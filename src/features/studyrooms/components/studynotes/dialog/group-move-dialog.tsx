@@ -1,19 +1,26 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+'use client';
+
+import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
+import {
+  useDeleteStudyNoteToGroup,
+  useUpdateStudyNoteToGroup,
+} from '@/features/studynotes/services/query';
 import { Select } from '@/features/studyrooms/components/common/select';
 import { DialogAction } from '@/features/studyrooms/hooks/useDialogReducer';
+import { getStudyNoteGroupInfiniteOption } from '@/features/studyrooms/services/query-options';
+import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import {
-  useDeleteStudyNoteGroup,
-  useUpdateStudyNoteGroup,
-} from '../services/query';
-import { getStudyNoteGroupInfiniteOption } from '../services/query-options';
 import type { StudyNoteGroupPageable } from '../type';
 
-const PAGE_SIZE = 10;
+export const GROUP_MOVE_DIALOG_PAGEABLE = {
+  page: 0,
+  size: 10,
+  sort: ['desc'],
+};
 
 export const GroupMoveDialog = ({
   open,
@@ -30,56 +37,42 @@ export const GroupMoveDialog = ({
   pageable: StudyNoteGroupPageable;
   keyword: string;
 }) => {
-  const [selectedGroup, setSelectedGroup] = useState<string | null>('none');
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [selectedGroup, setSelectedGroup] = useState<string | null>('all');
 
   const {
     data: studyNoteGroups,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    isPending,
+    isError,
   } = useInfiniteQuery({
     ...getStudyNoteGroupInfiniteOption({
       studyRoomId: studyRoomId,
-      pageable: { ...pageable, size: PAGE_SIZE, sort: [pageable.sortKey] },
+      pageable: GROUP_MOVE_DIALOG_PAGEABLE,
     }),
   });
 
-  const { mutate: removeStudyNoteGroup } = useDeleteStudyNoteGroup({
+  const { scrollContainerRef } = useInfiniteScroll({
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  });
+
+  const { mutate: removeStudyNoteGroup } = useDeleteStudyNoteToGroup({
     studyNoteId: studyNoteId,
     studyRoomId,
     pageable,
-    keyword,
+    // keyword,
   });
 
-  const { mutate: updateStudyNoteGroup } = useUpdateStudyNoteGroup({
+  const { mutate: updateStudyNoteGroup } = useUpdateStudyNoteToGroup({
     teachingNoteId: studyNoteId,
     teachingNoteGroupId: Number(selectedGroup),
     studyRoomId,
     pageable,
     keyword,
   });
-
-  const handleScroll = useCallback(() => {
-    if (!scrollContainerRef.current || !hasNextPage || isFetchingNextPage)
-      return;
-
-    const { scrollTop, scrollHeight, clientHeight } =
-      scrollContainerRef.current;
-    const scrollThreshold = 50;
-
-    if (scrollTop + clientHeight >= scrollHeight - scrollThreshold) {
-      fetchNextPage();
-    }
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
-
-  useEffect(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (scrollContainer) {
-      scrollContainer.addEventListener('scroll', handleScroll);
-      return () => scrollContainer.removeEventListener('scroll', handleScroll);
-    }
-  }, [handleScroll]);
 
   const handleSave = () => {
     if (selectedGroup === null || selectedGroup === 'none') {
@@ -89,6 +82,31 @@ export const GroupMoveDialog = ({
     }
     dispatch({ type: 'CLOSE' });
   };
+
+  // 1) 로딩 화면: 반드시 return 해서 아래 로직이 실행되지 않게
+  if (isPending) {
+    return (
+      <div className="p-4">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  // 2) 에러 화면: 마찬가지로 return
+  if (isError) {
+    return (
+      <div className="p-4">
+        <p>Error</p>
+      </div>
+    );
+  }
+
+  // 3)
+
+  const allGroups = [
+    { id: 'all', title: '전체 보기' },
+    ...studyNoteGroups.pages.flatMap((page) => page.content),
+  ];
 
   return (
     <Dialog
@@ -103,15 +121,10 @@ export const GroupMoveDialog = ({
           <Dialog.Description className="font-headline2-heading mb-1">
             이동할 그룹
           </Dialog.Description>
-          <div
-            ref={scrollContainerRef}
-            className="max-h-60 overflow-y-auto"
-          >
+          <div className="max-h-60 overflow-y-auto">
             <Select
               value={selectedGroup ?? ''}
-              onValueChange={(value) =>
-                setSelectedGroup(value === 'none' ? null : value)
-              }
+              onValueChange={(value) => setSelectedGroup(value)}
             >
               <Select.Trigger
                 className="w-full px-6"
@@ -123,33 +136,17 @@ export const GroupMoveDialog = ({
                 position="popper"
               >
                 <div
-                  className="max-h-40 overflow-y-auto"
-                  onScroll={(e) => {
-                    const target = e.target as HTMLDivElement;
-                    const { scrollTop, scrollHeight, clientHeight } = target;
-                    const scrollThreshold = 50;
-
-                    if (
-                      scrollTop + clientHeight >=
-                      scrollHeight - scrollThreshold
-                    ) {
-                      if (hasNextPage && !isFetchingNextPage) {
-                        fetchNextPage();
-                      }
-                    }
-                  }}
+                  className="flex max-h-40 flex-col gap-2 overflow-y-auto"
+                  ref={scrollContainerRef}
                 >
-                  <Select.Option value="none">없음</Select.Option>
-                  {studyNoteGroups?.pages.map((page) =>
-                    page.content.map((item) => (
-                      <Select.Option
-                        key={item.id}
-                        value={item.id.toString()}
-                      >
-                        {item.title}
-                      </Select.Option>
-                    ))
-                  )}
+                  {allGroups.map((item) => (
+                    <Select.Option
+                      key={item.id}
+                      value={item.id.toString()}
+                    >
+                      {item.title}
+                    </Select.Option>
+                  ))}
                 </div>
               </Select.Content>
             </Select>

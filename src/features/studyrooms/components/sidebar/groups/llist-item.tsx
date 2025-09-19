@@ -5,29 +5,47 @@ import { useState } from 'react';
 import Image from 'next/image';
 
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
+import { DialogAction } from '@/features/studyrooms/hooks/useDialogReducer';
 import { cn } from '@/lib/utils';
 
 export const GroupListItem = ({
   group,
   selectedGroupId,
   handleSelectGroup,
-  handleRenameGroup,
-  handleDeleteGroup,
+  dispatch,
 }: {
-  group: { id: number; name: string };
-  selectedGroupId: number;
-  handleSelectGroup: (id: number) => void;
-  handleRenameGroup: () => void;
-  handleDeleteGroup: () => void;
+  group: { id: number | 'all'; title: string };
+  selectedGroupId: number | 'all';
+  handleSelectGroup: (id: number | 'all') => void;
+  dispatch: (action: DialogAction) => void;
 }) => {
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
+
+  const handleRenameGroup = () => {
+    if (group.id === 'all') return;
+    dispatch({
+      type: 'OPEN',
+      scope: 'group',
+      kind: 'rename',
+      payload: { groupId: group.id, initialTitle: group.title },
+    });
+  };
+
+  const handleDeleteGroup = () => {
+    if (group.id === 'all') return;
+    dispatch({
+      type: 'OPEN',
+      scope: 'group',
+      kind: 'delete',
+      payload: { groupId: group.id, title: group.title },
+    });
+  };
 
   return (
     <div
       className={cn(
-        'group desktop:max-w-[296px] flex w-full cursor-pointer items-center justify-between gap-[10px] rounded-md px-2 py-3 hover:bg-gray-50',
-        selectedGroupId === group.id && 'text-key-color-primary',
-        menuOpenId === group.id && 'bg-gray-50'
+        'group desktop:max-w-[296px] hover:bg-gray-scale-gray-1 flex w-full cursor-pointer items-center justify-between gap-[10px] rounded-[8px] px-2 py-3',
+        selectedGroupId === group.id && 'text-key-color-primary'
       )}
       onClick={() => handleSelectGroup(group.id)}
     >
@@ -35,7 +53,7 @@ export const GroupListItem = ({
         <div
           className={cn(
             'bg-gray-scale-gray-60 h-6 w-6 shrink-0 transition-colors duration-200',
-            '[mask-image:url("/studyroom/ic-folder.png")]',
+            '[mask-image:url("/studyroom/ic-folder.svg")]',
             '[mask-size:contain]',
             '[mask-repeat:no-repeat]',
             '[mask-position:center]',
@@ -48,33 +66,30 @@ export const GroupListItem = ({
             selectedGroupId === group.id && 'text-key-color-primary'
           )}
         >
-          {group.name}
+          {group.title}
         </p>
       </div>
 
-      {group.id !== 12 && (
+      {group.id !== 'all' && (
         <DropdownMenu
           open={menuOpenId === group.id}
           onOpenChange={(open) => {
             if (open) {
               handleSelectGroup(group.id);
-              setMenuOpenId(group.id);
+              setMenuOpenId(group.id as number);
             } else {
               setMenuOpenId(null);
             }
           }}
         >
-          <DropdownMenu.Trigger
-            className="flex cursor-pointer items-center justify-center"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <DropdownMenu.Trigger className="flex cursor-pointer justify-center">
             <Image
               src="/studyroom/ic-kebab.png"
               alt="kebab-menu"
               width={24}
               height={24}
               className={cn(
-                'hidden shrink-0 cursor-pointer rounded-[8px] p-1 group-hover:block',
+                'hidden shrink-0 cursor-pointer group-hover:block',
                 menuOpenId === group.id && 'block'
               )}
             />

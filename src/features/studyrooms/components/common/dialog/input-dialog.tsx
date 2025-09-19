@@ -1,21 +1,29 @@
+'use client';
+
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { TextField } from '@/components/ui/text-field';
 
-export const CreateGroupDialog = ({
+export const InputDialog = ({
   isOpen,
+  placeholder,
   onOpenChange,
+  title,
+  description,
+  onSubmit,
+  error,
 }: {
   isOpen: boolean;
+  placeholder: string;
   onOpenChange: () => void;
+  title: string;
+  description?: string;
+  onSubmit: (name: string) => void;
+  error?: string;
 }) => {
-  const [groupName, setGroupName] = useState('');
-
-  const handleCreateGroup = () => {
-    setGroupName('');
-  };
+  const [name, setName] = useState('');
 
   return (
     <Dialog
@@ -24,20 +32,21 @@ export const CreateGroupDialog = ({
     >
       <Dialog.Content className="w-[598px]">
         <Dialog.Header>
-          <Dialog.Title>수업노트 그룹 생성</Dialog.Title>
+          <Dialog.Title>{title}</Dialog.Title>
         </Dialog.Header>
         <Dialog.Body className="mt-6">
           <Dialog.Description className="font-headline2-heading mb-1">
-            수업노트 그룹명
+            {description}
           </Dialog.Description>
-          <TextField>
+          <TextField error={!!error}>
             <TextField.Input
-              placeholder="수업노트 그룹명을 입력해주세요."
-              value={groupName}
-              onChange={(e) => setGroupName(e.target.value)}
+              placeholder={`${placeholder}`}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               maxLength={15}
             />
           </TextField>
+          {error && <p className="text-system-warning">{error}</p>}
         </Dialog.Body>
         <Dialog.Footer className="mt-6 justify-end">
           <Dialog.Close asChild>
@@ -54,8 +63,8 @@ export const CreateGroupDialog = ({
             <Button
               className="w-[120px]"
               size="small"
-              disabled={!groupName.trim()}
-              onClick={handleCreateGroup}
+              disabled={!name.trim() || !!error}
+              onClick={() => onSubmit(name)}
             >
               저장
             </Button>

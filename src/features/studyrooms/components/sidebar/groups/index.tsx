@@ -1,123 +1,126 @@
-'use client';
-
-import { useState } from 'react';
+import { useReducer } from 'react';
 
 import Image from 'next/image';
 
-import { CreateGroupDialog } from './create-dialog';
-import { DeleteGroupDialog } from './delete-dialog';
+import {
+  dialogReducer,
+  initialDialogState,
+} from '@/features/studyrooms/hooks/useDialogReducer';
+import { getStudyNoteGroupInfiniteOption } from '@/features/studyrooms/services/query-options';
+import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
+import { useInfiniteQuery } from '@tanstack/react-query';
+
+import { StudyroomGroupDialogs } from './dialogs.tsx';
 import { GroupListItem } from './llist-item';
-import { RenameGroupDialog } from './rename-dialog';
 
-type GroupDialogType = 'create' | 'rename' | 'delete' | null;
-
-interface GroupDialogData {
-  groupId?: number;
-  currentName?: string;
-  groupName?: string;
-}
-
-interface GroupDialogState {
-  isOpen: boolean;
-  type: GroupDialogType;
-  data?: GroupDialogData;
-}
+export const STUDYROOM_SIDEBAR_GROUPS_PAGEABLE = {
+  page: 0,
+  size: 20,
+  sort: ['desc'],
+};
 
 export const StudyroomGroups = ({
-  groups,
-  handleGroupDeleteConfirmAction,
+  studyRoomId,
+  selectedGroupId,
+  handleSelectGroupId,
 }: {
-  groups: { id: number; name: string }[];
-  handleGroupDeleteConfirmAction: () => void;
+  studyRoomId: number;
+  selectedGroupId: number | 'all';
+  handleSelectGroupId: (id: number | 'all') => void;
 }) => {
-  const [selectedGroupId, setSelectedGroupId] = useState<number>(12);
-  const [groupDialog, setGroupDialog] = useState<GroupDialogState>({
-    isOpen: false,
-    type: null,
+  const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
+
+  const {
+    data: studyNoteGroups,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isPending,
+    isError,
+  } = useInfiniteQuery({
+    ...getStudyNoteGroupInfiniteOption({
+      studyRoomId: studyRoomId,
+      pageable: STUDYROOM_SIDEBAR_GROUPS_PAGEABLE,
+    }),
   });
 
-  const handleSelectGroup = (id: number) => {
-    setSelectedGroupId(id);
+  const { scrollContainerRef } = useInfiniteScroll({
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  });
+
+  const handleCreateGroupClick = () => {
+    dispatch({
+      type: 'OPEN',
+      scope: 'group',
+      kind: 'create',
+      payload: { groupId: undefined, title: '' },
+    });
   };
 
-  const openGroupDialog = (type: GroupDialogType, data?: GroupDialogData) => {
-    setGroupDialog({ isOpen: true, type, data });
-  };
+  // 1) 로딩 화면: 반드시 return 해서 아래 로직이 실행되지 않게
+  if (isPending) {
+    return (
+      <div className="p-4">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
-  const closeGroupDialog = () => {
-    setGroupDialog({ isOpen: false, type: null, data: undefined });
-  };
+  // 2) 에러 화면: 마찬가지로 return
+  if (isError) {
+    return (
+      <div className="p-4">
+        <p>Error</p>
+      </div>
+    );
+  }
 
-  const handleGroupAction = (action: GroupDialogType) => {
-    switch (action) {
-      case 'create':
-        openGroupDialog('create');
-        break;
-      case 'rename':
-        openGroupDialog('rename', {
-          groupId: selectedGroupId,
-          currentName: groups.find((g) => g.id === selectedGroupId)?.name,
-        });
-        break;
-      case 'delete':
-        openGroupDialog('delete', {
-          groupId: selectedGroupId,
-          groupName: groups.find((g) => g.id === selectedGroupId)?.name,
-        });
-        break;
-    }
-  };
+  // 3)
+
+  const allGroups: Array<{ id: number | 'all'; title: string }> = [
+    { id: 'all', title: '전체 보기' },
+    ...studyNoteGroups.pages.flatMap((page) => page.content),
+  ];
 
   return (
     <>
-      {groupDialog.isOpen && (
-        <>
-          {groupDialog.type === 'create' && (
-            <CreateGroupDialog
-              isOpen={true}
-              onOpenChange={closeGroupDialog}
-            />
-          )}
-
-          {groupDialog.type === 'rename' && (
-            <RenameGroupDialog
-              isOpen={true}
-              initialGroupName={groupDialog.data?.currentName || ''}
-              onOpenChange={closeGroupDialog}
-            />
-          )}
-
-          {groupDialog.type === 'delete' && (
-            <DeleteGroupDialog
-              isOpen={true}
-              onOpenChange={closeGroupDialog}
-              onConfirm={handleGroupDeleteConfirmAction}
-            />
-          )}
-        </>
-      )}
+      <StudyroomGroupDialogs
+        dialog={dialog}
+        dispatch={dispatch}
+        studyRoomId={studyRoomId}
+        selectedGroupId={Number(selectedGroupId)}
+        handleSelectGroupId={handleSelectGroupId}
+      />
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <p className="font-body1-heading">수업노트 그룹</p>
-          <Image
-            src="/studyroom/ic-plus.png"
-            alt="plus"
-            width={24}
-            height={24}
-            className="hover:bg-gray-scale-gray-5 cursor-pointer rounded-[8px] p-1"
-            onClick={() => handleGroupAction('create')}
-          />
+          <div
+            className="hover:bg-gray-scale-gray-1 flex h-9 w-9 cursor-pointer items-center justify-center rounded-[8px]"
+            onClick={handleCreateGroupClick}
+          >
+            <Image
+              src="/studyroom/ic-plus.svg"
+              alt="plus"
+              width={16}
+              height={16}
+            />
+          </div>
         </div>
-        <div className="desktop:max-h-[880px] flex flex-col overflow-y-auto">
-          {groups.map((group) => (
+
+        <div
+          ref={scrollContainerRef}
+          className="desktop:max-h-[1000px] flex flex-col overflow-y-auto"
+        >
+          {allGroups.map((group) => (
             <GroupListItem
               key={group.id}
               group={group}
               selectedGroupId={selectedGroupId}
-              handleSelectGroup={handleSelectGroup}
-              handleRenameGroup={() => handleGroupAction('rename')}
-              handleDeleteGroup={() => handleGroupAction('delete')}
+              handleSelectGroup={handleSelectGroupId}
+              dispatch={dispatch}
             />
           ))}
         </div>

@@ -1,5 +1,11 @@
-export type DialogScope = 'group' | 'studyroom' | 'note';
-export type DialogKind = 'rename' | 'group-move' | 'delete' | 'onConfirm';
+export type DialogScope = 'group' | 'studyroom' | 'note' | 'invite';
+export type DialogKind =
+  | 'rename'
+  | 'group-move'
+  | 'delete'
+  | 'onConfirm'
+  | 'create'
+  | 'invite';
 
 export type DialogState =
   | { status: 'idle' }
@@ -8,10 +14,11 @@ export type DialogState =
       scope: DialogScope;
       kind: DialogKind;
       payload?: {
-        noteId?: string;
+        noteId?: number;
         title?: string;
         initialTitle?: string;
-        groupId?: string;
+        groupId?: number;
+        studyRoomId?: number;
       };
     };
 
@@ -21,10 +28,11 @@ export type DialogAction =
       scope: DialogScope;
       kind: DialogKind;
       payload?: {
-        noteId?: string;
+        noteId?: number;
         title?: string;
         initialTitle?: string;
-        groupId?: string;
+        groupId?: number;
+        studyRoomId?: number;
       };
     }
   | { type: 'GO_TO_CONFIRM' }

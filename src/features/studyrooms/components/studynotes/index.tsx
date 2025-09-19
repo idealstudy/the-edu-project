@@ -4,22 +4,29 @@ import { useEffect, useState } from 'react';
 
 import { useParams } from 'next/navigation';
 
-import { Pagination } from '@/components/ui/pagination';
+import {
+  useStudyNotesByGroupIdQuery,
+  useStudyNotesQuery,
+} from '@/features/studynotes/services/query';
 
+import { StudyRoomDetailLayout } from '../common/layout';
 import { StudyNotesList } from './list';
-import { SearchFilterBar } from './search-filter-bar';
-import { useStudyNotesQuery } from './services/query';
 import type {
   StudyNoteGroupPageable,
   StudyNoteLimit,
   StudyNoteSortKey,
 } from './type';
 
-export const StudyNotes = () => {
+export const StudyNotes = ({
+  selectedGroupId,
+}: {
+  selectedGroupId: number | 'all';
+}) => {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<StudyNoteSortKey>('LATEST_EDITED');
   const [limit, setLimit] = useState<StudyNoteLimit>(20);
   const [currentPage, setCurrentPage] = useState(0);
+
   const { id } = useParams();
   const studyRoomId = Number(id);
 
@@ -29,10 +36,20 @@ export const StudyNotes = () => {
     sortKey: sort,
   };
 
+  // TODO: 수업노트 조회 API keyword search 연결
   const { data } = useStudyNotesQuery({
     studyRoomId: studyRoomId,
     pageable: pageable,
-    keyword: search,
+    // keyword: search,
+  });
+
+  // TODO: 수업노트 그룹으로 수업노트 조회 API keyword search 연결
+  const { data: studyNotesByGroupId } = useStudyNotesByGroupIdQuery({
+    studyRoomId: studyRoomId,
+    teachingNoteGroupId: Number(selectedGroupId),
+    pageable: pageable,
+    // keyword: search,
+    enabled: selectedGroupId !== 'all',
   });
 
   const handlePageChange = (page: number) => {
@@ -51,33 +68,39 @@ export const StudyNotes = () => {
     setLimit(Number(e) as StudyNoteLimit);
   };
 
+  const page = {
+    page: currentPage,
+    totalPages:
+      selectedGroupId === 'all'
+        ? data?.totalPages || 1
+        : studyNotesByGroupId?.data?.totalPages || 1,
+    onPageChange: handlePageChange,
+  };
+
   useEffect(() => {
     setCurrentPage(0);
-  }, [search, sort, limit]);
+  }, [search, sort, limit, selectedGroupId]);
 
   return (
-    <div className="border-line-line1 flex flex-col gap-6 rounded-[12px] border bg-white px-8 py-6">
-      <div className="flex flex-col gap-3">
-        <SearchFilterBar
-          search={search}
-          sort={sort}
-          limit={limit}
-          onSearch={handleSearch}
-          onSortChange={handleSortChange}
-          onLimitChange={handleLimitChange}
-        />
-        <StudyNotesList
-          data={data?.content || []}
-          studyRoomId={Number(studyRoomId)}
-          pageable={pageable}
-          keyword={search}
-        />
-      </div>
-      <Pagination
-        page={currentPage}
-        totalPages={data?.totalPages || 0}
-        onPageChange={handlePageChange}
+    <StudyRoomDetailLayout
+      search={search}
+      sort={sort}
+      limit={limit}
+      onSearch={handleSearch}
+      onSortChange={handleSortChange}
+      onLimitChange={handleLimitChange}
+      page={page}
+    >
+      <StudyNotesList
+        data={
+          selectedGroupId === 'all'
+            ? data?.content || []
+            : studyNotesByGroupId?.data?.content || []
+        }
+        studyRoomId={Number(studyRoomId)}
+        pageable={pageable}
+        keyword={search}
       />
-    </div>
+    </StudyRoomDetailLayout>
   );
 };

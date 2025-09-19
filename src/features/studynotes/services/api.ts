@@ -1,16 +1,13 @@
-import { CommonResponse, PaginationMeta, apiClient } from '@/lib/api';
-import { Pageable } from '@/lib/api';
-
 import type {
   StudyNote,
-  StudyNoteGroup,
   StudyNoteGroupPageable,
-} from '../type';
+} from '@/features/studyrooms/components/studynotes/type';
+import { CommonResponse, PaginationMeta, apiClient } from '@/lib/api';
 
 export const getStudyNotes = async (args: {
   studyRoomId: number;
   pageable: StudyNoteGroupPageable;
-  keyword: string;
+  // keyword: string;
 }) => {
   const response = (
     await apiClient.get<
@@ -27,28 +24,28 @@ export const getStudyNotes = async (args: {
   return response.data;
 };
 
-export const getStudyNoteGroup = async (args: {
+export const getStudyNotesByGroupId = async (params: {
   studyRoomId: number;
-  pageable: Pageable;
+  teachingNoteGroupId: number;
+  pageable: StudyNoteGroupPageable;
+  // keyword: string;
 }) => {
-  const response = (
-    await apiClient.get<
-      CommonResponse<PaginationMeta & { content: StudyNoteGroup[] }>
-    >(`/teacher/study-rooms/${args.studyRoomId}/teaching-note-groups`, {
+  const response = await apiClient.get(
+    `/teacher/study-rooms/${params.studyRoomId}/teaching-note-groups/${params.teachingNoteGroupId}/teaching-notes`,
+    {
       params: {
-        page: args.pageable.page,
-        size: args.pageable.size,
-        sort: args.pageable.sort,
+        page: params.pageable.page,
+        size: params.pageable.size,
+        sortKey: params.pageable.sortKey,
+        // keyword: args.keyword,
       },
-      paramsSerializer: {
-        indexes: null,
-      },
-    })
-  ).data;
+    }
+  );
+
   return response.data;
 };
 
-export const deleteStudyNoteGroup = async (args: { studyNoteId: number }) => {
+export const deleteStudyNoteToGroup = async (args: { studyNoteId: number }) => {
   const response = await apiClient.delete(
     `/teacher/teaching-notes/${args.studyNoteId}/teaching-note-groups`
   );
@@ -82,17 +79,10 @@ export const updateStudyNoteGroup = async (args: {
   return response.data;
 };
 
-export const getStudyNoteDetail = async (args: { teachingNoteId: number }) => {
-  const response = await apiClient.get(
-    `/public/teaching-notes/${args.teachingNoteId}`
-  );
-  return response.data;
-};
-
 export const updateStudyNote = async (args: {
   teachingNoteId: number;
   studyRoomId: number;
-  teachingNoteGroupId: number;
+  teachingNoteGroupId: number | null;
   title: string;
   content: string;
   visibility: string;

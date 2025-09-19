@@ -5,17 +5,17 @@ import { useState } from 'react';
 import Image from 'next/image';
 
 import { Input } from '@/components/ui/input';
-import { Select } from '@/components/ui/select';
+import { Select } from '@/features/studyrooms/components/common/select';
 
 import type { StudyNoteLimit, StudyNoteSortKey } from './type';
 
 type Props = {
   search: string;
-  sort: string;
-  limit: number;
+  sort: StudyNoteSortKey;
+  limit: StudyNoteLimit;
   onSearch: (value: string) => void;
-  onSortChange: (value: string) => void;
-  onLimitChange: (value: number) => void;
+  onSortChange: (value: StudyNoteSortKey) => void;
+  onLimitChange: (value: StudyNoteLimit) => void;
 };
 
 const SORT_OPTIONS: Array<{ value: StudyNoteSortKey; label: string }> = [
@@ -51,7 +51,7 @@ export const SearchFilterBar = ({
     <div className="items-cente flex justify-between gap-4">
       <div className="flex gap-[10px]">
         <Select
-          defaultValue={sort}
+          value={sort}
           onValueChange={onSortChange}
         >
           <Select.Trigger
@@ -72,8 +72,10 @@ export const SearchFilterBar = ({
           </Select.Content>
         </Select>
         <Select
-          defaultValue={limit.toString()}
-          onValueChange={(value) => onLimitChange(Number(value))}
+          value={limit.toString()}
+          onValueChange={(value) =>
+            onLimitChange(Number(value) as StudyNoteLimit)
+          }
         >
           <Select.Trigger
             className={SELECT_STYLES.trigger}
