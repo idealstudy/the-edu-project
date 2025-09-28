@@ -1,0 +1,106 @@
+{
+  "data": [
+    {
+      "id": "q1",
+      "title": "은 어디에서 수업을 진행하나요?",
+      "type": "radio",
+      "options": [
+        {
+          "value": "online",
+          "label": "온라인"
+        },
+        {
+          "value": "offline",
+          "label": "오프라인"
+        }
+      ]
+    },
+    {
+      "id": "q2",
+      "title": "어떤 수업을 위해 만들어졌나요?",
+      "type": "radio",
+      "options": [
+        {
+          "value": "one_to_one",
+          "label": "1:1 수업 (과외, 멘토링)",
+          "subLabel": "한 명을 대상으로 하는 수업이에요"
+        },
+        {
+          "value": "one_to_many",
+          "label": "1:N 수업 (학원 등)",
+          "subLabel": "다수를 대상으로 하는 수업이에요"
+        }
+      ]
+    },
+    {
+      "id": "q3",
+      "title": "어떤 과목을 수업하시나요?",
+      "type": "radio",
+      "options": [
+        {
+          "value": "ko",
+          "label": "국어"
+        },
+        {
+          "value": "en",
+          "label": "영어"
+        },
+        {
+          "value": "math",
+          "label": "수학"
+        },
+        {
+          "value": "etc",
+          "label": "기타"
+        }
+      ]
+    },
+    {
+      "id": "q4",
+      "title": "몇 학년을 대상으로 수업하시나요?",
+      "type": "select",
+      "options": {
+        "school": [
+          {
+            "value": "high",
+            "label": "고등학교"
+          },
+          {
+            "value": "middle",
+            "label": "중학교"
+          },
+          {
+            "value": "elementary",
+            "label": "초등학교"
+          }
+        ],
+        "grade": [
+          {
+            "value": "1",
+            "label": "1학년"
+          },
+          {
+            "value": "2",
+            "label": "2학년"
+          },
+          {
+            "value": "3",
+            "label": "3학년"
+          },
+          {
+            "value": "4",
+            "label": "4학년"
+          },
+          {
+            "value": "5",
+            "label": "5학년"
+          },
+          {
+            "value": "6",
+            "label": "6학년"
+          }
+        ]
+      }
+    }
+  ]
+}
