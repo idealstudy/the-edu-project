@@ -61,7 +61,7 @@ const RadioCardLabel = ({
   return (
     <Label.Root
       className={cn(
-        'block cursor-pointer rounded-2xl border p-4 transition',
+        'block cursor-pointer rounded-md border p-4 transition',
         'data-[state=checked]:border-key-color-primary data-[state=checked]:shadow',
         'data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
         //'data-[disabled]:pointer-events-none',
