@@ -5,7 +5,7 @@ import CreateStudyRoomFlow from '@/features/studyrooms/components/create/CreateS
 
 export default function CreateStudyRoomPage() {
   return (
-    <ColumnLayout>
+    <ColumnLayout className="container mx-auto">
       <CreateStudyRoomFlow />
     </ColumnLayout>
   );
