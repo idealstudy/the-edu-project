@@ -49,10 +49,10 @@ const { data } = step2 as FileSchema;
 export default function StepTwo({ onNext, disabled }: CreateStepForm) {
   const { control, getValues, setValue } = useFormContext();
   const title = getValues('basic.title') ?? '';
-  const school = useWatch({ control, name: 'profile.school' });
+  const school = useWatch({ control, name: 'schoolInfo.schoolLevel' });
 
   React.useEffect(() => {
-    setValue('profile.grade', '', { shouldValidate: true });
+    setValue('schoolInfo.grade', '', { shouldValidate: true });
   }, [school, setValue]);
 
   return (
@@ -101,7 +101,7 @@ export default function StepTwo({ onNext, disabled }: CreateStepForm) {
               <div className="my-6 flex gap-3">
                 <Form.Item>
                   <Controller
-                    name="profile.school"
+                    name="schoolInfo.schoolLevel"
                     control={control}
                     render={({ field }) => (
                       <Select
@@ -130,7 +130,7 @@ export default function StepTwo({ onNext, disabled }: CreateStepForm) {
 
                 <Form.Item>
                   <Controller
-                    name="profile.grade"
+                    name="schoolInfo.grade"
                     control={control}
                     render={({ field }) => (
                       <Select
@@ -145,7 +145,7 @@ export default function StepTwo({ onNext, disabled }: CreateStepForm) {
                         <Select.Content>
                           {el.options.grade
                             .filter((option) => {
-                              if (school === 'elementary') return true;
+                              if (school === 'ELEMENTARY') return true;
                               return Number(option.value) <= 3;
                             })
                             .map((option) => (

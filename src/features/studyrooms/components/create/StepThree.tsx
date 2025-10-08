@@ -15,7 +15,7 @@ export default function StepThree() {
           초대할 학생이 있나요?
         </Form.Label>
         <Input
-          {...register('invite.emails')}
+          {...register('emails')}
           placeholder="초대할 사람을 검색 후 선택해주세요"
           className="mt-6"
         />

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { FieldErrors, FormProvider, useForm } from 'react-hook-form';
+import { FieldErrors, FieldPath, FormProvider, useForm } from 'react-hook-form';
 
 import { Form } from '@/components/ui/form';
 import ProgressIndicator from '@/features/studyrooms/components/create/ProgressIndicator';
@@ -23,30 +23,21 @@ import { zodResolver } from '@hookform/resolvers/zod';
 export const ORDER = ['basic', 'profile', 'invite'] as const;
 export type Step = (typeof ORDER)[number];
 
-type FieldName =
-  | 'basic.title'
-  | 'basic.visibility'
-  | 'profile.location'
-  | 'profile.classType'
-  | 'profile.subject'
-  | 'profile.school'
-  | 'profile.grade'
-  | 'invite.emails';
 /**
  * - basic : 스터디룸의 메타데이터
  * - profile : 스터디룸이 어떤 수업을 위한 것인지 설명하는 교육 프로필
  * - invite: 참여자
  **/
-export const fieldsPerStep: Record<Step, FieldName[]> = {
-  basic: ['basic.title', 'basic.visibility'],
+export const fieldsPerStep: Record<Step, FieldPath<StudyRoomFormValues>[]> = {
+  basic: ['name', 'visibility', 'description'],
   profile: [
-    'profile.classType',
-    'profile.location',
-    'profile.subject',
-    'profile.school',
-    'profile.grade',
+    'modality',
+    'classForm',
+    'subjectType',
+    'schoolInfo.schoolLevel',
+    'schoolInfo.grade',
   ],
-  invite: ['invite.emails'],
+  invite: ['emails'],
 };
 
 export default function CreateStudyRoomFlow() {
@@ -63,19 +54,15 @@ export default function CreateStudyRoomFlow() {
     resolver: zodResolver(CreateStudyRoomSchema),
     shouldUnregister: false,
     defaultValues: {
-      basic: {
-        title: '',
-        visibility: 'public',
-      },
-      profile: {
-        location: undefined,
-        classType: undefined,
-        subject: undefined,
-        school: undefined,
-        grade: '',
-      },
-      invite: {
-        emails: '',
+      name: '',
+      description: '',
+      visibility: 'PUBLIC',
+      modality: undefined,
+      classForm: undefined,
+      subjectType: undefined,
+      schoolInfo: {
+        schoolLevel: undefined,
+        grade: undefined as unknown as number,
       },
     },
   });
