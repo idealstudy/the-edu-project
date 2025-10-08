@@ -13,7 +13,6 @@ import { CreateStepForm } from '@/features/studyrooms/components/types';
 
 export default function StepOne({ onNext, disabled }: CreateStepForm) {
   const { register, control } = useFormContext();
-
   return (
     <>
       <Image
@@ -32,9 +31,7 @@ export default function StepOne({ onNext, disabled }: CreateStepForm) {
         </Form.Label>
         <Input
           className="border-line-line2"
-          {...register('basic.title', {
-            required: '스터디룸 이름은 필수입니다.',
-          })}
+          {...register('basic.title')}
         />
       </Form.Item>
       <Form.Item className="mt-8">
@@ -62,13 +59,16 @@ export default function StepOne({ onNext, disabled }: CreateStepForm) {
         <Controller
           name="basic.visibility"
           control={control}
-          defaultValue="public"
           render={({ field }) => (
             <Select
               value={field.value}
+              name={field.name}
               onValueChange={field.onChange}
             >
-              <Select.Trigger className="w-[240px]" />
+              <Select.Trigger
+                className="w-[240px]"
+                placeholder="공개 범위 선택"
+              />
               <Select.Content>
                 <Select.Option value="public">전체 공개</Select.Option>
                 <Select.Option value="private">비공개</Select.Option>
