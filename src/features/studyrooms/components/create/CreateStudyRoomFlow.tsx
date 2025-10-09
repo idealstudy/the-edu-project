@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { FieldErrors, FieldPath, FormProvider, useForm } from 'react-hook-form';
+import { FieldPath, FormProvider, useForm } from 'react-hook-form';
 
 import { Form } from '@/components/ui/form';
 import ProgressIndicator from '@/features/studyrooms/components/create/ProgressIndicator';
@@ -18,6 +18,7 @@ import {
   CreateStudyRoomSchema,
   StudyRoomFormValues,
 } from '@/features/studyrooms/schemas/create';
+import { useCreateStudyRoomMutation } from '@/features/studyrooms/services/query';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 export const ORDER = ['basic', 'profile', 'invite'] as const;
@@ -80,16 +81,9 @@ export default function CreateStudyRoomFlow() {
 
   const handleIndicatorMove = (to: number) => dispatch({ type: 'GO', to });
 
-  const onSubmit = (data: StudyRoomFormValues) => {
-    alert('제출 데이터 : ' + JSON.stringify(data));
-    // console.log('values keys:', Object.keys(methods.getValues()));
-    // console.log('폼 제출 데이터 :', JSON.stringify(data, null, 2));
-  };
+  const { mutate, isPending } = useCreateStudyRoomMutation();
 
-  const onError = (errors: FieldErrors<StudyRoomFormValues>) => {
-    alert(errors);
-    // console.log('제출 실패(errors):', errors);
-  };
+  const onSubmit = (data: StudyRoomFormValues) => mutate(data);
 
   return (
     <section className="flex flex-col">
@@ -105,7 +99,7 @@ export default function CreateStudyRoomFlow() {
       </div>
       <FormProvider {...methods}>
         <Form
-          onSubmit={methods.handleSubmit(onSubmit, onError)}
+          onSubmit={methods.handleSubmit(onSubmit)}
           className="mt-12"
         >
           {step === 'basic' && (
@@ -120,7 +114,7 @@ export default function CreateStudyRoomFlow() {
               disabled={!isStepValid}
             />
           )}
-          {step === 'invite' && <StepThree />}
+          {step === 'invite' && <StepThree disabled={isPending} />}
         </Form>
       </FormProvider>
     </section>

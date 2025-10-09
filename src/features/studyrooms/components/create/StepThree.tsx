@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-export default function StepThree() {
+export default function StepThree({ disabled }: { disabled?: boolean }) {
   const { register } = useFormContext();
   return (
     <>
@@ -34,8 +34,9 @@ export default function StepThree() {
         <Button
           type="submit"
           className="w-48"
+          disabled={disabled}
         >
-          완료
+          {disabled ? '생성 중...' : '완료'}
         </Button>
       </div>
     </>

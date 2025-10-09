@@ -8,8 +8,8 @@ import { Form } from '@/components/ui/form';
 import { RadioCard } from '@/components/ui/radio-card';
 import { RadioGroup } from '@/components/ui/radio-group';
 import { Select } from '@/components/ui/select';
-import { CreateStepForm } from '@/features/studyrooms/components/types';
 import step2 from '@/features/studyrooms/data/step2.json';
+import { CreateStepForm } from '@/features/studyrooms/types';
 
 type Base = {
   id: string;
