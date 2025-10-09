@@ -3,6 +3,7 @@
 import { useReducer, useState } from 'react';
 
 import { ColumnLayout } from '@/components/layout/column-layout';
+import StudentInvitationButton from '@/features/studynotes/components/StudentInvitationButton';
 import { ConfirmDialog } from '@/features/studyrooms/components/common/dialog/confirm-dialog';
 import { InputDialog } from '@/features/studyrooms/components/common/dialog/input-dialog';
 import {
@@ -84,6 +85,7 @@ export const StudyroomSidebar = ({
         <StudyroomSidebarHeader dispatch={dispatch} />
         {/* TODO: 스터디룸 수업노트, 학생, 질문 카운트 추가 */}
         <StudyStats />
+        <StudentInvitationButton />
         <StudyroomGroups
           studyRoomId={studyRoomId}
           selectedGroupId={selectedGroupId}
