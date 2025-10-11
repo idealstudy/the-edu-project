@@ -18,7 +18,7 @@ const SelectArea = () => {
   const { data: rooms } = useStudyRoomsQuery();
   const { data: studyNoteGroups } = useStudyNoteGroupsQuery();
 
-  const [open, setOpen] = useState(false);
+  const [openStudyRoomOption, setOpenStudyRoomOption] = useState(false);
 
   const {
     control,
@@ -42,24 +42,28 @@ const SelectArea = () => {
             <Controller
               name="studyRoomId"
               control={control}
+              // defaultValue={0}
               render={({ field }) => {
+                const fieldValue =
+                  field.value != null ? String(field.value) : '';
+                const selectedRoomName =
+                  rooms?.find((r) => String(r.id) === fieldValue)?.name ??
+                  '스터디룸을 선택해주세요.';
                 return (
                   <Popover.Root
-                    open={open}
-                    onOpenChange={setOpen}
+                    open={openStudyRoomOption}
+                    onOpenChange={setOpenStudyRoomOption}
                   >
                     <Popover.Trigger asChild>
-                      <button className="flex w-full cursor-pointer items-center justify-between text-start text-2xl leading-[140%] font-bold">
-                        <span>
-                          {field.value
-                            ? rooms?.find((room) => room.id === field.value)
-                                ?.name || '스터디룸을 선택해주세요.'
-                            : '스터디룸을 선택해주세요.'}
-                        </span>
+                      <button
+                        type="button"
+                        className="flex w-full cursor-pointer items-center justify-between text-start text-2xl leading-[140%] font-bold"
+                      >
+                        <span>{selectedRoomName}</span>
                         <ChevronDownIcon
                           className={cn(
                             'h-6 w-6 transition-transform duration-200',
-                            open ? 'rotate-180' : ''
+                            openStudyRoomOption ? 'rotate-180' : ''
                           )}
                         />
                       </button>
@@ -70,22 +74,30 @@ const SelectArea = () => {
                         className="mt-1 rounded-md border border-gray-200 bg-white shadow-sm"
                         style={{ width: 'var(--radix-popover-trigger-width)' }}
                       >
-                        {rooms?.map((room) => (
-                          <Popover.Close
-                            key={room.id}
-                            onClick={() => {
-                              field.onChange(room.id);
-                              setOpen(false);
-                            }}
-                            className={cn(
-                              'w-full cursor-pointer px-4 py-2 text-left transition-colors hover:bg-gray-100',
-                              field.value === room.id &&
-                                'bg-gray-200 font-semibold'
-                            )}
-                          >
-                            {room.name}
-                          </Popover.Close>
-                        ))}
+                        {rooms?.map((room) => {
+                          const isSelected = fieldValue === String(room.id);
+
+                          return (
+                            <Popover.Close
+                              key={room.id}
+                              asChild
+                            >
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  field.onChange(room.id);
+                                  setOpenStudyRoomOption(false);
+                                }}
+                                className={cn(
+                                  'w-full cursor-pointer px-4 py-2 text-left transition-colors hover:bg-gray-100',
+                                  isSelected && 'bg-gray-200 font-semibold'
+                                )}
+                              >
+                                {room.name}
+                              </button>
+                            </Popover.Close>
+                          );
+                        })}
                       </Popover.Content>
                     </Popover.Portal>
                   </Popover.Root>
@@ -107,27 +119,38 @@ const SelectArea = () => {
         </Form.Label>
         <Form.Control>
           <Controller
-            name="studyRoomId"
+            name="studyNoteGroup"
             control={control}
             rules={{ required: '공개 범위를 선택해주세요.' }}
             render={({ field }) => (
               <Select
-                value={String(field.value) || ''}
-                onValueChange={(value) => field.onChange(Number(value))}
+                value={String(field.value) ?? undefined}
+                onValueChange={(value) => {
+                  // 빈 선택(없음)을 허용한다면 undefined로 저장
+                  if (value === '' || value === 'none')
+                    return field.onChange(undefined);
+                  // 값이 숫자 enum이면 Number(value)로, 문자열이면 그대로
+                  field.onChange(value); // or Number(value)
+                }}
               >
                 <Select.Trigger
-                  placeholder="없음"
+                  placeholder="없음asdf"
                   className="mt-[9px]"
                 />
                 <Select.Content>
-                  {studyNoteGroups?.content.map((group) => (
-                    <Select.Option
-                      key={group.id}
-                      value={group.id + ''}
-                    >
-                      {group.title}
-                    </Select.Option>
-                  ))}
+                  {!studyNoteGroups?.content ||
+                  studyNoteGroups.content.length === 0 ? (
+                    <Select.Option value="none">없음</Select.Option>
+                  ) : (
+                    studyNoteGroups.content.map((group) => (
+                      <Select.Option
+                        key={group.id}
+                        value={String(group.id)}
+                      >
+                        {group.title}
+                      </Select.Option>
+                    ))
+                  )}
                 </Select.Content>
               </Select>
             )}

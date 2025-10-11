@@ -5,7 +5,7 @@ import SelectArea from '@/features/dashboard/studynote/write/components/select-a
 import WriteArea from '@/features/dashboard/studynote/write/components/write-area';
 import WriteForm from '@/features/dashboard/studynote/write/components/write-form';
 
-export default function SettingsPage() {
+export default function StudyNoteWritePage() {
   return (
     <>
       <div className="desktop:flex desktop:flex-row mt-[34px] hidden w-full flex-col justify-center gap-5">

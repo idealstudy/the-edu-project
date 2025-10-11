@@ -64,6 +64,7 @@ export const studyNoteFormSchema = z.object({
   studentIds: z
     .array(z.custom<ConnectedMember>())
     .nonempty('수업에 참여한 학생들을 입력해 주세요.'),
+  studyNoteGroup: z.string().min(1, '수업 노트 그룹을 선택해주세요.'),
 });
 
 export type StudyNoteForm = z.infer<typeof studyNoteFormSchema>;
