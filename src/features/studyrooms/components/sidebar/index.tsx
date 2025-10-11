@@ -3,9 +3,10 @@
 import { useReducer, useState } from 'react';
 
 import { ColumnLayout } from '@/components/layout/column-layout';
-import StudentInvitationButton from '@/features/studynotes/components/StudentInvitationButton';
 import { ConfirmDialog } from '@/features/studyrooms/components/common/dialog/confirm-dialog';
 import { InputDialog } from '@/features/studyrooms/components/common/dialog/input-dialog';
+import { InvitationDialog } from '@/features/studyrooms/components/student-invitation/InvitationDialog';
+import StudentInvitation from '@/features/studyrooms/components/student-invitation/StudentInvitation';
 import {
   dialogReducer,
   initialDialogState,
@@ -81,11 +82,22 @@ export const StudyroomSidebar = ({
           />
         )}
 
+      {dialog.status === 'open' &&
+        dialog.kind === 'invite' &&
+        dialog.scope === 'studyroom' && (
+          <InvitationDialog
+            isOpen={true}
+            title="스터디룸에 학생 초대"
+            placeholder="초대할 학생을 검색후 선택해 주세요."
+            onOpenChange={() => dispatch({ type: 'CLOSE' })}
+          />
+        )}
+
       <ColumnLayout.Left className="border-line-line1 flex h-fit flex-col gap-5 rounded-xl border bg-white px-8 py-8">
         <StudyroomSidebarHeader dispatch={dispatch} />
         {/* TODO: 스터디룸 수업노트, 학생, 질문 카운트 추가 */}
         <StudyStats />
-        <StudentInvitationButton />
+        <StudentInvitation dispatch={dispatch} />
         <StudyroomGroups
           studyRoomId={studyRoomId}
           selectedGroupId={selectedGroupId}
