@@ -162,4 +162,36 @@ export const ChevronDownIcon = ({ className }: { className: string }) => {
   );
 };
 
+export const PlusIcon = ({ className }: { className?: string }) => {
+  return (
+    <svg
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+    >
+      <g clipPath="url(#clip_plus_16)">
+        <path
+          d="M2.5 7.5L8 7.5L8 13M13.5 7.5L7.99948 7.49948L8 2"
+          stroke="#FF4805"
+          // stroke-linecap="round"
+          // stroke-linejoin="round"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip_plus_16">
+          <rect
+            width="16"
+            height="16"
+            fill="white"
+            transform="translate(0 0.5)"
+          />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
+
 export { Select };

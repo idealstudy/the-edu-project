@@ -7,7 +7,7 @@ import Image from 'next/image';
 
 import { ColumnLayout } from '@/components/layout/column-layout';
 import { Form } from '@/components/ui/form';
-import { ChevronDownIcon, Select } from '@/components/ui/select';
+import { ChevronDownIcon, PlusIcon, Select } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { Popover } from 'radix-ui';
 
@@ -15,15 +15,16 @@ import { StudyNoteForm } from '../schemas/note';
 import { useStudyNoteGroupsQuery, useStudyRoomsQuery } from '../services/query';
 
 const SelectArea = () => {
-  const { data: rooms } = useStudyRoomsQuery();
-  const { data: studyNoteGroups } = useStudyNoteGroupsQuery();
-
-  const [openStudyRoomOption, setOpenStudyRoomOption] = useState(false);
-
   const {
     control,
     formState: { errors },
+    watch,
   } = useFormContext<StudyNoteForm>();
+  const roomId = watch('studyRoomId');
+  const { data: rooms } = useStudyRoomsQuery();
+  const { data: studyNoteGroups } = useStudyNoteGroupsQuery(roomId);
+
+  const [open, setOpen] = useState(false);
 
   return (
     <ColumnLayout.Left className="border-line-line1 h-fit rounded-xl border bg-white px-8 py-10">
@@ -39,11 +40,16 @@ const SelectArea = () => {
           className="w-full"
         >
           <Form.Control>
+            {/* TODO
+                드롭다운으로 컴포넌트 변경 필요
+                기존 작업 popover로 제작됨
+                디자인 차이로 인한 결과로 추정됨 -> 일반 드롭다운과 디자인이 다름
+            */}
             <Controller
               name="studyRoomId"
               control={control}
-              // defaultValue={0}
               render={({ field }) => {
+                // 진입 시점 파악 필요
                 const fieldValue =
                   field.value != null ? String(field.value) : '';
                 const selectedRoomName =
@@ -51,8 +57,8 @@ const SelectArea = () => {
                   '스터디룸을 선택해주세요.';
                 return (
                   <Popover.Root
-                    open={openStudyRoomOption}
-                    onOpenChange={setOpenStudyRoomOption}
+                    open={open}
+                    onOpenChange={setOpen}
                   >
                     <Popover.Trigger asChild>
                       <button
@@ -63,7 +69,7 @@ const SelectArea = () => {
                         <ChevronDownIcon
                           className={cn(
                             'h-6 w-6 transition-transform duration-200',
-                            openStudyRoomOption ? 'rotate-180' : ''
+                            open ? 'rotate-180' : ''
                           )}
                         />
                       </button>
@@ -86,7 +92,7 @@ const SelectArea = () => {
                                 type="button"
                                 onClick={() => {
                                   field.onChange(room.id);
-                                  setOpenStudyRoomOption(false);
+                                  setOpen(false);
                                 }}
                                 className={cn(
                                   'w-full cursor-pointer px-4 py-2 text-left transition-colors hover:bg-gray-100',
@@ -122,43 +128,41 @@ const SelectArea = () => {
             name="studyNoteGroup"
             control={control}
             rules={{ required: '공개 범위를 선택해주세요.' }}
-            render={({ field }) => (
-              <Select
-                value={String(field.value) ?? undefined}
-                onValueChange={(value) => {
-                  // 빈 선택(없음)을 허용한다면 undefined로 저장
-                  if (value === '' || value === 'none')
-                    return field.onChange(undefined);
-                  // 값이 숫자 enum이면 Number(value)로, 문자열이면 그대로
-                  field.onChange(value); // or Number(value)
-                }}
-              >
-                <Select.Trigger
-                  placeholder="없음asdf"
-                  className="mt-[9px]"
-                />
-                <Select.Content>
-                  {!studyNoteGroups?.content ||
-                  studyNoteGroups.content.length === 0 ? (
-                    <Select.Option value="none">없음</Select.Option>
-                  ) : (
-                    studyNoteGroups.content.map((group) => (
+            render={() => {
+              return (
+                <Select defaultValue="">
+                  <Select.Trigger
+                    placeholder="없음"
+                    className="mt-[9px]"
+                  />
+                  <Select.Content>
+                    {!studyNoteGroups?.content ||
+                    studyNoteGroups.content.length === 0 ? (
                       <Select.Option
-                        key={group.id}
-                        value={String(group.id)}
+                        value="none"
+                        className="flex w-full"
                       >
-                        {group.title}
+                        <PlusIcon /> <span>추가하기</span>
                       </Select.Option>
-                    ))
-                  )}
-                </Select.Content>
-              </Select>
-            )}
+                    ) : (
+                      studyNoteGroups.content.map((group) => (
+                        <Select.Option
+                          key={group.id}
+                          value={String(group.id)}
+                        >
+                          {group.title}
+                        </Select.Option>
+                      ))
+                    )}
+                  </Select.Content>
+                </Select>
+              );
+            }}
           />
         </Form.Control>
-        {errors.studyRoomId && (
+        {errors.studyNoteGroup && (
           <Form.ErrorMessage className="text-system-warning text-sm">
-            {errors.studyRoomId.message}
+            {errors.studyNoteGroup.message}
           </Form.ErrorMessage>
         )}
       </Form.Item>

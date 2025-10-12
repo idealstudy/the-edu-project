@@ -12,8 +12,8 @@ export const useConnectMembers = (roomId: number) => {
   return useQuery(getConnectMembersOption(roomId));
 };
 
-export const useStudyNoteGroupsQuery = () => {
-  return useQuery(getStudyNodeGroupsOption());
+export const useStudyNoteGroupsQuery = (roomId: number) => {
+  return useQuery(getStudyNodeGroupsOption(roomId));
 };
 
 export const useWriteStudyNoteMutation = () => {
