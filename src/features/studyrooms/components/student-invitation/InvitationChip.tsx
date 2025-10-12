@@ -8,31 +8,54 @@ type InvitationChipProps = {
   onRemove?: () => void;
 };
 
-const InvitationChip = ({
+export const InvitationChip = ({
   name,
   guardianCount = 0,
   onRemove,
 }: InvitationChipProps) => {
   return (
-    <div className="bg-gray-scale-white inline-flex items-center gap-2 rounded-md border border-gray-300 px-3 py-[4px]">
-      <p className="text-sm font-medium text-gray-900">{name}</p>
+    <li
+      role="listitem"
+      aria-label={`${name}${guardianCount > 0 ? `, 보호자 ${guardianCount}` : ''}`}
+      className="bg-line-line1/60 text-md inline-flex w-fit items-center gap-2 rounded-md border border-gray-300 px-3 py-[4px]"
+    >
+      <p className="text-md font-medium text-gray-900">{name}</p>
 
       {guardianCount > 0 && (
-        <div className="text-system-warning flex items-center gap-1 text-[13px]">
-          <span className="text-[10px] leading-[0]">●</span>
+        <div
+          aria-label={`보호자 ${guardianCount}`}
+          className="text-system-warning flex items-center gap-2"
+        >
+          <span
+            className="text-[10px] leading-[0]"
+            aria-hidden="true"
+          >
+            ●
+          </span>
           <span>보호자 {guardianCount}</span>
         </div>
       )}
 
       <Button
-        onClick={onRemove}
-        className="ml-1 text-sm text-gray-500 hover:text-gray-700"
-        aria-label="삭제"
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onRemove?.();
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Backspace' || e.key === 'Delete') {
+            e.preventDefault();
+            e.stopPropagation();
+            onRemove?.();
+          }
+        }}
+        variant="outlined"
+        aria-label={`${name}칩 삭제 버튼`}
+        className="bg-line-line1/60 h-fit border-none px-2 text-sm"
       >
-        X
+        <span aria-hidden="true">X</span>
+        <span className="sr-only">삭제</span>
       </Button>
-    </div>
+    </li>
   );
 };
-
-export default InvitationChip;

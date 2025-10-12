@@ -2,9 +2,11 @@
 
 import React from 'react';
 
+import Image from 'next/image';
+
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
-import { InvitationSearchResult } from '@/features/studyrooms/components/student-invitation/InvitationSearchResult';
+import { InvitationField } from '@/features/studyrooms/components/student-invitation/InvitationField';
 import { useInvitationController } from '@/features/studyrooms/hooks/useInvitationController';
 
 /*type Invitee = {
@@ -34,11 +36,13 @@ export const InvitationDialog = ({
   placeholder,
   onOpenChange,
   title,
+  error,
 }: {
   isOpen: boolean;
   placeholder: string;
   onOpenChange: () => void;
   title: string;
+  error?: string;
 }) => {
   const invitation = useInvitationController();
   return (
@@ -51,28 +55,60 @@ export const InvitationDialog = ({
           <Dialog.Title className="text-3xl">{title}</Dialog.Title>
         </Dialog.Header>
         <Dialog.Body className="mt-6">
-          <Button
-            variant="outlined"
-            className="text-text-sub2 border-line-line2 hover:border-key-color-primary mb-4 justify-start rounded-lg hover:bg-transparent active:bg-transparent"
-            onClick={invitation.toggle}
-          >
-            {placeholder}
-          </Button>
-          {/*<InvitationNotice/>*/}
-          <InvitationSearchResult invitation={invitation} />
-        </Dialog.Body>
-        {/*<InvitationChip name='김은지' guardianCount={1} onRemove={() => {}}/>*/}
-        <Dialog.Footer className="mt-6 justify-end">
-          <Dialog.Close asChild>
-            <Button
-              className="w-[140px]"
-              //disabled={!name.trim() || !!error}
-              onClick={invitation.submit}
+          <Dialog.Description className="sr-only">
+            초대할 사용자를 검색하고 초대할 수 있는 다이얼로그입니다.
+          </Dialog.Description>
+          <InvitationField
+            invitation={invitation}
+            placeholder={placeholder}
+          />
+          {!invitation.isSearch && (
+            <aside
+              role="note"
+              aria-labelledby="invitation-info-title"
+              className="flex items-start gap-2"
             >
-              초대하기
-            </Button>
-          </Dialog.Close>
-        </Dialog.Footer>
+              <Image
+                src="/common/info.svg"
+                alt="alert"
+                width={20}
+                height={20}
+                className="relative top-[3px]"
+              />
+              <h2
+                id="invitation-info-title"
+                className="sr-only"
+              >
+                사용자(학생)초대 관련 안내
+              </h2>
+              <ul className="space-y-1">
+                <li>
+                  학생을 초대하면 연결된 보호자는 자동으로 함께 입장합니다.
+                </li>
+                <li>
+                  각 수업 노트는 보호자에게 공개하거나 비공개로 설정할 수
+                  있습니다.
+                </li>
+                <li>
+                  학생과 연결되지 않은 보호자는 스터디룸에 입장할 수 없습니다.
+                </li>
+              </ul>
+            </aside>
+          )}
+        </Dialog.Body>
+        {!invitation.isSearch && (
+          <Dialog.Footer className="mt-6 justify-end">
+            <Dialog.Close asChild>
+              <Button
+                className="w-[140px]"
+                disabled={!invitation.invitees.size || !!error}
+                onClick={invitation.submit}
+              >
+                초대하기
+              </Button>
+            </Dialog.Close>
+          </Dialog.Footer>
+        )}
       </Dialog.Content>
     </Dialog>
   );
