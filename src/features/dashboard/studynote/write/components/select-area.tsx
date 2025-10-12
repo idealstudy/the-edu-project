@@ -49,7 +49,8 @@ const SelectArea = () => {
               name="studyRoomId"
               control={control}
               render={({ field }) => {
-                // 진입 시점 파악 필요
+                // TODO: 진입 시점 파악 필요
+                // roomId 제공된 경우 vs 아닌 경우로 나누기
                 const fieldValue =
                   field.value != null ? String(field.value) : '';
                 const selectedRoomName =
@@ -128,23 +129,35 @@ const SelectArea = () => {
             name="studyNoteGroup"
             control={control}
             rules={{ required: '공개 범위를 선택해주세요.' }}
-            render={() => {
+            render={({ field }) => {
+              const value =
+                field.value == null ? undefined : String(field.value);
+
+              // "추가하기" 눌렀을 때 실행할 함수 (필요에 따라 props로 받아도 됨)
+              const onAddGroup = () => {
+                // 여기에 모달 오픈 로직
+                // openCreateGroupModal();
+              };
+
               return (
-                <Select defaultValue="">
+                <Select
+                  defaultValue=""
+                  value={value}
+                  onValueChange={(v) => {
+                    if (v === 'add') {
+                      onAddGroup();
+                      return;
+                    }
+                    field.onChange(v); // 저장 타입 문자열
+                  }}
+                >
                   <Select.Trigger
                     placeholder="없음"
                     className="mt-[9px]"
                   />
                   <Select.Content>
-                    {!studyNoteGroups?.content ||
-                    studyNoteGroups.content.length === 0 ? (
-                      <Select.Option
-                        value="none"
-                        className="flex w-full"
-                      >
-                        <PlusIcon /> <span>추가하기</span>
-                      </Select.Option>
-                    ) : (
+                    {Array.isArray(studyNoteGroups?.content) &&
+                      studyNoteGroups.content.length > 0 &&
                       studyNoteGroups.content.map((group) => (
                         <Select.Option
                           key={group.id}
@@ -152,8 +165,15 @@ const SelectArea = () => {
                         >
                           {group.title}
                         </Select.Option>
-                      ))
-                    )}
+                      ))}
+
+                    {/* 데이터가 없거나, 항상 맨 아래 “추가하기” 노출 */}
+                    <Select.Option value={'add'}>
+                      <button className="flex w-full cursor-pointer items-center justify-between gap-1 leading-[140%]">
+                        <PlusIcon />
+                        <span>추가하기</span>
+                      </button>
+                    </Select.Option>
                   </Select.Content>
                 </Select>
               );
@@ -166,6 +186,36 @@ const SelectArea = () => {
           </Form.ErrorMessage>
         )}
       </Form.Item>
+      {/* <Dialog>
+        <Dialog.Trigger asChild>
+          <Button size="small">열기</Button>
+        </Dialog.Trigger>
+        <Dialog.Content className="w-[598px]">
+          <Dialog.Header>
+            <Dialog.Title>수업노트 그룹 추가</Dialog.Title>
+          </Dialog.Header>
+          <Dialog.Body className="mt-6">
+            <TextField description={<TextField.Description>
+                  수업노트 그룹으로 여러개의 수업노트를 묶어서 관리할 수
+                  있습니다.
+                </TextField.Description>}>
+              <TextField.Input placeholder="수업노트 그룹 이름을 작성해주세요." />
+            </TextField>
+          </Dialog.Body>
+          <Dialog.Footer className="mt-6 justify-end">
+            <Dialog.Close asChild>
+              <Button className="w-[120px]" variant="outlined" size="small">
+                취소
+              </Button>
+            </Dialog.Close>
+            <Dialog.Close asChild>
+              <Button className="w-[120px]" size="small">
+                저장
+              </Button>
+            </Dialog.Close>
+          </Dialog.Footer>
+        </Dialog.Content>
+      </Dialog> */}
     </ColumnLayout.Left>
   );
 };
