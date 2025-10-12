@@ -13,6 +13,7 @@ import { Popover } from 'radix-ui';
 
 import { StudyNoteForm } from '../schemas/note';
 import { useStudyNoteGroupsQuery, useStudyRoomsQuery } from '../services/query';
+import { AddGroupDialog } from './add-group-dialog';
 
 const SelectArea = () => {
   const {
@@ -25,6 +26,7 @@ const SelectArea = () => {
   const { data: studyNoteGroups } = useStudyNoteGroupsQuery(roomId);
 
   const [open, setOpen] = useState(false);
+  const [openGroup, setOpenGroup] = useState(false);
 
   return (
     <ColumnLayout.Left className="border-line-line1 h-fit rounded-xl border bg-white px-8 py-10">
@@ -132,13 +134,7 @@ const SelectArea = () => {
             render={({ field }) => {
               const value =
                 field.value == null ? undefined : String(field.value);
-
-              // "추가하기" 눌렀을 때 실행할 함수 (필요에 따라 props로 받아도 됨)
-              const onAddGroup = () => {
-                // 여기에 모달 오픈 로직
-                // openCreateGroupModal();
-              };
-
+              const onAddGroup = () => setOpenGroup(true);
               return (
                 <Select
                   defaultValue=""
@@ -148,7 +144,7 @@ const SelectArea = () => {
                       onAddGroup();
                       return;
                     }
-                    field.onChange(v); // 저장 타입 문자열
+                    field.onChange(v);
                   }}
                 >
                   <Select.Trigger
@@ -186,36 +182,11 @@ const SelectArea = () => {
           </Form.ErrorMessage>
         )}
       </Form.Item>
-      {/* <Dialog>
-        <Dialog.Trigger asChild>
-          <Button size="small">열기</Button>
-        </Dialog.Trigger>
-        <Dialog.Content className="w-[598px]">
-          <Dialog.Header>
-            <Dialog.Title>수업노트 그룹 추가</Dialog.Title>
-          </Dialog.Header>
-          <Dialog.Body className="mt-6">
-            <TextField description={<TextField.Description>
-                  수업노트 그룹으로 여러개의 수업노트를 묶어서 관리할 수
-                  있습니다.
-                </TextField.Description>}>
-              <TextField.Input placeholder="수업노트 그룹 이름을 작성해주세요." />
-            </TextField>
-          </Dialog.Body>
-          <Dialog.Footer className="mt-6 justify-end">
-            <Dialog.Close asChild>
-              <Button className="w-[120px]" variant="outlined" size="small">
-                취소
-              </Button>
-            </Dialog.Close>
-            <Dialog.Close asChild>
-              <Button className="w-[120px]" size="small">
-                저장
-              </Button>
-            </Dialog.Close>
-          </Dialog.Footer>
-        </Dialog.Content>
-      </Dialog> */}
+
+      <AddGroupDialog
+        open={openGroup}
+        onOpenChange={setOpenGroup}
+      />
     </ColumnLayout.Left>
   );
 };
