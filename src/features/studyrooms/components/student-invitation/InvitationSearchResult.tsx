@@ -33,7 +33,7 @@ export const InvitationSearchResult = ({
         <TextField.Input
           autoFocus
           value={invitation.searchQuery}
-          onChange={invitation.change}
+          onChange={(e) => invitation.setSearchQuery(e.target.value)}
           placeholder="초대할 사람의 이메일을 입력하세요."
           aria-label="초대 대상 이메일 검색"
           aria-controls="invitation-results"
@@ -44,7 +44,7 @@ export const InvitationSearchResult = ({
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault();
-              invitation.search(invitation.searchQuery);
+              invitation.search(e.currentTarget.value.trim());
             }
             if (
               e.key === 'Backspace' &&
@@ -52,7 +52,7 @@ export const InvitationSearchResult = ({
               invitation.invitees.size
             ) {
               e.preventDefault();
-              invitation.removeUser();
+              invitation.removeLast();
             }
             if (e.key === 'Escape') {
               invitation.closeSearch();
@@ -72,10 +72,8 @@ export const InvitationSearchResult = ({
             role="option"
             aria-selected="false"
             aria-describedby="invitation-result-0"
-            aria-label={`${invitation.searchResult?.name}, ${invitation.searchResult?.role}, ${invitation.searchResult?.guardian} — ${
-              invitation.searchResult?.status === 'invite'
-                ? '초대 가능'
-                : '이미 초대됨'
+            aria-label={`${invitation.searchResult?.inviteeName}, ${invitation.searchResult?.role}, ${invitation.searchResult?.connectedGuardianCount} — ${
+              invitation.searchResult?.canInvite ? '초대 가능' : '이미 초대됨'
             }. 초대하기`}
             variant="outlined"
             className="hover:border-key-color-primary flex w-full cursor-pointer items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 hover:bg-transparent active:bg-transparent"
@@ -91,13 +89,19 @@ export const InvitationSearchResult = ({
 
               <div className="flex items-center gap-2">
                 <span className="font-medium text-gray-900">
-                  {invitation.searchResult?.name}
+                  {invitation.searchResult?.inviteeName}
                 </span>
                 <span className="rounded-md border border-gray-300 px-1.5 py-[1px] text-sm text-gray-700">
                   {invitation.searchResult?.role}
                 </span>
+                <span
+                  className="text-key-color-primary text-[10px] leading-[0]"
+                  aria-hidden="true"
+                >
+                  ●
+                </span>
                 <span className="text-system-warning text-sm">
-                  {invitation.searchResult?.guardian}
+                  보호자 {invitation.searchResult?.connectedGuardianCount}
                 </span>
               </div>
             </div>
@@ -106,9 +110,7 @@ export const InvitationSearchResult = ({
               id="invitation-result-0-status"
               className="text-md font-semibold text-gray-500"
             >
-              {invitation.searchResult?.status === 'invite'
-                ? '초대 가능'
-                : '이미 초대됨'}
+              {invitation.searchResult?.canInvite ? '초대 가능' : '이미 초대됨'}
             </p>
           </Button>
         )}

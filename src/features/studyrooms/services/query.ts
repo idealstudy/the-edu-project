@@ -40,9 +40,10 @@ export const useSendInvitationMutation = () => {
 export const useSearchInvitationQuery = (args: {
   studyRoomId: number;
   email: string;
+  enabled: boolean;
 }) => {
   return useQuery({
     ...getSearchInvitationOption(args),
-    enabled: !!args.email?.trim(),
+    enabled: args.enabled ?? !!args.email?.trim(),
   });
 };

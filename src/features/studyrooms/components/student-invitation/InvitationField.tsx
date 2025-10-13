@@ -29,10 +29,19 @@ export const InvitationField = ({
             invitation.toggle();
             requestAnimationFrame(() => inputRef.current?.focus());
           }
+
+          if (
+            (e.key === 'Backspace' || e.key === 'Delete') &&
+            !invitation.isSearch &&
+            invitation.searchQuery.trim() === '' &&
+            invitation.invitees.size > 0
+          ) {
+            e.preventDefault();
+            invitation.removeLast();
+          }
         }}
         className="text-text-sub2 border-line-line2 hover:border-key-color-primary focus-visible:ring-key-color-primary mb-4 flex min-h-12 flex-wrap items-center justify-start gap-2 rounded-lg border px-3 py-2 hover:bg-transparent focus:outline-none focus-visible:ring-2 active:bg-transparent"
       >
-        {/* placeholder (칩 없을 때만) */}
         {invitation.invitees.size === 0 && (
           <span
             className="text-gray-500"
@@ -48,10 +57,11 @@ export const InvitationField = ({
         >
           {Array.from(invitation.invitees.values()).map((u) => (
             <InvitationChip
-              key={u.email}
-              name={u.name}
-              guardianCount={Number(u.guardian?.match(/\d+/)?.[0] ?? 0)}
-              onRemove={() => invitation.removeUser(/* u */)}
+              key={u.inviteeEmail}
+              name={u.inviteeName}
+              email={u.inviteeEmail}
+              guardianCount={u.connectedGuardianCount ?? 0}
+              onRemove={() => invitation.removeUser(u.inviteeEmail)}
             />
           ))}
         </ul>

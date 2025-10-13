@@ -4,12 +4,14 @@ import { Button } from '@/components/ui/button';
 
 type InvitationChipProps = {
   name: string;
+  email: string;
   guardianCount?: number;
-  onRemove?: () => void;
+  onRemove?: (email: string) => void;
 };
 
 export const InvitationChip = ({
   name,
+  email,
   guardianCount = 0,
   onRemove,
 }: InvitationChipProps) => {
@@ -40,13 +42,13 @@ export const InvitationChip = ({
         type="button"
         onClick={(e) => {
           e.stopPropagation();
-          onRemove?.();
+          onRemove?.(email);
         }}
         onKeyDown={(e) => {
           if (e.key === 'Backspace' || e.key === 'Delete') {
             e.preventDefault();
             e.stopPropagation();
-            onRemove?.();
+            onRemove?.(email);
           }
         }}
         variant="outlined"

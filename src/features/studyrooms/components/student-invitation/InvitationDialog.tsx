@@ -9,28 +9,6 @@ import { Dialog } from '@/components/ui/dialog';
 import { InvitationField } from '@/features/studyrooms/components/student-invitation/InvitationField';
 import { useInvitationController } from '@/features/studyrooms/hooks/useInvitationController';
 
-/*type Invitee = {
-  role: 'ROLE_STUDENT' | 'ROLE_PARENT';
-  canInvite: boolean;
-  inviteeId: number;
-  inviteeEmail: string;
-  inviteeName: string;
-  connectedGuardianCount: number;
-  connectedStudentCount: number;
-  studentResponseList: string[];
-};
-
-const mockInvitee: Invitee = {
-  role: 'ROLE_STUDENT',
-  canInvite: true,
-  inviteeId: 1001,
-  inviteeEmail: 'student@dedu.com',
-  inviteeName: '김은지',
-  connectedGuardianCount: 1,
-  connectedStudentCount: 0,
-  studentResponseList: ['PENDING'],
-};*/
-
 export const InvitationDialog = ({
   isOpen,
   placeholder,
