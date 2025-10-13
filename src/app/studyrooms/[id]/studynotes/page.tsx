@@ -7,7 +7,7 @@ import { useParams } from 'next/navigation';
 import { ColumnLayout } from '@/components/layout/column-layout';
 import { StudyroomSidebar } from '@/features/studyrooms/components/sidebar';
 import { StudyNotes } from '@/features/studyrooms/components/studynotes';
-import { StudyRoomTabs } from '@/features/studyrooms/components/taps';
+import { StudyRoomTabs } from '@/features/studyrooms/components/tabs';
 
 export default function StudyRoomDetailPage() {
   const [selectedGroupId, setSelectedGroupId] = useState<number | 'all'>('all');
