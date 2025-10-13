@@ -29,10 +29,12 @@ export type InvitationController = {
   addUser: () => void;
   removeUser: (email: string) => void;
   removeLast: () => void;
-  submit: () => void;
 };
 
-export const useInvitationController = (): InvitationController => {
+export const useInvitationController = (
+  studyRoomId: number
+): InvitationController => {
+  // TODO: 추후 리듀서로 리팩토링 예정
   const [isSearch, setIsSearch] = React.useState(false);
   const [searchQuery, setSearchQuery] = useState('student_1@test.test');
   const [searchResult, setSearchResult] = useState<null | Invitee>(null);
@@ -40,7 +42,7 @@ export const useInvitationController = (): InvitationController => {
   const [shouldSearch, setShouldSearch] = useState(false);
 
   const { data } = useSearchInvitationQuery({
-    studyRoomId: 1,
+    studyRoomId,
     email: searchQuery,
     enabled: shouldSearch && !!searchQuery.trim(),
   });
@@ -48,7 +50,7 @@ export const useInvitationController = (): InvitationController => {
   React.useEffect(() => {
     if (data) {
       setSearchResult(data);
-      setShouldSearch(true);
+      setShouldSearch(false);
     }
   }, [data]);
 
@@ -89,8 +91,6 @@ export const useInvitationController = (): InvitationController => {
     });
   };
 
-  const submit = () => alert('초대하기 버튼 클릭');
-
   return {
     isSearch,
     searchQuery,
@@ -101,7 +101,6 @@ export const useInvitationController = (): InvitationController => {
     toggle,
     setSearchQuery,
     search,
-    submit,
     addUser,
     removeUser,
     removeLast,

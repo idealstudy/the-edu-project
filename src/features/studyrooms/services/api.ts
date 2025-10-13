@@ -49,7 +49,7 @@ export const studyroomApi = {
     }): Promise<MemberInvitation> => {
       const response = await api.post<ApiResponse<MemberInvitation>>(
         `/teacher/study-rooms/${args.studyRoomId}/members`,
-        args.emails
+        { studentEmailList: args.emails }
       );
       return response.data;
     },

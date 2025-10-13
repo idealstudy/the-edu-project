@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { InvitationField } from '@/features/studyrooms/components/student-invitation/InvitationField';
 import { useInvitationController } from '@/features/studyrooms/hooks/useInvitationController';
+import { useSendInvitationMutation } from '@/features/studyrooms/services/query';
 
 export const InvitationDialog = ({
   isOpen,
@@ -15,14 +16,24 @@ export const InvitationDialog = ({
   onOpenChange,
   title,
   error,
+  studyRoomId,
 }: {
   isOpen: boolean;
   placeholder: string;
   onOpenChange: () => void;
   title: string;
   error?: string;
+  studyRoomId: number;
 }) => {
-  const invitation = useInvitationController();
+  const invitation = useInvitationController(studyRoomId);
+  const { mutate: sendInvitation, isPending } = useSendInvitationMutation();
+
+  const handleSubmit = () => {
+    const emails = Array.from(invitation.invitees.keys());
+    if (!emails.length) return;
+    sendInvitation({ studyRoomId, emails });
+  };
+
   return (
     <Dialog
       isOpen={isOpen}
@@ -79,10 +90,10 @@ export const InvitationDialog = ({
             <Dialog.Close asChild>
               <Button
                 className="w-[140px]"
-                disabled={!invitation.invitees.size || !!error}
-                onClick={invitation.submit}
+                disabled={!invitation.invitees.size || !!error || isPending}
+                onClick={handleSubmit}
               >
-                초대하기
+                {isPending ? '초대 중…' : '초대하기'}
               </Button>
             </Dialog.Close>
           </Dialog.Footer>
