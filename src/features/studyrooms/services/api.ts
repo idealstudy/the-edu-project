@@ -43,21 +43,24 @@ export const studyroomApi = {
 
   // 스터디룸 사용자(학생)초대
   invitations: {
-    send: async (id: number, payload: string[]): Promise<MemberInvitation> => {
+    send: async (args: {
+      studyRoomId: number;
+      emails: string[];
+    }): Promise<MemberInvitation> => {
       const response = await api.post<ApiResponse<MemberInvitation>>(
-        `/teacher/study-rooms/${id}/members`,
-        payload
+        `/teacher/study-rooms/${args.studyRoomId}/members`,
+        args.emails
       );
       return response.data;
     },
-    search: async (id: number, query: string): Promise<Invitation> => {
+    search: async (args: {
+      studyRoomId: number;
+      email: string;
+    }): Promise<Invitation> => {
       const response = await api.get<ApiResponse<Invitation>>(
-        `/teacher/study-rooms/${id}/search`,
+        `/teacher/study-rooms/${args.studyRoomId}/search`,
         {
-          params: {
-            studyRoomId: id,
-            email: query,
-          },
+          params: { email: args.email },
         }
       );
       return response.data;

@@ -1,24 +1,48 @@
-//import { useRouter } from 'next/navigation';
 import { studyroomApi } from '@/features/studyrooms/services/api';
-import { StudyRoomsGroupQueryKey } from '@/features/studyrooms/services/query-options';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  InvitationQueryKey,
+  StudyRoomsGroupQueryKey,
+  getSearchInvitationOption,
+} from '@/features/studyrooms/services/query-options';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const useCreateStudyRoomMutation = () => {
   const queryClient = useQueryClient();
-  //const router = useRouter();
-
   return useMutation({
     mutationFn: studyroomApi.create,
-    onSuccess: (data) => {
+    onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: StudyRoomsGroupQueryKey.all,
       });
-      alert('폼 제출 완료: ' + JSON.stringify(data));
     },
     onError: (error: unknown) => {
       // eslint-disable-next-line no-console
       console.error('스터디룸 생성 실패:', error);
-      alert('생성에 실패했습니다. 다시 시도해주세요.' + JSON.stringify(error));
     },
+  });
+};
+
+// 스터디룸 사용자(학생)초대
+export const useSendInvitationMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (args: { studyRoomId: number; emails: string[] }) =>
+      studyroomApi.invitations.send(args),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: InvitationQueryKey.all,
+      });
+    },
+  });
+};
+
+export const useSearchInvitationQuery = (args: {
+  studyRoomId: number;
+  email: string;
+}) => {
+  return useQuery({
+    ...getSearchInvitationOption(args),
+    enabled: !!args.email?.trim(),
   });
 };
