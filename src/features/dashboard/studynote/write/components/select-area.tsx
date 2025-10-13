@@ -128,7 +128,7 @@ const SelectArea = () => {
         </Form.Label>
         <Form.Control>
           <Controller
-            name="studyNoteGroup"
+            name="teachingNoteGroupId"
             control={control}
             rules={{ required: '공개 범위를 선택해주세요.' }}
             render={({ field }) => {
@@ -144,7 +144,7 @@ const SelectArea = () => {
                       onAddGroup();
                       return;
                     }
-                    field.onChange(v);
+                    field.onChange(Number(v));
                   }}
                 >
                   <Select.Trigger
@@ -176,9 +176,9 @@ const SelectArea = () => {
             }}
           />
         </Form.Control>
-        {errors.studyNoteGroup && (
+        {errors.teachingNoteGroupId && (
           <Form.ErrorMessage className="text-system-warning text-sm">
-            {errors.studyNoteGroup.message}
+            {errors.teachingNoteGroupId.message}
           </Form.ErrorMessage>
         )}
       </Form.Item>

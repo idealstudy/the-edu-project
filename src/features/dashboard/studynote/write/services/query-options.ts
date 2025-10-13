@@ -48,7 +48,7 @@ export const getConnectMembersOption = (roomId: number) => {
   });
 };
 
-export const getStudyNodeGroupsOption = (roomId: number) => {
+export const getStudyNoteGroupsOption = (roomId: number) => {
   return queryOptions({
     queryKey: StudyNoteWriteQueryKey.studyNoteGroups(roomId),
     queryFn: () => getStudyNoteGroups(roomId),
