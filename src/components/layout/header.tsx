@@ -63,6 +63,18 @@ export const Header = () => {
               height={48}
               className="desktop:flex mr-4 hidden cursor-pointer rounded-full"
             />
+            <Link
+              href="/studyrooms/1/studynotes"
+              className="mx-2 text-white"
+            >
+              스터디룸 (임시)
+            </Link>
+            <Link
+              href="/dashboard/studynote/1"
+              className="mx-2 text-white"
+            >
+              스터디 노트 (임시)
+            </Link>
             <p className="desktop:flex mr-2 hidden items-center gap-2 text-[14px] font-[600] text-white">
               {session.nickname}
             </p>
