@@ -3,6 +3,7 @@
 import { Icon } from '@/components/ui/icon';
 import { Tabs } from '@/features/studyrooms/components/common/tabs';
 
+import QuestionSession from './question-session';
 import { StudyNote } from './study-note';
 
 export const StudyRoomTabs = () => {
@@ -34,7 +35,7 @@ export const StudyRoomTabs = () => {
             <p>학생</p>
           </Tabs.Content>
           <Tabs.Content value="3">
-            <p>질문</p>
+            <QuestionSession />
           </Tabs.Content>
         </div>
       </Tabs>

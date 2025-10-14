@@ -1,36 +1,17 @@
-'use client';
-
-import { useState } from 'react';
-
-import { useParams } from 'next/navigation';
-
 import { ColumnLayout } from '@/components/layout/column-layout';
-import { StudyroomSidebar } from '@/features/studyrooms/components/sidebar';
-import { StudyNotes } from '@/features/studyrooms/components/studynotes';
-import { StudyRoomTabs } from '@/features/studyrooms/components/tabs';
+import { ClientStudyRoomDetail } from '@/features/studyrooms/components/detail/client-study-room-detail';
 
-export default function StudyRoomDetailPage() {
-  const [selectedGroupId, setSelectedGroupId] = useState<number | 'all'>('all');
-  const { id } = useParams();
-
-  const handleSelectGroupId = (id: number | 'all') => {
-    setSelectedGroupId(id);
-  };
+export default async function StudyRoomDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const resolvedParams = await params;
 
   return (
     <main>
       <ColumnLayout>
-        <ColumnLayout.Left className="rounded-[12px] bg-gray-200">
-          <StudyroomSidebar
-            studyRoomId={Number(id)}
-            selectedGroupId={selectedGroupId}
-            handleSelectGroupId={handleSelectGroupId}
-          />
-        </ColumnLayout.Left>
-        <ColumnLayout.Right className="desktop:max-w-[740px] flex h-[400px] flex-col gap-3 rounded-[12px] px-8">
-          <StudyRoomTabs />
-          <StudyNotes selectedGroupId={selectedGroupId} />
-        </ColumnLayout.Right>
+        <ClientStudyRoomDetail roomId={Number(resolvedParams.id)} />
       </ColumnLayout>
     </main>
   );

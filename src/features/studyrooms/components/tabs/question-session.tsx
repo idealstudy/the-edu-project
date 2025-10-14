@@ -1,13 +1,11 @@
-'use client';
-
-import { FormEvent, useRef, useState } from 'react';
+import React, { FormEvent, useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
-export const StudyNote = () => {
+const QuestionSession = () => {
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -26,21 +24,19 @@ export const StudyNote = () => {
       }
     }
   };
-
   return (
-    <>
+    <div className="">
       <p className="font-headline1-heading whitespace-pre-wrap">
-        {'이번엔 어떤 수업을\n진행하셨나요?'}
+        {'궁금한 점이 생겼나요? 언제든 질문해보세요!'}
       </p>
-
       <form
         onSubmit={handleSubmit}
-        className="flex h-[56px] flex-row items-center gap-[10px] rounded-[12px] bg-white"
+        className="mt-9 flex h-[56px] flex-row items-center gap-[10px] rounded-[12px] bg-white"
       >
         <Input
           ref={inputRef}
           className="desktop:w-[504px] border-line-line1 h-[56px] px-6 py-[18px]"
-          placeholder="수업노트 제목을 입력해주세요."
+          placeholder="선생님이 질문을 기다리고 있어요!"
           maxLength={30}
         />
         <Button
@@ -49,10 +45,12 @@ export const StudyNote = () => {
           disabled={isLoading}
         >
           <span className="font-body2-normal font-bold">
-            {isLoading ? '페이지 이동중...' : '수업노트 작성'}
+            {isLoading ? '페이지 이동중...' : '질문하기'}
           </span>
         </Button>
       </form>
-    </>
+    </div>
   );
 };
+
+export default QuestionSession;
