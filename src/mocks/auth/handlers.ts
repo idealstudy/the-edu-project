@@ -27,8 +27,8 @@ export const authHandlers = [
       return HttpResponse.json();
     }
   ),
-  http.patch<never, VerifyCodeBody>(
-    BASE_URL + '/public/email-verifications',
+  http.post<never, VerifyCodeBody>(
+    BASE_URL + '/public/email-verifications/verify-code',
     async ({ request }) => {
       const body = await request.json();
 
