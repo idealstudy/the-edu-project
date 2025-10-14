@@ -18,7 +18,7 @@ export const InvitationSearchResult = ({
       id="invitation-search-panel"
       role="region"
       aria-labelledby="invitation-search-heading"
-      className="border-line-line2 w-full space-y-3 rounded-lg border-2 p-5"
+      className="w-full space-y-3 p-5"
     >
       <h3
         id="invitation-search-heading"

@@ -51,53 +51,47 @@ export const InvitationDialog = ({
             invitation={invitation}
             placeholder={placeholder}
           />
-          {!invitation.isSearch && (
-            <aside
-              role="note"
-              aria-labelledby="invitation-info-title"
-              className="flex items-start gap-2"
+          <aside
+            role="note"
+            aria-labelledby="invitation-info-title"
+            className="flex items-start gap-2"
+          >
+            <Image
+              src="/common/info.svg"
+              alt="alert"
+              width={20}
+              height={20}
+              className="relative top-[3px]"
+            />
+            <h2
+              id="invitation-info-title"
+              className="sr-only"
             >
-              <Image
-                src="/common/info.svg"
-                alt="alert"
-                width={20}
-                height={20}
-                className="relative top-[3px]"
-              />
-              <h2
-                id="invitation-info-title"
-                className="sr-only"
-              >
-                사용자(학생)초대 관련 안내
-              </h2>
-              <ul className="space-y-1">
-                <li>
-                  학생을 초대하면 연결된 보호자는 자동으로 함께 입장합니다.
-                </li>
-                <li>
-                  각 수업 노트는 보호자에게 공개하거나 비공개로 설정할 수
-                  있습니다.
-                </li>
-                <li>
-                  학생과 연결되지 않은 보호자는 스터디룸에 입장할 수 없습니다.
-                </li>
-              </ul>
-            </aside>
-          )}
+              사용자(학생)초대 관련 안내
+            </h2>
+            <ul className="space-y-1">
+              <li>학생을 초대하면 연결된 보호자는 자동으로 함께 입장합니다.</li>
+              <li>
+                각 수업 노트는 보호자에게 공개하거나 비공개로 설정할 수
+                있습니다.
+              </li>
+              <li>
+                학생과 연결되지 않은 보호자는 스터디룸에 입장할 수 없습니다.
+              </li>
+            </ul>
+          </aside>
         </Dialog.Body>
-        {!invitation.isSearch && (
-          <Dialog.Footer className="mt-6 justify-end">
-            <Dialog.Close asChild>
-              <Button
-                className="w-[140px]"
-                disabled={!invitation.invitees.size || !!error || isPending}
-                onClick={handleSubmit}
-              >
-                {isPending ? '초대 중…' : '초대하기'}
-              </Button>
-            </Dialog.Close>
-          </Dialog.Footer>
-        )}
+        <Dialog.Footer className="mt-6 justify-end">
+          <Dialog.Close asChild>
+            <Button
+              className="w-[140px]"
+              disabled={!invitation.invitees.size || !!error || isPending}
+              onClick={handleSubmit}
+            >
+              {isPending ? '초대 중…' : '초대하기'}
+            </Button>
+          </Dialog.Close>
+        </Dialog.Footer>
       </Dialog.Content>
     </Dialog>
   );
