@@ -4,6 +4,8 @@ import { InvitationChip } from '@/features/studyrooms/components/student-invitat
 import { InvitationSearchResult } from '@/features/studyrooms/components/student-invitation/InvitationSearchResult';
 import { InvitationController } from '@/features/studyrooms/hooks/useInvitationController';
 
+import { Popover } from './Popover';
+
 export const InvitationField = ({
   invitation,
   placeholder,
@@ -11,25 +13,10 @@ export const InvitationField = ({
   invitation: InvitationController;
   placeholder: string;
 }) => {
-  const inputRef = React.useRef<HTMLInputElement>(null);
   return (
-    <>
-      <div
-        role="button"
-        tabIndex={0}
-        aria-expanded={invitation.isSearch}
-        aria-controls="invitation-search-panel"
-        onClick={() => {
-          invitation.toggle();
-          requestAnimationFrame(() => inputRef.current?.focus());
-        }}
+    <Popover>
+      <Popover.Trigger
         onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            invitation.toggle();
-            requestAnimationFrame(() => inputRef.current?.focus());
-          }
-
           if (
             (e.key === 'Backspace' || e.key === 'Delete') &&
             !invitation.isSearch &&
@@ -40,7 +27,7 @@ export const InvitationField = ({
             invitation.removeLast();
           }
         }}
-        className="text-text-sub2 border-line-line2 hover:border-key-color-primary focus-visible:ring-key-color-primary mb-4 flex min-h-12 flex-wrap items-center justify-start gap-2 rounded-lg border px-3 py-2 hover:bg-transparent focus:outline-none focus-visible:ring-2 active:bg-transparent"
+        className="text-text-sub2 border-line-line2 hover:border-key-color-primary focus-visible:ring-key-color-primary mb-4 flex min-h-12 cursor-pointer flex-wrap items-center justify-start gap-2 rounded-[4px] border px-3 py-2 hover:bg-transparent focus:outline-none focus-visible:ring-2 active:bg-transparent"
       >
         {invitation.invitees.size === 0 && (
           <span
@@ -65,10 +52,10 @@ export const InvitationField = ({
             />
           ))}
         </ul>
-      </div>
-      {invitation.isSearch && (
+      </Popover.Trigger>
+      <Popover.Content>
         <InvitationSearchResult invitation={invitation} />
-      )}
-    </>
+      </Popover.Content>
+    </Popover>
   );
 };
