@@ -2,7 +2,13 @@ import { StudyRoomFormValues } from '@/features/studyrooms/schemas/create';
 import { CommonResponse, PaginationMeta, api, apiClient } from '@/lib/api';
 import { Pageable } from '@/lib/api';
 
-import type { ApiResponse, StudyNoteGroup, StudyRoom } from '../types';
+import {
+  ApiResponse,
+  Invitation,
+  MemberInvitation,
+  StudyNoteGroup,
+  StudyRoom,
+} from '../types';
 
 // 수업노트 그룹 조회
 export const getStudyNoteGroup = async (args: {
@@ -33,5 +39,31 @@ export const studyroomApi = {
       payload
     );
     return response.data;
+  },
+
+  // 스터디룸 사용자(학생)초대
+  invitations: {
+    send: async (args: {
+      studyRoomId: number;
+      emails: string[];
+    }): Promise<MemberInvitation> => {
+      const response = await api.post<ApiResponse<MemberInvitation>>(
+        `/teacher/study-rooms/${args.studyRoomId}/members`,
+        { studentEmailList: args.emails }
+      );
+      return response.data;
+    },
+    search: async (args: {
+      studyRoomId: number;
+      email: string;
+    }): Promise<Invitation> => {
+      const response = await api.get<ApiResponse<Invitation>>(
+        `/teacher/study-rooms/${args.studyRoomId}/search`,
+        {
+          params: { email: args.email },
+        }
+      );
+      return response.data;
+    },
   },
 };

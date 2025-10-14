@@ -3,6 +3,8 @@
 import React from 'react';
 import { FieldPath, FormProvider, useForm } from 'react-hook-form';
 
+import { useRouter } from 'next/navigation';
+
 import { Form } from '@/components/ui/form';
 import ProgressIndicator from '@/features/studyrooms/components/create/ProgressIndicator';
 import StepOne from '@/features/studyrooms/components/create/StepOne';
@@ -42,6 +44,7 @@ export const fieldsPerStep: Record<Step, FieldPath<StudyRoomFormValues>[]> = {
 };
 
 export default function CreateStudyRoomFlow() {
+  const router = useRouter();
   const [state, dispatch] = React.useReducer(
     stepperReducer,
     createStepState([...ORDER] as Step[])
@@ -83,7 +86,11 @@ export default function CreateStudyRoomFlow() {
 
   const { mutate, isPending } = useCreateStudyRoomMutation();
 
-  const onSubmit = (data: StudyRoomFormValues) => mutate(data);
+  const onSubmit = (data: StudyRoomFormValues) => {
+    mutate(data, {
+      onSuccess: () => router.push('/dashboard'),
+    });
+  };
 
   return (
     <section className="flex flex-col">
