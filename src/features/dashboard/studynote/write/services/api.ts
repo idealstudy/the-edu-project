@@ -35,11 +35,27 @@ export const writeStudyNote = async (data: StudyNote) => {
   await apiClient.post('/teacher/teaching-notes', data);
 };
 
-export const getStudyNoteGroups = async () => {
+export const getStudyNoteGroups = async (roomId: number) => {
   const response = (
     await apiClient.get<CommonResponse<StudyNoteGroupResponse>>(
-      `/teacher/teaching-note-groups`
+      `teacher/study-rooms/${roomId}/teaching-note-groups`
     )
+  ).data;
+
+  return response.data;
+};
+
+export const createStudyNoteGroup = async (data: {
+  studyRoomId: number;
+  title: string;
+}) => {
+  const response = (
+    await apiClient.post<
+      CommonResponse<{
+        id: number;
+        title: string;
+      }>
+    >(`/teacher/teaching-note-groups`, data)
   ).data;
 
   return response.data;

@@ -8,6 +8,8 @@ export interface StudyNote {
   visibility: string;
   taughtAt: string;
   studentIds: number[];
+  teachingNoteGroupId: number;
+  imageIds?: string[];
 }
 
 export interface ConnectedMember {
@@ -19,7 +21,6 @@ export interface ConnectedMember {
 }
 
 // 스터디 노트 그룹
-
 export interface Teacher {
   id: number;
   email: string;

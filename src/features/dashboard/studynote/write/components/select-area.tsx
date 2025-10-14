@@ -7,23 +7,26 @@ import Image from 'next/image';
 
 import { ColumnLayout } from '@/components/layout/column-layout';
 import { Form } from '@/components/ui/form';
-import { ChevronDownIcon, Select } from '@/components/ui/select';
+import { ChevronDownIcon, PlusIcon, Select } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { Popover } from 'radix-ui';
 
 import { StudyNoteForm } from '../schemas/note';
 import { useStudyNoteGroupsQuery, useStudyRoomsQuery } from '../services/query';
+import { AddGroupDialog } from './add-group-dialog';
 
 const SelectArea = () => {
-  const { data: rooms } = useStudyRoomsQuery();
-  const { data: studyNoteGroups } = useStudyNoteGroupsQuery();
-
-  const [open, setOpen] = useState(false);
-
   const {
     control,
     formState: { errors },
+    watch,
+    setValue,
   } = useFormContext<StudyNoteForm>();
+  const roomId = watch('studyRoomId');
+  const { data: rooms } = useStudyRoomsQuery();
+  const { data: studyNoteGroups } = useStudyNoteGroupsQuery(roomId);
+  const [open, setOpen] = useState(false);
+  const [openGroup, setOpenGroup] = useState(false);
 
   return (
     <ColumnLayout.Left className="border-line-line1 h-fit rounded-xl border bg-white px-8 py-10">
@@ -43,19 +46,24 @@ const SelectArea = () => {
               name="studyRoomId"
               control={control}
               render={({ field }) => {
+                // TODO: 진입 시점 파악 필요
+                // roomId 제공된 경우 vs 아닌 경우로 나누기
+                const fieldValue =
+                  field.value != null ? String(field.value) : '';
+                const selectedRoomName =
+                  rooms?.find((r) => String(r.id) === fieldValue)?.name ??
+                  '스터디룸을 선택해주세요.';
                 return (
                   <Popover.Root
                     open={open}
                     onOpenChange={setOpen}
                   >
                     <Popover.Trigger asChild>
-                      <button className="flex w-full cursor-pointer items-center justify-between text-start text-2xl leading-[140%] font-bold">
-                        <span>
-                          {field.value
-                            ? rooms?.find((room) => room.id === field.value)
-                                ?.name || '스터디룸을 선택해주세요.'
-                            : '스터디룸을 선택해주세요.'}
-                        </span>
+                      <button
+                        type="button"
+                        className="flex w-full cursor-pointer items-center justify-between text-start text-2xl leading-[140%] font-bold"
+                      >
+                        <span>{selectedRoomName}</span>
                         <ChevronDownIcon
                           className={cn(
                             'h-6 w-6 transition-transform duration-200',
@@ -70,22 +78,30 @@ const SelectArea = () => {
                         className="mt-1 rounded-md border border-gray-200 bg-white shadow-sm"
                         style={{ width: 'var(--radix-popover-trigger-width)' }}
                       >
-                        {rooms?.map((room) => (
-                          <Popover.Close
-                            key={room.id}
-                            onClick={() => {
-                              field.onChange(room.id);
-                              setOpen(false);
-                            }}
-                            className={cn(
-                              'w-full cursor-pointer px-4 py-2 text-left transition-colors hover:bg-gray-100',
-                              field.value === room.id &&
-                                'bg-gray-200 font-semibold'
-                            )}
-                          >
-                            {room.name}
-                          </Popover.Close>
-                        ))}
+                        {rooms?.map((room) => {
+                          const isSelected = fieldValue === String(room.id);
+
+                          return (
+                            <Popover.Close
+                              key={room.id}
+                              asChild
+                            >
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  field.onChange(room.id);
+                                  setOpen(false);
+                                }}
+                                className={cn(
+                                  'w-full cursor-pointer px-4 py-2 text-left transition-colors hover:bg-gray-100',
+                                  isSelected && 'bg-gray-200 font-semibold'
+                                )}
+                              >
+                                {room.name}
+                              </button>
+                            </Popover.Close>
+                          );
+                        })}
                       </Popover.Content>
                     </Popover.Portal>
                   </Popover.Root>
@@ -107,38 +123,71 @@ const SelectArea = () => {
         </Form.Label>
         <Form.Control>
           <Controller
-            name="studyRoomId"
+            name="teachingNoteGroupId"
             control={control}
             rules={{ required: '공개 범위를 선택해주세요.' }}
-            render={({ field }) => (
-              <Select
-                value={String(field.value) || ''}
-                onValueChange={(value) => field.onChange(Number(value))}
-              >
-                <Select.Trigger
-                  placeholder="없음"
-                  className="mt-[9px]"
-                />
-                <Select.Content>
-                  {studyNoteGroups?.content.map((group) => (
-                    <Select.Option
-                      key={group.id}
-                      value={group.id + ''}
-                    >
-                      {group.title}
+            render={({ field }) => {
+              const value =
+                field.value == null ? undefined : String(field.value);
+              return (
+                <Select
+                  defaultValue=""
+                  value={value}
+                  onValueChange={(v) => {
+                    if (v === 'add') {
+                      setOpenGroup(true);
+                      return;
+                    }
+                    field.onChange(Number(v));
+                  }}
+                >
+                  <Select.Trigger
+                    placeholder="없음"
+                    className="mt-[9px]"
+                  />
+                  <Select.Content>
+                    {Array.isArray(studyNoteGroups?.content) &&
+                      studyNoteGroups.content.length > 0 &&
+                      studyNoteGroups.content.map((group) => (
+                        <Select.Option
+                          key={group.id}
+                          value={String(group.id)}
+                        >
+                          {group.title}
+                        </Select.Option>
+                      ))}
+
+                    {/* 데이터가 없거나, 항상 맨 아래 “추가하기” 노출 */}
+                    <Select.Option value="add">
+                      <button className="flex w-full cursor-pointer items-center justify-between gap-1 leading-[140%]">
+                        <PlusIcon />
+                        <span>추가하기</span>
+                      </button>
                     </Select.Option>
-                  ))}
-                </Select.Content>
-              </Select>
-            )}
+                  </Select.Content>
+                </Select>
+              );
+            }}
           />
         </Form.Control>
-        {errors.studyRoomId && (
+        {errors.teachingNoteGroupId && (
           <Form.ErrorMessage className="text-system-warning text-sm">
-            {errors.studyRoomId.message}
+            {errors.teachingNoteGroupId.message}
           </Form.ErrorMessage>
         )}
       </Form.Item>
+
+      <AddGroupDialog
+        open={openGroup}
+        onOpenChange={setOpenGroup}
+        roomId={roomId}
+        onCreated={(created) => {
+          setValue('teachingNoteGroupId', Number(created.id), {
+            shouldDirty: true,
+          });
+          setOpenGroup(false);
+        }}
+      />
     </ColumnLayout.Left>
   );
 };

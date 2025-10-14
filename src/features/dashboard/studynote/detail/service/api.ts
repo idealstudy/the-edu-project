@@ -1,6 +1,6 @@
 import { CommonResponse, apiClient } from '@/lib/api';
 
-import { StudyNoteDetail } from '../tyoe';
+import { StudyNoteDetail } from '../type';
 
 export const getStudyNoteDetail = async (id: number) => {
   const response = (

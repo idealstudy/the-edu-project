@@ -64,5 +64,6 @@ function transformFormDataToServerFormat(formData: StudyNoteForm) {
     ),
     taughtAt: new Date(formData.taughtAt).toISOString(),
     studentIds: formData.studentIds.map((student) => student.id),
+    teachingNoteGroupId: formData.teachingNoteGroupId,
   };
 }

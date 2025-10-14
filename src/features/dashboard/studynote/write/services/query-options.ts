@@ -12,7 +12,11 @@ export const StudyNoteWriteQueryKey = {
     'students',
     roomId,
   ],
-  studyNoteGroups: () => [...StudyNoteWriteQueryKey.all, 'studyNoteGroups'],
+  studyNoteGroups: (roomId: number) => [
+    ...StudyNoteWriteQueryKey.all,
+    'studyNoteGroups',
+    roomId,
+  ],
   studyNoteListByStudyRoom: ({
     roomId,
     pageble,
@@ -44,10 +48,11 @@ export const getConnectMembersOption = (roomId: number) => {
   });
 };
 
-export const getStudyNodeGroupsOption = () => {
+export const getStudyNoteGroupsOption = (roomId: number) => {
   return queryOptions({
-    queryKey: StudyNoteWriteQueryKey.studyNoteGroups(),
-    queryFn: () => getStudyNoteGroups(),
+    queryKey: StudyNoteWriteQueryKey.studyNoteGroups(roomId),
+    queryFn: () => getStudyNoteGroups(roomId),
+    enabled: !!roomId,
   });
 };
 

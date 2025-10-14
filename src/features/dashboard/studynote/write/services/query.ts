@@ -1,10 +1,11 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { StudyNote } from '../type';
-import { writeStudyNote } from './api';
+import { createStudyNoteGroup, writeStudyNote } from './api';
 import {
+  StudyNoteWriteQueryKey,
   getConnectMembersOption,
-  getStudyNodeGroupsOption,
+  getStudyNoteGroupsOption,
   getStudyRoomsOption,
 } from './query-options';
 
@@ -12,13 +13,28 @@ export const useConnectMembers = (roomId: number) => {
   return useQuery(getConnectMembersOption(roomId));
 };
 
-export const useStudyNoteGroupsQuery = () => {
-  return useQuery(getStudyNodeGroupsOption());
+export const useStudyNoteGroupsQuery = (roomId: number) => {
+  return useQuery(getStudyNoteGroupsOption(roomId));
 };
 
 export const useWriteStudyNoteMutation = () => {
   return useMutation({
     mutationFn: (data: StudyNote) => writeStudyNote(data),
+  });
+};
+
+export const useCreateNoteGroupMutation = () => {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: createStudyNoteGroup,
+    onSuccess: async (_created, { studyRoomId }) => {
+      const key = StudyNoteWriteQueryKey.studyNoteGroups(studyRoomId);
+
+      // stale 처리 + 활성 쿼리 즉시 재요청
+      await qc.invalidateQueries({ queryKey: key, refetchType: 'active' });
+      await qc.fetchQuery(getStudyNoteGroupsOption(studyRoomId));
+    },
   });
 };
 
