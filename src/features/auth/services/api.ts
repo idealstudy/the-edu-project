@@ -19,7 +19,7 @@ export const authApi = {
     return api.post('/public/email-verifications/check-duplicate', body);
   },
   verifyCode: async (body: VerifyCodeBody) => {
-    return api.patch('/public/email-verifications', body);
+    return api.post('/public/email-verifications/verify-code', body);
   },
   signUp: async (body: SignUpBody) => {
     return api.post('/auth/sign-up', body);
