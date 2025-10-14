@@ -19,6 +19,7 @@ type AddGroupDialogProps = {
   onOpenChange: (v: boolean) => void;
   roomId: number;
   showTrigger?: boolean;
+  onCreated: (g: { id: number; title: string }) => void;
 };
 
 export const AddGroupDialog = ({
@@ -26,6 +27,7 @@ export const AddGroupDialog = ({
   onOpenChange,
   roomId,
   showTrigger = false,
+  onCreated,
 }: AddGroupDialogProps) => {
   const [name, setName] = useState<string>('');
   const { mutateAsync, isPending } = useCreateNoteGroupMutation();
@@ -33,7 +35,8 @@ export const AddGroupDialog = ({
   const onSave = async () => {
     const title = name.trim();
     if (!title) return;
-    await mutateAsync({ studyRoomId: roomId, title });
+    const created = await mutateAsync({ studyRoomId: roomId, title });
+    onCreated(created);
     onOpenChange(false);
     setName('');
   };
@@ -68,6 +71,7 @@ export const AddGroupDialog = ({
               value={name}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && onSave()}
+              autoComplete="off"
             />
           </TextField>
         </Dialog.Body>

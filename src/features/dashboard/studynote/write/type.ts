@@ -21,16 +21,6 @@ export interface ConnectedMember {
 }
 
 // 스터디 노트 그룹
-export interface NewNoteGroup {
-  studyRoomId: number;
-  title: string;
-}
-
-export interface NewNoteGroupResponse {
-  id: number;
-  title: string;
-}
-
 export interface Teacher {
   id: number;
   email: string;

@@ -1,8 +1,9 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { NewNoteGroup, StudyNote } from '../type';
+import { StudyNote } from '../type';
 import { createStudyNoteGroup, writeStudyNote } from './api';
 import {
+  StudyNoteWriteQueryKey,
   getConnectMembersOption,
   getStudyNoteGroupsOption,
   getStudyRoomsOption,
@@ -23,8 +24,17 @@ export const useWriteStudyNoteMutation = () => {
 };
 
 export const useCreateNoteGroupMutation = () => {
+  const qc = useQueryClient();
+
   return useMutation({
-    mutationFn: (data: NewNoteGroup) => createStudyNoteGroup(data),
+    mutationFn: createStudyNoteGroup,
+    onSuccess: async (_created, { studyRoomId }) => {
+      const key = StudyNoteWriteQueryKey.studyNoteGroups(studyRoomId);
+
+      // stale 처리 + 활성 쿼리 즉시 재요청
+      await qc.invalidateQueries({ queryKey: key, refetchType: 'active' });
+      await qc.fetchQuery(getStudyNoteGroupsOption(studyRoomId));
+    },
   });
 };
 

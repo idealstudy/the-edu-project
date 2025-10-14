@@ -20,11 +20,11 @@ const SelectArea = () => {
     control,
     formState: { errors },
     watch,
+    setValue,
   } = useFormContext<StudyNoteForm>();
   const roomId = watch('studyRoomId');
   const { data: rooms } = useStudyRoomsQuery();
   const { data: studyNoteGroups } = useStudyNoteGroupsQuery(roomId);
-
   const [open, setOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState(false);
 
@@ -42,11 +42,6 @@ const SelectArea = () => {
           className="w-full"
         >
           <Form.Control>
-            {/* TODO
-                드롭다운으로 컴포넌트 변경 필요
-                기존 작업 popover로 제작됨
-                디자인 차이로 인한 결과로 추정됨 -> 일반 드롭다운과 디자인이 다름
-            */}
             <Controller
               name="studyRoomId"
               control={control}
@@ -134,14 +129,13 @@ const SelectArea = () => {
             render={({ field }) => {
               const value =
                 field.value == null ? undefined : String(field.value);
-              const onAddGroup = () => setOpenGroup(true);
               return (
                 <Select
                   defaultValue=""
                   value={value}
                   onValueChange={(v) => {
                     if (v === 'add') {
-                      onAddGroup();
+                      setOpenGroup(true);
                       return;
                     }
                     field.onChange(Number(v));
@@ -164,7 +158,7 @@ const SelectArea = () => {
                       ))}
 
                     {/* 데이터가 없거나, 항상 맨 아래 “추가하기” 노출 */}
-                    <Select.Option value={'add'}>
+                    <Select.Option value="add">
                       <button className="flex w-full cursor-pointer items-center justify-between gap-1 leading-[140%]">
                         <PlusIcon />
                         <span>추가하기</span>
@@ -187,6 +181,12 @@ const SelectArea = () => {
         open={openGroup}
         onOpenChange={setOpenGroup}
         roomId={roomId}
+        onCreated={(created) => {
+          setValue('teachingNoteGroupId', Number(created.id), {
+            shouldDirty: true,
+          });
+          setOpenGroup(false);
+        }}
       />
     </ColumnLayout.Left>
   );
