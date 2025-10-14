@@ -186,6 +186,7 @@ const SelectArea = () => {
       <AddGroupDialog
         open={openGroup}
         onOpenChange={setOpenGroup}
+        roomId={roomId}
       />
     </ColumnLayout.Left>
   );

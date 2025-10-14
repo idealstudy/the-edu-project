@@ -2,7 +2,7 @@ import { CommonResponse, PaginationMeta, apiClient } from '@/lib/api';
 
 import {
   ConnectedMember,
-  NewStudyNoteGroupData,
+  NewNoteGroup,
   StudyNote,
   StudyNoteGroupResponse,
   StudyRoom,
@@ -46,8 +46,15 @@ export const getStudyNoteGroups = async (roomId: number) => {
   return response.data;
 };
 
-export const addStudyNoteGroup = async (data: NewStudyNoteGroupData) => {
-  await apiClient.post(`/teacher/teaching-note-groups`, data);
+export const createStudyNoteGroup = async (data: NewNoteGroup) => {
+  const response = (
+    await apiClient.post<CommonResponse<NewNoteGroup>>(
+      `/teacher/teaching-note-groups`,
+      data
+    )
+  ).data;
+
+  return response.data;
 };
 
 // export const getStudyNotesByStudyRoomId = async ({

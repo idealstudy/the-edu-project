@@ -1,8 +1,12 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { TextField } from '@/components/ui/text-field';
+
+import { useCreateNoteGroupMutation } from '../services/query';
 
 /*
  * AddGroupDialog
@@ -13,14 +17,27 @@ import { TextField } from '@/components/ui/text-field';
 type AddGroupDialogProps = {
   open: boolean;
   onOpenChange: (v: boolean) => void;
+  roomId: number;
   showTrigger?: boolean;
 };
 
 export const AddGroupDialog = ({
   open,
   onOpenChange,
+  roomId,
   showTrigger = false,
 }: AddGroupDialogProps) => {
+  const [name, setName] = useState<string>('');
+  const { mutateAsync, isPending } = useCreateNoteGroupMutation();
+
+  const onSave = async () => {
+    const title = name.trim();
+    if (!title) return;
+    await mutateAsync({ studyRoomId: roomId, title });
+    onOpenChange(false);
+    setName('');
+  };
+
   return (
     <Dialog
       isOpen={open}
@@ -46,7 +63,12 @@ export const AddGroupDialog = ({
               </TextField.Description>
             }
           >
-            <TextField.Input placeholder="수업노트 그룹 이름을 작성해주세요." />
+            <TextField.Input
+              placeholder="수업노트 그룹 이름을 작성해주세요."
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && onSave()}
+            />
           </TextField>
         </Dialog.Body>
         <Dialog.Footer className="mt-6 justify-end">
@@ -60,14 +82,12 @@ export const AddGroupDialog = ({
             </Button>
           </Dialog.Close>
           <Button
-            className="w-[120px]"
+            type="button"
             size="small"
-            onClick={async () => {
-              // TODO: 1) 값 검증/저장 로직...
-              onOpenChange(false);
-            }}
+            onClick={onSave}
+            disabled={isPending || !name.trim()}
           >
-            저장
+            {isPending ? '저장중…' : '저장'}
           </Button>
         </Dialog.Footer>
       </Dialog.Content>

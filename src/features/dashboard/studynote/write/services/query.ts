@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { NewStudyNoteGroupData, StudyNote } from '../type';
-import { addStudyNoteGroup, writeStudyNote } from './api';
+import { NewNoteGroup, StudyNote } from '../type';
+import { createStudyNoteGroup, writeStudyNote } from './api';
 import {
   getConnectMembersOption,
   getStudyNoteGroupsOption,
@@ -22,9 +22,9 @@ export const useWriteStudyNoteMutation = () => {
   });
 };
 
-export const useAddNewStudyNoteGroupMutation = () => {
+export const useCreateNoteGroupMutation = () => {
   return useMutation({
-    mutationFn: (data: NewStudyNoteGroupData) => addStudyNoteGroup(data),
+    mutationFn: (data: NewNoteGroup) => createStudyNoteGroup(data),
   });
 };
 
