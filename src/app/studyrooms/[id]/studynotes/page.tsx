@@ -1,5 +1,5 @@
 import { ColumnLayout } from '@/components/layout/column-layout';
-import { ClientStudyRoomDetail } from '@/features/studyrooms/components/detail/client-study-room-detail';
+import { StudyRoomDetail } from '@/features/studyrooms/components/detail/study-room-detail';
 
 export default async function StudyRoomDetailPage({
   params,
@@ -11,7 +11,7 @@ export default async function StudyRoomDetailPage({
   return (
     <main>
       <ColumnLayout>
-        <ClientStudyRoomDetail roomId={Number(resolvedParams.id)} />
+        <StudyRoomDetail roomId={Number(resolvedParams.id)} />
       </ColumnLayout>
     </main>
   );

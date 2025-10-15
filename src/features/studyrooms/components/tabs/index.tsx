@@ -1,17 +1,19 @@
 'use client';
 
+import StudentQuestionSession from '@/features/questions/components/detail/student-question';
 import { Tabs } from '@/features/studyrooms/components/common/tabs';
 
-import TeacherQuestionSession from '../../../questions/components/question-session';
+import TeacherQuestionSession from '../../../questions/components/detail/teacher-question';
 import { TabValue } from '../common/constants/tabs';
 import { StudyNote } from './study-note';
 
 type Props = {
   value: TabValue;
   onChange: (v: string) => void;
+  mode: 'teacher' | 'student';
 };
 
-export const StudyRoomTabs = ({ value, onChange }: Props) => {
+export const StudyRoomTabs = ({ value, onChange, mode }: Props) => {
   return (
     <div>
       <Tabs
@@ -45,7 +47,8 @@ export const StudyRoomTabs = ({ value, onChange }: Props) => {
           </Tabs.Content>
           <Tabs.Content value="3">
             {/* TODO: 선생님/학생/부모님 역할에 따른 다른 컴포넌트 표시 */}
-            <TeacherQuestionSession />
+            {mode === 'teacher' && <TeacherQuestionSession />}
+            {mode === 'student' && <StudentQuestionSession />}
           </Tabs.Content>
         </div>
       </Tabs>

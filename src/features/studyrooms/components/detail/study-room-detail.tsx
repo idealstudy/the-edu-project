@@ -9,13 +9,14 @@ import { StudyroomSidebar } from '../sidebar';
 import { StudyNotes } from '../studynotes';
 import { StudyRoomTabs } from '../tabs';
 
-type ClientStudyRoomDetailProps = {
+type Props = {
   roomId: number;
 };
 
-export function ClientStudyRoomDetail({ roomId }: ClientStudyRoomDetailProps) {
+export function StudyRoomDetail({ roomId }: Props) {
   const [selectedGroupId, setSelectedGroupId] = useState<number | 'all'>('all');
   const [tab, setTab] = useState<TabValue>(TAB.NOTES);
+  const [mode] = useState<'teacher' | 'student'>('teacher');
 
   const onTabChange = (v: string) => setTab(v as TabValue);
 
@@ -37,10 +38,13 @@ export function ClientStudyRoomDetail({ roomId }: ClientStudyRoomDetailProps) {
         <StudyRoomTabs
           value={tab}
           onChange={onTabChange}
+          mode={mode}
         />
         {tab === TAB.NOTES && <StudyNotes selectedGroupId={selectedGroupId} />}
         {tab === TAB.STUDENTS && <div>학생 리스트/컴포넌트</div>}
-        {tab === TAB.QUESTIONS && <div>질문 컴포넌트</div>}
+        {tab === TAB.QUESTIONS && mode === 'student' && (
+          <div>질문 컴포넌트</div>
+        )}
       </ColumnLayout.Right>
     </>
   );
