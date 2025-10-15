@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import { ColumnLayout } from '@/components/layout/column-layout';
 
+import { TAB, type TabValue } from '../common/constants/tabs';
 import { StudyroomSidebar } from '../sidebar';
 import { StudyNotes } from '../studynotes';
 import { StudyRoomTabs } from '../tabs';
@@ -14,10 +15,14 @@ type ClientStudyRoomDetailProps = {
 
 export function ClientStudyRoomDetail({ roomId }: ClientStudyRoomDetailProps) {
   const [selectedGroupId, setSelectedGroupId] = useState<number | 'all'>('all');
+  const [tab, setTab] = useState<TabValue>(TAB.NOTES);
+
+  const onTabChange = (v: string) => setTab(v as TabValue);
 
   const handleSelectGroupId = (id: number | 'all') => {
     setSelectedGroupId(id);
   };
+
   return (
     <>
       <ColumnLayout.Left className="rounded-[12px] bg-gray-200">
@@ -25,11 +30,17 @@ export function ClientStudyRoomDetail({ roomId }: ClientStudyRoomDetailProps) {
           studyRoomId={Number(roomId)}
           selectedGroupId={selectedGroupId}
           handleSelectGroupId={handleSelectGroupId}
+          currTab={tab}
         />
       </ColumnLayout.Left>
       <ColumnLayout.Right className="desktop:max-w-[740px] flex h-[400px] flex-col gap-3 rounded-[12px] px-8">
-        <StudyRoomTabs />
-        <StudyNotes selectedGroupId={selectedGroupId} />
+        <StudyRoomTabs
+          value={tab}
+          onChange={onTabChange}
+        />
+        {tab === TAB.NOTES && <StudyNotes selectedGroupId={selectedGroupId} />}
+        {tab === TAB.STUDENTS && <div>학생 리스트/컴포넌트</div>}
+        {tab === TAB.QUESTIONS && <div>질문 컴포넌트</div>}
       </ColumnLayout.Right>
     </>
   );
