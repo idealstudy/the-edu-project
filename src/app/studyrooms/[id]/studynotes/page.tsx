@@ -11,7 +11,7 @@ export default async function StudyRoomDetailPage({
   return (
     <main>
       <ColumnLayout>
-        <StudyRoomDetail roomId={Number(resolvedParams.id)} />
+        <StudyRoomDetail studyRoomId={Number(resolvedParams.id)} />
       </ColumnLayout>
     </main>
   );

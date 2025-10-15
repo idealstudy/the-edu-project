@@ -8,12 +8,18 @@ import { TabValue } from '../common/constants/tabs';
 import { StudyNote } from './study-note';
 
 type Props = {
+  studyRoomId: number;
   value: TabValue;
   onChange: (v: string) => void;
   mode: 'teacher' | 'student';
 };
 
-export const StudyRoomTabs = ({ value, onChange, mode }: Props) => {
+export const StudyRoomTabs = ({
+  value,
+  onChange,
+  mode,
+  studyRoomId,
+}: Props) => {
   return (
     <div>
       <Tabs
@@ -48,7 +54,9 @@ export const StudyRoomTabs = ({ value, onChange, mode }: Props) => {
           <Tabs.Content value="3">
             {/* TODO: 선생님/학생/부모님 역할에 따른 다른 컴포넌트 표시 */}
             {mode === 'teacher' && <TeacherQuestionSession />}
-            {mode === 'student' && <StudentQuestionSession />}
+            {mode === 'student' && (
+              <StudentQuestionSession studyRoomId={studyRoomId} />
+            )}
           </Tabs.Content>
         </div>
       </Tabs>

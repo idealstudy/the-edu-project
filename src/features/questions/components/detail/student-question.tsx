@@ -1,8 +1,10 @@
 'use client';
 
-import QuestionList from './question-list';
+type Props = {
+  studyRoomId: number;
+};
 
-export default function StudentQuestionSession() {
+export default function StudentQuestionSession({}: Props) {
   return (
     <div className="">
       <p className="font-headline1-heading whitespace-pre-wrap">
@@ -10,7 +12,7 @@ export default function StudentQuestionSession() {
       </p>
       {/* TODO: 질문 목록 */}
       {/* <StudyRoomDetailLayout> */}
-      <QuestionList />
+      {/* <QuestionList /> */}
       {/* </StudyRoomDetailLayout> */}
     </div>
   );
