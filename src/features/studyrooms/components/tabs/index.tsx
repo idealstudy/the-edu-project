@@ -1,26 +1,35 @@
 'use client';
 
-import { Icon } from '@/components/ui/icon';
 import { Tabs } from '@/features/studyrooms/components/common/tabs';
 
-import QuestionSession from './question-session';
+import TeacherQuestionSession from '../../../questions/components/question-session';
+import { TabValue } from '../common/constants/tabs';
 import { StudyNote } from './study-note';
 
-export const StudyRoomTabs = () => {
+type Props = {
+  value: TabValue;
+  onChange: (v: string) => void;
+};
+
+export const StudyRoomTabs = ({ value, onChange }: Props) => {
   return (
     <div>
-      <Tabs defaultValue="1">
+      <Tabs
+        value={value}
+        onValueChange={onChange}
+        defaultValue="1"
+      >
         <Tabs.List>
           <Tabs.Trigger value="1">
-            <Icon.Notebook />
+            {/* <Icon.Notebook /> */}
             수업노트
           </Tabs.Trigger>
           <Tabs.Trigger value="2">
-            <Icon.Person />
+            {/* <Icon.Person /> */}
             학생
           </Tabs.Trigger>
           <Tabs.Trigger value="3">
-            <Icon.Question />
+            {/* <Icon.Question /> */}
             질문
           </Tabs.Trigger>
         </Tabs.List>
@@ -35,7 +44,8 @@ export const StudyRoomTabs = () => {
             <p>학생</p>
           </Tabs.Content>
           <Tabs.Content value="3">
-            <QuestionSession />
+            {/* TODO: 선생님/학생/부모님 역할에 따른 다른 컴포넌트 표시 */}
+            <TeacherQuestionSession />
           </Tabs.Content>
         </div>
       </Tabs>
