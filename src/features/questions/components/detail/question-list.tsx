@@ -1,10 +1,21 @@
+import { useState } from 'react';
+
 import Link from 'next/link';
 
+import { useRole } from '@/hooks/use-role';
 import { formatMMDDWeekday } from '@/lib/utils';
 
 import { tempQuestionList } from '../../constants';
+import QuestionListDropDown from './question-list-dropdown';
 
 export default function QuestionList() {
+  const { role } = useRole();
+  const [open, setOpen] = useState(0);
+
+  const handleOpen = (id: number) => {
+    setOpen(open === id ? 0 : id);
+  };
+
   // TODO: ListItem으로 변경 필요
   return (
     <div>
@@ -23,7 +34,6 @@ export default function QuestionList() {
             href={`/studyrooms/question/${question.id}`}
           >
             <div className="flex flex-row items-center gap-3">
-              {/* {icon} */}
               <div className="flex flex-col items-start justify-between">
                 <div className="flex flex-row items-center gap-[10px]">
                   {question.feedback === 'DONE' ? (
@@ -41,21 +51,29 @@ export default function QuestionList() {
             </div>
 
             <div className="flex flex-row items-center gap-5">
-              <div className="flex flex-row gap-2">
-                <div className="bg-gray-scale-gray-20 h-6 w-6 rounded-full" />
-                <p>{question.author}</p>
-              </div>
+              {role === 'ROLE_TEACHER' && (
+                <div className="flex flex-row gap-2">
+                  <div className="bg-gray-scale-gray-20 h-6 w-6 rounded-full" />
+                  <p>{question.author}</p>
+                </div>
+              )}
 
-              <div className="gap-1">
+              <div className="flex gap-1">
                 <p className="text-gray-scale-gray-70">
                   {formatMMDDWeekday(question.createdAt)}
                 </p>
-                {/* <div
-                className="flex shrink-0 flex-row items-center"
-                onClick={(e) => e.preventDefault()}
-              >
-                {dropdown}
-              </div> */}
+                {role === 'ROLE_STUDENT' && (
+                  <div
+                    className="flex shrink-0 flex-row items-center"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <QuestionListDropDown
+                      open={open}
+                      handleOpen={handleOpen}
+                      item={question}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </Link>
