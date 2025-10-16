@@ -1,5 +1,6 @@
 'use client';
 
+import { Role } from '@/features/auth/type';
 import StudentQuestionSession from '@/features/questions/components/detail/student-question';
 import { Tabs } from '@/features/studyrooms/components/common/tabs';
 
@@ -11,7 +12,7 @@ type Props = {
   studyRoomId: number;
   value: TabValue;
   onChange: (v: string) => void;
-  mode: 'teacher' | 'student';
+  mode: Role | undefined;
 };
 
 export const StudyRoomTabs = ({ value, onChange, mode }: Props) => {
@@ -48,8 +49,8 @@ export const StudyRoomTabs = ({ value, onChange, mode }: Props) => {
           </Tabs.Content>
           <Tabs.Content value="3">
             {/* TODO: 선생님/학생/부모님 역할에 따른 다른 컴포넌트 표시 */}
-            {mode === 'teacher' && <TeacherQuestionSession />}
-            {mode === 'student' && <StudentQuestionSession />}
+            {mode === 'ROLE_TEACHER' && <TeacherQuestionSession />}
+            {mode === 'ROLE_STUDENT' && <StudentQuestionSession />}
           </Tabs.Content>
         </div>
       </Tabs>
