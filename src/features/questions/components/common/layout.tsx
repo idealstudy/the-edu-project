@@ -29,7 +29,7 @@ export const StudyRoomQuestionDetailLayout = ({
   };
 }) => {
   return (
-    <div className="mt-9 flex flex-col items-center gap-6 rounded-[12px]">
+    <div className="flex flex-col items-center gap-6 rounded-[12px]">
       <div className="flex w-full flex-col gap-3">
         <SearchFilterBar
           search={search}

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import { ColumnLayout } from '@/components/layout/column-layout';
-import TeacherQuestionSession from '@/features/questions/components/detail/teacher-question';
+import QuestionListWrapper from '@/features/questions/components/detail/question-list-wrapper';
 
 import { TAB, type TabValue } from '../common/constants/tabs';
 import { StudyroomSidebar } from '../sidebar';
@@ -45,7 +45,7 @@ export function StudyRoomDetail({ studyRoomId }: Props) {
         {tab === TAB.NOTES && <StudyNotes selectedGroupId={selectedGroupId} />}
         {tab === TAB.STUDENTS && <div>학생 리스트/컴포넌트</div>}
         {tab === TAB.QUESTIONS && mode === 'student' && (
-          <TeacherQuestionSession />
+          <QuestionListWrapper hasBorder={true} />
         )}
       </ColumnLayout.Right>
     </>
