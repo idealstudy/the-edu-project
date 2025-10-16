@@ -7,17 +7,17 @@ import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/features/studyrooms/components/common/select';
 
-import { LimitNumber, QuestionFilter, SortKey } from '../../type';
+import { LimitNumber, QnAFilter, SortKey } from '../../type';
 
 type Props = {
   search: string;
   sort?: SortKey;
   limit?: LimitNumber;
-  filter?: QuestionFilter;
+  filter?: QnAFilter;
   onSearch: (value: string) => void;
   onSortChange?: (value: SortKey) => void;
   onLimitChange?: (value: LimitNumber) => void;
-  onFilterChange?: (value: QuestionFilter) => void;
+  onFilterChange?: (value: QnAFilter) => void;
 };
 
 const SORT_OPTIONS: Array<{ value: SortKey; label: string }> = [
@@ -31,12 +31,11 @@ const LIMIT_OPTIONS: Array<{ value: LimitNumber; label: string }> = [
   { value: 30, label: '30개씩' },
 ];
 
-const QUESTION_FILTER_OPTIONS: Array<{ value: QuestionFilter; label: string }> =
-  [
-    { value: 'ALL', label: '모두보기' },
-    { value: 'FEEDBACK_PENDING', label: '피드백 대기만' },
-    { value: 'FEEDBACK_DONE', label: '피드백 완료만' },
-  ];
+const QUESTION_FILTER_OPTIONS: Array<{ value: QnAFilter; label: string }> = [
+  { value: 'ALL', label: '모두보기' },
+  { value: 'FEEDBACK_PENDING', label: '피드백 대기만' },
+  { value: 'FEEDBACK_DONE', label: '피드백 완료만' },
+];
 
 const SELECT_STYLES = {
   trigger:

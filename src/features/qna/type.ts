@@ -6,16 +6,10 @@ export type SortKey =
 
 export type LimitNumber = 20 | 30;
 
-export type QuestionFilter = 'ALL' | 'FEEDBACK_DONE' | 'FEEDBACK_PENDING';
+export type QnAFilter = 'ALL' | 'FEEDBACK_DONE' | 'FEEDBACK_PENDING';
 
-export interface PageableList {
-  sortKey: SortKey;
-  limit: LimitNumber;
-  page: number;
-}
-
-export interface TempQuestionItem {
-  feedback: QuestionStatus;
+export interface TempQnAItem {
+  feedback: QnAStatus;
   title: string;
   author: string;
   profile_img: string;
@@ -23,15 +17,35 @@ export interface TempQuestionItem {
   id: number;
 }
 
-export type QuestionStatus = 'PENDING' | 'COMPLETED';
+export type QnAStatus = 'PENDING' | 'COMPLETED';
 
-export interface QuestionDetailResponse {
+export interface QnAListItem {
   id: number;
   title: string;
-  status: QuestionStatus;
+  status: string;
   content: string;
   viewCount?: number;
   authorName: string;
   regDate: string;
   messages: string[];
+}
+
+export interface QuestionDetailResponse {
+  id: number;
+  title: string;
+  status: QnAStatus;
+  authorName: string;
+  content: string;
+  regDate: string;
+  messages: string[];
+}
+
+export interface QnAListResponse {
+  id: number;
+  title: string;
+  status: string;
+  viewCount: number;
+  authorName: string;
+  regDate: string;
+  read: boolean;
 }

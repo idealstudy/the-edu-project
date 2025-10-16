@@ -1,6 +1,6 @@
-import { TempQuestionItem } from './type';
+import { TempQnAItem } from './type';
 
-export const tempQuestionList: TempQuestionItem[] = [
+export const tempQuestionList: TempQnAItem[] = [
   {
     feedback: 'PENDING',
     title: '질문제목 1',

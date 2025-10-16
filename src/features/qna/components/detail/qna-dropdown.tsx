@@ -8,12 +8,12 @@ import {
   initialDialogState,
 } from '@/features/studyrooms/hooks/useDialogReducer';
 
-import { TempQuestionItem } from '../../type';
+import { QnAListItem } from '../../type';
 
 type Props = {
   open: number;
   handleOpen: (id: number) => void;
-  item: TempQuestionItem;
+  item: QnAListItem;
 };
 
 export default function QuestionDropDown({ open, handleOpen, item }: Props) {

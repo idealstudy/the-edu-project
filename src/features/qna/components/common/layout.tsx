@@ -1,6 +1,6 @@
 import { Pagination } from '@/components/ui/pagination';
 
-import { LimitNumber, QuestionFilter, SortKey } from '../../type';
+import { LimitNumber, QnAFilter, SortKey } from '../../type';
 import { SearchFilterBar } from '../detail/search-filter-bar';
 
 export const StudyRoomQuestionDetailLayout = ({
@@ -15,13 +15,13 @@ export const StudyRoomQuestionDetailLayout = ({
 }: {
   children: React.ReactNode;
   search: string;
-  filter?: QuestionFilter;
+  filter?: QnAFilter;
   sort?: SortKey;
   limit?: LimitNumber;
   onSearch: (value: string) => void;
   onSortChange?: (value: SortKey) => void;
   onLimitChange?: (value: LimitNumber) => void;
-  onFilterChange?: (value: QuestionFilter) => void;
+  onFilterChange?: (value: QnAFilter) => void;
   page: {
     page: number;
     totalPages: number;

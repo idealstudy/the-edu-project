@@ -4,10 +4,10 @@ import Image from 'next/image';
 
 import { cn } from '@/lib/utils';
 
-import { QuestionStatus } from '../../type';
+import { QnAStatus } from '../../type';
 
 type Props = {
-  status: QuestionStatus;
+  status: QnAStatus;
   title: string;
 };
 

@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from 'react';
 
-import { QuestionFilter, SortKey } from '../../type';
+import { Pageable } from '@/lib/api';
+
+import { useQnAsTeacherQuery } from '../../services/query';
+import { QnAFilter, SortKey } from '../../type';
 import { StudyRoomQuestionDetailLayout } from '../common/layout';
 import QuestionList from './qna-list';
 
@@ -13,12 +16,26 @@ type Props = {
 
 const QuestionListWrapper = ({ studyRoomId, hasBorder }: Props) => {
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState<QuestionFilter>('ALL');
+  const [filter, setFilter] = useState<QnAFilter>('ALL');
   const [sort, setSort] = useState<SortKey>('LATEST_EDITED');
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const pageable: Pageable = {
+    page: currentPage,
+    size: 20,
+    sort: [],
+  };
+
+  // TODO: 질문 목록 조회
+  const { data: qnaList } = useQnAsTeacherQuery({
+    studyRoomId,
+    pageable,
+    status: filter,
+    sort,
+  });
 
   const handleFilterChange = (e: string) => {
-    setFilter(e as QuestionFilter);
+    setFilter(e as QnAFilter);
   };
 
   const handleSearch = (value: string) => {
@@ -33,9 +50,9 @@ const QuestionListWrapper = ({ studyRoomId, hasBorder }: Props) => {
     setCurrentPage(page);
   };
 
-  const tempPage = {
+  const page = {
     page: currentPage,
-    totalPages: 1,
+    totalPages: qnaList?.totalPages || 1,
     onPageChange: handlePageChange,
   };
 
@@ -58,9 +75,12 @@ const QuestionListWrapper = ({ studyRoomId, hasBorder }: Props) => {
         onSearch={handleSearch}
         onSortChange={handleSortChange}
         onFilterChange={handleFilterChange}
-        page={tempPage}
+        page={page}
       >
-        <QuestionList studyRoomId={studyRoomId} />
+        <QuestionList
+          studyRoomId={studyRoomId}
+          data={qnaList?.content || []}
+        />
       </StudyRoomQuestionDetailLayout>
     </div>
   );

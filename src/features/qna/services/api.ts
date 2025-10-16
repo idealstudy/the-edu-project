@@ -1,4 +1,6 @@
-import { apiClient } from '@/lib/api';
+import { CommonResponse, Pageable, PaginationMeta, apiClient } from '@/lib/api';
+
+import { QnAListItem } from '../type';
 
 // POST /api/study-rooms/{studyRoomId}/qna - 질문 생성
 // POST /api/study-rooms/{studyRoomId}/qna/{contextId}/messages - 학생 추가 질문
@@ -24,10 +26,24 @@ export const getStudentQnADetail = async (args: {
 };
 
 // GET /api/teacher/study-rooms/{studyRoomId}/qna - 선생님 QnA 목록
-export const getTeacherQnAList = async (args: { studyRoomId: number }) => {
-  const response = await apiClient.get(
-    `/teacher/study-rooms/${args.studyRoomId}/qna`
-  );
+export const getTeacherQnAList = async (args: {
+  studyRoomId: number;
+  pageable: Pageable;
+  status?: string;
+  sort?: string;
+}) => {
+  const response = (
+    await apiClient.get<
+      CommonResponse<PaginationMeta & { content: QnAListItem[] }>
+    >(`/teacher/study-rooms/${args.studyRoomId}/qna`, {
+      params: {
+        status: args.status,
+        page: args.pageable.page,
+        size: args.pageable.size,
+        sort: args.sort ?? args.pageable.sort,
+      },
+    })
+  ).data;
 
   return response.data;
 };
