@@ -2,7 +2,7 @@ import { TempQuestionItem } from './type';
 
 export const tempQuestionList: TempQuestionItem[] = [
   {
-    feedback: 'DONE',
+    feedback: 'PENDING',
     title: '질문제목 1',
     author: '김지수',
     profile_img: '',
@@ -10,7 +10,7 @@ export const tempQuestionList: TempQuestionItem[] = [
     id: 1,
   },
   {
-    feedback: 'DONE',
+    feedback: 'PENDING',
     title: '질문제목 2',
     author: '박서준',
     profile_img: '',
@@ -18,7 +18,7 @@ export const tempQuestionList: TempQuestionItem[] = [
     id: 2,
   },
   {
-    feedback: 'DONE',
+    feedback: 'PENDING',
     title: '질문제목 3',
     author: '이예린',
     profile_img: '',
@@ -34,7 +34,7 @@ export const tempQuestionList: TempQuestionItem[] = [
     id: 4,
   },
   {
-    feedback: 'DONE',
+    feedback: 'COMPLETED',
     title: '질문제목 5',
     author: '정하늘',
     profile_img: '',
@@ -50,7 +50,7 @@ export const tempQuestionList: TempQuestionItem[] = [
     id: 6,
   },
   {
-    feedback: 'DONE',
+    feedback: 'COMPLETED',
     title: '질문제목 7',
     author: '한도윤',
     profile_img: '',

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import { ColumnLayout } from '@/components/layout/column-layout';
-import QuestionListWrapper from '@/features/questions/components/detail/question-list-wrapper';
+import QuestionListWrapper from '@/features/qna/components/detail/qna-list-wrapper';
 import { useRole } from '@/hooks/use-role';
 
 import { TAB, type TabValue } from '../common/constants/tabs';
@@ -44,9 +44,12 @@ export function StudyRoomDetail({ studyRoomId }: Props) {
           studyRoomId={studyRoomId}
         />
         {tab === TAB.NOTES && <StudyNotes selectedGroupId={selectedGroupId} />}
-        {tab === TAB.STUDENTS && <div>학생 리스트/컴포넌트</div>}
+        {tab === TAB.STUDENTS && <div> </div>}
         {tab === TAB.QUESTIONS && role === 'ROLE_STUDENT' && (
-          <QuestionListWrapper hasBorder={true} />
+          <QuestionListWrapper
+            hasBorder={true}
+            studyRoomId={studyRoomId}
+          />
         )}
       </ColumnLayout.Right>
     </>

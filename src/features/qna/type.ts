@@ -14,11 +14,23 @@ export interface PageableList {
   page: number;
 }
 
-export type TempQuestionItem = {
-  feedback: 'DONE' | 'PENDING';
+export interface TempQuestionItem {
+  feedback: QuestionStatus;
   title: string;
   author: string;
   profile_img: string;
   createdAt: string;
   id: number;
-};
+}
+
+export type QuestionStatus = 'PENDING' | 'COMPLETED';
+
+export interface QuestionDetailResponse {
+  id: number;
+  title: string;
+  status: QuestionStatus;
+  viewCount?: number;
+  authorName: string;
+  regDate: string;
+  messages: string[];
+}

@@ -1,10 +1,10 @@
 'use client';
 
 import { Role } from '@/features/auth/type';
-import StudentQuestionSession from '@/features/questions/components/detail/student-question';
+import StudentQuestionSession from '@/features/qna/components/detail/student-qna-tab';
 import { Tabs } from '@/features/studyrooms/components/common/tabs';
 
-import TeacherQuestionSession from '../../../questions/components/detail/teacher-question';
+import TeacherQuestionSession from '../../../qna/components/detail/teacher-qna-tab';
 import { TabValue } from '../common/constants/tabs';
 import { StudyNote } from './study-note';
 
@@ -15,7 +15,12 @@ type Props = {
   mode: Role | undefined;
 };
 
-export const StudyRoomTabs = ({ value, onChange, mode }: Props) => {
+export const StudyRoomTabs = ({
+  studyRoomId,
+  value,
+  onChange,
+  mode,
+}: Props) => {
   return (
     <div>
       <Tabs
@@ -49,7 +54,9 @@ export const StudyRoomTabs = ({ value, onChange, mode }: Props) => {
           </Tabs.Content>
           <Tabs.Content value="3">
             {/* TODO: 선생님/학생/부모님 역할에 따른 다른 컴포넌트 표시 */}
-            {mode === 'ROLE_TEACHER' && <TeacherQuestionSession />}
+            {mode === 'ROLE_TEACHER' && (
+              <TeacherQuestionSession studyRoomId={studyRoomId} />
+            )}
             {mode === 'ROLE_STUDENT' && <StudentQuestionSession />}
           </Tabs.Content>
         </div>

@@ -167,6 +167,13 @@
   letter-spacing: -4%;
 }
 
+@utility font-body1-normal {
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 160%;
+  letter-spacing: -4%;
+}
+
 @utility font-body2-heading {
   font-weight: 600;
   font-size: 16px;

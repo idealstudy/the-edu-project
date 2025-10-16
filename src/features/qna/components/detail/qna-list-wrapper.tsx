@@ -4,13 +4,14 @@ import { useEffect, useState } from 'react';
 
 import { QuestionFilter, SortKey } from '../../type';
 import { StudyRoomQuestionDetailLayout } from '../common/layout';
-import QuestionList from './question-list';
+import QuestionList from './qna-list';
 
 type Props = {
+  studyRoomId: number;
   hasBorder?: boolean;
 };
 
-const QuestionListWrapper = ({ hasBorder }: Props) => {
+const QuestionListWrapper = ({ studyRoomId, hasBorder }: Props) => {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<QuestionFilter>('ALL');
   const [sort, setSort] = useState<SortKey>('LATEST_EDITED');
@@ -59,7 +60,7 @@ const QuestionListWrapper = ({ hasBorder }: Props) => {
         onFilterChange={handleFilterChange}
         page={tempPage}
       >
-        <QuestionList />
+        <QuestionList studyRoomId={studyRoomId} />
       </StudyRoomQuestionDetailLayout>
     </div>
   );
