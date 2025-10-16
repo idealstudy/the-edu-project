@@ -1,12 +1,8 @@
-export type SortKey =
-  | 'LATEST_EDITED'
-  | 'OLDEST_EDITED'
-  | 'TITLE_ASC'
-  | 'TAUGHT_AT_ASC';
+export type SortKey = 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
 
 export type LimitNumber = 20 | 30;
 
-export type QnAFilter = 'ALL' | 'FEEDBACK_DONE' | 'FEEDBACK_PENDING';
+export type QnAFilter = 'DEFAULT' | 'PENDING' | 'COMPLETED';
 
 export interface TempQnAItem {
   feedback: QnAStatus;

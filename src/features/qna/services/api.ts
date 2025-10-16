@@ -7,8 +7,17 @@ import { QnAListItem } from '../type';
 // POST /api/teacher/study-rooms/{studyRoomId}/qna/{contextId}/answers - 선생님 답변
 
 // GET /api/study-rooms/{studyRoomId}/qna - 학생 QnA 목록
-export const getStudentQnAList = async (args: { studyRoomId: number }) => {
-  const response = await apiClient.get(`/study-rooms/${args.studyRoomId}/qna`);
+export const getStudentQnAList = async (args: {
+  studyRoomId: number;
+  pageable: Pageable;
+  status?: string;
+  sort?: string;
+}) => {
+  const response = (
+    await apiClient.get<
+      CommonResponse<PaginationMeta & { content: QnAListItem[] }>
+    >(`/study-rooms/${args.studyRoomId}/qna`)
+  ).data;
 
   return response.data;
 };

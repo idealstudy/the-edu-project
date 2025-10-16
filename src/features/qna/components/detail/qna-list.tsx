@@ -34,7 +34,7 @@ export default function QuestionList({ studyRoomId, data }: Props) {
             >
               <div className="flex flex-row items-center gap-3">
                 <div className="flex flex-col items-start justify-between">
-                  <div className="flex flex-row items-center gap-[10px]">
+                  <div className="font-label-normal flex flex-row items-center gap-[10px]">
                     {question.status === 'PENDING' ? (
                       <span className="border-orange-scale-orange-50 text-orange-scale-orange-50 bg-orange-scale-orange-1 rounded-full border px-3 py-[2px]">
                         피드백 대기
@@ -44,7 +44,7 @@ export default function QuestionList({ studyRoomId, data }: Props) {
                         피드백 완료
                       </span>
                     )}
-                    <p>{question.title}</p>
+                    <span className="font-body2-normal">{question.title}</span>
                   </div>
                 </div>
               </div>

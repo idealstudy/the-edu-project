@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react';
 
+import { useRole } from '@/hooks/use-role';
 import { Pageable } from '@/lib/api';
 
-import { useQnAsTeacherQuery } from '../../services/query';
+import { useQnAsQuery } from '../../services/query';
 import { QnAFilter, SortKey } from '../../type';
 import { StudyRoomQuestionDetailLayout } from '../common/layout';
 import QuestionList from './qna-list';
@@ -15,10 +16,11 @@ type Props = {
 };
 
 const QuestionListWrapper = ({ studyRoomId, hasBorder }: Props) => {
+  const { role } = useRole();
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState<QnAFilter>('ALL');
-  const [sort, setSort] = useState<SortKey>('LATEST_EDITED');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [filter, setFilter] = useState<QnAFilter>('DEFAULT');
+  const [sort, setSort] = useState<SortKey>('LATEST');
+  const [currentPage, setCurrentPage] = useState(0);
 
   const pageable: Pageable = {
     page: currentPage,
@@ -27,10 +29,10 @@ const QuestionListWrapper = ({ studyRoomId, hasBorder }: Props) => {
   };
 
   // TODO: 질문 목록 조회
-  const { data: qnaList } = useQnAsTeacherQuery({
+  const { data: qnaList } = useQnAsQuery(role, {
     studyRoomId,
     pageable,
-    status: filter,
+    status: filter === 'DEFAULT' ? undefined : filter,
     sort,
   });
 
@@ -57,7 +59,7 @@ const QuestionListWrapper = ({ studyRoomId, hasBorder }: Props) => {
   };
 
   useEffect(() => {
-    setCurrentPage(1);
+    setCurrentPage(0);
   }, [search, sort, filter]);
 
   return (

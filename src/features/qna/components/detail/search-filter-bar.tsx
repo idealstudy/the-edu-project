@@ -21,9 +21,9 @@ type Props = {
 };
 
 const SORT_OPTIONS: Array<{ value: SortKey; label: string }> = [
-  { value: 'LATEST_EDITED', label: '최근 편집순' },
-  { value: 'OLDEST_EDITED', label: '오래된순' },
-  { value: 'TITLE_ASC', label: '가나다순' },
+  { value: 'LATEST', label: '최신순' },
+  { value: 'OLDEST', label: '오래된순' },
+  { value: 'ALPHABETICAL', label: '가나다순' },
 ];
 
 const LIMIT_OPTIONS: Array<{ value: LimitNumber; label: string }> = [
@@ -32,9 +32,9 @@ const LIMIT_OPTIONS: Array<{ value: LimitNumber; label: string }> = [
 ];
 
 const QUESTION_FILTER_OPTIONS: Array<{ value: QnAFilter; label: string }> = [
-  { value: 'ALL', label: '모두보기' },
-  { value: 'FEEDBACK_PENDING', label: '피드백 대기만' },
-  { value: 'FEEDBACK_DONE', label: '피드백 완료만' },
+  { value: 'DEFAULT', label: '모두보기' },
+  { value: 'PENDING', label: '피드백 대기만' },
+  { value: 'COMPLETED', label: '피드백 완료만' },
 ];
 
 const SELECT_STYLES = {
