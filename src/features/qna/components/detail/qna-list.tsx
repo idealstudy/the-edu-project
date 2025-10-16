@@ -6,7 +6,7 @@ import { useRole } from '@/hooks/use-role';
 import { formatMMDDWeekday } from '@/lib/utils';
 
 import { tempQuestionList } from '../../constants';
-import QuestionListDropDown from './qna-list-dropdown';
+import QuestionDropDown from './qna-dropdown';
 
 type Props = {
   studyRoomId: number;
@@ -71,7 +71,7 @@ export default function QuestionList({ studyRoomId }: Props) {
                     className="flex shrink-0 flex-row items-center"
                     onClick={(e) => e.preventDefault()}
                   >
-                    <QuestionListDropDown
+                    <QuestionDropDown
                       open={open}
                       handleOpen={handleOpen}
                       item={question}

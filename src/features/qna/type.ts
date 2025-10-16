@@ -29,6 +29,7 @@ export interface QuestionDetailResponse {
   id: number;
   title: string;
   status: QuestionStatus;
+  content: string;
   viewCount?: number;
   authorName: string;
   regDate: string;

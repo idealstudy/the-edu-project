@@ -16,7 +16,7 @@ type Props = {
   item: TempQuestionItem;
 };
 
-const QuestionListDropDown = ({ open, handleOpen, item }: Props) => {
+export default function QuestionDropDown({ open, handleOpen, item }: Props) {
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
 
   const handleDelete = () => {
@@ -33,17 +33,7 @@ const QuestionListDropDown = ({ open, handleOpen, item }: Props) => {
 
   return (
     <>
-      {dialog.status === 'open' && (
-        // <StudyNotesDialog
-        //   state={dialog}
-        //   dispatch={dispatch}
-        //   studyRoomId={studyRoomId}
-        //   pageable={pageable}
-        //   keyword={keyword}
-        //   item={item}
-        // />
-        <div></div>
-      )}
+      {dialog.status === 'open' && <div />}
       <DropdownMenu
         open={open === item.id}
         onOpenChange={() => handleOpen(item.id)}
@@ -85,6 +75,4 @@ const QuestionListDropDown = ({ open, handleOpen, item }: Props) => {
       </DropdownMenu>
     </>
   );
-};
-
-export default QuestionListDropDown;
+}
