@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { ColumnLayout } from '@/components/layout/column-layout';
+import TeacherQuestionSession from '@/features/questions/components/detail/teacher-question';
 
 import { TAB, type TabValue } from '../common/constants/tabs';
 import { StudyroomSidebar } from '../sidebar';
@@ -16,7 +17,7 @@ type Props = {
 export function StudyRoomDetail({ studyRoomId }: Props) {
   const [selectedGroupId, setSelectedGroupId] = useState<number | 'all'>('all');
   const [tab, setTab] = useState<TabValue>(TAB.NOTES);
-  const [mode] = useState<'teacher' | 'student'>('teacher');
+  const [mode] = useState<'teacher' | 'student'>('student');
 
   const onTabChange = (v: string) => setTab(v as TabValue);
 
@@ -44,7 +45,7 @@ export function StudyRoomDetail({ studyRoomId }: Props) {
         {tab === TAB.NOTES && <StudyNotes selectedGroupId={selectedGroupId} />}
         {tab === TAB.STUDENTS && <div>학생 리스트/컴포넌트</div>}
         {tab === TAB.QUESTIONS && mode === 'student' && (
-          <div>질문 컴포넌트</div>
+          <TeacherQuestionSession />
         )}
       </ColumnLayout.Right>
     </>

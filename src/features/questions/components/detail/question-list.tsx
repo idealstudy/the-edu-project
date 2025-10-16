@@ -1,76 +1,8 @@
-import React from 'react';
-
 import Link from 'next/link';
 
 import { formatMMDDWeekday } from '@/lib/utils';
 
-type TempQuestionItem = {
-  feedback: 'DONE' | 'PENDING';
-  title: string;
-  author: string;
-  profile_img: string;
-  createdAt: string;
-  id: number;
-};
-
-const tempQuestionList: TempQuestionItem[] = [
-  {
-    feedback: 'DONE',
-    title: '질문제목 1',
-    author: '김지수',
-    profile_img: '',
-    createdAt: '2025-10-15T15:07:40.157Z',
-    id: 1,
-  },
-  {
-    feedback: 'DONE',
-    title: '질문제목 2',
-    author: '박서준',
-    profile_img: '',
-    createdAt: '2025-10-16T01:12:03.000Z',
-    id: 2,
-  },
-  {
-    feedback: 'DONE',
-    title: '질문제목 3',
-    author: '이예린',
-    profile_img: '',
-    createdAt: '2025-10-14T10:45:20.500Z',
-    id: 3,
-  },
-  {
-    feedback: 'PENDING',
-    title: '질문제목 4',
-    author: '최민수',
-    profile_img: '',
-    createdAt: '2025-10-13T22:30:11.120Z',
-    id: 4,
-  },
-  {
-    feedback: 'DONE',
-    title: '질문제목 5',
-    author: '정하늘',
-    profile_img: '',
-    createdAt: '2025-10-12T08:05:55.321Z',
-    id: 5,
-  },
-  {
-    feedback: 'PENDING',
-    title: '질문제목 6',
-    author: '오윤아',
-    profile_img: '',
-    createdAt: '2025-10-16T05:20:00.000Z',
-    id: 6,
-  },
-  {
-    feedback: 'DONE',
-    title: '질문제목 7',
-    author: '한도윤',
-    profile_img: '',
-    createdAt: '2025-10-11T16:18:42.777Z',
-    id: 7,
-  },
-];
+import { tempQuestionList } from '../../constants';
 
 export default function QuestionList() {
   // TODO: ListItem으로 변경 필요

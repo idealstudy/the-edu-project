@@ -63,6 +63,7 @@ export const Header = () => {
               height={48}
               className="desktop:flex mr-4 hidden cursor-pointer rounded-full"
             />
+            {/* TODO: studyrooms route를 dashboard로 url로 옮기기 */}
             <Link
               href="/studyrooms/1/studynotes"
               className="mx-2 text-white"

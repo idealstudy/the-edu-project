@@ -13,3 +13,12 @@ export interface PageableList {
   limit: LimitNumber;
   page: number;
 }
+
+export type TempQuestionItem = {
+  feedback: 'DONE' | 'PENDING';
+  title: string;
+  author: string;
+  profile_img: string;
+  createdAt: string;
+  id: number;
+};

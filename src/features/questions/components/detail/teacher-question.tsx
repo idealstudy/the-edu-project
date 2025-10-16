@@ -42,7 +42,7 @@ export default function TeacherQuestionSession() {
       <p className="font-headline1-heading whitespace-pre-wrap">
         {'학생들이 피드백을 기다리고 있어요.\n답변을 남겨주세요!'}
       </p>
-      {/* TODO: 질문 목록 */}
+      {/* TODO: 질문 목록 API 연동*/}
       <StudyRoomQuestionDetailLayout
         search={search}
         filter={filter}

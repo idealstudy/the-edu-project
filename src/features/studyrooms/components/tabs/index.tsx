@@ -14,12 +14,7 @@ type Props = {
   mode: 'teacher' | 'student';
 };
 
-export const StudyRoomTabs = ({
-  value,
-  onChange,
-  mode,
-  studyRoomId,
-}: Props) => {
+export const StudyRoomTabs = ({ value, onChange, mode }: Props) => {
   return (
     <div>
       <Tabs
@@ -54,9 +49,7 @@ export const StudyRoomTabs = ({
           <Tabs.Content value="3">
             {/* TODO: 선생님/학생/부모님 역할에 따른 다른 컴포넌트 표시 */}
             {mode === 'teacher' && <TeacherQuestionSession />}
-            {mode === 'student' && (
-              <StudentQuestionSession studyRoomId={studyRoomId} />
-            )}
+            {mode === 'student' && <StudentQuestionSession />}
           </Tabs.Content>
         </div>
       </Tabs>
