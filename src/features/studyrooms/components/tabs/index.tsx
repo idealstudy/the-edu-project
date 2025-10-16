@@ -53,7 +53,6 @@ export const StudyRoomTabs = ({
             <p>학생</p>
           </Tabs.Content>
           <Tabs.Content value="3">
-            {/* TODO: 선생님/학생/부모님 역할에 따른 다른 컴포넌트 표시 */}
             {mode === 'ROLE_TEACHER' && (
               <TeacherQuestionSession studyRoomId={studyRoomId} />
             )}
