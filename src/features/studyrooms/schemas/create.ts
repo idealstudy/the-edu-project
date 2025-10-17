@@ -41,10 +41,6 @@ export const CreateStudyRoomSchema = z.object({
       },
       { message: '학년 범위가 올바르지 않습니다.', path: ['grade'] }
     ),
-  emails: z.preprocess(
-    (v) => (typeof v === 'string' && v.trim() === '' ? undefined : v),
-    z.string().email('올바른 이메일을 입력해주세요.').optional()
-  ),
 });
 
 export type StudyRoomFormValues = z.infer<typeof CreateStudyRoomSchema>;

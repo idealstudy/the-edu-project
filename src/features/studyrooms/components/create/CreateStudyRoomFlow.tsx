@@ -8,7 +8,6 @@ import { useRouter } from 'next/navigation';
 import { Form } from '@/components/ui/form';
 import ProgressIndicator from '@/features/studyrooms/components/create/ProgressIndicator';
 import StepOne from '@/features/studyrooms/components/create/StepOne';
-import StepThree from '@/features/studyrooms/components/create/StepThree';
 import StepTwo from '@/features/studyrooms/components/create/StepTwo';
 import { useStepValidate } from '@/features/studyrooms/hooks/useStepValidate';
 import {
@@ -23,13 +22,12 @@ import {
 import { useCreateStudyRoomMutation } from '@/features/studyrooms/services/query';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-export const ORDER = ['basic', 'profile', 'invite'] as const;
+export const ORDER = ['basic', 'profile'] as const;
 export type Step = (typeof ORDER)[number];
 
 /**
  * - basic : 스터디룸의 메타데이터
  * - profile : 스터디룸이 어떤 수업을 위한 것인지 설명하는 교육 프로필
- * - invite: 참여자
  **/
 export const fieldsPerStep: Record<Step, FieldPath<StudyRoomFormValues>[]> = {
   basic: ['name', 'visibility', 'description'],
@@ -40,7 +38,6 @@ export const fieldsPerStep: Record<Step, FieldPath<StudyRoomFormValues>[]> = {
     'schoolInfo.schoolLevel',
     'schoolInfo.grade',
   ],
-  invite: ['emails'],
 };
 
 export default function CreateStudyRoomFlow() {
@@ -88,7 +85,7 @@ export default function CreateStudyRoomFlow() {
 
   const onSubmit = (data: StudyRoomFormValues) => {
     mutate(data, {
-      onSuccess: () => router.push('/dashboard'),
+      onSuccess: (data) => router.push(`/studyrooms/${data.id}/invite-member`),
     });
   };
 
@@ -115,13 +112,8 @@ export default function CreateStudyRoomFlow() {
               disabled={!isStepValid}
             />
           )}
-          {step === 'profile' && (
-            <StepTwo
-              onNext={handleNext}
-              disabled={!isStepValid}
-            />
-          )}
-          {step === 'invite' && <StepThree disabled={isPending} />}
+          {step === 'profile' && <StepTwo disabled={isPending} />}
+          {/*{step === 'invite' && <StepThree disabled={isPending} />}*/}
         </Form>
       </FormProvider>
     </section>

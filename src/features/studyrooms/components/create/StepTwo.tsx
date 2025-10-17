@@ -9,7 +9,6 @@ import { RadioCard } from '@/components/ui/radio-card';
 import { RadioGroup } from '@/components/ui/radio-group';
 import { Select } from '@/components/ui/select';
 import step2 from '@/features/studyrooms/data/step2.json';
-import { CreateStepForm } from '@/features/studyrooms/types';
 
 type Base = {
   id: string;
@@ -46,7 +45,7 @@ type FileSchema = {
 
 const { data } = step2 as FileSchema;
 
-export default function StepTwo({ onNext, disabled }: CreateStepForm) {
+export default function StepTwo({ disabled }: { disabled?: boolean }) {
   const { control, getValues, setValue } = useFormContext();
   const title = getValues('basic.title') ?? '';
   const school = useWatch({ control, name: 'schoolInfo.schoolLevel' });
@@ -172,12 +171,11 @@ export default function StepTwo({ onNext, disabled }: CreateStepForm) {
           작성하신 정보는 더 나은 디에듀 서비스를 제공하는데에 활용됩니다.
         </p>
         <Button
-          type="button"
+          type="submit"
           className="w-48"
-          onClick={onNext}
           disabled={disabled}
         >
-          다음
+          {disabled ? '생성 중...' : '완료'}
         </Button>
       </div>
     </>
