@@ -7,7 +7,11 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
-export default function StudentQuestionSession() {
+type Props = {
+  studyRoomId: number;
+};
+
+export default function StudentQuestionSession({ studyRoomId }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -15,11 +19,10 @@ export default function StudentQuestionSession() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     const value = inputRef.current?.value.trim() ?? '';
-    if (!value) return;
-    localStorage.setItem('studynote-title', value);
+    if (value) sessionStorage.setItem('qna-title', value);
     try {
       setIsLoading(true);
-      router.push('/studynotes/new');
+      router.push(`/studyrooms/${studyRoomId}/qna/write`);
     } finally {
       if (inputRef.current) {
         inputRef.current.value = '';

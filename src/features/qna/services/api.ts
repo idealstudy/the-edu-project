@@ -3,6 +3,15 @@ import { CommonResponse, Pageable, PaginationMeta, apiClient } from '@/lib/api';
 import { QnAListItem } from '../type';
 
 // POST /api/study-rooms/{studyRoomId}/qna - 질문 생성
+export const writeQnA = async (args: {
+  studyRoomId: number;
+  title: string;
+  content: string;
+}) => {
+  const data = { title: args.title, content: args.content };
+  await apiClient.post(`/study-rooms/${args.studyRoomId}/qna`, data);
+};
+
 // POST /api/study-rooms/{studyRoomId}/qna/{contextId}/messages - 학생 추가 질문
 // POST /api/teacher/study-rooms/{studyRoomId}/qna/{contextId}/answers - 선생님 답변
 
@@ -16,7 +25,14 @@ export const getStudentQnAList = async (args: {
   const response = (
     await apiClient.get<
       CommonResponse<PaginationMeta & { content: QnAListItem[] }>
-    >(`/study-rooms/${args.studyRoomId}/qna`)
+    >(`/study-rooms/${args.studyRoomId}/qna`, {
+      params: {
+        status: args.status,
+        page: args.pageable.page,
+        size: args.pageable.size,
+        sort: args.sort ?? args.pageable.sort,
+      },
+    })
   ).data;
 
   return response.data;

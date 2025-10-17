@@ -28,7 +28,6 @@ const QuestionListWrapper = ({ studyRoomId, hasBorder }: Props) => {
     sort: [],
   };
 
-  // TODO: 질문 목록 조회
   const { data: qnaList } = useQnAsQuery(role, {
     studyRoomId,
     pageable,

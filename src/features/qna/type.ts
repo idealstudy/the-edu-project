@@ -35,7 +35,6 @@ export interface QuestionDetailResponse {
   regDate: string;
   messages: string[];
 }
-
 export interface QnAListResponse {
   id: number;
   title: string;

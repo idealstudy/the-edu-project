@@ -56,7 +56,9 @@ export const StudyRoomTabs = ({
             {mode === 'ROLE_TEACHER' && (
               <TeacherQuestionSession studyRoomId={studyRoomId} />
             )}
-            {mode === 'ROLE_STUDENT' && <StudentQuestionSession />}
+            {mode === 'ROLE_STUDENT' && (
+              <StudentQuestionSession studyRoomId={studyRoomId} />
+            )}
           </Tabs.Content>
         </div>
       </Tabs>

@@ -1,8 +1,8 @@
 import { Role } from '@/features/auth/type';
 import { Pageable } from '@/lib/api';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { getStudentQnAList, getTeacherQnAList } from './api';
+import { getStudentQnAList, getTeacherQnAList, writeQnA } from './api';
 
 export const useQnAsQuery = (
   role: Role | undefined,
@@ -21,5 +21,15 @@ export const useQnAsQuery = (
       throw new Error('role not ready');
     },
     enabled: role === 'ROLE_TEACHER' || role === 'ROLE_STUDENT',
+  });
+};
+
+export const useWriteQnAMutation = () => {
+  return useMutation({
+    mutationFn: (args: {
+      studyRoomId: number;
+      title: string;
+      content: string;
+    }) => writeQnA(args),
   });
 };
