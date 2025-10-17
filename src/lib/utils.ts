@@ -61,3 +61,51 @@ export const formatMMDDWeekday = (date: Date | string): string => {
   const weekday = ['일', '월', '화', '수', '목', '금', '토'];
   return `${koreanTime.getMonth() + 1}/${koreanTime.getDate()} ${weekday[koreanTime.getDay()]}`;
 };
+
+type TipTapNode = {
+  type?: string;
+  text?: string;
+  content?: TipTapNode[];
+};
+
+type TipTapDoc = {
+  type: 'doc';
+  content?: TipTapNode[];
+};
+
+function isDoc(v: unknown): v is TipTapDoc {
+  return (
+    !!v && typeof v === 'object' && (v as { type?: string }).type === 'doc'
+  );
+}
+
+function collectText(nodes?: TipTapNode[]): string {
+  if (!Array.isArray(nodes)) return '';
+  let acc = '';
+  for (const n of nodes) {
+    if (n.type === 'text' && typeof n.text === 'string') acc += n.text;
+    if (Array.isArray(n.content)) acc += collectText(n.content);
+  }
+  return acc;
+}
+
+export function extractText(
+  input: string,
+  opts?: { stripTrailingPunct?: boolean }
+): string {
+  try {
+    const parsed: unknown = JSON.parse(input);
+    if (!isDoc(parsed)) return clean(input, opts?.stripTrailingPunct);
+
+    const out = collectText(parsed.content);
+    return clean(out, opts?.stripTrailingPunct);
+  } catch {
+    return clean(input, opts?.stripTrailingPunct);
+  }
+
+  function clean(s: string, strip?: boolean) {
+    const trimmed = (s ?? '').trim();
+    if (!strip) return trimmed;
+    return trimmed.replace(/[\s.!?]+$/u, '');
+  }
+}

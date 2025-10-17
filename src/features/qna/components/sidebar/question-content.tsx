@@ -5,7 +5,8 @@ import { useState } from 'react';
 import Image from 'next/image';
 
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
-import { formatMMDDWeekday } from '@/lib/utils';
+import { useRole } from '@/hooks/use-role';
+import { extractText, getRelativeTimeString } from '@/lib/utils';
 
 type Props = {
   content: string;
@@ -15,6 +16,7 @@ type Props = {
 
 const QuestionContent = ({ content, authorName, regDate }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { role } = useRole();
 
   return (
     <div className="border-line-line1 flex flex-col gap-5 rounded-xl border bg-white p-10">
@@ -23,36 +25,39 @@ const QuestionContent = ({ content, authorName, regDate }: Props) => {
           <div className="bg-gray-scale-gray-10 h-10 w-10 rounded-full" />
           <span className="font-body2-heading">{authorName}</span>
         </div>
-        {/* TODO: 질문 공용 DropDown으로 리팩토링 */}
-        <DropdownMenu
-          open={isOpen}
-          onOpenChange={setIsOpen}
-        >
-          <DropdownMenu.Trigger className="flex size-8 cursor-pointer items-center justify-center">
-            <Image
-              src="/studynotes/gray-kebab.svg"
-              width={24}
-              height={24}
-              alt="study-notes"
-              className="cursor-pointer"
-            />
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Content className="flex min-w-[110px] flex-col items-stretch">
-            <DropdownMenu.Item className="justify-center">
-              수정
-            </DropdownMenu.Item>
-            <DropdownMenu.Item
-              className="justify-center"
-              variant="danger"
-            >
-              삭제
-            </DropdownMenu.Item>
-          </DropdownMenu.Content>
-        </DropdownMenu>
+        {role === 'ROLE_STUDENT' && (
+          <DropdownMenu
+            open={isOpen}
+            onOpenChange={setIsOpen}
+          >
+            <DropdownMenu.Trigger className="flex size-8 cursor-pointer items-center justify-center">
+              <Image
+                src="/studynotes/gray-kebab.svg"
+                width={24}
+                height={24}
+                alt="study-notes"
+                className="cursor-pointer"
+              />
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content className="flex min-w-[110px] flex-col items-stretch">
+              <DropdownMenu.Item className="justify-center">
+                수정
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                className="justify-center"
+                variant="danger"
+              >
+                삭제
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu>
+        )}
       </div>
-      <p className="font-body2-normal whitespace-pre-line">{content}</p>
+      <p className="font-body2-normal whitespace-pre-line">
+        {extractText(content)}
+      </p>
       <span className="font-caption-normal text-gray-scale-gray-60 self-end">
-        {formatMMDDWeekday(regDate) + ' 작성'}
+        {getRelativeTimeString(regDate) + ' 작성'}
       </span>
     </div>
   );

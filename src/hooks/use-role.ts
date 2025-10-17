@@ -1,10 +1,19 @@
+import { queryKey } from '@/constants/query-key';
+import { getSession } from '@/features/auth/services/session';
 import { Role } from '@/features/auth/type';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const useRole = () => {
   const qc = useQueryClient();
-  const session = qc.getQueryData<{ auth?: Role }>(['session']);
-  const role = session?.auth;
 
-  return { role };
+  const { data, isLoading } = useQuery({
+    queryKey: queryKey.session,
+    queryFn: getSession,
+    initialData: () => qc.getQueryData<{ auth: Role }>(['session']),
+    staleTime: 0,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: false,
+  });
+
+  return { role: data?.auth, isLoading };
 };

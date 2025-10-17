@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 import { useRole } from '@/hooks/use-role';
-import { formatMMDDWeekday } from '@/lib/utils';
+import { getRelativeTimeString } from '@/lib/utils';
 
 import { QnAListItem } from '../../type';
 import QuestionDropDown from './qna-dropdown';
@@ -59,7 +59,7 @@ export default function QuestionList({ studyRoomId, data }: Props) {
 
                 <div className="flex gap-1">
                   <p className="text-gray-scale-gray-70">
-                    {formatMMDDWeekday(question.regDate)}
+                    {getRelativeTimeString(question.regDate)}
                   </p>
                   {role === 'ROLE_STUDENT' && (
                     <div

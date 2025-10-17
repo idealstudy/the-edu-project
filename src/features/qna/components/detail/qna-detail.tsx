@@ -1,9 +1,12 @@
 'use client';
 
-import { ColumnLayout } from '@/components/layout/column-layout';
+import Image from 'next/image';
 
-import { QuestionDetailResponse } from '../../type';
-import { QuestionLeftSidebar } from '../sidebar/left-side-bar';
+import { ColumnLayout } from '@/components/layout/column-layout';
+import { useRole } from '@/hooks/use-role';
+import { cn } from '@/lib/utils';
+
+import { useQnADetailQuery } from '../../services/query';
 import QuestionAnswer from '../sidebar/question-answer';
 import QuestionContent from '../sidebar/question-content';
 import QuestionEditor from '../sidebar/question-editor';
@@ -13,36 +16,71 @@ type Props = {
   contextId: number;
 };
 
-const tempQuestionDetail: QuestionDetailResponse = {
-  id: 90,
-  title: '(예시) 기후변화가 생태계에 미치는 영향은 어떤 방식으로 나타날까요?',
-  status: 'PENDING',
-  authorName: '김지수',
-  content:
-    '선생님, 저는 아직 기획이 뭔지 완전히 모르겠어요. 자꾸만 기능 정리하다가 길을 잃고, 와이어프레임 만들다 보면 그냥 화면 꾸미기 같기도 하고요. 그래서 궁금해졌어요. “좋은 기획자”는 도대체 어떤 사람일까요? 단순히 아이디어를 많이 내는 사람이 좋은 기획자인 건지, 아니면 문서 정리를 잘하는 사람이 그런 건지 잘 모르겠어요. 선생님이 생각하는 좋은 기획자의 기준을 듣고 싶습니다.',
-  regDate: '2025-10-11T16:18:42.777Z',
-  messages: ['답변 1', '답변 2'],
+const statusMessage = {
+  PENDING: '피드백 대기중',
+  COMPLETED: '피드백 완료',
 };
 
-export function QuestionDetail({}: Props) {
-  // TODO: API로 질문 가져오기
-  // 받아온 데이터만 하위 컴포넌트로 전달
+export function QuestionDetail({ studyRoomId, contextId }: Props) {
+  const { role } = useRole();
+  const { data: qnaDetail, isPending } = useQnADetailQuery(role, {
+    studyRoomId,
+    contextId,
+  });
+
+  if (isPending) return;
 
   return (
     <>
       <ColumnLayout.Left className="rounded-[12px] bg-white">
-        <QuestionLeftSidebar
-          status={tempQuestionDetail.status}
-          title={tempQuestionDetail.title}
-        />
+        <div className="border-line-line1 flex flex-col gap-5 rounded-xl border bg-white p-10">
+          <span
+            className={cn(
+              'font-body1-normal',
+              qnaDetail?.status === 'PENDING'
+                ? 'text-orange-scale-orange-50'
+                : 'text-gray-scale-gray-60'
+            )}
+          >
+            {qnaDetail && statusMessage[qnaDetail?.status]}
+          </span>
+          <h3 className="font-headline1-heading">{qnaDetail?.title}</h3>
+          <hr className="text-gray-scale-gray-10" />
+          <div className="font-label-normal flex cursor-default flex-col gap-2">
+            <div className="bg-gray-scale-gray-1 text-gray-scale-gray-70 flex w-fit items-center gap-1 rounded-sm px-2 py-1">
+              <Image
+                src="/qna/lock.svg"
+                width={14}
+                height={14}
+                alt="study-notes"
+                className="h-[14px] w-[14px]"
+              />
+              <span>공개범위</span>
+            </div>
+            <span>보호자 공개</span>
+          </div>
+        </div>
       </ColumnLayout.Left>
       <ColumnLayout.Right className="desktop:min-w-[740px] flex h-[400px] w-full flex-col gap-3 rounded-[12px]">
-        <QuestionContent
-          content={tempQuestionDetail.content}
-          authorName={tempQuestionDetail.authorName}
-          regDate={tempQuestionDetail.regDate}
-        />
-        <QuestionAnswer />
+        {qnaDetail?.messages.map((msg) => {
+          if (msg.authorType === 'ROLE_TEACHER')
+            return (
+              <QuestionAnswer
+                key={msg.id}
+                content={msg.content}
+                regDate={msg.regDate}
+              />
+            );
+          else if (msg.authorType === 'ROLE_STUDENT')
+            return (
+              <QuestionContent
+                key={msg.id}
+                content={msg.content}
+                authorName={msg.authorName}
+                regDate={msg.regDate}
+              />
+            );
+        })}
         <QuestionEditor />
       </ColumnLayout.Right>
     </>

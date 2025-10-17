@@ -1,3 +1,5 @@
+import { Role } from '../auth/type';
+
 export type SortKey = 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
 
 export type LimitNumber = 20 | 30;
@@ -17,15 +19,6 @@ export interface QnAListItem {
   messages: string[];
 }
 
-export interface QuestionDetailResponse {
-  id: number;
-  title: string;
-  status: QnAStatus;
-  authorName: string;
-  content: string;
-  regDate: string;
-  messages: string[];
-}
 export interface QnAListResponse {
   id: number;
   title: string;
@@ -34,4 +27,22 @@ export interface QnAListResponse {
   authorName: string;
   regDate: string;
   read: boolean;
+}
+
+export interface QnADetailResponse {
+  id: number;
+  title: string;
+  status: QnAStatus;
+  viewCount: number;
+  authorName: string;
+  regDate: string;
+  messages: QnAMessage[];
+}
+
+export interface QnAMessage {
+  id: number;
+  content: string;
+  authorType: Role;
+  authorName: string;
+  regDate: string;
 }
