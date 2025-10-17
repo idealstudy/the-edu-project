@@ -47,4 +47,28 @@ export const QnaACreateFormSchema = z.object({
   // isGuardianVisible: z.boolean().optional(),
 });
 
+export const QnAMessageFormSchema = z.object({
+  studyRoomId: z.number({ required_error: '스터디룸을 선택해 주세요!' }),
+  contextId: z.number({ required_error: '질문을 선택해 주세요' }),
+  content: z.custom<JSONContent>().superRefine((val, ctx) => {
+    const plainText = extractTextFromTiptapJSON(val);
+    const length = plainText.trim().length;
+
+    if (length < 10) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: '내용은 최소 10자 이상이어야 합니다.',
+      });
+    }
+
+    if (length > 3000) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: '3000자 이상은 입력하실 수 없습니다.',
+      });
+    }
+  }),
+});
+
 export type QnACreateForm = z.infer<typeof QnaACreateFormSchema>;
+export type QnAMessageForm = z.infer<typeof QnAMessageFormSchema>;

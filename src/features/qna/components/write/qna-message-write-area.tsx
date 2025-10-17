@@ -3,36 +3,35 @@
 import { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { ColumnLayout } from '@/components/layout/column-layout';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { ROUTE } from '@/constants/route';
 import { TextEditor } from '@/features/editor/components/text-editor';
+import { useRole } from '@/hooks/use-role';
 import { JSONContent } from '@tiptap/react';
 
-import { QnACreateForm } from '../../schema/create';
-import { useWriteQnAMutation } from '../../services/query';
-import { RequiredMark } from './qna-form-provider';
+import { QnAMessageForm } from '../../schema/create';
+import { useWriteQnAMessageMutation } from '../../services/query';
 
 type Props = {
   studyRoomId: number;
+  contextId: number;
 };
 
-const WriteArea = ({ studyRoomId }: Props) => {
+const WriteArea = ({ studyRoomId, contextId }: Props) => {
+  const { role } = useRole();
   const router = useRouter();
 
-  const { mutate, isPending } = useWriteQnAMutation();
+  const { mutate, isPending } = useWriteQnAMessageMutation(role);
   const {
     handleSubmit,
-    register,
     setValue,
     control,
     formState: { errors, isValid, isSubmitting },
-  } = useFormContext<QnACreateForm>();
+  } = useFormContext<QnAMessageForm>();
 
   useEffect(() => {
     if (studyRoomId != null) {
@@ -41,19 +40,26 @@ const WriteArea = ({ studyRoomId }: Props) => {
         shouldValidate: true,
       });
     }
-  }, [studyRoomId, setValue]);
+
+    if (contextId != null) {
+      setValue('contextId', contextId, {
+        shouldDirty: false,
+        shouldValidate: true,
+      });
+    }
+  }, [studyRoomId, contextId, setValue]);
 
   const isButtonDisabled = !isValid || isPending || isSubmitting;
 
   const onSubmit = (data: {
     studyRoomId: number;
-    title: string;
+    contextId: number;
     content: JSONContent;
   }) => {
     mutate(
       {
         studyRoomId,
-        title: data.title,
+        contextId,
         content: JSON.stringify(data.content),
       },
       {
@@ -66,48 +72,10 @@ const WriteArea = ({ studyRoomId }: Props) => {
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
-      <ColumnLayout.Right className="desktop:min-w-[740px] border-line-line1 h-fit w-full rounded-xl border bg-white px-8 py-10">
-        <div className="flex w-full justify-between">
-          <span>
-            <div className="text-key-color-primary font-semibold">
-              질문 작성
-            </div>
-            <h1 className="mt-2 text-[32px] font-bold">
-              어떤 궁금증이 <br /> 생겼나요?
-            </h1>
-          </span>
-          <Image
-            src="/studyroom/study-room-write-header.png"
-            alt="header-image"
-            width={71}
-            height={151}
-          />
-        </div>
-        <div className="space-y-8">
-          <Form.Item error={!!errors.title}>
-            <Form.Label>
-              제목
-              <RequiredMark />
-            </Form.Label>
-            <Form.Control>
-              <Input
-                {...register('title')}
-                type="text"
-                placeholder="질문의 제목을 입력해주세요."
-                disabled={isPending}
-              />
-            </Form.Control>
-            <Form.ErrorMessage className="text-system-warning text-sm">
-              {errors.title?.message}
-            </Form.ErrorMessage>
-          </Form.Item>
-
+      <ColumnLayout.Right className="desktop:min-w-[740px] h-fit w-full">
+        <div className="space-y-5">
           {/* 내용 */}
           <Form.Item error={!!errors.content}>
-            <Form.Label>
-              내용
-              <RequiredMark />
-            </Form.Label>
             <Form.Control>
               <Controller
                 name="content"
@@ -117,7 +85,7 @@ const WriteArea = ({ studyRoomId }: Props) => {
                     <TextEditor
                       value={field}
                       onChange={field.onChange}
-                      placeholder="질문 내용을 입력해주세요..."
+                      placeholder="추가로 궁금한 점을 적어주세요..."
                     />
                   );
                 }}

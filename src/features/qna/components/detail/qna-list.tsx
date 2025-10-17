@@ -21,7 +21,6 @@ export default function QuestionList({ studyRoomId, data }: Props) {
     setOpen(open === id ? 0 : id);
   };
 
-  // TODO: ListItem (공용 컴포넌트) 으로 추후 변경
   return (
     <div>
       {data.length !== 0 ? (

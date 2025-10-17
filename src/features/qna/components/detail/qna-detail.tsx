@@ -9,7 +9,8 @@ import { cn } from '@/lib/utils';
 import { useQnADetailQuery } from '../../services/query';
 import QuestionAnswer from '../sidebar/question-answer';
 import QuestionContent from '../sidebar/question-content';
-import QuestionEditor from '../sidebar/question-editor';
+import QnAMessageFormProvider from '../write/qna-message-provider';
+import WriteArea from '../write/qna-message-write-area';
 
 type Props = {
   studyRoomId: number;
@@ -81,7 +82,12 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
               />
             );
         })}
-        <QuestionEditor />
+        <QnAMessageFormProvider>
+          <WriteArea
+            studyRoomId={studyRoomId}
+            contextId={contextId}
+          />
+        </QnAMessageFormProvider>
       </ColumnLayout.Right>
     </>
   );

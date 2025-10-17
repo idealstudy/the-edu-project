@@ -13,7 +13,30 @@ export const writeQnA = async (args: {
 };
 
 // POST /api/study-rooms/{studyRoomId}/qna/{contextId}/messages - 학생 추가 질문
+export const writeStudentQnAMessage = async (args: {
+  studyRoomId: number;
+  contextId: number;
+  content: string;
+}) => {
+  await apiClient.post(
+    `/study-rooms/${args.studyRoomId}/qna/${args.contextId}/messages`,
+    { content: args.content }
+  );
+};
+
 // POST /api/teacher/study-rooms/{studyRoomId}/qna/{contextId}/answers - 선생님 답변
+export const writeTeacherQnAMessage = async (args: {
+  studyRoomId: number;
+  contextId: number;
+  content: string;
+}) => {
+  await apiClient.post(
+    `/teacher/study-rooms/${args.studyRoomId}/qna/${args.contextId}/answers`,
+    {
+      content: args.content,
+    }
+  );
+};
 
 // GET /api/study-rooms/{studyRoomId}/qna - 학생 QnA 목록
 export const getStudentQnAList = async (args: {

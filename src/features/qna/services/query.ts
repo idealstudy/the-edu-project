@@ -8,6 +8,8 @@ import {
   getTeacherQnADetail,
   getTeacherQnAList,
   writeQnA,
+  writeStudentQnAMessage,
+  writeTeacherQnAMessage,
 } from './api';
 
 export const useQnAsQuery = (
@@ -56,5 +58,19 @@ export const useWriteQnAMutation = () => {
       title: string;
       content: string;
     }) => writeQnA(args),
+  });
+};
+
+export const useWriteQnAMessageMutation = (role: Role | undefined) => {
+  return useMutation({
+    mutationFn: async (args: {
+      studyRoomId: number;
+      contextId: number;
+      content: string;
+    }) => {
+      if (role === 'ROLE_TEACHER') return writeTeacherQnAMessage(args);
+      if (role === 'ROLE_STUDENT') return writeStudentQnAMessage(args);
+      throw new Error('role not ready');
+    },
   });
 };
