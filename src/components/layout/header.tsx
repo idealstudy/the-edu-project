@@ -5,9 +5,11 @@ import Link from 'next/link';
 
 import { ROUTE } from '@/constants/route';
 import { useSession } from '@/features/auth/hooks/use-session';
+import { useRole } from '@/hooks/use-role';
 
 export const Header = () => {
   const { data: session } = useSession();
+  const { role } = useRole();
 
   const roleMetaMap = {
     ROLE_STUDENT: {
@@ -31,7 +33,7 @@ export const Header = () => {
     <header className="h-header-height fixed top-0 right-0 left-0 z-10 flex items-center border-b border-gray-200 bg-[#1A1A1A] px-8">
       <div className="mx-auto flex w-full items-center justify-between">
         <div className="flex items-center gap-2">
-          <Link href={ROUTE.HOME}>
+          <Link href={role === undefined ? ROUTE.HOME : ROUTE.DASHBOARD.HOME}>
             <Image
               src={'/logo.svg'}
               alt="THE EDU 로고"
@@ -46,8 +48,20 @@ export const Header = () => {
             width={44}
             height={20}
           />
+          <Link
+            href={ROUTE.DASHBOARD.HOME}
+            className="mx-2 text-white"
+          >
+            대시보드
+          </Link>
+          <Link
+            href=""
+            className="mx-2 text-white"
+          >
+            공지사항
+          </Link>
         </div>
-        {session && (
+        {role !== undefined && session && (
           <div className="flex items-center">
             <Image
               src={'/img_header_bell.svg'}
@@ -63,18 +77,7 @@ export const Header = () => {
               height={48}
               className="desktop:flex mr-4 hidden cursor-pointer rounded-full"
             />
-            <Link
-              href="/studyrooms/1/studynotes"
-              className="mx-2 text-white"
-            >
-              스터디룸
-            </Link>
-            <Link
-              href="/dashboard/studynote/1"
-              className="mx-2 text-white"
-            >
-              스터디 노트
-            </Link>
+
             <p className="desktop:flex mr-2 hidden items-center gap-2 text-[14px] font-[600] text-white">
               {session.nickname}
             </p>
