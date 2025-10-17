@@ -23,6 +23,15 @@ export type StudyRoom = {
   visibility: 'PUBLIC' | 'PRIVATE';
 };
 
+export type StudentStudyRoom = {
+  id: number;
+  name: string;
+  description: string;
+  teacherId: string;
+  visibility: 'PUBLIC' | 'PRIVATE';
+  numberOfTeachingNotes: number;
+};
+
 // 스터디룸 사용자(학생)초대
 export type Invitation = {
   role: string;

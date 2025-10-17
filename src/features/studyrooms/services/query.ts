@@ -3,8 +3,14 @@ import {
   InvitationQueryKey,
   StudyRoomsGroupQueryKey,
   getSearchInvitationOption,
+  getStudentStudyRoomsOption,
 } from '@/features/studyrooms/services/query-options';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
+// 학생이 스터디룸(목록) 조회
+export const useStudentStudyRoomsQuery = () => {
+  return useQuery(getStudentStudyRoomsOption());
+};
 
 export const useCreateStudyRoomMutation = () => {
   const queryClient = useQueryClient();

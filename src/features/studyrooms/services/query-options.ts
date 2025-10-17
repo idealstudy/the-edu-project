@@ -2,12 +2,19 @@ import { Pageable, PaginationMeta } from '@/lib/api';
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 
 import type { StudyNoteGroup } from '../types';
-import { getStudyNoteGroup, studyroomApi } from './api';
+import { getStudentStudyRooms, getStudyNoteGroup, studyroomApi } from './api';
 
+// 스터디룸 (목록)
+export const StudyRoomsQueryKey = {
+  all: ['studyRooms'],
+};
+
+// 스터디노트 그룹 (목록)
 export const StudyRoomsGroupQueryKey = {
   all: ['studyNoteGroups'],
 };
 
+// 학생 초대
 export const InvitationQueryKey = {
   all: ['invitations'] as const,
   search: (studyRoomId: number, email: string) =>
@@ -42,5 +49,12 @@ export const getSearchInvitationOption = (args: {
   return queryOptions({
     queryKey: [InvitationQueryKey.search, args],
     queryFn: () => studyroomApi.invitations.search(args),
+  });
+};
+
+export const getStudentStudyRoomsOption = () => {
+  return queryOptions({
+    queryKey: [StudyRoomsQueryKey.all],
+    queryFn: getStudentStudyRooms,
   });
 };

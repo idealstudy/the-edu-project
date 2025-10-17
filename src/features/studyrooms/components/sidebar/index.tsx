@@ -12,6 +12,7 @@ import {
   initialDialogState,
 } from '@/features/studyrooms/hooks/useDialogReducer';
 
+import { TabValue } from '../common/constants/tabs';
 import { StudyroomGroups } from './groups/index';
 import { StudyroomSidebarHeader } from './header';
 import { useDeleteStudyRoom } from './services/query';
@@ -21,10 +22,12 @@ export const StudyroomSidebar = ({
   studyRoomId,
   selectedGroupId,
   handleSelectGroupId,
+  currTab,
 }: {
   studyRoomId: number;
   selectedGroupId: number | 'all';
   handleSelectGroupId: (id: number | 'all') => void;
+  currTab: TabValue;
 }) => {
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
   const [roomName, setRoomName] = useState('');
@@ -99,11 +102,14 @@ export const StudyroomSidebar = ({
         {/* TODO: 스터디룸 수업노트, 학생, 질문 카운트 추가 */}
         <StudyStats />
         <StudentInvitation dispatch={dispatch} />
-        <StudyroomGroups
-          studyRoomId={studyRoomId}
-          selectedGroupId={selectedGroupId}
-          handleSelectGroupId={handleSelectGroupId}
-        />
+        {/* 수업노트 탭에서만 보이는 컴포넌트 */}
+        {currTab === '1' && (
+          <StudyroomGroups
+            studyRoomId={studyRoomId}
+            selectedGroupId={selectedGroupId}
+            handleSelectGroupId={handleSelectGroupId}
+          />
+        )}
         {/* TODO: 마지막 활동 시간 추가 */}
         <div className="font-body2-normal text-gray-scale-gray-60 flex items-end justify-end">
           <p className="text-right">마지막 활동 3일전</p>

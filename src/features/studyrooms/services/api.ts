@@ -6,9 +6,21 @@ import {
   ApiResponse,
   Invitation,
   MemberInvitation,
+  StudentStudyRoom,
   StudyNoteGroup,
   StudyRoom,
 } from '../types';
+
+// 학생이 스터디룸 리스트 조회
+export const getStudentStudyRooms = async () => {
+  const response = (
+    await apiClient.get<CommonResponse<StudentStudyRoom[]>>(
+      `/student/study-rooms`
+    )
+  ).data;
+
+  return response.data;
+};
 
 // 수업노트 그룹 조회
 export const getStudyNoteGroup = async (args: {
