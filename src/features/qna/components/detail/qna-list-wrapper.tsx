@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from 'react';
 
+import { Pagination } from '@/components/ui/pagination';
 import { useRole } from '@/hooks/use-role';
 import { Pageable } from '@/lib/api';
 
 import { useQnAsQuery } from '../../services/query';
 import { QnAFilter, SortKey } from '../../type';
-import { StudyRoomQuestionDetailLayout } from '../common/layout';
 import QuestionList from './qna-list';
+import { SearchFilterBar } from './search-filter-bar';
 
 type Props = {
   studyRoomId: number;
@@ -69,20 +70,23 @@ const QuestionListWrapper = ({ studyRoomId, hasBorder }: Props) => {
           : ''
       }
     >
-      <StudyRoomQuestionDetailLayout
-        search={search}
-        filter={filter}
-        sort={sort}
-        onSearch={handleSearch}
-        onSortChange={handleSortChange}
-        onFilterChange={handleFilterChange}
-        page={page}
-      >
-        <QuestionList
-          studyRoomId={studyRoomId}
-          data={qnaList?.content || []}
-        />
-      </StudyRoomQuestionDetailLayout>
+      <div className="flex flex-col items-center gap-6 rounded-[12px]">
+        <div className="flex w-full flex-col gap-3">
+          <SearchFilterBar
+            search={search}
+            filter={filter}
+            sort={sort}
+            onSearch={handleSearch}
+            onSortChange={handleSortChange}
+            onFilterChange={handleFilterChange}
+          />
+          <QuestionList
+            studyRoomId={studyRoomId}
+            data={qnaList?.content || []}
+          />
+        </div>
+        <Pagination {...page} />
+      </div>
     </div>
   );
 };

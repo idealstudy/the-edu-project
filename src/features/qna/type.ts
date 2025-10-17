@@ -4,15 +4,6 @@ export type LimitNumber = 20 | 30;
 
 export type QnAFilter = 'DEFAULT' | 'PENDING' | 'COMPLETED';
 
-export interface TempQnAItem {
-  feedback: QnAStatus;
-  title: string;
-  author: string;
-  profile_img: string;
-  createdAt: string;
-  id: number;
-}
-
 export type QnAStatus = 'PENDING' | 'COMPLETED';
 
 export interface QnAListItem {
