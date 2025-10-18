@@ -85,7 +85,8 @@ export default function CreateStudyRoomFlow() {
 
   const onSubmit = (data: StudyRoomFormValues) => {
     mutate(data, {
-      onSuccess: (data) => router.push(`/studyrooms/${data.id}/invite-member`),
+      onSuccess: (data) =>
+        router.replace(`/studyrooms/${data.id}/invite-member`),
     });
   };
 
