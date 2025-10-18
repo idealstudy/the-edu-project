@@ -9,7 +9,6 @@ import { RadioCard } from '@/components/ui/radio-card';
 import { RadioGroup } from '@/components/ui/radio-group';
 import { Select } from '@/components/ui/select';
 import step2 from '@/features/studyrooms/data/step2.json';
-import { CreateStepForm } from '@/features/studyrooms/types';
 
 type Base = {
   id: string;
@@ -46,7 +45,13 @@ type FileSchema = {
 
 const { data } = step2 as FileSchema;
 
-export default function StepTwo({ onNext, disabled }: CreateStepForm) {
+export default function StepTwo({
+  disabled,
+  onRequestSubmit,
+}: {
+  disabled?: boolean;
+  onRequestSubmit?: () => void;
+}) {
   const { control, getValues, setValue } = useFormContext();
   const title = getValues('basic.title') ?? '';
   const school = useWatch({ control, name: 'schoolInfo.schoolLevel' });
@@ -174,10 +179,10 @@ export default function StepTwo({ onNext, disabled }: CreateStepForm) {
         <Button
           type="button"
           className="w-48"
-          onClick={onNext}
           disabled={disabled}
+          onClick={onRequestSubmit}
         >
-          다음
+          {disabled ? '생성 중...' : '완료'}
         </Button>
       </div>
     </>
