@@ -5,10 +5,15 @@ import { FieldPath, FormProvider, useForm } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
 
+import { ConfirmDialog } from '@/components/dialog/confirm-dialog';
 import { Form } from '@/components/ui/form';
 import ProgressIndicator from '@/features/studyrooms/components/create/ProgressIndicator';
 import StepOne from '@/features/studyrooms/components/create/StepOne';
 import StepTwo from '@/features/studyrooms/components/create/StepTwo';
+import {
+  dialogReducer,
+  initialDialogState,
+} from '@/features/studyrooms/hooks/useDialogReducer';
 import { useStepValidate } from '@/features/studyrooms/hooks/useStepValidate';
 import {
   StepState,
@@ -47,6 +52,11 @@ export default function CreateStudyRoomFlow() {
     createStepState([...ORDER] as Step[])
   );
 
+  const [dialog, dialogDispatch] = React.useReducer(
+    dialogReducer,
+    initialDialogState
+  );
+
   const getCurrentStep = (s: StepState) => s.order[s.index];
   const step = getCurrentStep(state)!;
 
@@ -69,6 +79,7 @@ export default function CreateStudyRoomFlow() {
   });
 
   const { isStepValid } = useStepValidate(methods, step);
+  const { mutate, isPending } = useCreateStudyRoomMutation();
 
   const handleNext = async () => {
     const names = fieldsPerStep[step];
@@ -81,14 +92,25 @@ export default function CreateStudyRoomFlow() {
 
   const handleIndicatorMove = (to: number) => dispatch({ type: 'GO', to });
 
-  const { mutate, isPending } = useCreateStudyRoomMutation();
+  const buildNextRoute = (id: number, condition: 'invite' | 'dashboard') =>
+    condition === 'invite'
+      ? `/studyrooms/${id}/invite-member`
+      : `/studyrooms/${id}/studynotes`;
 
-  const onSubmit = (data: StudyRoomFormValues) => {
-    mutate(data, {
-      onSuccess: (data) =>
-        router.replace(`/studyrooms/${data.id}/invite-member`),
-    });
-  };
+  const handleSubmitCondition = React.useCallback(
+    (condition: 'invite' | 'dashboard') => {
+      if (isPending) return;
+      methods.handleSubmit((data: StudyRoomFormValues) => {
+        mutate(data, {
+          onSuccess: (result) => {
+            // 스펙상 id는 항상 옴 (fallback은 의도적으로 생략)
+            router.replace(buildNextRoute(result.id, condition));
+          },
+        });
+      })();
+    },
+    [isPending, methods, mutate, router]
+  );
 
   return (
     <section className="flex flex-col">
@@ -104,7 +126,7 @@ export default function CreateStudyRoomFlow() {
       </div>
       <FormProvider {...methods}>
         <Form
-          onSubmit={methods.handleSubmit(onSubmit)}
+          onSubmit={(e) => e.preventDefault()}
           className="mt-12"
         >
           {step === 'basic' && (
@@ -113,10 +135,37 @@ export default function CreateStudyRoomFlow() {
               disabled={!isStepValid}
             />
           )}
-          {step === 'profile' && <StepTwo disabled={isPending} />}
-          {/*{step === 'invite' && <StepThree disabled={isPending} />}*/}
+          {step === 'profile' && (
+            <StepTwo
+              disabled={isPending}
+              onRequestSubmit={() =>
+                dialogDispatch({
+                  type: 'OPEN',
+                  scope: 'studyroom',
+                  kind: 'onConfirm',
+                })
+              }
+            />
+          )}
         </Form>
       </FormProvider>
+
+      {dialog.status === 'open' &&
+        dialog.scope === 'studyroom' &&
+        dialog.kind === 'onConfirm' && (
+          <ConfirmDialog
+            open
+            dispatch={dialogDispatch}
+            variant="confirm-cancel"
+            title="학생을 지금 초대하시겠어요?"
+            description="지금 초대하면 초대 화면으로, 나중에 하시면 대시보드로 이동합니다."
+            confirmText="지금 초대하기"
+            cancelText="나중에 할게요"
+            pending={isPending}
+            onConfirm={() => handleSubmitCondition('invite')}
+            onCancel={() => handleSubmitCondition('dashboard')}
+          />
+        )}
     </section>
   );
 }

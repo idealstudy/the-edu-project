@@ -45,7 +45,13 @@ type FileSchema = {
 
 const { data } = step2 as FileSchema;
 
-export default function StepTwo({ disabled }: { disabled?: boolean }) {
+export default function StepTwo({
+  disabled,
+  onRequestSubmit,
+}: {
+  disabled?: boolean;
+  onRequestSubmit?: () => void;
+}) {
   const { control, getValues, setValue } = useFormContext();
   const title = getValues('basic.title') ?? '';
   const school = useWatch({ control, name: 'schoolInfo.schoolLevel' });
@@ -171,9 +177,10 @@ export default function StepTwo({ disabled }: { disabled?: boolean }) {
           작성하신 정보는 더 나은 디에듀 서비스를 제공하는데에 활용됩니다.
         </p>
         <Button
-          type="submit"
+          type="button"
           className="w-48"
           disabled={disabled}
+          onClick={onRequestSubmit}
         >
           {disabled ? '생성 중...' : '완료'}
         </Button>
