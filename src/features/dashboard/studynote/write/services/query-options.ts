@@ -39,9 +39,9 @@ export const getConnectMembersOption = (roomId: number) => {
     queryKey: StudyNoteWriteQueryKey.students(roomId),
     queryFn: () => getConnectMembers(roomId),
     select(data) {
-      const flatMembers = data.members.flatMap(
-        ({ studentInfo, parentInfo }) => [studentInfo, parentInfo]
-      );
+      const flatMembers = data.members
+        .flatMap(({ studentInfo, parentInfo }) => [studentInfo, parentInfo])
+        .filter((item) => item !== null);
       return flatMembers;
     },
     enabled: !!roomId,

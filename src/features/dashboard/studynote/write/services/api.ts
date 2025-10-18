@@ -21,7 +21,7 @@ export const getConnectMembers = async (roomId: number) => {
         PaginationMeta & {
           members: {
             studentInfo: ConnectedMember;
-            parentInfo: ConnectedMember;
+            parentInfo: ConnectedMember | null;
           }[];
         }
       >
