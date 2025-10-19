@@ -6,10 +6,10 @@ export const ROUTE = {
     HOME: '/dashboard',
     STUDYROOM: {
       DETAIL: (id: number) => `/studyrooms/${id}/studynotes`,
-      CREATE: '/studyrooms/create',
+      CREATE: '/studyrooms/write',
     },
     STUDYNOTE: {
-      CREATE: '/dashboard/studynote/create',
+      CREATE: '/dashboard/studynote/write',
       DETAIL: (id: number) => `/dashboard/studynote/${id}`,
     },
     QUESTIONS: {
