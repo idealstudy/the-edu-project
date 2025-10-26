@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import { Form } from '@/components/ui/form';
@@ -20,11 +21,20 @@ const MetaSection = () => {
     control,
     watch,
     formState: { errors },
+    setValue,
   } = useFormContext<StudyNoteForm>();
 
   const roomId = watch('studyRoomId');
   const { data: members } = useConnectMembers(roomId);
   const { isPending } = useWriteStudyNoteMutation();
+
+  useEffect(() => {
+    const tempTitle = sessionStorage.getItem('studynote-title');
+    if (tempTitle) {
+      setValue('title', tempTitle);
+    }
+    sessionStorage.removeItem('studynote-title');
+  });
 
   return (
     <>
