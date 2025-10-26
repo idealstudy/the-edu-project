@@ -15,8 +15,7 @@ export const StudyNoteSearch = () => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     const value = inputRef.current?.value.trim() ?? '';
-    if (!value) return;
-    localStorage.setItem('studynote-title', value);
+    if (value) sessionStorage.setItem('studynote-title', value);
     try {
       setIsLoading(true);
       router.push('/dashboard/studynote/write');
