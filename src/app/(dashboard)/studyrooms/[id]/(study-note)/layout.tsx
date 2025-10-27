@@ -43,7 +43,7 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
             studyRoomId={studyRoomId}
             path={segment!}
           />
-          <div className="border-line-line1 flex flex-col gap-8 rounded-tr-[12px] rounded-b-[12px] border bg-white p-8">
+          <div className="border-line-line1 flex flex-col gap-9 rounded-tr-[12px] rounded-b-[12px] border bg-white p-8">
             <StudyNoteTabShell
               mode={role}
               path={segment!}

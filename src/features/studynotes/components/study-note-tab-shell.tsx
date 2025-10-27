@@ -13,7 +13,15 @@ const StudyNoteTabShell = ({ mode, path }: Props) => {
     <>
       {path === 'note' && mode === 'ROLE_TEACHER' && <StudyNoteSearch />}
       {path === 'note' && mode === 'ROLE_STUDENT' && (
-        <div>학생 수업노트 목록 조회 리스트 위치</div>
+        <>
+          <p className="font-headline1-heading whitespace-pre-wrap">
+            {'지난 수업 내용을 확인해볼까요?'}
+          </p>
+          {/* <div>학생 수업노트 목록 조회 리스트 위치</div> */}
+          {/* <StudyNotes
+            selectedGroupId="all"
+          /> */}
+        </>
       )}
       {/*{path === 'qna' && mode === 'ROLE_TEACHER' && (
         <TeacherQuestionSession studyRoomId={studyRoomId} />
