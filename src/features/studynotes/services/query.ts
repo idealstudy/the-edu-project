@@ -5,6 +5,7 @@ import { deleteStudyNoteToGroup, updateStudyNoteGroup } from './api';
 import { updateStudyNote } from './api';
 import {
   StudyNoteQueryKey,
+  getStudyNoteMembersOption,
   getStudyNotesByGroupIdOption,
   getStudyNotesOption,
 } from './query-options';
@@ -104,4 +105,12 @@ export const useUpdateStudyNote = () => {
       });
     },
   });
+};
+
+export const useGetStudyNoteMembers = (args: {
+  studyRoomId: number;
+  page?: number;
+  size?: number;
+}) => {
+  return useQuery(getStudyNoteMembersOption(args));
 };

@@ -70,7 +70,7 @@ export const createStudyNoteGroup = async (data: {
 // }) => {
 //   const response = (
 //     await apiClient.get<
-//       CommonResponse<PaginationMeta & { content: StudyNote[] }>
+//       CommonResponse<PaginationMeta & { content: StudyNoteSearch[] }>
 //     >(
 //       `/teacher/study-rooms/${roomId}/teaching-notes?${objectToQueryString(pageble)}`
 //     )
