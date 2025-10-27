@@ -22,7 +22,7 @@ export default function QuestionList({ studyRoomId, data }: Props) {
   };
 
   return (
-    <div>
+    <div className="gap-2">
       {data.length !== 0 ? (
         data.map((question) => {
           return (
@@ -77,11 +77,18 @@ export default function QuestionList({ studyRoomId, data }: Props) {
             </Link>
           );
         })
-      ) : (
+      ) : data.length === 0 ? (
         // TODO: 질문 없을때 예외 처리
         <div className="mt-2 w-full text-center">
           <span className="text-gray-scale-gray-20">
             작성된 질문이 없습니다
+          </span>
+        </div>
+      ) : (
+        // TODO: 로딩 UI 필요
+        <div className="mt-2 w-full text-center">
+          <span className="text-gray-scale-gray-20">
+            질문을 불러오고 있습니다
           </span>
         </div>
       )}
