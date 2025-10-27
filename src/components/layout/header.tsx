@@ -65,6 +65,9 @@ export const Header = () => {
               <Link
                 href=""
                 className="mx-2 text-white"
+                onClick={() => {
+                  alert('서비스 준비 중입니다');
+                }}
               >
                 공지사항
               </Link>
