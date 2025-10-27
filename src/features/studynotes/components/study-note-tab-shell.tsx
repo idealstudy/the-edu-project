@@ -1,0 +1,28 @@
+import React from 'react';
+
+import { Role } from '@/features/auth/type';
+import StudentQuestionSession from '@/features/qna/components/detail/student-qna-tab';
+import TeacherQuestionSession from '@/features/qna/components/detail/teacher-qna-tab';
+import { StudyNoteSearch } from '@/features/studynotes/components/study-note-search';
+
+type Props = {
+  studyRoomId: number;
+  mode: Role | undefined;
+  path: string;
+};
+
+const StudyNoteTabShell = ({ studyRoomId, mode, path }: Props) => {
+  return (
+    <>
+      {path === 'note' && mode === 'ROLE_TEACHER' && <StudyNoteSearch />}
+      {path === 'qna' && mode === 'ROLE_TEACHER' && (
+        <TeacherQuestionSession studyRoomId={studyRoomId} />
+      )}
+      {path === 'qna' && mode === 'ROLE_STUDENT' && (
+        <StudentQuestionSession studyRoomId={studyRoomId} />
+      )}
+    </>
+  );
+};
+
+export default StudyNoteTabShell;

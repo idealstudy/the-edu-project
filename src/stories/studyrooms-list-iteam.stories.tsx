@@ -64,9 +64,9 @@ type Story = StoryObj<typeof ListItem>;
 
 // 아이콘 매핑 상수
 const ICON_MAPPING = {
-  global: '/studynotes/read-global.svg', // 이 경로가 실제 파일과 일치하는지 확인 필요
-  student: '/studynotes/read-students.svg',
-  secret: '/studynotes/read-secret.svg',
+  global: '/note/read-global.svg', // 이 경로가 실제 파일과 일치하는지 확인 필요
+  student: '/note/read-students.svg',
+  secret: '/note/read-secret.svg',
 } as const;
 
 // 공통 렌더 헬퍼: args를 받아 실제 JSX 슬롯을 만들어 ListItem에 주입
@@ -82,7 +82,7 @@ const renderWithSlots = (args: ListItemStoryArgs) => {
     menuItems,
   } = args;
 
-  const iconSrc = ICON_MAPPING[iconVariant] ?? '/studynotes/read-global.svg';
+  const iconSrc = ICON_MAPPING[iconVariant] ?? '/note/read-global.svg';
 
   const tag = showTag ? (
     <span className="text-gray-scale-gray-60 bg-gray-scale-gray-5 flex h-5 items-center justify-center rounded-[4px] px-2 py-0.5 text-[10px]">
