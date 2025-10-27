@@ -5,6 +5,7 @@ import type {
 } from '@/features/studyrooms/components/studynotes/type';
 import { CommonResponse, PaginationMeta, apiClient } from '@/lib/api';
 
+// 선생님이 스터디노트 목록 조회
 export const getStudyNotes = async (args: {
   studyRoomId: number;
   pageable: StudyNoteGroupPageable;
@@ -25,6 +26,7 @@ export const getStudyNotes = async (args: {
   return response.data;
 };
 
+// 선생님이 스터디노트를 그룹별로 조회
 export const getStudyNotesByGroupId = async (params: {
   studyRoomId: number;
   teachingNoteGroupId: number;
@@ -33,6 +35,49 @@ export const getStudyNotesByGroupId = async (params: {
 }) => {
   const response = await apiClient.get(
     `/teacher/study-rooms/${params.studyRoomId}/teaching-note-groups/${params.teachingNoteGroupId}/teaching-notes`,
+    {
+      params: {
+        page: params.pageable.page,
+        size: params.pageable.size,
+        sortKey: params.pageable.sortKey,
+        // keyword: args.keyword,
+      },
+    }
+  );
+
+  return response.data;
+};
+
+// 학생이 스터디노트 목록 조회
+export const getStudentStudyNotes = async (args: {
+  studyRoomId: number;
+  pageable: StudyNoteGroupPageable;
+  // keyword: string;
+}) => {
+  const response = (
+    await apiClient.get<
+      CommonResponse<PaginationMeta & { content: StudyNote[] }>
+    >(`/student/study-rooms/${args.studyRoomId}/teaching-notes`, {
+      params: {
+        page: args.pageable.page,
+        size: args.pageable.size,
+        sortKey: args.pageable.sortKey,
+        // keyword: args.keyword,
+      },
+    })
+  ).data;
+  return response.data;
+};
+
+// 학생이 스터디노트를 그룹별로 조회
+export const getStudentStudyNotesByGroupId = async (params: {
+  studyRoomId: number;
+  teachingNoteGroupId: number;
+  pageable: StudyNoteGroupPageable;
+  // keyword: string;
+}) => {
+  const response = await apiClient.get(
+    `/student/study-rooms/${params.studyRoomId}/teaching-note-groups/${params.teachingNoteGroupId}/teaching-notes`,
     {
       params: {
         page: params.pageable.page,
