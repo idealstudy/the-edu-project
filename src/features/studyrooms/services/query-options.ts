@@ -43,7 +43,6 @@ export const getStudyNoteGroupInfiniteOption = (
       };
       if (role === 'ROLE_TEACHER') return getStudyNoteGroup(req);
       if (role === 'ROLE_STUDENT') return getStudentStudyNoteGroup(req);
-      // enabled가 false면 실행되지 않지만 방어
       return Promise.reject(new Error('role not ready'));
     },
     initialPageParam: 0,
