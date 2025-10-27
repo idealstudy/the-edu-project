@@ -1,3 +1,4 @@
+import { StudyNoteMemberResponse } from '@/features/studynotes/types';
 import type {
   StudyNote,
   StudyNoteGroupPageable,
@@ -99,6 +100,24 @@ export const updateStudyNote = async (args: {
       visibility: args.visibility,
       taughtAt: args.taughtAt,
       studentIds: args.studentIds,
+    }
+  );
+  return response.data;
+};
+
+// 선생님이 스터디룸에 속한 학생들을 조회한다.
+export const getStudyNoteMembers = async (args: {
+  studyRoomId: number;
+  page?: number;
+  size?: number;
+}): Promise<StudyNoteMemberResponse> => {
+  const response = await apiClient.get(
+    `/teacher/study-rooms/${args.studyRoomId}/members`,
+    {
+      params: {
+        page: args.page ?? 0,
+        size: args.size ?? 20,
+      },
     }
   );
   return response.data;

@@ -1,7 +1,14 @@
-import React from 'react';
+import { redirect } from 'next/navigation';
 
-const StudyNoteMemberPage = () => {
-  return <div>StudyNoteMemberPage</div>;
+import MembersPanel from '@/features/studynotes/member/members-panel';
+
+type PageProps = {
+  params: Promise<{ id: string }>;
 };
 
-export default StudyNoteMemberPage;
+export default async function StudyNoteMemberPage({ params }: PageProps) {
+  const { id } = await params;
+  const studyRoomId = Number(id);
+  if (isNaN(studyRoomId)) redirect('/');
+  return <MembersPanel studyRoomId={studyRoomId} />;
+}

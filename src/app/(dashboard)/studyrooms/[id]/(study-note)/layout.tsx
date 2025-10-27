@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
-import { useParams, usePathname } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 
 import { ColumnLayout } from '@/components/layout/column-layout';
 import { StudyNoteTab } from '@/features/studynotes/components/study-note-tab';
@@ -10,12 +10,27 @@ import StudyNoteTabShell from '@/features/studynotes/components/study-note-tab-s
 import { StudyroomSidebar } from '@/features/studyrooms/components/sidebar';
 import { useRole } from '@/hooks/use-role';
 
-const StudyNoteLayout = ({ children }: { children: React.ReactNode }) => {
-  const { role } = useRole();
+type LayoutProps = {
+  children: React.ReactNode;
+};
+
+const StudyNoteLayout = ({ children }: LayoutProps) => {
+  const { role, isLoading } = useRole();
   const path = usePathname();
   const params = useParams();
+  const router = useRouter();
   const studyRoomId = Number(params.id);
   const segment = path.split('/').pop();
+
+  // 권한 체크
+  // Todo: 추후 미들웨어에서 처리하도록 변경
+  useEffect(() => {
+    if (isLoading) return;
+    if (segment === 'member' && role !== 'ROLE_TEACHER') {
+      router.replace(`/`);
+    }
+  }, [role, segment, isLoading, router, studyRoomId]);
+
   return (
     <ColumnLayout>
       <ColumnLayout.Left className="rounded-[12px] bg-gray-200">
@@ -31,7 +46,6 @@ const StudyNoteLayout = ({ children }: { children: React.ReactNode }) => {
           <div className="border-line-line1 flex flex-col gap-8 rounded-tr-[12px] rounded-b-[12px] border bg-white p-8">
             <StudyNoteTabShell
               mode={role}
-              studyRoomId={studyRoomId}
               path={segment!}
             />
             {segment !== 'note' && children}

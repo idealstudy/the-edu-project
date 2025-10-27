@@ -2,7 +2,12 @@ import { getStudyNoteDetail } from '@/features/dashboard/studynote/detail/servic
 import { queryOptions } from '@tanstack/react-query';
 
 import type { StudyNoteGroupPageable } from '../../studyrooms/components/studynotes/type';
-import { getStudyNotes, getStudyNotesByGroupId, updateStudyNote } from './api';
+import {
+  getStudyNoteMembers,
+  getStudyNotes,
+  getStudyNotesByGroupId,
+  updateStudyNote,
+} from './api';
 
 export const StudyNoteQueryKey = {
   all: ['studynote'],
@@ -53,5 +58,16 @@ export const getUpdateStudyNoteOption = (args: {
   return queryOptions({
     queryKey: [StudyNoteQueryKey.update, args],
     queryFn: () => updateStudyNote(args),
+  });
+};
+
+export const getStudyNoteMembersOption = (args: {
+  studyRoomId: number;
+  page?: number;
+  size?: number;
+}) => {
+  return queryOptions({
+    queryKey: [StudyNoteQueryKey.all, args],
+    queryFn: () => getStudyNoteMembers(args),
   });
 };

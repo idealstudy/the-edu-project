@@ -36,7 +36,7 @@ export const useInvitationController = (
 ): InvitationController => {
   // TODO: 추후 리듀서로 리팩토링 예정
   const [isSearch, setIsSearch] = React.useState(false);
-  const [searchQuery, setSearchQuery] = useState('student_1@test.test');
+  const [searchQuery, setSearchQuery] = useState('');
   const [searchResult, setSearchResult] = useState<null | Invitee>(null);
   const [invitees, setInvitees] = useState<Map<string, Invitee>>(new Map());
   const [shouldSearch, setShouldSearch] = useState(false);
