@@ -12,6 +12,7 @@ import { Select } from '@/features/studyrooms/components/common/select';
 import { DialogAction } from '@/features/studyrooms/hooks/useDialogReducer';
 import { getStudyNoteGroupInfiniteOption } from '@/features/studyrooms/services/query-options';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
+import { useRole } from '@/hooks/use-role';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 import type { StudyNoteGroupPageable } from '../type';
@@ -38,6 +39,7 @@ export const GroupMoveDialog = ({
   keyword: string;
 }) => {
   const [selectedGroup, setSelectedGroup] = useState<string | null>('all');
+  const { role } = useRole();
 
   const {
     data: studyNoteGroups,
@@ -47,7 +49,7 @@ export const GroupMoveDialog = ({
     isPending,
     isError,
   } = useInfiniteQuery({
-    ...getStudyNoteGroupInfiniteOption({
+    ...getStudyNoteGroupInfiniteOption(role, {
       studyRoomId: studyRoomId,
       pageable: GROUP_MOVE_DIALOG_PAGEABLE,
     }),

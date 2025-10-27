@@ -2,6 +2,7 @@ import { useReducer } from 'react';
 
 import Image from 'next/image';
 
+import { Role } from '@/features/auth/type.js';
 import {
   dialogReducer,
   initialDialogState,
@@ -20,10 +21,12 @@ export const STUDYROOM_SIDEBAR_GROUPS_PAGEABLE = {
 };
 
 export const StudyroomGroups = ({
+  role,
   studyRoomId,
   selectedGroupId,
   handleSelectGroupId,
 }: {
+  role: Role | undefined;
   studyRoomId: number;
   selectedGroupId: number | 'all';
   handleSelectGroupId: (id: number | 'all') => void;
@@ -38,7 +41,7 @@ export const StudyroomGroups = ({
     isPending,
     isError,
   } = useInfiniteQuery({
-    ...getStudyNoteGroupInfiniteOption({
+    ...getStudyNoteGroupInfiniteOption(role, {
       studyRoomId: studyRoomId,
       pageable: STUDYROOM_SIDEBAR_GROUPS_PAGEABLE,
     }),
@@ -97,17 +100,19 @@ export const StudyroomGroups = ({
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <p className="font-body1-heading">수업노트 그룹</p>
-          <div
-            className="hover:bg-gray-scale-gray-1 flex h-9 w-9 cursor-pointer items-center justify-center rounded-[8px]"
-            onClick={handleCreateGroupClick}
-          >
-            <Image
-              src="/studyroom/ic-plus.svg"
-              alt="plus"
-              width={16}
-              height={16}
-            />
-          </div>
+          {role === 'ROLE_TEACHER' && (
+            <div
+              className="hover:bg-gray-scale-gray-1 flex h-9 w-9 cursor-pointer items-center justify-center rounded-[8px]"
+              onClick={handleCreateGroupClick}
+            >
+              <Image
+                src="/studyroom/ic-plus.svg"
+                alt="plus"
+                width={16}
+                height={16}
+              />
+            </div>
+          )}
         </div>
 
         <div

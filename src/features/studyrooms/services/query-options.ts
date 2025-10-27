@@ -1,8 +1,14 @@
+import { Role } from '@/features/auth/type';
 import { Pageable, PaginationMeta } from '@/lib/api';
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 
 import type { StudyNoteGroup } from '../types';
-import { getStudentStudyRooms, getStudyNoteGroup, studyroomApi } from './api';
+import {
+  getStudentStudyNoteGroup,
+  getStudentStudyRooms,
+  getStudyNoteGroup,
+  studyroomApi,
+} from './api';
 
 // 스터디룸 (목록)
 export const StudyRoomsQueryKey = {
@@ -21,17 +27,25 @@ export const InvitationQueryKey = {
     [...InvitationQueryKey.all, 'search', studyRoomId, email] as const,
 };
 
-export const getStudyNoteGroupInfiniteOption = (args: {
-  studyRoomId: number;
-  pageable: Pageable;
-}) => {
+export const getStudyNoteGroupInfiniteOption = (
+  role: Role | undefined,
+  args: {
+    studyRoomId: number;
+    pageable: Pageable;
+  }
+) => {
   return infiniteQueryOptions({
-    queryKey: [StudyRoomsGroupQueryKey.all, args],
-    queryFn: ({ pageParam = 0 }) =>
-      getStudyNoteGroup({
+    queryKey: [StudyRoomsGroupQueryKey.all, args, role],
+    queryFn: ({ pageParam = 0 }) => {
+      const req = {
         ...args,
         pageable: { ...args.pageable, page: pageParam },
-      }),
+      };
+      if (role === 'ROLE_TEACHER') return getStudyNoteGroup(req);
+      if (role === 'ROLE_STUDENT') return getStudentStudyNoteGroup(req);
+      // enabled가 false면 실행되지 않지만 방어
+      return Promise.reject(new Error('role not ready'));
+    },
     initialPageParam: 0,
     getNextPageParam: (
       lastPage: PaginationMeta & { content: StudyNoteGroup[] }
@@ -39,6 +53,7 @@ export const getStudyNoteGroupInfiniteOption = (args: {
       if (lastPage.pageNumber >= lastPage.totalPages - 1) return undefined;
       return lastPage.pageNumber + 1;
     },
+    enabled: !!role && (role === 'ROLE_TEACHER' || role === 'ROLE_STUDENT'),
   });
 };
 
