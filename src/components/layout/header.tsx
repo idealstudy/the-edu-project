@@ -3,15 +3,29 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+// import { useRouter } from 'next/navigation';
+
 import { ROUTE } from '@/constants/route';
+import { useAuth } from '@/features/auth/hooks/use-auth';
 import { useSession } from '@/features/auth/hooks/use-session';
-import { useLogoutMutation } from '@/features/auth/services/query';
+
+// import { useLogoutMutation } from '@/features/auth/services/query';
 
 import { DropdownMenu } from '../ui/dropdown-menu';
 
 export const Header = () => {
   const { data: session } = useSession();
-  const { mutate: logout, isPending } = useLogoutMutation();
+  // const router = useRouter();
+  // const { mutate: logout } = useLogoutMutation();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    // TODO: 세션 유효한지 확인하는 API / Logout API 부재로
+    // window.location 사용 => 추후에 router.replace로 변경
+    window.location.replace(ROUTE.HOME);
+    // router.replace(ROUTE.HOME);
+  };
 
   const roleMetaMap = {
     ROLE_STUDENT: {
@@ -76,13 +90,6 @@ export const Header = () => {
         </div>
         {session?.auth && (
           <div className="flex items-center">
-            <button
-              className="mx-2 cursor-pointer text-white"
-              onClick={() => logout()}
-              disabled={isPending}
-            >
-              로그아웃
-            </button>
             <Image
               src={'/img_header_bell.svg'}
               alt="알림 벨 아이콘"
@@ -102,7 +109,9 @@ export const Header = () => {
                 />
               </DropdownMenu.Trigger>
               <DropdownMenu.Content>
-                <DropdownMenu.Item>로그아웃</DropdownMenu.Item>
+                <DropdownMenu.Item onClick={() => handleLogout()}>
+                  로그아웃
+                </DropdownMenu.Item>
               </DropdownMenu.Content>
             </DropdownMenu>
 

@@ -17,11 +17,11 @@ export const useAuth = () => {
   };
 
   const logout = () => {
-    queryClient.removeQueries({
-      queryKey: queryKey.session,
-      exact: true,
-    });
-
+    // TODO: logout API가 나온다면 이부분 작업 예정
+    // queryClient.removeQueries({
+    //   queryKey: queryKey.session,
+    //   exact: true,
+    // });
     removeSessionToken();
   };
 
