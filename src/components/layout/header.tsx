@@ -70,12 +70,12 @@ export const Header = () => {
           />
           {session?.auth && (
             <>
-              <Link
+              {/* <Link
                 href={ROUTE.DASHBOARD.HOME}
                 className="mx-2 text-white"
               >
                 대시보드
-              </Link>
+              </Link> */}
               <Link
                 href=""
                 className="mx-2 text-white"
