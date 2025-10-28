@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
+import { StudyNoteSortKey } from '@/features/studynotes/type';
 import { StudyNoteMember } from '@/features/studynotes/types';
-import { StudyNoteSortKey } from '@/features/studyrooms/components/studynotes/type';
 
 export const useMemberFilter = (
   members: StudyNoteMember[],

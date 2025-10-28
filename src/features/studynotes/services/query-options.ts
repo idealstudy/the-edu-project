@@ -2,7 +2,7 @@ import { Role } from '@/features/auth/type';
 import { getStudyNoteDetail } from '@/features/dashboard/studynote/detail/service/api';
 import { queryOptions } from '@tanstack/react-query';
 
-import type { StudyNoteGroupPageable } from '../../studyrooms/components/studynotes/type';
+import type { StudyNoteGroupPageable } from '../type';
 import {
   getStudentStudyNotes,
   getStudentStudyNotesByGroupId,

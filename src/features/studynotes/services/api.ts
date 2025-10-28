@@ -1,8 +1,8 @@
-import { StudyNoteMemberResponse } from '@/features/studynotes/types';
 import type {
   StudyNote,
   StudyNoteGroupPageable,
-} from '@/features/studyrooms/components/studynotes/type';
+} from '@/features/studynotes/type';
+import { StudyNoteMemberResponse } from '@/features/studynotes/types';
 import { CommonResponse, PaginationMeta, apiClient } from '@/lib/api';
 
 // 선생님이 스터디노트 목록 조회

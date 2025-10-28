@@ -1,7 +1,10 @@
 import { Pagination } from '@/components/ui/pagination';
 
-import { SearchFilterBar } from '../studynotes/search-filter-bar';
-import type { StudyNoteLimit, StudyNoteSortKey } from '../studynotes/type';
+import { SearchFilterBar } from '../../../studynotes/search-filter-bar';
+import type {
+  StudyNoteLimit,
+  StudyNoteSortKey,
+} from '../../../studynotes/type';
 
 export const StudyRoomDetailLayout = ({
   children,
