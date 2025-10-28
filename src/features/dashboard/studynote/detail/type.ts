@@ -8,8 +8,13 @@ export interface StudyNoteDetail {
   id: number;
   studyRoomId: number;
   studyRoomName: string;
+  groupId?: number;
   title: string;
   content: string;
+  resolvedContent?: {
+    content: string;
+  };
   taughtAt: string;
+  visibility: 'PUBLIC' | 'PRIVATE';
   studentInfos: StudentInfo[];
 }
