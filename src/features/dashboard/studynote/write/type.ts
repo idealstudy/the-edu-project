@@ -7,8 +7,8 @@ export interface StudyNote {
   content: string;
   visibility: string;
   taughtAt: string;
-  studentIds: number[];
-  teachingNoteGroupId: number;
+  studentIds?: number[];
+  teachingNoteGroupId?: number;
   imageIds?: string[];
 }
 
@@ -18,6 +18,12 @@ export interface ConnectedMember {
   name: string;
   email: string;
   joinDate: string | null;
+}
+
+// 수업 대상 표기를 위한
+// 학생 타입
+export interface CourseTargetStudentInfo extends ConnectedMember {
+  parentCount: number;
 }
 
 // 스터디 노트 그룹

@@ -59,10 +59,7 @@ const MetaSection = () => {
 
       {/* 수업 대상 */}
       <Form.Item error={!!errors.studentIds}>
-        <Form.Label>
-          수업 대상
-          <RequiredMark />
-        </Form.Label>
+        <Form.Label>수업 대상</Form.Label>
         <Form.Control>
           <Controller
             name="studentIds"
