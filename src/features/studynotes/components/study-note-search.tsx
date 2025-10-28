@@ -11,11 +11,13 @@ export const StudyNoteSearch = () => {
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  // const pathName = usePathname();
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     const value = inputRef.current?.value.trim() ?? '';
     if (value) sessionStorage.setItem('studynote-title', value);
+    // sessionStorage.setItem('studyroom-id', String(pathName.split('/')[2]));
     try {
       setIsLoading(true);
       router.push('/dashboard/studynote/write');

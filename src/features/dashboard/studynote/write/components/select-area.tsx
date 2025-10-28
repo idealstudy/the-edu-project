@@ -28,6 +28,12 @@ const SelectArea = () => {
   const [open, setOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState(false);
 
+  // useEffect(() => {
+  //   const givenRoomId = sessionStorage.getItem('studyroom-id');
+  //   if (givenRoomId) setValue('studyRoomId', Number(givenRoomId));
+  //   sessionStorage.removeItem('studyroom-id');
+  // }, [setValue]);
+
   return (
     <ColumnLayout.Left className="border-line-line1 h-fit rounded-xl border bg-white px-8 py-10">
       <Image
