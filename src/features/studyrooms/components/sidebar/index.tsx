@@ -14,6 +14,7 @@ import {
   dialogReducer,
   initialDialogState,
 } from '@/features/studyrooms/hooks/useDialogReducer';
+import { useRole } from '@/hooks/use-role';
 
 import { StudyroomSidebarHeader } from './header';
 import { useDeleteStudyRoom } from './services/query';
@@ -28,6 +29,7 @@ export const StudyroomSidebar = ({ studyRoomId }: { studyRoomId: number }) => {
   const [roomName, setRoomName] = useState('');
   const [deleteNoticeMsg, setDeleteNoticeMsg] =
     useState('수업노트 그룹이 삭제되었습니다.');
+  const { role } = useRole();
 
   const { mutate: deleteStudyRoom } = useDeleteStudyRoom();
 
@@ -104,6 +106,7 @@ export const StudyroomSidebar = ({ studyRoomId }: { studyRoomId: number }) => {
         {/* 수업노트 탭에서만 보이는 컴포넌트 */}
         {segment === 'note' && (
           <StudyroomGroups
+            role={role}
             studyRoomId={studyRoomId}
             selectedGroupId={selectedGroupId}
             handleSelectGroupId={handleSelectGroupId}

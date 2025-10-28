@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
+import QuestionListWrapper from './qna-list-wrapper';
+
 type Props = {
   studyRoomId: number;
 };
@@ -56,6 +58,8 @@ export default function StudentQuestionSession({ studyRoomId }: Props) {
           </span>
         </Button>
       </form>
+
+      <QuestionListWrapper studyRoomId={studyRoomId} />
     </div>
   );
 }

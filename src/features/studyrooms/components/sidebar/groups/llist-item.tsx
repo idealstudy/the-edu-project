@@ -6,6 +6,7 @@ import Image from 'next/image';
 
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
 import { DialogAction } from '@/features/studyrooms/hooks/useDialogReducer';
+import { useRole } from '@/hooks/use-role';
 import { cn } from '@/lib/utils';
 
 export const GroupListItem = ({
@@ -20,6 +21,7 @@ export const GroupListItem = ({
   dispatch: (action: DialogAction) => void;
 }) => {
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
+  const { role } = useRole();
 
   const handleRenameGroup = () => {
     if (group.id === 'all') return;
@@ -70,7 +72,7 @@ export const GroupListItem = ({
         </p>
       </div>
 
-      {group.id !== 'all' && (
+      {group.id !== 'all' && role === 'ROLE_TEACHER' && (
         <DropdownMenu
           open={menuOpenId === group.id}
           onOpenChange={(open) => {

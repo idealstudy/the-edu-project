@@ -1,3 +1,4 @@
+import { Role } from '@/features/auth/type';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import type { StudyNoteGroupPageable } from '../../studyrooms/components/studynotes/type';
@@ -10,23 +11,29 @@ import {
   getStudyNotesOption,
 } from './query-options';
 
-export const useStudyNotesQuery = (args: {
-  studyRoomId: number;
-  pageable: StudyNoteGroupPageable;
-  // keyword: string;
-}) => {
-  return useQuery(getStudyNotesOption(args));
+export const useStudyNotesQuery = (
+  role: Role | undefined,
+  args: {
+    studyRoomId: number;
+    pageable: StudyNoteGroupPageable;
+    // keyword: string;
+  }
+) => {
+  return useQuery(getStudyNotesOption(role, args));
 };
 
-export const useStudyNotesByGroupIdQuery = (args: {
-  studyRoomId: number;
-  teachingNoteGroupId: number;
-  pageable: StudyNoteGroupPageable;
-  // keyword: string;
-  enabled?: boolean;
-}) => {
+export const useStudyNotesByGroupIdQuery = (
+  role: Role | undefined,
+  args: {
+    studyRoomId: number;
+    teachingNoteGroupId: number;
+    pageable: StudyNoteGroupPageable;
+    // keyword: string;
+    enabled?: boolean;
+  }
+) => {
   return useQuery({
-    ...getStudyNotesByGroupIdOption(args),
+    ...getStudyNotesByGroupIdOption(role, args),
     enabled: args.enabled !== false,
   });
 };

@@ -1,8 +1,11 @@
+import { Role } from '@/features/auth/type';
 import { getStudyNoteDetail } from '@/features/dashboard/studynote/detail/service/api';
 import { queryOptions } from '@tanstack/react-query';
 
 import type { StudyNoteGroupPageable } from '../../studyrooms/components/studynotes/type';
 import {
+  getStudentStudyNotes,
+  getStudentStudyNotesByGroupId,
   getStudyNoteMembers,
   getStudyNotes,
   getStudyNotesByGroupId,
@@ -16,25 +19,39 @@ export const StudyNoteQueryKey = {
   update: ['studynote', 'update'],
 };
 
-export const getStudyNotesOption = (args: {
-  studyRoomId: number;
-  pageable: StudyNoteGroupPageable;
-  // keyword: string;
-}) => {
+export const getStudyNotesOption = (
+  role: Role | undefined,
+  args: {
+    studyRoomId: number;
+    pageable: StudyNoteGroupPageable;
+    // keyword: string;
+  }
+) => {
   return queryOptions({
-    queryKey: [StudyNoteQueryKey.all, args],
-    queryFn: () => getStudyNotes(args),
+    queryKey: [StudyNoteQueryKey.all, args, role],
+    queryFn: async () => {
+      if (role === 'ROLE_TEACHER') return getStudyNotes(args);
+      if (role === 'ROLE_STUDENT') return getStudentStudyNotes(args);
+    },
+    enabled: !!role,
   });
 };
 
-export const getStudyNotesByGroupIdOption = (args: {
-  studyRoomId: number;
-  teachingNoteGroupId: number;
-  pageable: StudyNoteGroupPageable;
-}) => {
+export const getStudyNotesByGroupIdOption = (
+  role: Role | undefined,
+  args: {
+    studyRoomId: number;
+    teachingNoteGroupId: number;
+    pageable: StudyNoteGroupPageable;
+  }
+) => {
   return queryOptions({
-    queryKey: [StudyNoteQueryKey.byGroupId, args],
-    queryFn: () => getStudyNotesByGroupId(args),
+    queryKey: [StudyNoteQueryKey.byGroupId, args, role],
+    queryFn: async () => {
+      if (role === 'ROLE_TEACHER') return getStudyNotesByGroupId(args);
+      if (role === 'ROLE_STUDENT') return getStudentStudyNotesByGroupId(args);
+    },
+    enabled: !!role,
   });
 };
 

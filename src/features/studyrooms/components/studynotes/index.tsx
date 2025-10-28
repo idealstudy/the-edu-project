@@ -8,6 +8,7 @@ import {
   useStudyNotesByGroupIdQuery,
   useStudyNotesQuery,
 } from '@/features/studynotes/services/query';
+import { useRole } from '@/hooks/use-role';
 
 import { StudyRoomDetailLayout } from '../common/layout';
 import { StudyNotesList } from './list';
@@ -27,6 +28,7 @@ export const StudyNotes = ({
   const [limit, setLimit] = useState<StudyNoteLimit>(20);
   const [currentPage, setCurrentPage] = useState(0);
 
+  const { role } = useRole();
   const { id } = useParams();
   const studyRoomId = Number(id);
 
@@ -37,14 +39,14 @@ export const StudyNotes = ({
   };
 
   // TODO: 수업노트 조회 API keyword search 연결
-  const { data } = useStudyNotesQuery({
+  const { data } = useStudyNotesQuery(role, {
     studyRoomId: studyRoomId,
     pageable: pageable,
     // keyword: search,
   });
 
   // TODO: 수업노트 그룹으로 수업노트 조회 API keyword search 연결
-  const { data: studyNotesByGroupId } = useStudyNotesByGroupIdQuery({
+  const { data: studyNotesByGroupId } = useStudyNotesByGroupIdQuery(role, {
     studyRoomId: studyRoomId,
     teachingNoteGroupId: Number(selectedGroupId),
     pageable: pageable,

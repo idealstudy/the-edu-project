@@ -22,7 +22,7 @@ export const getStudentStudyRooms = async () => {
   return response.data;
 };
 
-// 수업노트 그룹 조회
+// (선생님) 수업노트 그룹 조회
 export const getStudyNoteGroup = async (args: {
   studyRoomId: number;
   pageable: Pageable;
@@ -31,6 +31,28 @@ export const getStudyNoteGroup = async (args: {
     await apiClient.get<
       CommonResponse<PaginationMeta & { content: StudyNoteGroup[] }>
     >(`/teacher/study-rooms/${args.studyRoomId}/teaching-note-groups`, {
+      params: {
+        page: args.pageable.page,
+        size: args.pageable.size,
+        sort: args.pageable.sort,
+      },
+      paramsSerializer: {
+        indexes: null,
+      },
+    })
+  ).data;
+  return response.data;
+};
+
+// (학생) 수업노트 그룹 조회
+export const getStudentStudyNoteGroup = async (args: {
+  studyRoomId: number;
+  pageable: Pageable;
+}) => {
+  const response = (
+    await apiClient.get<
+      CommonResponse<PaginationMeta & { content: StudyNoteGroup[] }>
+    >(`/student/study-rooms/${args.studyRoomId}/teaching-note-groups`, {
       params: {
         page: args.pageable.page,
         size: args.pageable.size,
