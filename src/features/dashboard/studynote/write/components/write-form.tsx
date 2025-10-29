@@ -23,7 +23,8 @@ const WriteForm = ({ children }: PropsWithChildren) => {
     const parsingData = transformFormDataToServerFormat(data);
     mutate(parsingData, {
       onSuccess: () => {
-        router.replace(ROUTE.DASHBOARD.HOME);
+        const roomId = data.studyRoomId;
+        router.replace(ROUTE.DASHBOARD.STUDYNOTE.LIST(roomId));
       },
     });
   };
@@ -63,7 +64,7 @@ function transformFormDataToServerFormat(formData: StudyNoteForm) {
       isGuardianVisible
     ),
     taughtAt: new Date(formData.taughtAt).toISOString(),
-    studentIds: formData.studentIds.map((student) => student.id),
+    studentIds: formData.studentIds?.map((student) => student.id),
     teachingNoteGroupId: formData.teachingNoteGroupId,
   };
 }

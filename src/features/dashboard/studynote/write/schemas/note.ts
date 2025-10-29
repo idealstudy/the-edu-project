@@ -1,7 +1,7 @@
 import { JSONContent } from '@tiptap/react';
 import { z } from 'zod';
 
-import { ConnectedMember } from '../type';
+import { CourseTargetStudentInfo } from '../type';
 
 export const StudyNoteVisibility = z.enum(
   [
@@ -61,12 +61,8 @@ export const studyNoteFormSchema = z.object({
   visibility: StudyNoteVisibility,
   isGuardianVisible: z.boolean().optional(),
   taughtAt: z.string().min(1, '날짜를 선택해 주세요.'),
-  studentIds: z
-    .array(z.custom<ConnectedMember>())
-    .nonempty('수업에 참여한 학생들을 입력해 주세요.'),
-  teachingNoteGroupId: z.number({
-    required_error: '수업 노트 그룹을 선택해주세요.',
-  }),
+  studentIds: z.array(z.custom<CourseTargetStudentInfo>()).optional(),
+  teachingNoteGroupId: z.number().optional(),
 });
 
 export type StudyNoteForm = z.infer<typeof studyNoteFormSchema>;

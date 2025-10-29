@@ -1,6 +1,7 @@
 import { Pageable } from '@/lib/api';
 import { queryOptions } from '@tanstack/react-query';
 
+import { CourseTargetStudentInfo } from '../type';
 import { getConnectMembers, getStudyNoteGroups, getStudyRooms } from './api';
 
 export const StudyNoteWriteQueryKey = {
@@ -39,10 +40,16 @@ export const getConnectMembersOption = (roomId: number) => {
     queryKey: StudyNoteWriteQueryKey.students(roomId),
     queryFn: () => getConnectMembers(roomId),
     select(data) {
-      const flatMembers = data.members
-        .flatMap(({ studentInfo, parentInfo }) => [studentInfo, parentInfo])
-        .filter((item) => item !== null);
-      return flatMembers;
+      const refinedData: CourseTargetStudentInfo[] = data.members.map(
+        (member) => {
+          const parentCount = member.parentInfo ? 1 : 0;
+          return {
+            ...member.studentInfo,
+            parentCount,
+          };
+        }
+      );
+      return refinedData;
     },
     enabled: !!roomId,
   });
