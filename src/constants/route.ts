@@ -11,6 +11,7 @@ export const ROUTE = {
     STUDYNOTE: {
       CREATE: '/dashboard/studynote/write',
       DETAIL: (id: number) => `/dashboard/studynote/${id}`,
+      LIST: (id: number) => `/studyrooms/${id}/note`,
     },
     QUESTIONS: {
       DETAIL: (studyroomId: number, contextId: number) =>

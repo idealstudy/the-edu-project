@@ -22,7 +22,7 @@ const SubmitSection = () => {
         disabled={isButtonDisabled}
         className="w-[200px] rounded-sm"
       >
-        저장하기
+        {isPending ? '저장 중...' : '저장하기'}
       </Button>
     </div>
   );

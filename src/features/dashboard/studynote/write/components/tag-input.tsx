@@ -11,19 +11,19 @@ import {
   PopoverTrigger,
 } from '@radix-ui/react-popover';
 
-import { ConnectedMember } from '../type';
+import { CourseTargetStudentInfo } from '../type';
 
 type TagInputProps = {
-  students: ConnectedMember[];
-  selected: ConnectedMember[];
-  onChange: (selected: ConnectedMember[]) => void;
+  students: CourseTargetStudentInfo[];
+  selected: CourseTargetStudentInfo[] | undefined;
+  onChange: (selected: CourseTargetStudentInfo[]) => void;
   error?: boolean;
   disabled?: boolean;
 };
 
 export default function TagInput({
   students,
-  selected,
+  selected = [],
   onChange,
   error,
   disabled,
@@ -36,7 +36,7 @@ export default function TagInput({
     s.name.toLowerCase().includes(input.toLowerCase())
   );
 
-  const toggleSelect = (student: ConnectedMember) => {
+  const toggleSelect = (student: CourseTargetStudentInfo) => {
     const exists = selected.find((s) => s.id === student.id);
     if (exists) {
       onChange(selected.filter((s) => s.id !== student.id));
@@ -83,12 +83,9 @@ export default function TagInput({
                     className="bg-background-gray border-line-line1 flex items-center gap-1 rounded-sm py-2 pl-[12px] text-sm"
                   >
                     <span className="text-base text-black">{student.name}</span>
-                    {student.role === 'ROLE_PARENT' && (
-                      <>
-                        <span className="text-key-color-primary">•</span>
-                        <span className="text-key-color-primary">보호자</span>
-                      </>
-                    )}
+                    <span className="text-key-color-primary">•</span>
+                    <span className="text-key-color-primary">보호자</span>
+                    <span className="text-key-color-primary">{`${student.parentCount}`}</span>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -160,30 +157,26 @@ export default function TagInput({
                       <span className="truncate font-medium">
                         {student.name}
                       </span>
-                      {student.role === 'ROLE_PARENT' && (
-                        <>
-                          <span
-                            className={cn(
-                              'text-xs',
-                              isSelected
-                                ? 'text-orange-scale-orange-50'
-                                : 'text-text-sub1'
-                            )}
-                          >
-                            •
-                          </span>
-                          <span
-                            className={cn(
-                              'text-xs',
-                              isSelected
-                                ? 'text-orange-scale-orange-50'
-                                : 'text-text-sub1'
-                            )}
-                          >
-                            보호자
-                          </span>
-                        </>
-                      )}
+                      <span
+                        className={cn(
+                          'text-xs',
+                          isSelected
+                            ? 'text-orange-scale-orange-50'
+                            : 'text-text-sub1'
+                        )}
+                      >
+                        •
+                      </span>
+                      <span
+                        className={cn(
+                          'text-xs',
+                          isSelected
+                            ? 'text-orange-scale-orange-50'
+                            : 'text-text-sub1'
+                        )}
+                      >
+                        보호자 {`${student.parentCount}`}
+                      </span>
                     </div>
                     {isSelected ? (
                       <span className="ml-1 text-orange-500">✓</span>
