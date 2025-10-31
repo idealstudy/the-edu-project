@@ -34,7 +34,10 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
   return (
     <ColumnLayout>
       <ColumnLayout.Left className="rounded-[12px] bg-gray-200">
-        <StudyroomSidebar studyRoomId={studyRoomId} />
+        <StudyroomSidebar
+          studyRoomId={studyRoomId}
+          segment={segment === 'note' ? 'note' : undefined}
+        />
       </ColumnLayout.Left>
       <ColumnLayout.Right className="desktop:max-w-[740px] flex h-[400px] flex-col gap-3 rounded-[12px] px-8">
         <div>

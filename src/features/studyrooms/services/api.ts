@@ -1,6 +1,7 @@
 import { StudyRoomFormValues } from '@/features/studyrooms/schemas/create';
-import { CommonResponse, PaginationMeta, api, apiClient } from '@/lib/api';
-import { Pageable } from '@/lib/api';
+import { authApi } from '@/lib/http/api';
+import { Pageable, PaginationData } from '@/types/http';
+import type { CommonResponse } from '@/types/http';
 
 import {
   ApiResponse,
@@ -13,12 +14,10 @@ import {
 
 // 학생이 스터디룸 리스트 조회
 export const getStudentStudyRooms = async () => {
-  const response = (
-    await apiClient.get<CommonResponse<StudentStudyRoom[]>>(
+  const response =
+    await authApi.get<CommonResponse<StudentStudyRoom[]>>(
       `/student/study-rooms`
-    )
-  ).data;
-
+    );
   return response.data;
 };
 
@@ -27,20 +26,16 @@ export const getStudyNoteGroup = async (args: {
   studyRoomId: number;
   pageable: Pageable;
 }) => {
-  const response = (
-    await apiClient.get<
-      CommonResponse<PaginationMeta & { content: StudyNoteGroup[] }>
-    >(`/teacher/study-rooms/${args.studyRoomId}/teaching-note-groups`, {
-      params: {
-        page: args.pageable.page,
-        size: args.pageable.size,
-        sort: args.pageable.sort,
-      },
-      paramsSerializer: {
-        indexes: null,
-      },
-    })
-  ).data;
+  const response = await authApi.get<
+    CommonResponse<PaginationData<StudyNoteGroup>>
+  >(`/teacher/study-rooms/${args.studyRoomId}/teaching-note-groups`, {
+    params: {
+      page: args.pageable.page,
+      size: args.pageable.size,
+      sort: args.pageable.sort,
+    },
+    paramsSerializer: { indexes: null },
+  });
   return response.data;
 };
 
@@ -49,26 +44,22 @@ export const getStudentStudyNoteGroup = async (args: {
   studyRoomId: number;
   pageable: Pageable;
 }) => {
-  const response = (
-    await apiClient.get<
-      CommonResponse<PaginationMeta & { content: StudyNoteGroup[] }>
-    >(`/student/study-rooms/${args.studyRoomId}/teaching-note-groups`, {
-      params: {
-        page: args.pageable.page,
-        size: args.pageable.size,
-        sort: args.pageable.sort,
-      },
-      paramsSerializer: {
-        indexes: null,
-      },
-    })
-  ).data;
+  const response = await authApi.get<
+    CommonResponse<PaginationData<StudyNoteGroup>>
+  >(`/teacher/study-rooms/${args.studyRoomId}/teaching-note-groups`, {
+    params: {
+      page: args.pageable.page,
+      size: args.pageable.size,
+      sort: args.pageable.sort,
+    },
+    paramsSerializer: { indexes: null },
+  });
   return response.data;
 };
 
 export const studyroomApi = {
   create: async (payload: StudyRoomFormValues): Promise<StudyRoom> => {
-    const response = await api.post<ApiResponse<StudyRoom>>(
+    const response = await authApi.post<ApiResponse<StudyRoom>>(
       '/teacher/study-rooms',
       payload
     );
@@ -81,7 +72,7 @@ export const studyroomApi = {
       studyRoomId: number;
       emails: string[];
     }): Promise<MemberInvitation> => {
-      const response = await api.post<ApiResponse<MemberInvitation>>(
+      const response = await authApi.post<ApiResponse<MemberInvitation>>(
         `/teacher/study-rooms/${args.studyRoomId}/members`,
         { studentEmailList: args.emails }
       );
@@ -91,7 +82,7 @@ export const studyroomApi = {
       studyRoomId: number;
       email: string;
     }): Promise<Invitation> => {
-      const response = await api.get<ApiResponse<Invitation>>(
+      const response = await authApi.get<ApiResponse<Invitation>>(
         `/teacher/study-rooms/${args.studyRoomId}/search`,
         {
           params: { email: args.email },

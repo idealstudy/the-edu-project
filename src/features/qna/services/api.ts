@@ -1,4 +1,5 @@
-import { CommonResponse, Pageable, PaginationMeta, apiClient } from '@/lib/api';
+import { authApi } from '@/lib/http/api';
+import { CommonResponse, Pageable, PaginationMeta } from '@/types/http';
 
 import { QnADetailResponse, QnAListItem } from '../type';
 
@@ -9,7 +10,7 @@ export const writeQnA = async (args: {
   content: string;
 }) => {
   const data = { title: args.title, content: args.content };
-  await apiClient.post(`/study-rooms/${args.studyRoomId}/qna`, data);
+  await authApi.post(`/study-rooms/${args.studyRoomId}/qna`, data);
 };
 
 // POST /api/study-rooms/{studyRoomId}/qna/{contextId}/messages - 학생 추가 질문
@@ -18,7 +19,7 @@ export const writeStudentQnAMessage = async (args: {
   contextId: number;
   content: string;
 }) => {
-  await apiClient.post(
+  await authApi.post(
     `/study-rooms/${args.studyRoomId}/qna/${args.contextId}/messages`,
     { content: args.content }
   );
@@ -30,7 +31,7 @@ export const writeTeacherQnAMessage = async (args: {
   contextId: number;
   content: string;
 }) => {
-  await apiClient.post(
+  await authApi.post(
     `/teacher/study-rooms/${args.studyRoomId}/qna/${args.contextId}/answers`,
     {
       content: args.content,
@@ -45,18 +46,16 @@ export const getStudentQnAList = async (args: {
   status?: string;
   sort?: string;
 }) => {
-  const response = (
-    await apiClient.get<
-      CommonResponse<PaginationMeta & { content: QnAListItem[] }>
-    >(`/study-rooms/${args.studyRoomId}/qna`, {
-      params: {
-        status: args.status,
-        page: args.pageable.page,
-        size: args.pageable.size,
-        sort: args.sort ?? args.pageable.sort,
-      },
-    })
-  ).data;
+  const response = await authApi.get<
+    CommonResponse<PaginationMeta & { content: QnAListItem[] }>
+  >(`/study-rooms/${args.studyRoomId}/qna`, {
+    params: {
+      status: args.status,
+      page: args.pageable.page,
+      size: args.pageable.size,
+      sort: args.sort ?? args.pageable.sort,
+    },
+  });
 
   return response.data;
 };
@@ -66,11 +65,9 @@ export const getStudentQnADetail = async (args: {
   studyRoomId: number;
   contextId: number;
 }) => {
-  const response = (
-    await apiClient.get<CommonResponse<QnADetailResponse>>(
-      `/study-rooms/${args.studyRoomId}/qna/${args.contextId}`
-    )
-  ).data;
+  const response = await authApi.get<CommonResponse<QnADetailResponse>>(
+    `/study-rooms/${args.studyRoomId}/qna/${args.contextId}`
+  );
 
   return response.data;
 };
@@ -82,18 +79,16 @@ export const getTeacherQnAList = async (args: {
   status?: string;
   sort?: string;
 }) => {
-  const response = (
-    await apiClient.get<
-      CommonResponse<PaginationMeta & { content: QnAListItem[] }>
-    >(`/teacher/study-rooms/${args.studyRoomId}/qna`, {
-      params: {
-        status: args.status,
-        page: args.pageable.page,
-        size: args.pageable.size,
-        sort: args.sort ?? args.pageable.sort,
-      },
-    })
-  ).data;
+  const response = await authApi.get<
+    CommonResponse<PaginationMeta & { content: QnAListItem[] }>
+  >(`/teacher/study-rooms/${args.studyRoomId}/qna`, {
+    params: {
+      status: args.status,
+      page: args.pageable.page,
+      size: args.pageable.size,
+      sort: args.sort ?? args.pageable.sort,
+    },
+  });
 
   return response.data;
 };
@@ -103,11 +98,9 @@ export const getTeacherQnADetail = async (args: {
   studyRoomId: number;
   contextId: number;
 }) => {
-  const response = (
-    await apiClient.get<CommonResponse<QnADetailResponse>>(
-      `/teacher/study-rooms/${args.studyRoomId}/qna/${args.contextId}`
-    )
-  ).data;
+  const response = await authApi.get<CommonResponse<QnADetailResponse>>(
+    `/teacher/study-rooms/${args.studyRoomId}/qna/${args.contextId}`
+  );
 
   return response.data;
 };

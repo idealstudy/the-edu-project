@@ -2,7 +2,7 @@
 
 import { useReducer, useState } from 'react';
 
-import { usePathname } from 'next/navigation';
+//import { useSearchParams, useRouter } from 'next/navigation';
 
 import { ColumnLayout } from '@/components/layout/column-layout';
 import { ConfirmDialog } from '@/features/studyrooms/components/common/dialog/confirm-dialog';
@@ -20,9 +20,22 @@ import { StudyroomSidebarHeader } from './header';
 import { useDeleteStudyRoom } from './services/query';
 import { StudyStats } from './status';
 
-export const StudyroomSidebar = ({ studyRoomId }: { studyRoomId: number }) => {
-  const pathname = usePathname();
-  const segment = pathname.split('/').pop();
+/*const parseGroupIdParam = (value: string | null): number | 'all' => {
+  if (!value) return 'all';
+  if (value === 'all') return 'all';
+  const parsed = Number.parseInt(value, 10);
+  return Number.isNaN(parsed) ? 'all' : parsed;
+};*/
+
+export const StudyroomSidebar = ({
+  studyRoomId,
+  segment,
+}: {
+  studyRoomId: number;
+  segment: string | undefined;
+}) => {
+  // const router = useRouter();
+  // const searchParams = useSearchParams();
 
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
   const [selectedGroupId, setSelectedGroupId] = useState<number | 'all'>('all');
@@ -30,7 +43,6 @@ export const StudyroomSidebar = ({ studyRoomId }: { studyRoomId: number }) => {
   const [deleteNoticeMsg, setDeleteNoticeMsg] =
     useState('수업노트 그룹이 삭제되었습니다.');
   const { role } = useRole();
-
   const { mutate: deleteStudyRoom } = useDeleteStudyRoom();
 
   const handleSelectGroupId = (id: number | 'all') => {
@@ -49,7 +61,7 @@ export const StudyroomSidebar = ({ studyRoomId }: { studyRoomId: number }) => {
     setDeleteNoticeMsg('스터디룸이 삭제되었습니다.');
     dispatch({ type: 'GO_TO_CONFIRM' });
   };
-
+  if (!segment) return null;
   return (
     <>
       {dialog.status === 'open' && dialog.kind === 'onConfirm' && (

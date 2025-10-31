@@ -1,5 +1,5 @@
 import { Role } from '@/features/auth/type';
-import { Pageable, PaginationMeta } from '@/lib/api';
+import { Pageable, PaginationMeta } from '@/types/http';
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 
 import type { StudyNoteGroup } from '../types';
@@ -36,14 +36,17 @@ export const getStudyNoteGroupInfiniteOption = (
 ) => {
   return infiniteQueryOptions({
     queryKey: [StudyRoomsGroupQueryKey.all, args, role],
-    queryFn: ({ pageParam = 0 }) => {
+    queryFn: async ({ pageParam = 0 }) => {
+      if (role !== 'ROLE_TEACHER' && role !== 'ROLE_STUDENT') {
+        throw new Error('role not ready');
+      }
+
       const req = {
         ...args,
         pageable: { ...args.pageable, page: pageParam },
       };
       if (role === 'ROLE_TEACHER') return getStudyNoteGroup(req);
-      if (role === 'ROLE_STUDENT') return getStudentStudyNoteGroup(req);
-      return Promise.reject(new Error('role not ready'));
+      return getStudentStudyNoteGroup(req);
     },
     initialPageParam: 0,
     getNextPageParam: (

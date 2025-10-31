@@ -1,5 +1,5 @@
 import { Role } from '@/features/auth/type';
-import { Sort } from '@/lib/api';
+import { Sort } from '@/types/http';
 
 export interface StudyNote {
   studyRoomId: number;

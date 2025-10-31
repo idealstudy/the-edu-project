@@ -1,27 +1,28 @@
 import {
   CheckEmailDuplicateBody,
   LoginBody,
-  LoginResponse,
   SignUpBody,
   VerifyCodeBody,
 } from '@/features/auth/type';
-import { api } from '@/lib/api';
+import { authApi, publicApi } from '@/lib/http/api';
 
-export const authApi = {
+export const authService = {
   login: async (body: LoginBody) => {
-    const response = await api.post('/auth/login', body);
-    return LoginResponse.parse(response);
+    await publicApi.post('/auth/login', body, { withCredentials: true });
   },
   logout: async () => {
-    return api.post('/auth/logout');
+    return authApi.post('/auth/logout');
+  },
+  getSession: async () => {
+    return authApi.get('/');
   },
   checkEmailDuplicate: async (body: CheckEmailDuplicateBody) => {
-    return api.post('/public/email-verifications/check-duplicate', body);
+    return publicApi.post('/public/email-verifications/check-duplicate', body);
   },
   verifyCode: async (body: VerifyCodeBody) => {
-    return api.post('/public/email-verifications/verify-code', body);
+    return publicApi.post('/public/email-verifications/verify-code', body);
   },
   signUp: async (body: SignUpBody) => {
-    return api.post('/auth/sign-up', body);
+    return publicApi.post('/auth/sign-up', body);
   },
 };

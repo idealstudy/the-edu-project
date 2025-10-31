@@ -48,10 +48,11 @@ export default function StudyNotePage() {
     sortKey: sort,
   };
 
-  const { data } = useStudyNotesQuery(role, {
+  const { data: studyNotes } = useStudyNotesQuery(role, {
     studyRoomId,
     pageable /*, keyword: search*/,
   });
+
   const { data: studyNotesByGroupId } = useStudyNotesByGroupIdQuery(role, {
     studyRoomId,
     teachingNoteGroupId: Number(selectedGroupId),
@@ -63,6 +64,7 @@ export default function StudyNotePage() {
     (page: number, { replace = false }: { replace?: boolean } = {}) => {
       const next = new URLSearchParams(searchParams.toString());
       next.set('page', String(page));
+
       const href = `${pathname}?${next.toString()}`;
       if (replace) router.replace(href);
       else router.push(href);
@@ -96,8 +98,8 @@ export default function StudyNotePage() {
     page: currentPage,
     totalPages:
       selectedGroupId === 'all'
-        ? data?.totalPages || 1
-        : studyNotesByGroupId?.data?.totalPages || 1,
+        ? studyNotes?.totalPages || 1
+        : studyNotesByGroupId?.totalPages || 1,
     onPageChange: handlePageChange,
   };
 
@@ -114,8 +116,8 @@ export default function StudyNotePage() {
       <StudyNotesList
         data={
           selectedGroupId === 'all'
-            ? data?.content || []
-            : studyNotesByGroupId?.data?.content || []
+            ? studyNotes?.content || []
+            : studyNotesByGroupId?.content || []
         }
         studyRoomId={studyRoomId}
         pageable={pageable}
