@@ -17,7 +17,7 @@ export default function Error({
   const auth = useAuth();
 
   if (error instanceof AuthError || error instanceof ForbiddenError) {
-    auth.logout();
+    void auth.logout();
     router.replace(ROUTE.LOGIN);
   }
 
