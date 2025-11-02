@@ -6,7 +6,7 @@ import Image from 'next/image';
 
 import { formatMMDDWeekday, getRelativeTimeString } from '@/lib/utils';
 
-import { ListItem } from '../common/list-item';
+import { ListItem } from '../studyrooms/components/common/list-item';
 import { StudyNotesDropdown } from './dropdown';
 import type { StudyNote, StudyNoteGroupPageable } from './type';
 

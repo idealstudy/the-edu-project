@@ -1,4 +1,5 @@
-import { CommonResponse, PaginationMeta, apiClient } from '@/lib/api';
+import { authApi } from '@/lib/http/api';
+import { CommonResponse, PaginationMeta } from '@/types/http';
 
 import {
   ConnectedMember,
@@ -8,39 +9,35 @@ import {
 } from '../type';
 
 export const getStudyRooms = async () => {
-  const response = (
-    await apiClient.get<CommonResponse<StudyRoom[]>>('/teacher/study-rooms')
-  ).data;
+  const response = await authApi.get<CommonResponse<StudyRoom[]>>(
+    '/teacher/study-rooms'
+  );
   return response.data;
 };
 
 export const getConnectMembers = async (roomId: number) => {
-  const response = (
-    await apiClient.get<
-      CommonResponse<
-        PaginationMeta & {
-          members: {
-            studentInfo: ConnectedMember;
-            parentInfo: ConnectedMember | null;
-          }[];
-        }
-      >
-    >(`/teacher/study-rooms/${roomId}/members`)
-  ).data;
+  const response = await authApi.get<
+    CommonResponse<
+      PaginationMeta & {
+        members: {
+          studentInfo: ConnectedMember;
+          parentInfo: ConnectedMember | null;
+        }[];
+      }
+    >
+  >(`/teacher/study-rooms/${roomId}/members`);
 
   return response.data;
 };
 
 export const writeStudyNote = async (data: StudyNote) => {
-  await apiClient.post('/teacher/teaching-notes', data);
+  await authApi.post('/teacher/teaching-notes', data);
 };
 
 export const getStudyNoteGroups = async (roomId: number) => {
-  const response = (
-    await apiClient.get<CommonResponse<StudyNoteGroupResponse>>(
-      `teacher/study-rooms/${roomId}/teaching-note-groups`
-    )
-  ).data;
+  const response = await authApi.get<CommonResponse<StudyNoteGroupResponse>>(
+    `teacher/study-rooms/${roomId}/teaching-note-groups`
+  );
 
   return response.data;
 };
@@ -49,14 +46,12 @@ export const createStudyNoteGroup = async (data: {
   studyRoomId: number;
   title: string;
 }) => {
-  const response = (
-    await apiClient.post<
-      CommonResponse<{
-        id: number;
-        title: string;
-      }>
-    >(`/teacher/teaching-note-groups`, data)
-  ).data;
+  const response = await authApi.post<
+    CommonResponse<{
+      id: number;
+      title: string;
+    }>
+  >(`/teacher/teaching-note-groups`, data);
 
   return response.data;
 };

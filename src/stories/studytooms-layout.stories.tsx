@@ -4,9 +4,9 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { DropdownMenu } from '../components/ui/dropdown-menu';
+import { StudyNotesList } from '../features/studynotes/list';
 import { StudyRoomDetailLayout } from '../features/studyrooms/components/common/layout';
 import { ListItem } from '../features/studyrooms/components/common/list-item';
-import { StudyNotesList } from '../features/studyrooms/components/studynotes/list';
 
 const queryClient = new QueryClient({
   defaultOptions: {

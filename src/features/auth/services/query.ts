@@ -4,16 +4,16 @@ import { ROUTE } from '@/constants/route';
 import { useMutation } from '@tanstack/react-query';
 
 import { useAuth } from '../hooks/use-auth';
-import { authApi } from './api';
+import { authService } from './api';
 
 export const useLoginMutation = () => {
   const router = useRouter();
   const auth = useAuth();
 
   return useMutation({
-    mutationFn: authApi.login,
-    onSuccess: (data) => {
-      auth.login(data.token);
+    mutationFn: authService.login,
+    onSuccess: async () => {
+      await auth.login();
       router.replace(ROUTE.DASHBOARD.HOME);
     },
   });
@@ -24,9 +24,9 @@ export const useLogoutMutation = () => {
   const auth = useAuth();
 
   return useMutation({
-    mutationFn: authApi.logout,
+    mutationFn: authService.logout,
     onSuccess: async () => {
-      auth.logout();
+      await auth.logout();
       router.replace(ROUTE.HOME);
     },
   });
@@ -34,18 +34,18 @@ export const useLogoutMutation = () => {
 
 export const useCheckEmailDuplicate = () => {
   return useMutation({
-    mutationFn: authApi.checkEmailDuplicate,
+    mutationFn: authService.checkEmailDuplicate,
   });
 };
 
 export const useSignUp = () => {
   return useMutation({
-    mutationFn: authApi.signUp,
+    mutationFn: authService.signUp,
   });
 };
 
 export const useVerifyCode = () => {
   return useMutation({
-    mutationFn: authApi.verifyCode,
+    mutationFn: authService.verifyCode,
   });
 };

@@ -18,7 +18,6 @@ export const Header = () => {
   // const router = useRouter();
   // const { mutate: logout } = useLogoutMutation();
   const { logout } = useAuth();
-
   const handleLogout = () => {
     logout();
     // TODO: 세션 유효한지 확인하는 API / Logout API 부재로
@@ -130,7 +129,7 @@ export const Header = () => {
             />
           </div>
         )}
-        {session === null && (
+        {!session && (
           <div className="flex gap-5">
             <Link
               href={ROUTE.LOGIN}

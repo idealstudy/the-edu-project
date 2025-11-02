@@ -3,15 +3,32 @@ import {
   removeLocalStorage,
   setLocalStorage,
 } from '@/lib/local-storage';
+import Cookies from 'js-cookie';
 
-export const getSessionToken = () => {
+export const getLocalSessionToken = () => {
   return getLocalStorage('accessToken');
 };
 
-export const saveSessionToken = (token: string) => {
+export const saveLocalSessionToken = (token: string) => {
   setLocalStorage('accessToken', token);
 };
 
-export const removeSessionToken = () => {
+export const removeLocalSessionToken = () => {
   removeLocalStorage('accessToken');
+};
+
+export const getSessionToken = () => {
+  return Cookies.get('Authorization');
+};
+
+export const saveSessionToken = (token: string) => {
+  Cookies.set('Authorization', token, {
+    path: '/',
+    sameSite: 'strict',
+    secure: true,
+  });
+};
+
+export const removeSessionToken = () => {
+  Cookies.remove('Authorization', { path: '/' });
 };

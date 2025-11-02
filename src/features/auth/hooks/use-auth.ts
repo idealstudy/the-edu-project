@@ -1,28 +1,24 @@
 import { queryKey } from '@/constants/query-key';
+import { sessionQueryOption } from '@/features/auth/services/query-options';
 import { useQueryClient } from '@tanstack/react-query';
-
-import { parseSession } from '../services/session';
-import {
-  removeSessionToken,
-  saveSessionToken,
-} from '../services/session-token';
 
 export const useAuth = () => {
   const queryClient = useQueryClient();
 
-  const login = (token: string) => {
-    const session = parseSession(token);
-    queryClient.setQueryData(queryKey.session, session);
-    saveSessionToken(token);
+  const login = async () => {
+    // NOTE: 로그인 성공 후 세션 캐시를 갱신하기 위해 기존 데이터 무효화
+    await queryClient.invalidateQueries({
+      queryKey: queryKey.session,
+    });
+
+    // NOTE: 최신 세션 정보 강제 로드(ex.사용자 프로필 동기화)
+    await queryClient.ensureQueryData(sessionQueryOption);
   };
 
-  const logout = () => {
-    // TODO: logout API가 나온다면 이부분 작업 예정
-    // queryClient.removeQueries({
-    //   queryKey: queryKey.session,
-    //   exact: true,
-    // });
-    removeSessionToken();
+  const logout = async () => {
+    // NOTE: 로그아웃 시 세션 캐시 초기화 및 무효화
+    queryClient.setQueryData(queryKey.session, null);
+    await queryClient.invalidateQueries({ queryKey: queryKey.session });
   };
 
   return {

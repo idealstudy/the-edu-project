@@ -3,15 +3,12 @@
 import { useState } from 'react';
 
 import { Pagination } from '@/components/ui/pagination';
+import { MemberListItem } from '@/features/member/member-list-item';
 import { useMemberFilter } from '@/features/studynotes/hooks/use-member-filter';
-import { MemberListItem } from '@/features/studynotes/member/member-list-item';
+import { SearchFilterBar } from '@/features/studynotes/search-filter-bar';
 import { useGetStudyNoteMembers } from '@/features/studynotes/services/query';
 import { transformMembersData } from '@/features/studynotes/services/transform';
-import { SearchFilterBar } from '@/features/studyrooms/components/studynotes/search-filter-bar';
-import {
-  StudyNoteLimit,
-  StudyNoteSortKey,
-} from '@/features/studyrooms/components/studynotes/type';
+import { StudyNoteLimit, StudyNoteSortKey } from '@/features/studynotes/type';
 
 type Props = {
   studyRoomId: number;

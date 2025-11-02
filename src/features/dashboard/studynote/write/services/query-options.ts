@@ -1,4 +1,4 @@
-import { Pageable } from '@/lib/api';
+import { Pageable } from '@/types/http';
 import { queryOptions } from '@tanstack/react-query';
 
 import { CourseTargetStudentInfo } from '../type';
