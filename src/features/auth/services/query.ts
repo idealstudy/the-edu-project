@@ -16,7 +16,6 @@ export const useLoginMutation = () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
       await auth.login();
       router.replace(ROUTE.DASHBOARD.HOME);
-      // router.replace("/dashboard");
     },
   });
 };

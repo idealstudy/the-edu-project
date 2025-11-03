@@ -5,12 +5,10 @@ interface AuthState {
   user: Member | null;
   setUser: (user: Member | null) => void;
   clearUser: () => void;
-  isAuthenticated: boolean;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   setUser: (user) => set({ user }),
   clearUser: () => set({ user: null }),
-  isAuthenticated: false,
 }));

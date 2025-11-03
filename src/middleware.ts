@@ -5,11 +5,11 @@ export function middleware(req: NextRequest) {
   if (process.env.NODE_ENV !== 'production') return NextResponse.next();
 
   const { pathname } = req.nextUrl;
-  const auth = req.cookies.get('Authorization');
+  const hasAuth = req.cookies.get('Authorization');
 
   if (pathname.startsWith('/login')) return NextResponse.next();
 
-  if (pathname.startsWith('/dashboard') && !auth) {
+  if (pathname.startsWith('/dashboard') && !hasAuth) {
     const url = req.nextUrl.clone();
     url.pathname = '/login';
     return NextResponse.redirect(url);
