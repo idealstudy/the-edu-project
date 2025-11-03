@@ -1,14 +1,16 @@
 import type { Member } from '@/features/member/model/types';
 import { create } from 'zustand';
 
-interface SessionState {
+interface AuthState {
   user: Member | null;
   setUser: (user: Member | null) => void;
   clearUser: () => void;
+  isAuthenticated: boolean;
 }
 
-export const useSessionStore = create<SessionState>((set) => ({
+export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   setUser: (user) => set({ user }),
   clearUser: () => set({ user: null }),
+  isAuthenticated: false,
 }));

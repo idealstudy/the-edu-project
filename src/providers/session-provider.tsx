@@ -3,11 +3,11 @@
 import { ReactNode, useEffect } from 'react';
 
 import { useMemberInfo } from '@/features/member/hooks/use-queries';
-import { useSessionStore } from '@/store/session-store';
+import { useAuthStore } from '@/store/session-store';
 
 export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const { data: member, isLoading } = useMemberInfo();
-  const { setUser, clearUser } = useSessionStore();
+  const { setUser, clearUser } = useAuthStore();
 
   useEffect(() => {
     if (member) setUser(member);

@@ -7,14 +7,14 @@ import Link from 'next/link';
 
 import { ROUTE } from '@/constants/route';
 import { useAuth } from '@/features/auth/hooks/use-auth';
-import { useSessionStore } from '@/store/session-store';
+import { useAuthStore } from '@/store/session-store';
 
 // import { useLogoutMutation } from '@/features/auth/services/query';
 
 import { DropdownMenu } from '../ui/dropdown-menu';
 
 export const Header = () => {
-  const session = useSessionStore((s) => s.user);
+  const session = useAuthStore((s) => s.user);
 
   // const router = useRouter();
   // const { mutate: logout } = useLogoutMutation();
@@ -53,9 +53,7 @@ export const Header = () => {
     <header className="h-header-height fixed top-0 right-0 left-0 z-10 flex items-center border-b border-gray-200 bg-[#1A1A1A] px-8">
       <div className="mx-auto flex w-full items-center justify-between">
         <div className="flex items-center gap-2">
-          <Link
-            href={session === undefined ? ROUTE.HOME : ROUTE.DASHBOARD.HOME}
-          >
+          <Link href={session === null ? ROUTE.HOME : ROUTE.DASHBOARD.HOME}>
             <Image
               src={'/logo.svg'}
               alt="THE EDU 로고"
@@ -120,9 +118,11 @@ export const Header = () => {
             <p className="desktop:flex mr-2 hidden items-center gap-2 text-[14px] font-[600] text-white">
               {session.nickname}
             </p>
-            <div className="desktop:flex hidden items-center gap-2 rounded-[40px] border px-2 py-[2px] text-[12px] font-[400px] text-[#ffffff]">
-              {roleMetaMap[session.role].label}
-            </div>
+            {session?.role && (
+              <div className="desktop:flex hidden items-center gap-2 rounded-[40px] border px-2 py-[2px] text-[12px] font-[400px] text-[#ffffff]">
+                {roleMetaMap[session.role]?.label}
+              </div>
+            )}
             <Image
               src={'/ic_hamburger.svg'}
               alt="햄버거 메뉴 아이콘"

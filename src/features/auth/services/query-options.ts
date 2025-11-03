@@ -1,5 +1,6 @@
 import { queryKey } from '@/constants/query-key';
-import { fetchMemberInfo } from '@/features/member/api/requests';
+import { authService } from '@/features/auth/services/api';
+// import { fetchMemberInfo } from '@/features/member/api/requests';
 import { queryOptions } from '@tanstack/react-query';
 
 /**
@@ -12,6 +13,6 @@ import { queryOptions } from '@tanstack/react-query';
  */
 export const sessionQueryOption = queryOptions({
   queryKey: queryKey.session,
-  queryFn: fetchMemberInfo,
+  queryFn: authService.getSession,
   staleTime: 5 * 60 * 1000,
 });
