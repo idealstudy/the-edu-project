@@ -1,6 +1,7 @@
+// import { sessionQueryOption } from '@/features/auth/services/query-options';
 import { queryKey } from '@/constants/query-key';
-import { getLocalSession } from '@/features/auth/services/session';
-import type { Session } from '@/features/auth/type';
+import { fetchMemberInfo } from '@/features/member/api/requests';
+import { Member } from '@/features/member/model/types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 /**
@@ -16,12 +17,15 @@ export const useRole = () => {
 
   const { data, isLoading } = useQuery({
     queryKey: queryKey.session,
-    queryFn: getLocalSession,
-    initialData: () => qc.getQueryData<Session>(queryKey.session),
-    staleTime: 0,
-    refetchOnMount: 'always',
+    queryFn: fetchMemberInfo,
+    initialData: () => qc.getQueryData<Member>(queryKey.session),
+    refetchOnMount: false,
     refetchOnWindowFocus: false,
+    retry: false,
   });
 
-  return { role: data?.auth, isLoading };
+  return { role: data?.role, isLoading };
+  /*const { data, isLoading } = useQuery(sessionQueryOption);
+
+  return { role: data?.auth, isLoading };*/
 };

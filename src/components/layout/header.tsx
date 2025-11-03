@@ -7,19 +7,20 @@ import Link from 'next/link';
 
 import { ROUTE } from '@/constants/route';
 import { useAuth } from '@/features/auth/hooks/use-auth';
-import { useSession } from '@/features/auth/hooks/use-session';
+import { useSessionStore } from '@/store/session-store';
 
 // import { useLogoutMutation } from '@/features/auth/services/query';
 
 import { DropdownMenu } from '../ui/dropdown-menu';
 
 export const Header = () => {
-  const { data: session } = useSession();
+  const session = useSessionStore((s) => s.user);
+
   // const router = useRouter();
   // const { mutate: logout } = useLogoutMutation();
   const { logout } = useAuth();
   const handleLogout = () => {
-    logout();
+    void logout();
     // TODO: 세션 유효한지 확인하는 API / Logout API 부재로
     // window.location 사용 => 추후에 router.replace로 변경
     window.location.replace(ROUTE.HOME);
@@ -27,6 +28,10 @@ export const Header = () => {
   };
 
   const roleMetaMap = {
+    ROLE_ADMIN: {
+      label: '관리자',
+      className: 'border-white text-white',
+    },
     ROLE_STUDENT: {
       label: '학생',
       className: 'border-white text-white',
@@ -49,9 +54,7 @@ export const Header = () => {
       <div className="mx-auto flex w-full items-center justify-between">
         <div className="flex items-center gap-2">
           <Link
-            href={
-              session?.auth === undefined ? ROUTE.HOME : ROUTE.DASHBOARD.HOME
-            }
+            href={session === undefined ? ROUTE.HOME : ROUTE.DASHBOARD.HOME}
           >
             <Image
               src={'/logo.svg'}
@@ -67,7 +70,7 @@ export const Header = () => {
             width={44}
             height={20}
           />
-          {session?.auth && (
+          {session && (
             <>
               {/* <Link
                 href={ROUTE.DASHBOARD.HOME}
@@ -87,7 +90,7 @@ export const Header = () => {
             </>
           )}
         </div>
-        {session?.auth && (
+        {session && (
           <div className="flex items-center">
             <Image
               src={'/img_header_bell.svg'}
@@ -118,7 +121,7 @@ export const Header = () => {
               {session.nickname}
             </p>
             <div className="desktop:flex hidden items-center gap-2 rounded-[40px] border px-2 py-[2px] text-[12px] font-[400px] text-[#ffffff]">
-              {roleMetaMap[session.auth].label}
+              {roleMetaMap[session.role].label}
             </div>
             <Image
               src={'/ic_hamburger.svg'}

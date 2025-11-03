@@ -29,7 +29,7 @@ export const EmptyConnectionDialog = () => {
   const hasConnections =
     Array.isArray(data?.connectionList) && data.connectionList.length > 0;
 
-  const userRole = session.data?.auth;
+  const userRole = session.data?.role;
 
   const [isOpen, setIsOpen] = useState(false);
 

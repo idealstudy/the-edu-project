@@ -14,7 +14,7 @@ export const authService = {
     return authApi.post('/auth/logout');
   },
   getSession: async () => {
-    return authApi.get('/');
+    return authApi.get('/member/info');
   },
   checkEmailDuplicate: async (body: CheckEmailDuplicateBody) => {
     return publicApi.post('/public/email-verifications/check-duplicate', body);

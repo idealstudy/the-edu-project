@@ -1,7 +1,6 @@
 import { queryKey } from '@/constants/query-key';
+import { fetchMemberInfo } from '@/features/member/api/requests';
 import { queryOptions } from '@tanstack/react-query';
-
-import { getLocalSession } from './session';
 
 /**
  * [TODO 임시 버전]
@@ -13,6 +12,6 @@ import { getLocalSession } from './session';
  */
 export const sessionQueryOption = queryOptions({
   queryKey: queryKey.session,
-  queryFn: getLocalSession,
-  retry: false,
+  queryFn: fetchMemberInfo,
+  staleTime: 5 * 60 * 1000,
 });

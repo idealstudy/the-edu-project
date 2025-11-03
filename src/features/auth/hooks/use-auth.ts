@@ -1,5 +1,4 @@
 import { queryKey } from '@/constants/query-key';
-import { sessionQueryOption } from '@/features/auth/services/query-options';
 import { useQueryClient } from '@tanstack/react-query';
 
 export const useAuth = () => {
@@ -10,9 +9,6 @@ export const useAuth = () => {
     await queryClient.invalidateQueries({
       queryKey: queryKey.session,
     });
-
-    // NOTE: 최신 세션 정보 강제 로드(ex.사용자 프로필 동기화)
-    await queryClient.ensureQueryData(sessionQueryOption);
   };
 
   const logout = async () => {
