@@ -1,0 +1,9 @@
+app.dev.the-edu.site {
+    tls app.dev.the-edu.site.pem app.dev.the-edu.site-key.pem
+
+    @api path /api/*
+    reverse_proxy @api https://dev.the-edu.site {
+    header_up Host {upstream_hostport}
+}
+    reverse_proxy localhost:3000
+}

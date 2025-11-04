@@ -1,28 +1,29 @@
-import { queryKey } from '@/constants/query-key';
-import { sessionQueryOption } from '@/features/auth/services/query-options';
+import { authService } from '@/features/auth/services/api';
+import { memberKeys } from '@/features/member/api/keys';
+import { useAuthStore } from '@/store/session-store';
 import { useQueryClient } from '@tanstack/react-query';
 
 export const useAuth = () => {
   const queryClient = useQueryClient();
+  const { user, setUser, clearUser } = useAuthStore();
 
-  const login = async () => {
-    // NOTE: 로그인 성공 후 세션 캐시를 갱신하기 위해 기존 데이터 무효화
-    await queryClient.invalidateQueries({
-      queryKey: queryKey.session,
-    });
+  const fetchSession = async () => {
+    const member = await authService.getSession();
+    setUser(member);
+    queryClient.setQueryData(memberKeys.info(), member);
+    return member;
+  };
 
-    // NOTE: 최신 세션 정보 강제 로드(ex.사용자 프로필 동기화)
-    await queryClient.ensureQueryData(sessionQueryOption);
+  const login = async (form?: { email: string; password: string }) => {
+    if (form) await authService.login(form);
+    return fetchSession();
   };
 
   const logout = async () => {
     // NOTE: 로그아웃 시 세션 캐시 초기화 및 무효화
-    queryClient.setQueryData(queryKey.session, null);
-    await queryClient.invalidateQueries({ queryKey: queryKey.session });
+    clearUser();
+    queryClient.removeQueries({ queryKey: memberKeys.info(), exact: true });
   };
 
-  return {
-    login,
-    logout,
-  };
+  return { user, login, logout, fetchSession };
 };

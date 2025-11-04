@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "https": "next dev -H app.dev.the-edu.site -p 3000 --experimental-https",
     "build": "next build",
     "start": "next start",
     "lint": "next lint --max-warnings 0",

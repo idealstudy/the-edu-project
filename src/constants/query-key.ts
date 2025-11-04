@@ -1,3 +1,3 @@
 export const queryKey = {
-  session: ['session'],
+  session: ['member', 'info'],
 } as const;

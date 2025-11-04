@@ -13,6 +13,7 @@ export const useLoginMutation = () => {
   return useMutation({
     mutationFn: authService.login,
     onSuccess: async () => {
+      await new Promise((resolve) => setTimeout(resolve, 100));
       await auth.login();
       router.replace(ROUTE.DASHBOARD.HOME);
     },
