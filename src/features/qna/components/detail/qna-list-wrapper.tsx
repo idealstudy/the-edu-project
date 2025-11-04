@@ -7,7 +7,7 @@ import { useRole } from '@/hooks/use-role';
 import { Pageable } from '@/types/http';
 
 import { useQnAsQuery } from '../../services/query';
-import { QnAFilter, SortKey } from '../../type';
+import { QnAFilter, SortKey } from '../../types';
 import QuestionList from './qna-list';
 import { SearchFilterBar } from './search-filter-bar';
 

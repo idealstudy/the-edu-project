@@ -1,4 +1,4 @@
-import { Role } from '../auth/type';
+import { Role } from '../auth/types';
 
 export type SortKey = 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
 

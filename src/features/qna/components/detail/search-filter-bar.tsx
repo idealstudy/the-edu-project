@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/features/studyrooms/components/common/select';
 
-import { LimitNumber, QnAFilter, SortKey } from '../../type';
+import { LimitNumber, QnAFilter, SortKey } from '../../types';
 
 type Props = {
   search: string;

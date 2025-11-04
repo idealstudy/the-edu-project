@@ -1,4 +1,4 @@
-import { Role } from '@/features/auth/type';
+import { Role } from '@/features/auth/types';
 import { getStudyNoteDetail } from '@/features/dashboard/studynote/detail/service/api';
 import { queryOptions } from '@tanstack/react-query';
 

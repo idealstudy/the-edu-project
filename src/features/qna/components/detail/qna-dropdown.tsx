@@ -8,7 +8,7 @@ import {
   initialDialogState,
 } from '@/features/studyrooms/hooks/useDialogReducer';
 
-import { QnAListItem } from '../../type';
+import { QnAListItem } from '../../types';
 
 type Props = {
   open: number;

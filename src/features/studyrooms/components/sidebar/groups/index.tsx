@@ -2,7 +2,7 @@ import { useReducer } from 'react';
 
 import Image from 'next/image';
 
-import { Role } from '@/features/auth/type.js';
+import { Role } from '@/features/auth/types.js';
 import {
   dialogReducer,
   initialDialogState,

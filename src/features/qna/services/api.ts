@@ -1,7 +1,7 @@
 import { authApi } from '@/lib/http/api';
 import { CommonResponse, Pageable, PaginationMeta } from '@/types/http';
 
-import { QnADetailResponse, QnAListItem } from '../type';
+import { QnADetailResponse, QnAListItem } from '../types';
 
 // POST /api/study-rooms/{studyRoomId}/qna - 질문 생성
 export const writeQnA = async (args: {

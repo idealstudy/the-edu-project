@@ -1,7 +1,7 @@
 import { sessionEnvelope } from '@/features/auth/schemas/login';
 import { authService } from '@/features/auth/services/api';
 import { getSessionToken } from '@/features/auth/services/session-token';
-import { Session, SessionPayload } from '@/features/auth/type';
+import { Session, SessionPayload } from '@/features/auth/types';
 import { AuthError } from '@/lib/error';
 import * as jose from 'jose';
 

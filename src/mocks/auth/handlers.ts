@@ -1,5 +1,5 @@
-import { VerifyCodeBody } from '@/features/auth/type';
-import type { Session } from '@/features/auth/type';
+import { VerifyCodeBody } from '@/features/auth/types';
+import type { Session } from '@/features/auth/types';
 import { BASE_URL } from '@/lib/http/clients';
 import { HttpResponse, http } from 'msw';
 

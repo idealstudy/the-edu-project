@@ -1,4 +1,4 @@
-import { Role } from '@/features/auth/type';
+import { Role } from '@/features/auth/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import type { StudyNoteGroupPageable } from '../type';
