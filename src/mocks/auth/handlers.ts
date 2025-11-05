@@ -1,6 +1,6 @@
 import { VerifyCodeBody } from '@/features/auth/types';
 import type { Session } from '@/features/auth/types';
-import { BASE_URL } from '@/lib/http/clients';
+import { BASE_URL } from '@/lib/http';
 import { HttpResponse, http } from 'msw';
 
 export const DUPLICATE_EMAIL = 'test@gmail.com';

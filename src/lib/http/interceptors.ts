@@ -1,6 +1,5 @@
 import { AuthError, ForbiddenError } from '@/lib/error';
-import { authHttp } from '@/lib/http/clients';
-import { ensureRefreshSession } from '@/lib/http/refresh';
+import { authHttp, ensureRefreshSession } from '@/lib/http';
 import { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 type RetryableConfig = InternalAxiosRequestConfig & { _retry?: boolean };

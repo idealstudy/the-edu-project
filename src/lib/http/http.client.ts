@@ -1,6 +1,5 @@
+import { authHttp, publicHttp } from '@/lib/http';
 import type { AxiosInstance } from 'axios';
-
-import { authHttp, publicHttp } from './clients';
 
 // HTTP 요청 래퍼
 // NOTE: publicApi - 비로그인 상태에서도 호출 가능한 API

@@ -1,5 +1,8 @@
-import { installHttpInterceptors } from '@/lib/http/interceptors';
-import { ensureRefreshSession, refreshSession } from '@/lib/http/refresh';
+import {
+  ensureRefreshSession,
+  installHttpInterceptors,
+  refreshSession,
+} from '@/lib/http';
 
 let ejectInterceptors: (() => void) | null = null;
 export const bootstrap = () => {
