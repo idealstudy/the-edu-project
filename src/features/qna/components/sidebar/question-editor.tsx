@@ -1,5 +1,4 @@
-import { TextEditor } from '@/features/editor/components/text-editor';
-import { useTextEditor } from '@/features/editor/hooks/use-editor';
+import { TextEditor, useTextEditor } from '@/components/editor';
 
 const QuestionEditor = () => {
   const textEditor = useTextEditor();

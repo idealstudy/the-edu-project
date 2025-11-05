@@ -1,13 +1,7 @@
+import { defaultExtensions } from '@/components/editor/model/extensions';
+import { TextViewerProps } from '@/components/editor/model/types';
 import { cn } from '@/lib/utils';
 import { EditorContent, useEditor } from '@tiptap/react';
-
-import { TextEditorValue } from '../utils';
-import { defaultExtensions } from '../utils/extensions';
-
-type TextViewerProps = {
-  className?: string;
-  value: TextEditorValue;
-};
 
 export const TextViewer = ({ className, value }: TextViewerProps) => {
   const editor = useEditor({

@@ -1,19 +1,12 @@
 import { useMemo } from 'react';
 
+import { defaultExtensions } from '@/components/editor/model/extensions';
+import { TextEditorProps } from '@/components/editor/model/types';
 import { cn } from '@/lib/utils';
 import { Placeholder } from '@tiptap/extensions';
 import { EditorContent, useEditor } from '@tiptap/react';
 
-import { TextEditorValue } from '../utils';
-import { defaultExtensions } from '../utils/extensions';
 import { Toolbar } from './toolbar';
-
-type TextEditorProps = {
-  className?: string;
-  value: TextEditorValue;
-  onChange: (value: TextEditorValue) => void;
-  placeholder?: string;
-};
 
 export const TextEditor = ({
   className,

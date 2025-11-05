@@ -5,11 +5,11 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
 
+import { TextEditor } from '@/components/editor';
 import { ColumnLayout } from '@/components/layout/column-layout';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { ROUTE } from '@/constants/route';
-import { TextEditor } from '@/features/editor/components/text-editor';
 import { useRole } from '@/hooks/use-role';
 import { JSONContent } from '@tiptap/react';
 

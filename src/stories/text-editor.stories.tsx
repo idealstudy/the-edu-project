@@ -1,6 +1,4 @@
-import { TextEditor } from '@/features/editor/components/text-editor';
-import { TextViewer } from '@/features/editor/components/text-viewer';
-import { useTextEditor } from '@/features/editor/hooks/use-editor';
+import { TextEditor, TextViewer, useTextEditor } from '@/components/editor';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta = {
@@ -33,20 +31,22 @@ export const Editor: Story = {
 };
 
 // 좁은 넓이
-export const NarrowWidth: Story = {
-  render: () => {
-    const textEditor = useTextEditor();
+const NarrowWidthEditor = () => {
+  const textEditor = useTextEditor(); // ✅ 훅 호출 OK! (규칙 준수)
 
-    return (
-      <div className="w-[340px]">
-        <TextEditor
-          value={textEditor.value}
-          onChange={textEditor.onChange}
-          placeholder="수업 내용을 작성해보세요."
-        />
-      </div>
-    );
-  },
+  return (
+    <div className="w-[340px]">
+      <TextEditor
+        value={textEditor.value}
+        onChange={textEditor.onChange}
+        placeholder="수업 내용을 작성해보세요."
+      />
+    </div>
+  );
+};
+
+export const NarrowWidth: Story = {
+  render: () => <NarrowWidthEditor />,
 };
 
 export const Viewer: Story = {

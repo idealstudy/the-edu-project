@@ -1,6 +1,4 @@
-import { JSONContent } from '@tiptap/react';
-
-export type TextEditorValue = JSONContent;
+import { TextEditorValue } from '@/components/editor/model/types';
 
 export const initialTextEditorValue: TextEditorValue = {
   type: 'doc',

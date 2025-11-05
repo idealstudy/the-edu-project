@@ -1,13 +1,10 @@
+import { ToolbarProps } from '@/components/editor/model/types';
 import { cn } from '@/lib/utils';
-import { Editor, useEditorState } from '@tiptap/react';
+import { useEditorState } from '@tiptap/react';
 import {
   Popover as PopoverPrimitives,
   Select as SelectPrimitives,
 } from 'radix-ui';
-
-type ToolbarProps = {
-  editor: Editor;
-};
 
 const FONT_SIZE_OPTIONS = [12, 14, 16, 20, 24] as const;
 const DEFAULT_FONT_SIZE = 16;
