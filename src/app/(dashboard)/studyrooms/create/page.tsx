@@ -2,7 +2,7 @@ import React from 'react';
 
 import { ColumnLayout } from '@/components/layout/column-layout';
 import { Sidebar } from '@/components/layout/sidebar';
-import CreateStudyRoomFlow from '@/features/studyrooms/components/create/CreateStudyRoomFlow';
+import CreateStudyRoomFlow from '@/features/study-rooms/components/create/CreateStudyRoomFlow';
 
 export default function CreateStudyRoomPage() {
   return (

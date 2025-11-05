@@ -1,9 +1,8 @@
 import Image from 'next/image';
 
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
+import { ListItem } from '@/features/study-rooms/components/common/list-item';
 import type { Meta, StoryObj } from '@storybook/react';
-
-import { ListItem } from '../features/studyrooms/components/common/list-item';
 
 type ListItemStoryArgs = {
   title: string;

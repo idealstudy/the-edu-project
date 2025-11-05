@@ -4,11 +4,11 @@ import { useState } from 'react';
 
 import { Pagination } from '@/components/ui/pagination';
 import { MemberListItem } from '@/features/member/member-list-item';
-import { useMemberFilter } from '@/features/studynotes/hooks/use-member-filter';
-import { SearchFilterBar } from '@/features/studynotes/search-filter-bar';
-import { useGetStudyNoteMembers } from '@/features/studynotes/services/query';
-import { transformMembersData } from '@/features/studynotes/services/transform';
-import { StudyNoteLimit, StudyNoteSortKey } from '@/features/studynotes/type';
+import { useMemberFilter } from '@/features/study-notes/hooks/use-member-filter';
+import { SearchFilterBar } from '@/features/study-notes/search-filter-bar';
+import { useGetStudyNoteMembers } from '@/features/study-notes/services/query';
+import { transformMembersData } from '@/features/study-notes/services/transform';
+import { StudyNoteLimit, StudyNoteSortKey } from '@/features/study-notes/type';
 
 type Props = {
   studyRoomId: number;

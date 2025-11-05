@@ -1,7 +1,6 @@
 import { Icon } from '@/components/ui/icon';
+import { Tabs } from '@/features/study-rooms/components/common/tabs';
 import { Meta, StoryObj } from '@storybook/react';
-
-import { Tabs } from '../features/studyrooms/components/common/tabs';
 
 const meta = {
   title: 'studyroom/Tabs',

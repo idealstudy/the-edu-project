@@ -9,17 +9,17 @@ import {
   useSearchParams,
 } from 'next/navigation';
 
-import { StudyNotesList } from '@/features/studynotes/list';
+import { StudyNotesList } from '@/features/study-notes/list';
 import {
   useStudyNotesByGroupIdQuery,
   useStudyNotesQuery,
-} from '@/features/studynotes/services/query';
+} from '@/features/study-notes/services/query';
 import type {
   StudyNoteGroupPageable,
   StudyNoteLimit,
   StudyNoteSortKey,
-} from '@/features/studynotes/type';
-import { StudyRoomDetailLayout } from '@/features/studyrooms/components/common/layout';
+} from '@/features/study-notes/type';
+import { StudyRoomDetailLayout } from '@/features/study-rooms/components/common/layout';
 import { useRole } from '@/hooks/use-role';
 
 export default function StudyNotePage() {

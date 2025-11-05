@@ -3,55 +3,58 @@
 import React from 'react';
 
 import Image from 'next/image';
-import { useParams, useRouter } from 'next/navigation';
 
-import { ColumnLayout } from '@/components/layout/column-layout';
-import { Sidebar } from '@/components/layout/sidebar';
 import { Button } from '@/components/ui/button';
+import { Dialog } from '@/components/ui/dialog';
 import { InvitationField } from '@/features/study-rooms/components/student-invitation/InvitationField';
 import { useInvitationController } from '@/features/study-rooms/hooks/useInvitationController';
 import { useSendInvitationMutation } from '@/features/study-rooms/services/query';
 
-const InviteMemberPage = () => {
-  const router = useRouter();
-  const params = useParams();
-  const studyRoomId = Number(params.id);
-
+export const InvitationDialog = ({
+  isOpen,
+  placeholder,
+  onOpenChange,
+  title,
+  error,
+  studyRoomId,
+}: {
+  isOpen: boolean;
+  placeholder: string;
+  onOpenChange: () => void;
+  title: string;
+  error?: string;
+  studyRoomId: number;
+}) => {
   const invitation = useInvitationController(studyRoomId);
   const { mutate: sendInvitation, isPending } = useSendInvitationMutation();
 
   const handleSubmit = () => {
     const emails = Array.from(invitation.invitees.keys());
     if (!emails.length) return;
-    sendInvitation(
-      { studyRoomId, emails },
-      {
-        onSuccess: () =>
-          router.replace(`/studyrooms/${studyRoomId}/studynotes`),
-      }
-    );
+    sendInvitation({ studyRoomId, emails });
   };
 
   return (
-    <div className="desktop:pl-sidebar-width flex flex-col bg-[#F9F9F9]">
-      <Sidebar />
-      <ColumnLayout className="h-[calc(100vh-theme(space.header-height))] container mx-auto flex flex-col items-center overflow-auto pt-0">
-        <section className="w-3/4">
-          <h3
-            id="invite-label"
-            className="mb-4 text-2xl font-semibold"
-          >
-            초대할 학생이 있나요?
-          </h3>
+    <Dialog
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+    >
+      <Dialog.Content className="w-[798px]">
+        <Dialog.Header>
+          <Dialog.Title className="text-3xl">{title}</Dialog.Title>
+        </Dialog.Header>
+        <Dialog.Body className="mt-6">
+          <Dialog.Description className="sr-only">
+            초대할 사용자를 검색하고 초대할 수 있는 다이얼로그입니다.
+          </Dialog.Description>
           <InvitationField
-            labelledById="invite-label"
             invitation={invitation}
-            placeholder="초대할 학생을 검색후 선택해 주세요."
+            placeholder={placeholder}
           />
           <aside
             role="note"
             aria-labelledby="invitation-info-title"
-            className="mt-6 flex items-start gap-2"
+            className="flex items-start gap-2"
           >
             <Image
               src="/common/info.svg"
@@ -77,23 +80,19 @@ const InviteMemberPage = () => {
               </li>
             </ul>
           </aside>
-          <div className="mt-10 flex items-center justify-between space-y-4">
-            <p className="text-muted-foreground bg-key-color-secondary mb-0 rounded-md p-2 text-sm">
-              학생을 초대하지 않아도 스터디룸 기능을 먼저 사용할 수 있어요
-            </p>
+        </Dialog.Body>
+        <Dialog.Footer className="mt-6 justify-end">
+          <Dialog.Close asChild>
             <Button
-              type="button"
               className="w-[140px]"
-              disabled={!invitation.invitees.size || isPending}
+              disabled={!invitation.invitees.size || !!error || isPending}
               onClick={handleSubmit}
             >
               {isPending ? '초대 중…' : '초대하기'}
             </Button>
-          </div>
-        </section>
-      </ColumnLayout>
-    </div>
+          </Dialog.Close>
+        </Dialog.Footer>
+      </Dialog.Content>
+    </Dialog>
   );
 };
-
-export default InviteMemberPage;

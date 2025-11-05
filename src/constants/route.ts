@@ -6,7 +6,7 @@ export const ROUTE = {
     HOME: '/dashboard',
     STUDYROOM: {
       DETAIL: (id: number) => `/studyrooms/${id}/studynotes`,
-      CREATE: '/studyrooms/write',
+      CREATE: '/study-rooms/write',
     },
     STUDYNOTE: {
       CREATE: '/dashboard/studynote/write',
