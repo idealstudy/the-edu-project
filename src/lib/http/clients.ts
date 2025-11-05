@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const BASE_URL = 'https://dev.the-edu.site/api';
+export const BASE_URL = 'https://api.dev.the-edu.site/api';
 
 // NOTE: 인증 필요한 요청 전용 (쿠키 자동 포함)
 export const authHttp = axios.create({
