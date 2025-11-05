@@ -5,15 +5,15 @@ import { FieldPath, FormProvider, useForm } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
 
-import { ConfirmDialog } from '@/components/dialog/confirm-dialog';
+import {
+  ConfirmDialog,
+  dialogReducer,
+  initialDialogState,
+} from '@/components/dialog';
 import { Form } from '@/components/ui/form';
 import ProgressIndicator from '@/features/studyrooms/components/create/ProgressIndicator';
 import StepOne from '@/features/studyrooms/components/create/StepOne';
 import StepTwo from '@/features/studyrooms/components/create/StepTwo';
-import {
-  dialogReducer,
-  initialDialogState,
-} from '@/features/studyrooms/hooks/useDialogReducer';
 import { useStepValidate } from '@/features/studyrooms/hooks/useStepValidate';
 import {
   StepState,

@@ -4,8 +4,8 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 
+import { DialogAction } from '@/components/dialog';
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
-import { DialogAction } from '@/features/studyrooms/hooks/useDialogReducer';
 import { useRole } from '@/hooks/use-role';
 import { cn } from '@/lib/utils';
 

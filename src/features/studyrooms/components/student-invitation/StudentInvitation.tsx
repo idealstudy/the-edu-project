@@ -4,8 +4,8 @@ import React, { Dispatch } from 'react';
 
 import Image from 'next/image';
 
+import { DialogAction } from '@/components/dialog';
 import { Button } from '@/components/ui/button';
-import { DialogAction } from '@/features/studyrooms/hooks/useDialogReducer';
 
 const StudentInvitation = ({
   dispatch,

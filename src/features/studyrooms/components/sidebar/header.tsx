@@ -4,8 +4,8 @@ import { Dispatch } from 'react';
 
 import Image from 'next/image';
 
+import { DialogAction } from '@/components/dialog';
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
-import { DialogAction } from '@/features/studyrooms/hooks/useDialogReducer';
 
 export const StudyroomSidebarHeader = ({
   dispatch,

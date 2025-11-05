@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import { DialogAction } from '@/components/dialog';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import {
@@ -9,7 +10,6 @@ import {
   useUpdateStudyNoteToGroup,
 } from '@/features/studynotes/services/query';
 import { Select } from '@/features/studyrooms/components/common/select';
-import { DialogAction } from '@/features/studyrooms/hooks/useDialogReducer';
 import { getStudyNoteGroupInfiniteOption } from '@/features/studyrooms/services/query-options';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { useRole } from '@/hooks/use-role';

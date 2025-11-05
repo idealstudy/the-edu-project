@@ -2,9 +2,9 @@
 
 import React from 'react';
 
+import { DialogAction } from '@/components/dialog';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
-import { DialogAction } from '@/features/studyrooms/hooks/useDialogReducer';
 import { cn } from '@/lib/utils';
 
 // TODO: 스터디룸/공용 내 다이얼로그 컴포넌트를 공용컴포넌트로 분리해볼 예정

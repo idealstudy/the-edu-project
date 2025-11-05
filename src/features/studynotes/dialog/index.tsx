@@ -1,11 +1,8 @@
+import type { DialogAction, DialogState } from '@/components/dialog';
 import { useStudyNoteDetailQuery } from '@/features/dashboard/studynote/detail/service/query';
 import { useUpdateStudyNote } from '@/features/studynotes/services/query';
 import { ConfirmDialog } from '@/features/studyrooms/components/common/dialog/confirm-dialog';
 import { InputDialog } from '@/features/studyrooms/components/common/dialog/input-dialog';
-import type {
-  DialogAction,
-  DialogState,
-} from '@/features/studyrooms/hooks/useDialogReducer';
 
 import type { StudyNote, StudyNoteGroupPageable } from '../type';
 import { GroupMoveDialog } from './group-move-dialog';

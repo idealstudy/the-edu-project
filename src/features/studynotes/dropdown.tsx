@@ -3,11 +3,8 @@ import { useReducer } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { dialogReducer, initialDialogState } from '@/components/dialog';
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
-import {
-  dialogReducer,
-  initialDialogState,
-} from '@/features/studyrooms/hooks/useDialogReducer';
 
 import { StudyNotesDialog } from './dialog';
 import type { StudyNote } from './type';

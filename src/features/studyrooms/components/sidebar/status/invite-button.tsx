@@ -4,12 +4,9 @@ import { useReducer } from 'react';
 
 import Image from 'next/image';
 
+import { dialogReducer, initialDialogState } from '@/components/dialog';
 import { Button } from '@/components/ui/button';
 import { InputDialog } from '@/features/studyrooms/components/common/dialog/input-dialog';
-import {
-  dialogReducer,
-  initialDialogState,
-} from '@/features/studyrooms/hooks/useDialogReducer';
 
 export const InviteButton = () => {
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);

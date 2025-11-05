@@ -2,11 +2,8 @@ import { useReducer } from 'react';
 
 import Image from 'next/image';
 
+import { dialogReducer, initialDialogState } from '@/components/dialog';
 import { Role } from '@/features/auth/types.js';
-import {
-  dialogReducer,
-  initialDialogState,
-} from '@/features/studyrooms/hooks/useDialogReducer';
 import { getStudyNoteGroupInfiniteOption } from '@/features/studyrooms/services/query-options';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { useInfiniteQuery } from '@tanstack/react-query';

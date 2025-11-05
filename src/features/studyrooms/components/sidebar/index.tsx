@@ -2,6 +2,10 @@
 
 import { useReducer, useState } from 'react';
 
+import {
+  dialogReducer,
+  initialDialogState,
+} from '@/components/dialog/model/dialog-reducer';
 //import { useSearchParams, useRouter } from 'next/navigation';
 
 import { ColumnLayout } from '@/components/layout/column-layout';
@@ -10,10 +14,6 @@ import { InputDialog } from '@/features/studyrooms/components/common/dialog/inpu
 import { StudyroomGroups } from '@/features/studyrooms/components/sidebar/groups';
 import { InvitationDialog } from '@/features/studyrooms/components/student-invitation/InvitationDialog';
 import StudentInvitation from '@/features/studyrooms/components/student-invitation/StudentInvitation';
-import {
-  dialogReducer,
-  initialDialogState,
-} from '@/features/studyrooms/hooks/useDialogReducer';
 import { useRole } from '@/hooks/use-role';
 
 import { StudyroomSidebarHeader } from './header';

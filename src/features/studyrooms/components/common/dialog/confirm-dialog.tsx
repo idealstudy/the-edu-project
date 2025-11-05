@@ -1,6 +1,6 @@
+import { DialogAction } from '@/components/dialog';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
-import { DialogAction } from '@/features/studyrooms/hooks/useDialogReducer';
 import { cn } from '@/lib/utils';
 
 export const ConfirmDialog = ({
