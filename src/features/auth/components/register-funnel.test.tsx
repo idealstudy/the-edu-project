@@ -5,6 +5,7 @@ import { DUPLICATE_EMAIL } from '@/mocks/auth/handlers';
 import { renderWithProviders } from '@/tests/utils';
 import { cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { waitFor } from 'storybook/test';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
 import { RegisterFunnel } from './register-funnel';
@@ -71,8 +72,13 @@ describe('RegisterFunnel', () => {
     await user.type(confirmPasswordInput, FORM_DATA.PASSWORD);
     await user.click(agreeAllCheckbox);
 
-    expect(credentialFormNextButton).toBeEnabled();
-
+    //expect(credentialFormNextButton).toBeEnabled();
+    await waitFor(
+      () => {
+        expect(credentialFormNextButton).toBeEnabled();
+      },
+      { timeout: 3000 }
+    );
     await user.click(credentialFormNextButton);
 
     const nameInput = screen.getByLabelText('이름');

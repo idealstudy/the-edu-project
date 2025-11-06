@@ -38,10 +38,6 @@ export type CheckEmailDuplicateBody = {
   email: string;
 };
 
-export type SendVerificationCodeBody = {
-  email: string;
-};
-
 export type VerifyCodeBody = {
   email: string;
   code: string;
