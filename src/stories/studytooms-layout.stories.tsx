@@ -1,12 +1,12 @@
 import Image from 'next/image';
 
+import { StudyNotesList } from '@/features/study-notes/components/list';
+import { StudyRoomDetailLayout } from '@/features/study-rooms/components/common/layout';
+import { ListItem } from '@/features/study-rooms/components/common/list-item';
 import type { Meta, StoryObj } from '@storybook/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { DropdownMenu } from '../components/ui/dropdown-menu';
-import { StudyNotesList } from '../features/studynotes/list';
-import { StudyRoomDetailLayout } from '../features/studyrooms/components/common/layout';
-import { ListItem } from '../features/studyrooms/components/common/list-item';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -41,7 +41,7 @@ export const Default: Story = {
     <div className="w-[740px]">
       <StudyRoomDetailLayout
         search=""
-        sort="LATEST_EDITED"
+        sort="LATEST"
         limit={20}
         onSearch={() => {}}
         onSortChange={() => {}}
@@ -99,7 +99,7 @@ export const StudyroomStudentsListItem: Story = {
     <div className="w-[740px]">
       <StudyRoomDetailLayout
         search=""
-        sort="LATEST_EDITED"
+        sort="LATEST"
         limit={20}
         onSearch={() => {}}
         onSortChange={() => {}}

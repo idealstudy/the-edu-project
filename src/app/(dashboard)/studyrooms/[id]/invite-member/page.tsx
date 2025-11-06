@@ -8,9 +8,9 @@ import { useParams, useRouter } from 'next/navigation';
 import { ColumnLayout } from '@/components/layout/column-layout';
 import { Sidebar } from '@/components/layout/sidebar';
 import { Button } from '@/components/ui/button';
-import { InvitationField } from '@/features/studyrooms/components/student-invitation/InvitationField';
-import { useInvitationController } from '@/features/studyrooms/hooks/useInvitationController';
-import { useSendInvitationMutation } from '@/features/studyrooms/services/query';
+import { useSendInvitation } from '@/features/study-rooms';
+import { InvitationField } from '@/features/study-rooms/components/student-invitation/InvitationField';
+import { useInvitationController } from '@/features/study-rooms/hooks/useInvitationController';
 
 const InviteMemberPage = () => {
   const router = useRouter();
@@ -18,7 +18,7 @@ const InviteMemberPage = () => {
   const studyRoomId = Number(params.id);
 
   const invitation = useInvitationController(studyRoomId);
-  const { mutate: sendInvitation, isPending } = useSendInvitationMutation();
+  const { mutate: sendInvitation, isPending } = useSendInvitation();
 
   const handleSubmit = () => {
     const emails = Array.from(invitation.invitees.keys());

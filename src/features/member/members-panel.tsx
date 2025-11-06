@@ -4,11 +4,11 @@ import { useState } from 'react';
 
 import { Pagination } from '@/components/ui/pagination';
 import { MemberListItem } from '@/features/member/member-list-item';
-import { useMemberFilter } from '@/features/studynotes/hooks/use-member-filter';
-import { SearchFilterBar } from '@/features/studynotes/search-filter-bar';
-import { useGetStudyNoteMembers } from '@/features/studynotes/services/query';
-import { transformMembersData } from '@/features/studynotes/services/transform';
-import { StudyNoteLimit, StudyNoteSortKey } from '@/features/studynotes/type';
+import { SearchFilterBar } from '@/features/qna/components/detail/search-filter-bar';
+import { useGetTeacherNoteMembers } from '@/features/study-notes/hooks';
+import { useMemberFilter } from '@/features/study-notes/hooks/use-member-filter';
+import { StudyNoteLimit, StudyNoteSortKey } from '@/features/study-notes/model';
+import { transformMembersData } from '@/features/study-notes/model/transform';
 
 type Props = {
   studyRoomId: number;
@@ -17,10 +17,10 @@ type Props = {
 export default function MembersPanel({ studyRoomId }: Props) {
   const [currentPage, setCurrentPage] = useState(0);
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<StudyNoteSortKey>('LATEST_EDITED');
+  const [sort, setSort] = useState<StudyNoteSortKey>('LATEST');
   const [limit, setLimit] = useState<StudyNoteLimit>(20);
 
-  const { data, isLoading } = useGetStudyNoteMembers({
+  const { data, isLoading } = useGetTeacherNoteMembers({
     studyRoomId,
     page: currentPage,
     size: limit,

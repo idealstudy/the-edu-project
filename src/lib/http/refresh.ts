@@ -1,4 +1,4 @@
-import { refreshHttp } from '@/lib/http/clients';
+import { refreshHttp } from '@/lib/http/http.transport';
 
 export const refreshSession = async (): Promise<void> => {
   await refreshHttp.get('/auth/refresh');

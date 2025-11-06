@@ -1,4 +1,4 @@
-import { Select } from '@/features/studyrooms/components/common/select';
+import { Select } from '@/features/study-rooms/components/common/select';
 import { Meta, StoryObj } from '@storybook/react';
 
 const meta = {

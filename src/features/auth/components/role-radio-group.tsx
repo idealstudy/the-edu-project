@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { RadioGroup as RadioGroupPrimitives } from 'radix-ui';
 
-import { Role } from '../type';
+import { Role } from '../types';
 
 type RoleRadioGroupItemProps = Omit<
   React.ComponentProps<typeof RadioGroupPrimitives.Item>,

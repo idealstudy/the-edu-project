@@ -1,4 +1,4 @@
-import { Role } from '@/features/auth/type';
+import { Role } from '@/features/auth/types';
 import { Sort } from '@/types/http';
 
 export interface StudyNote {

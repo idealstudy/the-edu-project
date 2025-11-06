@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRole } from '@/hooks/use-role';
 import { getRelativeTimeString } from '@/lib/utils';
 
-import { QnAListItem } from '../../type';
+import { QnAListItem } from '../../types';
 import QuestionDropDown from './qna-dropdown';
 
 type Props = {

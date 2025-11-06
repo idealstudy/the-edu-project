@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 
+import '@/components/editor/styles/text-editor.css';
 import { Header } from '@/components/layout/header';
-import '@/features/editor/styles/text-editor.css';
 import AuthProvider from '@/providers/auth-provider';
 import { GlobalProvider } from '@/providers/global-provider';
 import '@/styles/globals.css';

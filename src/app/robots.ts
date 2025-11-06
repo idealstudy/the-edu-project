@@ -11,7 +11,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: [
           '/login',
           '/register',
-          '/studyrooms',
+          '/study-rooms',
           '/dashboard',
           '/api',
           '/_next',

@@ -1,4 +1,4 @@
-import { authApi } from '@/lib/http/api';
+import { authApi } from '@/lib/http/http.client';
 import type { z } from 'zod';
 
 import {

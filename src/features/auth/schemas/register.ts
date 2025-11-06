@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { ROLES } from '../type';
+import { ROLES } from '../types';
 
 // 8~16자, 최소 하나의 문자, 하나의 숫자, 하나의 특수문자 포함
 const PASSWORD_REGEX =

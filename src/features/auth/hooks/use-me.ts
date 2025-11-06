@@ -1,7 +1,7 @@
 import { authService } from '@/features/auth/services/api';
+import { memberKeys } from '@/features/member/api/keys';
 import { useAuthStore } from '@/store/session-store';
 import { useQuery } from '@tanstack/react-query';
-import { memberKeys } from '@/features/member/api/keys';
 
 export function useMe(options?: { enabled?: boolean }) {
   const setUser = useAuthStore((s) => s.setUser);

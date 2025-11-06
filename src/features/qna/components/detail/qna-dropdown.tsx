@@ -2,13 +2,10 @@ import { useReducer } from 'react';
 
 import Image from 'next/image';
 
+import { dialogReducer, initialDialogState } from '@/components/dialog';
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
-import {
-  dialogReducer,
-  initialDialogState,
-} from '@/features/studyrooms/hooks/useDialogReducer';
 
-import { QnAListItem } from '../../type';
+import { QnAListItem } from '../../types';
 
 type Props = {
   open: number;

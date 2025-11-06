@@ -1,4 +1,4 @@
-import { SessionPayload } from '@/features/auth/type';
+import { SessionPayload } from '@/features/auth/types';
 import { z } from 'zod';
 
 export const loginSchema = z.object({

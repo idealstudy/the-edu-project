@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-import { StudyNoteMember } from '@/features/studynotes/types';
+import { StudyNoteMember } from '@/features/study-notes/model';
 
 type Props = {
   member: StudyNoteMember;
@@ -14,7 +14,7 @@ export const MemberListItem = ({ member, isHighlighted }: Props) => {
     >
       <div className="flex min-w-0 items-center gap-3">
         <Image
-          src={member.avatarSrc ?? '/studynotes/student.svg'}
+          src={member.avatarSrc ?? '/study-notes/student.svg'}
           alt={`${member.name} 프로필`}
           width={36}
           height={36}
