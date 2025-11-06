@@ -5,10 +5,12 @@ import Link from 'next/link';
 
 import { dialogReducer, initialDialogState } from '@/components/dialog';
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
+import {
+  StudyNote,
+  StudyNoteGroupPageable,
+} from '@/features/study-notes/model';
 
 import { StudyNotesDialog } from './dialog';
-import type { StudyNote } from './type';
-import type { StudyNoteGroupPageable } from './type';
 
 export const StudyNotesDropdown = ({
   studyRoomId,

@@ -1,7 +1,9 @@
 import { useMemo } from 'react';
 
-import { StudyNoteSortKey } from '@/features/study-notes/type';
-import { StudyNoteMember } from '@/features/study-notes/types';
+import {
+  StudyNoteMember,
+  StudyNoteSortKey,
+} from '@/features/study-notes/model';
 
 export const useMemberFilter = (
   members: StudyNoteMember[],
@@ -23,14 +25,13 @@ export const useMemberFilter = (
 
     // 정렬
     switch (sort) {
-      case 'TITLE_ASC':
+      case 'LATEST':
         filtered.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
         break;
-      case 'OLDEST_EDITED':
+      case 'OLDEST':
         filtered.reverse();
         break;
-      case 'TAUGHT_AT_ASC':
-      case 'LATEST_EDITED':
+      case 'ALPHABETICAL':
       default:
         break;
     }

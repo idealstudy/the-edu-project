@@ -6,16 +6,15 @@ import { DialogAction } from '@/components/dialog';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import {
-  useDeleteStudyNoteToGroup,
-  useUpdateStudyNoteToGroup,
-} from '@/features/study-notes/services/query';
+  useMoveNoteToGroup,
+  useRemoveNoteFromGroup,
+} from '@/features/study-notes/hooks';
+import { StudyNoteGroupPageable } from '@/features/study-notes/model';
+import { getStudyNoteGroupInfiniteOption } from '@/features/study-rooms';
 import { Select } from '@/features/study-rooms/components/common/select';
-import { getStudyNoteGroupInfiniteOption } from '@/features/study-rooms/services/query-options';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { useRole } from '@/hooks/use-role';
 import { useInfiniteQuery } from '@tanstack/react-query';
-
-import type { StudyNoteGroupPageable } from '../type';
 
 export const GROUP_MOVE_DIALOG_PAGEABLE = {
   page: 0,
@@ -61,31 +60,34 @@ export const GroupMoveDialog = ({
     fetchNextPage,
   });
 
-  const { mutate: removeStudyNoteGroup } = useDeleteStudyNoteToGroup({
-    studyNoteId: studyNoteId,
-    studyRoomId,
-    pageable,
-    // keyword,
-  });
-
-  const { mutate: updateStudyNoteGroup } = useUpdateStudyNoteToGroup({
-    teachingNoteId: studyNoteId,
-    teachingNoteGroupId: Number(selectedGroup),
-    studyRoomId,
-    pageable,
-    keyword,
-  });
+  const { mutate: removeNoteMutation } = useRemoveNoteFromGroup();
+  const { mutate: moveNoteMutation } = useMoveNoteToGroup();
 
   const handleSave = () => {
+    const mutationArgs = {
+      studyNoteId: studyNoteId,
+      studyRoomId: studyRoomId,
+      keyword: keyword,
+      pageable: {
+        page: pageable.page,
+        size: pageable.size,
+        sortKey: pageable.sortKey,
+      },
+    };
     if (selectedGroup === null || selectedGroup === 'none') {
-      removeStudyNoteGroup();
+      removeNoteMutation({
+        ...mutationArgs,
+        groupId: null,
+      });
     } else {
-      updateStudyNoteGroup();
+      moveNoteMutation({
+        ...mutationArgs,
+        groupId: Number(selectedGroup),
+      });
     }
     dispatch({ type: 'CLOSE' });
   };
 
-  // 1) 로딩 화면: 반드시 return 해서 아래 로직이 실행되지 않게
   if (isPending) {
     return (
       <div className="p-4">
@@ -94,7 +96,6 @@ export const GroupMoveDialog = ({
     );
   }
 
-  // 2) 에러 화면: 마찬가지로 return
   if (isError) {
     return (
       <div className="p-4">
@@ -102,8 +103,6 @@ export const GroupMoveDialog = ({
       </div>
     );
   }
-
-  // 3)
 
   const allGroups = [
     { id: 'all', title: '전체 보기' },

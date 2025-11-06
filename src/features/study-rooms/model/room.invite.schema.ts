@@ -7,4 +7,4 @@ export const InviteMemberSchema = z.object({
   ),
 });
 
-export type InviteMemberSchema = z.infer<typeof InviteMemberSchema>;
+export type InviteMemberSchemaType = z.infer<typeof InviteMemberSchema>;

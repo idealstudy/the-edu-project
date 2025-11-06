@@ -1,7 +1,7 @@
 import {
   StudyNoteMember,
   StudyNoteMemberResponse,
-} from '@/features/study-notes/types';
+} from '@/features/study-notes/model';
 
 export const transformMembersData = (
   data?: StudyNoteMemberResponse['data']

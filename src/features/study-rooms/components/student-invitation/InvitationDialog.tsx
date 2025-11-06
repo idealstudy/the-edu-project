@@ -6,9 +6,9 @@ import Image from 'next/image';
 
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
+import { useSendInvitation } from '@/features/study-rooms';
 import { InvitationField } from '@/features/study-rooms/components/student-invitation/InvitationField';
 import { useInvitationController } from '@/features/study-rooms/hooks/useInvitationController';
-import { useSendInvitationMutation } from '@/features/study-rooms/services/query';
 
 export const InvitationDialog = ({
   isOpen,
@@ -26,7 +26,7 @@ export const InvitationDialog = ({
   studyRoomId: number;
 }) => {
   const invitation = useInvitationController(studyRoomId);
-  const { mutate: sendInvitation, isPending } = useSendInvitationMutation();
+  const { mutate: sendInvitation, isPending } = useSendInvitation();
 
   const handleSubmit = () => {
     const emails = Array.from(invitation.invitees.keys());

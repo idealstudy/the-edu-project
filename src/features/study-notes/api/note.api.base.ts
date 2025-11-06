@@ -1,0 +1,51 @@
+import type {
+  StudyNoteDetails,
+  StudyNoteGroupPageable,
+} from '@/features/study-notes/model';
+import { authApi } from '@/lib/http';
+import type { CommonResponse } from '@/types/http';
+
+type Role = 'ROLE_TEACHER' | 'ROLE_STUDENT';
+
+export interface NotesBaseApi<TList> {
+  getNotes(args: {
+    studyRoomId: number;
+    pageable: StudyNoteGroupPageable;
+  }): Promise<TList>;
+  getNotesByGroup(args: {
+    studyRoomId: number;
+    teachingNoteGroupId: number;
+    pageable: StudyNoteGroupPageable;
+  }): Promise<TList>;
+  getDetail(teachingNoteId: number): Promise<StudyNoteDetails>;
+}
+
+export const createNotesBaseApi = <TList>(role: Role): NotesBaseApi<TList> => {
+  const roomPath = (studyRoomId: number) =>
+    `/${role}/study-rooms/${studyRoomId}`;
+
+  return {
+    async getNotes({ studyRoomId, pageable }) {
+      const res = await authApi.get<CommonResponse<TList>>(
+        `${roomPath(studyRoomId)}/teaching-notes`,
+        { params: pageable }
+      );
+      return res.data;
+    },
+
+    async getNotesByGroup({ studyRoomId, teachingNoteGroupId, pageable }) {
+      const res = await authApi.get<CommonResponse<TList>>(
+        `${roomPath(studyRoomId)}/teaching-note-groups/${teachingNoteGroupId}/teaching-notes`,
+        { params: pageable }
+      );
+      return res.data;
+    },
+
+    async getDetail(teachingNoteId) {
+      const res = await authApi.get<CommonResponse<StudyNoteDetails>>(
+        `/public/teaching-notes/${teachingNoteId}`
+      );
+      return res.data;
+    },
+  };
+};

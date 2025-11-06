@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
-import { CreateStepForm } from '@/features/study-rooms/types';
+import { CreateStepForm } from '@/features/study-rooms';
 
 export default function StepOne({ onNext, disabled }: CreateStepForm) {
   const { register, control } = useFormContext();

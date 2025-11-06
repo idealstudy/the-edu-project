@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 import { dialogReducer, initialDialogState } from '@/components/dialog';
 import { Role } from '@/features/auth/types.js';
-import { getStudyNoteGroupInfiniteOption } from '@/features/study-rooms/services/query-options';
+import { getStudyNoteGroupInfiniteOption } from '@/features/study-rooms';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
@@ -76,8 +76,6 @@ export const StudyroomGroups = ({
       </div>
     );
   }
-
-  // 3)
 
   const allGroups: Array<{ id: number | 'all'; title: string }> = [
     { id: 'all', title: '전체 보기' },

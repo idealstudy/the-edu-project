@@ -5,7 +5,7 @@ import {
   VerifyCodeBody,
 } from '@/features/auth/types';
 import type { Member } from '@/features/member/model/types';
-import { authApi, publicApi } from '@/lib/http/api';
+import { authApi, publicApi } from '@/lib/http';
 
 export const authService = {
   login: async (body: LoginBody) => {

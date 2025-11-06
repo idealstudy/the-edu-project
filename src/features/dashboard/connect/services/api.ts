@@ -1,4 +1,4 @@
-import { authApi } from '@/lib/http/api';
+import { authApi } from '@/lib/http';
 
 import { ConnectionListRequestParams, ConnectionListResponse } from '../type';
 

@@ -11,6 +11,11 @@ import {
   initialDialogState,
 } from '@/components/dialog';
 import { Form } from '@/components/ui/form';
+import {
+  CreateStudyRoomSchema,
+  useCreateStudyRoom,
+} from '@/features/study-rooms';
+import type { StudyRoomFormValues } from '@/features/study-rooms';
 import ProgressIndicator from '@/features/study-rooms/components/create/ProgressIndicator';
 import StepOne from '@/features/study-rooms/components/create/StepOne';
 import StepTwo from '@/features/study-rooms/components/create/StepTwo';
@@ -20,11 +25,6 @@ import {
   createStepState,
   stepperReducer,
 } from '@/features/study-rooms/hooks/useStepperReducer';
-import {
-  CreateStudyRoomSchema,
-  StudyRoomFormValues,
-} from '@/features/study-rooms/schemas/room.create.schema';
-import { useCreateStudyRoomMutation } from '@/features/study-rooms/services/query';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 export const ORDER = ['basic', 'profile'] as const;
@@ -79,7 +79,7 @@ export default function CreateStudyRoomFlow() {
   });
 
   const { isStepValid } = useStepValidate(methods, step);
-  const { mutate, isPending } = useCreateStudyRoomMutation();
+  const { mutate, isPending } = useCreateStudyRoom();
 
   const handleNext = async () => {
     const names = fieldsPerStep[step];

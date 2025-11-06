@@ -4,11 +4,14 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 
+import type {
+  StudyNote,
+  StudyNoteGroupPageable,
+} from '@/features/study-notes/model';
 import { ListItem } from '@/features/study-rooms/components/common/list-item';
 import { formatMMDDWeekday, getRelativeTimeString } from '@/lib/utils';
 
 import { StudyNotesDropdown } from './dropdown';
-import type { StudyNote, StudyNoteGroupPageable } from './type';
 
 export const StudyNotesList = ({
   data,

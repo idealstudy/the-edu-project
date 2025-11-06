@@ -14,6 +14,7 @@ export const InputDialog = ({
   description,
   onSubmit,
   error,
+  disabled,
 }: {
   isOpen: boolean;
   placeholder: string;
@@ -22,8 +23,10 @@ export const InputDialog = ({
   description?: string;
   onSubmit: (name: string) => void;
   error?: string;
+  disabled?: boolean;
 }) => {
   const [name, setName] = useState('');
+  const finalDisabled = disabled || !name.trim() || !!error;
 
   return (
     <Dialog
@@ -63,7 +66,7 @@ export const InputDialog = ({
             <Button
               className="w-[120px]"
               size="xsmall"
-              disabled={!name.trim() || !!error}
+              disabled={finalDisabled}
               onClick={() => onSubmit(name)}
             >
               저장

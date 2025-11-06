@@ -9,16 +9,18 @@ import {
   useSearchParams,
 } from 'next/navigation';
 
-import { StudyNotesList } from '@/features/study-notes/list';
+import { StudyNotesList } from '@/features/study-notes/components/list';
 import {
-  useStudyNotesByGroupIdQuery,
-  useStudyNotesQuery,
-} from '@/features/study-notes/services/query';
-import type {
+  useGetStudentNotesByGroup,
+  useGetStudentNotesList,
+  useGetTeacherNotesByGroup,
+  useGetTeacherNotesList,
+} from '@/features/study-notes/hooks';
+import {
   StudyNoteGroupPageable,
   StudyNoteLimit,
   StudyNoteSortKey,
-} from '@/features/study-notes/type';
+} from '@/features/study-notes/model';
 import { StudyRoomDetailLayout } from '@/features/study-rooms/components/common/layout';
 import { useRole } from '@/hooks/use-role';
 
@@ -35,7 +37,7 @@ export default function StudyNotePage() {
   }, [searchParams]);
 
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<StudyNoteSortKey>('LATEST_EDITED');
+  const [sort, setSort] = useState<StudyNoteSortKey>('LATEST');
   const [limit, setLimit] = useState<StudyNoteLimit>(20);
 
   const { role } = useRole();
@@ -48,17 +50,50 @@ export default function StudyNotePage() {
     sortKey: sort,
   };
 
-  const { data: studyNotes } = useStudyNotesQuery(role, {
+  // ------------------------------------------------------------------
+  // 일반 목록 조회
+  // TODO: 추후 엔티티분리후 커스텀훅으로 분리
+  // ------------------------------------------------------------------
+  const teacherListQuery = useGetTeacherNotesList({
     studyRoomId,
-    pageable /*, keyword: search*/,
+    pageable,
+    enabled: role === 'ROLE_TEACHER',
   });
 
-  const { data: studyNotesByGroupId } = useStudyNotesByGroupIdQuery(role, {
+  const studentListQuery = useGetStudentNotesList({
     studyRoomId,
-    teachingNoteGroupId: Number(selectedGroupId),
     pageable,
-    enabled: selectedGroupId !== 'all',
+    enabled: role === 'ROLE_STUDENT',
   });
+
+  const studyNotes =
+    role === 'ROLE_TEACHER' ? teacherListQuery.data : studentListQuery.data;
+
+  // ------------------------------------------------------------------
+  // 그룹별 목록 조회
+  // TODO: 추후 엔티티분리
+  // ------------------------------------------------------------------
+  const isGroupSelected = selectedGroupId !== 'all';
+  const teachingNoteGroupId = Number(selectedGroupId);
+
+  const teacherByGroupQuery = useGetTeacherNotesByGroup({
+    studyRoomId,
+    teachingNoteGroupId,
+    pageable,
+    enabled: isGroupSelected && role === 'ROLE_TEACHER',
+  });
+
+  const studentByGroupQuery = useGetStudentNotesByGroup({
+    studyRoomId,
+    teachingNoteGroupId,
+    pageable,
+    enabled: isGroupSelected && role === 'ROLE_STUDENT',
+  });
+
+  const studyNotesByGroupId =
+    role === 'ROLE_TEACHER'
+      ? teacherByGroupQuery.data
+      : studentByGroupQuery.data;
 
   const setPage = useCallback(
     (page: number, { replace = false }: { replace?: boolean } = {}) => {

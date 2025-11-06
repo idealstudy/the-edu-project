@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-import { StudyNoteMember } from '@/features/study-notes/types';
+import { StudyNoteMember } from '@/features/study-notes/model';
 
 type Props = {
   member: StudyNoteMember;

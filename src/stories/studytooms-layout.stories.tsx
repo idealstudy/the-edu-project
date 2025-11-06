@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-import { StudyNotesList } from '@/features/study-notes/list';
+import { StudyNotesList } from '@/features/study-notes/components/list';
 import { StudyRoomDetailLayout } from '@/features/study-rooms/components/common/layout';
 import { ListItem } from '@/features/study-rooms/components/common/list-item';
 import type { Meta, StoryObj } from '@storybook/react';
@@ -41,7 +41,7 @@ export const Default: Story = {
     <div className="w-[740px]">
       <StudyRoomDetailLayout
         search=""
-        sort="LATEST_EDITED"
+        sort="LATEST"
         limit={20}
         onSearch={() => {}}
         onSortChange={() => {}}
@@ -99,7 +99,7 @@ export const StudyroomStudentsListItem: Story = {
     <div className="w-[740px]">
       <StudyRoomDetailLayout
         search=""
-        sort="LATEST_EDITED"
+        sort="LATEST"
         limit={20}
         onSearch={() => {}}
         onSortChange={() => {}}
