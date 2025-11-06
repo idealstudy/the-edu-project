@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-
-import { useSearchInvitationQuery } from '@/features/study-rooms/services/query';
+import { useSearchInvitation } from '@/features/study-rooms';
 
 export type Invitee = {
   role: string;
@@ -41,7 +40,7 @@ export const useInvitationController = (
   const [invitees, setInvitees] = useState<Map<string, Invitee>>(new Map());
   const [shouldSearch, setShouldSearch] = useState(false);
 
-  const { data } = useSearchInvitationQuery({
+  const { data } = useSearchInvitation({
     studyRoomId,
     email: searchQuery,
     enabled: shouldSearch && !!searchQuery.trim(),

@@ -1,0 +1,83 @@
+import { StudyRoomFormValues } from '@/features/study-rooms';
+import {
+  TeacherStudyRoomRequests,
+  createStudyRoomBaseApi,
+} from '@/features/study-rooms/api';
+import type { CommonResponse, Pageable, PaginationData } from '@/types/http';
+
+import type {
+  ApiResponse,
+  Invitation,
+  MemberInvitation,
+  SearchInvitationPayload,
+  StudyNoteGroup,
+  StudyRoom,
+  StudyRoomClient,
+} from '../model/types';
+
+export const createTeacherStudyRoomApi = (
+  client?: StudyRoomClient
+): TeacherStudyRoomRequests => {
+  const base = createStudyRoomBaseApi(client);
+
+  // 스터디룸 조회
+  const getStudyRooms = async (): Promise<StudyRoom[]> => {
+    const response = await base.client.get<CommonResponse<StudyRoom[]>>(
+      base.teacherBasePath
+    );
+    return response.data;
+  };
+
+  // 스터디룸 생성
+  const create = async (payload: StudyRoomFormValues): Promise<StudyRoom> => {
+    const response = await base.client.post<ApiResponse<StudyRoom>>(
+      base.teacherBasePath,
+      payload
+    );
+    return response.data;
+  };
+
+  // 스터디룸 초대
+  const sendInvitation = async (args: {
+    studyRoomId: number;
+    emails: string[];
+  }): Promise<MemberInvitation> => {
+    const response = await base.client.post<ApiResponse<MemberInvitation>>(
+      `${base.teacherBasePath}/${args.studyRoomId}/members`,
+      { studentEmailList: args.emails }
+    );
+    return response.data;
+  };
+
+  // 초대할 사용자 검색
+  const searchInvitation = async (
+    args: SearchInvitationPayload
+  ): Promise<Invitation> => {
+    const response = await base.client.get<ApiResponse<Invitation>>(
+      `${base.teacherBasePath}/${args.studyRoomId}/search`,
+      { params: { email: args.email } }
+    );
+    return response.data;
+  };
+
+  // 수업노트 그룹 조회
+  const getStudyNoteGroup = async (args: {
+    studyRoomId: number;
+    pageable: Pageable;
+  }): Promise<PaginationData<StudyNoteGroup>> => {
+    const response = await base.client.get<
+      CommonResponse<PaginationData<StudyNoteGroup>>
+    >(`${base.teacherBasePath}/${args.studyRoomId}/teaching-note-groups`, {
+      params: args.pageable,
+      paramsSerializer: { indexes: null },
+    });
+    return response.data;
+  };
+
+  return {
+    getStudyRooms,
+    create,
+    invitations: { send: sendInvitation, search: searchInvitation },
+    getStudyNoteGroup,
+  };
+};

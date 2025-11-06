@@ -1,4 +1,6 @@
+import { authApi } from '@/lib/http/http.client';
 export type ApiResponse<T> = { status: number; message: string; data: T };
+
 export type Role =
   | 'ROLE_ADMIN'
   | 'ROLE_STUDENT'
@@ -60,3 +62,23 @@ export type MemberInvitation = {
   successEmailList: InviteSuccess[];
   failEmailList: InviteFailure[];
 };
+
+export interface StudyRoomClient {
+  get: typeof authApi.get;
+  post: typeof authApi.post;
+  delete: typeof authApi.delete;
+}
+
+export interface InvitationPayload {
+  studyRoomId: number;
+  emails: string[];
+}
+
+export interface SearchInvitationPayload {
+  studyRoomId: number;
+  email: string;
+}
+
+export interface DeleteStudyRoomPayload {
+  studyRoomId: number;
+}

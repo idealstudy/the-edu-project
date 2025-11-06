@@ -4,7 +4,7 @@ import {
   Step,
   fieldsPerStep,
 } from '@/features/study-rooms/components/create/CreateStudyRoomFlow';
-import { StudyRoomFormValues } from '@/features/study-rooms/schemas/create';
+import { StudyRoomFormValues } from '@/features/study-rooms/model';
 
 export const useStepValidate = (
   methods: UseFormReturn<StudyRoomFormValues>,

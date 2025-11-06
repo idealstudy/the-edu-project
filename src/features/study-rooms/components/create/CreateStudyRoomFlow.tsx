@@ -23,7 +23,7 @@ import {
 import {
   CreateStudyRoomSchema,
   StudyRoomFormValues,
-} from '@/features/study-rooms/schemas/create';
+} from '@/features/study-rooms/schemas/room.create.schema';
 import { useCreateStudyRoomMutation } from '@/features/study-rooms/services/query';
 import { zodResolver } from '@hookform/resolvers/zod';
 
