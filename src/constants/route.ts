@@ -6,18 +6,17 @@ export const ROUTE = {
     HOME: '/dashboard',
     STUDYROOM: {
       DETAIL: (id: number) => `/studyrooms/${id}/studynotes`,
-      CREATE: '/study-rooms/write',
+      CREATE: '/study-rooms/new',
     },
     STUDYNOTE: {
-      CREATE: '/dashboard/studynote/write',
+      CREATE: '/dashboard/study-note/new',
       DETAIL: (id: number) => `/dashboard/studynote/${id}`,
       LIST: (id: number) => `/studyrooms/${id}/note`,
     },
     QUESTIONS: {
       DETAIL: (studyroomId: number, contextId: number) =>
-        `/dashboard/studyrooms/${studyroomId}/qna/${contextId}`,
-      CREATE: (studyroomId: number) =>
-        `/dashboard/studyrooms/${studyroomId}/qna/write`,
+        `/study-rooms/${studyroomId}/qna/${contextId}`,
+      CREATE: (studyroomId: number) => `/study-rooms/${studyroomId}/qna/new`,
     },
     SETTINGS: '/dashboard/settings',
   },

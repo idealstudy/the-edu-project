@@ -29,11 +29,11 @@ const MetaSection = () => {
   const { isPending } = useWriteStudyNoteMutation();
 
   useEffect(() => {
-    const tempTitle = sessionStorage.getItem('studynote-title');
+    const tempTitle = sessionStorage.getItem('study-note-title');
     if (tempTitle) {
       setValue('title', tempTitle);
     }
-    sessionStorage.removeItem('studynote-title');
+    sessionStorage.removeItem('study-note-title');
   });
 
   return (

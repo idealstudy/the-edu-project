@@ -16,7 +16,7 @@ export const StudyNoteSearch = () => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     const value = inputRef.current?.value.trim() ?? '';
-    if (value) sessionStorage.setItem('studynote-title', value);
+    if (value) sessionStorage.setItem('study-note-title', value);
     // sessionStorage.setItem('studyroom-id', String(pathName.split('/')[2]));
     try {
       setIsLoading(true);
