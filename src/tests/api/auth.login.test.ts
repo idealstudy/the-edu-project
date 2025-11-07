@@ -13,8 +13,8 @@ import {
   vi,
 } from 'vitest';
 
-process.env.NEXT_PUBLIC_SPRING_SERVER_BASE_URL = 'http://mock-spring-api';
-const MOCK_BASE_URL = process.env.NEXT_PUBLIC_SPRING_SERVER_BASE_URL;
+process.env.NEXT_PUBLIC_BASE_URL = 'http://localhost/mock-api';
+const MOCK_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 const LOGIN_URL = `${MOCK_BASE_URL}/auth/login`;
 const MEMBER_URL = `${MOCK_BASE_URL}/members/info`;
 

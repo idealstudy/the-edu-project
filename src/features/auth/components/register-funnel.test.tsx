@@ -38,8 +38,7 @@ describe('RegisterFunnel', () => {
 
     await user.type(emailInput, DUPLICATE_EMAIL);
     await user.click(nextButton);
-
-    expect(screen.getByText('이미 사용중인 이메일입니다.')).toBeInTheDocument();
+    await screen.findByText('이미 사용중인 이메일입니다.');
   });
 
   test('모든 단계를 진행한 후 회원가입이 정상적으로 완료되어야 합니다.', async () => {
@@ -51,7 +50,7 @@ describe('RegisterFunnel', () => {
     await user.type(emailInput, FORM_DATA.EMAIL);
     await user.click(emailFormNextButton);
 
-    const verificationCodeInput = screen.getByLabelText('인증코드');
+    const verificationCodeInput = await screen.findByLabelText('인증코드');
     const passwordInput = screen.getByLabelText('비밀번호');
     const confirmPasswordInput = screen.getByLabelText('비밀번호 확인');
     const agreeAllCheckbox = screen.getByRole('checkbox', {
@@ -81,14 +80,16 @@ describe('RegisterFunnel', () => {
     );
     await user.click(credentialFormNextButton);
 
-    const nameInput = screen.getByLabelText('이름');
+    const nameInput = await screen.getByLabelText('이름');
     const signUpButton = screen.getByRole('button', { name: '가입 완료' });
 
     await user.type(nameInput, FORM_DATA.NAME);
     await user.click(signUpButton);
 
-    expect(mockRouter).toMatchObject({
-      pathname: ROUTE.HOME,
+    await waitFor(() => {
+      expect(mockRouter).toMatchObject({
+        pathname: ROUTE.HOME,
+      });
     });
   });
 });

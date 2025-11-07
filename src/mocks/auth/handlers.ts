@@ -3,12 +3,13 @@ import { HttpResponse, http } from 'msw';
 
 // TODO: BASE_URL -> 환경변수로 분리 및 삭제 예정
 // const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30';
-const API_URL = 'http://mock-spring-api';
+const LOGIN_URL = 'http://localhost/mock-api';
+const API_URL = 'https://api.dev.the-edu.site/api';
 export const DUPLICATE_EMAIL = 'test@gmail.com';
 export const VALID_VERIFICATION_CODE = '123456';
 
 export const authHandlers = [
-  http.post(API_URL + '/auth/login', () => {
+  http.post(LOGIN_URL + '/auth/login', () => {
     return HttpResponse.json(
       { success: true },
       {
@@ -20,7 +21,7 @@ export const authHandlers = [
     );
   }),
 
-  http.get(API_URL + '/members/info', ({ request }) => {
+  http.get(LOGIN_URL + '/members/info', ({ request }) => {
     const cookieHeader = request.headers.get('Cookie');
 
     if (cookieHeader?.includes('session_id=mock-token-success')) {
