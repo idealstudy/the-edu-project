@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { API_BASE_URL } from '@/constants';
-import { extractErrorMessage, getSetCookies, safeJson } from '@/lib';
-import { appendSetCookies } from '@/lib/bff/utils';
+import { applySetCookies, extractErrorMessage, safeJson } from '@/lib';
 
 if (!API_BASE_URL) throw new Error('NEXT_PUBLIC_BASE_URL is not defined');
 
@@ -27,7 +26,6 @@ export async function POST(request: NextRequest) {
     { ok: true },
     { status: loginResponse.status }
   );
-  const setCookies = getSetCookies(loginResponse);
-  appendSetCookies(response, setCookies);
+  applySetCookies(loginResponse, response);
   return response;
 }

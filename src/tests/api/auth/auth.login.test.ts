@@ -31,7 +31,7 @@ vi.mock('@/lib', async (importOriginal) => {
     ),
     extractErrorMessage: original.extractErrorMessage,
     safeJson: original.safeJson,
-    getSetCookies: original.getSetCookies,
+    collectSetCookies: original.collectSetCookies,
   };
 });
 

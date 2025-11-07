@@ -2,8 +2,7 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 import { API_BASE_URL } from '@/constants';
-import { extractErrorMessage, getSetCookies, safeJson } from '@/lib';
-import { appendSetCookies } from '@/lib/bff/utils';
+import { applySetCookies, extractErrorMessage, safeJson } from '@/lib';
 
 if (!API_BASE_URL) throw new Error('NEXT_PUBLIC_BASE_URL is not defined');
 
@@ -31,16 +30,16 @@ export async function GET() {
     return NextResponse.json({ message }, { status: infoResponse.status });
   }
 
-  const setCookies = getSetCookies(infoResponse);
+  let response: NextResponse;
   if (infoResponse.status === 204) {
-    const response = new NextResponse(null, { status: infoResponse.status });
-    appendSetCookies(response, setCookies);
+    response = new NextResponse(null, { status: infoResponse.status });
     return response;
+  } else {
+    response = NextResponse.json(payload ?? null, {
+      status: infoResponse.status,
+    });
   }
 
-  const response = NextResponse.json(payload ?? null, {
-    status: infoResponse.status,
-  });
-  appendSetCookies(response, setCookies);
+  applySetCookies(infoResponse, response);
   return response;
 }
