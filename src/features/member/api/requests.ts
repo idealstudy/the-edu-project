@@ -1,12 +1,11 @@
 // import { authBffApi } from '@/lib';
-import { authService } from '@/features/auth/services/api';
-import type { z } from 'zod';
-
 import {
   // MemberAnyResponseSchema,
   // MemberEnvelopeSchema,
   MemberSchema,
-} from '../model/schema';
+} from '@/entities';
+import { authService } from '@/features/auth/services/api';
+import type { z } from 'zod';
 
 // type MemberEnvelope = z.infer<typeof MemberEnvelopeSchema>;
 type Member = z.infer<typeof MemberSchema>;
