@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { API_BASE_URL } from '@/constants';
-import { applySetCookies, extractErrorMessage, safeJson } from '@/lib';
+import {
+  applySetCookies,
+  extractErrorMessage,
+  safeJson,
+  serverEnv,
+} from '@/lib';
 
-if (!API_BASE_URL) throw new Error('NEXT_PUBLIC_BASE_URL is not defined');
+if (!serverEnv.backendApiUrl) throw new Error('BASE_URL is not defined');
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const loginResponse = await fetch(`${API_BASE_URL}/auth/login`, {
+  const loginResponse = await fetch(`${serverEnv.backendApiUrl}/auth/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

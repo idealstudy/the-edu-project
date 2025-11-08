@@ -1,13 +1,20 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
-import { API_BASE_URL } from '@/constants';
-import { applySetCookies, extractErrorMessage, safeJson } from '@/lib';
+import {
+  applySetCookies,
+  extractErrorMessage,
+  safeJson,
+  serverEnv,
+} from '@/lib';
 
-if (!API_BASE_URL) throw new Error('NEXT_PUBLIC_BASE_URL is not defined');
+if (!serverEnv.backendApiUrl) throw new Error('BASE_URL is not defined');
 
 export async function GET() {
   const cookieJar = await cookies();
+  const sid = cookieJar.get('sid');
+  if (!sid) return new NextResponse(null, { status: 204 });
+
   const allow = new Set(['sid', 'refresh']);
   const cookieHeader = cookieJar
     .getAll()
@@ -15,7 +22,7 @@ export async function GET() {
     .map((cookie) => `${cookie.name}=${cookie.value}`)
     .join('; ');
 
-  const infoResponse = await fetch(`${API_BASE_URL}/members/info`, {
+  const infoResponse = await fetch(`${serverEnv.backendApiUrl}/members/info`, {
     method: 'GET',
     headers: cookieHeader ? { Cookie: cookieHeader } : undefined,
     cache: 'no-store',

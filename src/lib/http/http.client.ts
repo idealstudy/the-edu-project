@@ -1,4 +1,4 @@
-import { authHttp, publicHttp } from '@/lib/http';
+import { authBffHttp, authHttp, publicHttp } from '@/lib/http';
 import type { AxiosInstance } from 'axios';
 
 // HTTP 요청 래퍼
@@ -53,6 +53,23 @@ export const authApi = {
     ...args: Parameters<AxiosInstance['delete']>
   ): Promise<T> => {
     const response = await authHttp.delete<T>(...args);
+    return response.data;
+  },
+};
+
+// NOTE: BFF 전용
+export const authBffApi = {
+  get: async <T = unknown>(
+    ...args: Parameters<AxiosInstance['get']>
+  ): Promise<T> => {
+    const response = await authBffHttp.get<T>(...args);
+    return response.data;
+  },
+
+  post: async <T = unknown>(
+    ...args: Parameters<AxiosInstance['post']>
+  ): Promise<T> => {
+    const response = await authBffHttp.post<T>(...args);
     return response.data;
   },
 };

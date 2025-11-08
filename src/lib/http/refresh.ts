@@ -1,7 +1,7 @@
-import { refreshHttp } from '@/lib/http/http.transport';
+import { authBffHttp } from '@/lib';
 
 export const refreshSession = async (): Promise<void> => {
-  await refreshHttp.get('/auth/refresh');
+  await authBffHttp.get('/api/v1/auth/refresh');
 };
 
 let refreshPromise: Promise<void> | null = null;

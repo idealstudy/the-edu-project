@@ -1,9 +1,18 @@
 app.dev.the-edu.site {
     tls app.dev.the-edu.site.pem app.dev.the-edu.site-key.pem
 
+    # BFF 먼저 매칭
+    @bff path /api/v1/*
+    reverse_proxy @bff 127.0.0.1:3000
+
+    # 스프링
     @api path /api/*
-    reverse_proxy @api https://dev.the-edu.site {
-    header_up Host {upstream_hostport}
-}
-    reverse_proxy localhost:3000
+    reverse_proxy @api https://api.dev.the-edu.site {
+    header_up Host api.dev.the-edu.site
+    # 필요시 원본 Host 유지하려면(아래 주석 해제)
+    # header_up Host {http.reverse_proxy.upstream.hostport}
+    }
+
+    # 정적/페이지 등 나머지
+    reverse_proxy 127.0.0.1:3000
 }

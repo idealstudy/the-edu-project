@@ -1,5 +1,5 @@
 import { Sidebar } from '@/components/layout/sidebar';
-import { SessionProvider } from '@/providers/session-provider';
+import { SessionGuard } from '@/providers';
 
 export default function DashboardLayout({
   children,
@@ -7,11 +7,11 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <SessionProvider>
+    <SessionGuard>
       <div className="desktop:pl-sidebar-width flex flex-col bg-[#F9F9F9]">
         <Sidebar />
         <div className="px-grid-margin w-full">{children}</div>
       </div>
-    </SessionProvider>
+    </SessionGuard>
   );
 }

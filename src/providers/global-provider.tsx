@@ -1,11 +1,15 @@
 import { ReactNode } from 'react';
 
-import { QueryProvider } from './query-provider';
+import { QueryProvider, SessionProvider } from '@/providers';
 
 interface Props {
   children: ReactNode;
 }
 
 export const GlobalProvider = ({ children }: Props) => {
-  return <QueryProvider>{children}</QueryProvider>;
+  return (
+    <QueryProvider>
+      <SessionProvider>{children}</SessionProvider>
+    </QueryProvider>
+  );
 };
