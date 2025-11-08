@@ -1,9 +1,12 @@
-import type { Member } from '@/entities/member/types/types';
+import type { Member } from '@/entities/member/types/member.types';
 
 const localPart = (email: string) => email.split('@')[0];
 
 // 우선순위: 닉네임 > 이름 > 대체값 > 이메일의 로컬 파트
-export const getDisplayName = (m: Member, fallback?: string): string => {
+export const getDisplayName =(
+  m: Pick<Member, 'email'> & Partial<Pick<Member, 'name' | 'nickname'>>,
+  fallback?: string
+): string => {
   const nick = m.nickname?.trim();
   if (nick && nick.length > 0) return nick;
 

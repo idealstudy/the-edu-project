@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const MemberSchema = z.object({
   id: z.number().int().nonnegative(),
   email: z.string().email(),
+  password: z.string().optional(),
   name: z.string().optional(),
   nickname: z.string().optional(),
   phoneNumber: z.string().optional(),

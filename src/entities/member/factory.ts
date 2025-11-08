@@ -1,26 +1,10 @@
-import { MemberSchema, getDisplayName } from '@/entities';
-import type { Member, SafeMember } from '@/entities';
+import type { Member } from '@/entities';
+import { FrontendMemberSchema } from '@/entities/member/types/front.schema';
 
+// 최소 필드만 보장되면 나머지는 스키마가 다 처리
 type CreateMemberInput = Partial<Member> &
   Pick<Member, 'id' | 'email' | 'role'>;
 
-export const createMember = (raw: CreateMemberInput): SafeMember => {
-  const parsed = MemberSchema.partial().parse(raw);
-
-  const normalized: Member = {
-    id: parsed.id!,
-    email: parsed.email!,
-    role: parsed.role!,
-    name: parsed.name ?? '',
-    nickname: parsed.nickname ?? '',
-    phoneNumber: parsed.phoneNumber ?? '',
-    birthDate: parsed.birthDate ?? '',
-    acceptRequiredTerm: parsed.acceptRequiredTerm ?? false,
-    acceptOptionalTerm: parsed.acceptOptionalTerm ?? false,
-    regDate: parsed.regDate ?? '',
-    modDate: parsed.modDate ?? '',
-  };
-
-  const displayName = getDisplayName(normalized);
-  return { ...normalized, displayName };
+export const createMember = (raw: CreateMemberInput) => {
+  return FrontendMemberSchema.parse(raw);
 };
