@@ -2,15 +2,14 @@ name: Sync to personal repo
 
 on:
   push:
-    branches:
-      - main
-      - develop
+    branches: [ main, develop ]
   pull_request:
-    branches:
-      - main
-      - develop
+    branches: [ main, develop ]
     types: [opened, synchronize, reopened]
-  delete: 
+  delete:
+
+permissions:
+  contents: read
 
 concurrency:
   group: sync-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
@@ -20,37 +19,40 @@ jobs:
   sync:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.head_ref != 'main' && github.head_ref != 'develop')
     runs-on: ubuntu-latest
-
     steps:
       - name: Check out current ref (push) or PR head (pull_request)
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GH_PAT }}
           fetch-depth: 0
+          # GITHUB_TOKEN 사용 (token 옵션 제거)
           ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
-        env:
-          ACTIONS_STEP_DEBUG: true    
-      
-      - name: Add remote personal repo
+          persist-credentials: false
+
+      - name: Set commit identity (optional)
+        run: |
+          git config user.name "park J"
+          git config user.email "youremail@example.com"
+
+      - name: Add remote to team repo (the-edu)
         run: |
           git remote add personal-repo https://the-edu:${{ secrets.PERSONAL_REPO_TOKEN }}@github.com/the-edu/the-edu-project.git
 
-      - name: Push to the same branch name on personal repo
+      - name: Push to same branch on team repo
         run: |
           BRANCH="${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}"
           git push -f personal-repo HEAD:"$BRANCH"
 
-      - name: Remove remote
+      - name: Cleanup remote
         run: git remote remove personal-repo
 
   sync-delete:
     if: github.event_name == 'delete' && github.event.ref_type == 'branch'
     runs-on: ubuntu-latest
     steps:
-      - name: Delete branch on personal repo
+      - name: Delete branch on team repo
         run: |
-          REF="${{ github.event.ref }}"              
-          BRANCH="${REF#refs/heads/}"              
+          REF="${{ github.event.ref }}"
+          BRANCH="${REF#refs/heads/}"
           git init
           git remote add personal-repo https://the-edu:${{ secrets.PERSONAL_REPO_TOKEN }}@github.com/the-edu/the-edu-project.git
-          git push personal-repo --delete "$BRANCH"
+          git push personal-repo --delete "$BRANCH" || true
