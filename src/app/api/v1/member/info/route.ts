@@ -12,10 +12,10 @@ if (!serverEnv.backendApiUrl) throw new Error('BASE_URL is not defined');
 
 export async function GET() {
   const cookieJar = await cookies();
-  const sid = cookieJar.get('sid');
-  if (!sid) return new NextResponse(null, { status: 204 });
+  const token = cookieJar.get('Authorization') ?? cookieJar.get('sid');
+  if (!token) return new NextResponse(null, { status: 204 });
 
-  const allow = new Set(['sid', 'refresh']);
+  const allow = new Set(['Authorization', 'refresh']);
   const cookieHeader = cookieJar
     .getAll()
     .filter((cookie) => allow.has(cookie.name))

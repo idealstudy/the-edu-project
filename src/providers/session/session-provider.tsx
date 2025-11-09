@@ -9,8 +9,8 @@ import {
   useState,
 } from 'react';
 
-import type { Member } from '@/features/member/model/types';
-import { QuerySessionStrategy } from '@/providers/session/session-query.strategy';
+import { Member } from '@/entities';
+import { makeQuerySessionStrategy } from '@/providers/session/session-strategy';
 import type { SessionStrategy } from '@/providers/session/session-strategy';
 import { useAuthStore } from '@/store/session-store';
 import { useQueryClient } from '@tanstack/react-query';
@@ -23,25 +23,29 @@ import {
 interface SessionProviderProps {
   children: ReactNode;
   strategy?: SessionStrategy;
+  initialHasSession: boolean;
 }
-
-const INITIAL_STATE: SessionSnapshot = {
-  status: 'loading',
-  member: null,
-  error: null,
-};
 
 export const SessionProvider = ({
   children,
   strategy,
+  initialHasSession,
 }: SessionProviderProps) => {
   const queryClient = useQueryClient();
   const defaultStrategy = useMemo(
-    () => strategy ?? new QuerySessionStrategy(queryClient),
+    () => strategy ?? makeQuerySessionStrategy(queryClient),
     [strategy, queryClient]
   );
   const { setUser, clearUser } = useAuthStore();
-  const [snapshot, setSnapshot] = useState<SessionSnapshot>(INITIAL_STATE);
+  /**
+   * 쿠키 있으면 서버확인 필요
+   * 쿠키 없으면 바로 비로그인
+   */
+  const [snapshot, setSnapshot] = useState<SessionSnapshot>(() =>
+    initialHasSession
+      ? { status: 'loading', member: null, error: null }
+      : { status: 'unauthenticated', member: null, error: null }
+  );
   const isMountedRef = useRef(false);
 
   useEffect(() => {
@@ -84,22 +88,25 @@ export const SessionProvider = ({
     if (isMountedRef.current) {
       setSnapshot((prev) => ({ ...prev, status: 'loading', error: null }));
     }
-
     try {
       const member = await defaultStrategy.bootstrap();
       if (member) return applyAuthenticated(member);
       return applyUnauthenticated();
     } catch (error) {
       applyError(error);
-      throw error;
+      return null;
     }
   }, [defaultStrategy, applyAuthenticated, applyUnauthenticated, applyError]);
 
-  // 마운트시 refresh 때림
-  // TODO: 나중에 시드 추출해서 프롭으로 내린담에 그거 존재여부에따라서 리프레시 호출로 변경해야함
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    const bootstrap = async () => {
+      // 쿠키 있으면 서버에서 확정
+      if (initialHasSession) await refresh();
+      // 쿠키 없으면 요청 자체 스킵
+      else applyUnauthenticated();
+    };
+    void bootstrap();
+  }, [initialHasSession, refresh, applyUnauthenticated]);
 
   const value = useMemo(
     () => ({

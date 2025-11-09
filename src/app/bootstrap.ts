@@ -5,10 +5,7 @@ import {
 } from '@/lib/http';
 
 let ejectInterceptors: (() => void) | null = null;
-export const bootstrap = () => {
-  if (!ejectInterceptors) ejectInterceptors = installHttpInterceptors();
-
-  // test
+const bindRefreshDebug = () => {
   if (process.env.NODE_ENV === 'development') {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
@@ -17,4 +14,12 @@ export const bootstrap = () => {
     // @ts-expect-error
     window._refreshOnce = ensureRefreshSession;
   }
+};
+
+export const initHttp = () => {
+  if (!ejectInterceptors) {
+    ejectInterceptors = installHttpInterceptors();
+    bindRefreshDebug();
+  }
+  return ejectInterceptors;
 };

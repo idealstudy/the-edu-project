@@ -1,4 +1,5 @@
 export * from '@/entities/member/types/schema';
+export * from '@/entities/member/types/front.schema';
 export type * from '@/entities/member/types/member.types';
 
 // 권한

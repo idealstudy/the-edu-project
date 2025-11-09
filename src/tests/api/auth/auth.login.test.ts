@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 
 import { POST } from '@/app/api/v1/auth/login/route';
-import { API_BASE_URL } from '@/constants';
+import { env } from '@/lib';
 import { server } from '@/mocks/node';
 import { HttpResponse, http } from 'msw';
 import {
@@ -14,7 +14,7 @@ import {
   vi,
 } from 'vitest';
 
-const LOGIN_URL = `${API_BASE_URL}/auth/login`;
+const LOGIN_URL = `${env.backendApiUrl}/auth/login`;
 
 beforeAll(() => server.listen());
 afterAll(() => server.close());

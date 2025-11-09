@@ -1,4 +1,4 @@
-import { SERVER_API_BASE_URL } from '@/constants';
+import { serverEnv } from '@/lib';
 import { HttpResponse, http } from 'msw';
 
 const createSetCookieHeaders = () => {
@@ -15,7 +15,7 @@ const createSetCookieHeaders = () => {
 // 토큰이 없거나 유효하지 않으면 401을 반환할수 있음
 // 테스트 편의상 204 성공 시나리오만 진행
 export const refreshHandlers = [
-  http.get(`${SERVER_API_BASE_URL}/auth/refresh`, ({ request }) => {
+  http.get(`${serverEnv.backendApiUrl}/auth/refresh`, ({ request }) => {
     const cookieHeader = request.headers.get('Cookie');
     // console.log('MSW received Cookie header:', cookieHeader);
     if (!cookieHeader || !cookieHeader.includes('refresh-token')) {
@@ -35,7 +35,7 @@ export const refreshHandlers = [
   }),
 
   // 실패시 쿠키를 제거하는 Set-Cookie 헤더를 포함가능(본문과 401 상태만 반환)
-  http.get(`${SERVER_API_BASE_URL}/auth/refresh`, () => {
+  http.get(`${serverEnv.backendApiUrl}/auth/refresh`, () => {
     return HttpResponse.json(
       { message: 'Refresh token expired or invalid.' },
       {

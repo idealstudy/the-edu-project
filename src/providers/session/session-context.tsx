@@ -2,7 +2,7 @@
 
 import { createContext, useContext } from 'react';
 
-import type { Member } from '@/features/member/model/types';
+import { Member } from '@/entities';
 
 export type SessionStatus =
   | 'loading'
@@ -28,10 +28,9 @@ export const SessionProviderContext = SessionContext;
 
 export const useSession = () => {
   const context = useContext(SessionContext);
-  if (!context) {
+  if (!context)
     throw new Error(
       'SessionProvider가 존재하지 않는 곳에서 세션을 사용하려고 했습니다.'
     );
-  }
   return context;
 };

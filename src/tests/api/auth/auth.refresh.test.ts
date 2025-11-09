@@ -1,9 +1,9 @@
-import { API_BASE_URL } from '@/constants';
+import { env } from '@/lib';
 import { server } from '@/mocks/node';
 import { HttpResponse, http } from 'msw';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
-const REFRESH_URL = `${API_BASE_URL}/auth/refresh`;
+const REFRESH_URL = `${env.backendApiUrl}/auth/refresh`;
 beforeAll(() => server.listen());
 afterAll(() => server.close());
 afterEach(() => server.resetHandlers());

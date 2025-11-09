@@ -1,5 +1,5 @@
-import { API_BASE_URL } from '@/constants';
 import { CheckEmailDuplicateBody, VerifyCodeBody } from '@/features/auth/types';
+import { env } from '@/lib';
 import { HttpResponse, http } from 'msw';
 
 // const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30';
@@ -7,7 +7,7 @@ export const DUPLICATE_EMAIL = 'test@gmail.com';
 export const VALID_VERIFICATION_CODE = '123456';
 
 export const authHandlers = [
-  http.post(API_BASE_URL + '/auth/login', () => {
+  http.post(env.backendApiUrl + '/auth/login', () => {
     return HttpResponse.json(
       { success: true },
       {
@@ -20,7 +20,7 @@ export const authHandlers = [
   }),
 
   http.post<never, CheckEmailDuplicateBody>(
-    API_BASE_URL + '/public/email-verifications/check-duplicate',
+    env.backendApiUrl + '/public/email-verifications/check-duplicate',
     async ({ request }) => {
       const body = await request.json();
 
@@ -33,7 +33,7 @@ export const authHandlers = [
   ),
 
   http.post<never, VerifyCodeBody>(
-    API_BASE_URL + '/public/email-verifications/verify-code',
+    env.backendApiUrl + '/public/email-verifications/verify-code',
     async ({ request }) => {
       const body = await request.json();
 
@@ -45,7 +45,7 @@ export const authHandlers = [
     }
   ),
 
-  http.post(API_BASE_URL + '/auth/sign-up', () => {
+  http.post(env.backendApiUrl + '/auth/sign-up', () => {
     return HttpResponse.json();
   }),
 ];

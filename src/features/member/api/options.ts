@@ -1,7 +1,7 @@
 import { queryOptions } from '@tanstack/react-query';
 
 import { memberKeys } from './keys';
-import { fetchMemberInfo } from './requests';
+import { fetchMemberInfo } from './member.api';
 
 export const getMemberInfoOptions = () =>
   queryOptions({

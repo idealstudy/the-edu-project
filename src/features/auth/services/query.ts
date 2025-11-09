@@ -8,13 +8,12 @@ import { authService } from './api';
 
 export const useLoginMutation = () => {
   const router = useRouter();
-  const auth = useAuth();
+  const { refreshSession } = useAuth();
 
   return useMutation({
     mutationFn: authService.login,
     onSuccess: async () => {
-      await new Promise((resolve) => setTimeout(resolve, 100));
-      await auth.login();
+      await refreshSession();
       router.replace(ROUTE.DASHBOARD.HOME);
     },
   });

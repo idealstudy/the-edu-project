@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '@/constants';
+import { env } from '@/lib';
 import { HttpResponse, http } from 'msw';
 
 const MOCK_MEMBER_PAYLOAD = {
@@ -22,7 +22,7 @@ const MOCK_MEMBER_PAYLOAD = {
 
 // TODO: 타입 추가해야함
 export const memberHandlers = [
-  http.get(API_BASE_URL + '/member/info', ({ request }) => {
+  http.get(env.backendApiUrl + '/member/info', ({ request }) => {
     const cookieHeader = request.headers.get('Cookie');
     if (cookieHeader?.includes('session_id=mock-token-success')) {
       return HttpResponse.json(

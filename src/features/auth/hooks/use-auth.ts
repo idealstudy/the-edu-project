@@ -9,15 +9,11 @@ export const useAuth = () => {
   const { user, clearUser } = useAuthStore();
   const { refresh } = useSession();
 
-  const fetchSession = async () => {
+  const refreshSession = async () => {
     const member = await refresh();
     if (!member) throw new Error('세션 정보를 불러오지 못했습니다.');
+    queryClient.setQueryData(memberKeys.info(), member);
     return member;
-  };
-
-  const login = async (form?: { email: string; password: string }) => {
-    if (form) await authService.login(form);
-    return fetchSession();
   };
 
   const logout = async () => {
@@ -30,5 +26,5 @@ export const useAuth = () => {
     }
   };
 
-  return { user, login, logout, fetchSession };
+  return { user, logout, refreshSession };
 };

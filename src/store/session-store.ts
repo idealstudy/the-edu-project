@@ -1,4 +1,4 @@
-import type { Member } from '@/features/member/model/types';
+import { Member } from '@/entities';
 import { create } from 'zustand';
 
 interface AuthState {
