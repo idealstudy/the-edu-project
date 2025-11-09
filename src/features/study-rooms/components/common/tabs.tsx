@@ -16,8 +16,8 @@ const TabsTrigger = ({ className, children, ...props }: TabsTriggerProps) => {
         'group border-line-line1 relative flex h-[55px] min-w-[170px] cursor-pointer items-center justify-center gap-2 rounded-t-[12px] border border-b-0 px-5',
         'text-text-sub2 text-lg',
         'bg-transparent',
-        '[&>svg]:text-text-inactive data-[state=active]:[&>svg]:text-key-color-primary',
-        'data-[state=active]:text-key-color-primary data-[state=active]:bg-gray-scale-white data-[state=active]:font-semibold',
+        '[&>svg]:text-text-inactive mock-[state=active]:[&>svg]:text-key-color-primary',
+        'mock-[state=active]:text-key-color-primary mock-[state=active]:bg-gray-scale-white mock-[state=active]:font-semibold',
         className
       )}
       {...props}

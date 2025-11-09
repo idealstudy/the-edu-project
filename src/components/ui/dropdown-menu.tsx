@@ -30,7 +30,7 @@ const DropdownMenuContent = ({
         className={cn(
           'border-line-line1 bg-gray-scale-white text-text-main z-50 overflow-hidden rounded-[6px] border',
           'animate-in fade-in-0',
-          'data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
+          'mock-[side=bottom]:slide-in-from-top-2 mock-[side=left]:slide-in-from-right-2 mock-[side=right]:slide-in-from-left-2 mock-[side=top]:slide-in-from-bottom-2',
           className
         )}
         sideOffset={sideOffset}

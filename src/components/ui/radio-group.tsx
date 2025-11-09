@@ -49,7 +49,7 @@ const RadioGroupItem = ({ className, ...props }: RadioGroupItemProps) => {
       <RadioGroupPrimitives.Indicator
         className={cn(
           'bg-key-color-primary size-[12px] rounded-full',
-          'data-disabled:bg-gray-scale-gray-20'
+          'mock-disabled:bg-gray-scale-gray-20'
         )}
       />
     </RadioGroupPrimitives.Item>

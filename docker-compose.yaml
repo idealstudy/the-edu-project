@@ -23,7 +23,7 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./app.dev.the-edu.site.pem:/etc/caddy/certs/app.dev.the-edu.site.pem
       - ./app.dev.the-edu.site-key.pem:/etc/caddy/certs/app.dev.the-edu.site-key.pem
-      - caddy_data:/data
+      - caddy_data:/mock
 
     depends_on:
       - nextjs

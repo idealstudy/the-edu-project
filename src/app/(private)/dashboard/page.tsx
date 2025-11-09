@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 
+import { DashboardContainer } from '@/features/dashboard/components/dashboard-container';
 import { EmptyConnectionDialog } from '@/features/dashboard/connect/components/empty-connection-dialog';
 
 const SITE_NAME = '디에듀';
@@ -41,7 +42,7 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
-      <main className="mx-auto max-w-[570px] px-4 pb-[180px]"></main>
+      <DashboardContainer />
       <EmptyConnectionDialog />
     </>
   );
