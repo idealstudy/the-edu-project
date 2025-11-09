@@ -32,8 +32,9 @@ jobs:
 
       - name: Add remote personal repo
         run: |
-          git remote add personal-repo https://the-edu:${{ secrets.PERSONAL_REPO_TOKEN }}@github.com/the-edu/the-edu-project.git
-
+          git remote add personal-repo https://x-access-token:${{ secrets.PERSONAL_REPO_TOKEN }}@github.com/the-edu/the-edu-project.git
+        # git remote add personal-repo https://the-edu:${{ secrets.PERSONAL_REPO_TOKEN }}@github.com/the-edu/the-edu-project.git
+          
       - name: Push to the same branch name on personal repo
         run: |
           BRANCH="${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}"
