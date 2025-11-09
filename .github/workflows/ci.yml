@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: development
     permissions:
-      contents: read
+      contents: write
     env:
       BACKEND_API_URL: ${{ secrets.BACKEND_API_URL }}
     steps:
@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: development
     permissions:
-      contents: read
+      contents: write
     env:
       BACKEND_API_URL: ${{ secrets.BACKEND_API_URL }}
     steps:
