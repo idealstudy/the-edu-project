@@ -1,14 +1,13 @@
-import { MEMBER_QUERY_STALE_TIME } from '@/features/member/model/constants';
 import { queryOptions } from '@tanstack/react-query';
 
 import { memberKeys } from './keys';
-import { fetchMemberInfo } from './requests';
+import { fetchMemberInfo } from './member.api';
 
 export const getMemberInfoOptions = () =>
   queryOptions({
     queryKey: memberKeys.info(),
     queryFn: fetchMemberInfo,
-    staleTime: MEMBER_QUERY_STALE_TIME,
+    staleTime: 5 * 60 * 1000,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     retry: false,

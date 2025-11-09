@@ -1,21 +1,38 @@
 import {
+  FrontendMemberSchema,
+  Member,
+  MemberAnyResponseSchema,
+  MemberEnvelope,
+} from '@/entities';
+import {
   CheckEmailDuplicateBody,
   LoginBody,
   SignUpBody,
   VerifyCodeBody,
 } from '@/features/auth/types';
-import type { Member } from '@/features/member/model/types';
-import { authApi, publicApi } from '@/lib/http';
+import { authApi, authBffApi, publicApi } from '@/lib/http';
 
 export const authService = {
   login: async (body: LoginBody) => {
-    await publicApi.post('/auth/login', body, { withCredentials: true });
+    await authBffApi.post('/api/v1/auth/login', body, {
+      withCredentials: true,
+    });
   },
   logout: async () => {
     return authApi.post('/auth/logout');
   },
   getSession: async () => {
-    return authApi.get<Member>('/members/info');
+    try {
+      const response = await authBffApi.get<Member | MemberEnvelope>(
+        '/api/v1/member/info'
+      );
+      const domain = MemberAnyResponseSchema.parse(response);
+      return FrontendMemberSchema.parse(domain);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e: unknown) {
+      // console.error('Session Data Parsing Error:', e);
+      return null;
+    }
   },
   checkEmailDuplicate: async (body: CheckEmailDuplicateBody) => {
     return publicApi.post('/public/email-verifications/check-duplicate', body);

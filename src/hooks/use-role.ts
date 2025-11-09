@@ -1,7 +1,6 @@
-// import { sessionQueryOption } from '@/features/auth/services/query-options';
 import { queryKey } from '@/constants/query-key';
-import { fetchMemberInfo } from '@/features/member/api/requests';
-import { Member } from '@/features/member/model/types';
+import { Member } from '@/entities';
+import { fetchMemberInfo } from '@/features/member/api/member.api';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 /**
@@ -25,7 +24,4 @@ export const useRole = () => {
   });
 
   return { role: data?.role, isLoading };
-  /*const { data, isLoading } = useQuery(sessionQueryOption);
-
-  return { role: data?.auth, isLoading };*/
 };

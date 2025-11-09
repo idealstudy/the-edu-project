@@ -57,11 +57,11 @@ const SelectTrigger = ({
     <SelectPrimitives.Trigger
       className={cn(
         'border-gray-scale-gray-10 bg-gray-scale-white relative flex h-[56px] w-full items-center justify-between rounded-[4px] border pr-14 pl-6 text-start outline-hidden',
-        'data-placeholder:text-gray-scale-gray-50',
+        'mock-placeholder:text-gray-scale-gray-50',
         '[&>span]:min-w-0',
         'placeholder-text-gray-scale-gray-50',
         'cursor-pointer',
-        'data-[state=open]:[&>svg]:rotate-180',
+        'mock-[state=open]:[&>svg]:rotate-180',
         'disabled:border-text-inactive disabled:bg-gray-scale-gray-1 disabled:text-text-inactive disabled:pointer-events-none',
         invalid && 'border-system-warning',
         className
@@ -130,8 +130,8 @@ const SelectOption = ({ className, children, ...props }: SelectOptionProps) => {
       className={cn(
         'relative flex h-[56px] w-full cursor-pointer items-center px-6 outline-hidden select-none',
         'focus:bg-gray-scale-gray-1',
-        'data-[state=checked]:text-key-color-primary',
-        'data-disabled:pointer-events-none',
+        'mock-[state=checked]:text-key-color-primary',
+        'mock-disabled:pointer-events-none',
         className
       )}
       {...props}

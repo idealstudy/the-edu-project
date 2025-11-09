@@ -1,3 +1,10 @@
-import { authHandlers } from './auth/handlers';
+import { refreshHandlers } from '@/mocks/auth/refresh.handlers';
 
-export const handlers = [...authHandlers];
+import { authHandlers } from './auth/handlers';
+import { memberHandlers } from './member/handlers';
+
+export const handlers = [
+  ...authHandlers,
+  ...memberHandlers,
+  ...refreshHandlers,
+];

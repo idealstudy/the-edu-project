@@ -39,7 +39,7 @@ const QUESTION_FILTER_OPTIONS: Array<{ value: QnAFilter; label: string }> = [
 
 const SELECT_STYLES = {
   trigger:
-    'border-line-line2 h-[36px] rounded-[8px] pr-8 pl-2 text-sm w-auto min-w-[110px] text-[var(--color-text-sub2)] whitespace-nowrap data-[state=open]:border-line-line3 focus:ring-0 focus:outline-none px-3 font-label-normal',
+    'border-line-line2 h-[36px] rounded-[8px] pr-8 pl-2 text-sm w-auto min-w-[110px] text-[var(--color-text-sub2)] whitespace-nowrap mock-[state=open]:border-line-line3 focus:ring-0 focus:outline-none px-3 font-label-normal',
   option:
     'flex h-[32px] border-b-0 text-center w-full font-body2-normal justify-center items-center',
 };

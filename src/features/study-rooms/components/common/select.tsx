@@ -27,11 +27,11 @@ const SelectTrigger = ({
       className={cn(
         'border-line-line3 bg-gray-scale-white relative flex h-[36px] items-center justify-between rounded-[8px] border pr-11 pl-3 text-start text-sm outline-hidden',
         'min-w-[110px]',
-        'data-placeholder:text-text-sub2',
+        'mock-placeholder:text-text-sub2',
         '[&>span]:min-w-0',
         'placeholder-text-text-sub2',
         'cursor-pointer',
-        'data-[state=open]:[&>svg]:rotate-180',
+        'mock-[state=open]:[&>svg]:rotate-180',
         className
       )}
       {...props}
@@ -96,8 +96,8 @@ const SelectOption = ({ className, children, ...props }: SelectOptionProps) => {
       className={cn(
         'relative flex h-[32px] cursor-pointer items-center justify-center px-3 outline-hidden select-none',
         'focus:bg-gray-scale-gray-5',
-        'data-[state=checked]:text-key-color-primary',
-        'data-disabled:pointer-events-none',
+        'mock-[state=checked]:text-key-color-primary',
+        'mock-disabled:pointer-events-none',
         className
       )}
       {...props}

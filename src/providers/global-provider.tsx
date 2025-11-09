@@ -1,11 +1,25 @@
 import { ReactNode } from 'react';
 
-import { QueryProvider } from './query-provider';
+import { checkCookie } from '@/lib';
+import {
+  InterceptorProvider,
+  QueryProvider,
+  SessionProvider,
+} from '@/providers';
 
 interface Props {
   children: ReactNode;
 }
 
-export const GlobalProvider = ({ children }: Props) => {
-  return <QueryProvider>{children}</QueryProvider>;
+export const GlobalProvider = async ({ children }: Props) => {
+  const hasSession = await checkCookie();
+  return (
+    <InterceptorProvider>
+      <QueryProvider>
+        <SessionProvider initialHasSession={hasSession}>
+          {children}
+        </SessionProvider>
+      </QueryProvider>
+    </InterceptorProvider>
+  );
 };

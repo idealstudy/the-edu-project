@@ -531,7 +531,7 @@ const FontSizeSelect = ({
         <SelectPrimitives.Value>{value.slice(0, -2)}pt</SelectPrimitives.Value>
         <SelectPrimitives.Icon
           className={cn(
-            'group-hover:bg-gray-scale-gray-5 flex size-3 items-center justify-center rounded-[2px] group-data-[state=open]:rotate-180',
+            'group-hover:bg-gray-scale-gray-5 group-mock-[state=open]:rotate-180 flex size-3 items-center justify-center rounded-[2px]',
             isNotDefaultFontSize &&
               'bg-background-orange text-key-color-primary group-hover:bg-orange-scale-orange-5'
           )}
@@ -566,7 +566,7 @@ const FontSizeSelectOption = ({
       className={cn(
         'font-label-normal text-text-main flex h-[26px] w-[52px] cursor-pointer items-center justify-center outline-none',
         'focus:bg-background-gray',
-        'data-[state=checked]:bg-background-orange data-[state=checked]:text-key-color-primary',
+        'mock-[state=checked]:bg-background-orange mock-[state=checked]:text-key-color-primary',
         className
       )}
       {...props}

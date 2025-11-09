@@ -3,7 +3,6 @@ import localFont from 'next/font/local';
 
 import '@/components/editor/styles/text-editor.css';
 import { Header } from '@/components/layout/header';
-import AuthProvider from '@/providers/auth-provider';
 import { GlobalProvider } from '@/providers/global-provider';
 import '@/styles/globals.css';
 
@@ -24,12 +23,10 @@ export default function RootLayout({
       className={`${pretendard.variable} font-pretendard`}
     >
       <body className="antialiased">
-        <AuthProvider>
-          <GlobalProvider>
-            <Header />
-            <div className="mt-header-height flex flex-col">{children}</div>
-          </GlobalProvider>
-        </AuthProvider>
+        <GlobalProvider>
+          <Header />
+          <div className="mt-header-height flex flex-col">{children}</div>
+        </GlobalProvider>
       </body>
     </html>
   );

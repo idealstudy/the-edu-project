@@ -69,7 +69,7 @@ export const createStudyNoteGroup = async (data: {
 //     >(
 //       `/teacher/study-rooms/${roomId}/teaching-notes?${objectToQueryString(pageble)}`
 //     )
-//   ).data;
+//   ).mock;
 
-//   return response.data;
+//   return response.mock;
 // };

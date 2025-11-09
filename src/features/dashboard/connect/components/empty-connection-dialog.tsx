@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
-import { useSession } from '@/features/auth/hooks/use-session';
+import { useRole } from '@/hooks/use-role';
 import { translateModalMessage } from '@/lib/message';
 
 import { useConnectionList } from '../services/query';
@@ -21,7 +21,9 @@ const DialogTwStyles = {
 };
 
 export const EmptyConnectionDialog = () => {
-  const session = useSession();
+  const { role } = useRole();
+  const [isOpen, setIsOpen] = useState(false);
+
   const { data } = useConnectionList({
     state: 'PENDING',
   });
@@ -29,17 +31,11 @@ export const EmptyConnectionDialog = () => {
   const hasConnections =
     Array.isArray(data?.connectionList) && data.connectionList.length > 0;
 
-  const userRole = session.data?.role;
-
-  const [isOpen, setIsOpen] = useState(false);
-
   useEffect(() => {
-    if (hasConnections && userRole) {
-      setIsOpen(true);
-    }
-  }, [userRole, hasConnections]);
+    if (hasConnections && role) setIsOpen(true);
+  }, [role, hasConnections]);
 
-  if (!userRole || !hasConnections) return null;
+  if (!role || !hasConnections) return null;
 
   return (
     <Dialog
@@ -51,11 +47,11 @@ export const EmptyConnectionDialog = () => {
       <Dialog.Content className={DialogTwStyles.content}>
         <Dialog.Header className={DialogTwStyles.header}>
           <Dialog.Title className={DialogTwStyles.title}>
-            {translateModalMessage(userRole).title}
+            {translateModalMessage(role).title}
           </Dialog.Title>
         </Dialog.Header>
         <Dialog.Body className={DialogTwStyles.body}>
-          {translateModalMessage(userRole).content}
+          {translateModalMessage(role).content}
         </Dialog.Body>
         <Dialog.Footer className={DialogTwStyles.footer}>
           <Dialog.Close

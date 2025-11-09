@@ -1,5 +1,5 @@
 import { CheckEmailDuplicateBody, VerifyCodeBody } from '@/features/auth/types';
-import { BASE_URL } from '@/lib/http';
+import { env } from '@/lib';
 import { HttpResponse, http } from 'msw';
 
 // const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30';
@@ -7,12 +7,42 @@ export const DUPLICATE_EMAIL = 'test@gmail.com';
 export const VALID_VERIFICATION_CODE = '123456';
 
 export const authHandlers = [
-  http.post(BASE_URL + '/auth/login', () => {
-    return HttpResponse.json({ status: 200, message: 'OK' });
+  http.post(env.backendApiUrl + '/auth/login', () => {
+    return HttpResponse.json(
+      { success: true },
+      {
+        status: 200,
+        headers: {
+          'Set-Cookie': 'session_id=mock-token-success; Path=/; HttpOnly',
+        },
+      }
+    );
+  }),
+
+  http.get(env.backendApiUrl + '/members/info', ({ request }) => {
+    const cookieHeader = request.headers.get('Cookie');
+    if (
+      !cookieHeader ||
+      !cookieHeader.includes('session_id=mock-token-success')
+    ) {
+      return HttpResponse.json(
+        { message: '인증 정보가 유효하지 않습니다.' },
+        { status: 401 }
+      );
+    }
+
+    return HttpResponse.json(
+      {
+        id: 1,
+        email: 'theedu1234@success.com',
+        name: 'Mock User',
+      },
+      { status: 200 }
+    );
   }),
 
   http.post<never, CheckEmailDuplicateBody>(
-    BASE_URL + '/public/email-verifications/check-duplicate',
+    env.backendApiUrl + '/public/email-verifications/check-duplicate',
     async ({ request }) => {
       const body = await request.json();
 
@@ -25,7 +55,7 @@ export const authHandlers = [
   ),
 
   http.post<never, VerifyCodeBody>(
-    BASE_URL + '/public/email-verifications/verify-code',
+    env.backendApiUrl + '/public/email-verifications/verify-code',
     async ({ request }) => {
       const body = await request.json();
 
@@ -37,7 +67,7 @@ export const authHandlers = [
     }
   ),
 
-  http.post(BASE_URL + '/auth/sign-up', () => {
+  http.post(env.backendApiUrl + '/auth/sign-up', () => {
     return HttpResponse.json();
   }),
 ];
