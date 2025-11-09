@@ -10,8 +10,6 @@ jobs:
     name: Lint and Test
     runs-on: ubuntu-latest
     environment: development
-    permissions:
-      contents: write
     env:
       BACKEND_API_URL: ${{ secrets.BACKEND_API_URL }}
     steps:
@@ -32,8 +30,6 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     environment: development
-    permissions:
-      contents: write
     env:
       BACKEND_API_URL: ${{ secrets.BACKEND_API_URL }}
     steps:
