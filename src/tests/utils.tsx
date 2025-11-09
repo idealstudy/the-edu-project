@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 
+import { InterceptorProvider, SessionProvider } from '@/providers';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render } from '@testing-library/react';
 
@@ -12,10 +13,15 @@ const queryClient = new QueryClient({
 });
 
 export const wrapper = ({ children }: { children: React.ReactNode }) => {
+  const hasSession = false;
   return (
-    <QueryClientProvider client={queryClient}>
-      <Suspense>{children}</Suspense>
-    </QueryClientProvider>
+    <InterceptorProvider>
+      <QueryClientProvider client={queryClient}>
+        <SessionProvider initialHasSession={hasSession}>
+          <Suspense>{children}</Suspense>
+        </SessionProvider>
+      </QueryClientProvider>
+    </InterceptorProvider>
   );
 };
 

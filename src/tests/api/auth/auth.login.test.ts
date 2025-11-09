@@ -50,8 +50,15 @@ describe('로그인 BFF 핸들러 테스트 (POST /api/v1/auth/login)', () => {
 
     // 응답, 응답 본문 검증
     expect(response.status).toBe(200);
-    expect(jsonBody).toEqual({
+    /*expect(jsonBody).toEqual({
       ok: true,
+    });*/
+    expect(jsonBody).toEqual({
+      member: {
+        id: 1,
+        email: 'theedu1234@success.com',
+        name: 'Mock User',
+      },
     });
 
     // 쿠키 검증

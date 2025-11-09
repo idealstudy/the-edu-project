@@ -19,6 +19,28 @@ export const authHandlers = [
     );
   }),
 
+  http.get(env.backendApiUrl + '/members/info', ({ request }) => {
+    const cookieHeader = request.headers.get('Cookie');
+    if (
+      !cookieHeader ||
+      !cookieHeader.includes('session_id=mock-token-success')
+    ) {
+      return HttpResponse.json(
+        { message: '인증 정보가 유효하지 않습니다.' },
+        { status: 401 }
+      );
+    }
+
+    return HttpResponse.json(
+      {
+        id: 1,
+        email: 'theedu1234@success.com',
+        name: 'Mock User',
+      },
+      { status: 200 }
+    );
+  }),
+
   http.post<never, CheckEmailDuplicateBody>(
     env.backendApiUrl + '/public/email-verifications/check-duplicate',
     async ({ request }) => {
