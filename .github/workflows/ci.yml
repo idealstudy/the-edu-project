@@ -12,16 +12,17 @@ jobs:
     environment: development
     permissions:
       contents: read
+    env:
+      BACKEND_API_URL: ${{ secrets.BACKEND_API_URL }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: '20'
-          cache: 'npm'
       - name: Create env file (.env.test)
         run: |
           echo "NODE_ENV=development" >> .env.test
-          echo "NEXT_PUBLIC_BASE_URL=${{ secrets.NEXT_PUBLIC_BASE_URL }}" >> .env.test
+          echo "NEXT_PUBLIC_BACKEND_API_URL=${{ secrets.NEXT_PUBLIC_BACKEND_API_URL }}" >> .env.test
       - run: npm ci
       - run: npm run lint
       - run: npm run check-types
@@ -33,12 +34,13 @@ jobs:
     environment: development
     permissions:
       contents: read
+    env:
+      BACKEND_API_URL: ${{ secrets.BACKEND_API_URL }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: '20'
-          cache: 'npm'
       - name: Create env file (.env.test) for build
         run: |
           echo "NODE_ENV=development" >> .env.test
