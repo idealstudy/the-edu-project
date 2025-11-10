@@ -79,8 +79,12 @@ export function middleware(req: NextRequest) {
   return handleAuthGuard(req);
 }
 
-// 보호할 경로: 필요 시 특정 경로만 매칭
-// '/((?!_next/static|_next/image|favicon.ico|api).*)', // 전역 가드 예시
 export const config = {
-  matcher: ['/dashboard/:path*', '/study-rooms/:path*', '/studyrooms/:path*'],
+  matcher: [
+    '/',
+    '/api/:path*',
+    '/dashboard/:path*',
+    '/study-rooms/:path*',
+    '/studyrooms/:path*',
+  ],
 };
