@@ -1,5 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// CORS
+const ALLOWED_ORIGINS = [
+  'http://localhost:3000',
+  'https://localhost:3000',
+  'https://app.dev.the-edu.site',
+  'https://the-edu.vercel.app',
+  'https://the-edu-dev.vercel.app',
+  'https://dev.the-edu.site',
+  'https://d-edu.site',
+];
+const createCorsHeaders = (origin: string) => ({
+  'Access-Control-Allow-Origin': origin,
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers':
+    'Content-Type, Authorization, X-Custom-Header',
+  'Access-Control-Allow-Credentials': 'true',
+});
+
 const PUBLIC_PATHS = new Set<string>(['/', '/login', '/register']);
 
 // 인프라(next.js)
@@ -33,10 +51,26 @@ function handleAuthGuard(req: NextRequest) {
 }
 
 export function middleware(req: NextRequest) {
+  const { pathname, origin } = req.nextUrl;
+  if (req.method === 'OPTIONS') {
+    const reqOrigin = req.headers.get('origin') || origin;
+    let allowedOrigin = reqOrigin;
+
+    if (!ALLOWED_ORIGINS.includes(reqOrigin)) {
+      allowedOrigin = ALLOWED_ORIGINS[0] || '*';
+    }
+
+    const corsHeaders = createCorsHeaders(allowedOrigin);
+
+    return new NextResponse(null, {
+      status: 204,
+      headers: corsHeaders,
+    });
+  }
+
   // 개발용
   if (process.env.NODE_ENV !== 'production') return NextResponse.next();
   if (isInfraRequest(req)) return NextResponse.next();
-  const { pathname } = req.nextUrl;
 
   // 공개 경로 통과
   if (PUBLIC_PATHS.has(pathname)) return NextResponse.next();
