@@ -24,7 +24,7 @@ const PUBLIC_PATHS = new Set<string>(['/', '/login', '/register']);
 function isInfraRequest(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
   return (
-    req.method === 'OPTIONS' ||
+    // req.method === 'OPTIONS' ||
     req.headers.get('next-router-prefetch') === '1' ||
     req.headers.get('purpose') === 'prefetch' ||
     req.headers.get('rsc') === '1' ||
