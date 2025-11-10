@@ -18,7 +18,12 @@ const createCorsHeaders = (origin: string) => ({
   'Access-Control-Allow-Credentials': 'true',
 });
 
-const PUBLIC_PATHS = new Set<string>(['/', '/login', '/register']);
+const PUBLIC_PATHS = new Set<string>([
+  '/',
+  '/login',
+  '/register',
+  '/api/v1/auth/login',
+]);
 
 // 인프라(next.js)
 function isInfraRequest(req: NextRequest) {
