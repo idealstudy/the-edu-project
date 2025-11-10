@@ -1,3 +1,5 @@
+'use client';
+
 import { DashboardSummaryCardProps } from '@/features/dashboard/types';
 import { cn } from '@/lib/utils';
 
