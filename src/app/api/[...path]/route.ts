@@ -1,7 +1,4 @@
-import {
-  createCorsHeaders,
-  resolveAllowedOrigin,
-} from '@/app/api/feedback/route';
+import { createCorsHeaders, resolveAllowedOrigin } from '@/lib';
 
 // API Route Handler || Root Page의 HTTP 요청 처리
 export async function OPTIONS(req: Request) {
