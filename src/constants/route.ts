@@ -1,3 +1,4 @@
+// 프론트엔드 내비게이션 경로 관리
 export const ROUTE = {
   HOME: '/',
   LOGIN: '/login',
