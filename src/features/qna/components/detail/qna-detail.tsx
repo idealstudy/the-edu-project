@@ -1,10 +1,12 @@
 'use client';
 
+import { Key } from 'react';
+
 import Image from 'next/image';
 
-import { ColumnLayout } from '@/components/layout/column-layout';
-import { useRole } from '@/hooks/use-role';
-import { cn } from '@/lib/utils';
+import { ColumnLayout } from '@/shared/components/layout/column-layout';
+import { useRole } from '@/shared/hooks/use-role';
+import { cn } from '@/shared/lib/utils';
 
 import { useQnADetailQuery } from '../../services/query';
 import QuestionAnswer from '../sidebar/question-answer';
@@ -43,7 +45,9 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
                 : 'text-gray-scale-gray-60'
             )}
           >
-            {qnaDetail && statusMessage[qnaDetail?.status]}
+            {/* TODO: 임시 타입경고 제거 */}
+            {qnaDetail &&
+              statusMessage[qnaDetail?.status as keyof typeof statusMessage]}
           </span>
           <h3 className="font-headline1-heading">{qnaDetail?.title}</h3>
           <hr className="text-gray-scale-gray-10" />
@@ -63,25 +67,33 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
         </div>
       </ColumnLayout.Left>
       <ColumnLayout.Right className="desktop:min-w-[740px] flex h-[400px] w-full flex-col gap-3 rounded-[12px]">
-        {qnaDetail?.messages.map((msg) => {
-          if (msg.authorType === 'ROLE_TEACHER')
-            return (
-              <QuestionAnswer
-                key={msg.id}
-                content={msg.content}
-                regDate={msg.regDate}
-              />
-            );
-          else if (msg.authorType === 'ROLE_STUDENT')
-            return (
-              <QuestionContent
-                key={msg.id}
-                content={msg.content}
-                authorName={msg.authorName}
-                regDate={msg.regDate}
-              />
-            );
-        })}
+        {qnaDetail?.messages.map(
+          (msg: {
+            authorType: string;
+            id: Key | null | undefined;
+            content: string;
+            regDate: string;
+            authorName: string;
+          }) => {
+            if (msg.authorType === 'ROLE_TEACHER')
+              return (
+                <QuestionAnswer
+                  key={msg.id}
+                  content={msg.content}
+                  regDate={msg.regDate}
+                />
+              );
+            else if (msg.authorType === 'ROLE_STUDENT')
+              return (
+                <QuestionContent
+                  key={msg.id}
+                  content={msg.content}
+                  authorName={msg.authorName}
+                  regDate={msg.regDate}
+                />
+              );
+          }
+        )}
         <QnAMessageFormProvider>
           <WriteArea
             studyRoomId={studyRoomId}

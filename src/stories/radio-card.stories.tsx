@@ -1,5 +1,5 @@
-import { RadioCard } from '@/components/ui/radio-card';
-import { RadioGroup } from '@/components/ui/radio-group';
+import { RadioCard } from '@/shared/components/ui/radio-card';
+import { RadioGroup } from '@/shared/components/ui/radio-group';
 import { Meta, StoryObj } from '@storybook/react';
 
 const meta = {

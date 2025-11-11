@@ -5,12 +5,12 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
 
-import { TextEditor } from '@/components/editor';
-import { ColumnLayout } from '@/components/layout/column-layout';
-import { Button } from '@/components/ui/button';
-import { Form } from '@/components/ui/form';
-import { ROUTE } from '@/constants/route';
-import { useRole } from '@/hooks/use-role';
+import { TextEditor } from '@/shared/components/editor';
+import { ColumnLayout } from '@/shared/components/layout/column-layout';
+import { Button } from '@/shared/components/ui/button';
+import { Form } from '@/shared/components/ui/form';
+import { ROUTE } from '@/shared/constants/route';
+import { useRole } from '@/shared/hooks/use-role';
 import { JSONContent } from '@tiptap/react';
 
 import { QnAMessageForm } from '../../schema/create';

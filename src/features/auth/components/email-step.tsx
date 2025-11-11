@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 
-import { Button } from '@/components/ui/button';
-import { Form } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { ROUTE } from '@/constants/route';
+import { Button } from '@/shared/components/ui/button';
+import { Form } from '@/shared/components/ui/form';
+import { Input } from '@/shared/components/ui/input';
+import { ROUTE } from '@/shared/constants/route';
 
 import { useCheckEmailDuplicate } from '../services/query';
 import { useRegisterFormContext } from './register-form-context-provider';

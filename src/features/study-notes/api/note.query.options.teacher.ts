@@ -3,7 +3,7 @@ import {
   TeacherNotesApi,
   createNotesListQueryOptions,
 } from '@/features/study-notes/api';
-import { BaseQueryOptions, DEFAULT_QUERY_OPTION } from '@/lib/query';
+import { BaseQueryOptions, DEFAULT_QUERY_OPTION } from '@/shared/lib/query';
 import { queryOptions } from '@tanstack/react-query';
 
 export type TeacherQueryOptions = ReturnType<

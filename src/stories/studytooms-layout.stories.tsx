@@ -3,10 +3,9 @@ import Image from 'next/image';
 import { StudyNotesList } from '@/features/study-notes/components/list';
 import { StudyRoomDetailLayout } from '@/features/study-rooms/components/common/layout';
 import { ListItem } from '@/features/study-rooms/components/common/list-item';
+import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 import type { Meta, StoryObj } from '@storybook/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
-import { DropdownMenu } from '../components/ui/dropdown-menu';
 
 const queryClient = new QueryClient({
   defaultOptions: {

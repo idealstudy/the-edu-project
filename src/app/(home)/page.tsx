@@ -1,5 +1,5 @@
-import { Footer } from '@/components/layout/footer';
 import { Session1, Session2, Session3, Session4 } from '@/features/home';
+import { Footer } from '@/shared/components/layout/footer';
 
 export default function home() {
   return (

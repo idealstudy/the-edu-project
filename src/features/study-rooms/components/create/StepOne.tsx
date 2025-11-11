@@ -4,12 +4,12 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import Image from 'next/image';
 
-import { TextEditor } from '@/components/editor';
-import { Button } from '@/components/ui/button';
-import { Form } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Select } from '@/components/ui/select';
 import { CreateStepForm } from '@/features/study-rooms';
+import { TextEditor } from '@/shared/components/editor';
+import { Button } from '@/shared/components/ui/button';
+import { Form } from '@/shared/components/ui/form';
+import { Input } from '@/shared/components/ui/input';
+import { Select } from '@/shared/components/ui/select';
 
 export default function StepOne({ onNext, disabled }: CreateStepForm) {
   const { register, control } = useFormContext();

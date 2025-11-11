@@ -6,7 +6,7 @@ import {
   extractErrorMessage,
   safeJson,
   serverEnv,
-} from '@/lib';
+} from '@/shared/lib';
 
 if (!serverEnv.backendApiUrl) throw new Error('BASE_URL is not defined');
 

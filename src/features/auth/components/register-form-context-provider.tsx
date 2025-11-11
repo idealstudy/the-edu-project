@@ -4,10 +4,10 @@ import { useForm } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
 
-import { Form } from '@/components/ui/form';
-import { ROUTE } from '@/constants/route';
-import { useCheckboxGroup } from '@/hooks/use-checkbox-group';
-import { createContextFactory } from '@/lib/context';
+import { Form } from '@/shared/components/ui/form';
+import { ROUTE } from '@/shared/constants/route';
+import { useCheckboxGroup } from '@/shared/hooks/use-checkbox-group';
+import { createContextFactory } from '@/shared/lib/context';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { RegisterForm } from '../schemas/register';

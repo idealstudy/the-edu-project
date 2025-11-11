@@ -2,9 +2,6 @@
 
 import { useState } from 'react';
 
-import { DialogAction } from '@/components/dialog';
-import { Button } from '@/components/ui/button';
-import { Dialog } from '@/components/ui/dialog';
 import {
   useMoveNoteToGroup,
   useRemoveNoteFromGroup,
@@ -12,8 +9,11 @@ import {
 import { StudyNoteGroupPageable } from '@/features/study-notes/model';
 import { getStudyNoteGroupInfiniteOption } from '@/features/study-rooms';
 import { Select } from '@/features/study-rooms/components/common/select';
-import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
-import { useRole } from '@/hooks/use-role';
+import { DialogAction } from '@/shared/components/dialog';
+import { Button } from '@/shared/components/ui/button';
+import { Dialog } from '@/shared/components/ui/dialog';
+import { useInfiniteScroll } from '@/shared/hooks/use-infinite-scroll';
+import { useRole } from '@/shared/hooks/use-role';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 export const GROUP_MOVE_DIALOG_PAGEABLE = {

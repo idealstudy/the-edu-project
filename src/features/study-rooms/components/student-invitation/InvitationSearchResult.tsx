@@ -4,9 +4,9 @@ import React from 'react';
 
 import Image from 'next/image';
 
-import { Button } from '@/components/ui/button';
-import { TextField } from '@/components/ui/text-field';
 import { InvitationController } from '@/features/study-rooms/hooks/useInvitationController';
+import { Button } from '@/shared/components/ui/button';
+import { TextField } from '@/shared/components/ui/text-field';
 
 export const InvitationSearchResult = ({
   invitation,

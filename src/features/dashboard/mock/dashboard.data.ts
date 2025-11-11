@@ -1,10 +1,10 @@
-import { Icon } from '@/components/ui/icon';
 import {
   MarketingAsset,
   RecentNote,
   StudyRoom,
   SummaryCard,
 } from '@/features/dashboard/types';
+import { Icon } from '@/shared/components/ui/icon';
 
 export const SUMMARY_CARDS: SummaryCard[] = [
   {

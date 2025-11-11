@@ -4,10 +4,10 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import Image from 'next/image';
 
-import { Checkbox } from '@/components/ui/checkbox';
-import { Form } from '@/components/ui/form';
-import { Select } from '@/components/ui/select';
 import { STUDY_NOTE_VISIBILITY } from '@/features/dashboard/studynote/constant';
+import { Checkbox } from '@/shared/components/ui/checkbox';
+import { Form } from '@/shared/components/ui/form';
+import { Select } from '@/shared/components/ui/select';
 
 import { StudyNoteForm } from '../schemas/note';
 import { useWriteStudyNoteMutation } from '../services/query';

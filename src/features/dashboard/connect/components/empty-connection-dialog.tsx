@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
-import { Dialog } from '@/components/ui/dialog';
-import { useRole } from '@/hooks/use-role';
-import { translateModalMessage } from '@/lib/message';
+import { Button } from '@/shared/components/ui/button';
+import { Dialog } from '@/shared/components/ui/dialog';
+import { useRole } from '@/shared/hooks/use-role';
+import { translateModalMessage } from '@/shared/lib';
 
 import { useConnectionList } from '../services/query';
 

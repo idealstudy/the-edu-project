@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 import { Popover as PopoverPrimitives } from 'radix-ui';
 
 type PopoverProps = React.ComponentPropsWithRef<typeof PopoverPrimitives.Root>;

@@ -1,6 +1,6 @@
-import { ColumnLayout } from '@/components/layout/column-layout';
 import StudyNoteDetailContentsSection from '@/features/dashboard/studynote/detail/components/contents-section';
 import StudyNoteDetailMetaSection from '@/features/dashboard/studynote/detail/components/meta-section';
+import { ColumnLayout } from '@/shared/components/layout/column-layout';
 
 export default async function StudyNotePage({
   params,

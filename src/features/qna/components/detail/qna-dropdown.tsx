@@ -2,8 +2,8 @@ import { useReducer } from 'react';
 
 import Image from 'next/image';
 
-import { dialogReducer, initialDialogState } from '@/components/dialog';
-import { DropdownMenu } from '@/components/ui/dropdown-menu';
+import { dialogReducer, initialDialogState } from '@/shared/components/dialog';
+import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 
 import { QnAListItem } from '../../types';
 

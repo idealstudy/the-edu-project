@@ -1,4 +1,8 @@
-import { TextEditor, TextViewer, useTextEditor } from '@/components/editor';
+import {
+  TextEditor,
+  TextViewer,
+  useTextEditor,
+} from '@/shared/components/editor';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta = {

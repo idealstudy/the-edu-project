@@ -2,9 +2,9 @@
 
 import { useFormContext } from 'react-hook-form';
 
-import { Button } from '@/components/ui/button';
-import { Form } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/shared/components/ui/button';
+import { Form } from '@/shared/components/ui/form';
+import { Input } from '@/shared/components/ui/input';
 
 export default function StepThree({ disabled }: { disabled?: boolean }) {
   const { register } = useFormContext();

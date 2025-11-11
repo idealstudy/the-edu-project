@@ -6,12 +6,12 @@ import { Controller, useFormContext } from 'react-hook-form';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-import { TextEditor } from '@/components/editor';
-import { ColumnLayout } from '@/components/layout/column-layout';
-import { Button } from '@/components/ui/button';
-import { Form } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { ROUTE } from '@/constants/route';
+import { TextEditor } from '@/shared/components/editor';
+import { ColumnLayout } from '@/shared/components/layout/column-layout';
+import { Button } from '@/shared/components/ui/button';
+import { Form } from '@/shared/components/ui/form';
+import { Input } from '@/shared/components/ui/input';
+import { ROUTE } from '@/shared/constants/route';
 import { JSONContent } from '@tiptap/react';
 
 import { QnACreateForm } from '../../schema/create';

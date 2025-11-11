@@ -4,8 +4,8 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 
-import { Input } from '@/components/ui/input';
 import { Select } from '@/features/study-rooms/components/common/select';
+import { Input } from '@/shared/components/ui/input';
 
 import { LimitNumber, QnAFilter, SortKey } from '../../types';
 

@@ -4,9 +4,9 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 
-import { DropdownMenu } from '@/components/ui/dropdown-menu';
-import { useRole } from '@/hooks/use-role';
-import { extractText, getRelativeTimeString } from '@/lib/utils';
+import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
+import { useRole } from '@/shared/hooks/use-role';
+import { extractText, getRelativeTimeString } from '@/shared/lib/utils';
 
 type Props = {
   content: string;

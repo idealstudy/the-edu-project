@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 
-import { Button } from '@/components/ui/button';
-import { Dialog } from '@/components/ui/dialog';
-import { TextField } from '@/components/ui/text-field';
+import { Button } from '@/shared/components/ui/button';
+import { Dialog } from '@/shared/components/ui/dialog';
+import { TextField } from '@/shared/components/ui/text-field';
 
 export const InputDialog = ({
   isOpen,

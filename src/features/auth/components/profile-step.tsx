@@ -2,10 +2,10 @@
 
 import { Controller } from 'react-hook-form';
 
-import { Button } from '@/components/ui/button';
-import { Form } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { useRegisterFormContext } from '@/features/auth/components/register-form-context-provider';
+import { Button } from '@/shared/components/ui/button';
+import { Form } from '@/shared/components/ui/form';
+import { Input } from '@/shared/components/ui/input';
 
 import { RoleRadioGroup } from './role-radio-group';
 

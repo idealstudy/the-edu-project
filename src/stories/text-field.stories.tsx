@@ -1,4 +1,4 @@
-import { TextField } from '@/components/ui/text-field';
+import { TextField } from '@/shared/components/ui/text-field';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta = {

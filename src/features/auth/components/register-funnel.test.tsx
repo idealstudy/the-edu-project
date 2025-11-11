@@ -1,7 +1,7 @@
 import mockRouter from 'next-router-mock';
 
-import { ROUTE } from '@/constants/route';
 import { DUPLICATE_EMAIL } from '@/mocks/auth/handlers';
+import { ROUTE } from '@/shared/constants/route';
 import { renderWithProviders } from '@/tests/utils';
 import { cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

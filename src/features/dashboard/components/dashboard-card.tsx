@@ -1,7 +1,7 @@
 'use client';
 
 import { DashboardSummaryCardProps } from '@/features/dashboard/types';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 
 export const DashboardSummaryCard = ({ card }: DashboardSummaryCardProps) => {
   const IconComponent = card.icon;

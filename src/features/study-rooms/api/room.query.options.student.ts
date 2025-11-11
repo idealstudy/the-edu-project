@@ -2,7 +2,7 @@ import {
   StudentStudyRoomRequests,
   StudyRoomsQueryKey,
 } from '@/features/study-rooms/api';
-import { BaseQueryOptions, DEFAULT_QUERY_OPTION } from '@/lib/query';
+import { BaseQueryOptions, DEFAULT_QUERY_OPTION } from '@/shared/lib/query';
 import { queryOptions } from '@tanstack/react-query';
 
 import type { StudentStudyRoom } from '../model/types';

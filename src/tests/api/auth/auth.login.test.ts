@@ -1,8 +1,8 @@
 import { NextRequest } from 'next/server';
 
 import { POST } from '@/app/api/v1/auth/login/route';
-import { env } from '@/lib';
 import { server } from '@/mocks/node';
+import { env } from '@/shared/lib';
 import { HttpResponse, http } from 'msw';
 import {
   afterAll,
@@ -21,8 +21,8 @@ afterAll(() => server.close());
 afterEach(() => server.resetHandlers());
 
 // mock
-vi.mock('@/lib', async (importOriginal) => {
-  const original = await importOriginal<typeof import('@/lib')>();
+vi.mock('@/shared/lib', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@/shared/lib')>();
   return {
     ...original,
     normalizeMember: vi.fn((payload) => payload.data),

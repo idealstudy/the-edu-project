@@ -1,5 +1,5 @@
-import { ColumnLayout } from '@/components/layout/column-layout';
 import QnAWriteDetail from '@/features/qna/components/write/qna-write-detail';
+import { ColumnLayout } from '@/shared/components/layout/column-layout';
 
 type Props = {
   params: Promise<{ id: string }>;

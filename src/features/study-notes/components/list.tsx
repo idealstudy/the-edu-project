@@ -9,7 +9,7 @@ import type {
   StudyNoteGroupPageable,
 } from '@/features/study-notes/model';
 import { ListItem } from '@/features/study-rooms/components/common/list-item';
-import { formatMMDDWeekday, getRelativeTimeString } from '@/lib/utils';
+import { formatMMDDWeekday, getRelativeTimeString } from '@/shared/lib/utils';
 
 import { StudyNotesDropdown } from './dropdown';
 

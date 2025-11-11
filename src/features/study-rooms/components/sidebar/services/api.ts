@@ -1,5 +1,5 @@
 // 수업노트 그룹 생성
-import { authApi } from '@/lib/http/http.client';
+import { authApi } from '@/shared/lib/http/http.client';
 
 export const createStudyNoteGroup = async (params: {
   studyRoomId: number;

@@ -1,4 +1,4 @@
-import AuthBanner from '@/components/auth/banner';
+import AuthBanner from '@/shared/components/auth/banner';
 
 export default function AuthLayout({
   children,

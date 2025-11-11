@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
-import { Pagination } from '@/components/ui/pagination';
-import { useRole } from '@/hooks/use-role';
+import { Pagination } from '@/shared/components/ui/pagination';
+import { useRole } from '@/shared/hooks/use-role';
 import { Pageable } from '@/types/http';
 
 import { useQnAsQuery } from '../../services/query';

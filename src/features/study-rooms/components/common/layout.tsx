@@ -1,6 +1,6 @@
-import { Pagination } from '@/components/ui/pagination';
 import { SearchFilterBar } from '@/features/qna/components/detail/search-filter-bar';
 import { StudyNoteLimit, StudyNoteSortKey } from '@/features/study-notes/model';
+import { Pagination } from '@/shared/components/ui/pagination';
 
 export const StudyRoomDetailLayout = ({
   children,

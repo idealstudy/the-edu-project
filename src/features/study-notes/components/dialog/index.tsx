@@ -1,6 +1,5 @@
 'use client';
 
-import type { DialogAction, DialogState } from '@/components/dialog';
 import { useStudyNoteDetailQuery } from '@/features/dashboard/studynote/detail/service/query';
 import {
   useRemoveNoteFromGroup,
@@ -12,7 +11,8 @@ import {
 } from '@/features/study-notes/model';
 import { ConfirmDialog } from '@/features/study-rooms/components/common/dialog/confirm-dialog';
 import { InputDialog } from '@/features/study-rooms/components/common/dialog/input-dialog';
-import { useRole } from '@/hooks/use-role';
+import type { DialogAction, DialogState } from '@/shared/components/dialog';
+import { useRole } from '@/shared/hooks/use-role';
 
 import { GroupMoveDialog } from './group-move-dialog';
 

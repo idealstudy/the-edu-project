@@ -3,12 +3,12 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Icon } from '@/components/ui/icon';
 import {
   RecentNoteCardProps,
   StudyRoomCardProps,
 } from '@/features/dashboard/types';
-import { cn } from '@/lib/utils';
+import { Icon } from '@/shared/components/ui/icon';
+import { cn } from '@/shared/lib/utils';
 
 interface DashboardContentsCardProps {
   title: string;

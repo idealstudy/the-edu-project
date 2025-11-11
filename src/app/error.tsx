@@ -2,9 +2,9 @@
 
 import { useRouter } from 'next/navigation';
 
-import { ROUTE } from '@/constants/route';
 import { useAuth } from '@/features/auth/hooks/use-auth';
-import { AuthError, ForbiddenError } from '@/lib/error';
+import { ROUTE } from '@/shared/constants/route';
+import { AuthError, ForbiddenError } from '@/shared/lib';
 
 export default function Error({
   error,

@@ -1,4 +1,4 @@
-import { TextEditor, useTextEditor } from '@/components/editor';
+import { TextEditor, useTextEditor } from '@/shared/components/editor';
 
 const QuestionEditor = () => {
   const textEditor = useTextEditor();

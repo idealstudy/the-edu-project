@@ -1,5 +1,5 @@
-import { Icon } from '@/components/ui/icon';
 import { Tabs } from '@/features/study-rooms/components/common/tabs';
+import { Icon } from '@/shared/components/ui/icon';
 import { Meta, StoryObj } from '@storybook/react';
 
 const meta = {

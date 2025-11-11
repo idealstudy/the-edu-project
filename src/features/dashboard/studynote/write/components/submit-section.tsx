@@ -2,7 +2,7 @@
 
 import { useFormContext } from 'react-hook-form';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/components/ui/button';
 
 import { StudyNoteForm } from '../schemas/note';
 import { useWriteStudyNoteMutation } from '../services/query';

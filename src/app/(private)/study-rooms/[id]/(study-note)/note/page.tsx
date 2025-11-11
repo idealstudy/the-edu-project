@@ -22,7 +22,7 @@ import {
   StudyNoteSortKey,
 } from '@/features/study-notes/model';
 import { StudyRoomDetailLayout } from '@/features/study-rooms/components/common/layout';
-import { useRole } from '@/hooks/use-role';
+import { useRole } from '@/shared/hooks/use-role';
 
 export default function StudyNotePage() {
   const router = useRouter();
