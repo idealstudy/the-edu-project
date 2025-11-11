@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 
 import { ROUTE } from '@/constants/route';
 import { useSession } from '@/providers';
+import { SessionGuardFallback } from '@/providers/session/session-guard-fallback';
 
 interface SessionGuardProps {
   children: ReactNode;
@@ -13,11 +14,7 @@ interface SessionGuardProps {
   fallback?: ReactNode;
 }
 
-const DEFAULT_FALLBACK = (
-  <div className="flex h-screen items-center justify-center text-white">
-    세션을 불러오는 중입니다...
-  </div>
-);
+const DEFAULT_FALLBACK = <SessionGuardFallback />;
 
 export const SessionGuard = ({
   children,
