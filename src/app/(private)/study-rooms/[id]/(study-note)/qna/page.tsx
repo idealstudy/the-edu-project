@@ -6,7 +6,7 @@ import { useParams, usePathname } from 'next/navigation';
 
 import StudentQuestionSession from '@/features/qna/components/detail/student-qna-tab';
 import TeacherQuestionSession from '@/features/qna/components/detail/teacher-qna-tab';
-import { useRole } from '@/hooks/use-role';
+import { useRole } from '@/shared/hooks/use-role';
 
 const StudyNoteQnAPage = () => {
   const { role } = useRole();

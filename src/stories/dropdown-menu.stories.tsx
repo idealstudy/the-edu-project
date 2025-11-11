@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { DropdownMenu } from '@/components/ui/dropdown-menu';
+import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta = {
@@ -31,25 +31,26 @@ export const Default: Story = {
   },
 };
 
-export const Controlled: Story = {
-  render: () => {
-    const [isOpen, setIsOpen] = useState(false);
+function DropdownMenuControlledDemo() {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <DropdownMenu
+      open={isOpen}
+      onOpenChange={setIsOpen}
+    >
+      <DropdownMenu.Trigger className="flex size-8 cursor-pointer items-center justify-center">
+        <EllipsisVerticalIcon />
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content>
+        <DropdownMenu.Item>편집하기</DropdownMenu.Item>
+        <DropdownMenu.Item variant="danger">삭제하기</DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu>
+  );
+}
 
-    return (
-      <DropdownMenu
-        open={isOpen}
-        onOpenChange={setIsOpen}
-      >
-        <DropdownMenu.Trigger className="flex size-8 cursor-pointer items-center justify-center">
-          <EllipsisVerticalIcon />
-        </DropdownMenu.Trigger>
-        <DropdownMenu.Content>
-          <DropdownMenu.Item>편집하기</DropdownMenu.Item>
-          <DropdownMenu.Item variant="danger">삭제하기</DropdownMenu.Item>
-        </DropdownMenu.Content>
-      </DropdownMenu>
-    );
-  },
+export const Controlled: Story = {
+  render: () => <DropdownMenuControlledDemo />,
 };
 
 const EllipsisVerticalIcon = () => {

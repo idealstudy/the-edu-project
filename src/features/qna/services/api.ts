@@ -1,4 +1,4 @@
-import { authApi } from '@/lib/http/http.client';
+import { authApi } from '@/shared/lib/http/http.client';
 import { CommonResponse, Pageable, PaginationMeta } from '@/types/http';
 
 import { QnADetailResponse, QnAListItem } from '../types';

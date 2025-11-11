@@ -1,4 +1,4 @@
-import { serverEnv } from '@/lib';
+import { serverEnv } from '@/shared/lib/bff';
 import { HttpResponse, http } from 'msw';
 
 const createSetCookieHeaders = () => {

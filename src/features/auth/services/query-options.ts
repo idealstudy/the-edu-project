@@ -1,5 +1,5 @@
-import { queryKey } from '@/constants/query-key';
 import { authService } from '@/features/auth/services/api';
+import { queryKey } from '@/shared/constants/query-key';
 // import { fetchMemberInfo } from '@/features/member/api/requests';
 import { queryOptions } from '@tanstack/react-query';
 

@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 
-import { ColumnLayout } from '@/components/layout/column-layout';
+import { ColumnLayout } from '@/shared/components/layout/column-layout';
 
 import MetaSection from './meta-section';
 import SubmitSection from './submit-section';

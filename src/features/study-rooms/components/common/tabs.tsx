@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 import { Tabs as TabsPrimitives } from 'radix-ui';
 
 type TabsProps = TabsPrimitives.TabsProps;

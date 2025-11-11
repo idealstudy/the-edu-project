@@ -4,13 +4,13 @@ import { useState } from 'react';
 
 import Link from 'next/link';
 
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Form } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { link } from '@/constants/link';
 import { useRegisterFormContext } from '@/features/auth/components/register-form-context-provider';
-import { useCountdown } from '@/hooks/use-countdown';
+import { Button } from '@/shared/components/ui/button';
+import { Checkbox } from '@/shared/components/ui/checkbox';
+import { Form } from '@/shared/components/ui/form';
+import { Input } from '@/shared/components/ui/input';
+import { link } from '@/shared/constants/link';
+import { useCountdown } from '@/shared/hooks/use-countdown';
 
 import { useCheckEmailDuplicate, useVerifyCode } from '../services/query';
 

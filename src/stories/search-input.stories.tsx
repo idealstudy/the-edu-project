@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { SearchInput } from '@/components/ui/search-input';
+import { SearchInput } from '@/shared/components/ui/search-input';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta = {
@@ -33,15 +33,17 @@ export const Uncontrolled: Story = {
   },
 };
 
-export const Controlled: Story = {
-  render: () => {
-    const [value, setValue] = useState('');
+const ControlledSearchInputStory = () => {
+  const [value, setValue] = useState('');
 
-    return (
-      <SearchInput
-        value={value}
-        onChange={setValue}
-      />
-    );
-  },
+  return (
+    <SearchInput
+      value={value}
+      onChange={setValue}
+    />
+  );
+};
+
+export const Controlled: Story = {
+  render: () => <ControlledSearchInputStory />,
 };

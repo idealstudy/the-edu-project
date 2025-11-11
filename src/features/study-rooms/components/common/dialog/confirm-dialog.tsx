@@ -1,7 +1,7 @@
-import { DialogAction } from '@/components/dialog';
-import { Button } from '@/components/ui/button';
-import { Dialog } from '@/components/ui/dialog';
-import { cn } from '@/lib/utils';
+import { DialogAction } from '@/shared/components/dialog';
+import { Button } from '@/shared/components/ui/button';
+import { Dialog } from '@/shared/components/ui/dialog';
+import { cn } from '@/shared/lib/utils';
 
 export const ConfirmDialog = ({
   type,

@@ -1,8 +1,8 @@
 'use client';
 
-import { DialogAction, DialogState } from '@/components/dialog';
 import { ConfirmDialog } from '@/features/study-rooms/components/common/dialog/confirm-dialog';
 import { InputDialog } from '@/features/study-rooms/components/common/dialog/input-dialog';
+import { DialogAction, DialogState } from '@/shared/components/dialog';
 
 import { useDeleteStudyNoteGroup } from '../services/query';
 import {

@@ -5,10 +5,14 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import Image from 'next/image';
 
-import { ColumnLayout } from '@/components/layout/column-layout';
-import { Form } from '@/components/ui/form';
-import { ChevronDownIcon, PlusIcon, Select } from '@/components/ui/select';
-import { cn } from '@/lib/utils';
+import { ColumnLayout } from '@/shared/components/layout/column-layout';
+import { Form } from '@/shared/components/ui/form';
+import {
+  ChevronDownIcon,
+  PlusIcon,
+  Select,
+} from '@/shared/components/ui/select';
+import { cn } from '@/shared/lib/utils';
 import { Popover } from 'radix-ui';
 
 import { StudyNoteForm } from '../schemas/note';

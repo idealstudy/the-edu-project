@@ -1,4 +1,4 @@
-import { env } from '@/lib';
+import { env } from '@/shared/lib';
 import { HttpResponse, http } from 'msw';
 
 const MOCK_MEMBER_PAYLOAD = {

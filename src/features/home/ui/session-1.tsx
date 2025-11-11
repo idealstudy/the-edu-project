@@ -3,8 +3,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { ROUTE } from '@/constants/route';
-import { cn } from '@/lib/utils';
+import { ROUTE } from '@/shared/constants/route';
+import { cn } from '@/shared/lib/utils';
 import { cva } from 'class-variance-authority';
 
 const buttonVariants = cva('flex items-center justify-center text-center', {

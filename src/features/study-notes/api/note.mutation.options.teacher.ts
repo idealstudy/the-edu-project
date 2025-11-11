@@ -1,6 +1,6 @@
 import { StudyNoteQueryKey } from '@/features/study-notes/api';
 import { StudyNoteGroupPageable } from '@/features/study-notes/model';
-import type { BaseQueryOptions } from '@/lib/query';
+import { BaseQueryOptions } from '@/shared/lib/query/types';
 import { QueryKey } from '@tanstack/query-core';
 
 import type { TeacherNotesApi } from './note.api.teacher';

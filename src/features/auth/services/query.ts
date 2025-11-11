@@ -1,6 +1,6 @@
 import { useRouter } from 'next/navigation';
 
-import { ROUTE } from '@/constants/route';
+import { ROUTE } from '@/shared/constants/route';
 import { useMutation } from '@tanstack/react-query';
 
 import { useAuth } from '../hooks/use-auth';

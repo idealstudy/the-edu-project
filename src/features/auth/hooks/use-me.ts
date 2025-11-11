@@ -1,6 +1,6 @@
 import { authService } from '@/features/auth/services/api';
 import { memberKeys } from '@/features/member/api/keys';
-import { useAuthStore } from '@/store/session-store';
+import { useAuthStore } from '@/shared/store/session-store';
 import { useQuery } from '@tanstack/react-query';
 
 export function useMe(options?: { enabled?: boolean }) {

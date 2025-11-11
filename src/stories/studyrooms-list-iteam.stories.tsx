@@ -1,7 +1,7 @@
 import Image from 'next/image';
 
-import { DropdownMenu } from '@/components/ui/dropdown-menu';
 import { ListItem } from '@/features/study-rooms/components/common/list-item';
+import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 import type { Meta, StoryObj } from '@storybook/react';
 
 type ListItemStoryArgs = {
@@ -144,47 +144,50 @@ export const StudyroomStudyNotesListItem: Story = {
   render: (args) => renderWithSlots(args as unknown as ListItemStoryArgs),
 };
 
+const StudyroomStudentsListItemComponent = () => {
+  return (
+    <div className="w-[740px]">
+      <ListItem
+        id={1}
+        title="김뎨듀"
+        tag={
+          <div className="flex flex-row items-center gap-2">
+            <div className="bg-line-line2 h-[13px] w-px" />
+            <span className="font-caption-normal text-key-color-primary">
+              보호자 1
+            </span>
+          </div>
+        }
+        subtitle="kimdedu@dedu.com"
+        date="3일전 가입"
+        href="/"
+        icon={
+          <Image
+            src="/invite/invite-type.svg"
+            alt="invite-type"
+            width={28}
+            height={28}
+          />
+        }
+        dropdown={
+          <DropdownMenu>
+            <DropdownMenu.Trigger>
+              <Image
+                src="/studynotes/gray-kebab.svg"
+                width={24}
+                height={24}
+                alt="menu"
+                className="cursor-pointer"
+              />
+            </DropdownMenu.Trigger>
+            {/* 드롭다운 콘텐츠는 여기에 추가될 수 있습니다. */}
+          </DropdownMenu>
+        }
+      />
+    </div>
+  );
+};
+
 export const StudyroomStudentsListItem: Story = {
-  render: () => {
-    return (
-      <div className="w-[740px]">
-        <ListItem
-          id={1}
-          title="김뎨듀"
-          tag={
-            <div className="flex flex-row items-center gap-2">
-              <div className="bg-line-line2 h-[13px] w-px" />
-              <span className="font-caption-normal text-key-color-primary">
-                보호자 1
-              </span>
-            </div>
-          }
-          subtitle="kimdedu@dedu.com"
-          date="3일전 가입"
-          href="/"
-          icon={
-            <Image
-              src="/invite/invite-type.svg"
-              alt="invite-type"
-              width={28}
-              height={28}
-            />
-          }
-          dropdown={
-            <DropdownMenu>
-              <DropdownMenu.Trigger>
-                <Image
-                  src="/studynotes/gray-kebab.svg"
-                  width={24}
-                  height={24}
-                  alt="menu"
-                  className="cursor-pointer"
-                />
-              </DropdownMenu.Trigger>
-            </DropdownMenu>
-          }
-        />
-      </div>
-    );
-  },
+  render: () => <StudyroomStudentsListItemComponent />,
 };

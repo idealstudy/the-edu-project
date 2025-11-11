@@ -4,8 +4,8 @@ import { FormEvent, useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/shared/components/ui/button';
+import { Input } from '@/shared/components/ui/input';
 
 import QuestionListWrapper from './qna-list-wrapper';
 

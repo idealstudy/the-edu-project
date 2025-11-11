@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import { Button } from '@/components/ui/button';
-import { Prompt } from '@/components/ui/prompt';
+import { Button } from '@/shared/components/ui/button';
+import { Prompt } from '@/shared/components/ui/prompt';
 import { Meta, StoryObj } from '@storybook/react';
 
 const meta = {
@@ -56,28 +56,30 @@ export const Alert: Story = {
   },
 };
 
-export const Controlled: Story = {
-  render: () => {
-    const [isOpen, setIsOpen] = useState(false);
+const ControlledPromptStory = () => {
+  const [isOpen, setIsOpen] = useState(false);
 
-    return (
-      <Prompt
-        isOpen={isOpen}
-        onOpenChange={setIsOpen}
-      >
-        <Prompt.Trigger asChild>
-          <Button>열기</Button>
-        </Prompt.Trigger>
-        <Prompt.Content>
-          <Prompt.Header>
-            <Prompt.Title>연결 요청을 거절하시겠습니까?</Prompt.Title>
-          </Prompt.Header>
-          <Prompt.Footer>
-            <Prompt.Cancel>취소</Prompt.Cancel>
-            <Prompt.Action>확인</Prompt.Action>
-          </Prompt.Footer>
-        </Prompt.Content>
-      </Prompt>
-    );
-  },
+  return (
+    <Prompt
+      isOpen={isOpen}
+      onOpenChange={setIsOpen}
+    >
+      <Prompt.Trigger asChild>
+        <Button>열기</Button>
+      </Prompt.Trigger>
+      <Prompt.Content>
+        <Prompt.Header>
+          <Prompt.Title>연결 요청을 거절하시겠습니까?</Prompt.Title>
+        </Prompt.Header>
+        <Prompt.Footer>
+          <Prompt.Cancel>취소</Prompt.Cancel>
+          <Prompt.Action>확인</Prompt.Action>
+        </Prompt.Footer>
+      </Prompt.Content>
+    </Prompt>
+  );
+};
+
+export const Controlled: Story = {
+  render: () => <ControlledPromptStory />,
 };

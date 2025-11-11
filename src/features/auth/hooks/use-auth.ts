@@ -1,7 +1,7 @@
 import { authService } from '@/features/auth/services/api';
 import { memberKeys } from '@/features/member/api/keys';
-import { useSession } from '@/providers';
-import { useAuthStore } from '@/store/session-store';
+import { useSession } from '@/shared/providers';
+import { useAuthStore } from '@/shared/store/session-store';
 import { useQueryClient } from '@tanstack/react-query';
 
 export const useAuth = () => {

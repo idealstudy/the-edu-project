@@ -5,8 +5,8 @@ import { useFormContext } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
 
-import { Form } from '@/components/ui/form';
-import { ROUTE } from '@/constants/route';
+import { Form } from '@/shared/components/ui/form';
+import { ROUTE } from '@/shared/constants/route';
 
 import { STUDY_NOTE_VISIBILITY } from '../../constant';
 import { StudyNoteVisibility } from '../../type';

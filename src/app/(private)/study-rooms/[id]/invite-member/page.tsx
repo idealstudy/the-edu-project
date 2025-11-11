@@ -5,12 +5,12 @@ import React from 'react';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 
-import { ColumnLayout } from '@/components/layout/column-layout';
-import { Sidebar } from '@/components/layout/sidebar';
-import { Button } from '@/components/ui/button';
 import { useSendInvitation } from '@/features/study-rooms';
 import { InvitationField } from '@/features/study-rooms/components/student-invitation/InvitationField';
 import { useInvitationController } from '@/features/study-rooms/hooks/useInvitationController';
+import { ColumnLayout } from '@/shared/components/layout/column-layout';
+import { Sidebar } from '@/shared/components/layout/sidebar';
+import { Button } from '@/shared/components/ui/button';
 
 const InviteMemberPage = () => {
   const router = useRouter();

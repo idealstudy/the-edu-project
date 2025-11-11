@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 import { Select as SelectPrimitives } from 'radix-ui';
 
 type SelectProps = React.ComponentPropsWithRef<typeof SelectPrimitives.Root>;

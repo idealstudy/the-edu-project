@@ -5,7 +5,7 @@ import {
   createTeacherStudyRoomQueryOptions,
 } from '@/features/study-rooms/api';
 import type { StudyRoomFormValues } from '@/features/study-rooms/model';
-import { BaseQueryOptions } from '@/lib/query';
+import { BaseQueryOptions } from '@/shared/lib/query';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 type SearchArgs = { studyRoomId: number; email: string; enabled?: boolean };

@@ -5,9 +5,9 @@ import { useState } from 'react';
 import Image from 'next/image';
 
 import EllipsisIcon from '@/assets/icons/ellipsis-vertical.svg';
-import { TextViewer } from '@/components/editor';
-import { ColumnLayout } from '@/components/layout/column-layout';
 import { useStudyNoteDetailQuery } from '@/features/dashboard/studynote/detail/service/query';
+import { TextViewer } from '@/shared/components/editor';
+import { ColumnLayout } from '@/shared/components/layout/column-layout';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 

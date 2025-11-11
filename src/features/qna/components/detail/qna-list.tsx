@@ -2,8 +2,8 @@ import { useState } from 'react';
 
 import Link from 'next/link';
 
-import { useRole } from '@/hooks/use-role';
-import { getRelativeTimeString } from '@/lib/utils';
+import { useRole } from '@/shared/hooks/use-role';
+import { getRelativeTimeString } from '@/shared/lib/utils';
 
 import { QnAListItem } from '../../types';
 import QuestionDropDown from './qna-dropdown';

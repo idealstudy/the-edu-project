@@ -2,7 +2,6 @@
 
 import React from 'react';
 
-import { ROUTE } from '@/constants';
 import { DashboardSummaryCard } from '@/features/dashboard/components/dashboard-card';
 import { DashboardContents } from '@/features/dashboard/components/dashboard-contents';
 import { ContentsCard } from '@/features/dashboard/components/dashboard-contents-card';
@@ -12,6 +11,7 @@ import {
   RECENT_STUDY_NOTES,
   SUMMARY_CARDS,
 } from '@/features/dashboard/mock';
+import { ROUTE } from '@/shared/constants';
 
 export const DashboardContainer = () => {
   React.useEffect(() => {

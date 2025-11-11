@@ -4,11 +4,11 @@ import React, { useEffect } from 'react';
 
 import { useParams, usePathname, useRouter } from 'next/navigation';
 
-import { ColumnLayout } from '@/components/layout/column-layout';
 import { StudyNoteTab } from '@/features/study-notes/components/study-note-tab';
 import StudyNoteTabShell from '@/features/study-notes/components/study-note-tab-shell';
 import { StudyroomSidebar } from '@/features/study-rooms/components/sidebar';
-import { useRole } from '@/hooks/use-role';
+import { ColumnLayout } from '@/shared/components/layout/column-layout';
+import { useRole } from '@/shared/hooks/use-role';
 
 type LayoutProps = {
   children: React.ReactNode;

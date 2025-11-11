@@ -3,9 +3,9 @@
 import { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import { TextEditor } from '@/components/editor';
-import { Form } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { TextEditor } from '@/shared/components/editor';
+import { Form } from '@/shared/components/ui/form';
+import { Input } from '@/shared/components/ui/input';
 
 import { StudyNoteForm } from '../schemas/note';
 import {

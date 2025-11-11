@@ -6,12 +6,6 @@ import { FieldPath, FormProvider, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 
 import {
-  ConfirmDialog,
-  dialogReducer,
-  initialDialogState,
-} from '@/components/dialog';
-import { Form } from '@/components/ui/form';
-import {
   CreateStudyRoomSchema,
   useCreateStudyRoom,
 } from '@/features/study-rooms';
@@ -25,6 +19,12 @@ import {
   createStepState,
   stepperReducer,
 } from '@/features/study-rooms/hooks/useStepperReducer';
+import {
+  ConfirmDialog,
+  dialogReducer,
+  initialDialogState,
+} from '@/shared/components/dialog';
+import { Form } from '@/shared/components/ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 export const ORDER = ['basic', 'profile'] as const;

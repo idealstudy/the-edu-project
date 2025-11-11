@@ -3,7 +3,7 @@
 import Link from 'next/link';
 
 import { Role } from '@/features/auth/types';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 
 type Props = {
   studyRoomId: number;

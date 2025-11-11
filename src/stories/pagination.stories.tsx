@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Pagination } from '@/components/ui/pagination';
+import { Pagination } from '@/shared/components/ui/pagination';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta = {
@@ -14,30 +14,34 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  render: () => {
-    const [page, setPage] = useState(1);
+const DefaultPaginationStory = () => {
+  const [page, setPage] = useState(1);
 
-    return (
-      <Pagination
-        page={page}
-        onPageChange={setPage}
-        totalPages={10}
-      />
-    );
-  },
+  return (
+    <Pagination
+      page={page}
+      onPageChange={setPage}
+      totalPages={10}
+    />
+  );
+};
+
+export const Default: Story = {
+  render: () => <DefaultPaginationStory />,
+};
+
+const ManyPagesPaginationStory = () => {
+  const [page, setPage] = useState(1);
+
+  return (
+    <Pagination
+      page={page}
+      onPageChange={setPage}
+      totalPages={30}
+    />
+  );
 };
 
 export const ManyPages: Story = {
-  render: () => {
-    const [page, setPage] = useState(1);
-
-    return (
-      <Pagination
-        page={page}
-        onPageChange={setPage}
-        totalPages={30}
-      />
-    );
-  },
+  render: () => <ManyPagesPaginationStory />,
 };

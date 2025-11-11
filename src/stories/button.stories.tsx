@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/components/ui/button';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta = {

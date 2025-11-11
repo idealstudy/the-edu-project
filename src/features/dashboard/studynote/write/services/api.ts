@@ -1,4 +1,4 @@
-import { authApi } from '@/lib/http/http.client';
+import { authApi } from '@/shared/lib';
 import { CommonResponse, PaginationMeta } from '@/types/http';
 
 import {

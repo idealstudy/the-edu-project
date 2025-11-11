@@ -1,6 +1,6 @@
 import { StudyNoteQueryKey } from '@/features/study-notes/api';
 import type { StudyNoteGroupPageable } from '@/features/study-notes/model';
-import { BaseQueryOptions, DEFAULT_QUERY_OPTION } from '@/lib/query';
+import { BaseQueryOptions, DEFAULT_QUERY_OPTION } from '@/shared/lib/query';
 import { queryOptions } from '@tanstack/react-query';
 
 // 공통 api

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Icon } from '@/components/ui/icon';
+import { Icon } from '@/shared/components/ui/icon';
 
 export const StudyStats = () => {
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);

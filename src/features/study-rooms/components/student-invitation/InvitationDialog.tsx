@@ -4,11 +4,11 @@ import React from 'react';
 
 import Image from 'next/image';
 
-import { Button } from '@/components/ui/button';
-import { Dialog } from '@/components/ui/dialog';
 import { useSendInvitation } from '@/features/study-rooms';
 import { InvitationField } from '@/features/study-rooms/components/student-invitation/InvitationField';
 import { useInvitationController } from '@/features/study-rooms/hooks/useInvitationController';
+import { Button } from '@/shared/components/ui/button';
+import { Dialog } from '@/shared/components/ui/dialog';
 
 export const InvitationDialog = ({
   isOpen,

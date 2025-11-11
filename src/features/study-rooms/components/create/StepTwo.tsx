@@ -3,12 +3,12 @@
 import React from 'react';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 
-import { Button } from '@/components/ui/button';
-import { Form } from '@/components/ui/form';
-import { RadioCard } from '@/components/ui/radio-card';
-import { RadioGroup } from '@/components/ui/radio-group';
-import { Select } from '@/components/ui/select';
 import step2 from '@/features/study-rooms/data/step2.json';
+import { Button } from '@/shared/components/ui/button';
+import { Form } from '@/shared/components/ui/form';
+import { RadioCard } from '@/shared/components/ui/radio-card';
+import { RadioGroup } from '@/shared/components/ui/radio-group';
+import { Select } from '@/shared/components/ui/select';
 
 type Base = {
   id: string;

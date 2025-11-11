@@ -4,9 +4,9 @@ import React from 'react';
 
 import Link from 'next/link';
 
-import { Button } from '@/components/ui/button';
-import { ROUTE } from '@/constants';
-import { cn } from '@/lib/utils';
+import { Button } from '@/shared/components/ui/button';
+import { ROUTE } from '@/shared/constants';
+import { cn } from '@/shared/lib/utils';
 
 const MARKETING_ASSETS = {
   SPOTLIGHT: {

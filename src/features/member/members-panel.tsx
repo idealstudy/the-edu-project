@@ -2,13 +2,13 @@
 
 import { useState } from 'react';
 
-import { Pagination } from '@/components/ui/pagination';
 import { MemberListItem } from '@/features/member/member-list-item';
 import { SearchFilterBar } from '@/features/qna/components/detail/search-filter-bar';
 import { useGetTeacherNoteMembers } from '@/features/study-notes/hooks';
 import { useMemberFilter } from '@/features/study-notes/hooks/use-member-filter';
 import { StudyNoteLimit, StudyNoteSortKey } from '@/features/study-notes/model';
 import { transformMembersData } from '@/features/study-notes/model/transform';
+import { Pagination } from '@/shared/components/ui/pagination';
 
 type Props = {
   studyRoomId: number;
