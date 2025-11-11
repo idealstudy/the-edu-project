@@ -18,7 +18,7 @@
 - Tailwind CSS v4 
 - RHF + Zod (폼/검증)
 
-### Add-ons (필요 시만 표기)
+### Add-ons
 - Storybook 9, Vitest + Testing Library, MSW 
 - Axios, jose(JWT), js-cookie 
 - Tiptap v3(노트 편집)
