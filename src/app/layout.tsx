@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 
-import '@/components/editor/styles/text-editor.css';
+import '@/shared/components/editor/styles/text-editor.css';
 import { Header } from '@/shared/components/layout/header';
 import { GlobalProvider } from '@/shared/providers/global-provider';
 import '@/styles/globals.css';
