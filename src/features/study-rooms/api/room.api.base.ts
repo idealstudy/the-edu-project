@@ -8,7 +8,7 @@ import type {
   StudyRoomClient,
 } from '@/features/study-rooms/model';
 import { StudyRoomFormValues } from '@/features/study-rooms/model/room.create.schema';
-import { authApi } from '@/shared/lib/http/http.client';
+import { authApi } from '@/shared/api';
 import { Pageable, PaginationData } from '@/types/http';
 
 type GroupListResponse = PaginationData<StudyNoteGroup>;

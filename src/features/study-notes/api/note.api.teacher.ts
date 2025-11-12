@@ -3,7 +3,7 @@ import type {
   StudyNote,
   StudyNoteMemberResponse,
 } from '@/features/study-notes/model';
-import { authApi } from '@/shared/lib/http';
+import { authApi } from '@/shared/api';
 import type { PaginationData } from '@/types/http';
 
 export interface TeacherNotesApi

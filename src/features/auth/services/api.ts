@@ -10,7 +10,7 @@ import {
   SignUpBody,
   VerifyCodeBody,
 } from '@/features/auth/types';
-import { authApi, authBffApi, publicApi } from '@/shared/lib';
+import { authApi, authBffApi, publicApi } from '@/shared/api';
 
 export const authService = {
   login: async (body: LoginBody) => {

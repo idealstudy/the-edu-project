@@ -1,5 +1,5 @@
+import { authHttp, ensureRefreshSession } from '@/shared/api';
 import { AuthError, ForbiddenError } from '@/shared/lib/error';
-import { authHttp, ensureRefreshSession } from '@/shared/lib/http';
 import { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 type RetryableConfig = InternalAxiosRequestConfig & { _retry?: boolean };
