@@ -1,4 +1,4 @@
-import { memberKeys } from '@/features/member/api/keys';
+import { memberKeys } from '@/entities/member';
 import { getMemberInfoOptions } from '@/features/member/api/options';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 

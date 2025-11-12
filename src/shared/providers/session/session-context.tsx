@@ -2,7 +2,7 @@
 
 import { createContext, useContext } from 'react';
 
-import { Member } from '@/entities';
+import { Member } from '@/entities/member';
 
 export type SessionStatus =
   | 'loading'

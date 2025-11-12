@@ -7,14 +7,14 @@ import { useAuth } from '@/features/auth/hooks/use-auth';
 // import { useRouter } from 'next/navigation';
 
 import { ROUTE } from '@/shared/constants/route';
-import { useAuthStore } from '@/shared/store/session-store';
+import { useMemberStore } from '@/shared/store/member.store';
 
 // import { useLogoutMutation } from '@/features/auth/services/query';
 
 import { DropdownMenu } from '../ui/dropdown-menu';
 
 export const Header = () => {
-  const session = useAuthStore((s) => s.user);
+  const session = useMemberStore((s) => s.member);
 
   // const router = useRouter();
   // const { mutate: logout } = useLogoutMutation();

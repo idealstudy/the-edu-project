@@ -1,4 +1,4 @@
-import { getDisplayName } from '@/entities';
+import { getDisplayName } from '@/entities/member';
 import { z } from 'zod';
 
 import { MemberSchema } from './schema';
