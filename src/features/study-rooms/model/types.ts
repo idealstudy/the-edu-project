@@ -1,4 +1,4 @@
-import { authApi } from '@/shared/lib/http/http.client';
+import { authApi } from '@/shared/api';
 
 export type ApiResponse<T> = { status: number; message: string; data: T };
 

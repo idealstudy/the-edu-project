@@ -2,7 +2,7 @@ import {
   ensureRefreshSession,
   installHttpInterceptors,
   refreshSession,
-} from '@/shared/lib';
+} from '@/shared/api';
 
 let ejectInterceptors: (() => void) | null = null;
 const bindRefreshDebug = () => {

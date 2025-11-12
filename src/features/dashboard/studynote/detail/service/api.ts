@@ -1,4 +1,4 @@
-import { authApi } from '@/shared/lib/http';
+import { authApi } from '@/shared/api';
 import { CommonResponse } from '@/types/http';
 
 import { StudyNoteDetail } from '../type';
