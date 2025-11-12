@@ -1,4 +1,4 @@
-import { Member } from '@/entities';
+import { Member } from '@/entities/member';
 import { fetchMemberInfo } from '@/features/member/api/member.api';
 import { queryKey } from '@/shared/constants/query-key';
 import { useQuery, useQueryClient } from '@tanstack/react-query';

@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 
 import Link from 'next/link';
 
-import { useLoginMutation } from '@/features/auth/services/query';
+import { useAuth } from '@/features/auth/hooks/use-auth';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
@@ -28,10 +28,10 @@ export default function LoginForm() {
     mode: 'onChange',
   });
 
-  const { mutate, isPending } = useLoginMutation();
+  const { login, isLoggingIn } = useAuth();
 
   const onSubmit = async (data: LoginFormValues) => {
-    mutate(data, {
+    login(data, {
       onError: (error) => {
         setError('password', {
           type: 'server',
@@ -41,7 +41,7 @@ export default function LoginForm() {
     });
   };
 
-  const isLoading = isPending || isSubmitting;
+  const isLoading = isLoggingIn || isSubmitting;
   const isInValid = Object.keys(errors).length > 0;
 
   return (

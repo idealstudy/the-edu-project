@@ -1,119 +1,51 @@
 'use client';
 
-import {
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { type ReactNode, useMemo } from 'react';
 
-import { Member } from '@/entities';
-import { makeQuerySessionStrategy } from '@/shared/providers/session/session-strategy';
-import type { SessionStrategy } from '@/shared/providers/session/session-strategy';
-import { useAuthStore } from '@/shared/store/session-store';
-import { useQueryClient } from '@tanstack/react-query';
+import { useCurrentMember } from '@/shared/providers/session/hooks/use-current-member';
 
 import {
+  SessionContextValue,
   SessionProviderContext,
-  type SessionSnapshot,
+  SessionStatus,
 } from './session-context';
 
 interface SessionProviderProps {
   children: ReactNode;
-  strategy?: SessionStrategy;
   initialHasSession: boolean;
 }
 
 export const SessionProvider = ({
   children,
-  strategy,
   initialHasSession,
 }: SessionProviderProps) => {
-  const queryClient = useQueryClient();
-  const defaultStrategy = useMemo(
-    () => strategy ?? makeQuerySessionStrategy(queryClient),
-    [strategy, queryClient]
-  );
-  const { setUser, clearUser } = useAuthStore();
-  /**
-   * 쿠키 있으면 서버확인 필요
-   * 쿠키 없으면 바로 비로그인
-   */
-  const [snapshot, setSnapshot] = useState<SessionSnapshot>(() =>
-    initialHasSession
-      ? { status: 'loading', member: null, error: null }
-      : { status: 'unauthenticated', member: null, error: null }
-  );
-  const isMountedRef = useRef(false);
+  const {
+    data: member,
+    isPending,
+    isError,
+    refetch,
+  } = useCurrentMember(initialHasSession);
 
-  useEffect(() => {
-    isMountedRef.current = true;
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
+  // 쿼리상태 변환
+  const status: SessionStatus = useMemo(() => {
+    if (isPending) return 'loading';
+    if (isError) return 'error';
+    if (member) return 'authenticated';
+    return 'unauthenticated';
+  }, [isPending, isError, member]);
 
-  const applyAuthenticated = useCallback(
-    (member: Member) => {
-      if (isMountedRef.current) {
-        setSnapshot({ status: 'authenticated', member, error: null });
-      }
-      setUser(member);
-      return member;
-    },
-    [setUser]
-  );
-
-  const applyUnauthenticated = useCallback(() => {
-    if (isMountedRef.current) {
-      setSnapshot({ status: 'unauthenticated', member: null, error: null });
-    }
-    clearUser();
-    return null;
-  }, [clearUser]);
-
-  const applyError = useCallback(
-    (error: unknown) => {
-      if (isMountedRef.current) {
-        setSnapshot({ status: 'error', member: null, error });
-      }
-      clearUser();
-    },
-    [clearUser]
-  );
-
-  const refresh = useCallback(async () => {
-    if (isMountedRef.current) {
-      setSnapshot((prev) => ({ ...prev, status: 'loading', error: null }));
-    }
-    try {
-      const member = await defaultStrategy.bootstrap();
-      if (member) return applyAuthenticated(member);
-      return applyUnauthenticated();
-    } catch (error) {
-      applyError(error);
-      return null;
-    }
-  }, [defaultStrategy, applyAuthenticated, applyUnauthenticated, applyError]);
-
-  useEffect(() => {
-    const bootstrap = async () => {
-      // 쿠키 있으면 서버에서 확정
-      if (initialHasSession) await refresh();
-      // 쿠키 없으면 요청 자체 스킵
-      else applyUnauthenticated();
-    };
-    void bootstrap();
-  }, [initialHasSession, refresh, applyUnauthenticated]);
-
-  const value = useMemo(
+  // Context Value
+  const value: SessionContextValue = useMemo(
     () => ({
-      ...snapshot,
-      refresh,
+      status: status,
+      member: member || null,
+      error: isError ? 'SESSION_ERROR' : null,
+      refresh: async () => {
+        const result = await refetch();
+        return result.data || null;
+      },
     }),
-    [snapshot, refresh]
+    [status, member, isError, refetch]
   );
 
   return (

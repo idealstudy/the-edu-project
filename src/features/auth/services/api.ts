@@ -3,7 +3,7 @@ import {
   Member,
   MemberAnyResponseSchema,
   MemberEnvelope,
-} from '@/entities';
+} from '@/entities/member';
 import {
   CheckEmailDuplicateBody,
   LoginBody,

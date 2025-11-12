@@ -1,6 +1,6 @@
+import { memberKeys } from '@/entities/member';
 import { queryOptions } from '@tanstack/react-query';
 
-import { memberKeys } from './keys';
 import { fetchMemberInfo } from './member.api';
 
 export const getMemberInfoOptions = () =>
