@@ -54,7 +54,6 @@ export default function LoginForm() {
         <Form.Control>
           <Input
             type="email"
-            value="teacher_1@test.test"
             {...register('email')}
           />
         </Form.Control>
@@ -66,7 +65,6 @@ export default function LoginForm() {
         <Form.Control>
           <Input
             type="password"
-            value="Theedu1!"
             {...register('password')}
           />
         </Form.Control>
