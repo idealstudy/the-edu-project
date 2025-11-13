@@ -1,4 +1,4 @@
-import { Role } from '@/features/auth/types';
+import { Role } from '@/entities/member';
 
 type ModalMessage = {
   title: string;

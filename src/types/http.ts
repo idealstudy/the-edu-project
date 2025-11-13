@@ -1,17 +1,8 @@
-import { z } from 'zod';
-
 export type ApiResponse<TData> = {
   status: number;
   message: string;
   result: TData;
 };
-
-export const ApiResponse = <TData extends z.ZodType>(result: TData) =>
-  z.object({
-    status: z.number(),
-    message: z.string(),
-    result: result,
-  });
 
 export type CommonResponse<T> = {
   status: number;

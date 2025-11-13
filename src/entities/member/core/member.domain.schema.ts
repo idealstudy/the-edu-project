@@ -1,11 +1,11 @@
 import { getDisplayName } from '@/entities/member';
 import { z } from 'zod';
 
-import { MemberSchema } from './schema';
+import { MemberDtoSchema } from '../infrastructure';
 
 const toUndef = (v: unknown) => (v === null ? undefined : v);
 
-export const FrontendMemberSchema = MemberSchema.omit({ password: true })
+export const FrontendMemberSchema = MemberDtoSchema.omit({ password: true })
   .partial()
   .required({ id: true, email: true, role: true })
   .extend({

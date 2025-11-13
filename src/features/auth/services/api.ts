@@ -1,8 +1,8 @@
 import {
   FrontendMemberSchema,
-  Member,
   MemberAnyResponseSchema,
-  MemberEnvelope,
+  MemberDTO,
+  MemberEnvelopeDTO,
 } from '@/entities/member';
 import {
   CheckEmailDuplicateBody,
@@ -23,7 +23,7 @@ export const authService = {
   },
   getSession: async () => {
     try {
-      const response = await authBffApi.get<Member | MemberEnvelope>(
+      const response = await authBffApi.get<MemberDTO | MemberEnvelopeDTO>(
         '/api/v1/member/info'
       );
       const domain = MemberAnyResponseSchema.parse(response);

@@ -1,17 +1,10 @@
+import type { Role } from '@/entities/member';
+import { MemberRoleSchema } from '@/entities/member';
 import { z } from 'zod';
-
-export const ROLES = [
-  'ROLE_ADMIN',
-  'ROLE_PARENT',
-  'ROLE_TEACHER',
-  'ROLE_STUDENT',
-] as const;
-export type Role = (typeof ROLES)[number];
-export const Role = z.enum(ROLES);
 
 export type Session = z.infer<typeof Session>;
 export const Session = z.object({
-  auth: Role,
+  auth: MemberRoleSchema,
   memberId: z.number().optional(),
   email: z.string().optional(),
   name: z.string().optional(),
@@ -24,8 +17,8 @@ export type LoginBody = {
 };
 
 export const SessionPayload = z.object({
-  auth: Role.optional(),
-  role: Role.optional(),
+  auth: MemberRoleSchema.optional(),
+  role: MemberRoleSchema.optional(),
   memberId: z.number().optional(),
   email: z.string().optional(),
   name: z.string().nullable().optional(),

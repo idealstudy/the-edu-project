@@ -2,7 +2,7 @@
 
 import { createContext, useContext } from 'react';
 
-import { Member } from '@/entities/member';
+import { MemberDTO } from '@/entities/member';
 
 export type SessionStatus =
   | 'loading'
@@ -12,12 +12,12 @@ export type SessionStatus =
 
 export interface SessionSnapshot {
   status: SessionStatus;
-  member: Member | null;
+  member: MemberDTO | null;
   error: unknown;
 }
 
 export interface SessionContextValue extends SessionSnapshot {
-  refresh: () => Promise<Member | null>;
+  refresh: () => Promise<MemberDTO | null>;
 }
 
 const SessionContext = createContext<SessionContextValue | undefined>(

@@ -1,4 +1,4 @@
-import { Role } from '../auth/types';
+import { Role } from '@/entities/member';
 
 export type SortKey = 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
 
