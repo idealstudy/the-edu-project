@@ -5,7 +5,6 @@ import React from 'react';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 
-import { Sidebar } from '@//layout/sidebar';
 import { useSendInvitation } from '@/features/study-rooms';
 import { InvitationField } from '@/features/study-rooms/components/student-invitation/InvitationField';
 import { useInvitationController } from '@/features/study-rooms/hooks/useInvitationController';
@@ -34,7 +33,7 @@ const InviteMemberPage = () => {
 
   return (
     <div className="desktop:pl-sidebar-width flex flex-col bg-[#F9F9F9]">
-      <Sidebar />
+      {/*<Sidebar />*/}
       <ColumnLayout className="h-[calc(100vh-theme(space.header-height))] container mx-auto flex flex-col items-center overflow-auto pt-0">
         <section className="w-3/4">
           <h3

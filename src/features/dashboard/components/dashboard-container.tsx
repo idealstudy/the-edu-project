@@ -13,12 +13,21 @@ import {
 } from '@/features/dashboard/mock';
 import { ROUTE } from '@/shared/constants';
 
+/* ─────────────────────────────────────────────────────
+ * 테스트용 플래그
+ * ────────────────────────────────────────────────────*/
+const ALERT_KEY = 'dashboard_welcome_alert_shown';
 export const DashboardContainer = () => {
   React.useEffect(() => {
-    alert(
-      '선생님, 환영합니다! 개인 정보 바인딩은 다음 업데이트를 통해 제공될 예정입니다.'
-    );
+    const hasShown = sessionStorage.getItem(ALERT_KEY);
+    if (!hasShown) {
+      alert(
+        '선생님, 환영합니다! 개인 정보 바인딩은 다음 업데이트를 통해 제공될 예정입니다.'
+      );
+      sessionStorage.setItem(ALERT_KEY, 'true');
+    }
   }, []);
+
   return (
     <div className="bg-system-background">
       <div className="mx-auto flex w-full max-w-[1120px] flex-col gap-8 px-6 pt-12 pb-24">

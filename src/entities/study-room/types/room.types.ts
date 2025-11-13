@@ -47,7 +47,13 @@ export type RoomMemberPageDTO = z.infer<typeof RoomMemberPageSchema>;
 
 /* ─────────────────────────────────────────────────────
  * domain 타입
+ * Room: 개별 스터디룸 도메인 타입
+ * RoomList: 스터디룸 리스트 도메인 타입 (Room 도메인 객체의 배열)
+ * StudentRoom: 개별 학생용 스터디룸 도메인 타입
+ * StudentRoomList: 개별 학생용 스터디룸 리스트 도메인 타입
  * ────────────────────────────────────────────────────*/
 export type Room = z.infer<typeof RoomDomainSchema>;
-export type TeacherRoomDetail = z.infer<typeof TeacherRoomDetailDomainSchema>;
+export type RoomList = Room[];
 export type StudentRoom = z.infer<typeof StudentRoomDomainSchema>;
+export type StudentRoomList = StudentRoom[];
+export type TeacherRoomDetail = z.infer<typeof TeacherRoomDetailDomainSchema>;
