@@ -1,5 +1,5 @@
-import { Sidebar } from '@/shared/components/layout/sidebar';
-import { SessionGuard } from '@/shared/providers';
+import { Sidebar } from '@/layout/sidebar';
+import { SessionGuard } from '@/providers';
 
 export default function DashboardLayout({
   children,

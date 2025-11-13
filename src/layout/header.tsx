@@ -4,14 +4,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
+// import { useLogoutMutation } from '@/features/auth/services/query';
+
+import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 // import { useRouter } from 'next/navigation';
 
 import { ROUTE } from '@/shared/constants/route';
-import { useMemberStore } from '@/shared/store/member.store';
-
-// import { useLogoutMutation } from '@/features/auth/services/query';
-
-import { DropdownMenu } from '../ui/dropdown-menu';
+import { useMemberStore } from '@/store';
 
 export const Header = () => {
   const session = useMemberStore((s) => s.member);

@@ -7,13 +7,13 @@ import { InputDialog } from '@/features/study-rooms/components/common/dialog/inp
 import { StudyroomGroups } from '@/features/study-rooms/components/sidebar/groups';
 import { InvitationDialog } from '@/features/study-rooms/components/student-invitation/InvitationDialog';
 import StudentInvitation from '@/features/study-rooms/components/student-invitation/StudentInvitation';
+//import { useSearchParams, useRouter } from 'next/navigation';
+
+import { ColumnLayout } from '@/layout/column-layout';
 import {
   dialogReducer,
   initialDialogState,
 } from '@/shared/components/dialog/model/dialog-reducer';
-//import { useSearchParams, useRouter } from 'next/navigation';
-
-import { ColumnLayout } from '@/shared/components/layout/column-layout';
 import { useRole } from '@/shared/hooks/use-role';
 
 import { StudyroomSidebarHeader } from './header';

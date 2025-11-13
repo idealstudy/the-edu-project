@@ -4,8 +4,8 @@ import React from 'react';
 
 import { usePathname } from 'next/navigation';
 
+import { useSession } from '@/providers';
 import { FullScreenLoader } from '@/shared/components/loading';
-import { useSession } from '@/shared/providers';
 
 export const SessionGuardFallback = () => {
   const { status } = useSession();

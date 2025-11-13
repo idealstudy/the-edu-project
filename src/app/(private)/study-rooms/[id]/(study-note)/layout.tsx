@@ -7,7 +7,7 @@ import { useParams, usePathname, useRouter } from 'next/navigation';
 import { StudyNoteTab } from '@/features/study-notes/components/study-note-tab';
 import StudyNoteTabShell from '@/features/study-notes/components/study-note-tab-shell';
 import { StudyroomSidebar } from '@/features/study-rooms/components/sidebar';
-import { ColumnLayout } from '@/shared/components/layout/column-layout';
+import { ColumnLayout } from '@/layout/column-layout';
 import { useRole } from '@/shared/hooks/use-role';
 
 type LayoutProps = {

@@ -3,7 +3,7 @@ import StudyNoteFormProvider from '@/features/dashboard/studynote/write/componen
 import SelectArea from '@/features/dashboard/studynote/write/components/select-area';
 import WriteArea from '@/features/dashboard/studynote/write/components/write-area';
 import WriteForm from '@/features/dashboard/studynote/write/components/write-form';
-import { ColumnLayout } from '@/shared/components/layout/column-layout';
+import { ColumnLayout } from '@/layout/column-layout';
 
 export default function StudyNoteWritePage() {
   return (

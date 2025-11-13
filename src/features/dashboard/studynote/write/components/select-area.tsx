@@ -5,7 +5,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import Image from 'next/image';
 
-import { ColumnLayout } from '@/shared/components/layout/column-layout';
+import { ColumnLayout } from '@/layout/column-layout';
 import { Form } from '@/shared/components/ui/form';
 import {
   ChevronDownIcon,

@@ -1,8 +1,8 @@
 import React from 'react';
 
 import CreateStudyRoomFlow from '@/features/study-rooms/components/create/CreateStudyRoomFlow';
-import { ColumnLayout } from '@/shared/components/layout/column-layout';
-import { Sidebar } from '@/shared/components/layout/sidebar';
+import { ColumnLayout } from '@/layout/column-layout';
+import { Sidebar } from '@/layout/sidebar';
 
 export default function CreateStudyRoomPage() {
   return (
