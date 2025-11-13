@@ -1,4 +1,4 @@
-import { StudyNoteQueryKey } from '@/features/study-notes/api';
+import { StudyNoteQueryKey } from '@/entities/study-note';
 import type { StudyNoteGroupPageable } from '@/features/study-notes/model';
 import { BaseQueryOptions, DEFAULT_QUERY_OPTION } from '@/shared/lib/query';
 import { queryOptions } from '@tanstack/react-query';

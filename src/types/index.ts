@@ -6,4 +6,5 @@ export type {
   PaginationMeta,
   PaginationData,
 } from './http';
-export { ApiResponseSchema, EmptyDataSchema } from './api.schema';
+export { sharedSchema } from './api.schema';
+export type { EmptyData, SuccessId } from './shared.types';

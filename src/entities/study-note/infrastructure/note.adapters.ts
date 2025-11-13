@@ -1,19 +1,37 @@
-/* ─────────────────────────────────────────────────────
- * Query Key
- * ────────────────────────────────────────────────────*/
-export { StudyNoteQueryKey } from './note.keys';
+import { dto } from '@/entities/study-note/infrastructure';
+import { sharedSchema } from '@/types';
+import { z } from 'zod';
 
 /* ─────────────────────────────────────────────────────
- * DTO Type
+ * 공통 응답 어댑터 (Void, ID반환)
+ * EmptyDataSchema: 삭제, 수정 응답 (데이터 없음)
+ * SuccessIdSchema: 생성, 복제 응답 (ID 반환)
  * ────────────────────────────────────────────────────*/
-export { dto } from './note.dto.schema';
+const NoteDeleteAdapter = sharedSchema.response(sharedSchema.empty);
+const NoteCreateAdapter = sharedSchema.response(sharedSchema.successId);
 
 /* ─────────────────────────────────────────────────────
- * Adapters
+ * 전체 수업노트조회 응답의 개별 아이템
  * ────────────────────────────────────────────────────*/
-export { adapters } from './note.adapters';
+const NoteListAdapter = sharedSchema.response(z.array(dto.listItem));
 
 /* ─────────────────────────────────────────────────────
- * Repository
+ * 수업 노트 목록 조회 응답(Pagination 포함)
  * ────────────────────────────────────────────────────*/
-export { repository } from './note.api.repository';
+const NoteListDataAdapter = sharedSchema.response(dto.listData);
+
+/* ─────────────────────────────────────────────────────
+ * 수업 노트 상세 내용 조회 응답
+ * ────────────────────────────────────────────────────*/
+const NoteDetailAdapter = sharedSchema.response(dto.detail);
+
+/* ─────────────────────────────────────────────────────
+ * 내보내기
+ * ────────────────────────────────────────────────────*/
+export const adapters = {
+  create: NoteCreateAdapter,
+  delete: NoteDeleteAdapter,
+  listItem: NoteListAdapter,
+  listData: NoteListDataAdapter,
+  details: NoteDetailAdapter,
+};
