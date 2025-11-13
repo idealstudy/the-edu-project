@@ -5,7 +5,7 @@ import { MemberDtoSchema } from '../infrastructure';
 
 const toUndef = (v: unknown) => (v === null ? undefined : v);
 
-export const FrontendMemberSchema = MemberDtoSchema.omit({ password: true })
+const FrontendMemberSchema = MemberDtoSchema.omit({ password: true })
   .partial()
   .required({ id: true, email: true, role: true })
   .extend({
@@ -25,3 +25,5 @@ export const FrontendMemberSchema = MemberDtoSchema.omit({ password: true })
       '안녕하세요'
     ),
   }));
+
+export const domain = { member: FrontendMemberSchema };

@@ -1,5 +1,5 @@
 // api
-export { memberRepository, memberKeys } from './infrastructure';
+export { repository, memberKeys } from './infrastructure';
 
 // hook, query
 export {

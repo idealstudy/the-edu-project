@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import {
   getCurrentMemberOptions,
   memberKeys,
-  memberRepository,
+  repository,
 } from '@/entities/member';
 import { LoginBody } from '@/features/auth/types';
 import { useSession } from '@/providers';
@@ -35,7 +35,7 @@ export const useLogout = () => {
   const router = useRouter();
 
   return useMutation({
-    mutationFn: memberRepository.logout,
+    mutationFn: repository.logout,
     // 요청 성공/실패와 무관하게 상태 정리
     onSettled: () => {
       clearMember();

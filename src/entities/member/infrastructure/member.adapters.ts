@@ -1,21 +1,14 @@
-import { domain } from '../core';
-import type { MemberDTO } from '../types';
+import { dto } from '@/entities/member';
+import { sharedSchema } from '@/types';
 
 /* ─────────────────────────────────────────────────────
- * 최소 필드만 보장되면 나머지는 스키마가 다 처리
+ * API 응답 데이터를 도메인 객체로 변환 및 검증
  * ────────────────────────────────────────────────────*/
-type CreateMemberInput = Partial<MemberDTO> &
-  Pick<MemberDTO, 'id' | 'email' | 'role'>;
+const toDomainFromAPI = sharedSchema.response(dto.schema);
 
 /* ─────────────────────────────────────────────────────
- * 도메인 Member - 프론트 전용 멤버(표시 필드 포함)
+ * 내보내기
  * ────────────────────────────────────────────────────*/
-const createFrontendMember = (raw: CreateMemberInput) => {
-  return domain.member.parse(raw);
-};
-
-export const factory = {
-  member: {
-    create: createFrontendMember,
-  },
+export const adapters = {
+  fromApi: toDomainFromAPI,
 };
