@@ -12,9 +12,6 @@ export { createNotesBaseApi } from '@/features/study-notes/api/note.api.base';
 export type { TeacherNotesApi } from '@/features/study-notes/api/note.api.teacher';
 export type { StudentNotesApi } from '@/features/study-notes/api/note.api.student';
 
-// 쿼리키, 헬퍼
-export { StudyNoteQueryKey } from '@/features/study-notes/api/note.query.key';
-
 export * from '@/features/study-notes/api/note.query.options.base';
 export * from '@/features/study-notes/api/note.query.options.teacher';
 export * from '@/features/study-notes/api/note.query.options.student';

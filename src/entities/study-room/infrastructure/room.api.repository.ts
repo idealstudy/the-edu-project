@@ -9,9 +9,9 @@ import { authApi } from '@/shared/api';
 import { CommonResponse } from '@/types';
 
 import {
-  StudentRoomListResponseSchema,
-  TeacherRoomDetailResponseSchema,
-  TeacherRoomListResponseSchema,
+  RoomDetailResponseAdapter,
+  RoomListResponseAdapter,
+  StudentRoomListResponseAdapter,
 } from './room.adapters';
 
 export const studyRoomRepository = {
@@ -22,7 +22,7 @@ export const studyRoomRepository = {
     const response = await authApi.get<CommonResponse<TeacherRoomDetailDTO>>(
       `/study-rooms/${id}`
     );
-    const parsed = TeacherRoomDetailResponseSchema.parse(response.data);
+    const parsed = RoomDetailResponseAdapter.parse(response.data);
     return RoomFactory.fromTeacherDetail(parsed.data);
   },
 
@@ -34,7 +34,7 @@ export const studyRoomRepository = {
       const response = await authApi.get<
         CommonResponse<TeacherRoomListItemDTO>
       >(`/teacher/study-rooms}`);
-      const parsed = TeacherRoomListResponseSchema.parse(response.data);
+      const parsed = RoomListResponseAdapter.parse(response.data);
       return RoomFactory.fromTeacherList(parsed.data);
     },
   },
@@ -48,7 +48,7 @@ export const studyRoomRepository = {
         await authApi.get<CommonResponse<StudentRoomListItemDTO>>(
           `/student/study-rooms`
         );
-      const parsed = StudentRoomListResponseSchema.parse(response.data);
+      const parsed = StudentRoomListResponseAdapter.parse(response.data);
       return RoomFactory.fromStudentList(parsed.data);
     },
   },

@@ -1,4 +1,4 @@
-import { StudyNoteQueryKey } from '@/features/study-notes/api';
+import { StudyNoteQueryKey } from '@/entities/study-note';
 import { StudyRoomsGroupQueryKey } from '@/features/study-rooms';
 import { useMutation } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';

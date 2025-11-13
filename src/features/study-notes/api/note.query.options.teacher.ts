@@ -1,4 +1,4 @@
-import { StudyNoteQueryKey } from '@/features/study-notes/api';
+import { StudyNoteQueryKey } from '@/entities/study-note';
 import {
   TeacherNotesApi,
   createNotesListQueryOptions,
