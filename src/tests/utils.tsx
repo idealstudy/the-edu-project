@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 
-import { InterceptorProvider, SessionProvider } from '@/shared/providers';
+import { InterceptorProvider, SessionProvider } from '@/providers';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render } from '@testing-library/react';
 

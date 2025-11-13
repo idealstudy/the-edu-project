@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { useCoreCurrentMember } from '@/entities/member';
-import { useMemberStore } from '@/shared/store/member.store';
+import { useMemberStore } from '@/store';
 
 // 로그인한 사용자 정보 조회
 export const useCurrentMember = (initialHasSession: boolean) => {

@@ -6,9 +6,9 @@ import {
   memberRepository,
 } from '@/entities/member';
 import { LoginBody } from '@/features/auth/types';
+import { useSession } from '@/providers';
 import { authBffApi } from '@/shared/api';
-import { useSession } from '@/shared/providers';
-import { useMemberStore } from '@/shared/store/member.store';
+import { useMemberStore } from '@/store';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 // 로그인

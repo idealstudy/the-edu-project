@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 
+import { Header } from '@/layout/header';
+import { GlobalProvider } from '@/providers';
 import '@/shared/components/editor/styles/text-editor.css';
-import { Header } from '@/shared/components/layout/header';
-import { GlobalProvider } from '@/shared/providers/global-provider';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {

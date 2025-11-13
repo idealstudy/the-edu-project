@@ -4,9 +4,8 @@ import { type ReactNode, useEffect } from 'react';
 
 import { useRouter } from 'next/navigation';
 
+import { SessionGuardFallback, useSession } from '@/providers';
 import { ROUTE } from '@/shared/constants/route';
-import { useSession } from '@/shared/providers';
-import { SessionGuardFallback } from '@/shared/providers/session/session-guard-fallback';
 
 interface SessionGuardProps {
   children: ReactNode;

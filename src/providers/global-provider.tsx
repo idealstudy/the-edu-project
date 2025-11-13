@@ -1,11 +1,11 @@
 import { ReactNode } from 'react';
 
-import { checkCookie } from '@/shared/lib';
 import {
   InterceptorProvider,
   QueryProvider,
   SessionProvider,
-} from '@/shared/providers';
+} from '@/providers';
+import { checkCookie } from '@/shared/lib';
 
 interface Props {
   children: ReactNode;

@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-import { ColumnLayout } from '@/shared/components/layout/column-layout';
+import { ColumnLayout } from '@/layout/column-layout';
 
 import { getStudyNoteDetail } from '../service/api';
 

@@ -2,7 +2,7 @@
 
 import { type ReactNode, useMemo } from 'react';
 
-import { useCurrentMember } from '@/shared/providers/session/hooks/use-current-member';
+import { useCurrentMember } from '@/providers/session/hooks/use-current-member';
 
 import {
   SessionContextValue,

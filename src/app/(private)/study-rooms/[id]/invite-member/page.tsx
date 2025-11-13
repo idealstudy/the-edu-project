@@ -5,11 +5,11 @@ import React from 'react';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 
+import { Sidebar } from '@//layout/sidebar';
 import { useSendInvitation } from '@/features/study-rooms';
 import { InvitationField } from '@/features/study-rooms/components/student-invitation/InvitationField';
 import { useInvitationController } from '@/features/study-rooms/hooks/useInvitationController';
-import { ColumnLayout } from '@/shared/components/layout/column-layout';
-import { Sidebar } from '@/shared/components/layout/sidebar';
+import { ColumnLayout } from '@/layout/column-layout';
 import { Button } from '@/shared/components/ui/button';
 
 const InviteMemberPage = () => {
