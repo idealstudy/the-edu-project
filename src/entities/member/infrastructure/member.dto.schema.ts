@@ -25,7 +25,7 @@ export const MemberDtoSchema = z.object({
 });
 
 // api 응답(envelope 포함) + 도메인으로 변환(.transform)
-export const MemberEnvelopeSchema = z.object({
+const MemberEnvelopeSchema = z.object({
   status: z.number(),
   message: z.string().optional(),
   data: MemberDtoSchema,
@@ -38,3 +38,8 @@ export const MemberAnyResponseSchema = z
     if (val === null) return null;
     return 'data' in val ? val.data : val;
   });
+
+export const dto = {
+  schema: MemberDtoSchema,
+  response: MemberAnyResponseSchema,
+};

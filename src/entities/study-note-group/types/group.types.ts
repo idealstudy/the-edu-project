@@ -1,21 +1,15 @@
+import { z } from 'zod';
+
 import { domain } from '../core';
-import type { MemberDTO } from '../types';
+import { dto } from '../infrastructure';
 
 /* ─────────────────────────────────────────────────────
- * 최소 필드만 보장되면 나머지는 스키마가 다 처리
+ * DTO
  * ────────────────────────────────────────────────────*/
-type CreateMemberInput = Partial<MemberDTO> &
-  Pick<MemberDTO, 'id' | 'email' | 'role'>;
+export type StudyNoteGroupDto = z.infer<typeof dto.item>;
+export type StudyNoteGroupPageDto = z.infer<typeof dto.page>;
 
 /* ─────────────────────────────────────────────────────
- * 도메인 Member - 프론트 전용 멤버(표시 필드 포함)
+ * 도메인
  * ────────────────────────────────────────────────────*/
-const createFrontendMember = (raw: CreateMemberInput) => {
-  return domain.member.parse(raw);
-};
-
-export const factory = {
-  member: {
-    create: createFrontendMember,
-  },
-};
+export type StudyNoteGroup = z.infer<typeof domain.group>;

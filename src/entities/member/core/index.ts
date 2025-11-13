@@ -1,5 +1,5 @@
 // 팩토리
-export { MemberFactory } from './member.factory';
+export { factory } from './member.factory';
 
 // 도메인 스키마
-export { FrontendMemberSchema } from './member.domain.schema';
+export { domain } from './member.domain.schema';
