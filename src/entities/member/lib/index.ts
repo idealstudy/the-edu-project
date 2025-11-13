@@ -1,1 +1,0 @@
-export { MemberFactory } from './factory';
