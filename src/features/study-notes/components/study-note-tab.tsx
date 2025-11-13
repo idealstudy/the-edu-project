@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { Role } from '@/features/auth/types';
+import { Role } from '@/entities/member';
 import { cn } from '@/shared/lib/utils';
 
 type Props = {

@@ -1,4 +1,4 @@
-import { Role } from '@/features/auth/types';
+import { Role } from '@/entities/member';
 import { Pageable } from '@/types/http';
 import { useMutation, useQuery } from '@tanstack/react-query';
 

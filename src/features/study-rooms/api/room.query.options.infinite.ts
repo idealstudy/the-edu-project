@@ -1,4 +1,4 @@
-import type { Role } from '@/features/auth/types';
+import { Role } from '@/entities/member';
 import { StudyRoomsGroupQueryKey } from '@/features/study-rooms';
 import type { StudyNoteGroup } from '@/features/study-rooms/model/types';
 import type { Pageable, PaginationMeta } from '@/types/http';

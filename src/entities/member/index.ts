@@ -1,5 +1,5 @@
 // api
-export { memberRepository } from './api';
+export { memberRepository, memberKeys } from './infrastructure';
 
 // hook, query
 export {
@@ -7,10 +7,9 @@ export {
   useCoreCurrentMemberActions,
   getCurrentMemberOptions,
 } from './hooks/use-member-query';
-export { memberKeys } from './keys';
 
-export * from '@/entities/member/types/schema';
-export * from '@/entities/member/types/front.schema';
+export * from '@/entities/member/core/member.domain.schema';
+export * from '@/entities/member/infrastructure/member.dto.schema';
 export type * from '@/entities/member/types/member.types';
 
 // 권한

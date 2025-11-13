@@ -1,10 +1,10 @@
-import { Member } from '@/entities/member';
+import { MemberDTO } from '@/entities/member';
 import { create } from 'zustand';
 
 interface MemberState {
-  member: Member | null;
+  member: MemberDTO | null;
   isAuthenticated: boolean;
-  setMember: (member: Member | null) => void;
+  setMember: (member: MemberDTO | null) => void;
   clearMember: () => void;
 }
 

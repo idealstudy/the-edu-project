@@ -1,7 +1,13 @@
 import { z } from 'zod';
 
-// 도메인 스키마
-export const MemberSchema = z.object({
+export const MemberRoleSchema = z.enum([
+  'ROLE_ADMIN',
+  'ROLE_PARENT',
+  'ROLE_TEACHER',
+  'ROLE_STUDENT',
+]);
+
+export const MemberDtoSchema = z.object({
   id: z.number().int().nonnegative(),
   email: z.string().email(),
   password: z.string().optional(),
@@ -12,7 +18,7 @@ export const MemberSchema = z.object({
   birthDate: z.string().optional().nullable(),
   acceptRequiredTerm: z.boolean().optional().nullable(),
   acceptOptionalTerm: z.boolean().optional().nullable(),
-  role: z.enum(['ROLE_ADMIN', 'ROLE_PARENT', 'ROLE_TEACHER', 'ROLE_STUDENT']),
+  role: MemberRoleSchema,
   // ISO date-time
   regDate: z.string().optional().nullable(),
   modDate: z.string().optional().nullable(),
@@ -22,11 +28,11 @@ export const MemberSchema = z.object({
 export const MemberEnvelopeSchema = z.object({
   status: z.number(),
   message: z.string().optional(),
-  data: MemberSchema,
+  data: MemberDtoSchema,
 });
 
 export const MemberAnyResponseSchema = z
-  .union([MemberSchema, MemberEnvelopeSchema])
+  .union([MemberDtoSchema, MemberEnvelopeSchema])
   .nullable()
   .transform((val) => {
     if (val === null) return null;

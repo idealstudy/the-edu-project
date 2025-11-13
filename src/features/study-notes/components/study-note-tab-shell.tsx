@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Role } from '@/features/auth/types';
+import { Role } from '@/entities/member';
 import { StudyNoteSearch } from '@/features/study-notes/components/study-note-search';
 
 type Props = {

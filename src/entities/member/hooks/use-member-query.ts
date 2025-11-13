@@ -1,11 +1,11 @@
-import { Member, memberRepository } from '@/entities/member';
-import { memberKeys } from '@/entities/member/keys';
+import { MemberDTO, memberRepository } from '@/entities/member';
+import { memberKeys } from '@/entities/member';
 import { queryOptions, useQuery } from '@tanstack/react-query';
 
 const FIVE_MINUTES = 1000 * 60 * 5;
 
 export const getCurrentMemberOptions = (initialHasSession: boolean) =>
-  queryOptions<Member | null>({
+  queryOptions<MemberDTO | null>({
     queryKey: memberKeys.info(),
     queryFn: memberRepository.getCurrentMember,
     staleTime: FIVE_MINUTES,

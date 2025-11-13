@@ -27,22 +27,22 @@ export const createStudentStudyNoteHooks = (
 export const createTeacherStudyNoteHooks = (
   teacherQo: TeacherQueryOptions
 ) => ({
-  // 교사 노트 목록 조회
+  // 선생님 노트 목록 조회
   useGetTeacherNotesList: (args: ListArgs) => {
     return useQuery(teacherQo.list(args));
   },
 
-  // 교사 그룹별 노트 목록 조회
+  // 선생님 그룹별 노트 목록 조회
   useGetTeacherNotesByGroup: (args: ByGroupArgs) => {
     return useQuery(teacherQo.byGroup(args));
   },
 
-  // 교사 노트 상세 조회
+  // 선생님 노트 상세 조회
   useGetTeacherNoteDetail: (teachingNoteId: number) => {
     return useQuery(teacherQo.detail(teachingNoteId));
   },
 
-  // 교사 노트 멤버 목록 조회
+  // 선생님 노트 멤버 목록 조회
   useGetTeacherNoteMembers: (args: {
     studyRoomId: number;
     page?: number;
