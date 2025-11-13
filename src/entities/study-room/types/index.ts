@@ -1,7 +1,13 @@
 /* ─────────────────────────────────────────────────────
  * 도메인
  * ────────────────────────────────────────────────────*/
-export type { Room, TeacherRoomDetail, StudentRoom } from './room.types';
+export type {
+  Room,
+  TeacherRoomDetail,
+  StudentRoom,
+  RoomList,
+  StudentRoomList,
+} from './room.types';
 
 /* ─────────────────────────────────────────────────────
  * 공통 타입
