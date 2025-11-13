@@ -1,6 +1,1 @@
-export type {
-  MemberDTO,
-  MemberEnvelopeDTO,
-  Role,
-  FrontendMember,
-} from './member.types';
+export type { MemberDTO, Role, FrontendMember } from './member.types';
