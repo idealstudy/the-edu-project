@@ -6,7 +6,7 @@ import { useFormContext } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 
 import { Form } from '@/shared/components/ui/form';
-import { ROUTE } from '@/shared/constants/route';
+import { PRIVATE } from '@/shared/constants';
 
 import { STUDY_NOTE_VISIBILITY } from '../../constant';
 import { StudyNoteVisibility } from '../../type';
@@ -24,7 +24,7 @@ const WriteForm = ({ children }: PropsWithChildren) => {
     mutate(parsingData, {
       onSuccess: () => {
         const roomId = data.studyRoomId;
-        router.replace(ROUTE.DASHBOARD.STUDYNOTE.LIST(roomId));
+        router.replace(PRIVATE.NOTE.LIST(roomId));
       },
     });
   };

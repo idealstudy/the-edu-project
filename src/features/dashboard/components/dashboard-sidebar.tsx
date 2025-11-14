@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 import { HomeIcon, PlusIcon, SettingIcon } from '@/shared/components/icons';
 import { Sidebar } from '@/shared/components/sidebar';
-import { ROUTE } from '@/shared/constants/route';
+import { PRIVATE } from '@/shared/constants/route';
 
 /* ─────────────────────────────────────────────────────
  * 더미 데이터: 실제에선 서버/쿼리로 대체
@@ -20,7 +20,7 @@ export const DashboardSidebar = () => {
   return (
     <Sidebar>
       {/* 홈 */}
-      <Sidebar.Item href={ROUTE.DASHBOARD.HOME}>
+      <Sidebar.Item href={PRIVATE.DASHBOARD.INDEX}>
         <HomeIcon />
         <Sidebar.Text>홈</Sidebar.Text>
       </Sidebar.Item>
@@ -31,7 +31,7 @@ export const DashboardSidebar = () => {
           <Sidebar.HeaderText>스터디룸</Sidebar.HeaderText>
         </div>
         <Sidebar.Item
-          href={ROUTE.DASHBOARD.STUDYROOM.CREATE}
+          href={PRIVATE.ROOM.CREATE}
           className="h-9 w-9 justify-center bg-transparent px-0"
         >
           <PlusIcon />
@@ -48,14 +48,14 @@ export const DashboardSidebar = () => {
         ))}
       </Sidebar.List>
 
-      <Sidebar.Item href={ROUTE.DASHBOARD.SETTINGS}>
+      <Sidebar.Item href={PRIVATE.DASHBOARD.SETTINGS}>
         <SettingIcon />
         <Sidebar.Text>환경설정</Sidebar.Text>
       </Sidebar.Item>
 
       <div className="absolute right-0 bottom-0 p-4">
         <Link
-          href={ROUTE.DASHBOARD.SETTINGS}
+          href={PRIVATE.DASHBOARD.INQUIRY}
           className="text-gray-scale-gray-50 hover:bg-gray-scale-gray-5 flex items-center gap-2 rounded-lg text-[14px] font-semibold"
         >
           <Sidebar.Text>디에듀에 문의하기</Sidebar.Text>

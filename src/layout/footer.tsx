@@ -1,13 +1,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { ROUTE } from '@/shared/constants/route';
+import { PUBLIC } from '@/shared/constants/route';
 
 export const Footer = () => {
   return (
     <footer className="w-full bg-[#2E2E2E] px-5 py-[68px] text-sm text-white">
       <div className="mx-auto max-w-7xl space-y-4">
-        <Link href={ROUTE.HOME}>
+        <Link href={PUBLIC.CORE.INDEX}>
           <Image
             src="/logo.svg"
             alt="THE EDU 로고"

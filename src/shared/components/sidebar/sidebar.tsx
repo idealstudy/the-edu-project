@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { ListIcon, TextIcon } from '@/shared/components/icons';
-import { ROUTE } from '@/shared/constants/route';
+import { PRIVATE } from '@/shared/constants/route';
 import { cn } from '@/shared/lib';
 
 /* ─────────────────────────────────────────────────────
@@ -81,7 +81,7 @@ const SidebarItem = ({
   const { pathname } = useSidebarContext();
   const isActive =
     propIsActive !== undefined ? propIsActive : pathname === href;
-  const isCreatePage = href === ROUTE.DASHBOARD.STUDYROOM.CREATE;
+  const isCreatePage = href === PRIVATE.ROOM.CREATE;
 
   return (
     <Link
@@ -168,7 +168,7 @@ const SidebarList = <TItem extends BaseSidebarItem>({
  * ────────────────────────────────────────────────────*/
 const SidebarListItem = ({ item }: { item: BaseSidebarItem }) => {
   const { pathname } = useSidebarContext();
-  const detailHref = ROUTE.DASHBOARD.STUDYROOM.DETAIL(item.id);
+  const detailHref = PRIVATE.ROOM.DETAIL(item.id);
   const isActive = pathname === detailHref;
 
   return (

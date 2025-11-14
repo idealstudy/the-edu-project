@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { ROUTE } from '@/shared/constants/route';
+import { PUBLIC } from '@/shared/constants';
 import { cn } from '@/shared/lib/utils';
 import { cva } from 'class-variance-authority';
 
@@ -45,7 +45,7 @@ export function Session1() {
 
           <div className="mt-[282px] flex gap-3">
             <Link
-              href={ROUTE.SIGNUP}
+              href={PUBLIC.CORE.SIGNUP}
               className={cn(
                 buttonVariants({ variant: 'default', size: 'default' }),
                 'text-white'
@@ -55,7 +55,7 @@ export function Session1() {
             </Link>
 
             <Link
-              href={ROUTE.BIZ}
+              href={PUBLIC.CORE.BIZ}
               className={buttonVariants({ variant: 'biz', size: 'biz' })}
             >
               비즈니스 문의

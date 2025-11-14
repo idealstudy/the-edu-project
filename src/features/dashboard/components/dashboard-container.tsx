@@ -11,7 +11,7 @@ import {
   RECENT_STUDY_NOTES,
   SUMMARY_CARDS,
 } from '@/features/dashboard/mock';
-import { ROUTE } from '@/shared/constants';
+import { PRIVATE } from '@/shared/constants';
 
 /* ─────────────────────────────────────────────────────
  * 테스트용 플래그
@@ -54,7 +54,7 @@ export const DashboardContainer = () => {
             title="내 스터디룸"
             description="오늘도 학생들과 함께할 준비가 끝났어요"
             buttonText="새로 만들기"
-            buttonHref={ROUTE.DASHBOARD.STUDYROOM.CREATE}
+            buttonHref={PRIVATE.ROOM.CREATE}
             buttonVariant="primary"
           >
             {MY_STUDY_ROOMS.map((room) => (
@@ -68,7 +68,7 @@ export const DashboardContainer = () => {
             title="최근 수업노트"
             description="다시 확인하고 싶은 수업 기록을 모아봤어요"
             buttonText="전체보기"
-            buttonHref={ROUTE.DASHBOARD.HOME}
+            buttonHref={PRIVATE.DASHBOARD.INDEX}
             buttonVariant="outlined"
           >
             {RECENT_STUDY_NOTES.map((note) => (

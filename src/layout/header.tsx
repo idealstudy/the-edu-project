@@ -9,7 +9,7 @@ import { useAuth } from '@/features/auth/hooks/use-auth';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 // import { useRouter } from 'next/navigation';
 
-import { ROUTE } from '@/shared/constants/route';
+import { PRIVATE, PUBLIC } from '@/shared/constants';
 import { useMemberStore } from '@/store';
 
 export const Header = () => {
@@ -22,7 +22,7 @@ export const Header = () => {
     void logout();
     // TODO: 세션 유효한지 확인하는 API / Logout API 부재로
     // window.location 사용 => 추후에 router.replace로 변경
-    window.location.replace(ROUTE.HOME);
+    window.location.replace(PUBLIC.CORE.INDEX);
     // router.replace(ROUTE.HOME);
   };
 
@@ -52,7 +52,11 @@ export const Header = () => {
     <header className="h-header-height fixed top-0 right-0 left-0 z-10 flex items-center border-b border-gray-200 bg-[#1A1A1A] px-8">
       <div className="mx-auto flex w-full items-center justify-between">
         <div className="flex items-center gap-2">
-          <Link href={session === null ? ROUTE.HOME : ROUTE.DASHBOARD.HOME}>
+          <Link
+            href={
+              session === null ? PUBLIC.CORE.INDEX : PRIVATE.DASHBOARD.INDEX
+            }
+          >
             <Image
               src={'/logo.svg'}
               alt="THE EDU 로고"
@@ -134,13 +138,13 @@ export const Header = () => {
         {!session && (
           <div className="flex gap-5">
             <Link
-              href={ROUTE.LOGIN}
+              href={PUBLIC.CORE.LOGIN}
               className={buttonBase}
             >
               로그인
             </Link>
             <Link
-              href={ROUTE.SIGNUP}
+              href={PUBLIC.CORE.SIGNUP}
               className={`${buttonBase} bg-key-color-primary hover:bg-key-color-secondary`}
             >
               디에듀 시작하기

@@ -5,7 +5,7 @@ import { type ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { SessionGuardFallback, useSession } from '@/providers';
-import { ROUTE } from '@/shared/constants/route';
+import { PUBLIC } from '@/shared/constants/route';
 
 interface SessionGuardProps {
   children: ReactNode;
@@ -17,7 +17,7 @@ const DEFAULT_FALLBACK = <SessionGuardFallback />;
 
 export const SessionGuard = ({
   children,
-  redirectTo = ROUTE.LOGIN,
+  redirectTo = PUBLIC.CORE.LOGIN,
   fallback = DEFAULT_FALLBACK,
 }: SessionGuardProps) => {
   const router = useRouter();

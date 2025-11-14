@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
-import { ROUTE } from '@/shared/constants/route';
+import { PUBLIC } from '@/shared/constants/route';
 
 import { useCheckEmailDuplicate } from '../services/query';
 import { useRegisterFormContext } from './register-form-context-provider';
@@ -60,7 +60,7 @@ export const EmailStep = ({ onNext }: EmailStepProps) => {
       </Button>
       <Link
         className="flex w-fit gap-2 self-center"
-        href={ROUTE.LOGIN}
+        href={PUBLIC.CORE.LOGIN}
       >
         <span className="text-gray-scale-gray-70 underline">
           이미 가입 하셨나요?
