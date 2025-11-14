@@ -8,13 +8,13 @@ export const ROUTE = {
   DASHBOARD: {
     HOME: '/dashboard',
     STUDYROOM: {
-      DETAIL: (id: number) => `/studyrooms/${id}/studynotes`,
+      DETAIL: (id: number) => `/study-rooms/${id}/note`,
       CREATE: '/study-rooms/new',
     },
     STUDYNOTE: {
       CREATE: '/dashboard/study-note/new',
-      DETAIL: (id: number) => `/dashboard/studynote/${id}`,
-      LIST: (id: number) => `/studyrooms/${id}/note`,
+      DETAIL: (id: number) => `/dashboard/study-note/${id}`,
+      LIST: (id: number) => `/study-rooms/${id}/note`,
     },
     QUESTIONS: {
       DETAIL: (studyroomId: number, contextId: number) =>
