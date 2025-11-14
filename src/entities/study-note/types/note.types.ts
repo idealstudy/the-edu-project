@@ -1,10 +1,18 @@
-import {
-  NoteListResponseSchema,
-  NoteListSchema,
-  NoteSchema,
-} from '@/entities/study-note/types/schema';
+import { NoteDomainSchema } from '@/entities/study-note/core/note.domain.schema';
+import { dto } from '@/entities/study-note/infrastructure';
 import { z } from 'zod';
 
-export type Note = z.infer<typeof NoteSchema>;
-export type NoteList = z.infer<typeof NoteListSchema>;
-export type NoteListResponse = z.infer<typeof NoteListResponseSchema>;
+/* ─────────────────────────────────────────────────────
+ * DTO
+ * ────────────────────────────────────────────────────*/
+export type NoteVisibility = z.infer<typeof dto.visibility>;
+export type StudentInfo = z.infer<typeof dto.studentInfo>;
+export type NoteRequest = z.infer<typeof dto.request>;
+
+export type NoteListItem = z.infer<typeof dto.listItem>;
+export type NoteDetail = z.infer<typeof dto.detail>;
+
+/* ─────────────────────────────────────────────────────
+ * 도메인
+ * ────────────────────────────────────────────────────*/
+export type NoteDomain = z.infer<typeof NoteDomainSchema>;

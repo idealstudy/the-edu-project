@@ -1,20 +1,48 @@
+// TODO: 작업중
+// https://github.com/radix-ui/primitives/blob/main/packages/react/accordion/src/accordion.tsx
+// https://www.radix-ui.com/primitives/docs/components/accordion
 'use client';
 
-import { forwardRef } from 'react';
-import type { ComponentPropsWithoutRef, ElementRef } from 'react';
+import { ForwardRefExoticComponent, RefAttributes, forwardRef } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 
 import { cn } from '@/shared/lib';
 import * as AccordionPrimitive from '@radix-ui/react-accordion';
+import {
+  AccordionMultipleProps,
+  AccordionSingleProps,
+} from '@radix-ui/react-accordion';
 
 import { Icon } from './icon';
 
-const Accordion = AccordionPrimitive.Root;
+// TODO: 작업중
+// https://github.com/radix-ui/primitives/blob/main/packages/react/accordion/src/accordion.tsx
+// https://www.radix-ui.com/primitives/docs/components/accordion
 
-/* -------------------------------------------------------------------------------------------------
+/* ─────────────────────────────────────────────────────
+ * Accordion Type
+ * ────────────────────────────────────────────────────*/
+type AccordionRootType = ForwardRefExoticComponent<
+  (AccordionSingleProps | AccordionMultipleProps) &
+    RefAttributes<HTMLDivElement>
+>;
+
+type ExtendedAccordionComponent = AccordionRootType & {
+  Item: typeof AccordionItem;
+  Trigger: typeof AccordionTrigger;
+  Content: typeof AccordionContent;
+};
+
+/* ─────────────────────────────────────────────────────
+ * Accordion Component
+ * ────────────────────────────────────────────────────*/
+const Accordion = AccordionPrimitive.Root as ExtendedAccordionComponent;
+
+/* ─────────────────────────────────────────────────────
  * AccordionItem
- * -----------------------------------------------------------------------------------------------*/
+ * ────────────────────────────────────────────────────*/
 const AccordionItem = forwardRef<
-  ElementRef<typeof AccordionPrimitive.Item>,
+  React.ComponentRef<typeof AccordionPrimitive.Item>,
   ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>
 >(({ className, ...props }, ref) => (
   <AccordionPrimitive.Item
@@ -28,11 +56,11 @@ const AccordionItem = forwardRef<
 ));
 AccordionItem.displayName = 'AccordionItem';
 
-/* -------------------------------------------------------------------------------------------------
+/* ─────────────────────────────────────────────────────
  * AccordionTrigger
- * -----------------------------------------------------------------------------------------------*/
+ * ────────────────────────────────────────────────────*/
 const AccordionTrigger = forwardRef<
-  ElementRef<typeof AccordionPrimitive.Trigger>,
+  React.ComponentRef<typeof AccordionPrimitive.Trigger>,
   ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
 >(({ className, children, ...props }, ref) => (
   <AccordionPrimitive.Header className="flex">
@@ -52,19 +80,21 @@ const AccordionTrigger = forwardRef<
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 ));
-AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName;
+AccordionTrigger.displayName = 'AccordionTrigger';
 
-/* -------------------------------------------------------------------------------------------------
+/* ─────────────────────────────────────────────────────
  * AccordionContent
- * -----------------------------------------------------------------------------------------------*/
+ * ────────────────────────────────────────────────────*/
 const AccordionContent = forwardRef<
-  ElementRef<typeof AccordionPrimitive.Content>,
+  React.ComponentRef<typeof AccordionPrimitive.Content>,
   ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>
 >(({ className, children, ...props }, ref) => (
   <AccordionPrimitive.Content
     ref={ref}
     className={cn(
-      'overflow-hidden text-sm transition-all data-[state=closed]:max-h-0 data-[state=open]:max-h-[440px]',
+      // data-[state=closed]:max-h-0 data-[state=open]:max-h-[440px]
+      // 이 부분은 Radix의 Collapsible Content 애니메이션 (높이 조정)을 위한 CSS 변환 속성으로 대체하는 것이 더 좋습니다.
+      'data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown overflow-hidden text-sm transition-all',
       className
     )}
     {...props}
@@ -74,11 +104,10 @@ const AccordionContent = forwardRef<
     </div>
   </AccordionPrimitive.Content>
 ));
-AccordionContent.displayName = AccordionPrimitive.Content.displayName;
+AccordionContent.displayName = 'AccordionContent';
 
-const Root = Accordion;
-const Item = AccordionItem;
-const Trigger = AccordionTrigger;
-const Content = AccordionContent;
+Accordion.Item = AccordionItem;
+Accordion.Trigger = AccordionTrigger;
+Accordion.Content = AccordionContent;
 
-export { Root, Item, Trigger, Content };
+export { Accordion };

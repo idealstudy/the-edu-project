@@ -3,7 +3,7 @@
 import Image from 'next/image';
 
 import { useStudentStudyRoomsQuery } from '@/features/study-rooms';
-import { ColumnLayout } from '@/shared/components/layout/column-layout';
+import { ColumnLayout } from '@/layout/column-layout';
 
 import QnAFormProvider from './qna-form-provider';
 import WriteArea from './qna-write-area';

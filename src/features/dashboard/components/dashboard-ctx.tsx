@@ -5,7 +5,7 @@ import React from 'react';
 import Link from 'next/link';
 
 import { Button } from '@/shared/components/ui/button';
-import { ROUTE } from '@/shared/constants';
+import { PRIVATE } from '@/shared/constants';
 import { cn } from '@/shared/lib/utils';
 
 const MARKETING_ASSETS = {
@@ -17,12 +17,12 @@ const MARKETING_ASSETS = {
     buttons: [
       {
         text: '홍보자료 내려받기',
-        href: ROUTE.DASHBOARD.HOME,
+        href: PRIVATE.DASHBOARD.INDEX,
         variant: 'primary',
       },
       {
         text: '체험 수업 초대 링크 만들기',
-        href: ROUTE.DASHBOARD.HOME,
+        href: PRIVATE.DASHBOARD.INDEX,
         variant: 'secondary',
       },
     ],

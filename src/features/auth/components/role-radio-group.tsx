@@ -1,9 +1,8 @@
 import Image from 'next/image';
 
+import { Role } from '@/entities/member';
 import { cn } from '@/shared/lib/utils';
 import { RadioGroup as RadioGroupPrimitives } from 'radix-ui';
-
-import { Role } from '../types';
 
 type RoleRadioGroupItemProps = Omit<
   React.ComponentProps<typeof RadioGroupPrimitives.Item>,

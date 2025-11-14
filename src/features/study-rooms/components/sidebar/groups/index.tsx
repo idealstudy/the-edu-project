@@ -2,7 +2,7 @@ import { useReducer } from 'react';
 
 import Image from 'next/image';
 
-import { Role } from '@/features/auth/types.js';
+import { Role } from '@/entities/member';
 import { getStudyNoteGroupInfiniteOption } from '@/features/study-rooms';
 import { dialogReducer, initialDialogState } from '@/shared/components/dialog';
 import { useInfiniteScroll } from '@/shared/hooks/use-infinite-scroll';

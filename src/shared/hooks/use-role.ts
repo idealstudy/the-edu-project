@@ -1,4 +1,4 @@
-import { Member } from '@/entities';
+import { MemberDTO } from '@/entities/member';
 import { fetchMemberInfo } from '@/features/member/api/member.api';
 import { queryKey } from '@/shared/constants/query-key';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -17,7 +17,7 @@ export const useRole = () => {
   const { data, isLoading } = useQuery({
     queryKey: queryKey.session,
     queryFn: fetchMemberInfo,
-    initialData: () => qc.getQueryData<Member>(queryKey.session),
+    initialData: () => qc.getQueryData<MemberDTO>(queryKey.session),
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     retry: false,

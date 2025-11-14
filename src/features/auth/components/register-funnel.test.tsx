@@ -1,7 +1,7 @@
 import mockRouter from 'next-router-mock';
 
 import { DUPLICATE_EMAIL } from '@/mocks/auth/handlers';
-import { ROUTE } from '@/shared/constants/route';
+import { PUBLIC } from '@/shared/constants';
 import { renderWithProviders } from '@/tests/utils';
 import { cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -80,7 +80,7 @@ describe('RegisterFunnel', () => {
     );
     await user.click(credentialFormNextButton);
 
-    const nameInput = await screen.getByLabelText('이름');
+    const nameInput = screen.getByLabelText('이름');
     const signUpButton = screen.getByRole('button', { name: '가입 완료' });
 
     await user.type(nameInput, FORM_DATA.NAME);
@@ -88,7 +88,7 @@ describe('RegisterFunnel', () => {
 
     await waitFor(() => {
       expect(mockRouter).toMatchObject({
-        pathname: ROUTE.HOME,
+        pathname: PUBLIC.CORE.INDEX,
       });
     });
   });

@@ -5,11 +5,11 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
 
+import { ColumnLayout } from '@/layout/column-layout';
 import { TextEditor } from '@/shared/components/editor';
-import { ColumnLayout } from '@/shared/components/layout/column-layout';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
-import { ROUTE } from '@/shared/constants/route';
+import { PRIVATE } from '@/shared/constants';
 import { useRole } from '@/shared/hooks/use-role';
 import { JSONContent } from '@tiptap/react';
 
@@ -64,7 +64,7 @@ const WriteArea = ({ studyRoomId, contextId }: Props) => {
       },
       {
         onSuccess: () => {
-          router.replace(ROUTE.DASHBOARD.HOME);
+          router.replace(PRIVATE.DASHBOARD.INDEX);
         },
       }
     );

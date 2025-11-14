@@ -1,16 +1,14 @@
-import {
-  FrontendMemberSchema,
-  Member,
-  MemberAnyResponseSchema,
-  MemberEnvelope,
-} from '@/entities';
+import { MemberDTO } from '@/entities/member';
+import { factory } from '@/entities/member/core';
+import { adapters } from '@/entities/member/infrastructure/member.adapters';
 import {
   CheckEmailDuplicateBody,
   LoginBody,
   SignUpBody,
   VerifyCodeBody,
 } from '@/features/auth/types';
-import { authApi, authBffApi, publicApi } from '@/shared/lib';
+import { authApi, authBffApi, publicApi } from '@/shared/api';
+import { CommonResponse } from '@/types';
 
 export const authService = {
   login: async (body: LoginBody) => {
@@ -23,11 +21,11 @@ export const authService = {
   },
   getSession: async () => {
     try {
-      const response = await authBffApi.get<Member | MemberEnvelope>(
+      const response = await authBffApi.get<CommonResponse<MemberDTO>>(
         '/api/v1/member/info'
       );
-      const domain = MemberAnyResponseSchema.parse(response);
-      return FrontendMemberSchema.parse(domain);
+      const validatedResponse = adapters.fromApi.parse(response);
+      return factory.member.create(validatedResponse.data);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e: unknown) {
       // console.error('Session Data Parsing Error:', e);

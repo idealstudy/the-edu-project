@@ -6,12 +6,12 @@ import { Controller, useFormContext } from 'react-hook-form';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
+import { ColumnLayout } from '@/layout/column-layout';
 import { TextEditor } from '@/shared/components/editor';
-import { ColumnLayout } from '@/shared/components/layout/column-layout';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
-import { ROUTE } from '@/shared/constants/route';
+import { PRIVATE } from '@/shared/constants';
 import { JSONContent } from '@tiptap/react';
 
 import { QnACreateForm } from '../../schema/create';
@@ -58,7 +58,7 @@ const WriteArea = ({ studyRoomId }: Props) => {
       },
       {
         onSuccess: () => {
-          router.replace(ROUTE.DASHBOARD.HOME);
+          router.replace(PRIVATE.DASHBOARD.INDEX);
         },
       }
     );

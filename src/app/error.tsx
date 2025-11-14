@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
-import { ROUTE } from '@/shared/constants/route';
+import { PUBLIC } from '@/shared/constants';
 import { AuthError, ForbiddenError } from '@/shared/lib';
 
 export default function Error({
@@ -18,7 +18,7 @@ export default function Error({
 
   if (error instanceof AuthError || error instanceof ForbiddenError) {
     void auth.logout();
-    router.replace(ROUTE.LOGIN);
+    router.replace(PUBLIC.CORE.LOGIN);
   }
 
   return (

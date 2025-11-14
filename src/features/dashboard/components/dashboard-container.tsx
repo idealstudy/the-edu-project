@@ -11,14 +11,23 @@ import {
   RECENT_STUDY_NOTES,
   SUMMARY_CARDS,
 } from '@/features/dashboard/mock';
-import { ROUTE } from '@/shared/constants';
+import { PRIVATE } from '@/shared/constants';
 
+/* ─────────────────────────────────────────────────────
+ * 테스트용 플래그
+ * ────────────────────────────────────────────────────*/
+const ALERT_KEY = 'dashboard_welcome_alert_shown';
 export const DashboardContainer = () => {
   React.useEffect(() => {
-    alert(
-      '선생님, 환영합니다! 개인 정보 바인딩은 다음 업데이트를 통해 제공될 예정입니다.'
-    );
+    const hasShown = sessionStorage.getItem(ALERT_KEY);
+    if (!hasShown) {
+      alert(
+        '선생님, 환영합니다! 개인 정보 바인딩은 다음 업데이트를 통해 제공될 예정입니다.'
+      );
+      sessionStorage.setItem(ALERT_KEY, 'true');
+    }
   }, []);
+
   return (
     <div className="bg-system-background">
       <div className="mx-auto flex w-full max-w-[1120px] flex-col gap-8 px-6 pt-12 pb-24">
@@ -45,7 +54,7 @@ export const DashboardContainer = () => {
             title="내 스터디룸"
             description="오늘도 학생들과 함께할 준비가 끝났어요"
             buttonText="새로 만들기"
-            buttonHref={ROUTE.DASHBOARD.STUDYROOM.CREATE}
+            buttonHref={PRIVATE.ROOM.CREATE}
             buttonVariant="primary"
           >
             {MY_STUDY_ROOMS.map((room) => (
@@ -59,7 +68,7 @@ export const DashboardContainer = () => {
             title="최근 수업노트"
             description="다시 확인하고 싶은 수업 기록을 모아봤어요"
             buttonText="전체보기"
-            buttonHref={ROUTE.DASHBOARD.HOME}
+            buttonHref={PRIVATE.DASHBOARD.INDEX}
             buttonVariant="outlined"
           >
             {RECENT_STUDY_NOTES.map((note) => (

@@ -1,30 +1,54 @@
-import { authService } from '@/features/auth/services/api';
-import { memberKeys } from '@/features/member/api/keys';
-import { useSession } from '@/shared/providers';
-import { useAuthStore } from '@/shared/store/session-store';
-import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
-export const useAuth = () => {
+import {
+  getCurrentMemberOptions,
+  memberKeys,
+  repository,
+} from '@/entities/member';
+import { LoginBody } from '@/features/auth/types';
+import { useSession } from '@/providers';
+import { authBffApi } from '@/shared/api';
+import { useMemberStore } from '@/store';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+// 로그인
+export const useLogin = () => {
   const queryClient = useQueryClient();
-  const { user, clearUser } = useAuthStore();
-  const { refresh } = useSession();
-
-  const refreshSession = async () => {
-    const member = await refresh();
-    if (!member) throw new Error('세션 정보를 불러오지 못했습니다.');
-    queryClient.setQueryData(memberKeys.info(), member);
-    return member;
+  const loginRequest = async (body: LoginBody) => {
+    return await authBffApi.post('/api/v1/auth/login', body, {
+      withCredentials: true,
+    });
   };
 
-  const logout = async () => {
-    try {
-      await authService.logout();
-    } finally {
-      clearUser();
+  return useMutation({
+    mutationFn: loginRequest,
+    onSuccess: async () => {
+      await queryClient.fetchQuery(getCurrentMemberOptions(true));
+    },
+  });
+};
+
+// 로그아웃
+export const useLogout = () => {
+  const queryClient = useQueryClient();
+  const { clearMember } = useMemberStore();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: repository.member.logout,
+    // 요청 성공/실패와 무관하게 상태 정리
+    onSettled: () => {
+      clearMember();
       queryClient.removeQueries({ queryKey: memberKeys.info(), exact: true });
-      await refresh();
-    }
-  };
+      router.replace('/');
+    },
+  });
+};
 
-  return { user, logout, refreshSession };
+// 인증 상태, 액션을 제공하는 허브
+export const useAuth = () => {
+  const { mutate: login, isPending: isLoggingIn } = useLogin();
+  const { mutate: logout, isPending: isLoggingOut } = useLogout();
+  const { member, refresh } = useSession();
+  return { member, logout, isLoggingOut, login, isLoggingIn, refresh };
 };

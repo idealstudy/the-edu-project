@@ -1,12 +1,11 @@
+import type { Role } from '@/entities/member';
+
 export type Resource = 'room' | 'note' | 'comment';
 export type Action = 'read' | 'create' | 'update' | 'delete';
 
 type Matrix = Record<Resource, Partial<Record<Action, boolean>>>;
 
-export const abilityMatrixByRole: Record<
-  'ROLE_ADMIN' | 'ROLE_PARENT' | 'ROLE_TEACHER' | 'ROLE_STUDENT',
-  Matrix
-> = {
+export const abilityMatrixByRole: Record<Role, Matrix> = {
   ROLE_ADMIN: {
     room: { read: true, create: true, update: true, delete: true },
     note: { read: true, create: true, update: true, delete: true },

@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 
 import { Form } from '@/shared/components/ui/form';
-import { ROUTE } from '@/shared/constants/route';
+import { PUBLIC } from '@/shared/constants';
 import { useCheckboxGroup } from '@/shared/hooks/use-checkbox-group';
 import { createContextFactory } from '@/shared/lib/context';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -81,7 +81,7 @@ export const RegisterFormContextProvider = ({
       },
       {
         onSuccess: () => {
-          router.replace(ROUTE.HOME);
+          router.replace(PUBLIC.CORE.INDEX);
         },
         onError: () => {
           alert('회원가입에 실패했습니다. 잠시 후 다시 시도해주세요.');

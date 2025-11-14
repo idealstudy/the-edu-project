@@ -2,7 +2,7 @@ import type {
   StudyNoteDetails,
   StudyNoteGroupPageable,
 } from '@/features/study-notes/model';
-import { authApi } from '@/shared/lib/http';
+import { authApi } from '@/shared/api';
 import type { CommonResponse } from '@/types/http';
 
 type Role = 'ROLE_TEACHER' | 'ROLE_STUDENT';
