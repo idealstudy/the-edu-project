@@ -80,7 +80,7 @@ describe('RegisterFunnel', () => {
     );
     await user.click(credentialFormNextButton);
 
-    const nameInput = await screen.getByLabelText('이름');
+    const nameInput = screen.getByLabelText('이름');
     const signUpButton = screen.getByRole('button', { name: '가입 완료' });
 
     await user.type(nameInput, FORM_DATA.NAME);

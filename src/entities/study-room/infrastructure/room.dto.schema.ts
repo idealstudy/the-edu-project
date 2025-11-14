@@ -1,4 +1,4 @@
-import { MemberRoleSchema } from '@/entities/member';
+import { domain } from '@/entities/member';
 import { z } from 'zod';
 
 /* ─────────────────────────────────────────────────────
@@ -81,14 +81,14 @@ export const TeacherRoomCUDResponseDataSchema = z.object({
  * ────────────────────────────────────────────────────*/
 export const RoomMemberItemSchema = z.object({
   studentInfo: z.object({
-    role: MemberRoleSchema,
+    role: domain.role,
     id: z.number().int(),
     name: z.string(),
     email: z.string(),
     joinDate: z.string(),
   }),
   parentInfo: z.object({
-    role: MemberRoleSchema,
+    role: domain.role,
     id: z.number().int(),
     name: z.string(),
     email: z.string(),
@@ -110,7 +110,7 @@ export const RoomMemberPageSchema = z.object({
 export const InviteSuccessItemSchema = z.object({
   email: z.string(),
   name: z.string(),
-  role: MemberRoleSchema,
+  role: domain.role,
 });
 
 export const InviteFailItemSchema = z.object({

@@ -1,3 +1,4 @@
+// TODO: 스키마 수정 예정
 // api
 export { repository, memberKeys } from './infrastructure';
 
@@ -8,9 +9,9 @@ export {
   getCurrentMemberOptions,
 } from './hooks/use-member-query';
 
-export * from '@/entities/member/core/member.domain.schema';
-export * from '@/entities/member/infrastructure/member.dto.schema';
-export type * from '@/entities/member/types/member.types';
+export * from './core';
+export * from './infrastructure';
+export type * from './types';
 
 // 권한
 export * from '@/entities/member/policy/rules';
@@ -20,3 +21,5 @@ export type * from '@/entities/member/policy/ability';
 
 // 매퍼
 export * from '@/entities/member/mapper/member.mapper';
+
+// 스키마
