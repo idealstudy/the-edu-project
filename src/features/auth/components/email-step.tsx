@@ -16,14 +16,10 @@ type EmailStepProps = {
 
 export const EmailStep = ({ onNext }: EmailStepProps) => {
   const { form } = useRegisterFormContext();
-
   const { mutate: checkEmailDuplicate, isPending } = useCheckEmailDuplicate();
-
   const onNextButtonClick = async () => {
     if (isPending) return;
-
     const isValid = await form.trigger(['email']);
-
     if (!isValid) return;
 
     checkEmailDuplicate(

@@ -41,6 +41,8 @@ const logout = async (): Promise<void> => {
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const repository = {
-  getMember: getCurrentMember,
-  logout: logout,
+  member: {
+    getMember: getCurrentMember,
+    logout: logout,
+  },
 };

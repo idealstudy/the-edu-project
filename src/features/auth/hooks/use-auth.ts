@@ -35,7 +35,7 @@ export const useLogout = () => {
   const router = useRouter();
 
   return useMutation({
-    mutationFn: repository.logout,
+    mutationFn: repository.member.logout,
     // 요청 성공/실패와 무관하게 상태 정리
     onSettled: () => {
       clearMember();
