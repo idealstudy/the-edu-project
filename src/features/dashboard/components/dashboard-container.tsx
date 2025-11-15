@@ -2,6 +2,7 @@
 
 import React from 'react';
 
+import { useDashboardQuery } from '@/features/dashboard';
 import { DashboardSummaryCard } from '@/features/dashboard/components/dashboard-card';
 import { DashboardContents } from '@/features/dashboard/components/dashboard-contents';
 import { ContentsCard } from '@/features/dashboard/components/dashboard-contents-card';
@@ -18,6 +19,10 @@ import { PRIVATE } from '@/shared/constants';
  * ────────────────────────────────────────────────────*/
 const ALERT_KEY = 'dashboard_welcome_alert_shown';
 export const DashboardContainer = () => {
+  // [CRITICAL TODO: API 구현 누락] useDashboardQuery의 데이터(data)를 사용할 수 있도록 백엔드 API 및 바인딩 작업을 즉시 진행해야 합니다.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { data, isLoading, isError } = useDashboardQuery();
+
   React.useEffect(() => {
     const hasShown = sessionStorage.getItem(ALERT_KEY);
     if (!hasShown) {

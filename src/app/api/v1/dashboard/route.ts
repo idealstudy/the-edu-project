@@ -18,12 +18,12 @@ function toDashboardRole(role: Role): DashboardRole | null {
 function getEndpoints(role: DashboardRole) {
   if (role === 'teacher')
     return {
-      rooms: '/api/teacher/study-rooms',
-      notes: '/api/teacher/teaching-notes',
+      rooms: '/teacher/study-rooms',
+      notes: '/teacher/teaching-notes',
     };
   return {
-    rooms: '/api/student/study-rooms',
-    notes: '/api/student/teaching-notes',
+    rooms: '/student/study-rooms',
+    notes: '/student/teaching-notes',
   };
 }
 

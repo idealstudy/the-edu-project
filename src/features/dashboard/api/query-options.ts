@@ -7,10 +7,10 @@ import type {
 } from '@/shared/lib/query/types';
 
 /**
- * @description 대시보드 데이터를 가져오는 쿼리 옵션을 생성합니다.
- * 이 팩토리는 기본 설정(staleTime, retry 등)을 적용하고 쿼리 키/함수 및 에러 핸들러를 정의합니다.
+ * @description 대시보드 데이터를 가져오는 쿼리 옵션 객체를 생성하는 팩토리 함수입니다.
+ * 이 팩토리는 프로젝트의 공통 설정(staleTime, retry 등)을 적용하고 쿼리별 속성을 정의합니다.
  *
- * @param {BaseQueryOptions} [base={}] - 훅 사용 시 기본 옵션(DEFAULT_QUERY_OPTION)을 덮어쓰기 위해 전달되는 옵션입니다.
+ * @param {BaseQueryOptions} [base={}] - 훅 사용 시 기본 옵션(DEFAULT_QUERY_OPTION)을 덮어쓰기 위해 전달되는 선택적 옵션입니다.
  * @returns {QueryOptionsWithBase<Dashboard>} 기본 설정이 적용된 최종 React Query 옵션 객체.
  */
 const getDashboardQueryOption = (
