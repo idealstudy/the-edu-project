@@ -1,4 +1,4 @@
-import { authApi } from '@/shared/api';
+import { api } from '@/shared/api';
 
 export type ApiResponse<T> = { status: number; message: string; data: T };
 
@@ -65,9 +65,9 @@ export type MemberInvitation = {
 };
 
 export interface StudyRoomClient {
-  get: typeof authApi.get;
-  post: typeof authApi.post;
-  delete: typeof authApi.delete;
+  get: typeof api.private.get;
+  post: typeof api.private.post;
+  delete: typeof api.private.delete;
 }
 
 export interface InvitationPayload {

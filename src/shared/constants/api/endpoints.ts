@@ -1,4 +1,7 @@
 /* ─────────────────────────────────────────────────────
- * domain
+ * BFF 기준 API host/경로
  * ────────────────────────────────────────────────────*/
-export { domain } from './note.domain.schema';
+/*
+const ENDPOINT = {
+
+} as const;*/

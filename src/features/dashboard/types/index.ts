@@ -1,5 +1,12 @@
 import { ComponentPropsWithoutRef, ComponentType } from 'react';
 
+/* ─────────────────────────────────────────────────────
+ * 대시보드 스키마 & 타입
+ * ────────────────────────────────────────────────────*/
+import { z } from 'zod';
+
+import { domain } from '../model/dashboard.schema';
+
 export type DashboardSummaryCardProps = {
   card: SummaryCard;
 };
@@ -53,3 +60,6 @@ export type StudyRoomCardProps = {
 export type RecentNoteCardProps = {
   note: RecentNote;
 };
+
+export type DashboardMember = z.infer<typeof domain.member>;
+export type Dashboard = z.infer<typeof domain.schema>;

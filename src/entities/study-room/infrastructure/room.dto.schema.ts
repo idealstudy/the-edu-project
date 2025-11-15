@@ -1,94 +1,73 @@
-import { domain } from '@/entities/member';
+import { member } from '@/entities/member';
 import { z } from 'zod';
 
+import { base } from './room.base.schema';
+
 /* ─────────────────────────────────────────────────────
- * default
+ * 공용
  * ────────────────────────────────────────────────────*/
-export const RoomVisibilitySchema = z.enum(['PRIVATE', 'PUBLIC']);
-
-export const RoomModalitySchema = z.enum(['ONLINE', 'OFFLINE']);
-
-export const RoomClassFormSchema = z.enum(['ONE_ON_ONE', 'ONE_TO_MANY']);
-
-export const RoomSubjectSchema = z.enum(['KOREAN', 'ENGLISH', 'MATH', 'OTHER']);
-
-export const SchoolLevelSchema = z.enum(['ELEMENTARY', 'MIDDLE', 'HIGH']);
-
-export const SchoolInfoSchema = z.object({
-  schoolLevel: SchoolLevelSchema,
-  grade: z.number().int().min(1).max(12),
-});
-
-export const RoomDtoSchema = z.object({
-  id: z.number().int().nonnegative(),
-  teacherId: z.number().int().nonnegative(),
-  name: z.string(),
-  description: z.string(),
-  visibility: RoomVisibilitySchema,
-});
-
-export const RoomStatsSchema = z.object({
+const RoomStatsSchema = z.object({
   numberOfTeachingNote: z.number().int(),
 });
 
-export const RoomStudentNamesSchema = z.object({
+const RoomStudentNamesSchema = z.object({
   studentNames: z.array(z.string()),
 });
 
 /* ─────────────────────────────────────────────────────
  * 선생님 - 목록 응답 아이템 (GET /api/teacher/study-rooms)
  * ────────────────────────────────────────────────────*/
-export const TeacherRoomListItemSchema = RoomDtoSchema.merge(
-  RoomStatsSchema
-).merge(RoomStudentNamesSchema);
+const TeacherRoomListItemSchema = base.schema
+  .merge(RoomStatsSchema)
+  .merge(RoomStudentNamesSchema);
 
 /* ─────────────────────────────────────────────────────
  * 선생님 - 상세 (GET /api/teacher/study-rooms/{id})
  * ────────────────────────────────────────────────────*/
-export const TeacherRoomDetailSchema = TeacherRoomListItemSchema.extend({
+const TeacherRoomDetailSchema = TeacherRoomListItemSchema.extend({
   teacherName: z.string(),
-  modality: RoomModalitySchema,
-  classForm: RoomClassFormSchema,
-  subjectType: RoomSubjectSchema,
-  schoolInfo: SchoolInfoSchema,
+  modality: base.modality,
+  classForm: base.classForm,
+  subjectType: base.subject,
+  schoolInfo: base.schoolInfo,
   numberOfQuestion: z.number().int(),
 });
 
 /* ─────────────────────────────────────────────────────
  * 선생님 - 생성/수정 요청 바디 (POST/PUT /api/teacher/study-rooms)
  * ────────────────────────────────────────────────────*/
-export const TeacherRoomCURequestSchema = z.object({
+const TeacherRoomCURequestSchema = z.object({
   name: z.string(),
   description: z.string(),
-  modality: RoomModalitySchema,
-  classForm: RoomClassFormSchema,
-  subjectType: RoomSubjectSchema,
-  schoolInfo: SchoolInfoSchema,
-  visibility: RoomVisibilitySchema,
+  modality: base.modality,
+  classForm: base.classForm,
+  subjectType: base.subject,
+  schoolInfo: base.schoolInfo,
+  visibility: base.visibility,
 });
 
 // 생성/수정 응답 예시
-export const TeacherRoomCUDResponseDataSchema = z.object({
+const TeacherRoomCUDResponseDataSchema = z.object({
   id: z.number().int(),
   name: z.string(),
   description: z.string(),
   teacherName: z.string(),
-  visibility: RoomVisibilitySchema,
+  visibility: base.visibility,
 });
 
 /* ─────────────────────────────────────────────────────
  * 선생님 - 멤버 목록 (GET /api/teacher/study-rooms/{id}/members)
  * ────────────────────────────────────────────────────*/
-export const RoomMemberItemSchema = z.object({
+const RoomMemberItemSchema = z.object({
   studentInfo: z.object({
-    role: domain.role,
+    role: member.dto.role,
     id: z.number().int(),
     name: z.string(),
     email: z.string(),
     joinDate: z.string(),
   }),
   parentInfo: z.object({
-    role: domain.role,
+    role: member.domain.role,
     id: z.number().int(),
     name: z.string(),
     email: z.string(),
@@ -96,7 +75,7 @@ export const RoomMemberItemSchema = z.object({
   }),
 });
 
-export const RoomMemberPageSchema = z.object({
+const RoomMemberPageSchema = z.object({
   pageNumber: z.number().int(),
   size: z.number().int(),
   totalElements: z.number().int(),
@@ -107,13 +86,13 @@ export const RoomMemberPageSchema = z.object({
 /* ─────────────────────────────────────────────────────
  * 선생님 - 멤버 초대 (POST /api/teacher/study-rooms/{id}/members)
  * ────────────────────────────────────────────────────*/
-export const InviteSuccessItemSchema = z.object({
+const InviteSuccessItemSchema = z.object({
   email: z.string(),
   name: z.string(),
-  role: domain.role,
+  role: member.domain.role,
 });
 
-export const InviteFailItemSchema = z.object({
+const InviteFailItemSchema = z.object({
   email: z.string(),
   name: z.string(),
   reason: z.string(),
@@ -122,33 +101,33 @@ export const InviteFailItemSchema = z.object({
 /* ─────────────────────────────────────────────────────
  * 학생 - 스터디룸 목록
  * ────────────────────────────────────────────────────*/
-export const StudentRoomListItemSchema = z.object({
+const StudentRoomListItemSchema = z.object({
   id: z.number().int(),
   name: z.string(),
   description: z.string(),
   teacherId: z.number().int(),
-  visibility: RoomVisibilitySchema,
+  visibility: base.visibility,
   numberOfTeachingNote: z.number().int(),
 });
 
 /* ─────────────────────────────────────────────────────
  * 학생 - 초대 응답
  * ────────────────────────────────────────────────────*/
-export const StudyRoomInviteRespondDataSchema = z.object({
+const StudyRoomInviteRespondDataSchema = z.object({
   state: z.enum(['PENDING', 'ACCEPTED', 'DECLINED']).catch('PENDING'),
   studyRoomResponse: z.object({
     id: z.number().int(),
     name: z.string(),
     description: z.string(),
     teacherName: z.string(),
-    visibility: RoomVisibilitySchema,
+    visibility: base.visibility,
   }),
 });
 
 /* ─────────────────────────────────────────────────────
  * 선생님 - 초대 대상 검색
  * ────────────────────────────────────────────────────*/
-export const StudyRoomSearchInviteeDataSchema = z.object({
+const StudyRoomSearchInviteeDataSchema = z.object({
   role: z.string(),
   canInvite: z.boolean(),
   inviteeId: z.number().int(),
@@ -158,3 +137,33 @@ export const StudyRoomSearchInviteeDataSchema = z.object({
   connectedStudentCount: z.number().int(),
   studentResponseList: z.array(z.string()),
 });
+
+/* ─────────────────────────────────────────────────────
+ * DTO 내보내기
+ * ────────────────────────────────────────────────────*/
+const teacher = {
+  listItem: TeacherRoomListItemSchema,
+  detail: TeacherRoomDetailSchema,
+  cuRequest: TeacherRoomCURequestSchema,
+  cuResponse: TeacherRoomCUDResponseDataSchema,
+  memberPage: RoomMemberPageSchema,
+  inviteSuccess: InviteSuccessItemSchema,
+  inviteFail: InviteFailItemSchema,
+};
+
+const student = {
+  listItem: StudentRoomListItemSchema,
+  inviteRespond: StudyRoomInviteRespondDataSchema,
+};
+
+const search = {
+  invitee: StudyRoomSearchInviteeDataSchema,
+};
+
+export const dto = {
+  teacher,
+  student,
+  search,
+  states: RoomStatsSchema,
+  studentNames: RoomStudentNamesSchema,
+};

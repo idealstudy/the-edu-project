@@ -1,29 +1,26 @@
-import { Room, RoomFactory, StudentRoom } from '@/entities/study-room';
 import type {
   StudentRoomListItemDTO,
   TeacherRoomDetail,
   TeacherRoomDetailDTO,
   TeacherRoomListItemDTO,
 } from '@/entities/study-room/types';
-import { authApi } from '@/shared/api';
+import { api } from '@/shared/api';
 import { CommonResponse } from '@/types';
 
-import {
-  RoomDetailResponseAdapter,
-  RoomListResponseAdapter,
-  StudentRoomListResponseAdapter,
-} from './room.adapters';
+import { factory } from '../core/room.factory';
+import type { Room, StudentRoom } from '../types';
+import { adapters } from './room.adapters';
 
 export const studyRoomRepository = {
   /* ─────────────────────────────────────────────────────
    * 공용
    * ────────────────────────────────────────────────────*/
   getDetail: async (id: number): Promise<TeacherRoomDetail> => {
-    const response = await authApi.get<CommonResponse<TeacherRoomDetailDTO>>(
-      `/study-rooms/${id}`
-    );
-    const parsed = RoomDetailResponseAdapter.parse(response.data);
-    return RoomFactory.fromTeacherDetail(parsed.data);
+    const response = await api.private.get<
+      CommonResponse<TeacherRoomDetailDTO>
+    >(`/study-rooms/${id}`);
+    const parsed = adapters.teacher.detail.parse(response.data);
+    return factory.teacher.detail(parsed.data);
   },
 
   /* ─────────────────────────────────────────────────────
@@ -31,11 +28,11 @@ export const studyRoomRepository = {
    * ────────────────────────────────────────────────────*/
   teacher: {
     getList: async (): Promise<Room[]> => {
-      const response = await authApi.get<
+      const response = await api.private.get<
         CommonResponse<TeacherRoomListItemDTO>
       >(`/teacher/study-rooms}`);
-      const parsed = RoomListResponseAdapter.parse(response.data);
-      return RoomFactory.fromTeacherList(parsed.data);
+      const parsed = adapters.teacher.list.parse(response.data);
+      return factory.teacher.list(parsed.data);
     },
   },
 
@@ -45,11 +42,11 @@ export const studyRoomRepository = {
   student: {
     getList: async (): Promise<StudentRoom[]> => {
       const response =
-        await authApi.get<CommonResponse<StudentRoomListItemDTO>>(
+        await api.private.get<CommonResponse<StudentRoomListItemDTO>>(
           `/student/study-rooms`
         );
-      const parsed = StudentRoomListResponseAdapter.parse(response.data);
-      return RoomFactory.fromStudentList(parsed.data);
+      const parsed = adapters.student.list.parse(response.data);
+      return factory.student.list(parsed.data);
     },
   },
 };

@@ -1,5 +1,5 @@
 import { StudyNoteGroupPageable } from '@/features/study-notes/model';
-import { authApi } from '@/shared/api';
+import { api } from '@/shared/api';
 import { CommonResponse, EmptyData, PaginationData } from '@/types';
 import type { SuccessId } from '@/types';
 
@@ -27,7 +27,7 @@ const TEACHING_NOTE_PATH = (teachingNoteId: number) =>
  * 생성 API는 ID를 반환하므로 DTO 타입 그대로 반환
  * ────────────────────────────────────────────────────*/
 const createNote = async (dto: NoteRequest): Promise<SuccessId> => {
-  const response = await authApi.post<CommonResponse<SuccessId>>(
+  const response = await api.private.post<CommonResponse<SuccessId>>(
     `/teacher/teaching-notes`,
     dto
   );
@@ -42,7 +42,7 @@ const updateNote = async (
   teachingNoteId: number,
   dto: NoteRequest
 ): Promise<void> => {
-  const response = await authApi.put<CommonResponse<EmptyData>>(
+  const response = await api.private.put<CommonResponse<EmptyData>>(
     TEACHING_NOTE_PATH(teachingNoteId),
     dto
   );
@@ -53,7 +53,7 @@ const updateNote = async (
  * 수업 노트 삭제
  * ────────────────────────────────────────────────────*/
 const deleteNote = async (teachingNoteId: number): Promise<void> => {
-  const response = await authApi.delete<CommonResponse<EmptyData>>(
+  const response = await api.private.delete<CommonResponse<EmptyData>>(
     TEACHING_NOTE_PATH(teachingNoteId)
   );
   adapters.delete.parse(response.data);
@@ -69,10 +69,10 @@ const getNoteList = async ({
   studyRoomId: number;
   pageable: StudyNoteGroupPageable;
 }): Promise<PaginationData<NoteDomain>> => {
-  const response = await authApi.get<
+  const response = await api.private.get<
     CommonResponse<PaginationData<NoteListItem>>
   >(`${TEACHER_PATH(studyRoomId)}/teaching-notes`, { params: pageable });
-  const validatedListResponse = adapters.listData.parse(response.data);
+  const validatedListResponse = adapters.list.parse(response.data);
   const domainContent = factory.fromList(validatedListResponse.data.content);
 
   return {
@@ -85,7 +85,7 @@ const getNoteList = async ({
  * 수업 노트 상세 내용 조회
  * ────────────────────────────────────────────────────*/
 const getNoteDetail = async (teachingNoteId: number): Promise<NoteDomain> => {
-  const response = await authApi.get<CommonResponse<NoteDetail>>(
+  const response = await api.private.get<CommonResponse<NoteDetail>>(
     `/public/teaching-notes/${teachingNoteId}`
   );
   const validatedResponse = adapters.details.parse(response.data);

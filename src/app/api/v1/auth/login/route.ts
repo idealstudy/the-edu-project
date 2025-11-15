@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import {
-  applySetCookies,
-  extractErrorMessage,
-  safeJson,
-  serverEnv,
-} from '@/shared/lib';
+import { serverEnv } from '@/shared/constants/api';
+import { applySetCookies, extractErrorMessage, safeJson } from '@/shared/lib';
 
 if (!serverEnv.backendApiUrl) throw new Error('BASE_URL is not defined');
 

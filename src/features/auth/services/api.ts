@@ -7,21 +7,21 @@ import {
   SignUpBody,
   VerifyCodeBody,
 } from '@/features/auth/types';
-import { authApi, authBffApi, publicApi } from '@/shared/api';
+import { api } from '@/shared/api';
 import { CommonResponse } from '@/types';
 
 export const authService = {
   login: async (body: LoginBody) => {
-    await authBffApi.post('/api/v1/auth/login', body, {
+    await api.bff.client.post('/api/v1/auth/login', body, {
       withCredentials: true,
     });
   },
   logout: async () => {
-    return authApi.post('/auth/logout');
+    return api.private.post('/auth/logout');
   },
   getSession: async () => {
     try {
-      const response = await authBffApi.get<CommonResponse<MemberDTO>>(
+      const response = await api.bff.client.get<CommonResponse<MemberDTO>>(
         '/api/v1/member/info'
       );
       const validatedResponse = adapters.fromApi.parse(response);
@@ -33,12 +33,12 @@ export const authService = {
     }
   },
   checkEmailDuplicate: async (body: CheckEmailDuplicateBody) => {
-    return publicApi.post('/public/email-verifications/check-duplicate', body);
+    return api.public.post('/public/email-verifications/check-duplicate', body);
   },
   verifyCode: async (body: VerifyCodeBody) => {
-    return publicApi.post('/public/email-verifications/verify-code', body);
+    return api.public.post('/public/email-verifications/verify-code', body);
   },
   signUp: async (body: SignUpBody) => {
-    return publicApi.post('/auth/sign-up', body);
+    return api.public.post('/auth/sign-up', body);
   },
 };

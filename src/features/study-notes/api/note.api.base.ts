@@ -2,7 +2,7 @@ import type {
   StudyNoteDetails,
   StudyNoteGroupPageable,
 } from '@/features/study-notes/model';
-import { authApi } from '@/shared/api';
+import { api } from '@/shared/api';
 import type { CommonResponse } from '@/types/http';
 
 type Role = 'ROLE_TEACHER' | 'ROLE_STUDENT';
@@ -26,7 +26,7 @@ export const createNotesBaseApi = <TList>(role: Role): NotesBaseApi<TList> => {
 
   return {
     async getNotes({ studyRoomId, pageable }) {
-      const res = await authApi.get<CommonResponse<TList>>(
+      const res = await api.private.get<CommonResponse<TList>>(
         `${roomPath(studyRoomId)}/teaching-notes`,
         { params: pageable }
       );
@@ -34,7 +34,7 @@ export const createNotesBaseApi = <TList>(role: Role): NotesBaseApi<TList> => {
     },
 
     async getNotesByGroup({ studyRoomId, teachingNoteGroupId, pageable }) {
-      const res = await authApi.get<CommonResponse<TList>>(
+      const res = await api.private.get<CommonResponse<TList>>(
         `${roomPath(studyRoomId)}/teaching-note-groups/${teachingNoteGroupId}/teaching-notes`,
         { params: pageable }
       );
@@ -42,7 +42,7 @@ export const createNotesBaseApi = <TList>(role: Role): NotesBaseApi<TList> => {
     },
 
     async getDetail(teachingNoteId) {
-      const res = await authApi.get<CommonResponse<StudyNoteDetails>>(
+      const res = await api.private.get<CommonResponse<StudyNoteDetails>>(
         `/public/teaching-notes/${teachingNoteId}`
       );
       return res.data;

@@ -7,7 +7,7 @@ import {
 } from '@/entities/member';
 import { LoginBody } from '@/features/auth/types';
 import { useSession } from '@/providers';
-import { authBffApi } from '@/shared/api';
+import { api } from '@/shared/api';
 import { useMemberStore } from '@/store';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -15,7 +15,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 export const useLogin = () => {
   const queryClient = useQueryClient();
   const loginRequest = async (body: LoginBody) => {
-    return await authBffApi.post('/api/v1/auth/login', body, {
+    return await api.bff.client.post('/api/v1/auth/login', body, {
       withCredentials: true,
     });
   };

@@ -3,7 +3,7 @@ import type {
   StudyNote,
   StudyNoteMemberResponse,
 } from '@/features/study-notes/model';
-import { authApi } from '@/shared/api';
+import { api } from '@/shared/api';
 import type { PaginationData } from '@/types/http';
 
 export interface TeacherNotesApi
@@ -38,24 +38,27 @@ export const createTeacherNotesApi = (): TeacherNotesApi => ({
   ...createNotesBaseApi<TeacherListResp>('ROLE_TEACHER'),
 
   async getMembers({ studyRoomId, page = 0, size = 20 }) {
-    return authApi.get(`/teacher/study-rooms/${studyRoomId}/members`, {
+    return api.private.get(`/teacher/study-rooms/${studyRoomId}/members`, {
       params: { page, size },
     });
   },
 
   update(args) {
-    return authApi.put(`/teacher/teaching-notes/${args.teachingNoteId}`, args);
+    return api.private.put(
+      `/teacher/teaching-notes/${args.teachingNoteId}`,
+      args
+    );
   },
 
   moveToGroup({ studyNoteId, groupId, studyRoomId }) {
-    return authApi.put(
+    return api.private.put(
       `/teacher/study-rooms/${studyRoomId}/teaching-notes/${studyNoteId}/group`,
       { groupId }
     );
   },
 
   removeFromGroup({ studyNoteId }) {
-    return authApi.delete(
+    return api.private.delete(
       `/teacher/teaching-notes/${studyNoteId}/teaching-note-groups`
     );
   },

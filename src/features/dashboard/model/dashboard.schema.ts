@@ -1,26 +1,30 @@
+import { member } from '@/entities/member';
+import { note } from '@/entities/study-note';
+import { room } from '@/entities/study-room';
 import { z } from 'zod';
 
-import { dto } from '../infrastructure';
-
 /* ─────────────────────────────────────────────────────
- * 스터디 노트 도메인 스키마
+ * BFF에서 프론트로 내려줄 대시보드 전용 멤버 스키마
  * ────────────────────────────────────────────────────*/
-const NoteDomainSchema = z.object({
-  id: z.number().int(),
-  studyRoomId: z.number().int(),
-  teachingNoteGroupId: z.number().int(),
-  title: z.string(),
-  content: z.string(),
-  visibility: dto.visibility,
-  taughtAt: z.string().datetime(),
-  updatedAt: z.string().datetime().optional(),
-  studentIds: z.array(z.number().int()).optional(),
-  imageIds: z.array(z.string()).optional(),
+const DashboardMemberSchema = member.domain.shape.pick({
+  id: true,
+  role: true,
+  name: true,
 });
 
 /* ─────────────────────────────────────────────────────
- * 내보내기
+ * BFF에서 내려줄 최종 Dashboard 응답 형태
+ * member: 로그인한 사용자 요약
+ * rooms: 최신 스터디룸 n개 (도메인 Room)
+ * notes: 최신 노트 n개 (도메인 Note)
  * ────────────────────────────────────────────────────*/
+const DashboardSchema = z.object({
+  member: DashboardMemberSchema,
+  rooms: room.domain.base.array(),
+  notes: note.domain.schema.array(),
+});
+
 export const domain = {
-  schema: NoteDomainSchema,
+  schema: DashboardSchema,
+  member: DashboardMemberSchema,
 };

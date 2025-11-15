@@ -1,4 +1,4 @@
-import { authApi } from '@/shared/api';
+import { api } from '@/shared/api';
 import { CommonResponse, Pageable, PaginationMeta } from '@/types/http';
 
 import { QnADetailResponse, QnAListItem } from '../types';
@@ -10,7 +10,7 @@ export const writeQnA = async (args: {
   content: string;
 }) => {
   const data = { title: args.title, content: args.content };
-  await authApi.post(`/study-rooms/${args.studyRoomId}/qna`, data);
+  await api.private.post(`/study-rooms/${args.studyRoomId}/qna`, data);
 };
 
 // POST /api/study-rooms/{studyRoomId}/qna/{contextId}/messages - 학생 추가 질문
@@ -19,7 +19,7 @@ export const writeStudentQnAMessage = async (args: {
   contextId: number;
   content: string;
 }) => {
-  await authApi.post(
+  await api.private.post(
     `/study-rooms/${args.studyRoomId}/qna/${args.contextId}/messages`,
     { content: args.content }
   );
@@ -31,7 +31,7 @@ export const writeTeacherQnAMessage = async (args: {
   contextId: number;
   content: string;
 }) => {
-  await authApi.post(
+  await api.private.post(
     `/teacher/study-rooms/${args.studyRoomId}/qna/${args.contextId}/answers`,
     {
       content: args.content,
@@ -46,7 +46,7 @@ export const getStudentQnAList = async (args: {
   status?: string;
   sort?: string;
 }) => {
-  const response = await authApi.get<
+  const response = await api.private.get<
     CommonResponse<PaginationMeta & { content: QnAListItem[] }>
   >(`/study-rooms/${args.studyRoomId}/qna`, {
     params: {
@@ -65,7 +65,7 @@ export const getStudentQnADetail = async (args: {
   studyRoomId: number;
   contextId: number;
 }) => {
-  const response = await authApi.get<CommonResponse<QnADetailResponse>>(
+  const response = await api.private.get<CommonResponse<QnADetailResponse>>(
     `/study-rooms/${args.studyRoomId}/qna/${args.contextId}`
   );
 
@@ -79,7 +79,7 @@ export const getTeacherQnAList = async (args: {
   status?: string;
   sort?: string;
 }) => {
-  const response = await authApi.get<
+  const response = await api.private.get<
     CommonResponse<PaginationMeta & { content: QnAListItem[] }>
   >(`/teacher/study-rooms/${args.studyRoomId}/qna`, {
     params: {
@@ -98,7 +98,7 @@ export const getTeacherQnADetail = async (args: {
   studyRoomId: number;
   contextId: number;
 }) => {
-  const response = await authApi.get<CommonResponse<QnADetailResponse>>(
+  const response = await api.private.get<CommonResponse<QnADetailResponse>>(
     `/teacher/study-rooms/${args.studyRoomId}/qna/${args.contextId}`
   );
 

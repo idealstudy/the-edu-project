@@ -1,5 +1,5 @@
 import { MemberDTO } from '@/entities/member';
-import { authApi, authBffApi } from '@/shared/api';
+import { api } from '@/shared/api';
 import { CommonResponse } from '@/types/http';
 import axios from 'axios';
 
@@ -12,11 +12,9 @@ import { adapters } from './member.adapters';
  * ────────────────────────────────────────────────────*/
 const getCurrentMember = async (): Promise<MemberDTO | null> => {
   try {
-    const response = await authBffApi.get<CommonResponse<MemberDTO>>(
+    const response = await api.bff.client.get<CommonResponse<MemberDTO>>(
       '/api/v1/member/info'
     );
-    // console.log('raw keys:', Object.keys(response));
-    // console.log('member data:', response.data);
     const validatedResponse = adapters.fromApi.parse(response);
     return factory.member.create(validatedResponse.data);
   } catch (error: unknown) {
@@ -34,7 +32,7 @@ const getCurrentMember = async (): Promise<MemberDTO | null> => {
  * useAuth의 useLogout에서 mutationFn으로 사용
  * ────────────────────────────────────────────────────*/
 const logout = async (): Promise<void> => {
-  return authApi.post('/auth/logout');
+  return api.private.post('/auth/logout');
 };
 
 /* ─────────────────────────────────────────────────────

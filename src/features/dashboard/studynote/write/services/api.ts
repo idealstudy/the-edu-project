@@ -1,4 +1,4 @@
-import { authApi } from '@/shared/api';
+import { api } from '@/shared/api';
 import { CommonResponse, PaginationMeta } from '@/types/http';
 
 import {
@@ -9,14 +9,14 @@ import {
 } from '../type';
 
 export const getStudyRooms = async () => {
-  const response = await authApi.get<CommonResponse<StudyRoom[]>>(
+  const response = await api.private.get<CommonResponse<StudyRoom[]>>(
     '/teacher/study-rooms'
   );
   return response.data;
 };
 
 export const getConnectMembers = async (roomId: number) => {
-  const response = await authApi.get<
+  const response = await api.private.get<
     CommonResponse<
       PaginationMeta & {
         members: {
@@ -31,13 +31,13 @@ export const getConnectMembers = async (roomId: number) => {
 };
 
 export const writeStudyNote = async (data: StudyNote) => {
-  await authApi.post('/teacher/teaching-notes', data);
+  await api.private.post('/teacher/teaching-notes', data);
 };
 
 export const getStudyNoteGroups = async (roomId: number) => {
-  const response = await authApi.get<CommonResponse<StudyNoteGroupResponse>>(
-    `teacher/study-rooms/${roomId}/teaching-note-groups`
-  );
+  const response = await api.private.get<
+    CommonResponse<StudyNoteGroupResponse>
+  >(`teacher/study-rooms/${roomId}/teaching-note-groups`);
 
   return response.data;
 };
@@ -46,7 +46,7 @@ export const createStudyNoteGroup = async (data: {
   studyRoomId: number;
   title: string;
 }) => {
-  const response = await authApi.post<
+  const response = await api.private.post<
     CommonResponse<{
       id: number;
       title: string;

@@ -1,11 +1,16 @@
 import { getDisplayName } from '@/entities/member';
 import { z } from 'zod';
 
-import { member } from '../schema';
+import { base } from '../schema';
 
 const toUndef = (v: unknown) => (v === null ? undefined : v);
 
-const MemberSchema = member.schema
+/* ─────────────────────────────────────────────────────
+ * base 스키마를 가공하여 도메인 기본 구조 생성
+ * - password 제거
+ * - nullable / undefined를 기본값으로 정리
+ * ────────────────────────────────────────────────────*/
+const MemberShape = base.schema
   .omit({ password: true })
   .partial()
   .required({ id: true, email: true, role: true })
@@ -18,16 +23,21 @@ const MemberSchema = member.schema
     acceptOptionalTerm: z.preprocess(toUndef, z.boolean().default(false)),
     regDate: z.preprocess(toUndef, z.string().default('')),
     modDate: z.preprocess(toUndef, z.string().default('')),
-  })
-  .transform((m) => ({
-    ...m,
-    displayName: getDisplayName(
-      { email: m.email, name: m.name, nickname: m.nickname },
-      '안녕하세요'
-    ),
-  }));
+  });
+
+/* ─────────────────────────────────────────────────────
+ * shape에 transform 추가하여 displayName 생성(추가생성 가능)
+ * ────────────────────────────────────────────────────*/
+const MemberSchema = MemberShape.transform((member) => ({
+  ...member,
+  name: getDisplayName(
+    { email: member.email, name: member.name, nickname: member.nickname },
+    '안녕하세요'
+  ),
+}));
 
 export const domain = {
-  member: MemberSchema,
-  role: member.role,
+  schema: MemberSchema,
+  shape: MemberShape,
+  role: base.role,
 };

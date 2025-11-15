@@ -1,11 +1,11 @@
-import { authApi } from '@/shared/api';
+import { api } from '@/shared/api';
 
 import { ConnectionListRequestParams, ConnectionListResponse } from '../type';
 
 export const getConnectionList = async (
   params: ConnectionListRequestParams
 ) => {
-  return await authApi.get<ConnectionListResponse>('/connections', {
+  return await api.private.get<ConnectionListResponse>('/connections', {
     params,
   });
 };

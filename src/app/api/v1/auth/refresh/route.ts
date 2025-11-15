@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { applySetCookies, serverEnv } from '@/shared/lib';
+import { serverEnv } from '@/shared/constants/api';
+import { applySetCookies } from '@/shared/lib';
 
 export async function GET(request: NextRequest) {
   const cookieHeader = request.headers.get('cookie');
