@@ -1,2 +1,2 @@
-export type * from './types';
-export * from './base';
+export * from './types';
+export { queryConfig } from './base';

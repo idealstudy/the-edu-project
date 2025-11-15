@@ -2,7 +2,7 @@ import {
   StudentNotesApi,
   createNotesListQueryOptions,
 } from '@/features/study-notes/api';
-import { BaseQueryOptions } from '@/shared/lib/query';
+import { BaseQueryOptions } from '@/shared/lib/query/types';
 
 export type StudentQueryOptions = ReturnType<
   typeof createStudentNoteQueryOptions
