@@ -1,77 +1,86 @@
-import {
-  InviteFailItemSchema,
-  InviteSuccessItemSchema,
-  RoomMemberPageSchema,
-  StudentRoomListItemSchema,
-  StudyRoomInviteRespondDataSchema,
-  StudyRoomSearchInviteeDataSchema,
-  TeacherRoomCUDResponseDataSchema,
-  TeacherRoomDetailSchema,
-  TeacherRoomListItemSchema,
-} from '@/entities/study-room/infrastructure/room.dto.schema';
 import { sharedSchema } from '@/types';
 import { z } from 'zod';
 
+// import { base } from '../infrastructure/room.base.schema';
+import { dto } from '../infrastructure/room.dto.schema';
+
 // 선생님 - 목록
-export const RoomListResponseAdapter = sharedSchema.response(
-  z.array(TeacherRoomListItemSchema)
+const RoomListResponseAdapter = sharedSchema.response(
+  z.array(dto.teacher.listItem)
 );
 
 // 선생님 - 상세
-export const RoomDetailResponseAdapter = sharedSchema.response(
-  TeacherRoomDetailSchema
-);
+const RoomDetailResponseAdapter = sharedSchema.response(dto.teacher.detail);
 
 // 선생님 - 생성/수정 응답
-export const RoomCUDResponseAdapter = sharedSchema.response(
-  TeacherRoomCUDResponseDataSchema
-);
+const RoomCUDResponseAdapter = sharedSchema.response(dto.teacher.cuResponse);
 
 // 선생님 - 삭제
-export const RoomDeleteResponseAdapter = sharedSchema.response(
-  sharedSchema.empty
-);
+const RoomDeleteResponseAdapter = sharedSchema.response(sharedSchema.empty);
 
 // 선생님 - 멤버 목록
-export const RoomMemberListResponseAdapter =
-  sharedSchema.response(RoomMemberPageSchema);
+const RoomMemberListResponseAdapter = sharedSchema.response(
+  dto.teacher.memberPage
+);
 
 // 선생님 - 초대 결과
-export const InviteMembersResponseAdapter = sharedSchema.response(
+const InviteMembersResponseAdapter = sharedSchema.response(
   z.object({
-    successEmailList: z.array(InviteSuccessItemSchema),
-    failEmailList: z.array(InviteFailItemSchema),
+    successEmailList: z.array(dto.teacher.inviteSuccess),
+    failEmailList: z.array(dto.teacher.inviteFail).optional(),
   })
+);
+
+/* ─────────────────────────────────────────────────────
+ * 선생님 - 초대 대상 검색
+ * ────────────────────────────────────────────────────*/
+const StudyRoomSearchInviteeResponseAdapter = sharedSchema.response(
+  dto.search.invitee
 );
 
 /* ─────────────────────────────────────────────────────
  * 선생님 - 멤버 다건 삭제 (DELETE /api/teacher/study-rooms/{id}/members)
  * 단건 삭제 (DELETE /api/teacher/study-rooms/{id}/members/{studentId})
  * ────────────────────────────────────────────────────*/
-export const RoomMembersBulkDeleteResponseSchema = sharedSchema.response(
+const RoomMembersBulkDeleteResponseSchema = sharedSchema.response(
   sharedSchema.empty
 );
-export const RoomMemberDeleteResponseSchema = sharedSchema.response(
+const RoomMemberDeleteResponseSchema = sharedSchema.response(
   sharedSchema.empty
 );
 
 /* ─────────────────────────────────────────────────────
  * 학생 - 스터디룸 목록 (GET /api/student/study-rooms)
  * ────────────────────────────────────────────────────*/
-export const StudentRoomListResponseAdapter = sharedSchema.response(
-  z.array(StudentRoomListItemSchema)
+const StudentRoomListResponseAdapter = sharedSchema.response(
+  z.array(dto.student.listItem)
 );
 
 /* ─────────────────────────────────────────────────────
  * 학생 - 초대 응답
  * ────────────────────────────────────────────────────*/
-export const StudyRoomInviteRespondResponseAdapter = sharedSchema.response(
-  StudyRoomInviteRespondDataSchema
+const StudyRoomInviteRespondResponseAdapter = sharedSchema.response(
+  dto.student.inviteRespond
 );
 
-/* ─────────────────────────────────────────────────────
- * 선생님 - 초대 대상 검색
- * ────────────────────────────────────────────────────*/
-export const StudyRoomSearchInviteeResponseAdapter = sharedSchema.response(
-  StudyRoomSearchInviteeDataSchema
-);
+const teacher = {
+  list: RoomListResponseAdapter,
+  detail: RoomDetailResponseAdapter,
+  cu: RoomCUDResponseAdapter,
+  remove: RoomDeleteResponseAdapter,
+  members: RoomMemberListResponseAdapter,
+  invite: InviteMembersResponseAdapter,
+  removeMembers: RoomMembersBulkDeleteResponseSchema,
+  removeMember: RoomMemberDeleteResponseSchema,
+  searchInvitee: StudyRoomSearchInviteeResponseAdapter,
+};
+
+const student = {
+  list: StudentRoomListResponseAdapter,
+  invite: StudyRoomInviteRespondResponseAdapter,
+};
+
+export const adapters = {
+  teacher,
+  student,
+};

@@ -1,6 +1,7 @@
-import { NoteDomainSchema } from '@/entities/study-note/core/note.domain.schema';
-import { dto } from '@/entities/study-note/infrastructure';
 import { z } from 'zod';
+
+import { domain } from '../core/note.domain.schema';
+import { dto } from '../infrastructure/note.dto.schema';
 
 /* ─────────────────────────────────────────────────────
  * DTO
@@ -15,4 +16,4 @@ export type NoteDetail = z.infer<typeof dto.detail>;
 /* ─────────────────────────────────────────────────────
  * 도메인
  * ────────────────────────────────────────────────────*/
-export type NoteDomain = z.infer<typeof NoteDomainSchema>;
+export type NoteDomain = z.infer<typeof domain.schema>;

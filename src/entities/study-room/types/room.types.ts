@@ -1,59 +1,56 @@
-import {
-  RoomDomainSchema,
-  StudentRoomDomainSchema,
-  TeacherRoomDetailDomainSchema,
-} from '@/entities/study-room/core/room.domain.schema';
-import {
-  RoomClassFormSchema,
-  RoomDtoSchema,
-  RoomMemberPageSchema,
-  RoomModalitySchema,
-  RoomSubjectSchema,
-  RoomVisibilitySchema,
-  SchoolLevelSchema,
-  StudentRoomListItemSchema,
-  TeacherRoomCUDResponseDataSchema,
-  TeacherRoomCURequestSchema,
-  TeacherRoomDetailSchema,
-  TeacherRoomListItemSchema,
-} from '@/entities/study-room/infrastructure/room.dto.schema';
 import { z } from 'zod';
+
+import { domain } from '../core/room.domain.schema';
+import { base } from '../infrastructure/room.base.schema';
+import { dto } from '../infrastructure/room.dto.schema';
 
 /* ─────────────────────────────────────────────────────
  * DTO - 공통 타입
  * ────────────────────────────────────────────────────*/
-export type RoomDTO = z.infer<typeof RoomDtoSchema>;
-export type RoomVisibilityDTO = z.infer<typeof RoomVisibilitySchema>;
-export type RoomModalityDTO = z.infer<typeof RoomModalitySchema>;
-export type RoomClassFormDTO = z.infer<typeof RoomClassFormSchema>;
-export type RoomSchoolLevelDTO = z.infer<typeof SchoolLevelSchema>;
-export type RoomSubjectDTO = z.infer<typeof RoomSubjectSchema>;
+export type RoomDTO = z.infer<typeof base.schema>;
+export type RoomVisibilityDTO = z.infer<typeof base.visibility>;
+export type RoomModalityDTO = z.infer<typeof base.modality>;
+export type RoomClassFormDTO = z.infer<typeof base.classForm>;
+export type RoomSchoolLevelDTO = z.infer<typeof base.schoolInfo>;
+export type RoomSubjectDTO = z.infer<typeof base.subject>;
 
 /* ─────────────────────────────────────────────────────
  * DTO - 선생님 타입
  * ────────────────────────────────────────────────────*/
-export type TeacherRoomListItemDTO = z.infer<typeof TeacherRoomListItemSchema>;
-export type TeacherRoomDetailDTO = z.infer<typeof TeacherRoomDetailSchema>;
-export type TeacherRoomCUReqDTO = z.infer<typeof TeacherRoomCURequestSchema>;
-export type TeacherRoomCUDResDTO = z.infer<
-  typeof TeacherRoomCUDResponseDataSchema
->;
+export type TeacherRoomListItemDTO = z.infer<typeof dto.teacher.listItem>;
+export type TeacherRoomDetailDTO = z.infer<typeof dto.teacher.detail>;
+export type TeacherRoomCUReqDTO = z.infer<typeof dto.teacher.cuRequest>;
+export type TeacherRoomCUDResDTO = z.infer<typeof dto.teacher.cuResponse>;
+export type RoomMemberPageDTO = z.infer<typeof dto.teacher.memberPage>;
 
 /* ─────────────────────────────────────────────────────
  * DTO - 학생 타입
  * ────────────────────────────────────────────────────*/
-export type StudentRoomListItemDTO = z.infer<typeof StudentRoomListItemSchema>;
-export type RoomMemberPageDTO = z.infer<typeof RoomMemberPageSchema>;
+export type StudentRoomListItemDTO = z.infer<typeof dto.student.listItem>;
 
 /* ─────────────────────────────────────────────────────
- * domain 타입
- * Room: 개별 스터디룸 도메인 타입
- * RoomList: 스터디룸 리스트 도메인 타입 (Room 도메인 객체의 배열)
- * StudentRoom: 개별 학생용 스터디룸 도메인 타입
- * StudentRoomList: 개별 학생용 스터디룸 리스트 도메인 타입
+ * 도메인 타입 정의 (Domain Layer)
+ * Room              : 스터디룸의 공통 도메인 객체 (teacher/student 공통 필드)
+ * RoomList          : Room[] 리스트
+ *
+ * TeacherRoom       : 선생님용 스터디룸 도메인 객체
+ * TeacherRoomList   : 선생님용 스터디룸 리스트(목록)
+ * TeacherRoomDetail : 선생님 스터디룸 상세 도메인
+ *
+ * StudentRoom       : 학생용 스터디룸 도메인 객체
+ * StudentRoomList   : 학생용 스터디룸 리스트(목록)
+ * StudentRoomDetail : 학생 스터디룸 상세 도메인
+ *
+ * RoomsDomain       : Room 리스트의 총합 타입
+ *                     (TeacherRoomList | StudentRoomList)
+ *                     대시보드 등 역할 구분 없이 처리할 때 사용
  * ────────────────────────────────────────────────────*/
-export type Room = z.infer<typeof RoomDomainSchema>;
+export type Room = z.infer<typeof domain.base>;
 export type RoomList = Room[];
-export type StudentRoom = z.infer<typeof StudentRoomDomainSchema>;
+export type TeacherRoom = z.infer<typeof domain.teacher.list>;
+export type TeacherRoomList = TeacherRoom[];
+export type TeacherRoomDetail = z.infer<typeof domain.teacher.detail>;
+export type StudentRoom = z.infer<typeof domain.student.list>;
 export type StudentRoomList = StudentRoom[];
-export type TeacherRoomDetail = z.infer<typeof TeacherRoomDetailDomainSchema>;
+export type StudentRoomDetail = z.infer<typeof domain.student.detail>;
+export type RoomsDomain = TeacherRoomList | StudentRoomList;

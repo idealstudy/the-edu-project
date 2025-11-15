@@ -1,16 +1,21 @@
+import { sharedSchema } from '@/types';
 import { z } from 'zod';
 
-import { member } from '../schema';
+import { base } from '../schema';
 
-const MemberDtoSchema = member.schema;
+/* ─────────────────────────────────────────────────────
+ * api 응답(DTO 객체)
+ * ────────────────────────────────────────────────────*/
+const MemberDtoSchema = base.schema;
 
-// api 응답(envelope 포함) + 도메인으로 변환(.transform)
-const MemberEnvelopeSchema = z.object({
-  status: z.number(),
-  message: z.string().optional(),
-  data: MemberDtoSchema,
-});
+/* ─────────────────────────────────────────────────────
+ * api 응답(envelope 포함)
+ * ────────────────────────────────────────────────────*/
+const MemberEnvelopeSchema = sharedSchema.response(MemberDtoSchema);
 
+/* ─────────────────────────────────────────────────────
+ * 도메인으로 변환(.transform)
+ * ────────────────────────────────────────────────────*/
 const MemberAnyResponseSchema = z
   .union([MemberDtoSchema, MemberEnvelopeSchema])
   .nullable()
@@ -20,9 +25,8 @@ const MemberAnyResponseSchema = z
   });
 
 export const dto = {
-  member: {
-    schema: MemberDtoSchema,
-    response: MemberAnyResponseSchema,
-    role: member.role,
-  },
+  schema: MemberDtoSchema,
+  envelope: MemberEnvelopeSchema,
+  response: MemberAnyResponseSchema,
+  role: base.role,
 };

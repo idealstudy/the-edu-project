@@ -2,7 +2,7 @@ import {
   StudentStudyRoomRequests,
   StudyRoomsQueryKey,
 } from '@/features/study-rooms/api';
-import { BaseQueryOptions, DEFAULT_QUERY_OPTION } from '@/shared/lib/query';
+import { BaseQueryOptions, queryConfig } from '@/shared/lib/query';
 import { queryOptions } from '@tanstack/react-query';
 
 import type { StudentStudyRoom } from '../model/types';
@@ -15,7 +15,7 @@ export const createStudentStudyRoomQueryOptions = (
   api: StudentStudyRoomRequests,
   qOpt: BaseQueryOptions = {}
 ) => {
-  const opt = { ...DEFAULT_QUERY_OPTION, ...qOpt };
+  const opt = { ...queryConfig.DEFAULT_QUERY_OPTION, ...qOpt };
   const studentList = () =>
     queryOptions<StudentStudyRoom[]>({
       queryKey: StudyRoomsQueryKey.studentList,

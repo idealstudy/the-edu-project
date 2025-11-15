@@ -1,5 +1,5 @@
 import { server } from '@/mocks/node';
-import { env } from '@/shared/lib';
+import { env } from '@/shared/constants/api';
 import { HttpResponse, http } from 'msw';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 

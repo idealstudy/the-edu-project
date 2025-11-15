@@ -11,7 +11,7 @@ type CreateMemberInput = Partial<MemberDTO> &
  * 도메인 Member - 프론트 전용 멤버(표시 필드 포함)
  * ────────────────────────────────────────────────────*/
 const createFrontendMember = (raw: CreateMemberInput) => {
-  return domain.member.parse(raw);
+  return domain.schema.parse(raw);
 };
 
 export const factory = {

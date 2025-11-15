@@ -8,7 +8,7 @@ import type {
   StudyRoomClient,
 } from '@/features/study-rooms/model';
 import { StudyRoomFormValues } from '@/features/study-rooms/model/room.create.schema';
-import { authApi } from '@/shared/api';
+import { api } from '@/shared/api';
 import { Pageable, PaginationData } from '@/types/http';
 
 type GroupListResponse = PaginationData<StudyNoteGroup>;
@@ -58,7 +58,9 @@ export interface StudyRoomRequests {
   ): Promise<InvitationAcceptResponse>;
 }
 
-export const createStudyRoomBaseApi = (client: StudyRoomClient = authApi) => ({
+export const createStudyRoomBaseApi = (
+  client: StudyRoomClient = api.private
+) => ({
   client,
   teacherBasePath: '/teacher/study-rooms',
   studentBasePath: '/student/study-rooms',

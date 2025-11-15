@@ -1,4 +1,4 @@
-import type { MemberDTO } from '@/entities/member/types/member.types';
+import type { MemberDTO } from '../types';
 
 const localPart = (email: string) => email.split('@')[0];
 

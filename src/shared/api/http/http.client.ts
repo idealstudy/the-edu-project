@@ -1,6 +1,6 @@
 import type { AxiosInstance } from 'axios';
 
-import { authBffHttp, authHttp, publicHttp } from './http.transport';
+import { http } from './http.transport';
 
 // HTTP 요청 래퍼
 const createApi = (httpInstance: AxiosInstance) => ({
@@ -22,10 +22,20 @@ const createApi = (httpInstance: AxiosInstance) => ({
 });
 
 // NOTE: publicApi - 비로그인 상태에서도 호출 가능한 API
-export const publicApi = createApi(publicHttp);
+const publicApi = createApi(http.public);
 
 // NOTE: authApi - 로그인(인증 쿠키) 필요 API
-export const authApi = createApi(authHttp);
+const privateApi = createApi(http.private);
 
 // NOTE: BFF 전용
-export const authBffApi = createApi(authBffHttp);
+const clientToBffApi = createApi(http.bff.client);
+
+const serverToBffApi = createApi(http.bff.server);
+
+const bff = { client: clientToBffApi, server: serverToBffApi };
+
+export const api = {
+  public: publicApi,
+  private: privateApi,
+  bff,
+};

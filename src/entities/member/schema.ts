@@ -24,7 +24,7 @@ const MemberSchema = z.object({
   modDate: z.string().optional().nullable(),
 });
 
-export const member = {
+export const base = {
   role: MemberRoleSchema,
   schema: MemberSchema,
 };

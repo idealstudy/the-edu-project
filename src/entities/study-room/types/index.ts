@@ -3,10 +3,14 @@
  * ────────────────────────────────────────────────────*/
 export type {
   Room,
+  RoomList,
+  TeacherRoom,
+  TeacherRoomList,
   TeacherRoomDetail,
   StudentRoom,
-  RoomList,
   StudentRoomList,
+  StudentRoomDetail,
+  RoomsDomain,
 } from './room.types';
 
 /* ─────────────────────────────────────────────────────

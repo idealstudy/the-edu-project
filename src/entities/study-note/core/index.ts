@@ -1,4 +1,4 @@
 /* ─────────────────────────────────────────────────────
  * domain
  * ────────────────────────────────────────────────────*/
-export { NoteDomainSchema } from './note.domain.schema';
+export { domain } from './note.domain.schema';

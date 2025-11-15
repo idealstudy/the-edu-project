@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 
 import { POST } from '@/app/api/v1/auth/login/route';
 import { server } from '@/mocks/node';
-import { env } from '@/shared/lib';
+import { env } from '@/shared/constants/api';
 import { HttpResponse, http } from 'msw';
 import {
   afterAll,

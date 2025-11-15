@@ -31,7 +31,7 @@ const NoteDetailAdapter = sharedSchema.response(dto.detail);
 export const adapters = {
   create: NoteCreateAdapter,
   delete: NoteDeleteAdapter,
+  list: NoteListDataAdapter,
   listItem: NoteListAdapter,
-  listData: NoteListDataAdapter,
   details: NoteDetailAdapter,
 };

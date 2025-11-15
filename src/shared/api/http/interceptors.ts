@@ -1,6 +1,8 @@
-import { authHttp, ensureRefreshSession } from '@/shared/api';
+import { ensureRefreshSession } from '@/shared/api';
 import { AuthError, ForbiddenError } from '@/shared/lib/error';
 import { AxiosError, InternalAxiosRequestConfig } from 'axios';
+
+import { http } from './http.transport';
 
 type RetryableConfig = InternalAxiosRequestConfig & { _retry?: boolean };
 
@@ -31,14 +33,14 @@ function markRetry(cfg: RetryableConfig) {
 }
 
 export const installHttpInterceptors = () => {
-  const requestId = authHttp.interceptors.request.use(
+  const requestId = http.private.interceptors.request.use(
     (config) => {
       return config;
     },
     (error) => Promise.reject(error)
   );
 
-  const responseId = authHttp.interceptors.response.use(
+  const responseId = http.private.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
       const cfg = (error.config || {}) as RetryableConfig;
@@ -59,7 +61,7 @@ export const installHttpInterceptors = () => {
 
       try {
         await ensureRefreshSession();
-        return authHttp(markRetry(cfg));
+        return http.private(markRetry(cfg));
       } catch {
         throw new AuthError('세션이 만료되었습니다.');
       }
@@ -67,7 +69,7 @@ export const installHttpInterceptors = () => {
   );
 
   return () => {
-    authHttp.interceptors.request.eject(requestId);
-    authHttp.interceptors.response.eject(responseId);
+    http.private.interceptors.request.eject(requestId);
+    http.private.interceptors.response.eject(responseId);
   };
 };
