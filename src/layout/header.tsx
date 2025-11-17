@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
+import { NotificationPopover } from '@/features/notifications/components/notification-popover';
 // import { useLogoutMutation } from '@/features/auth/services/query';
 
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
@@ -102,13 +103,14 @@ export const Header = () => {
         </div>
         {session && (
           <div className="flex items-center">
-            <Image
+            {/* <Image
               src={'/img_header_bell.svg'}
               alt="알림 벨 아이콘"
               width={24}
               height={24}
               className="mr-8 cursor-pointer"
-            />
+            /> */}
+            <NotificationPopover />
 
             <DropdownMenu>
               <DropdownMenu.Trigger className="flex cursor-pointer items-center justify-center">
