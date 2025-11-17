@@ -32,7 +32,7 @@ const getCurrentMember = async (): Promise<MemberDTO | null> => {
  * useAuth의 useLogout에서 mutationFn으로 사용
  * ────────────────────────────────────────────────────*/
 const logout = async (): Promise<void> => {
-  return api.private.post('/auth/logout');
+  return api.bff.client.post('/api/v1/auth/logout');
 };
 
 /* ─────────────────────────────────────────────────────

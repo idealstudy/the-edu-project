@@ -30,8 +30,16 @@ export const createSessionCookieHeader = (setCookies: string[]): string => {
     .join('; ');
 };
 
+const sanitizeCookieForLocalhost = (cookie: string) => {
+  if (process.env.NODE_ENV === 'production') {
+    return cookie;
+  }
+  // Remove Domain attribute so cookie becomes host-only for localhost.
+  return cookie.replace(/Domain=[^;]+;?\s*/i, '');
+};
+
 export const applySetCookies = (source: Response, target: NextResponse) => {
   collectSetCookies(source).forEach((cookie) => {
-    target.headers.append('Set-Cookie', cookie);
+    target.headers.append('Set-Cookie', sanitizeCookieForLocalhost(cookie));
   });
 };

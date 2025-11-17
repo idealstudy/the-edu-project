@@ -18,12 +18,20 @@ export const Header = () => {
   // const router = useRouter();
   // const { mutate: logout } = useLogoutMutation();
   const { logout } = useAuth();
-  const handleLogout = () => {
-    void logout();
-    // TODO: 세션 유효한지 확인하는 API / Logout API 부재로
-    // window.location 사용 => 추후에 router.replace로 변경
-    window.location.replace(PUBLIC.CORE.INDEX);
-    // router.replace(ROUTE.HOME);
+  const handleLogout = async () => {
+    try {
+      await logout();
+      // TODO: 세션 유효한지 확인하는 API / Logout API 부재로
+      // window.location 사용 => 추후에 router.replace로 변경
+      window.location.replace(PUBLIC.CORE.INDEX);
+      // router.replace(ROUTE.HOME);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : '로그아웃 처리 중 오류가 발생했습니다.';
+      alert(message);
+    }
   };
 
   const roleMetaMap = {
