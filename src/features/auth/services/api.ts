@@ -17,9 +17,9 @@ export const authService = {
     });
   },
   logout: async () => {
-    return api.bff.client.post('/api/v1/auth/logout', {
-      withCredentials: true,
-    });
+logout: async () => {
+  return api.bff.client.post('/api/v1/auth/logout');
+},
   },
   getSession: async () => {
     try {
