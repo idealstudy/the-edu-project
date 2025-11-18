@@ -48,7 +48,7 @@ export const useLogout = () => {
 // 인증 상태, 액션을 제공하는 허브
 export const useAuth = () => {
   const { mutate: login, isPending: isLoggingIn } = useLogin();
-  const { mutateAsync: logout, isPending: isLoggingOut } = useLogout();
+  const { mutate: logout, isPending: isLoggingOut } = useLogout();
   const { member, refresh } = useSession();
   return { member, logout, isLoggingOut, login, isLoggingIn, refresh };
 };
