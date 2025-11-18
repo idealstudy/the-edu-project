@@ -74,7 +74,6 @@ export const RegisterFormContextProvider = ({
       {
         email: form.getValues('email'),
         password: form.getValues('password'),
-        acceptRequiredTerm: isAllRequiredTermsChecked,
         acceptOptionalTerm:
           termsCheckboxGroup.checkedItems.includes('marketing'),
         name: data.name,
