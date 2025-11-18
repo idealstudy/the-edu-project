@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Checkbox } from '@/components/ui/checkbox';
+import { Checkbox } from '@/shared/components/ui/checkbox';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta = {
@@ -24,8 +24,27 @@ export const Checked: Story = {
 };
 
 export const Disabled: Story = {
-  args: {
-    disabled: true,
+  render: () => {
+    return (
+      <Checkbox.Label>
+        <Checkbox disabled />
+        체크박스 텍스트
+      </Checkbox.Label>
+    );
+  },
+};
+
+export const DisabledChecked: Story = {
+  render: () => {
+    return (
+      <Checkbox.Label>
+        <Checkbox
+          checked
+          disabled
+        />
+        체크박스 텍스트
+      </Checkbox.Label>
+    );
   },
 };
 
@@ -34,7 +53,18 @@ export const WithLabel: Story = {
     return (
       <Checkbox.Label>
         <Checkbox />
-        서비스 이용 약관에 동의합니다.
+        체크박스 텍스트
+      </Checkbox.Label>
+    );
+  },
+};
+
+export const Invalid: Story = {
+  render: () => {
+    return (
+      <Checkbox.Label>
+        <Checkbox aria-invalid />
+        스타일 미구현
       </Checkbox.Label>
     );
   },
@@ -61,15 +91,16 @@ export const Grouped: Story = {
   },
 };
 
-export const Controlled: Story = {
-  render: () => {
-    const [checked, setChecked] = useState<boolean | 'indeterminate'>(false);
+function ControlledDemo() {
+  const [checked, setChecked] = useState<boolean | 'indeterminate'>(false);
+  return (
+    <Checkbox
+      checked={checked}
+      onCheckedChange={setChecked}
+    />
+  );
+}
 
-    return (
-      <Checkbox
-        checked={checked}
-        onCheckedChange={setChecked}
-      />
-    );
-  },
+export const Controlled: Story = {
+  render: () => <ControlledDemo />,
 };

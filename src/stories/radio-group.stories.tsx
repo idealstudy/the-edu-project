@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { RadioGroup } from '@/components/ui/radio-group';
+import { RadioGroup } from '@/shared/components/ui/radio-group';
 import { Meta, StoryObj } from '@storybook/react';
 
 const meta = {
@@ -15,18 +15,6 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: () => {
-    return (
-      <RadioGroup defaultValue="1">
-        <RadioGroup.Item value="1" />
-        <RadioGroup.Item value="2" />
-        <RadioGroup.Item value="3" />
-      </RadioGroup>
-    );
-  },
-};
-
-export const WithLabel: Story = {
   render: () => {
     return (
       <RadioGroup defaultValue="1">
@@ -70,19 +58,35 @@ export const ItemDisabled: Story = {
   },
 };
 
-export const Controlled: Story = {
+export const Invalid: Story = {
   render: () => {
-    const [value, setValue] = useState('1');
-
     return (
       <RadioGroup
-        value={value}
-        onValueChange={setValue}
+        defaultValue="1"
+        aria-invalid
       >
-        <RadioGroup.Option value="1">라디오 옵션 1</RadioGroup.Option>
-        <RadioGroup.Option value="2">라디오 옵션 2</RadioGroup.Option>
-        <RadioGroup.Option value="3">라디오 옵션 3</RadioGroup.Option>
+        <RadioGroup.Option value="1">미구현</RadioGroup.Option>
+        <RadioGroup.Option value="2">미구현</RadioGroup.Option>
+        <RadioGroup.Option value="3">미구현</RadioGroup.Option>
       </RadioGroup>
     );
   },
+};
+
+function ControlledDemo() {
+  const [value, setValue] = useState('1');
+  return (
+    <RadioGroup
+      value={value}
+      onValueChange={setValue}
+    >
+      <RadioGroup.Option value="1">라디오 옵션 1</RadioGroup.Option>
+      <RadioGroup.Option value="2">라디오 옵션 2</RadioGroup.Option>
+      <RadioGroup.Option value="3">라디오 옵션 3</RadioGroup.Option>
+    </RadioGroup>
+  );
+}
+
+export const Controlled: Story = {
+  render: () => <ControlledDemo />,
 };

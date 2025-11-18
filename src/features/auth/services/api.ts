@@ -1,37 +1,44 @@
+import { MemberDTO } from '@/entities/member';
+import { factory } from '@/entities/member/core';
+import { adapters } from '@/entities/member/infrastructure/member.adapters';
 import {
   CheckEmailDuplicateBody,
   LoginBody,
-  LoginResponse,
   SignUpBody,
   VerifyCodeBody,
-} from '@/features/auth/type';
-import { api } from '@/lib/api';
-import { LoginFormValues } from '@/schema/login';
+} from '@/features/auth/types';
+import { api } from '@/shared/api';
+import { CommonResponse } from '@/types';
 
-export const login = async (params: LoginFormValues) => {
-  const response = await api.post<LoginResponse>('/auth/login', params);
-  return response;
-};
-
-export const logout = async () => {
-  const response = await api.post<LoginResponse>('/auth/logout');
-  return response;
-};
-
-export const authApi = {
+export const authService = {
   login: async (body: LoginBody) => {
-    return api.post<LoginResponse>('/auth/login', body);
+    await api.bff.client.post('/api/v1/auth/login', body, {
+      withCredentials: true,
+    });
   },
   logout: async () => {
-    return api.post('/auth/logout');
+    return api.private.post('/auth/logout');
+  },
+  getSession: async () => {
+    try {
+      const response = await api.bff.client.get<CommonResponse<MemberDTO>>(
+        '/api/v1/member/info'
+      );
+      const validatedResponse = adapters.fromApi.parse(response);
+      return factory.member.create(validatedResponse.data);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e: unknown) {
+      // console.error('Session Data Parsing Error:', e);
+      return null;
+    }
   },
   checkEmailDuplicate: async (body: CheckEmailDuplicateBody) => {
-    return api.post('/public/email-verifications/check-duplicate', body);
+    return api.public.post('/public/email-verifications/check-duplicate', body);
   },
   verifyCode: async (body: VerifyCodeBody) => {
-    return api.patch('/public/email-verifications', body);
+    return api.public.post('/public/email-verifications/verify-code', body);
   },
   signUp: async (body: SignUpBody) => {
-    return api.post('/auth/sign-up', body);
+    return api.public.post('/auth/sign-up', body);
   },
 };

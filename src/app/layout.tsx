@@ -1,11 +1,9 @@
-import { Suspense } from 'react';
-
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 
-import { Footer } from '@/components/layout/footer';
-import { Header } from '@/components/layout/header';
-import { GlobalProvider } from '@/providers/global-provider';
+import { Header } from '@/layout/header';
+import { GlobalProvider } from '@/providers';
+import '@/shared/components/editor/styles/text-editor.css';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
@@ -25,13 +23,10 @@ export default function RootLayout({
       className={`${pretendard.variable} font-pretendard`}
     >
       <body className="antialiased">
-        <Suspense fallback={null}>
-          <GlobalProvider>
-            <Header />
-            {children}
-          </GlobalProvider>
-        </Suspense>
-        <Footer />
+        <GlobalProvider>
+          <Header />
+          <div className="mt-header-height flex flex-col">{children}</div>
+        </GlobalProvider>
       </body>
     </html>
   );

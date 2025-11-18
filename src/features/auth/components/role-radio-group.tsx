@@ -1,9 +1,8 @@
 import Image from 'next/image';
 
-import { cn } from '@/lib/utils';
+import { Role } from '@/entities/member';
+import { cn } from '@/shared/lib/utils';
 import { RadioGroup as RadioGroupPrimitives } from 'radix-ui';
-
-import { Role } from '../type';
 
 type RoleRadioGroupItemProps = Omit<
   React.ComponentProps<typeof RadioGroupPrimitives.Item>,
@@ -20,8 +19,8 @@ const RoleRadioGroupItem = ({
   return (
     <RadioGroupPrimitives.Item
       className={cn(
-        'text-dark-gray-03 border-light-gray-03 flex h-[180px] w-[174px] cursor-pointer flex-col items-center justify-center gap-2 border pt-6 pb-3 font-medium',
-        'data-[state=checked]:border-dedu-orange data-[state=checked]:text-dedu-black data-[state=checked]:outline-dedu-orange data-[state=checked]:outline-1',
+        'text-gray-scale-gray-50 border-gray-scale-gray-10 flex h-[180px] w-[174px] cursor-pointer flex-col items-center justify-center gap-2 border pt-6 pb-3 font-medium',
+        'mock-[state=checked]:border-line-primary mock-[state=checked]:text-text-main mock-[state=checked]:outline-key-color-primary mock-[state=checked]:outline-1',
         className
       )}
       {...props}

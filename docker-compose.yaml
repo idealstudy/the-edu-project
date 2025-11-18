@@ -1,0 +1,33 @@
+# TODO 작업중
+version: '3.8'
+
+services:
+  nextjs:
+    image: node:20-alpine
+    container_name: nextjs_dev
+    command: npm run dev
+    working_dir: /app
+
+    volumes:
+      - .:/app
+      - /app/node_modules
+    restart: "no"
+
+  caddy:
+    image: caddy:latest
+    container_name: caddy_proxy
+    ports:
+      - "443:443"
+
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./app.dev.the-edu.site.pem:/etc/caddy/certs/app.dev.the-edu.site.pem
+      - ./app.dev.the-edu.site-key.pem:/etc/caddy/certs/app.dev.the-edu.site-key.pem
+      - caddy_data:/mock
+
+    depends_on:
+      - nextjs
+    restart: always
+
+volumes:
+  caddy_data:

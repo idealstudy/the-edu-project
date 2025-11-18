@@ -4,18 +4,17 @@ import { useForm } from 'react-hook-form';
 
 import Link from 'next/link';
 
-import { ParsedError } from '@/app/error';
-import { Button } from '@/components/ui/button';
-import { Form } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { useLoginMutation } from '@/features/auth/services/query';
-import { parseJson } from '@/lib/utils';
-import { LoginFormValues, loginSchema } from '@/schema/login';
+import { useAuth } from '@/features/auth/hooks/use-auth';
+import { Button } from '@/shared/components/ui/button';
+import { Form } from '@/shared/components/ui/form';
+import { Input } from '@/shared/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
+
+import { LoginFormValues, loginSchema } from '../schemas/login';
 
 const LoginFormtwStyles = {
   wrapper: 'space-y-10 pb-[138px] pt-[42px]',
-  link: 'text-dedu-orange underline mx-auto w-fit',
+  link: 'text-key-color-primary underline mx-auto w-fit',
 };
 
 export default function LoginForm() {
@@ -29,27 +28,20 @@ export default function LoginForm() {
     mode: 'onChange',
   });
 
-  const { mutate, isPending } = useLoginMutation();
+  const { login, isLoggingIn } = useAuth();
 
   const onSubmit = async (data: LoginFormValues) => {
-    mutate(data, {
+    login(data, {
       onError: (error) => {
-        const parsedError = parseJson<ParsedError>(error.message, {
-          name: 'Server Error',
-          statusCode: 500,
-          message: '서버에서 오류가 발생하였습니다.',
-        });
-        const errorMsg = parsedError?.message;
-
         setError('password', {
           type: 'server',
-          message: errorMsg,
+          message: error.message || '서버에서 에러가 발생하였습니다.',
         });
       },
     });
   };
 
-  const isLoading = isPending || isSubmitting;
+  const isLoading = isLoggingIn || isSubmitting;
   const isInValid = Object.keys(errors).length > 0;
 
   return (
