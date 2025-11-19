@@ -4,23 +4,22 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { useDashboardQuery } from '@/features/dashboard';
+import { useTeacherStudyRoomsQuery } from '@/features/study-rooms';
 import { HomeIcon, PlusIcon, SettingIcon } from '@/shared/components/icons';
 import { Sidebar } from '@/shared/components/sidebar';
 import { PRIVATE } from '@/shared/constants/route';
-
-/* ─────────────────────────────────────────────────────
- * 더미 데이터: 실제에선 서버/쿼리로 대체
- * ────────────────────────────────────────────────────*/
-const studyRoomList = [
-  { id: 1, text: '나의 첫 스터디룸...' },
-  { id: 2, text: '은광여고 여름방학 특강반...' },
-  { id: 3, text: '오버플로우 확인용 오버플로우 확인용' },
-];
 
 export const DashboardSidebar = () => {
   // [CRITICAL TODO: API 구현 누락] useDashboardQuery의 데이터(data)를 사용할 수 있도록 백엔드 API 및 바인딩 작업을 즉시 진행해야 합니다.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data, isLoading, isError } = useDashboardQuery();
+
+  /* ─────────────────────────────────────────────────────
+   * TEMPORARY : 현재는 스터디룸 API를 이용하지만 추후 위의 useDashboardQuery 필요 예상
+   * ────────────────────────────────────────────────────*/
+  const { data: studyRoomList } = useTeacherStudyRoomsQuery({
+    enabled: true,
+  });
 
   return (
     <Sidebar>
@@ -45,10 +44,13 @@ export const DashboardSidebar = () => {
       </Sidebar.Header>
 
       <Sidebar.List>
-        {studyRoomList.map((item) => (
+        {studyRoomList?.map((item) => (
           <Sidebar.ListItem
             key={item.id}
-            item={item}
+            item={{
+              id: item.id,
+              text: item.name,
+            }}
           />
         ))}
       </Sidebar.List>

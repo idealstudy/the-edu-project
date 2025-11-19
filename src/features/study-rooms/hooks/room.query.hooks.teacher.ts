@@ -16,6 +16,13 @@ export const createTeacherStudyRoomHooks = (
 ) => {
   const qo = createTeacherStudyRoomQueryOptions(api, base);
 
+  // 스터디룸 목록 조회 (강사용 - 임시: 추후 위의 useDashboardQuery 필요 예상)
+  const useTeacherStudyRoomsQuery = (options?: { enabled?: boolean }) =>
+    useQuery({
+      ...qo.teacherList(),
+      enabled: options?.enabled ?? true,
+    });
+
   // 이메일 초대 검색
   const useSearchInvitation = (args: SearchArgs) =>
     useQuery({
@@ -49,6 +56,7 @@ export const createTeacherStudyRoomHooks = (
   };
 
   return {
+    useTeacherStudyRoomsQuery,
     useSearchInvitation,
     useCreateStudyRoom,
     useSendInvitation,

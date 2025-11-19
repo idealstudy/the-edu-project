@@ -107,6 +107,7 @@ const SidebarItem = ({
 interface BaseSidebarItem {
   id: number;
   text: string;
+  // href는 내부에서 item.id로 자동 생성되므로 필요 없음
 }
 
 interface CommonRoomFields {
@@ -168,6 +169,7 @@ const SidebarList = <TItem extends BaseSidebarItem>({
  * ────────────────────────────────────────────────────*/
 const SidebarListItem = ({ item }: { item: BaseSidebarItem }) => {
   const { pathname } = useSidebarContext();
+  // item.id를 사용해서 자동으로 상세 페이지 경로 생성
   const detailHref = PRIVATE.ROOM.DETAIL(item.id);
   const isActive = pathname === detailHref;
 
