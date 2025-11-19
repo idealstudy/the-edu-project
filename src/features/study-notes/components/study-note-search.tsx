@@ -20,7 +20,7 @@ export const StudyNoteSearch = () => {
     // sessionStorage.setItem('studyroom-id', String(pathName.split('/')[2]));
     try {
       setIsLoading(true);
-      router.push('/dashboard/studynote/write');
+      router.push('/study-note/new');
     } finally {
       if (inputRef.current) {
         inputRef.current.value = '';
