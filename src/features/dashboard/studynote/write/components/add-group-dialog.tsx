@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 
 import { Button } from '@/shared/components/ui/button';
 import { Dialog } from '@/shared/components/ui/dialog';
+import { Prompt } from '@/shared/components/ui/prompt';
 import { TextField } from '@/shared/components/ui/text-field';
 
 import { useCreateNoteGroupMutation } from '../services/query';
@@ -30,11 +31,19 @@ export const AddGroupDialog = ({
   onCreated,
 }: AddGroupDialogProps) => {
   const [name, setName] = useState<string>('');
+  const [showErrorPrompt, setShowErrorPrompt] = useState(false);
   const { mutateAsync, isPending } = useCreateNoteGroupMutation();
 
   const onSave = async () => {
     const title = name.trim();
     if (!title) return;
+
+    // 스터디룸을 선택하지않으면 에러
+    if (!roomId || !Number.isFinite(roomId)) {
+      setShowErrorPrompt(true);
+      return;
+    }
+
     const created = await mutateAsync({ studyRoomId: roomId, title });
     onCreated(created);
     onOpenChange(false);
@@ -42,59 +51,79 @@ export const AddGroupDialog = ({
   };
 
   return (
-    <Dialog
-      isOpen={open}
-      onOpenChange={onOpenChange}
-    >
-      {showTrigger && (
-        <Dialog.Trigger asChild>
-          <Button size="small">열기</Button>
-        </Dialog.Trigger>
-      )}
-      <Dialog.Content
-        className="w-[598px]"
-        aria-describedby={undefined}
+    <>
+      <Dialog
+        isOpen={open}
+        onOpenChange={onOpenChange}
       >
-        <Dialog.Header>
-          <Dialog.Title>수업노트 그룹 추가</Dialog.Title>
-        </Dialog.Header>
-        <Dialog.Body className="mt-6">
-          <TextField
-            description={
-              <TextField.Description>
-                수업노트 그룹으로 여러개의 수업노트를 묶어서 관리할 수 있습니다.
-              </TextField.Description>
-            }
-          >
-            <TextField.Input
-              placeholder="수업노트 그룹 이름을 작성해주세요."
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && onSave()}
-              autoComplete="off"
-            />
-          </TextField>
-        </Dialog.Body>
-        <Dialog.Footer className="mt-6 justify-end">
-          <Dialog.Close asChild>
-            <Button
-              className="w-[120px]"
-              variant="outlined"
-              size="small"
+        {showTrigger && (
+          <Dialog.Trigger asChild>
+            <Button size="small">열기</Button>
+          </Dialog.Trigger>
+        )}
+        <Dialog.Content
+          className="w-[598px]"
+          aria-describedby={undefined}
+        >
+          <Dialog.Header>
+            <Dialog.Title>수업노트 그룹 추가</Dialog.Title>
+          </Dialog.Header>
+          <Dialog.Body className="mt-6">
+            <TextField
+              description={
+                <TextField.Description>
+                  수업노트 그룹으로 여러개의 수업노트를 묶어서 관리할 수
+                  있습니다.
+                </TextField.Description>
+              }
             >
-              취소
+              <TextField.Input
+                placeholder="수업노트 그룹 이름을 작성해주세요."
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && onSave()}
+                autoComplete="off"
+              />
+            </TextField>
+          </Dialog.Body>
+          <Dialog.Footer className="mt-6 justify-end">
+            <Dialog.Close asChild>
+              <Button
+                className="w-[120px]"
+                variant="outlined"
+                size="small"
+              >
+                취소
+              </Button>
+            </Dialog.Close>
+            <Button
+              type="button"
+              size="small"
+              onClick={onSave}
+              disabled={isPending || !name.trim()}
+            >
+              {isPending ? '저장중…' : '저장'}
             </Button>
-          </Dialog.Close>
-          <Button
-            type="button"
-            size="small"
-            onClick={onSave}
-            disabled={isPending || !name.trim()}
-          >
-            {isPending ? '저장중…' : '저장'}
-          </Button>
-        </Dialog.Footer>
-      </Dialog.Content>
-    </Dialog>
+          </Dialog.Footer>
+        </Dialog.Content>
+      </Dialog>
+
+      {/* Alert용 Prompt - 스터디룸 미선택 시 */}
+      <Prompt
+        isOpen={showErrorPrompt}
+        onOpenChange={setShowErrorPrompt}
+      >
+        <Prompt.Content>
+          <Prompt.Header>
+            <Prompt.Title>스터디룸을 먼저 선택해주세요.</Prompt.Title>
+          </Prompt.Header>
+          <Prompt.Footer>
+            <Prompt.Action onClick={() => setShowErrorPrompt(false)}>
+              확인
+            </Prompt.Action>
+          </Prompt.Footer>
+        </Prompt.Content>
+      </Prompt>
+    </>
   );
 };
