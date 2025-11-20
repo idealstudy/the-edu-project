@@ -15,6 +15,19 @@ if (!serverEnv.backendApiUrl) throw new Error('BASE_URL is not defined');
  *
  * 특정 라우트(/api/v1/auth/login 등)가 있으면 해당 라우트가 우선 처리됩니다.
  */
+/**
+ * ROLE_* 값을 API 경로 prefix로 변환
+ * - ROLE_TEACHER → teacher
+ * - ROLE_STUDENT → student
+ */
+function normalizeRoleInPath(segments: string[]): string[] {
+  return segments.map((segment) => {
+    if (segment === 'ROLE_TEACHER') return 'teacher';
+    if (segment === 'ROLE_STUDENT') return 'student';
+    return segment;
+  });
+}
+
 async function handleRequest(
   request: NextRequest,
   context: { params: Promise<{ path: string[] }> }
@@ -23,7 +36,9 @@ async function handleRequest(
   const { searchParams } = request.nextUrl;
   const params = await context.params;
   const pathSegments = params.path;
-  const backendPath = `/${pathSegments.join('/')}`;
+  // ROLE_* 값을 API 경로 prefix로 변환
+  const normalizedSegments = normalizeRoleInPath(pathSegments);
+  const backendPath = `/${normalizedSegments.join('/')}`;
 
   // 쿼리 파라미터 추가
   const queryString = searchParams.toString();
