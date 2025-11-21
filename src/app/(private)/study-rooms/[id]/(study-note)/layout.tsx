@@ -36,7 +36,7 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
       <ColumnLayout.Left className="rounded-[12px] bg-gray-200">
         <StudyroomSidebar
           studyRoomId={studyRoomId}
-          segment={segment === 'note' ? 'note' : undefined}
+          segment={segment || undefined}
         />
       </ColumnLayout.Left>
       <ColumnLayout.Right className="desktop:max-w-[740px] flex h-[400px] flex-col gap-3 rounded-[12px] px-8">
