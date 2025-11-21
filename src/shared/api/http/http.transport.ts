@@ -1,6 +1,8 @@
 import { env } from '@/shared/constants/api';
 import axios from 'axios';
 
+const isServer = typeof window === 'undefined';
+
 // NOTE: 인증 필요한 요청 전용 (쿠키 자동 포함)
 const privateHttp = axios.create({
   /* ─────────────────────────────────────────────────────
@@ -8,7 +10,7 @@ const privateHttp = axios.create({
    * 따라서 /api/v1 경로로 요청하도록 설정하며 app/v1/[...path] 라우터 핸들러를 통해 쿠키를 붙여 백엔드로 프록시
    * ────────────────────────────────────────────────────*/
   // baseURL: env.backendApiUrl,
-  baseURL: '/api/v1',
+  baseURL: isServer ? env.backendApiUrl : '/api/v1',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
