@@ -9,14 +9,16 @@ import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 
 export const StudyroomSidebarHeader = ({
   dispatch,
+  studyRoomName,
 }: {
   dispatch: Dispatch<DialogAction>;
+  studyRoomName?: string;
 }) => {
   return (
     <>
       <div className="flex items-start justify-between">
         <p className="desktop:max-w-[260px] text-[28px] leading-tight font-bold">
-          에듀중학교 복습반ㅇㄷㅇㄹㅇㄹㅇㄹㅇㄹㅇㄹㅇㄹㅇㄹㅇㄹㅇㄹㅇ
+          {studyRoomName || '스터디룸'}
         </p>
         <DropdownMenu>
           <DropdownMenu.Trigger className="flex cursor-pointer items-center justify-center">

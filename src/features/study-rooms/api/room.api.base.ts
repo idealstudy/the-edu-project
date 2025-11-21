@@ -6,6 +6,7 @@ import type {
   StudyNoteGroup,
   StudyRoom,
   StudyRoomClient,
+  StudyRoomDetail,
 } from '@/features/study-rooms/model';
 import { StudyRoomFormValues } from '@/features/study-rooms/model/room.create.schema';
 import { api } from '@/shared/api';
@@ -18,6 +19,7 @@ export type InvitationAcceptResponse = unknown;
 
 export interface TeacherStudyRoomRequests {
   getStudyRooms(): Promise<StudyRoom[]>;
+  getStudyRoomDetail(studyRoomId: number): Promise<StudyRoomDetail>;
   create(payload: StudyRoomFormValues): Promise<StudyRoom>;
   invitations: {
     send(args: {

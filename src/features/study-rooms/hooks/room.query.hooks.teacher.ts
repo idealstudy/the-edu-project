@@ -23,6 +23,16 @@ export const createTeacherStudyRoomHooks = (
       enabled: options?.enabled ?? true,
     });
 
+  // 스터디룸 상세 조회
+  const useTeacherStudyRoomDetailQuery = (
+    studyRoomId: number,
+    options?: { enabled?: boolean }
+  ) =>
+    useQuery({
+      ...qo.teacherDetail(studyRoomId),
+      enabled: options?.enabled ?? true,
+    });
+
   // 이메일 초대 검색
   const useSearchInvitation = (args: SearchArgs) =>
     useQuery({
@@ -57,6 +67,7 @@ export const createTeacherStudyRoomHooks = (
 
   return {
     useTeacherStudyRoomsQuery,
+    useTeacherStudyRoomDetailQuery,
     useSearchInvitation,
     useCreateStudyRoom,
     useSendInvitation,

@@ -22,6 +22,7 @@ export const { useStudentStudyRoomsQuery } = studentHooks;
 
 export const {
   useTeacherStudyRoomsQuery,
+  useTeacherStudyRoomDetailQuery,
   useSearchInvitation,
   useCreateStudyRoom,
   useSendInvitation,

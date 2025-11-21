@@ -3,13 +3,14 @@ export const StudyRoomsQueryKey = {
   all: ['studyRooms'] as const,
   teacherList: ['studyRooms', 'teacherList'] as const,
   studentList: ['studyRooms', 'studentList'] as const,
-  detail: (id: number) => ['studyRooms', 'detail', id] as const,
+  detail: (id: number) => ['studyRooms', 'detail', id] as const, // 상세지만 계층구조를 위해 studyRooms 으로 유지 (성진)
 };
 
 // 스터디노트 그룹 (목록)
 export const StudyRoomsGroupQueryKey = {
   all: ['studyNoteGroups'] as const,
-  list: (studyRoomId: number) => ['studyNoteGroups', 'list', studyRoomId] as const,
+  list: (studyRoomId: number) =>
+    ['studyNoteGroups', 'list', studyRoomId] as const,
 };
 
 // 학생 초대
