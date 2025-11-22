@@ -5,7 +5,14 @@ import WriteArea from '@/features/dashboard/studynote/write/components/write-are
 import WriteForm from '@/features/dashboard/studynote/write/components/write-form';
 import { ColumnLayout } from '@/layout/column-layout';
 
-export default function StudyNoteWritePage() {
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function StudyNoteWritePage({ params }: Props) {
+  const resolvedParams = await params;
+  const studyRoomId = Number(resolvedParams.id);
+
   return (
     <>
       <div className="desktop:flex desktop:flex-row mt-[34px] hidden w-full flex-col justify-center gap-5">
@@ -15,7 +22,7 @@ export default function StudyNoteWritePage() {
         <span className="desktop:max-w-[740px] w-full" />
       </div>
 
-      <StudyNoteFormProvider>
+      <StudyNoteFormProvider defaultStudyRoomId={studyRoomId}>
         <WriteForm>
           <ColumnLayout className="pt-[10px] pb-10">
             <SelectArea />

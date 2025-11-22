@@ -7,20 +7,22 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 
-export const StudyNoteSearch = () => {
+type Props = {
+  studyRoomId: number;
+};
+
+export const StudyNoteSearch = ({ studyRoomId }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  // const pathName = usePathname();
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     const value = inputRef.current?.value.trim() ?? '';
     if (value) sessionStorage.setItem('study-note-title', value);
-    // sessionStorage.setItem('studyroom-id', String(pathName.split('/')[2]));
     try {
       setIsLoading(true);
-      router.push('/study-note/new');
+      router.push(`/study-rooms/${studyRoomId}/note/new`);
     } finally {
       if (inputRef.current) {
         inputRef.current.value = '';
