@@ -29,7 +29,7 @@ const buttonVariants = cva('flex items-center justify-center text-center', {
 export function Session1() {
   return (
     <section className="mt-[136px] mb-[220px] w-full max-w-[1385px]">
-      <div className="flex-co flex gap-10">
+      <div className="flex gap-10">
         <div>
           <h1 className="justify-center text-[2.5rem] leading-[1.6em] font-normal tracking-[-0.05em]">
             수업 · 숙제 · 피드백까지 <br /> 학습의 흐름을 깔끔하게,
