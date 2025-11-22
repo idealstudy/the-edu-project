@@ -39,8 +39,8 @@ export const StudyNoteTab = ({ studyRoomId, mode, path }: Props) => {
               className={cn(
                 baseCls,
                 isActive
-                  ? 'text-key-color-primary z-20 border-zinc-200 border-b-transparent bg-white font-semibold'
-                  : 'text-text-sub2 z-10 border-zinc-200 bg-transparent hover:bg-zinc-50'
+                  ? 'text-key-color-primary border-zinc-200 border-b-transparent bg-white font-semibold'
+                  : 'text-text-sub2 border-zinc-200 bg-transparent hover:bg-zinc-50'
               )}
             >
               {tab.label}
