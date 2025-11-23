@@ -15,16 +15,13 @@ export default async function StudyNoteWritePage({ params }: Props) {
 
   return (
     <>
-      <div className="desktop:flex desktop:flex-row mt-[34px] hidden w-full flex-col justify-center gap-5">
-        <span className="w-[360px]">
-          <BackLink />
-        </span>
-        <span className="desktop:max-w-[740px] w-full" />
+      <div className="mb-6">
+        <BackLink />
       </div>
 
       <StudyNoteFormProvider defaultStudyRoomId={studyRoomId}>
         <WriteForm>
-          <ColumnLayout className="pt-[10px] pb-10">
+          <ColumnLayout className="pb-10">
             <SelectArea />
             <WriteArea />
           </ColumnLayout>

@@ -21,7 +21,7 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
   const router = useRouter();
   const studyRoomId = Number(params.id);
 
-  // URL에서 segment 추출: /study-rooms/1/qna/4 -> '4', /study-rooms/1/qna -> 'qna'
+  // URL에서 segment 추출: /study-rooms/1/qna/4 -> '4'
   const pathSegments = path.split('/').filter(Boolean);
   const segment = pathSegments[pathSegments.length - 1];
   const secondLastSegment = pathSegments[pathSegments.length - 2];
@@ -49,10 +49,10 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
 
   return (
     <ColumnLayout>
-      <ColumnLayout.Left className="rounded-[12px] bg-gray-200">
+      <ColumnLayout.Left>
         <StudyroomSidebar
           studyRoomId={studyRoomId}
-          segment={segment === 'note' ? 'note' : undefined}
+          segment={segment}
         />
       </ColumnLayout.Left>
       <ColumnLayout.Right className="desktop:max-w-[740px] flex h-[400px] flex-col gap-3 rounded-[12px] px-8">
@@ -66,6 +66,7 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
             <StudyNoteTabShell
               mode={role}
               path={segment!}
+              studyRoomId={studyRoomId}
             />
             {segment !== 'note' && children}
           </div>

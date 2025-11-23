@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import Image from 'next/image';
@@ -32,16 +32,16 @@ const SelectArea = () => {
   const [open, setOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState(false);
 
-  // useEffect(() => {
-  //   const givenRoomId = sessionStorage.getItem('studyroom-id');
-  //   if (givenRoomId) setValue('studyRoomId', Number(givenRoomId));
-  //   sessionStorage.removeItem('studyroom-id');
-  // }, [setValue]);
+  useEffect(() => {
+    const givenRoomId = sessionStorage.getItem('studyroom-id');
+    if (givenRoomId) setValue('studyRoomId', Number(givenRoomId));
+    sessionStorage.removeItem('studyroom-id');
+  }, [setValue]);
 
   return (
     <ColumnLayout.Left className="border-line-line1 h-fit rounded-xl border bg-white px-8 py-10">
       <Image
-        src="/studyroom/profile.svg"
+        src="/studyroom/study-room-profile.svg"
         alt="select-area"
         width={300}
         height={300}
