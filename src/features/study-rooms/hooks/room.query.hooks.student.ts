@@ -12,7 +12,11 @@ export const createStudentStudyRoomHooks = (
   const qo = createStudentStudyRoomQueryOptions(api, base);
 
   // 학생 스터디룸 목록
-  const useStudentStudyRoomsQuery = () => useQuery(qo.studentList());
+  const useStudentStudyRoomsQuery = (options?: { enabled?: boolean }) =>
+    useQuery({
+      ...qo.studentList(),
+      enabled: options?.enabled ?? true,
+    });
   return {
     useStudentStudyRoomsQuery,
   };

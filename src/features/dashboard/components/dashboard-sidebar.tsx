@@ -4,10 +4,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { useDashboardQuery } from '@/features/dashboard';
-import { useTeacherStudyRoomsQuery } from '@/features/study-rooms';
+import {
+  useStudentStudyRoomsQuery,
+  useTeacherStudyRoomsQuery,
+} from '@/features/study-rooms';
 import { HomeIcon, PlusIcon, SettingIcon } from '@/shared/components/icons';
 import { Sidebar } from '@/shared/components/sidebar';
 import { PRIVATE } from '@/shared/constants/route';
+import { useRole } from '@/shared/hooks/use-role';
 
 export const DashboardSidebar = () => {
   // [CRITICAL TODO: API 구현 누락] useDashboardQuery의 데이터(data)를 사용할 수 있도록 백엔드 API 및 바인딩 작업을 즉시 진행해야 합니다.
@@ -15,11 +19,25 @@ export const DashboardSidebar = () => {
   const { data, isLoading, isError } = useDashboardQuery();
 
   /* ─────────────────────────────────────────────────────
-   * TEMPORARY : 현재는 스터디룸 API를 이용하지만 추후 위의 useDashboardQuery 필요 예상
+   * 역할에 따라 다른 쿼리 사용
    * ────────────────────────────────────────────────────*/
-  const { data: studyRoomList } = useTeacherStudyRoomsQuery({
+  const { data: teacherStudyRoomList } = useTeacherStudyRoomsQuery({
     enabled: true,
   });
+
+  const { data: studentStudyRoomList } = useStudentStudyRoomsQuery({
+    enabled: true,
+  });
+
+  const { role } = useRole();
+
+  // 역할에 따라 적절한 리스트 선택
+  const studyRoomList =
+    role === 'ROLE_TEACHER'
+      ? teacherStudyRoomList
+      : role === 'ROLE_STUDENT'
+        ? studentStudyRoomList
+        : undefined;
 
   return (
     <Sidebar>
@@ -34,13 +52,16 @@ export const DashboardSidebar = () => {
           <Sidebar.SectionIcon />
           <Sidebar.HeaderText>스터디룸</Sidebar.HeaderText>
         </div>
-        <Sidebar.Item
-          href={PRIVATE.ROOM.CREATE}
-          className="h-9 w-9 justify-center bg-transparent px-0"
-        >
-          <PlusIcon />
-          <span className="sr-only">스터디룸 생성</span>
-        </Sidebar.Item>
+        {/* 선생님만 스터디룸 생성 버튼 표시 */}
+        {role === 'ROLE_TEACHER' && (
+          <Sidebar.Item
+            href={PRIVATE.ROOM.CREATE}
+            className="h-9 w-9 justify-center bg-transparent px-0"
+          >
+            <PlusIcon />
+            <span className="sr-only">스터디룸 생성</span>
+          </Sidebar.Item>
+        )}
       </Sidebar.Header>
 
       <Sidebar.List>
