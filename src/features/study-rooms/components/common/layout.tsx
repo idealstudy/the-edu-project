@@ -1,4 +1,4 @@
-import { SearchFilterBar } from '@/features/qna/components/detail/search-filter-bar';
+import { SearchFilterBar } from '@/features/study-notes/components/search-filter-bar';
 import { StudyNoteLimit, StudyNoteSortKey } from '@/features/study-notes/model';
 import { Pagination } from '@/shared/components/ui/pagination';
 

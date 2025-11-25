@@ -25,13 +25,14 @@ export const useMemberFilter = (
 
     // 정렬
     switch (sort) {
-      case 'LATEST':
+      case 'LATEST_EDITED':
         filtered.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
         break;
-      case 'OLDEST':
+      case 'OLDEST_EDITED':
         filtered.reverse();
         break;
-      case 'ALPHABETICAL':
+      case 'TITLE_ASC':
+      case 'TAUGHT_AT_ASC':
       default:
         break;
     }

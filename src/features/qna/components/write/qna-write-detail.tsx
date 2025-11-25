@@ -25,7 +25,7 @@ export default function QnAWriteDetail({ studyRoomId }: Props) {
             {!isPending && currStudyRoom}
           </h3>
           <Image
-            src="/studyroom/study-room-profile.svg"
+            src="/studyroom/profile.svg"
             alt="select-area"
             width={300}
             height={300}

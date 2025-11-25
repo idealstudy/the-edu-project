@@ -28,9 +28,10 @@ export const studyRoomRepository = {
    * ────────────────────────────────────────────────────*/
   teacher: {
     getList: async (): Promise<Room[]> => {
-      const response = await api.private.get<
-        CommonResponse<TeacherRoomListItemDTO>
-      >(`/teacher/study-rooms}`);
+      const response =
+        await api.private.get<CommonResponse<TeacherRoomListItemDTO>>(
+          `/teacher/study-rooms`
+        );
       const parsed = adapters.teacher.list.parse(response.data);
       return factory.teacher.list(parsed.data);
     },

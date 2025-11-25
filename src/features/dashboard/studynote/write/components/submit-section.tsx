@@ -2,18 +2,28 @@
 
 import { useFormContext } from 'react-hook-form';
 
+import { useUpdateStudyNote } from '@/features/study-notes/hooks';
 import { Button } from '@/shared/components/ui/button';
 
 import { StudyNoteForm } from '../schemas/note';
 import { useWriteStudyNoteMutation } from '../services/query';
 
-const SubmitSection = () => {
-  const { isPending } = useWriteStudyNoteMutation();
+type SubmitSectionProps = {
+  isEditMode?: boolean;
+};
+
+const SubmitSection = ({ isEditMode = false }: SubmitSectionProps) => {
+  const { isPending: isWritePending } = useWriteStudyNoteMutation();
+  const { isPending: isUpdatePending } = useUpdateStudyNote();
   const {
-    formState: { isValid, isSubmitting },
+    formState: { isValid, isSubmitting, isDirty },
   } = useFormContext<StudyNoteForm>();
 
-  const isButtonDisabled = !isValid || isPending || isSubmitting;
+  const isPending = isEditMode ? isUpdatePending : isWritePending;
+
+  // 편집 모드일 때는 변경사항이 있을 때만 활성화
+  const isButtonDisabled =
+    !isValid || isPending || isSubmitting || (isEditMode && !isDirty);
 
   return (
     <div className="flex justify-end">
@@ -22,7 +32,7 @@ const SubmitSection = () => {
         disabled={isButtonDisabled}
         className="w-[200px] rounded-sm"
       >
-        {isPending ? '저장 중...' : '저장하기'}
+        {isPending ? '저장 중...' : isEditMode ? '수정하기' : '저장하기'}
       </Button>
     </div>
   );

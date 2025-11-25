@@ -16,6 +16,8 @@ export const createStudentStudyRoomQueryOptions = (
   qOpt: BaseQueryOptions = {}
 ) => {
   const opt = { ...queryConfig.DEFAULT_QUERY_OPTION, ...qOpt };
+
+  // 스터디룸 목록 조회
   const studentList = () =>
     queryOptions<StudentStudyRoom[]>({
       queryKey: StudyRoomsQueryKey.studentList,

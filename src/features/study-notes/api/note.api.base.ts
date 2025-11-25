@@ -21,6 +21,7 @@ export interface NotesBaseApi<TList> {
 }
 
 export const createNotesBaseApi = <TList>(role: Role): NotesBaseApi<TList> => {
+  // BFF에서 ROLE_* → teacher/student 변환 처리
   const roomPath = (studyRoomId: number) =>
     `/${role}/study-rooms/${studyRoomId}`;
 

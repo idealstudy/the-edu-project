@@ -3,7 +3,7 @@ import { TeacherStudyRoomRequests } from '@/features/study-rooms/api/room.api.ba
 import { BaseQueryOptions, queryConfig } from '@/shared/lib/query';
 import { queryOptions } from '@tanstack/react-query';
 
-import type { StudyRoom } from '../model/types';
+import type { StudyRoom, StudyRoomDetail } from '../model/types';
 
 export type TeacherStudyRoomQueryOptions = ReturnType<
   typeof createTeacherStudyRoomQueryOptions
@@ -23,6 +23,14 @@ export const createTeacherStudyRoomQueryOptions = (
       ...opt,
     });
 
+  // 스터디룸 상세 조회
+  const teacherDetail = (studyRoomId: number) =>
+    queryOptions<StudyRoomDetail>({
+      queryKey: StudyRoomsQueryKey.detail(studyRoomId),
+      queryFn: () => api.getStudyRoomDetail(studyRoomId),
+      ...opt,
+    });
+
   // 초대 검색 (이메일)
   const searchInvitation = (args: { studyRoomId: number; email: string }) =>
     queryOptions({
@@ -35,5 +43,5 @@ export const createTeacherStudyRoomQueryOptions = (
       refetchOnMount: false as const,
     });
 
-  return { teacherList, searchInvitation };
+  return { teacherList, teacherDetail, searchInvitation };
 };

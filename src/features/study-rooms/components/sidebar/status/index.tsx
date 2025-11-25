@@ -1,6 +1,14 @@
 // type IconCmp = React.ComponentType<React.SVGProps<SVGSVGElement>>;
 
-export const StudyStats = () => {
+export const StudyStats = ({
+  numberOfTeachingNote,
+  numberOfStudents,
+  numberOfQuestion,
+}: {
+  numberOfTeachingNote?: number;
+  numberOfStudents?: number;
+  numberOfQuestion?: number;
+}) => {
   // TODO: 매핑 방식으로 변경하려고 했으나 SVG 오류
   // const studyIcons: { name: string; Icon: IconCmp; count: string }[] = [
   //   {
@@ -33,7 +41,7 @@ export const StudyStats = () => {
           수업노트
         </p>
         <p className="font-headline2-heading text-key-color-primary text-center">
-          999장
+          {numberOfTeachingNote != null ? `${numberOfTeachingNote}장` : '0장'}
         </p>
       </li>
       <li
@@ -45,7 +53,7 @@ export const StudyStats = () => {
           학생
         </p>
         <p className="font-headline2-heading text-key-color-primary text-center">
-          999명
+          {numberOfStudents != null ? `${numberOfStudents}명` : ''}
         </p>
       </li>
       <li
@@ -57,7 +65,7 @@ export const StudyStats = () => {
           질문
         </p>
         <p className="font-headline2-heading text-key-color-primary text-center">
-          999개
+          {numberOfQuestion != null ? `${numberOfQuestion}개` : '0개'}
         </p>
       </li>
     </ul>

@@ -1,3 +1,4 @@
+import BackLink from '@/features/dashboard/studynote/components/back-link';
 import { QuestionDetail } from '@/features/qna/components/detail/qna-detail';
 import { ColumnLayout } from '@/layout/column-layout';
 
@@ -11,13 +12,16 @@ export default async function QuestionDetailPage({ params }: Props) {
   const contextId = Number(resolvedParams.contextId);
 
   return (
-    <main>
-      <ColumnLayout>
+    <>
+      <div className="mb-6">
+        <BackLink />
+      </div>
+      <ColumnLayout className="items-start gap-6 p-6">
         <QuestionDetail
           studyRoomId={studyRoomId}
           contextId={contextId}
         />
       </ColumnLayout>
-    </main>
+    </>
   );
 }

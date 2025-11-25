@@ -117,7 +117,7 @@ const MetaSection = () => {
             render={({ field }) => {
               return (
                 <TextEditor
-                  value={field}
+                  value={field.value}
                   onChange={field.onChange}
                   placeholder="수업 내용을 입력해주세요..."
                 />

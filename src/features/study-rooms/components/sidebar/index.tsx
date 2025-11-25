@@ -9,6 +9,7 @@ import { InvitationDialog } from '@/features/study-rooms/components/student-invi
 import StudentInvitation from '@/features/study-rooms/components/student-invitation/StudentInvitation';
 //import { useSearchParams, useRouter } from 'next/navigation';
 
+import { useTeacherStudyRoomDetailQuery } from '@/features/study-rooms/hooks';
 import { ColumnLayout } from '@/layout/column-layout';
 import {
   dialogReducer,
@@ -44,6 +45,14 @@ export const StudyroomSidebar = ({
     useState('수업노트 그룹이 삭제되었습니다.');
   const { role } = useRole();
   const { mutate: deleteStudyRoom } = useDeleteStudyRoom();
+
+  // 스터디룸 상세 정보 조회 (선생님만)
+  const { data: studyRoomDetail } = useTeacherStudyRoomDetailQuery(
+    studyRoomId,
+    {
+      enabled: role === 'ROLE_TEACHER',
+    }
+  );
 
   const handleSelectGroupId = (id: number | 'all') => {
     setSelectedGroupId(id);
@@ -111,9 +120,15 @@ export const StudyroomSidebar = ({
         )}
 
       <ColumnLayout.Left className="border-line-line1 flex h-fit flex-col gap-5 rounded-xl border bg-white px-8 py-8">
-        <StudyroomSidebarHeader dispatch={dispatch} />
-        {/* TODO: 스터디룸 수업노트, 학생, 질문 카운트 추가 */}
-        <StudyStats />
+        <StudyroomSidebarHeader
+          dispatch={dispatch}
+          studyRoomName={studyRoomDetail?.name}
+        />
+        <StudyStats
+          numberOfTeachingNote={studyRoomDetail?.numberOfTeachingNote}
+          numberOfStudents={studyRoomDetail?.studentNames?.length}
+          numberOfQuestion={studyRoomDetail?.numberOfQuestion}
+        />
         <StudentInvitation dispatch={dispatch} />
         {/* 수업노트 탭에서만 보이는 컴포넌트 */}
         {segment === 'note' && (
