@@ -1,3 +1,4 @@
+import { StudyNoteQueryKey } from '@/entities/study-note';
 import {
   InvitationQueryKey,
   StudyRoomsQueryKey,
@@ -59,8 +60,17 @@ export const createTeacherStudyRoomHooks = (
     const qc = useQueryClient();
     return useMutation({
       mutationFn: api.invitations.send,
-      onSuccess: () => {
+      onSuccess: (data, variables) => {
+        // 초대 검색 쿼리 무효화
         void qc.invalidateQueries({ queryKey: InvitationQueryKey.all });
+        // 멤버 목록 쿼리 무효화 (새로 초대된 멤버가 목록에 반영되도록)
+        void qc.invalidateQueries({
+          queryKey: StudyNoteQueryKey.membersPrefix(variables.studyRoomId),
+        });
+        // 스터디룸 상세 쿼리 무효화 (studentNames 업데이트)
+        void qc.invalidateQueries({
+          queryKey: StudyRoomsQueryKey.detail(variables.studyRoomId),
+        });
       },
     });
   };

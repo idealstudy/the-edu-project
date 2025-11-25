@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import EllipsisIcon from '@/assets/icons/ellipsis-vertical.svg';
 import { useStudyNoteDetailQuery } from '@/features/dashboard/studynote/detail/service/query';
@@ -14,6 +15,7 @@ import { ko } from 'date-fns/locale';
 const StudyNoteDetailContentsSection = ({ id }: { id: string }) => {
   const { data } = useStudyNoteDetailQuery(Number(id));
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
 
   if (!data) return null;
 
@@ -28,7 +30,8 @@ const StudyNoteDetailContentsSection = ({ id }: { id: string }) => {
   );
 
   const handleEdit = () => {
-    // TODO: 편집 기능 구현
+    // 편집 페이지로 이동
+    router.push(`/study-rooms/${data.studyRoomId}/note/${id}/edit`);
   };
 
   const handleDelete = () => {

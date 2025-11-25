@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { defaultExtensions } from '@/shared/components/editor/model/extensions';
 import { TextEditorProps } from '@/shared/components/editor/model/types';
@@ -38,6 +38,21 @@ export const TextEditor = ({
     },
     immediatelyRender: false,
   });
+
+  // content prop이 변경되면 에디터 내용 업데이트
+  // 폼이 reset()으로 업데이트될 때 에디터도 함께 업데이트되도록 함
+  useEffect(() => {
+    if (!editor || !value) return;
+
+    const currentContent = editor.getJSON();
+    const currentContentStr = JSON.stringify(currentContent);
+    const newContentStr = JSON.stringify(value);
+
+    // 내용이 실제로 변경된 경우에만 업데이트
+    if (currentContentStr !== newContentStr) {
+      editor.commands.setContent(value); // false = emitUpdate을 비활성화하여 무한 루프 방지
+    }
+  }, [editor, value]);
 
   if (editor === null) {
     return null;

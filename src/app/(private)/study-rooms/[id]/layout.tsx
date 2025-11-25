@@ -26,10 +26,18 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
   const segment = pathSegments[pathSegments.length - 1];
   const secondLastSegment = pathSegments[pathSegments.length - 2];
 
+  // 편집/작성 페이지인지 확인 (note/[noteId]/edit 또는 note/new)
+  const isEditOrWritePage =
+    segment === 'edit' ||
+    segment === 'new' ||
+    (secondLastSegment === 'note' && segment === 'new');
+
   // 상세 페이지인지 확인 (note/[noteId] 또는 qna/[contextId])
+  // 편집/작성 페이지는 제외
   const isDetailPage =
-    (pathSegments.length > 3 && secondLastSegment === 'qna') ||
-    (pathSegments.length > 3 && secondLastSegment === 'note');
+    !isEditOrWritePage &&
+    ((pathSegments.length > 3 && secondLastSegment === 'qna') ||
+      (pathSegments.length > 3 && secondLastSegment === 'note'));
 
   // 권한 체크
   // Todo: 추후 미들웨어에서 처리하도록 변경
@@ -39,6 +47,11 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
       router.replace(`/`);
     }
   }, [role, segment, isLoading, router, studyRoomId]);
+
+  // 편집/작성 페이지는 layout을 적용하지 않고 children을 그대로 반환
+  if (isEditOrWritePage) {
+    return <>{children}</>;
+  }
 
   // 상세 페이지는 sidebar 없이 전체 레이아웃 사용
   if (isDetailPage) {
