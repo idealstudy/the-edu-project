@@ -129,27 +129,30 @@ export const deleteStudentQnAMessage = async (args: {
   );
 };
 
-// PATCH /api/teacher/study-rooms/{studyRoomId}/qna/{contextId}/answers/{answerId} - 선생님 답변 수정
-// 백엔드 API 스펙 확인 필요 (현재는 PATCH로 변경, 백엔드가 PUT을 요구하면 다시 변경)
+// PATCH /api/study-rooms/{studyRoomId}/qna/{contextId}/messages/{messageId} - 선생님 메시지 수정
+// 백엔드 스펙: PATCH/DELETE는 /api/study-rooms/... 사용 (학생/선생님 공통)
+// answers는 POST만 존재하고, 수정/삭제는 messages 엔드포인트 사용
 export const updateTeacherQnAMessage = async (args: {
   studyRoomId: number;
   contextId: number;
-  answerId: number;
+  messageId: number;
   content: string;
 }) => {
   await api.private.patch(
-    `/teacher/study-rooms/${args.studyRoomId}/qna/${args.contextId}/answers/${args.answerId}`,
+    `/study-rooms/${args.studyRoomId}/qna/${args.contextId}/messages/${args.messageId}`,
     { content: args.content }
   );
 };
 
-// DELETE /api/teacher/study-rooms/{studyRoomId}/qna/{contextId}/answers/{answerId} - 선생님 답변 삭제
+// DELETE /api/study-rooms/{studyRoomId}/qna/{contextId}/messages/{messageId} - 선생님 메시지 삭제
+// 백엔드 스펙: PATCH/DELETE는 /api/study-rooms/... 사용 (학생/선생님 공통)
+// answers는 POST만 존재하고, 수정/삭제는 messages 엔드포인트 사용
 export const deleteTeacherQnAMessage = async (args: {
   studyRoomId: number;
   contextId: number;
-  answerId: number;
+  messageId: number;
 }) => {
   await api.private.delete(
-    `/teacher/study-rooms/${args.studyRoomId}/qna/${args.contextId}/answers/${args.answerId}`
+    `/study-rooms/${args.studyRoomId}/qna/${args.contextId}/messages/${args.messageId}`
   );
 };

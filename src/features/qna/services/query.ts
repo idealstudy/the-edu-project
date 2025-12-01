@@ -108,7 +108,7 @@ export const useUpdateQnAMessageMutation = (role: Role | undefined) => {
         return updateTeacherQnAMessage({
           studyRoomId: args.studyRoomId,
           contextId: args.contextId,
-          answerId: args.messageId,
+          messageId: args.messageId,
           content: args.content,
         });
       if (role === 'ROLE_STUDENT')
@@ -149,7 +149,7 @@ export const useDeleteQnAMessageMutation = (role: Role | undefined) => {
         return deleteTeacherQnAMessage({
           studyRoomId: args.studyRoomId,
           contextId: args.contextId,
-          answerId: args.messageId,
+          messageId: args.messageId,
         });
       if (role === 'ROLE_STUDENT')
         return deleteStudentQnAMessage({
