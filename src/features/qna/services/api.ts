@@ -156,3 +156,27 @@ export const deleteTeacherQnAMessage = async (args: {
     `/study-rooms/${args.studyRoomId}/qna/${args.contextId}/messages/${args.messageId}`
   );
 };
+
+// PATCH /api/study-rooms/{studyRoomId}/qna/{contextId} - QNA 질문 제목 수정
+// 학생: 본인 QnA만, 선생님: 모든 QnA
+export const updateQnATitle = async (args: {
+  studyRoomId: number;
+  contextId: number;
+  title: string;
+}) => {
+  await api.private.patch(
+    `/study-rooms/${args.studyRoomId}/qna/${args.contextId}`,
+    { title: args.title }
+  );
+};
+
+// DELETE /api/study-rooms/{studyRoomId}/qna/{contextId} - QNA 컨텍스트(질문) 삭제
+// 학생: 본인 QnA만, 선생님: 모든 QnA
+export const deleteQnA = async (args: {
+  studyRoomId: number;
+  contextId: number;
+}) => {
+  await api.private.delete(
+    `/study-rooms/${args.studyRoomId}/qna/${args.contextId}`
+  );
+};
