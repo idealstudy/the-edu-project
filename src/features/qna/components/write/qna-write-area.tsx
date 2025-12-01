@@ -11,7 +11,6 @@ import { TextEditor } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
-import { PRIVATE } from '@/shared/constants';
 import { JSONContent } from '@tiptap/react';
 
 import { QnACreateForm } from '../../schema/create';
@@ -58,7 +57,7 @@ const WriteArea = ({ studyRoomId }: Props) => {
       },
       {
         onSuccess: () => {
-          router.replace(PRIVATE.DASHBOARD.INDEX);
+          router.replace(`/study-rooms/${studyRoomId}/qna`);
         },
       }
     );
@@ -115,7 +114,7 @@ const WriteArea = ({ studyRoomId }: Props) => {
                 render={({ field }) => {
                   return (
                     <TextEditor
-                      value={field}
+                      value={field.value}
                       onChange={field.onChange}
                       placeholder="질문 내용을 입력해주세요..."
                     />

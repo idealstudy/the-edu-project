@@ -1,12 +1,16 @@
 import { Role } from '@/entities/member';
 import { Pageable } from '@/types/http';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
+  deleteStudentQnAMessage,
+  deleteTeacherQnAMessage,
   getStudentQnADetail,
   getStudentQnAList,
   getTeacherQnADetail,
   getTeacherQnAList,
+  updateStudentQnAMessage,
+  updateTeacherQnAMessage,
   writeQnA,
   writeStudentQnAMessage,
   writeTeacherQnAMessage,
@@ -52,16 +56,25 @@ export const useQnADetailQuery = (
 };
 
 export const useWriteQnAMutation = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (args: {
       studyRoomId: number;
       title: string;
       content: string;
     }) => writeQnA(args),
+    onSuccess: () => {
+      // QNA 목록 쿼리 무효화
+      queryClient.invalidateQueries({
+        queryKey: ['qnaList'],
+        refetchType: 'active',
+      });
+    },
   });
 };
 
 export const useWriteQnAMessageMutation = (role: Role | undefined) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (args: {
       studyRoomId: number;
@@ -71,6 +84,94 @@ export const useWriteQnAMessageMutation = (role: Role | undefined) => {
       if (role === 'ROLE_TEACHER') return writeTeacherQnAMessage(args);
       if (role === 'ROLE_STUDENT') return writeStudentQnAMessage(args);
       throw new Error('role not ready');
+    },
+    onSuccess: (_, variables) => {
+      // QNA 상세 쿼리 무효화
+      queryClient.invalidateQueries({
+        queryKey: ['qnaDetail', role, variables],
+        refetchType: 'active',
+      });
+    },
+  });
+};
+
+export const useUpdateQnAMessageMutation = (role: Role | undefined) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (args: {
+      studyRoomId: number;
+      contextId: number;
+      messageId: number;
+      content: string;
+    }) => {
+      if (role === 'ROLE_TEACHER')
+        return updateTeacherQnAMessage({
+          studyRoomId: args.studyRoomId,
+          contextId: args.contextId,
+          answerId: args.messageId,
+          content: args.content,
+        });
+      if (role === 'ROLE_STUDENT')
+        return updateStudentQnAMessage({
+          studyRoomId: args.studyRoomId,
+          contextId: args.contextId,
+          messageId: args.messageId,
+          content: args.content,
+        });
+      throw new Error('role not ready');
+    },
+    onSuccess: (_, variables) => {
+      // QNA 상세 쿼리 무효화
+      queryClient.invalidateQueries({
+        queryKey: [
+          'qnaDetail',
+          role,
+          {
+            studyRoomId: variables.studyRoomId,
+            contextId: variables.contextId,
+          },
+        ],
+        refetchType: 'active',
+      });
+    },
+  });
+};
+
+export const useDeleteQnAMessageMutation = (role: Role | undefined) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (args: {
+      studyRoomId: number;
+      contextId: number;
+      messageId: number;
+    }) => {
+      if (role === 'ROLE_TEACHER')
+        return deleteTeacherQnAMessage({
+          studyRoomId: args.studyRoomId,
+          contextId: args.contextId,
+          answerId: args.messageId,
+        });
+      if (role === 'ROLE_STUDENT')
+        return deleteStudentQnAMessage({
+          studyRoomId: args.studyRoomId,
+          contextId: args.contextId,
+          messageId: args.messageId,
+        });
+      throw new Error('role not ready');
+    },
+    onSuccess: (_, variables) => {
+      // QNA 상세 쿼리 무효화
+      queryClient.invalidateQueries({
+        queryKey: [
+          'qnaDetail',
+          role,
+          {
+            studyRoomId: variables.studyRoomId,
+            contextId: variables.contextId,
+          },
+        ],
+        refetchType: 'active',
+      });
     },
   });
 };

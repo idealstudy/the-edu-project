@@ -104,3 +104,52 @@ export const getTeacherQnADetail = async (args: {
 
   return response.data;
 };
+
+// PATCH /api/study-rooms/{studyRoomId}/qna/{contextId}/messages/{messageId} - 학생 메시지 수정
+export const updateStudentQnAMessage = async (args: {
+  studyRoomId: number;
+  contextId: number;
+  messageId: number;
+  content: string;
+}) => {
+  await api.private.patch(
+    `/study-rooms/${args.studyRoomId}/qna/${args.contextId}/messages/${args.messageId}`,
+    { content: args.content }
+  );
+};
+
+// DELETE /api/study-rooms/{studyRoomId}/qna/{contextId}/messages/{messageId} - 학생 메시지 삭제
+export const deleteStudentQnAMessage = async (args: {
+  studyRoomId: number;
+  contextId: number;
+  messageId: number;
+}) => {
+  await api.private.delete(
+    `/study-rooms/${args.studyRoomId}/qna/${args.contextId}/messages/${args.messageId}`
+  );
+};
+
+// PATCH /api/teacher/study-rooms/{studyRoomId}/qna/{contextId}/answers/{answerId} - 선생님 답변 수정
+// 백엔드 API 스펙 확인 필요 (현재는 PATCH로 변경, 백엔드가 PUT을 요구하면 다시 변경)
+export const updateTeacherQnAMessage = async (args: {
+  studyRoomId: number;
+  contextId: number;
+  answerId: number;
+  content: string;
+}) => {
+  await api.private.patch(
+    `/teacher/study-rooms/${args.studyRoomId}/qna/${args.contextId}/answers/${args.answerId}`,
+    { content: args.content }
+  );
+};
+
+// DELETE /api/teacher/study-rooms/{studyRoomId}/qna/{contextId}/answers/{answerId} - 선생님 답변 삭제
+export const deleteTeacherQnAMessage = async (args: {
+  studyRoomId: number;
+  contextId: number;
+  answerId: number;
+}) => {
+  await api.private.delete(
+    `/teacher/study-rooms/${args.studyRoomId}/qna/${args.contextId}/answers/${args.answerId}`
+  );
+};

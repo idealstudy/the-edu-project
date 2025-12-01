@@ -4,18 +4,118 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 
+import { TextEditor, TextViewer } from '@/shared/components/editor';
+import { Button } from '@/shared/components/ui/button';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 import { useRole } from '@/shared/hooks/use-role';
-import { extractText, getRelativeTimeString } from '@/shared/lib/utils';
+import { getRelativeTimeString } from '@/shared/lib/utils';
+import { JSONContent } from '@tiptap/react';
+
+import {
+  useDeleteQnAMessageMutation,
+  useUpdateQnAMessageMutation,
+} from '../../services/query';
 
 type Props = {
+  id: number;
   content: string;
   regDate: string;
+  studyRoomId: number;
+  contextId: number;
 };
 
-const QuestionAnswer = ({ content, regDate }: Props) => {
+const QuestionAnswer = ({
+  id,
+  content,
+  regDate,
+  studyRoomId,
+  contextId,
+}: Props) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState<JSONContent | null>(null);
+
   const { role } = useRole();
+  const { mutate: updateMessage, isPending: isUpdating } =
+    useUpdateQnAMessageMutation(role);
+  const { mutate: deleteMessage, isPending: isDeleting } =
+    useDeleteQnAMessageMutation(role);
+
+  // JSONContent 파싱
+  let parsedContent: JSONContent = {
+    type: 'doc',
+    content: [{ type: 'paragraph' }],
+  };
+  try {
+    const parsed = JSON.parse(content);
+    if (parsed && typeof parsed === 'object' && 'type' in parsed) {
+      parsedContent = parsed as JSONContent;
+    } else {
+      // JSON이지만 JSONContent 형식이 아니면 기본 구조로 변환
+      parsedContent = {
+        type: 'doc',
+        content: [
+          {
+            type: 'paragraph',
+            content: [{ type: 'text', text: String(content) }],
+          },
+        ],
+      };
+    }
+  } catch {
+    // JSON 파싱 실패 시 기본 구조로 변환
+    parsedContent = {
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [{ type: 'text', text: content }],
+        },
+      ],
+    };
+  }
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setEditContent(parsedContent);
+    setIsOpen(false);
+  };
+
+  const handleSave = () => {
+    if (!editContent) return;
+    updateMessage(
+      {
+        studyRoomId,
+        contextId,
+        messageId: id,
+        content: JSON.stringify(editContent),
+      },
+      {
+        onSuccess: () => {
+          setIsEditing(false);
+          setEditContent(null);
+          // 쿼리 무효화는 mutation hook에서 처리되므로 라우팅 불필요
+          // 같은 페이지에 있으므로 자동으로 업데이트됨
+        },
+      }
+    );
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditContent(null);
+  };
+
+  const handleDelete = () => {
+    if (confirm('정말 삭제하시겠습니까?')) {
+      deleteMessage({
+        studyRoomId,
+        contextId,
+        messageId: id,
+      });
+    }
+    setIsOpen(false);
+  };
 
   return (
     <div className="border-line-line1 flex flex-col gap-5 rounded-xl border bg-white px-8 py-8">
@@ -44,25 +144,58 @@ const QuestionAnswer = ({ content, regDate }: Props) => {
               />
             </DropdownMenu.Trigger>
             <DropdownMenu.Content className="flex min-w-[110px] flex-col items-stretch">
-              <DropdownMenu.Item className="justify-center">
-                수정
+              <DropdownMenu.Item
+                className="justify-center"
+                onClick={handleEdit}
+                disabled={isUpdating || isDeleting}
+              >
+                {isUpdating ? '수정 중...' : '수정'}
               </DropdownMenu.Item>
               <DropdownMenu.Item
                 className="justify-center"
                 variant="danger"
+                onClick={handleDelete}
+                disabled={isUpdating || isDeleting}
               >
-                삭제
+                {isDeleting ? '삭제 중...' : '삭제'}
               </DropdownMenu.Item>
             </DropdownMenu.Content>
           </DropdownMenu>
         )}
       </div>
-      <p className="font-body2-normal whitespace-pre-line">
-        {extractText(content)}
-      </p>
-      <span className="font-caption-normal text-gray-scale-gray-60 self-end">
-        {getRelativeTimeString(regDate) + ' 작성'}
-      </span>
+      {isEditing ? (
+        <div className="space-y-3">
+          <TextEditor
+            value={editContent || parsedContent}
+            onChange={(value) => setEditContent(value)}
+            placeholder="내용을 수정하세요..."
+          />
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outlined"
+              onClick={handleCancel}
+              disabled={isUpdating}
+            >
+              취소
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={isUpdating || !editContent}
+            >
+              {isUpdating ? '저장 중...' : '저장'}
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="font-body2-normal">
+            <TextViewer value={parsedContent} />
+          </div>
+          <span className="font-caption-normal text-gray-scale-gray-60 self-end">
+            {getRelativeTimeString(regDate) + ' 작성'}
+          </span>
+        </>
+      )}
     </div>
   );
 };
