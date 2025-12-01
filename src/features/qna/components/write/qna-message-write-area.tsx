@@ -3,13 +3,10 @@
 import { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import { useRouter } from 'next/navigation';
-
 import { ColumnLayout } from '@/layout/column-layout';
 import { TextEditor } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
-import { PRIVATE } from '@/shared/constants';
 import { useRole } from '@/shared/hooks/use-role';
 import { JSONContent } from '@tiptap/react';
 
@@ -23,13 +20,13 @@ type Props = {
 
 const WriteArea = ({ studyRoomId, contextId }: Props) => {
   const { role } = useRole();
-  const router = useRouter();
 
   const { mutate, isPending } = useWriteQnAMessageMutation(role);
   const {
     handleSubmit,
     setValue,
     control,
+    reset,
     formState: { errors, isValid, isSubmitting },
   } = useFormContext<QnAMessageForm>();
 
@@ -64,7 +61,10 @@ const WriteArea = ({ studyRoomId, contextId }: Props) => {
       },
       {
         onSuccess: () => {
-          router.replace(PRIVATE.DASHBOARD.INDEX);
+          // 폼 리셋
+          reset({ content: {} });
+          // 쿼리 무효화는 mutation hook에서 처리되므로 라우팅 불필요
+          // 같은 페이지에 있으므로 자동으로 업데이트됨
         },
       }
     );
@@ -83,7 +83,7 @@ const WriteArea = ({ studyRoomId, contextId }: Props) => {
                 render={({ field }) => {
                   return (
                     <TextEditor
-                      value={field}
+                      value={field.value}
                       onChange={field.onChange}
                       placeholder="추가로 궁금한 점을 적어주세요..."
                     />

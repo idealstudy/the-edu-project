@@ -32,6 +32,7 @@ const QUESTIONS = {
   DETAIL: (studyroomId: number, contextId: number) =>
     `/study-rooms/${studyroomId}/qna/${contextId}`,
   CREATE: (studyroomId: number) => `/study-rooms/${studyroomId}/qna/new`,
+  LIST: (studyroomId: number) => `/study-rooms/${studyroomId}/qna`,
 } as const;
 
 /* ─────────────────────────────────────────────────────
