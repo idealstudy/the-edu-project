@@ -37,7 +37,7 @@ export default function StudyNotePage() {
   }, [searchParams]);
 
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<StudyNoteSortKey>('LATEST');
+  const [sort, setSort] = useState<StudyNoteSortKey>('LATEST_EDITED');
   const [limit, setLimit] = useState<StudyNoteLimit>(20);
 
   const { role } = useRole();

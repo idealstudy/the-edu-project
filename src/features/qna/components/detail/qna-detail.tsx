@@ -79,17 +79,23 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
               return (
                 <QuestionAnswer
                   key={msg.id}
+                  id={Number(msg.id)}
                   content={msg.content}
                   regDate={msg.regDate}
+                  studyRoomId={studyRoomId}
+                  contextId={contextId}
                 />
               );
             else if (msg.authorType === 'ROLE_STUDENT')
               return (
                 <QuestionContent
                   key={msg.id}
+                  id={Number(msg.id)}
                   content={msg.content}
                   authorName={msg.authorName}
                   regDate={msg.regDate}
+                  studyRoomId={studyRoomId}
+                  contextId={contextId}
                 />
               );
           }

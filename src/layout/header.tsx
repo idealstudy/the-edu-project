@@ -88,6 +88,22 @@ export const Header = () => {
               >
                 공지사항
               </Link>
+              <Link
+                href="https://open.kakao.com/o/gzPs2mIe"
+                className="mx-2 text-white"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                카카오 오픈채팅
+              </Link>
+              <Link
+                href="https://docs.google.com/forms/d/e/1FAIpQLScorJ0ofMtrxSDiFukigY-ytiablWaQE1MqaYplfzLfFY07Gw/viewform?usp=header"
+                className="mx-2 text-white"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                피드백
+              </Link>
             </>
           )}
         </div>

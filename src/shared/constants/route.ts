@@ -32,14 +32,16 @@ const QUESTIONS = {
   DETAIL: (studyroomId: number, contextId: number) =>
     `/study-rooms/${studyroomId}/qna/${contextId}`,
   CREATE: (studyroomId: number) => `/study-rooms/${studyroomId}/qna/new`,
+  LIST: (studyroomId: number) => `/study-rooms/${studyroomId}/qna`,
 } as const;
 
 /* ─────────────────────────────────────────────────────
  * STUDY NOTE
  * ────────────────────────────────────────────────────*/
 const NOTE = {
-  CREATE: '/study-note/new',
-  DETAIL: (id: number) => `/study-note/${id}`,
+  CREATE: (studyRoomId: number) => `/study-rooms/${studyRoomId}/note/new`,
+  DETAIL: (studyRoomId: number, noteId: number) =>
+    `/study-rooms/${studyRoomId}/note/${noteId}`,
   LIST: (id: number) => `/study-rooms/${id}/note`,
 } as const;
 

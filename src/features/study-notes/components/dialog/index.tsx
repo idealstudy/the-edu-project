@@ -9,6 +9,7 @@ import {
   StudyNote,
   StudyNoteGroupPageable,
 } from '@/features/study-notes/model';
+// TODO : study-rooms 의 컴포넌트 쓰고 있네 나중에 shared 로 옮겨야지 않을까요? - @성진
 import { ConfirmDialog } from '@/features/study-rooms/components/common/dialog/confirm-dialog';
 import { InputDialog } from '@/features/study-rooms/components/common/dialog/input-dialog';
 import type { DialogAction, DialogState } from '@/shared/components/dialog';

@@ -13,6 +13,7 @@ import type {
   StudyNoteGroup,
   StudyRoom,
   StudyRoomClient,
+  StudyRoomDetail,
 } from '../model/types';
 
 export const createTeacherStudyRoomApi = (
@@ -20,10 +21,20 @@ export const createTeacherStudyRoomApi = (
 ): TeacherStudyRoomRequests => {
   const base = createStudyRoomBaseApi(client);
 
-  // 스터디룸 조회
+  // 스터디룸 목록 조회
   const getStudyRooms = async (): Promise<StudyRoom[]> => {
     const response = await base.client.get<CommonResponse<StudyRoom[]>>(
       base.teacherBasePath
+    );
+    return response.data;
+  };
+
+  // 스터디룸 상세 조회
+  const getStudyRoomDetail = async (
+    studyRoomId: number
+  ): Promise<StudyRoomDetail> => {
+    const response = await base.client.get<CommonResponse<StudyRoomDetail>>(
+      `${base.teacherBasePath}/${studyRoomId}`
     );
     return response.data;
   };
@@ -76,6 +87,7 @@ export const createTeacherStudyRoomApi = (
 
   return {
     getStudyRooms,
+    getStudyRoomDetail,
     create,
     invitations: { send: sendInvitation, search: searchInvitation },
     getStudyNoteGroup,
