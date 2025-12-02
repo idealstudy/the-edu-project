@@ -23,6 +23,7 @@ const PUBLIC_PATHS = new Set<string>([
   '/login',
   '/register',
   '/api/v1/auth/login',
+  '/api/v1/member/info', // 자체 인증 처리 (쿠키 없으면 204 반환)
 ]);
 
 // 인프라(next.js)
