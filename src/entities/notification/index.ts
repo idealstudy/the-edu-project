@@ -7,7 +7,6 @@ import { dto } from '@/entities/notification/infrastructure';
 export * from './infrastructure';
 export * from './core';
 export * from './mapper';
-export * from './hooks/use-notification-query';
 
 /* ─────────────────────────────────────────────────────
  * 스키마
