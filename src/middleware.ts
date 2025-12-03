@@ -4,11 +4,9 @@ import { NextRequest, NextResponse } from 'next/server';
 const ALLOWED_ORIGINS = [
   'http://localhost:3000',
   'https://localhost:3000',
-  'https://app.dev.the-edu.site',
-  'https://the-edu.vercel.app',
-  'https://the-edu-dev.vercel.app',
-  'https://dev.the-edu.site',
+  'https://dev.d-edu.site',
   'https://d-edu.site',
+  'https://the-edu-front.vercel.app',
 ];
 const createCorsHeaders = (origin: string) => ({
   'Access-Control-Allow-Origin': origin,
