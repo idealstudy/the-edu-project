@@ -1,12 +1,9 @@
+// vercel 에서 NEXT_PUBLIC_BACKEND_API_URL, BACKEND_API_URL 환경 변수 설정 동일하게 필요
+// 단 develop, main 브랜치 별로 다르게 설정
 const DEFAULT_BACKEND_API_URL = 'https://api.dev.the-edu.site/api';
 
 const sanitize = (value: string | undefined) =>
   value && value.trim().length > 0 ? value.trim() : undefined;
-
-// 테스트 전용
-// BFF/Next.js API Route 엔드포인트
-// 테스트 환경에서 vite.config.ts NEXT_PUBLIC_BASE_URL 값
-// export const BFF_BASE_URL = sanitize(process.env.NEXT_PUBLIC_BACKEND_API_URL) ?? DEFAULT_BACKEND_API_URL;
 
 /* ─────────────────────────────────────────────────────
  * 공용 클라이언트 번들에서 사용하는 백엔드 API 기본 URL
