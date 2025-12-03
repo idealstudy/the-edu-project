@@ -28,9 +28,29 @@ const PUBLIC_PATHS = new Set<string>([
 // 인프라(next.js)
 function isInfraRequest(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
+
+  console.log('[MW] pathname=', req.nextUrl.pathname);
+  console.log('[MW] search=', req.nextUrl.search);
+  console.log(
+    '[MW] headers: next-router-state-tree=',
+    req.headers.has('next-router-state-tree')
+  );
+  console.log(
+    '[MW] headers: next-router-prefetch=',
+    req.headers.get('next-router-prefetch')
+  );
+  console.log('[MW] headers: purpose=', req.headers.get('purpose'));
+  console.log(
+    '[MW] headers: rsc=',
+    req.headers.get('rsc'),
+    'has rsc header=',
+    req.headers.has('rsc')
+  );
+
   return (
     // req.method === 'OPTIONS' ||
     req.headers.get('next-router-prefetch') === '1' ||
+    req.headers.get('next-router-state-tree') === '1' ||
     req.headers.get('purpose') === 'prefetch' ||
     req.headers.get('rsc') === '1' ||
     searchParams.has('_rsc') ||
