@@ -33,26 +33,26 @@ jobs:
           git config user.name "park J"
           git config user.email "youremail@example.com"
 
-      - name: Add remote to team repo (the-edu)
+      - name: Add remote to deployment repo (idealstudy/the-edu-project)
         run: |
-          git remote add personal-repo https://the-edu:${{ secrets.PERSONAL_REPO_TOKEN }}@github.com/the-edu/the-edu-project.git
+          git remote add deployment-repo https://idealstudy:${{ secrets.PERSONAL_REPO_TOKEN }}@github.com/idealstudy/the-edu-project.git
 
-      - name: Push to same branch on team repo
+      - name: Push to same branch on deployment repo
         run: |
           BRANCH="${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}"
-          git push -f personal-repo HEAD:"$BRANCH"
+          git push -f deployment-repo HEAD:"$BRANCH"
 
       - name: Cleanup remote
-        run: git remote remove personal-repo
+        run: git remote remove deployment-repo
 
   sync-delete:
     if: github.event_name == 'delete' && github.event.ref_type == 'branch'
     runs-on: ubuntu-latest
     steps:
-      - name: Delete branch on team repo
+      - name: Delete branch on deployment repo
         run: |
           REF="${{ github.event.ref }}"
           BRANCH="${REF#refs/heads/}"
           git init
-          git remote add personal-repo https://the-edu:${{ secrets.PERSONAL_REPO_TOKEN }}@github.com/the-edu/the-edu-project.git
-          git push personal-repo --delete "$BRANCH" || true
+          git remote add deployment-repo https://idealstudy:${{ secrets.PERSONAL_REPO_TOKEN }}@github.com/idealstudy/the-edu-project.git
+          git push deployment-repo --delete "$BRANCH" || true

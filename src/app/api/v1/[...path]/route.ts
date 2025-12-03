@@ -79,12 +79,36 @@ async function handleRequest(
     }
   }
 
+  // 개발 환경에서 백엔드 요청 로그
+  console.log('[BFF] → Backend Request:', {
+    method,
+    url: backendUrl,
+    hasCookies: !!cookieHeader,
+    hasBody: !!requestBody,
+    cookieNames: cookieHeader
+      ? cookieHeader
+          .split(';')
+          .map((c) => c.split('=')[0]?.trim() ?? '')
+          .filter(Boolean)
+      : [],
+  });
+
   // 백엔드로 요청 전송
   const backendResponse = await fetch(backendUrl, {
     method,
     headers: requestHeaders,
     body: requestBody,
     cache: 'no-store',
+  });
+
+  // 개발 환경에서 백엔드 응답 로그
+  const responseClone = backendResponse.clone();
+  const responseText: string = await responseClone.text();
+  console.log('[BFF] ← Backend Response:', {
+    status: backendResponse.status,
+    statusText: backendResponse.statusText,
+    bodyLength: responseText.length,
+    preview: responseText.substring(0, 300),
   });
 
   // 응답 본문 파싱
