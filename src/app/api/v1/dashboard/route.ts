@@ -126,7 +126,6 @@ export async function GET() {
     }
 
     // 예측 못 한 에러
-    // eslint-disable-next-line
     console.error('[dashboard BFF] unexpected error', error);
     return NextResponse.json(
       { message: 'Internal Server Error', status: 500 },

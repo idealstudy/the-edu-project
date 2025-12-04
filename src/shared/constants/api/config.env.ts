@@ -1,5 +1,5 @@
 // vercel 에서 NEXT_PUBLIC_BACKEND_API_URL, BACKEND_API_URL 환경 변수 설정안해도 되게함.
-//
+
 const DEFAULT_DEV_BACKEND_API_URL = 'https://api.dev.the-edu.site/api';
 const DEFAULT_PROD_BACKEND_API_URL = 'https://api.d-edu.site/api';
 
@@ -44,20 +44,26 @@ const getBackendUrl = () => {
  * 우선순위:
  * 1. NEXT_PUBLIC_BACKEND_API_URL 환경 변수 (빌드 시점에 클라이언트 번들에 포함)
  * 2. getBackendUrl() - 런타임에 호스트 확인 (클라이언트) 또는 VERCEL_ENV 확인 (서버)
- *
- * getBackendUrl()은 항상 문자열을 반환하므로 publicBackendUrl도 항상 문자열입니다.
  * ────────────────────────────────────────────────────*/
-const publicBackendUrl: string =
+const publicBackendUrl =
   sanitize(process.env.NEXT_PUBLIC_BACKEND_API_URL) ?? getBackendUrl();
 
 /* ─────────────────────────────────────────────────────
  * Next.js Route Handler 등 서버 전용 환경에서 사용하는 백엔드 API 기본 URL
  * BFF가 스프링 서버로 요청을 보낼 때 사용
  *
- * publicBackendUrl은 항상 문자열이므로 fallback으로 충분합니다.
+ * 중요: serverBackendUrl은 절대 undefined가 될 수 없습니다.
+ * getBackendUrl()은 항상 문자열을 반환하므로 최종 fallback으로 사용합니다.
  * ────────────────────────────────────────────────────*/
-const serverBackendUrl: string =
-  sanitize(process.env.BACKEND_API_URL) ?? publicBackendUrl;
+const serverBackendUrl =
+  sanitize(process.env.BACKEND_API_URL) ?? publicBackendUrl ?? getBackendUrl();
+
+// 타입 안전성 보장: 절대 undefined가 아님을 확인
+if (!serverBackendUrl) {
+  throw new Error(
+    'serverBackendUrl must be defined. This should never happen.'
+  );
+}
 
 export const env = {
   backendApiUrl: publicBackendUrl,
