@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { env } from '@/shared/constants/api';
+
 // CORS
 const ALLOWED_ORIGINS = [
   'http://localhost:3000',
@@ -16,6 +18,7 @@ const createCorsHeaders = (origin: string) => ({
   'Access-Control-Allow-Credentials': 'true',
 });
 
+// 인증없이 접근 가능한 경로
 const PUBLIC_PATHS = new Set<string>([
   '/',
   '/login',
@@ -24,27 +27,12 @@ const PUBLIC_PATHS = new Set<string>([
   '/api/v1/member/info', // 자체 인증 처리 (쿠키 없으면 204 반환)
 ]);
 
-// 인프라(next.js)
+// next.js 인프라 내부로의 요청인지 판단
 function isInfraRequest(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
-
-  console.log('[MW] pathname=', req.nextUrl.pathname);
-  console.log('[MW] search=', req.nextUrl.search);
-  console.log(
-    '[MW] headers: next-router-state-tree=',
-    req.headers.has('next-router-state-tree')
-  );
-  console.log(
-    '[MW] headers: next-router-prefetch=',
-    req.headers.get('next-router-prefetch')
-  );
-  console.log('[MW] headers: purpose=', req.headers.get('purpose'));
-  console.log(
-    '[MW] headers: rsc=',
-    req.headers.get('rsc'),
-    'has rsc header=',
-    req.headers.has('rsc')
-  );
+  req.headers.forEach((value, key) => {
+    console.log(`[MW] headers: ${key}=${value}`);
+  });
 
   return (
     // req.method === 'OPTIONS' ||
@@ -74,8 +62,14 @@ function handleAuthGuard(req: NextRequest) {
   return NextResponse.next();
 }
 
+// 미들웨어 메인함수
 export function middleware(req: NextRequest) {
   const { pathname, origin } = req.nextUrl;
+
+  console.log('env', env);
+
+  console.log(req);
+
   if (req.method === 'OPTIONS') {
     const reqOrigin = req.headers.get('origin') || origin;
     let allowedOrigin = reqOrigin;
@@ -93,11 +87,18 @@ export function middleware(req: NextRequest) {
   }
 
   // 개발용
-  if (process.env.NODE_ENV !== 'production') return NextResponse.next();
-  if (isInfraRequest(req)) return NextResponse.next();
+  if (process.env.NODE_ENV !== 'production') {
+    return NextResponse.next();
+  }
+
+  if (isInfraRequest(req)) {
+    return NextResponse.next();
+  }
 
   // 공개 경로 통과
-  if (PUBLIC_PATHS.has(pathname)) return NextResponse.next();
+  if (PUBLIC_PATHS.has(pathname)) {
+    return NextResponse.next();
+  }
 
   // 인증 가드
   return handleAuthGuard(req);
