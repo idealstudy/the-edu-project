@@ -1,5 +1,5 @@
 import { defaultExtensions } from '@/shared/components/editor/model/extensions';
-import { TextViewerProps } from '@/shared/components/editor/model/types';
+import { TextViewerProps } from '@/shared/components/editor/types';
 import { cn } from '@/shared/lib';
 import { EditorContent, useEditor } from '@tiptap/react';
 
