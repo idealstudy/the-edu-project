@@ -21,6 +21,7 @@ const RoleRadioGroupItem = ({
       className={cn(
         'text-gray-scale-gray-50 border-gray-scale-gray-10 flex h-[180px] w-[174px] cursor-pointer flex-col items-center justify-center gap-2 border pt-6 pb-3 font-medium',
         'mock-[state=checked]:border-line-primary mock-[state=checked]:text-text-main mock-[state=checked]:outline-key-color-primary mock-[state=checked]:outline-1',
+        `data-[state=checked]:border-key-color-primary data-[state=checked]:border-2`,
         className
       )}
       {...props}

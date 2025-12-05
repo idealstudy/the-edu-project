@@ -85,12 +85,14 @@ export default function StepTwo({
                       <RadioCard.Item
                         key={option.value}
                         value={option.value}
-                        className="border-line-line2 flex h-32 flex-1 items-center justify-center"
+                        className={`border-line-line2 flex h-32 flex-1 cursor-pointer items-center justify-center ${field.value === option.value ? 'border-key-color-primary bg-key-color-primary/10 text-key-color-primary' : ''} `}
                       >
                         <div className="text-center">
                           <p className="font-medium">{option.label}</p>
                           {option.subLabel && (
-                            <p className="text-sm text-gray-500">
+                            <p
+                              className={`text-sm text-gray-500 ${field.value === option.value ? 'text-key-color-primary' : ''}`}
+                            >
                               {option.subLabel}
                             </p>
                           )}
