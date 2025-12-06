@@ -1,6 +1,6 @@
 // vercel 에서 NEXT_PUBLIC_BACKEND_API_URL, BACKEND_API_URL 환경 변수 설정안해도 되게함.
-
-const DEFAULT_DEV_BACKEND_API_URL = 'https://api.dev.the-edu.site/api';
+//
+const DEFAULT_DEV_BACKEND_API_URL = 'https://api.dev.d-edu.site/api';
 const DEFAULT_PROD_BACKEND_API_URL = 'https://api.d-edu.site/api';
 
 const sanitize = (value: string | undefined) =>
@@ -31,7 +31,7 @@ const getBackendUrl = () => {
   }
 
   // 개발 도메인
-  if (hostname === 'dev.d-edu.site' || hostname.includes('dev.the-edu.site')) {
+  if (hostname === 'dev.d-edu.site') {
     return DEFAULT_DEV_BACKEND_API_URL;
   }
 
