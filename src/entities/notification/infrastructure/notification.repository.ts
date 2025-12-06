@@ -17,7 +17,7 @@ const getNotificationList = async (): Promise<FrontendNotification[]> => {
   try {
     const response = await api.bff.client.get<
       CommonResponse<NotificationDTO[]>
-    >('/api/v1/notifications/all');
+    >('/api/v1/notification');
 
     const validatedResponse = adapters.fromApi.parse(response);
 

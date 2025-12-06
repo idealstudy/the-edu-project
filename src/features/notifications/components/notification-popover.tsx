@@ -1,9 +1,8 @@
 'use client';
 
-import { useMemo } from 'react';
-
 import Image from 'next/image';
 
+import { useNotifications } from '@/features/notifications/hooks/use-notifications';
 import {
   Popover,
   PopoverClose,
@@ -12,34 +11,6 @@ import {
 } from '@/shared/components/ui/popover';
 import { cn } from '@/shared/lib/utils';
 
-type NotificationItem = {
-  id: string;
-  category: '수업노트' | '질문/답변' | '과제' | '공지';
-  message: string;
-  createdAt: string; // “3시간 전” 같은 표현
-};
-
-const MOCK_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: '1',
-    category: '수업노트',
-    message: '〇〇〇 선생님이 새로운 수업노트를 작성했습니다.',
-    createdAt: '3시간 전',
-  },
-  {
-    id: '2',
-    category: '질문/답변',
-    message: '〇〇〇 선생님이 새로운 과제를 생성했습니다.',
-    createdAt: '3시간 전',
-  },
-  {
-    id: '3',
-    category: '과제',
-    message: '〇〇〇 선생님이 새로운 과제를 생성했습니다.',
-    createdAt: '3시간 전',
-  },
-];
-
 type NotificationPopoverProps = {
   defaultOpen?: boolean;
 };
@@ -47,7 +18,9 @@ type NotificationPopoverProps = {
 export function NotificationPopover({
   defaultOpen = false,
 }: NotificationPopoverProps) {
-  const notifications = useMemo(() => MOCK_NOTIFICATIONS, []);
+  const { data, isLoading, error } = useNotifications();
+
+  const notifications = data ?? [];
   const hasNotifications = notifications.length > 0;
 
   return (
@@ -82,7 +55,19 @@ export function NotificationPopover({
           </PopoverClose>
         </header>
 
-        {hasNotifications ? (
+        {isLoading && (
+          <div className="flex h-[200px] items-center justify-center bg-white px-6 py-12 text-sm text-gray-500">
+            <p>알림을 불러오는 중..</p>
+          </div>
+        )}
+
+        {error && (
+          <div className="flex h-[200px] items-center justify-center bg-white px-6 py-12 text-sm text-gray-500">
+            <p>알림을 불러오는데 실패했습니다.</p>
+          </div>
+        )}
+
+        {!isLoading && !error && hasNotifications && (
           <ul className="max-h-[320px] overflow-y-auto bg-white">
             {notifications.map((item) => (
               <li
@@ -102,7 +87,7 @@ export function NotificationPopover({
                 </div>
                 <div className="ml-3 flex flex-col items-end gap-3">
                   <span className="text-xs text-gray-400">
-                    {item.createdAt}
+                    {item.relativeTime}
                   </span>
                   <button
                     type="button"
@@ -115,9 +100,11 @@ export function NotificationPopover({
               </li>
             ))}
           </ul>
-        ) : (
+        )}
+
+        {!isLoading && !error && !hasNotifications && (
           <div className="flex h-[200px] items-center justify-center bg-white px-6 py-12 text-sm text-gray-500">
-            최근 90일 동안 받은 알림이 없어요.
+            <p>최근 90일 동안 받은 알림이 없어요.</p>
           </div>
         )}
 
