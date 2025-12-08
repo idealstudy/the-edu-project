@@ -1,7 +1,6 @@
 'use client';
 
-import Image from 'next/image';
-
+import NotificationIcon from '@/features/notifications/components/notification-icon';
 import { useNotifications } from '@/features/notifications/hooks/use-notifications';
 import {
   Popover,
@@ -28,27 +27,21 @@ export function NotificationPopover({
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="relative flex size-6 items-center justify-center outline-none"
+          className="relative flex size-6 cursor-pointer items-center justify-center outline-none"
           aria-label="알림 확인"
         >
-          <Image
-            src="/img_header_bell.svg"
-            alt="알림"
-            width={24}
-            height={24}
-          />
+          <NotificationIcon hasNotifications={hasNotifications} />
           <span className="sr-only">알림</span>
-          {/* 필요 시 배지 */}
         </button>
       </PopoverTrigger>
 
-      <PopoverContent className="overflow-hidden p-0">
+      <PopoverContent className="mr-4 overflow-hidden p-0">
         <header className="flex items-center justify-between border-b px-6 py-4">
           <h2 className="text-lg font-semibold">알림</h2>
           <PopoverClose asChild>
             <button
               type="button"
-              className="text-sm text-gray-500 hover:text-gray-700"
+              className="cursor-pointer text-sm text-gray-500 hover:text-gray-700"
             >
               닫기
             </button>
@@ -111,13 +104,13 @@ export function NotificationPopover({
         <footer className="flex items-center justify-between border-t bg-gray-900 px-6 py-4 text-sm text-white">
           <button
             type="button"
-            className="hover:underline"
+            className="cursor-pointer hover:underline"
           >
             전체 삭제
           </button>
           <button
             type="button"
-            className="flex items-center gap-2 hover:underline"
+            className="flex cursor-pointer items-center gap-2 hover:underline"
           >
             ⚙️ 알림 설정
           </button>
