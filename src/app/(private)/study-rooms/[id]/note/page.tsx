@@ -90,6 +90,16 @@ export default function StudyNotePage() {
     enabled: isGroupSelected && role === 'ROLE_STUDENT',
   });
 
+  // 현재 선택된 query 결정
+  const currentQuery =
+    selectedGroupId === 'all'
+      ? role === 'ROLE_TEACHER'
+        ? teacherListQuery
+        : studentListQuery
+      : role === 'ROLE_TEACHER'
+        ? teacherByGroupQuery
+        : studentByGroupQuery;
+
   const studyNotesByGroupId =
     role === 'ROLE_TEACHER'
       ? teacherByGroupQuery.data
@@ -157,6 +167,7 @@ export default function StudyNotePage() {
         studyRoomId={studyRoomId}
         pageable={pageable}
         keyword={search}
+        onRefresh={currentQuery.refetch}
       />
     </StudyRoomDetailLayout>
   );

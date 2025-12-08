@@ -24,6 +24,7 @@ export const StudyNotesDialog = ({
   item,
   pageable,
   keyword,
+  onRefresh,
 }: {
   state: DialogState;
   dispatch: (action: DialogAction) => void;
@@ -31,6 +32,7 @@ export const StudyNotesDialog = ({
   item: StudyNote;
   pageable: StudyNoteGroupPageable;
   keyword: string;
+  onRefresh: () => void;
 }) => {
   const { role } = useRole();
   const isTeacher = role === 'ROLE_TEACHER';
@@ -70,6 +72,12 @@ export const StudyNotesDialog = ({
         taughtAt: item.taughtAt,
         studentIds: data?.studentInfos?.map((student) => student.studentId),
         pageable: pageable,
+      },
+      {
+        onSuccess: () => {
+          onRefresh(); // refetch
+          dispatch({ type: 'CLOSE' });
+        },
       }
       // {
       //   onError: (error) => {
