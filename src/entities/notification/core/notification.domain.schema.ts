@@ -29,10 +29,10 @@ const NotificationShape = base.schema
     read: true,
   })
   .extend({
-    regDate: z.preprocess(
-      (val) => (typeof val === 'string' ? new Date(val) : val),
-      z.date()
-    ),
+    regDate: z.preprocess((val) => {
+      if (!val) return new Date();
+      return typeof val === 'string' ? new Date(val) : val;
+    }, z.date()),
   });
 
 /* ─────────────────────────────────────────────────────

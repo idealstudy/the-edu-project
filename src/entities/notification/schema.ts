@@ -7,7 +7,7 @@ const NotificationSchema = z.object({
   message: z.string(),
   type: NotificationTypeSchema,
   targetId: z.number().int().nonnegative(),
-  regDate: z.string(),
+  regDate: z.string().nullable(),
   read: z.boolean(),
 });
 
