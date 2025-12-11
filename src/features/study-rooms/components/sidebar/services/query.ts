@@ -90,7 +90,22 @@ export const useUpdateStudyRoom = () => {
 };
 
 export const useDeleteStudyRoom = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (args: { studyRoomId: number }) => deleteStudyRoom(args),
+
+    onSuccess: (_, variables) => {
+      const id = variables.studyRoomId;
+      queryClient.invalidateQueries({
+        queryKey: StudyRoomsQueryKey.detail(id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: StudyRoomsQueryKey.teacherList,
+      });
+      queryClient.invalidateQueries({
+        queryKey: StudyRoomsQueryKey.studentList,
+      });
+    },
   });
 };
