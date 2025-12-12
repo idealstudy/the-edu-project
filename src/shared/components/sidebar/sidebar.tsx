@@ -55,7 +55,7 @@ const SidebarRoot = ({ children }: { children: ReactNode }) => {
         'desktop:flex'
       )}
     >
-      <aside className="bg-system-background-alt w-sidebar-width relative flex-1 flex-col overflow-y-auto rounded-r-[12px] border-y border-r border-[#D9D9D9] p-3">
+      <aside className="bg-system-background-alt w-sidebar-width relative flex-1 flex-col overflow-hidden rounded-r-[12px] border-y border-r border-[#D9D9D9] p-3">
         {children}
       </aside>
     </div>
@@ -164,6 +164,10 @@ const SidebarList = <TItem extends BaseSidebarItem>({
   return <ul className="flex flex-col" />;
 };
 
+const SidebarScrollArea = ({ children }: { children: ReactNode }) => {
+  return <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>;
+};
+
 /* ─────────────────────────────────────────────────────
  * Sidebar.ListItem(스터디룸 목록 개별 아이템)
  * ────────────────────────────────────────────────────*/
@@ -261,5 +265,6 @@ Sidebar.ListItem = SidebarListItem;
 Sidebar.Header = SidebarHeader;
 Sidebar.HeaderText = SidebarHeaderText;
 Sidebar.SectionIcon = SidebarSectionIcon;
+Sidebar.ScrollArea = SidebarScrollArea;
 
 export { Sidebar };
