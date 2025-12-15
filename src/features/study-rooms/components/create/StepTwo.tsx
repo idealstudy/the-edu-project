@@ -52,7 +52,12 @@ export default function StepTwo({
   disabled?: boolean;
   onRequestSubmit?: () => void;
 }) {
-  const { control, getValues, setValue } = useFormContext();
+  const {
+    control,
+    getValues,
+    setValue,
+    formState: { isValid },
+  } = useFormContext();
   const title = getValues('basic.title') ?? '';
   const school = useWatch({ control, name: 'schoolInfo.schoolLevel' });
 
@@ -74,6 +79,7 @@ export default function StepTwo({
               <Controller
                 name={el.name}
                 control={control}
+                rules={{ required: true }}
                 render={({ field }) => (
                   <RadioGroup
                     value={field.value}
@@ -110,6 +116,7 @@ export default function StepTwo({
                   <Controller
                     name="schoolInfo.schoolLevel"
                     control={control}
+                    rules={{ required: true }}
                     render={({ field }) => (
                       <Select
                         value={field.value}
@@ -139,6 +146,7 @@ export default function StepTwo({
                   <Controller
                     name="schoolInfo.grade"
                     control={control}
+                    rules={{ required: true }}
                     render={({ field }) => (
                       <Select
                         value={field.value}
@@ -147,6 +155,7 @@ export default function StepTwo({
                       >
                         <Select.Trigger
                           placeholder="학년을 선택하세요"
+                          disabled={!school}
                           className="w-[240px]"
                         />
                         <Select.Content>
@@ -181,7 +190,7 @@ export default function StepTwo({
         <Button
           type="button"
           className="w-48"
-          disabled={disabled}
+          disabled={disabled || !isValid}
           onClick={onRequestSubmit}
         >
           {disabled ? '생성 중...' : '완료'}
