@@ -1,5 +1,3 @@
-import { useRouter } from 'next/navigation';
-
 import { DialogAction } from '@/shared/components/dialog';
 import { Button } from '@/shared/components/ui/button';
 import { Dialog } from '@/shared/components/ui/dialog';
@@ -12,6 +10,7 @@ export const ConfirmDialog = ({
   title,
   description,
   onDelete,
+  onConfirm,
 }: {
   type: 'delete' | 'confirm';
   open: boolean;
@@ -19,8 +18,8 @@ export const ConfirmDialog = ({
   title?: string;
   description: string;
   onDelete?: () => void;
+  onConfirm?: () => void;
 }) => {
-  const router = useRouter();
   return (
     <Dialog isOpen={open}>
       <Dialog.Content className="w-[598px]">
@@ -60,13 +59,10 @@ export const ConfirmDialog = ({
               if (type === 'delete') {
                 onDelete?.();
                 return;
-              } else if (type === 'confirm') {
-                router.push('/dashboard');
-                // onConfirm?.()
-                // console.log('확인니용');
-
-                dispatch({ type: 'CLOSE' });
               }
+
+              onConfirm?.();
+              dispatch({ type: 'CLOSE' });
             }}
           >
             {type === 'delete' ? '삭제' : '확인'}

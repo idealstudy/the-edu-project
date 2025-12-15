@@ -1,7 +1,5 @@
 'use client';
 
-// import { useEffect } from 'react';
-// import { useRouter } from 'next/navigation';
 import { ConfirmDialog } from '@/features/study-rooms/components/common/dialog/confirm-dialog';
 import { InputDialog } from '@/features/study-rooms/components/common/dialog/input-dialog';
 import { DialogAction, DialogState } from '@/shared/components/dialog';
@@ -25,19 +23,9 @@ export const StudyroomGroupDialogs = ({
   selectedGroupId: number;
   handleSelectGroupId: (id: number | 'all') => void;
 }) => {
-  // useEffect(() => {
-  //   if (dialog.status === 'open') {
-  //     console.log('dialog 상태:', dialog.kind);
-  //   } else {
-  //     console.log('dialog 상태: idle');
-  //   }
-  // }, [dialog]);
-
   const { mutate: createStudyNoteGroup } = useCreateStudyNoteGroup();
   const { mutate: updateStudyNoteGroup } = useUpdateStudyNoteGroup();
   const { mutate: deleteStudyNoteGroup } = useDeleteStudyNoteGroup();
-
-  // const router = useRouter();
 
   const handleCreateGroup = (title: string) => {
     createStudyNoteGroup({ studyRoomId, title });
@@ -59,11 +47,6 @@ export const StudyroomGroupDialogs = ({
     });
     dispatch({ type: 'GO_TO_CONFIRM' });
   };
-
-  // const onConfirm = () => {
-  //   console.log('됐다');
-  //   router.push('/dashboard');
-  // };
 
   return (
     <>
@@ -116,7 +99,6 @@ export const StudyroomGroupDialogs = ({
             open={true}
             dispatch={dispatch}
             description="수업노트 그룹이 삭제되었습니다."
-            // onConfirm={() => onConfirm()}
           />
         )}
     </>

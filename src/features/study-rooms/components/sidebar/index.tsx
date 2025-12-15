@@ -2,13 +2,13 @@
 
 import { useReducer, useState } from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import { ConfirmDialog } from '@/features/study-rooms/components/common/dialog/confirm-dialog';
 import { InputDialog } from '@/features/study-rooms/components/common/dialog/input-dialog';
 import { StudyroomGroups } from '@/features/study-rooms/components/sidebar/groups';
 import { InvitationDialog } from '@/features/study-rooms/components/student-invitation/InvitationDialog';
 import StudentInvitation from '@/features/study-rooms/components/student-invitation/StudentInvitation';
-//import { useSearchParams, useRouter } from 'next/navigation';
-
 import { useTeacherStudyRoomDetailQuery } from '@/features/study-rooms/hooks';
 import { ColumnLayout } from '@/layout/column-layout';
 import {
@@ -22,13 +22,6 @@ import { StudyroomSidebarHeader } from './header';
 import { useDeleteStudyRoom, useUpdateStudyRoom } from './services/query';
 import { StudyStats } from './status';
 
-/*const parseGroupIdParam = (value: string | null): number | 'all' => {
-  if (!value) return 'all';
-  if (value === 'all') return 'all';
-  const parsed = Number.parseInt(value, 10);
-  return Number.isNaN(parsed) ? 'all' : parsed;
-};*/
-
 export const StudyroomSidebar = ({
   studyRoomId,
   segment,
@@ -36,8 +29,7 @@ export const StudyroomSidebar = ({
   studyRoomId: number;
   segment: string | undefined;
 }) => {
-  // const router = useRouter();
-  // const searchParams = useSearchParams();
+  const router = useRouter();
 
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
   const [selectedGroupId, setSelectedGroupId] = useState<number | 'all'>('all');
@@ -76,6 +68,10 @@ export const StudyroomSidebar = ({
     setDeleteNoticeMsg('스터디룸이 삭제되었습니다.');
     dispatch({ type: 'GO_TO_CONFIRM' });
   };
+  const onConfirmDelete = () => {
+    router.push('/dashboard');
+  };
+
   if (!segment) return null;
   return (
     <>
@@ -85,6 +81,7 @@ export const StudyroomSidebar = ({
           open={true}
           dispatch={dispatch}
           description={deleteNoticeMsg}
+          onConfirm={onConfirmDelete}
         />
       )}
 
