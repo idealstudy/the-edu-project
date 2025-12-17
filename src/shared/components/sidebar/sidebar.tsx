@@ -87,7 +87,7 @@ const SidebarItem = ({
     <Link
       href={href}
       className={cn(
-        'flex h-[58px] items-center gap-2 rounded-lg px-5 font-bold',
+        'flex min-h-[58px] items-center gap-2 rounded-lg px-5 font-bold',
         isActive
           ? 'text-key-color-primary bg-[#FFF4F1]'
           : 'hover:bg-gray-scale-gray-5',
@@ -165,7 +165,7 @@ const SidebarList = <TItem extends BaseSidebarItem>({
 };
 
 const SidebarScrollArea = ({ children }: { children: ReactNode }) => {
-  return <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>;
+  return <div className="max-h-none min-h-0 overflow-y-auto">{children}</div>;
 };
 
 /* ─────────────────────────────────────────────────────
