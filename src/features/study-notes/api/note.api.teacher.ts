@@ -50,10 +50,10 @@ export const createTeacherNotesApi = (): TeacherNotesApi => ({
     );
   },
 
-  moveToGroup({ studyNoteId, groupId, studyRoomId }) {
+  moveToGroup({ studyNoteId, groupId }) {
     return api.private.put(
-      `/teacher/study-rooms/${studyRoomId}/teaching-notes/${studyNoteId}/group`,
-      { groupId }
+      `/teacher/teaching-notes/${studyNoteId}/teaching-note-groups`,
+      { teachingNoteGroupId: groupId }
     );
   },
 

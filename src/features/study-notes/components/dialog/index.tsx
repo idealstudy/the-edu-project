@@ -137,6 +137,7 @@ export const StudyNotesDialog = ({
           studyNoteId={item.id}
           pageable={pageable}
           keyword={keyword}
+          onRefresh={onRefresh}
         />
       )}
 
