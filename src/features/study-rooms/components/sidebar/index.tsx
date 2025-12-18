@@ -25,14 +25,17 @@ import { StudyStats } from './status';
 export const StudyroomSidebar = ({
   studyRoomId,
   segment,
+  selectedGroupId,
+  onSelectGroup,
 }: {
   studyRoomId: number;
   segment: string | undefined;
+  selectedGroupId: number | 'all';
+  onSelectGroup: (id: number | 'all') => void;
 }) => {
   const router = useRouter();
 
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
-  const [selectedGroupId, setSelectedGroupId] = useState<number | 'all'>('all');
   const [deleteNoticeMsg, setDeleteNoticeMsg] =
     useState('수업노트 그룹이 삭제되었습니다.');
   const { role } = useRole();
@@ -45,10 +48,6 @@ export const StudyroomSidebar = ({
       enabled: role === 'ROLE_TEACHER',
     }
   );
-
-  const handleSelectGroupId = (id: number | 'all') => {
-    setSelectedGroupId(id);
-  };
 
   // TODO: 스터디룸 이름 변경 API 연결
   const handleSubmitRoomRename = (name: string, others: StudyRoomDetail) => {
@@ -141,7 +140,7 @@ export const StudyroomSidebar = ({
             role={role}
             studyRoomId={studyRoomId}
             selectedGroupId={selectedGroupId}
-            handleSelectGroupId={handleSelectGroupId}
+            handleSelectGroupId={onSelectGroup}
           />
         )}
         {/* TODO: 마지막 활동 시간 추가 */}

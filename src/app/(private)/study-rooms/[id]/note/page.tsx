@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import {
   useParams,
@@ -10,6 +10,7 @@ import {
 } from 'next/navigation';
 
 import { StudyNotesList } from '@/features/study-notes/components/list';
+import { StudyNoteGroupContext } from '@/features/study-notes/contexts/study-note-group.context';
 import {
   useGetStudentNotesByGroup,
   useGetStudentNotesList,
@@ -28,7 +29,8 @@ export default function StudyNotePage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const selectedGroupId = 'all';
+  const ctx = useContext(StudyNoteGroupContext);
+  const selectedGroupId = ctx?.selectedGroupId ?? 'all';
 
   const currentPage = useMemo(() => {
     const raw = searchParams.get('page');
