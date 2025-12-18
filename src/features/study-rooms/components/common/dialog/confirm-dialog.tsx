@@ -11,6 +11,7 @@ export const ConfirmDialog = ({
   description,
   onDelete,
   onConfirm,
+  onRefresh,
 }: {
   type: 'delete' | 'confirm';
   open: boolean;
@@ -19,6 +20,7 @@ export const ConfirmDialog = ({
   description: string;
   onDelete?: () => void;
   onConfirm?: () => void;
+  onRefresh?: () => void;
 }) => {
   return (
     <Dialog isOpen={open}>
@@ -62,6 +64,7 @@ export const ConfirmDialog = ({
               }
 
               onConfirm?.();
+              onRefresh?.();
               dispatch({ type: 'CLOSE' });
             }}
           >

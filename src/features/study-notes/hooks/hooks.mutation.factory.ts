@@ -1,4 +1,5 @@
 import { StudyNoteQueryKey } from '@/entities/study-note';
+import { studyRoomsQueryKey } from '@/entities/study-room';
 import { teacherMutationOptions } from '@/features/study-notes/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -48,9 +49,27 @@ export const createTeacherStudyNoteMutations = () => {
     });
   };
 
+  // 수업 노트 삭제
+  const useRemoveStudyNote = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+      ...teacherMutationOptions.removeStudyNote(),
+      onSuccess: (_data, variables) => {
+        queryClient.invalidateQueries({
+          queryKey: [StudyNoteQueryKey.list],
+          exact: false,
+        });
+        queryClient.invalidateQueries({
+          queryKey: studyRoomsQueryKey.detail(variables.studyRoomId),
+        });
+      },
+    });
+  };
+
   return {
     useUpdateStudyNote,
     useMoveNoteToGroup,
     useRemoveNoteFromGroup,
+    useRemoveStudyNote,
   };
 };

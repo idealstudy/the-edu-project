@@ -2,7 +2,8 @@
 
 import { useStudyNoteDetailQuery } from '@/features/dashboard/studynote/detail/service/query';
 import {
-  useRemoveNoteFromGroup,
+  // useRemoveNoteFromGroup,
+  useRemoveStudyNote,
   useUpdateStudyNote,
 } from '@/features/study-notes/hooks';
 import {
@@ -44,7 +45,8 @@ export const StudyNotesDialog = ({
 
   const { mutate: updateStudyNote, isPending: isUpdating } =
     useUpdateStudyNote();
-  const { mutate: removeNoteMutate } = useRemoveNoteFromGroup();
+  // const { mutate: removeNoteMutate } = useRemoveNoteFromGroup();
+  const { mutate: removeNoteMutate } = useRemoveStudyNote();
 
   if (isPending) {
     return <div>Loading...</div>;
@@ -157,6 +159,7 @@ export const StudyNotesDialog = ({
           type="confirm"
           open
           dispatch={dispatch}
+          onRefresh={onRefresh}
           description="수업노트가 삭제되었습니다."
         />
       )}
