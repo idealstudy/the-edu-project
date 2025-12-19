@@ -175,8 +175,8 @@ const SidebarListItem = ({ item }: { item: BaseSidebarItem }) => {
   const { pathname } = useSidebarContext();
   // item.id를 사용해서 자동으로 상세 페이지 경로 생성
   const detailHref = PRIVATE.ROOM.DETAIL(item.id);
-  const isActive = pathname === detailHref;
-
+  const roomBasePath = `/study-rooms/${item.id}`;
+  const isActive = pathname?.startsWith(roomBasePath) ?? false;
   return (
     <li>
       <Sidebar.Item
