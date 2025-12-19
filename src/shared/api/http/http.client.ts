@@ -27,6 +27,9 @@ const publicApi = createApi(http.public);
 // NOTE: authApi - 로그인(인증 쿠키) 필요 API
 const privateApi = createApi(http.private);
 
+// NOTE: authenticatedApi - 인증 관련 API
+const authenticatedApi = createApi(http.authenticated);
+
 // NOTE: BFF 전용
 const clientToBffApi = createApi(http.bff.client);
 
@@ -37,5 +40,6 @@ const bff = { client: clientToBffApi, server: serverToBffApi };
 export const api = {
   public: publicApi,
   private: privateApi,
+  authenticated: authenticatedApi,
   bff,
 };

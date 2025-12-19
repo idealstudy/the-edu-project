@@ -15,7 +15,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 export const useLogin = () => {
   const queryClient = useQueryClient();
   const loginRequest = async (body: LoginBody) => {
-    return await api.bff.client.post('/api/v1/auth/login', body, {
+    return await api.authenticated.post('/auth/login', body, {
       withCredentials: true,
     });
   };

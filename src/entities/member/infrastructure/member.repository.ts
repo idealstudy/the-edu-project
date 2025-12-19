@@ -12,9 +12,8 @@ import { adapters } from './member.adapters';
  * ────────────────────────────────────────────────────*/
 const getCurrentMember = async (): Promise<MemberDTO | null> => {
   try {
-    const response = await api.bff.client.get<CommonResponse<MemberDTO>>(
-      '/api/v1/member/info'
-    );
+    const response =
+      await api.private.get<CommonResponse<MemberDTO>>('/members/info');
     const validatedResponse = adapters.fromApi.parse(response);
     return factory.member.create(validatedResponse.data);
   } catch (error: unknown) {
@@ -32,7 +31,7 @@ const getCurrentMember = async (): Promise<MemberDTO | null> => {
  * useAuth의 useLogout에서 mutationFn으로 사용
  * ────────────────────────────────────────────────────*/
 const logout = async (): Promise<void> => {
-  return api.bff.client.post('/api/v1/auth/logout', undefined, {
+  return api.authenticated.post('/auth/logout', undefined, {
     withCredentials: true,
   });
 };

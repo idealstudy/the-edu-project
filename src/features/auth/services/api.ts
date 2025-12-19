@@ -12,20 +12,19 @@ import { CommonResponse } from '@/types';
 
 export const authService = {
   login: async (body: LoginBody) => {
-    await api.bff.client.post('/api/v1/auth/login', body, {
+    return await api.authenticated.post('/auth/login', body, {
       withCredentials: true,
     });
   },
   logout: async () => {
-    return api.bff.client.post('/api/v1/auth/logout', undefined, {
+    return api.authenticated.post('/auth/logout', undefined, {
       withCredentials: true,
     });
   },
   getSession: async () => {
     try {
-      const response = await api.bff.client.get<CommonResponse<MemberDTO>>(
-        '/api/v1/member/info'
-      );
+      const response =
+        await api.private.get<CommonResponse<MemberDTO>>('/members/info');
       const validatedResponse = adapters.fromApi.parse(response);
       return factory.member.create(validatedResponse.data);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
