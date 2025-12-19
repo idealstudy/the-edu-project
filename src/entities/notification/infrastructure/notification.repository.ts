@@ -15,9 +15,10 @@ import { adapters } from './notification.adapters';
  * ────────────────────────────────────────────────────*/
 const getNotificationList = async (): Promise<FrontendNotification[]> => {
   try {
-    const response = await api.bff.client.get<
-      CommonResponse<NotificationDTO[]>
-    >('/api/v1/notification');
+    const response =
+      await api.private.get<CommonResponse<NotificationDTO[]>>(
+        '/notification/all'
+      );
 
     const validatedResponse = adapters.fromApi.parse(response);
 
