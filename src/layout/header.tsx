@@ -44,6 +44,10 @@ export const Header = () => {
   const buttonBase =
     'cursor-pointer border border-[#1A1A1A] px-6 py-3 text-base font-bold text-white';
 
+  // 수정된 스타일
+  const feedbackButtonBase =
+    'flex items-center gap-1.5 rounded-full border border-gray-scale-gray-60 bg-transparent px-4 py-1.5 text-sm font-semibold text-gray-scale-gray-30 transition-colors hover:border-gray-scale-gray-30 hover:text-white cursor-pointer';
+
   return (
     <header className="h-header-height fixed top-0 right-0 left-0 z-10 flex items-center border-b border-gray-200 bg-[#1A1A1A] px-8">
       <div className="mx-auto flex w-full items-center justify-between">
@@ -67,6 +71,20 @@ export const Header = () => {
             width={44}
             height={20}
           />
+          <Link
+            href="https://forms.gle/ktLvekAsKTkqTcpQ6"
+            className={`${feedbackButtonBase} ml-2`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              src="/ic_question_mark.svg"
+              alt="피드백"
+              width={16}
+              height={16}
+            />
+            의견 보내기
+          </Link>
           {session && (
             <>
               {/* <Link
@@ -75,31 +93,6 @@ export const Header = () => {
               >
                 대시보드
               </Link> */}
-              <Link
-                href=""
-                className="mx-2 text-white"
-                onClick={() => {
-                  alert('서비스 준비 중입니다');
-                }}
-              >
-                공지사항
-              </Link>
-              <Link
-                href="https://open.kakao.com/o/gzPs2mIe"
-                className="mx-2 text-white"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                카카오 오픈채팅
-              </Link>
-              <Link
-                href="https://docs.google.com/forms/d/e/1FAIpQLScorJ0ofMtrxSDiFukigY-ytiablWaQE1MqaYplfzLfFY07Gw/viewform?usp=header"
-                className="mx-2 text-white"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                피드백
-              </Link>
             </>
           )}
         </div>
