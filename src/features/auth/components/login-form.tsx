@@ -8,7 +8,9 @@ import { useAuth } from '@/features/auth/hooks/use-auth';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
+import { extractErrorMessage } from '@/shared/lib/bff/utils.message';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AxiosError } from 'axios';
 
 import { LoginFormValues, loginSchema } from '../schemas/login';
 
@@ -33,9 +35,16 @@ export default function LoginForm() {
   const onSubmit = async (data: LoginFormValues) => {
     login(data, {
       onError: (error) => {
+        let message = '로그인에 실패하였습니다. 잠시 후 다시 시도하주세요.';
+
+        if (error instanceof AxiosError) {
+          const serverMessage = extractErrorMessage(error.response?.data);
+          message = serverMessage || message;
+        }
+
         setError('password', {
           type: 'server',
-          message: error.message || '서버에서 에러가 발생하였습니다.',
+          message,
         });
       },
     });
