@@ -2,14 +2,13 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { NotificationPopover } from '@/features/notifications/components/notification-popover';
 // import { useLogoutMutation } from '@/features/auth/services/query';
 
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
-// import { useRouter } from 'next/navigation';
-
 import { PRIVATE, PUBLIC } from '@/shared/constants';
 import {
   trackGnbLogoClick,
@@ -20,6 +19,11 @@ import { useMemberStore } from '@/store';
 
 export const Header = () => {
   const session = useMemberStore((s) => s.member);
+  const router = useRouter();
+
+  const goToMypage = () => {
+    router.push('/mypage');
+  };
 
   // const router = useRouter();
   // const { mutate: logout } = useLogoutMutation();
@@ -134,6 +138,9 @@ export const Header = () => {
                 />
               </DropdownMenu.Trigger>
               <DropdownMenu.Content>
+                <DropdownMenu.Item onClick={() => goToMypage()}>
+                  마이페이지
+                </DropdownMenu.Item>
                 <DropdownMenu.Item onClick={() => handleLogout()}>
                   로그아웃
                 </DropdownMenu.Item>
