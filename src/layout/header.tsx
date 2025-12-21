@@ -12,7 +12,6 @@ import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 
 import { PRIVATE, PUBLIC } from '@/shared/constants';
 import {
-  trackGnbAlarmClick,
   trackGnbLogoClick,
   trackGnbLogoutClick,
   trackGnbProfileClick,

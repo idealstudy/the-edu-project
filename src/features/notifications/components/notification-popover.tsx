@@ -9,6 +9,8 @@ import {
   PopoverTrigger,
 } from '@/shared/components/ui/popover';
 import { cn } from '@/shared/lib/utils';
+import { trackGnbAlarmClick } from '@/shared/lib/gtm/trackers';
+import { useMemberStore } from '@/store';
 
 type NotificationPopoverProps = {
   defaultOpen?: boolean;
@@ -18,7 +20,7 @@ export function NotificationPopover({
   defaultOpen = false,
 }: NotificationPopoverProps) {
   const { data, isLoading, error } = useNotifications();
-
+  const session = useMemberStore((s) => s.member);
   const notifications = data ?? [];
   const hasNotifications = notifications.length > 0;
 
@@ -29,7 +31,11 @@ export function NotificationPopover({
           type="button"
           className="relative flex size-6 cursor-pointer items-center justify-center outline-none"
           aria-label="알림 확인"
-        >
+          onClick={() => {
+            // GNB 알림 아이콘 클릭 이벤트 전송
+            trackGnbAlarmClick(session?.role ?? null);
+          }}
+        > 
           <NotificationIcon hasNotifications={hasNotifications} />
           <span className="sr-only">알림</span>
         </button>
