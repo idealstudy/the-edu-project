@@ -87,6 +87,7 @@ export const Default: Story = {
           studyRoomId={1}
           pageable={{ page: 0, size: 20, sortKey: 'LATEST_EDITED' }}
           keyword=""
+          onRefresh={() => {}}
         />
       </StudyRoomDetailLayout>
     </div>

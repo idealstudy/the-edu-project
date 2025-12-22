@@ -19,6 +19,7 @@ export const StudyNotesDropdown = ({
   item,
   pageable,
   keyword,
+  onRefresh,
 }: {
   studyRoomId: number;
   open: number;
@@ -26,6 +27,7 @@ export const StudyNotesDropdown = ({
   item: StudyNote;
   pageable: StudyNoteGroupPageable;
   keyword: string;
+  onRefresh: () => void;
 }) => {
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
 
@@ -51,6 +53,7 @@ export const StudyNotesDropdown = ({
         <StudyNotesDialog
           state={dialog}
           dispatch={dispatch}
+          onRefresh={onRefresh}
           studyRoomId={studyRoomId}
           pageable={pageable}
           keyword={keyword}
@@ -67,7 +70,7 @@ export const StudyNotesDropdown = ({
             width={24}
             height={24}
             alt="study-notes"
-            className="cursor-pointer"
+            className="hover:bg-gray-scale-gray-5 cursor-pointer rounded" // 3단 점을 누르는건지 수업노트를 누르는건지 구분 필요
             onClick={() => handleOpen(item.id)}
           />
         </DropdownMenu.Trigger>

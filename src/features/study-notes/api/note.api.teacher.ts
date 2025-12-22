@@ -29,6 +29,7 @@ export interface TeacherNotesApi
     studyRoomId: number;
   }): Promise<void>;
   removeFromGroup(args: { studyNoteId: number }): Promise<void>;
+  removeStudyNote(args: { studyNoteId: number }): Promise<void>;
 }
 
 export type TeacherListResp = PaginationData<StudyNote>;
@@ -50,10 +51,10 @@ export const createTeacherNotesApi = (): TeacherNotesApi => ({
     );
   },
 
-  moveToGroup({ studyNoteId, groupId, studyRoomId }) {
+  moveToGroup({ studyNoteId, groupId }) {
     return api.private.put(
-      `/teacher/study-rooms/${studyRoomId}/teaching-notes/${studyNoteId}/group`,
-      { groupId }
+      `/teacher/teaching-notes/${studyNoteId}/teaching-note-groups`,
+      { teachingNoteGroupId: groupId }
     );
   },
 
@@ -61,5 +62,9 @@ export const createTeacherNotesApi = (): TeacherNotesApi => ({
     return api.private.delete(
       `/teacher/teaching-notes/${studyNoteId}/teaching-note-groups`
     );
+  },
+
+  removeStudyNote({ studyNoteId }) {
+    return api.private.delete(`/teacher/teaching-notes/${studyNoteId}`);
   },
 });
