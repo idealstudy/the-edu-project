@@ -1,4 +1,4 @@
-import { getDisplayName } from '@/entities/member/mapper/member.mapper';
+import { getDisplayName } from '@/entities/member';
 import { z } from 'zod';
 
 import { base } from '../schema';

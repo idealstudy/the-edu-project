@@ -1,5 +1,6 @@
 'use client';
 
+// 상태관리 zustand로
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import {

@@ -63,9 +63,15 @@ export const StudyroomSidebar = ({
 
   // TODO: 스터디룸 삭제 API 연결
   const handleDeleteGroup = () => {
-    deleteStudyRoom({ studyRoomId });
-    setDeleteNoticeMsg('스터디룸이 삭제되었습니다.');
-    dispatch({ type: 'GO_TO_CONFIRM' });
+    deleteStudyRoom(
+      { studyRoomId },
+      {
+        onSuccess: () => {
+          setDeleteNoticeMsg('스터디룸이 삭제되었습니다.');
+          dispatch({ type: 'GO_TO_CONFIRM' });
+        },
+      }
+    );
   };
   const onConfirmDelete = () => {
     router.push('/dashboard');
