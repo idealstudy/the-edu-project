@@ -60,18 +60,17 @@ export default function QuestionList({ studyRoomId, data }: Props) {
                   <p className="text-gray-scale-gray-70">
                     {getRelativeTimeString(question.regDate)}
                   </p>
-                  {role === 'ROLE_STUDENT' && (
-                    <div
-                      className="flex shrink-0 flex-row items-center"
-                      onClick={(e) => e.preventDefault()}
-                    >
-                      <QuestionDropDown
-                        open={open}
-                        handleOpen={handleOpen}
-                        item={question}
-                      />
-                    </div>
-                  )}
+                  <div
+                    className="flex shrink-0 flex-row items-center"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <QuestionDropDown
+                      open={open}
+                      handleOpen={handleOpen}
+                      item={question}
+                      studyRoomId={studyRoomId}
+                    />
+                  </div>
                 </div>
               </div>
             </Link>

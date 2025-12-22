@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
+import { NotificationPopover } from '@/features/notifications/components/notification-popover';
 // import { useLogoutMutation } from '@/features/auth/services/query';
 
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
@@ -18,12 +19,8 @@ export const Header = () => {
   // const router = useRouter();
   // const { mutate: logout } = useLogoutMutation();
   const { logout } = useAuth();
-  const handleLogout = () => {
-    void logout();
-    // TODO: 세션 유효한지 확인하는 API / Logout API 부재로
-    // window.location 사용 => 추후에 router.replace로 변경
-    window.location.replace(PUBLIC.CORE.INDEX);
-    // router.replace(ROUTE.HOME);
+  const handleLogout = async () => {
+    logout();
   };
 
   const roleMetaMap = {
@@ -48,6 +45,10 @@ export const Header = () => {
   const buttonBase =
     'cursor-pointer border border-[#1A1A1A] px-6 py-3 text-base font-bold text-white';
 
+  // 수정된 스타일
+  const feedbackButtonBase =
+    'flex items-center gap-1.5 rounded-full border border-gray-scale-gray-60 bg-transparent px-4 py-1.5 text-sm font-semibold text-gray-scale-gray-30 transition-colors hover:border-gray-scale-gray-30 hover:text-white cursor-pointer';
+
   return (
     <header className="h-header-height fixed top-0 right-0 left-0 z-10 flex items-center border-b border-gray-200 bg-[#1A1A1A] px-8">
       <div className="mx-auto flex w-full items-center justify-between">
@@ -71,6 +72,20 @@ export const Header = () => {
             width={44}
             height={20}
           />
+          <Link
+            href="https://forms.gle/ktLvekAsKTkqTcpQ6"
+            className={`${feedbackButtonBase} ml-2`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              src="/ic_question_mark.svg"
+              alt="피드백"
+              width={16}
+              height={16}
+            />
+            의견 보내기
+          </Link>
           {session && (
             <>
               {/* <Link
@@ -79,43 +94,19 @@ export const Header = () => {
               >
                 대시보드
               </Link> */}
-              <Link
-                href=""
-                className="mx-2 text-white"
-                onClick={() => {
-                  alert('서비스 준비 중입니다');
-                }}
-              >
-                공지사항
-              </Link>
-              <Link
-                href="https://open.kakao.com/o/gzPs2mIe"
-                className="mx-2 text-white"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                카카오 오픈채팅
-              </Link>
-              <Link
-                href="https://docs.google.com/forms/d/e/1FAIpQLScorJ0ofMtrxSDiFukigY-ytiablWaQE1MqaYplfzLfFY07Gw/viewform?usp=header"
-                className="mx-2 text-white"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                피드백
-              </Link>
             </>
           )}
         </div>
         {session && (
-          <div className="flex items-center">
-            <Image
+          <div className="desktop:gap-4 flex items-center gap-1">
+            {/* <Image
               src={'/img_header_bell.svg'}
               alt="알림 벨 아이콘"
               width={24}
               height={24}
               className="mr-8 cursor-pointer"
-            />
+            /> */}
+            <NotificationPopover />
 
             <DropdownMenu>
               <DropdownMenu.Trigger className="flex cursor-pointer items-center justify-center">
@@ -124,7 +115,7 @@ export const Header = () => {
                   alt="프로필 사진"
                   width={48}
                   height={48}
-                  className="desktop:flex mr-4 hidden cursor-pointer rounded-full"
+                  className="desktop:flex hidden cursor-pointer rounded-full"
                 />
               </DropdownMenu.Trigger>
               <DropdownMenu.Content>
@@ -134,11 +125,11 @@ export const Header = () => {
               </DropdownMenu.Content>
             </DropdownMenu>
 
-            <p className="desktop:flex mr-2 hidden items-center gap-2 text-[14px] font-[600] text-white">
+            {/* <p className="desktop:flex hidden items-center gap-2 text-[14px] font-[600] text-white">
               {session.nickname}
-            </p>
+            </p> */}
             {session?.role && (
-              <div className="desktop:flex hidden items-center gap-2 rounded-[40px] border px-2 py-[2px] text-[12px] font-[400px] text-[#ffffff]">
+              <div className="desktop:flex hidden items-center rounded-[40px] border px-2 py-[2px] text-[12px] font-[400px] text-[#ffffff]">
                 {roleMetaMap[session.role]?.label}
               </div>
             )}

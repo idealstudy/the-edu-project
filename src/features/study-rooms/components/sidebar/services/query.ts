@@ -1,5 +1,9 @@
 import { StudyNoteQueryKey } from '@/entities/study-note';
-import { StudyRoomsGroupQueryKey } from '@/features/study-rooms';
+import {
+  StudyRoomDetail,
+  StudyRoomsGroupQueryKey,
+  StudyRoomsQueryKey,
+} from '@/features/study-rooms';
 import { useMutation } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -8,6 +12,7 @@ import {
   deleteStudyNoteGroup,
   deleteStudyRoom,
   updateStudyNoteGroup,
+  updateStudyRoom,
 } from './api';
 
 export const useCreateStudyNoteGroup = () => {
@@ -59,8 +64,48 @@ export const useDeleteStudyNoteGroup = () => {
   });
 };
 
+export const useUpdateStudyRoom = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (args: {
+      studyRoomId: number;
+      name: string;
+      others: StudyRoomDetail;
+    }) => updateStudyRoom(args),
+
+    onSuccess: (_, variables) => {
+      const id = variables.studyRoomId;
+      queryClient.invalidateQueries({
+        queryKey: StudyRoomsQueryKey.detail(id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: StudyRoomsQueryKey.teacherList,
+      });
+      queryClient.invalidateQueries({
+        queryKey: StudyRoomsQueryKey.studentList,
+      });
+    },
+  });
+};
+
 export const useDeleteStudyRoom = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (args: { studyRoomId: number }) => deleteStudyRoom(args),
+
+    onSuccess: (_, variables) => {
+      const id = variables.studyRoomId;
+      queryClient.invalidateQueries({
+        queryKey: StudyRoomsQueryKey.detail(id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: StudyRoomsQueryKey.teacherList,
+      });
+      queryClient.invalidateQueries({
+        queryKey: StudyRoomsQueryKey.studentList,
+      });
+    },
   });
 };

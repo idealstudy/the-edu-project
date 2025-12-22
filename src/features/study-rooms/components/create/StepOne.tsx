@@ -33,6 +33,7 @@ export default function StepOne({ onNext, disabled }: CreateStepForm) {
         <Input
           className="border-line-line2"
           {...register('name')}
+          required
         />
       </Form.Item>
       <Form.Item className="mt-8">

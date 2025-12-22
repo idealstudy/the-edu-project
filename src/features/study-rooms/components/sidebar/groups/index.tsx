@@ -8,7 +8,7 @@ import { dialogReducer, initialDialogState } from '@/shared/components/dialog';
 import { useInfiniteScroll } from '@/shared/hooks/use-infinite-scroll';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { StudyroomGroupDialogs } from './dialogs.tsx';
+import { StudyroomGroupDialogs } from './dialogs';
 import { GroupListItem } from './llist-item';
 
 export const STUDYROOM_SIDEBAR_GROUPS_PAGEABLE = {

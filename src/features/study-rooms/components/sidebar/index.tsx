@@ -2,13 +2,13 @@
 
 import { useReducer, useState } from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import { ConfirmDialog } from '@/features/study-rooms/components/common/dialog/confirm-dialog';
 import { InputDialog } from '@/features/study-rooms/components/common/dialog/input-dialog';
 import { StudyroomGroups } from '@/features/study-rooms/components/sidebar/groups';
 import { InvitationDialog } from '@/features/study-rooms/components/student-invitation/InvitationDialog';
 import StudentInvitation from '@/features/study-rooms/components/student-invitation/StudentInvitation';
-//import { useSearchParams, useRouter } from 'next/navigation';
-
 import { useTeacherStudyRoomDetailQuery } from '@/features/study-rooms/hooks';
 import { ColumnLayout } from '@/layout/column-layout';
 import {
@@ -17,35 +17,30 @@ import {
 } from '@/shared/components/dialog/model/dialog-reducer';
 import { useRole } from '@/shared/hooks/use-role';
 
+import { StudyRoomDetail } from '../../model';
 import { StudyroomSidebarHeader } from './header';
-import { useDeleteStudyRoom } from './services/query';
+import { useDeleteStudyRoom, useUpdateStudyRoom } from './services/query';
 import { StudyStats } from './status';
-
-/*const parseGroupIdParam = (value: string | null): number | 'all' => {
-  if (!value) return 'all';
-  if (value === 'all') return 'all';
-  const parsed = Number.parseInt(value, 10);
-  return Number.isNaN(parsed) ? 'all' : parsed;
-};*/
 
 export const StudyroomSidebar = ({
   studyRoomId,
   segment,
+  selectedGroupId,
+  onSelectGroup,
 }: {
   studyRoomId: number;
   segment: string | undefined;
+  selectedGroupId: number | 'all';
+  onSelectGroup: (id: number | 'all') => void;
 }) => {
-  // const router = useRouter();
-  // const searchParams = useSearchParams();
+  const router = useRouter();
 
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
-  const [selectedGroupId, setSelectedGroupId] = useState<number | 'all'>('all');
-  const [roomName, setRoomName] = useState('');
   const [deleteNoticeMsg, setDeleteNoticeMsg] =
     useState('수업노트 그룹이 삭제되었습니다.');
   const { role } = useRole();
   const { mutate: deleteStudyRoom } = useDeleteStudyRoom();
-
+  const { mutate: updateRoomName } = useUpdateStudyRoom();
   // 스터디룸 상세 정보 조회 (선생님만)
   const { data: studyRoomDetail } = useTeacherStudyRoomDetailQuery(
     studyRoomId,
@@ -54,22 +49,34 @@ export const StudyroomSidebar = ({
     }
   );
 
-  const handleSelectGroupId = (id: number | 'all') => {
-    setSelectedGroupId(id);
-  };
-
   // TODO: 스터디룸 이름 변경 API 연결
-  const handleSubmitRoomRename = (name: string) => {
-    setRoomName(name);
-    dispatch({ type: 'CLOSE' });
+  const handleSubmitRoomRename = (name: string, others: StudyRoomDetail) => {
+    updateRoomName(
+      { studyRoomId, name, others },
+      {
+        onSuccess: () => {
+          dispatch({ type: 'CLOSE' });
+        },
+      }
+    );
   };
 
   // TODO: 스터디룸 삭제 API 연결
   const handleDeleteGroup = () => {
-    deleteStudyRoom({ studyRoomId });
-    setDeleteNoticeMsg('스터디룸이 삭제되었습니다.');
-    dispatch({ type: 'GO_TO_CONFIRM' });
+    deleteStudyRoom(
+      { studyRoomId },
+      {
+        onSuccess: () => {
+          setDeleteNoticeMsg('스터디룸이 삭제되었습니다.');
+          dispatch({ type: 'GO_TO_CONFIRM' });
+        },
+      }
+    );
   };
+  const onConfirmDelete = () => {
+    router.push('/dashboard');
+  };
+
   if (!segment) return null;
   return (
     <>
@@ -79,6 +86,7 @@ export const StudyroomSidebar = ({
           open={true}
           dispatch={dispatch}
           description={deleteNoticeMsg}
+          onConfirm={onConfirmDelete}
         />
       )}
 
@@ -94,16 +102,18 @@ export const StudyroomSidebar = ({
             description="삭제된 스터디룸은 복구할 수 없습니다."
           />
         )}
-
       {dialog.status === 'open' &&
         dialog.kind === 'rename' &&
-        dialog.scope === 'studyroom' && (
+        dialog.scope === 'studyroom' &&
+        studyRoomDetail && (
           <InputDialog
             isOpen={true}
-            placeholder="에듀중학교 복습반ㅇㄷㅇㄹㅇㄹㅇㄹㅇㄹㅇㄹㅇㄹㅇㄹㅇㄹㅇㄹㅇ"
+            placeholder={studyRoomDetail?.name || ''}
             onOpenChange={() => dispatch({ type: 'CLOSE' })}
             title="스터디룸 이름 변경"
-            onSubmit={() => handleSubmitRoomRename(roomName)}
+            onSubmit={(newName) =>
+              handleSubmitRoomRename(newName, studyRoomDetail)
+            }
           />
         )}
 
@@ -136,7 +146,7 @@ export const StudyroomSidebar = ({
             role={role}
             studyRoomId={studyRoomId}
             selectedGroupId={selectedGroupId}
-            handleSelectGroupId={handleSelectGroupId}
+            handleSelectGroupId={onSelectGroup}
           />
         )}
         {/* TODO: 마지막 활동 시간 추가 */}
