@@ -11,14 +11,22 @@ const sanitize = (value: string | undefined) =>
  * - 서버 사이드: VERCEL_ENV를 사용하여 프로덕션/개발 환경 구분
  * - 클라이언트 사이드: window.location.hostname을 사용하여 런타임에 환경 구분
  */
+const serverHostname = process.env.VERCEL_URL;
+
 const getBackendUrl = () => {
   // 서버 사이드: VERCEL_ENV 확인
   if (typeof window === 'undefined') {
     const vercelEnv = process.env.VERCEL_ENV;
     if (vercelEnv === 'production') {
+      // 개발 화면인 경우 '개발' 서버로 요청
+      if (serverHostname === 'dev.d-edu.site') {
+        return DEFAULT_DEV_BACKEND_API_URL;
+      }
+      // 운영 화면인 경우 '운영' 서버로 요청
       return DEFAULT_PROD_BACKEND_API_URL;
     }
-    // preview, development, 또는 로컬
+
+    // preview, development, 또는 로컬의 경우 '개발' 서버로 요청
     return DEFAULT_DEV_BACKEND_API_URL;
   }
 
