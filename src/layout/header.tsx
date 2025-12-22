@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
+import { NotificationPopover } from '@/features/notifications/components/notification-popover';
 // import { useLogoutMutation } from '@/features/auth/services/query';
 
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
@@ -101,14 +102,15 @@ export const Header = () => {
           )}
         </div>
         {session && (
-          <div className="flex items-center">
-            <Image
+          <div className="desktop:gap-4 flex items-center gap-1">
+            {/* <Image
               src={'/img_header_bell.svg'}
               alt="알림 벨 아이콘"
               width={24}
               height={24}
               className="mr-8 cursor-pointer"
-            />
+            /> */}
+            <NotificationPopover />
 
             <DropdownMenu>
               <DropdownMenu.Trigger className="flex cursor-pointer items-center justify-center">
@@ -117,7 +119,7 @@ export const Header = () => {
                   alt="프로필 사진"
                   width={48}
                   height={48}
-                  className="desktop:flex mr-4 hidden cursor-pointer rounded-full"
+                  className="desktop:flex hidden cursor-pointer rounded-full"
                 />
               </DropdownMenu.Trigger>
               <DropdownMenu.Content>
@@ -127,11 +129,11 @@ export const Header = () => {
               </DropdownMenu.Content>
             </DropdownMenu>
 
-            <p className="desktop:flex mr-2 hidden items-center gap-2 text-[14px] font-[600] text-white">
+            {/* <p className="desktop:flex hidden items-center gap-2 text-[14px] font-[600] text-white">
               {session.nickname}
-            </p>
+            </p> */}
             {session?.role && (
-              <div className="desktop:flex hidden items-center gap-2 rounded-[40px] border px-2 py-[2px] text-[12px] font-[400px] text-[#ffffff]">
+              <div className="desktop:flex hidden items-center rounded-[40px] border px-2 py-[2px] text-[12px] font-[400px] text-[#ffffff]">
                 {roleMetaMap[session.role]?.label}
               </div>
             )}
