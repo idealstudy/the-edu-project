@@ -84,7 +84,7 @@ export const Header = () => {
               width={16}
               height={16}
             />
-            의견 보내기
+            소중한 의견 보내기
           </Link>
           {session && (
             <>
