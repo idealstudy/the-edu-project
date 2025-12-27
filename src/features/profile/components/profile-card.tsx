@@ -5,43 +5,23 @@ import { useState } from 'react';
 import Image from 'next/image';
 
 import { ProfileCardDropdown } from '@/features/profile/components/profile-card-dropdown';
+import StudentProfileExtra from '@/features/profile/components/student/student-profile-extra';
 import TeacherProfileExtra from '@/features/profile/components/teacher/teacher-profile-extra';
+import { ProfileAccessProps } from '@/features/profile/types';
 
-type Props =
-  | {
-      userId: string;
-      isOwner?: false;
-    }
-  | {
-      userId?: never;
-      isOwner: true;
-    };
-
-export default function ProfileCard({ userId, isOwner = false }: Props) {
+export default function ProfileCard({ profile, isOwner }: ProfileAccessProps) {
   const [, setIsEditMode] = useState(false);
-
-  const currentUser = {
-    id: '1',
-    role: 'TEACHER',
-  };
-
-  const profile = {
-    id: isOwner ? currentUser.id : userId,
-    role: 'TEACHER',
-    name: '김에듀',
-    intro: '안녕하세요',
-    profileImg: undefined,
-    email: 'kim1234@dedu.com',
-  };
 
   let profileExtra;
 
   switch (profile.role) {
-    case 'TEACHER':
+    case 'ROLE_TEACHER':
       profileExtra = <TeacherProfileExtra />;
       break;
-    case 'STUDENT':
-    case 'PARENT':
+    case 'ROLE_STUDENT':
+      profileExtra = <StudentProfileExtra />;
+      break;
+    case 'ROLE_PARENT':
     default:
       profileExtra = <div>잘못된 접근입니다.</div>;
   }

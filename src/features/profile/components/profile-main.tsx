@@ -1,49 +1,48 @@
 'use client';
 
-import TeacherSections from '@/features/profile/components/teacher/teacher-sections';
+import { useRouter } from 'next/navigation';
+
+import ProfileLayout from '@/features/profile/components/profile-layout';
+import { ProfileViewerProps } from '@/features/profile/types';
 import { useCurrentMember } from '@/providers/session/hooks/use-current-member';
 
-type Props =
-  | {
-      userId: string;
-      isOwner?: false;
+export default function ProfileMain(props: ProfileViewerProps) {
+  const router = useRouter();
+
+  const { data: member } = useCurrentMember(true);
+
+  if (props.mode === 'owner') {
+    if (!member) {
+      alert('로그인이 필요합니다.');
+      router.replace('/login');
+      return null;
     }
-  | {
-      userId?: never;
-      isOwner: true;
-    };
 
-export default function ProfileMain({ userId, isOwner = false }: Props) {
-  const { data: member /* , isPending, isError, refetch */ } =
-    useCurrentMember(true);
-
-  // console.log(member);
-
-  if (!userId) userId = member!.id.toString();
-
-  const profile = {
-    id: userId,
-    role: 'TEACHER',
-    name: '테스트 강사',
-    intro: '안녕하세요',
-  };
-
-  let sections;
-
-  switch (profile.role) {
-    case 'TEACHER':
-      sections = (
-        <TeacherSections
-          profile={profile}
-          isOwner={isOwner}
-        />
-      );
-      break;
-    case 'STUDENT':
-    case 'PARENT':
-    default:
-      sections = <div>잘못된 접근입니다.</div>;
+    return (
+      <ProfileLayout
+        profile={{
+          id: member.id.toString(),
+          role: member.role,
+          name: member.name || '',
+          email: member.email,
+          intro: `안녕하세요, ${props.mode}`,
+        }}
+        isOwner
+      />
+    );
   }
 
-  return <div className="flex flex-col gap-3">{sections}</div>;
+  // props.mode === 'viewer'
+  return (
+    <ProfileLayout
+      profile={{
+        id: props.userId,
+        role: 'ROLE_TEACHER',
+        name: '이에듀',
+        email: 'theedu@test.test',
+        intro: `안녕하세요, ${props.mode}`,
+      }}
+      isOwner={false}
+    />
+  );
 }

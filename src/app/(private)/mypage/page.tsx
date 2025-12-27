@@ -1,5 +1,5 @@
-import MypageContainer from '@/features/profile/components/profile-main';
+import ProfileMain from '@/features/profile/components/profile-main';
 
 export default async function MypagePage() {
-  return <MypageContainer isOwner={true} />;
+  return <ProfileMain mode="owner" />;
 }

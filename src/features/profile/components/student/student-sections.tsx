@@ -1,49 +1,55 @@
 'use client';
 
 import SectionContainer from '@/features/profile/components/section-container';
-import StudynotesSection from '@/features/profile/components/teacher/studynotes-section';
-import StudyroomSection from '@/features/profile/components/teacher/studyroom-section';
-import { ProfileAccessProps } from '@/features/profile/types';
 
-export default function TeacherSections({
-  profile,
-  isOwner,
-}: ProfileAccessProps) {
+export type Profile = {
+  id: string;
+  role: string;
+  name: string;
+  intro: string;
+};
+
+type Props = {
+  profile: Profile;
+  isOwner?: boolean;
+};
+
+export default function StudentSections({ isOwner = false }: Props) {
   return (
     <>
       <SectionContainer
-        title="활동 요약"
+        title="누적 활동 리포트"
         action={isOwner}
       >
         <></>
       </SectionContainer>
 
       <SectionContainer
-        title="후기"
+        title="내 과제"
         action={isOwner}
       >
         <></>
       </SectionContainer>
 
       <SectionContainer
-        title="경력"
+        title="내 질문"
         action={isOwner}
       >
         <></>
       </SectionContainer>
 
       <SectionContainer
-        title="대표 수업노트"
+        title="최근 등록된 수업노트"
         action={isOwner}
       >
-        <StudynotesSection profile={profile} />
+        <></>
       </SectionContainer>
 
       <SectionContainer
-        title="운영중인 스터디룸"
+        title="참여한 스터디룸"
         action={isOwner}
       >
-        <StudyroomSection profile={profile} />
+        <></>
       </SectionContainer>
     </>
   );
