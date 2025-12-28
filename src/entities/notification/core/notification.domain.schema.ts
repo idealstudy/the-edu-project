@@ -4,15 +4,16 @@ import { ko } from 'date-fns/locale';
 import { z } from 'zod';
 
 /* ─────────────────────────────────────────────────────
- * type -> category 변환 매핑
+ * category -> 한글 변환 매핑
  * ────────────────────────────────────────────────────*/
-const TYPE_TO_CATEGORY_MAP = {
+const CATEGORY_TO_KOREAN = {
+  TEACHING_NOTE: '수업노트',
   SYSTEM: '공지사항',
   CONNECTION_REQUEST: '연결 요청',
 };
 
-const getCategory = (type: string): string =>
-  TYPE_TO_CATEGORY_MAP[type as keyof typeof TYPE_TO_CATEGORY_MAP];
+const getCategoryKorean = (type: string): string =>
+  CATEGORY_TO_KOREAN[type as keyof typeof CATEGORY_TO_KOREAN];
 
 /* ─────────────────────────────────────────────────────
  * base 스키마를 가공하여 도메인 기본 구조 생성
@@ -24,9 +25,9 @@ const NotificationShape = base.schema
   .required({
     id: true,
     message: true,
-    type: true,
+    category: true,
     targetId: true,
-    read: true,
+    isRead: true,
   })
   .extend({
     regDate: z.preprocess((val) => {
@@ -43,16 +44,15 @@ const NotificationShape = base.schema
  * ────────────────────────────────────────────────────*/
 const NotificationSchema = NotificationShape.transform((notification) => ({
   ...notification,
-  category: getCategory(notification.type),
+  categoryKorean: getCategoryKorean(notification.category),
   relativeTime: formatDistanceToNow(notification.regDate, {
     addSuffix: true,
     locale: ko,
   }),
-  isRead: notification.read,
 }));
 
 export const domain = {
   schema: NotificationSchema,
   shape: NotificationShape,
-  type: base.type,
+  category: base.category,
 };

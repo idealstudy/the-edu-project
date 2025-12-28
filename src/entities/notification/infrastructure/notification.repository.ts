@@ -22,9 +22,10 @@ const getNotificationList = async (): Promise<FrontendNotification[]> => {
 
     const validatedResponse = adapters.fromApi.parse(response);
 
-    return notificationMapper.toDomianList(validatedResponse.data ?? []);
+    return notificationMapper.toDomainList(validatedResponse.data ?? []);
   } catch (error: unknown) {
     if (!axios.isAxiosError(error)) throw error;
+    // TODO api 인터셉터 내부에서 처리
     if (!error.response) throw error;
 
     const status = error.response.status;

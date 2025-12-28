@@ -1,17 +1,22 @@
 import { z } from 'zod';
 
-const NotificationTypeSchema = z.enum(['SYSTEM', 'CONNECTION_REQUEST']);
+const NotificationCategorySchema = z.enum([
+  'TEACHING_NOTE',
+  'SYSTEM',
+  'CONNECTION_REQUEST',
+  // TODO: 추가 카테고리
+]);
 
 const NotificationSchema = z.object({
   id: z.number().int().nonnegative(),
   message: z.string(),
-  type: NotificationTypeSchema,
+  category: NotificationCategorySchema,
   targetId: z.number().int().nonnegative(),
   regDate: z.string().nullable(),
-  read: z.boolean(),
+  isRead: z.boolean(),
 });
 
 export const base = {
-  type: NotificationTypeSchema,
+  category: NotificationCategorySchema,
   schema: NotificationSchema,
 };

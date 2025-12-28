@@ -12,6 +12,6 @@ import { NotificationDTO } from '@/entities/notification/types';
 export const notificationMapper = {
   toDomain: (dto: NotificationDTO) => domain.schema.parse(dto),
 
-  toDomianList: (dtos: NotificationDTO[]) =>
+  toDomainList: (dtos: NotificationDTO[]) =>
     dtos.map(notificationMapper.toDomain),
 };

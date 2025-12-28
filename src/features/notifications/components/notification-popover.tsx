@@ -77,10 +77,14 @@ export function NotificationPopover({
                 )}
               >
                 <div className="flex-1">
-                  <p className="text-xs font-semibold text-gray-500">
-                    {item.category}
+                  <p
+                    className={`text-xs font-semibold text-gray-500 ${item.isRead ? 'font-body2-normal' : 'font-body2-heading'}`}
+                  >
+                    {item.categoryKorean}
                   </p>
-                  <p className="mt-1 text-sm leading-relaxed text-gray-900">
+                  <p
+                    className={`mt-1 text-sm leading-relaxed text-gray-900 ${item.isRead ? 'font-body2-normal' : 'font-body2-heading'}`}
+                  >
                     {item.message}
                   </p>
                 </div>
@@ -117,6 +121,7 @@ export function NotificationPopover({
           <button
             type="button"
             className="flex cursor-pointer items-center gap-2 hover:underline"
+            aria-label="알림 설정"
           >
             ⚙️ 알림 설정
           </button>
