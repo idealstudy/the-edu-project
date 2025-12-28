@@ -1,7 +1,13 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
+import { FrontendNotification } from '@/entities/notification';
 import NotificationIcon from '@/features/notifications/components/notification-icon';
-import { useNotifications } from '@/features/notifications/hooks/use-notifications';
+import {
+  useMarkAsRead,
+  useNotifications,
+} from '@/features/notifications/hooks/use-notifications';
 import {
   Popover,
   PopoverClose,
@@ -19,10 +25,21 @@ type NotificationPopoverProps = {
 export function NotificationPopover({
   defaultOpen = false,
 }: NotificationPopoverProps) {
+  const router = useRouter();
   const { data, isLoading, error } = useNotifications();
   const session = useMemberStore((s) => s.member);
+  const markAsRead = useMarkAsRead();
+
   const notifications = data ?? [];
   const hasNotifications = notifications.length > 0;
+
+  const handleNotificationClick = (notification: FrontendNotification) => {
+    if (!notification.isRead) markAsRead.mutate([notification.id]);
+    if (notification.targetUrl) router.push(notification.targetUrl);
+  };
+
+  // TODO 전체 읽음 처리
+  const handleMarkAllRead = () => {};
 
   return (
     <Popover defaultOpen={defaultOpen}>
@@ -35,7 +52,7 @@ export function NotificationPopover({
             // GNB 알림 아이콘 클릭 이벤트 전송
             trackGnbAlarmClick(session?.role ?? null);
           }}
-        > 
+        >
           <NotificationIcon hasNotifications={hasNotifications} />
           <span className="sr-only">알림</span>
         </button>
@@ -75,6 +92,7 @@ export function NotificationPopover({
                   'flex items-start justify-between border-b px-6 py-4 transition-colors',
                   'hover:bg-gray-50'
                 )}
+                onClick={() => handleNotificationClick(item)}
               >
                 <div className="flex-1">
                   <p
@@ -115,6 +133,7 @@ export function NotificationPopover({
           <button
             type="button"
             className="cursor-pointer hover:underline"
+            onClick={handleMarkAllRead}
           >
             전체 삭제
           </button>

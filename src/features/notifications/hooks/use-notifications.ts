@@ -1,6 +1,6 @@
 import { notificationKeys } from '@/entities/notification';
 import { notificationsApi } from '@/features/notifications/api/notifications.api';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 const FIVE_MINUTES = 1000 * 60 * 5;
 
@@ -12,3 +12,17 @@ export const useNotifications = () =>
     staleTime: FIVE_MINUTES,
     refetchOnWindowFocus: true,
   });
+
+export const useMarkAsRead = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (notificationIds: number[]) =>
+      notificationsApi.markAsRead(notificationIds),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: notificationKeys.all,
+      });
+    },
+  });
+};

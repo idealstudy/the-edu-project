@@ -6,14 +6,31 @@ import { z } from 'zod';
 /* ─────────────────────────────────────────────────────
  * category -> 한글 변환 매핑
  * ────────────────────────────────────────────────────*/
-const CATEGORY_TO_KOREAN = {
+const CATEGORY_TO_KOREAN: Record<string, string> = {
   TEACHING_NOTE: '수업노트',
   SYSTEM: '공지사항',
   CONNECTION_REQUEST: '연결 요청',
 };
 
-const getCategoryKorean = (type: string): string =>
-  CATEGORY_TO_KOREAN[type as keyof typeof CATEGORY_TO_KOREAN];
+const getCategoryKorean = (category: string): string =>
+  CATEGORY_TO_KOREAN[category as keyof typeof CATEGORY_TO_KOREAN] || '기타';
+
+/* ─────────────────────────────────────────────────────
+ * category -> URL 변환 매핑
+ * ────────────────────────────────────────────────────*/
+const CATEGORY_TO_ROUTE: Record<string, string | null> = {
+  TEACHING_NOTE: '/study-rooms/1/note',
+  CONNECTION_REQUEST: null,
+  SYSTEM: null,
+};
+
+const getTargetUrl = (category: string, targetId: number): string | null => {
+  const basePath =
+    CATEGORY_TO_ROUTE[category as keyof typeof CATEGORY_TO_ROUTE];
+
+  if (!basePath) return null;
+  return `${basePath}/${targetId}`;
+};
 
 /* ─────────────────────────────────────────────────────
  * base 스키마를 가공하여 도메인 기본 구조 생성
@@ -45,6 +62,7 @@ const NotificationShape = base.schema
 const NotificationSchema = NotificationShape.transform((notification) => ({
   ...notification,
   categoryKorean: getCategoryKorean(notification.category),
+  targetUrl: getTargetUrl(notification.category, notification.targetId),
   relativeTime: formatDistanceToNow(notification.regDate, {
     addSuffix: true,
     locale: ko,
