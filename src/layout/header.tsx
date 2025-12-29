@@ -10,20 +10,23 @@ import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 // import { useRouter } from 'next/navigation';
 
 import { PRIVATE, PUBLIC } from '@/shared/constants';
-import { getGaUserType, pushEvent } from '@/shared/lib/gtm';
+import {
+  trackGnbAlarmClick,
+  trackGnbLogoClick,
+  trackGnbLogoutClick,
+  trackGnbProfileClick,
+} from '@/shared/lib/gtm/trackers';
 import { useMemberStore } from '@/store';
 
 export const Header = () => {
   const session = useMemberStore((s) => s.member);
-  // GA4용 user_type 변환 (teacher, student, guardian, not)
-  const userType = getGaUserType(session?.role);
 
   // const router = useRouter();
   // const { mutate: logout } = useLogoutMutation();
   const { logout } = useAuth();
   const handleLogout = () => {
     // GNB 로그아웃 클릭 이벤트 전송
-    pushEvent('gnb_logout_click', { user_type: userType });
+    trackGnbLogoutClick(session?.role ?? null);
 
     void logout();
     // TODO: 세션 유효한지 확인하는 API / Logout API 부재로
@@ -64,7 +67,7 @@ export const Header = () => {
             }
             onClick={() => {
               // GNB 로고 클릭 이벤트 전송
-              pushEvent('gnb_logo_click', { user_type: userType });
+              trackGnbLogoClick(session?.role ?? null);
             }}
           >
             <Image
@@ -127,7 +130,7 @@ export const Header = () => {
               className="mr-8 cursor-pointer"
               onClick={() => {
                 // GNB 알림 아이콘 클릭 이벤트 전송
-                pushEvent('gnb_alarm_click', { user_type: userType });
+                trackGnbAlarmClick(session?.role ?? null);
               }}
             />
 
@@ -136,7 +139,7 @@ export const Header = () => {
                 className="flex cursor-pointer items-center justify-center"
                 onClick={() => {
                   // GNB 프로필 조회 클릭 이벤트 전송
-                  pushEvent('gnb_profile_click', { user_type: userType });
+                  trackGnbProfileClick(session?.role ?? null);
                 }}
               >
                 <Image

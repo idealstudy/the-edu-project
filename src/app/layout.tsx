@@ -18,19 +18,26 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
+
   return (
     <html
       lang="ko"
       className={`${pretendard.variable} font-pretendard`}
     >
       <body className="antialiased">
-        {/* 
-          GTM (Google Tag Manager) 스니펫
-          - Next.js Script 컴포넌트를 사용하여 최적화된 방식으로 GTM을 로드합니다
-          - id 속성은 필수이며, strategy="afterInteractive"는 페이지가 인터랙티브한 후 로드합니다
-        */}
-        {process.env.NEXT_PUBLIC_GTM_ID && (
+        {/* GTM Head 스니펫 */}
+        {gtmId && (
           <>
+            <Script
+              id="gtm-init"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                `,
+              }}
+            />
             <Script
               id="gtm-script"
               strategy="afterInteractive"
@@ -40,23 +47,22 @@ export default function RootLayout({
                   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
                   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-                  })(window,document,'script','dataLayer','${process.env.NEXT_PUBLIC_GTM_ID}');
+                  })(window,document,'script','dataLayer','${gtmId}');
                 `,
               }}
             />
-            {/* 
-              GTM Body 스니펫 (noscript)
-              - JavaScript가 비활성화된 브라우저용 fallback입니다
-            */}
-            <noscript>
-              <iframe
-                src={`https://www.googletagmanager.com/ns.html?id=${process.env.NEXT_PUBLIC_GTM_ID}`}
-                height="0"
-                width="0"
-                style={{ display: 'none', visibility: 'hidden' }}
-              />
-            </noscript>
           </>
+        )}
+        {/* GTM Body 스니펫 (noscript) */}
+        {gtmId && (
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+              height="0"
+              width="0"
+              style={{ display: 'none', visibility: 'hidden' }}
+            />
+          </noscript>
         )}
         <GlobalProvider>
           <Header />
