@@ -88,7 +88,7 @@ export interface StudynoteGroupParams extends RoomEventParams {
  */
 export interface StudentInviteParams extends RoomEventParams {
   from_user_id: number;
-  to_user_id: number;
+  to_user_id: string; // 현재 이메일이나 추후 ID로
 }
 
 /**
@@ -161,6 +161,10 @@ export interface StudynoteFilterParams extends RoomEventParams {
  * 이벤트 이름 상수
  */
 export const GA4_EVENTS = {
+  // Auth
+  SIGNUP_SUCCESS: 'signup_success',
+  LOGIN_SUCCESS: 'login_success',
+
   // GNB
   GNB_LOGO_CLICK: 'gnb_logo_click',
   GNB_ALARM_CLICK: 'gnb_alarm_click',
@@ -178,6 +182,7 @@ export const GA4_EVENTS = {
 
   // Studyroom
   STUDYROOM_CREATE_CLICK: 'studyroom_create_click',
+  STUDYROOM_CREATE_SUCCESS: 'studyroom_create_success',
   STUDYROOM_STUDENT_INVITE_OPEN: 'studyroom_student_invite_open',
   STUDYROOM_TITLE_UPDATE_OPEN: 'studyroom_title_update_open',
   STUDYROOM_TITLE_UPDATE_CLICK: 'studyroom_title_update_click',

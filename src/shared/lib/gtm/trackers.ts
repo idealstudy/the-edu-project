@@ -25,6 +25,16 @@ import type {
   StudyroomTitleUpdateParams,
 } from './events';
 
+// ==================== 인증 이벤트 ====================
+
+export const trackSignupSuccess = (role?: Role | null) => {
+  pushEvent(GA4_EVENTS.SIGNUP_SUCCESS, withUserType({}, role));
+};
+
+export const trackLoginSuccess = (role?: Role | null) => {
+  pushEvent(GA4_EVENTS.LOGIN_SUCCESS, withUserType({}, role));
+};
+
 // ==================== GNB 이벤트 ====================
 
 export const trackGnbLogoClick = (role?: Role | null) => {
@@ -80,6 +90,13 @@ export const trackStudyroomCreateClick = (
   role?: Role | null
 ) => {
   pushEvent(GA4_EVENTS.STUDYROOM_CREATE_CLICK, withUserType(params, role));
+};
+
+export const trackStudyroomCreateSuccess = (
+  params: Omit<StudyroomCreateParams, 'user_type'>,
+  role?: Role | null
+) => {
+  pushEvent(GA4_EVENTS.STUDYROOM_CREATE_SUCCESS, withUserType(params, role));
 };
 
 export const trackStudyroomStudentInviteOpen = (

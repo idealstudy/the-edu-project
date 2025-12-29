@@ -24,6 +24,7 @@ export default function RootLayout({
     <html
       lang="ko"
       className={`${pretendard.variable} font-pretendard`}
+      suppressHydrationWarning
     >
       <body className="antialiased">
         {/* GTM Head 스니펫 */}

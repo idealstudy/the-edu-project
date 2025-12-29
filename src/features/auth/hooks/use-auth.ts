@@ -8,6 +8,7 @@ import {
 import { LoginBody } from '@/features/auth/types';
 import { useSession } from '@/providers';
 import { api } from '@/shared/api';
+import { trackLoginSuccess } from '@/shared/lib/gtm/trackers';
 import { useMemberStore } from '@/store';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -23,7 +24,11 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: loginRequest,
     onSuccess: async () => {
-      await queryClient.fetchQuery(getCurrentMemberOptions(true));
+      const member = await queryClient.fetchQuery(
+        getCurrentMemberOptions(true)
+      );
+      // 로그인 성공 이벤트
+      trackLoginSuccess(member?.role ?? null);
     },
   });
 };
