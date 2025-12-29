@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Link from 'next/link';
 
@@ -83,9 +83,40 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
     }
   };
 
-  const canMoveToNext = isAllRequiredTermsChecked && emailCodeVerified;
+  // 비밀번호와 비밀번호 확인 필드의 유효성 확인
+  const password = form.watch('password');
+  const confirmPassword = form.watch('confirmPassword');
+  const passwordError = form.formState.errors.password;
+  const confirmPasswordError = form.formState.errors.confirmPassword;
+  const isPasswordValid = !passwordError && password && password.length > 0;
+  const isConfirmPasswordValid =
+    !confirmPasswordError &&
+    confirmPassword &&
+    confirmPassword.length > 0 &&
+    password === confirmPassword;
+
+  // 모든 조건이 만족될 때만 '계속' 버튼 활성화
+  const canMoveToNext =
+    isAllRequiredTermsChecked &&
+    emailCodeVerified &&
+    isPasswordValid &&
+    isConfirmPasswordValid;
 
   const verificationCodeInputValue = form.watch('verificationCode');
+
+  // 비밀번호 입력 시 실시간 검증
+  useEffect(() => {
+    if (password) {
+      void form.trigger('password');
+    }
+  }, [password, form]);
+
+  // 비밀번호 확인 입력 시 실시간 검증
+  useEffect(() => {
+    if (confirmPassword) {
+      void form.trigger(['password', 'confirmPassword']);
+    }
+  }, [confirmPassword, form]);
 
   return (
     <div className="flex flex-col gap-8">
@@ -144,7 +175,7 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
         <Form.Control>
           <Input
             type="password"
-            placeholder="8자 이상의 영문 소문자 및 숫자, 특수문자"
+            placeholder="8자 이상의 영문 대·소문자 및 숫자, 특수문자"
             {...form.register('password')}
           />
         </Form.Control>
@@ -157,7 +188,7 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
         <Form.Control>
           <Input
             type="password"
-            placeholder="8자 이상의 영문 소문자 및 숫자, 특수문자"
+            placeholder="8자 이상의 영문 대·소문자 및 숫자, 특수문자"
             {...form.register('confirmPassword')}
           />
         </Form.Control>

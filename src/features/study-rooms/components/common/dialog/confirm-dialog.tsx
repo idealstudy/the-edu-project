@@ -10,6 +10,8 @@ export const ConfirmDialog = ({
   title,
   description,
   onDelete,
+  onConfirm,
+  onRefresh,
 }: {
   type: 'delete' | 'confirm';
   open: boolean;
@@ -17,12 +19,11 @@ export const ConfirmDialog = ({
   title?: string;
   description: string;
   onDelete?: () => void;
+  onConfirm?: () => void;
+  onRefresh?: () => void;
 }) => {
   return (
-    <Dialog
-      isOpen={open}
-      onOpenChange={() => dispatch({ type: 'CLOSE' })}
-    >
+    <Dialog isOpen={open}>
       <Dialog.Content className="w-[598px]">
         <Dialog.Header>
           <Dialog.Title className="text-center"></Dialog.Title>
@@ -56,9 +57,16 @@ export const ConfirmDialog = ({
             className="w-[120px]"
             size="xsmall"
             variant="secondary"
-            onClick={
-              type === 'delete' ? onDelete : () => dispatch({ type: 'CLOSE' })
-            }
+            onClick={() => {
+              if (type === 'delete') {
+                onDelete?.();
+                return;
+              }
+
+              onConfirm?.();
+              onRefresh?.();
+              dispatch({ type: 'CLOSE' });
+            }}
           >
             {type === 'delete' ? '삭제' : '확인'}
           </Button>

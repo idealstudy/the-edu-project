@@ -42,9 +42,10 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: repository.member.logout,
     // 요청 성공/실패와 무관하게 상태 정리
-    onSettled: () => {
+    onSuccess: async () => {
       clearMember();
-      queryClient.removeQueries({ queryKey: memberKeys.info(), exact: true });
+      await queryClient.invalidateQueries({ queryKey: memberKeys.info() });
+      queryClient.removeQueries({ queryKey: memberKeys.info() });
       router.replace('/');
     },
   });

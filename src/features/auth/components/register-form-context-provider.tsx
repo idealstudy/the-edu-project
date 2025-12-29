@@ -50,6 +50,7 @@ export const RegisterFormContextProvider = ({
 
   const form = useForm<RegisterForm>({
     resolver: zodResolver(RegisterForm),
+    mode: 'onChange', // 실시간 검증 활성화
     defaultValues: {
       email: '',
       verificationCode: '',

@@ -12,7 +12,7 @@ export default async function QuestionDetailPage({ params }: Props) {
   const contextId = Number(resolvedParams.contextId);
 
   return (
-    <>
+    <div className="flex-col">
       <div className="mb-6">
         <BackLink />
       </div>
@@ -22,6 +22,6 @@ export default async function QuestionDetailPage({ params }: Props) {
           contextId={contextId}
         />
       </ColumnLayout>
-    </>
+    </div>
   );
 }

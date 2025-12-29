@@ -64,24 +64,26 @@ export const DashboardSidebar = () => {
         )}
       </Sidebar.Header>
 
-      <Sidebar.List>
-        {studyRoomList?.map((item) => (
-          <Sidebar.ListItem
-            key={item.id}
-            item={{
-              id: item.id,
-              text: item.name,
-            }}
-          />
-        ))}
-      </Sidebar.List>
+      <Sidebar.ScrollArea>
+        <Sidebar.List>
+          {studyRoomList?.map((item) => (
+            <Sidebar.ListItem
+              key={item.id}
+              item={{
+                id: item.id,
+                text: item.name,
+              }}
+            />
+          ))}
+        </Sidebar.List>
+      </Sidebar.ScrollArea>
 
       <Sidebar.Item href={PRIVATE.DASHBOARD.SETTINGS}>
         <SettingIcon />
         <Sidebar.Text>환경설정</Sidebar.Text>
       </Sidebar.Item>
 
-      <div className="absolute right-0 bottom-0 p-4">
+      <div className="mt-auto flex justify-end p-4">
         <Link
           href={PRIVATE.DASHBOARD.INQUIRY}
           className="text-gray-scale-gray-50 hover:bg-gray-scale-gray-5 flex items-center gap-2 rounded-lg text-[14px] font-semibold"

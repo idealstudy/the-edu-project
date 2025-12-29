@@ -62,16 +62,16 @@ export const InputDialog = ({
               취소
             </Button>
           </Dialog.Close>
-          <Dialog.Close asChild>
-            <Button
-              className="w-[120px]"
-              size="xsmall"
-              disabled={finalDisabled}
-              onClick={() => onSubmit(name)}
-            >
-              저장
-            </Button>
-          </Dialog.Close>
+          {/* <Dialog.Close asChild> */}
+          <Button
+            className="w-[120px]"
+            size="xsmall"
+            disabled={finalDisabled}
+            onClick={() => onSubmit(name)}
+          >
+            저장
+          </Button>
+          {/* </Dialog.Close> */}
         </Dialog.Footer>
       </Dialog.Content>
     </Dialog>
