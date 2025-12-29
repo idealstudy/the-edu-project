@@ -8,8 +8,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/shared/components/ui/popover';
-import { cn } from '@/shared/lib/utils';
 import { trackGnbAlarmClick } from '@/shared/lib/gtm/trackers';
+import { cn } from '@/shared/lib/utils';
 import { useMemberStore } from '@/store';
 
 type NotificationPopoverProps = {
