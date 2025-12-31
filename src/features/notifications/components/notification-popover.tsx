@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { FrontendNotification } from '@/entities/notification';
 import NotificationIcon from '@/features/notifications/components/notification-icon';
 import {
+  useDeleteNotifications,
   useMarkAsRead,
   useNotifications,
 } from '@/features/notifications/hooks/use-notifications';
@@ -26,13 +27,16 @@ export function NotificationPopover({
   defaultOpen = false,
 }: NotificationPopoverProps) {
   const router = useRouter();
+
   const { data, isLoading, error } = useNotifications();
   const session = useMemberStore((s) => s.member);
   const markAsRead = useMarkAsRead();
+  const deleteNotifications = useDeleteNotifications();
 
   const notifications = data ?? [];
   const hasNotifications = notifications.length > 0;
 
+  // 개별 읽음 처리
   const handleNotificationClick = (notification: FrontendNotification) => {
     if (!notification.isRead) markAsRead.mutate([notification.id]);
     if (notification.targetUrl) router.push(notification.targetUrl);
@@ -40,6 +44,18 @@ export function NotificationPopover({
 
   // TODO 전체 읽음 처리
   const handleMarkAllRead = () => {};
+
+  // 개별 삭제
+  const handleDelete = (id: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    deleteNotifications.mutate([id]);
+  };
+
+  // TODO 전체 삭제
+  const handleDeleteAll = () => {
+    if (!hasNotifications) return;
+  };
 
   return (
     <Popover defaultOpen={defaultOpen}>
@@ -114,6 +130,7 @@ export function NotificationPopover({
                     type="button"
                     className="text-gray-300 hover:text-gray-500"
                     aria-label="알림 삭제"
+                    onClick={(event) => handleDelete(item.id, event)}
                   >
                     🗑️
                   </button>
@@ -130,13 +147,23 @@ export function NotificationPopover({
         )}
 
         <footer className="flex items-center justify-between border-t bg-gray-900 px-6 py-4 text-sm text-white">
-          <button
-            type="button"
-            className="cursor-pointer hover:underline"
-            onClick={handleMarkAllRead}
-          >
-            전체 삭제
-          </button>
+          <div>
+            <button
+              type="button"
+              className="cursor-pointer hover:underline"
+              onClick={handleDeleteAll}
+            >
+              전체 삭제
+            </button>
+            <span aria-hidden> | </span>
+            <button
+              type="button"
+              className="cursor-pointer hover:underline"
+              onClick={handleMarkAllRead}
+            >
+              전체 읽음
+            </button>
+          </div>
           <button
             type="button"
             className="flex cursor-pointer items-center gap-2 hover:underline"

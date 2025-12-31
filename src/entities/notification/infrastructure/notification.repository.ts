@@ -10,7 +10,6 @@ import { adapters } from './notification.adapters';
 
 /* ─────────────────────────────────────────────────────
  * [Read] 알림 목록 조회
- * useNotificationQuery의 queryFn으로 사용
  * ────────────────────────────────────────────────────*/
 const getNotificationList = async (): Promise<FrontendNotification[]> => {
   const response =
@@ -23,10 +22,20 @@ const getNotificationList = async (): Promise<FrontendNotification[]> => {
 
 /* ─────────────────────────────────────────────────────
  * [Update] 알림 읽음 처리
- * useMutation의 mutationFn으로 처리
  * ────────────────────────────────────────────────────*/
 const markAsRead = async (notificationIds: number[]): Promise<void> => {
   await api.private.patch('/notification/read', { notificationIds });
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Delete] 알림 삭제
+ * ────────────────────────────────────────────────────*/
+const deleteNotifications = async (
+  notificationIds: number[]
+): Promise<void> => {
+  await api.private.delete('/notification', {
+    data: { notificationIds },
+  });
 };
 
 // TODO 미확인 알림 조회
@@ -35,6 +44,7 @@ export const repository = {
   notification: {
     getList: getNotificationList,
     markAsRead: markAsRead,
+    delete: deleteNotifications,
     // TODO 추가
   },
 };

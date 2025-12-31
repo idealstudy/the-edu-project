@@ -26,3 +26,17 @@ export const useMarkAsRead = () => {
     },
   });
 };
+
+export const useDeleteNotifications = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (notificationIds: number[]) =>
+      notificationsApi.delete(notificationIds),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: notificationKeys.all,
+      });
+    },
+  });
+};
