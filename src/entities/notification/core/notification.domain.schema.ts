@@ -7,9 +7,11 @@ import { z } from 'zod';
  * category -> 한글 변환 매핑
  * ────────────────────────────────────────────────────*/
 const CATEGORY_TO_KOREAN: Record<string, string> = {
-  TEACHING_NOTE: '수업노트',
   SYSTEM: '공지사항',
-  CONNECTION_REQUEST: '연결 요청',
+  HOMEWORK: '과제',
+  TEACHING_NOTE: '수업노트',
+  STUDY_ROOM: '스터디룸 초대',
+  QNA: '질문',
 };
 
 const getCategoryKorean = (category: string): string =>
@@ -18,18 +20,18 @@ const getCategoryKorean = (category: string): string =>
 /* ─────────────────────────────────────────────────────
  * category -> URL 변환 매핑
  * ────────────────────────────────────────────────────*/
-const CATEGORY_TO_ROUTE: Record<string, string | null> = {
-  TEACHING_NOTE: '/study-rooms/1/note',
-  CONNECTION_REQUEST: null,
-  SYSTEM: null,
-};
-
 const getTargetUrl = (category: string, targetId: number): string | null => {
-  const basePath =
-    CATEGORY_TO_ROUTE[category as keyof typeof CATEGORY_TO_ROUTE];
-
-  if (!basePath) return null;
-  return `${basePath}/${targetId}`;
+  switch (category) {
+    case 'TEACHING_NOTE':
+      return `/study-rooms/1/note/${targetId}`;
+    case 'STUDY_ROOM':
+      return `/study-rooms/${targetId}/note`;
+    // TODO URL 확인 후 추가
+    case 'QNA':
+    case 'HOMEWORK':
+    default:
+      return null;
+  }
 };
 
 /* ─────────────────────────────────────────────────────
@@ -44,7 +46,7 @@ const NotificationShape = base.schema
     message: true,
     category: true,
     targetId: true,
-    isRead: true,
+    read: true,
   })
   .extend({
     regDate: z.preprocess((val) => {
@@ -67,6 +69,7 @@ const NotificationSchema = NotificationShape.transform((notification) => ({
     addSuffix: true,
     locale: ko,
   }),
+  isRead: notification.read,
 }));
 
 export const domain = {

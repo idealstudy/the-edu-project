@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 import { useRouter } from 'next/navigation';
 
 import { FrontendNotification } from '@/entities/notification';
@@ -19,27 +21,29 @@ import { trackGnbAlarmClick } from '@/shared/lib/gtm/trackers';
 import { cn } from '@/shared/lib/utils';
 import { useMemberStore } from '@/store';
 
-type NotificationPopoverProps = {
-  defaultOpen?: boolean;
-};
-
-export function NotificationPopover({
-  defaultOpen = false,
-}: NotificationPopoverProps) {
+export function NotificationPopover() {
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
 
-  const { data, isLoading, error } = useNotifications();
   const session = useMemberStore((s) => s.member);
+  const { data, isLoading, error, refetch } = useNotifications();
   const markAsRead = useMarkAsRead();
   const deleteNotifications = useDeleteNotifications();
 
   const notifications = data ?? [];
   const hasNotifications = notifications.length > 0;
 
+  useEffect(() => {
+    if (isOpen) refetch();
+  }, [isOpen, refetch]);
+
   // 개별 읽음 처리
   const handleNotificationClick = (notification: FrontendNotification) => {
     if (!notification.isRead) markAsRead.mutate([notification.id]);
-    if (notification.targetUrl) router.push(notification.targetUrl);
+    if (notification.targetUrl) {
+      router.push(notification.targetUrl);
+      setIsOpen(false);
+    }
   };
 
   // TODO 전체 읽음 처리
@@ -58,7 +62,10 @@ export function NotificationPopover({
   };
 
   return (
-    <Popover defaultOpen={defaultOpen}>
+    <Popover
+      open={isOpen}
+      onOpenChange={setIsOpen}
+    >
       <PopoverTrigger asChild>
         <button
           type="button"
@@ -105,30 +112,28 @@ export function NotificationPopover({
               <li
                 key={item.id}
                 className={cn(
-                  'flex items-start justify-between border-b px-6 py-4 transition-colors',
-                  'hover:bg-gray-50'
+                  'flex cursor-pointer items-start justify-between border-b px-6 py-4 transition-colors',
+                  'hover:bg-gray-100'
                 )}
                 onClick={() => handleNotificationClick(item)}
               >
                 <div className="flex-1">
-                  <p
-                    className={`text-xs font-semibold text-gray-500 ${item.isRead ? 'font-body2-normal' : 'font-body2-heading'}`}
-                  >
+                  <p className="text-text-sub2 text-xs font-semibold">
                     {item.categoryKorean}
                   </p>
                   <p
-                    className={`mt-1 text-sm leading-relaxed text-gray-900 ${item.isRead ? 'font-body2-normal' : 'font-body2-heading'}`}
+                    className={`mt-1 text-sm leading-relaxed hover:underline ${item.isRead ? 'font-body2-normal text-text-sub2' : 'font-body2-heading'}`}
                   >
                     {item.message}
                   </p>
                 </div>
-                <div className="ml-3 flex flex-col items-end gap-3">
+                <div className="ml-3 flex flex-col items-end">
                   <span className="text-xs text-gray-400">
                     {item.relativeTime}
                   </span>
                   <button
                     type="button"
-                    className="text-gray-300 hover:text-gray-500"
+                    className="cursor-pointer p-1 text-gray-300 hover:text-gray-500"
                     aria-label="알림 삭제"
                     onClick={(event) => handleDelete(item.id, event)}
                   >

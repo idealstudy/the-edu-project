@@ -2,14 +2,16 @@ import { notificationKeys } from '@/entities/notification';
 import { notificationsApi } from '@/features/notifications/api/notifications.api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-const FIVE_MINUTES = 1000 * 60 * 5;
+const ONE_MINUTE = 60 * 1000;
 
 // Query: 알림 목록 조회
+// TODO SSE 전환 예정
 export const useNotifications = () =>
   useQuery({
     queryKey: notificationKeys.list(),
     queryFn: notificationsApi.getList,
-    staleTime: FIVE_MINUTES,
+    staleTime: ONE_MINUTE,
+    refetchInterval: ONE_MINUTE,
     refetchOnWindowFocus: true,
   });
 
