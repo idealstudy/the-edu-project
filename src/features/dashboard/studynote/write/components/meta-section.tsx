@@ -1,6 +1,7 @@
 'use client';
 
-import { HomeworkMetaFields } from './homework-meta-form';
+import { HomeworkMetaFields } from '@/features/dashboard/homework/write/components/homework-meta-form';
+
 import { NoteMetaFields } from './note-meta-form';
 
 type MetaSectionProps = {

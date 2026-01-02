@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import EllipsisIcon from '@/assets/icons/ellipsis-vertical.svg';
-import { useStudyNoteDetailQuery } from '@/features/dashboard/studynoteHomework/detail/service/query';
+import { useStudyNoteDetailQuery } from '@/features/dashboard/studynote/detail/service/query';
 import { ColumnLayout } from '@/layout/column-layout';
 import { TextViewer } from '@/shared/components/editor';
 import { format } from 'date-fns';

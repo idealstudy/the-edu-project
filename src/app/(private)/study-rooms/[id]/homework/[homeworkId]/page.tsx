@@ -1,6 +1,6 @@
-import BackLink from '@/features/dashboard/studynoteHomework/components/back-link';
-// import StudyNoteDetailContentsSection from '@/features/dashboard/studynote/detail/components/contents-section';
-// import StudyNoteDetailMetaSection from '@/features/dashboard/studynote/detail/components/meta-section';
+import BackLink from '@/features/dashboard/studynote/components/back-link';
+// import StudyNoteDetailContentsSection from '@/features/dashboard/studynoteHomework/detail/components/contents-section';
+// import StudyNoteDetailMetaSection from '@/features/dashboard/studynoteHomework/detail/components/meta-section';
 import { ColumnLayout } from '@/layout/column-layout';
 
 // type Props = {

@@ -1,6 +1,10 @@
 import { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
+import {
+  useConnectMembers,
+  useWriteStudyNoteMutation,
+} from '@/features/dashboard/studynote/write/services/query';
 import { useGetTeacherNotesList } from '@/features/study-notes/hooks';
 import { StudyNoteGroupPageable } from '@/features/study-notes/model';
 import { TextEditor } from '@/shared/components/editor';
@@ -8,10 +12,6 @@ import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 
 import { HomeworkForm } from '../schemas/note';
-import {
-  useConnectMembers,
-  useWriteStudyNoteMutation,
-} from '../services/query';
 import { RequiredMark } from './form-provider';
 import TagInput from './tag-input';
 import TagInputNote from './tag-input-note';

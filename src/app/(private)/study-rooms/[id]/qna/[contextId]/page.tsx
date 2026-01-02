@@ -1,4 +1,4 @@
-import BackLink from '@/features/dashboard/studynoteHomework/components/back-link';
+import BackLink from '@/features/dashboard/studynote/components/back-link';
 import { QuestionDetail } from '@/features/qna/components/detail/qna-detail';
 import { ColumnLayout } from '@/layout/column-layout';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import BackLink from '@/features/dashboard/studynoteHomework/components/back-link';
+import BackLink from '@/features/dashboard/studynote/components/back-link';
 import CreateStudyRoomFlow from '@/features/study-rooms/components/create/CreateStudyRoomFlow';
 import { ColumnLayout } from '@/layout/column-layout';
 

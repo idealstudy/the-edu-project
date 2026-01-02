@@ -4,7 +4,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import Image from 'next/image';
 
-import { STUDY_NOTE_VISIBILITY } from '@/features/dashboard/studynoteHomework/constant';
+import { STUDY_NOTE_VISIBILITY } from '@/features/dashboard/studynote/constant';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Form } from '@/shared/components/ui/form';
 import { Select } from '@/shared/components/ui/select';

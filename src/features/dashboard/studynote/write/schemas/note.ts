@@ -67,21 +67,4 @@ export const studyNoteFormSchema = z.object({
   teachingNoteGroupId: z.number().optional(),
 });
 
-export const HomeworkFormSchema = z.object({
-  title: z
-    .string()
-    .min(1, '과제 제목을 입력해 주세요.')
-    .max(30, '과제 제목은 30자 이하로 입력해주세요.'),
-  content: contentSchema,
-  deadline: z.string().min(1, '날짜를 선택해 주세요.'),
-  studentIds: z.array(z.custom<CourseTargetStudentInfo>()).optional(),
-  reminderOffsets: z
-    .array(z.enum(['HOUR_1', 'HOUR_3', 'DAY_1']))
-    .nullable()
-    .optional(),
-  teachingNoteIds: z.array(z.number()).optional().nullable(),
-  studyRoomId: z.number(),
-});
-
 export type StudyNoteForm = z.infer<typeof studyNoteFormSchema>;
-export type HomeworkForm = z.infer<typeof HomeworkFormSchema>;

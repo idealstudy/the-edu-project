@@ -6,7 +6,7 @@ import { useFormContext } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 
 import { StudyNoteQueryKey } from '@/entities/study-note';
-import { StudyNoteDetailQueryKey } from '@/features/dashboard/studynoteHomework/detail/service/query-options';
+import { StudyNoteDetailQueryKey } from '@/features/dashboard/studynote/detail/service/query-options';
 import { useUpdateStudyNote } from '@/features/study-notes/hooks';
 import { Form } from '@/shared/components/ui/form';
 import { useQueryClient } from '@tanstack/react-query';
