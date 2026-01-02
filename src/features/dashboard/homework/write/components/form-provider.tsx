@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { useGetTeacherHomeworkDetail } from '@/features/homework/hooks/teacher/useGetTeacherHomeworkDetail';
+import { useGetTeacherHomeworkDetail } from '@/features/homework/hooks/teacher/useTeacherHomeworkQuries';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { HomeworkForm, HomeworkFormSchema } from '../schemas/note';

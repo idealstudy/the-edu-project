@@ -13,8 +13,8 @@ import {
 import { HomeworkSearchFilterBar } from '@/features/homework/components/search-filter-bar';
 import { StudentHomeworkList } from '@/features/homework/components/student-homework-list';
 import { TeacherHomeworkList } from '@/features/homework/components/teacher-homework-list';
-import { useGetStudentHomeworkList } from '@/features/homework/hooks/student/useGetStudentHomeworkList';
-import { useGetTeacherHomeworkList } from '@/features/homework/hooks/teacher/useGetTeacherHomeworkList';
+import { useGetStudentHomeworkList } from '@/features/homework/hooks/student/useStudentHomeworkQuries';
+import { useGetTeacherHomeworkList } from '@/features/homework/hooks/teacher/useTeacherHomeworkQuries';
 import {
   HomeworkLimit,
   HomeworkPageable,

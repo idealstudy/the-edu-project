@@ -3,8 +3,10 @@
 import Image from 'next/image';
 import { useParams, usePathname } from 'next/navigation';
 
-import { useCreateHomework } from '@/features/homework/hooks/teacher/useCreateHomework';
-import { useUpdateTeacherHomework } from '@/features/homework/hooks/teacher/useUpdateHomework';
+import {
+  useTeacherCreateHomework,
+  useTeacherUpdateTeacherHomework,
+} from '@/features/homework/hooks/teacher/useTeacherHomeworkMutations';
 import { useUpdateStudyNote } from '@/features/study-notes/hooks';
 import { ColumnLayout } from '@/layout/column-layout';
 
@@ -30,11 +32,10 @@ const WriteArea = ({ isEditMode = false }: WriteAreaProps) => {
   const { isPending: isUpdateNotePending } = useUpdateStudyNote();
 
   // homework
-  const { isPending: isCreateHomeworkPending } = useCreateHomework(studyRoomId);
-  const { isPending: isUpdateHomeworkPending } = useUpdateTeacherHomework(
-    studyRoomId,
-    homeworkId
-  );
+  const { isPending: isCreateHomeworkPending } =
+    useTeacherCreateHomework(studyRoomId);
+  const { isPending: isUpdateHomeworkPending } =
+    useTeacherUpdateTeacherHomework(studyRoomId, homeworkId);
 
   const isPending =
     tab === 'note'

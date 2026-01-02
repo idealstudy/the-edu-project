@@ -5,7 +5,7 @@ import { useFormContext } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
 
-import { useUpdateTeacherHomework } from '@/features/homework/hooks/teacher/useUpdateHomework';
+import { useTeacherUpdateTeacherHomework } from '@/features/homework/hooks/teacher/useTeacherHomeworkMutations';
 import { TeacherHomeworkQueryKey } from '@/features/homework/service/query-keys';
 import { Form } from '@/shared/components/ui/form';
 import { useQueryClient } from '@tanstack/react-query';
@@ -24,7 +24,7 @@ const HomeworkEditForm = ({
 }: PropsWithChildren<EditFormProps>) => {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { mutate: updateHomework } = useUpdateTeacherHomework(
+  const { mutate: updateHomework } = useTeacherUpdateTeacherHomework(
     studyRoomId,
     homeworkId
   );

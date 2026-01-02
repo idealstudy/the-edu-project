@@ -56,7 +56,7 @@ export const removeTeacherHomework = async (
 };
 
 // PATCH 선생님이 과제를 수정한다.
-export const updateTeacherHomwork = async (
+export const updateTeacherHomework = async (
   studyRoomId: number,
   homeworkId: number,
   body: TeacherHomeworkRequest

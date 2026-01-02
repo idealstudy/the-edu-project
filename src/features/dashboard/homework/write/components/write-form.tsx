@@ -5,7 +5,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
 
-import { useCreateHomework } from '@/features/homework/hooks/teacher/useCreateHomework';
+import { useTeacherCreateHomework } from '@/features/homework/hooks/teacher/useTeacherHomeworkMutations';
 import { TeacherHomeworkRequest } from '@/features/homework/model/homework.types';
 import { Form } from '@/shared/components/ui/form';
 import { PRIVATE } from '@/shared/constants';
@@ -16,7 +16,7 @@ import { HomeworkForm } from '../schemas/note';
 export const HomeworkWriteForm = ({ children }: PropsWithChildren) => {
   const router = useRouter();
   const studyRoomId = useWatch({ name: 'studyRoomId' });
-  const { mutate } = useCreateHomework(studyRoomId);
+  const { mutate } = useTeacherCreateHomework(studyRoomId);
   const { handleSubmit } = useFormContext<HomeworkForm>();
 
   const onSubmit = (data: HomeworkForm) => {

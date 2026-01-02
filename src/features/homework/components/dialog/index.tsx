@@ -5,7 +5,7 @@ import { ConfirmDialog } from '@/features/study-rooms/components/common/dialog/c
 import type { DialogAction, DialogState } from '@/shared/components/dialog';
 import { useRole } from '@/shared/hooks/use-role';
 
-import { useRemoveHomework } from '../../hooks/teacher/useRemoveHomwork';
+import { useTeacherRemoveHomework } from '../../hooks/teacher/useTeacherHomeworkMutations';
 import { Homework, HomeworkPageable } from '../../model/homework.types';
 
 export const HomeworkDialog = ({
@@ -34,7 +34,7 @@ export const HomeworkDialog = ({
     mutate: removeHomeworkMutate,
     isPending,
     isError,
-  } = useRemoveHomework(studyRoomId, homeworkId);
+  } = useTeacherRemoveHomework(studyRoomId, homeworkId);
 
   if (isPending) {
     return <div>Loading...</div>;
