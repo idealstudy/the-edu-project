@@ -11,6 +11,7 @@ import {
 } from 'next/navigation';
 
 import { StudyNotesList } from '@/features/study-notes/components/list';
+import { StudyNoteSearchFilterBar } from '@/features/study-notes/components/search-filter-bar';
 import { StudyNoteGroupContext } from '@/features/study-notes/contexts/study-note-group.context';
 import {
   useGetStudentNotesByGroup,
@@ -153,12 +154,16 @@ export default function StudyNotePage() {
 
   return (
     <StudyRoomDetailLayout
-      search={search}
-      sort={sort}
-      limit={limit}
-      onSearch={handleSearch}
-      onSortChange={handleSortChange}
-      onLimitChange={handleLimitChange}
+      filter={
+        <StudyNoteSearchFilterBar
+          search={search}
+          sort={sort}
+          limit={limit}
+          onSearch={handleSearch}
+          onSortChange={handleSortChange}
+          onLimitChange={handleLimitChange}
+        />
+      }
       page={page}
     >
       <StudyNotesList

@@ -1,6 +1,6 @@
 'use client';
 
-import { useStudyNoteDetailQuery } from '@/features/dashboard/studynote/detail/service/query';
+import { useStudyNoteDetailQuery } from '@/features/dashboard/studynoteHomework/detail/service/query';
 import {
   // useRemoveNoteFromGroup,
   useRemoveStudyNote,

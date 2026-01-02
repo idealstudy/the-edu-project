@@ -1,8 +1,8 @@
-import BackLink from '@/features/dashboard/studynote/components/back-link';
-import EditForm from '@/features/dashboard/studynote/write/components/edit-form';
-import StudyNoteFormProvider from '@/features/dashboard/studynote/write/components/form-provider';
-import SelectArea from '@/features/dashboard/studynote/write/components/select-area';
-import WriteArea from '@/features/dashboard/studynote/write/components/write-area';
+import BackLink from '@/features/dashboard/studynoteHomework/components/back-link';
+import { StudyNoteFormProvider } from '@/features/dashboard/studynoteHomework/write/components/form-provider';
+import StudyNoteEditForm from '@/features/dashboard/studynoteHomework/write/components/note-edit-form';
+import SelectArea from '@/features/dashboard/studynoteHomework/write/components/select-area';
+import WriteArea from '@/features/dashboard/studynoteHomework/write/components/write-area';
 import { ColumnLayout } from '@/layout/column-layout';
 
 type Props = {
@@ -25,7 +25,7 @@ export default async function StudyNoteEditPage({ params }: Props) {
         noteId={noteId}
         isEditMode={true}
       >
-        <EditForm
+        <StudyNoteEditForm
           noteId={noteId}
           studyRoomId={studyRoomId}
         >
@@ -33,7 +33,7 @@ export default async function StudyNoteEditPage({ params }: Props) {
             <SelectArea />
             <WriteArea isEditMode={true} />
           </ColumnLayout>
-        </EditForm>
+        </StudyNoteEditForm>
       </StudyNoteFormProvider>
     </>
   );

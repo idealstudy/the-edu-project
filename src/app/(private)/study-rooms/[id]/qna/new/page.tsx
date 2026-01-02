@@ -1,4 +1,4 @@
-import BackLink from '@/features/dashboard/studynote/components/back-link';
+import BackLink from '@/features/dashboard/studynoteHomework/components/back-link';
 import QnAWriteDetail from '@/features/qna/components/write/qna-write-detail';
 import { ColumnLayout } from '@/layout/column-layout';
 

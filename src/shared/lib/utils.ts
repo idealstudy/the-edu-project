@@ -62,6 +62,14 @@ export const formatMMDDWeekday = (date: Date | string): string => {
   return `${koreanTime.getMonth() + 1}/${koreanTime.getDate()} ${weekday[koreanTime.getDay()]}`;
 };
 
+export const formatYYYYMMDD = (date: Date | string): string => {
+  const targetDate = typeof date === 'string' ? new Date(date) : date;
+
+  const koreanTime = new Date(targetDate.getTime() + 9 * 60 * 60 * 1000);
+
+  return `${koreanTime.getFullYear()}.${koreanTime.getMonth() + 1}.${koreanTime.getDate()} 까지`;
+};
+
 type TipTapNode = {
   type?: string;
   text?: string;

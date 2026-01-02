@@ -7,7 +7,6 @@ import type { Meta, StoryObj } from '@storybook/react';
 type ListItemStoryArgs = {
   title: string;
   subtitle: string;
-  date: string;
   href: string;
   showTag: boolean;
   tagText: string;
@@ -70,16 +69,8 @@ const ICON_MAPPING = {
 
 // 공통 렌더 헬퍼: args를 받아 실제 JSX 슬롯을 만들어 ListItem에 주입
 const renderWithSlots = (args: ListItemStoryArgs) => {
-  const {
-    title,
-    subtitle,
-    date,
-    href,
-    showTag,
-    tagText,
-    iconVariant,
-    menuItems,
-  } = args;
+  const { title, subtitle, href, showTag, tagText, iconVariant, menuItems } =
+    args;
 
   const iconSrc = ICON_MAPPING[iconVariant] ?? '/note/read-global.svg';
 
@@ -130,7 +121,6 @@ const renderWithSlots = (args: ListItemStoryArgs) => {
         id={1}
         title={title}
         subtitle={subtitle}
-        date={date}
         href={href}
         tag={tag}
         dropdown={dropdown}
@@ -159,7 +149,6 @@ const StudyroomStudentsListItemComponent = () => {
           </div>
         }
         subtitle="kimdedu@dedu.com"
-        date="3일전 가입"
         href="/"
         icon={
           <Image

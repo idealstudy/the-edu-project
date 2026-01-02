@@ -4,8 +4,9 @@ import React, { useEffect, useState } from 'react';
 
 import { useParams, usePathname, useRouter } from 'next/navigation';
 
+import { HomeworkTabShell } from '@/features/homework/components/homework-tab-shell';
 import { StudyNoteTab } from '@/features/study-notes/components/study-note-tab';
-import StudyNoteTabShell from '@/features/study-notes/components/study-note-tab-shell';
+import { StudyNoteTabShell } from '@/features/study-notes/components/study-note-tab-shell';
 import { StudyNoteGroupContext } from '@/features/study-notes/contexts/study-note-group.context';
 import { StudyroomSidebar } from '@/features/study-rooms/components/sidebar';
 import { ColumnLayout } from '@/layout/column-layout';
@@ -28,6 +29,9 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
   const pathSegments = path.split('/').filter(Boolean);
   const segment = pathSegments[pathSegments.length - 1];
   const secondLastSegment = pathSegments[pathSegments.length - 2];
+
+  // note인지 homework 인지
+  const isNoteOrHw = segment === 'note' || segment === 'homework';
 
   // 편집/작성 페이지인지 확인 (note/[noteId]/edit 또는 note/new)
   const isEditOrWritePage =
@@ -89,10 +93,15 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
                 path={segment!}
                 studyRoomId={studyRoomId}
               />
-              {segment !== 'note' && children}
+              <HomeworkTabShell
+                mode={role}
+                path={segment!}
+                studyRoomId={studyRoomId}
+              />
+              {!isNoteOrHw && children}
             </div>
           </div>
-          {segment === 'note' && children}
+          {isNoteOrHw && children}
         </ColumnLayout.Right>
       </ColumnLayout>
     </StudyNoteGroupContext.Provider>

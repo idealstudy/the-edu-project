@@ -106,7 +106,7 @@ export const StudyNotesList = ({
           ? `${getRelativeTimeString(item.taughtAt)} 작성`
           : `${getRelativeTimeString(item.updatedAt)} 수정`
       }
-      date={formatMMDDWeekday(item.taughtAt)}
+      rightTitle={formatMMDDWeekday(item.taughtAt)}
       dropdown={
         <StudyNotesDropdown
           open={open}

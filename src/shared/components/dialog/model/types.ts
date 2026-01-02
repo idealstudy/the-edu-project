@@ -1,4 +1,10 @@
-export type DialogScope = 'group' | 'studyroom' | 'note' | 'invite' | 'qna';
+export type DialogScope =
+  | 'group'
+  | 'studyroom'
+  | 'note'
+  | 'invite'
+  | 'qna'
+  | 'homework';
 
 export type DialogKind =
   | 'rename'
@@ -20,6 +26,7 @@ export type DialogState =
         initialTitle?: string;
         groupId?: number;
         studyRoomId?: number;
+        homeworkId?: number;
       };
     };
 
@@ -34,6 +41,7 @@ export type DialogAction =
         initialTitle?: string;
         groupId?: number;
         studyRoomId?: number;
+        homeworkId?: number;
       };
     }
   | { type: 'GO_TO_CONFIRM' }

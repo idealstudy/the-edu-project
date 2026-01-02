@@ -9,11 +9,18 @@ type Props = {
   studyRoomId: number;
 };
 
-const StudyNoteTabShell = ({ mode, path, studyRoomId }: Props) => {
+export const StudyNoteTabShell = ({ mode, path, studyRoomId }: Props) => {
   return (
     <>
       {path === 'note' && mode === 'ROLE_TEACHER' && (
-        <StudyNoteSearch studyRoomId={studyRoomId} />
+        <StudyNoteSearch
+          studyRoomId={studyRoomId}
+          title={'이번엔 어떤 수업을\n진행하셨나요?'}
+          placeholder="수업노트 제목을 입력해주세요."
+          buttonText="수업노트 작성"
+          storageKey="study-note-title"
+          targetPath="note/new"
+        />
       )}
       {path === 'note' && mode === 'ROLE_STUDENT' && (
         <>
@@ -35,5 +42,3 @@ const StudyNoteTabShell = ({ mode, path, studyRoomId }: Props) => {
     </>
   );
 };
-
-export default StudyNoteTabShell;
