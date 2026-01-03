@@ -1,4 +1,10 @@
-export type DialogScope = 'group' | 'studyroom' | 'note' | 'invite' | 'qna';
+export type DialogScope =
+  | 'group'
+  | 'studyroom'
+  | 'note'
+  | 'invite'
+  | 'qna'
+  | 'notification';
 
 export type DialogKind =
   | 'rename'

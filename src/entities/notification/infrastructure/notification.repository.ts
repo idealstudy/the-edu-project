@@ -21,6 +21,15 @@ const getNotificationList = async (): Promise<FrontendNotification[]> => {
 };
 
 /* ─────────────────────────────────────────────────────
+ * [Read] 미확인 알림 조회
+ * ────────────────────────────────────────────────────*/
+const getUnreadNotifications = async () => {
+  const response = await api.private.get('/notification/unread');
+  const validatedResponse = adapters.fromApi.parse(response);
+  return notificationMapper.toDomainList(validatedResponse.data ?? []);
+};
+
+/* ─────────────────────────────────────────────────────
  * [Update] 알림 읽음 처리
  * ────────────────────────────────────────────────────*/
 const markAsRead = async (notificationIds: number[]): Promise<void> => {
@@ -38,13 +47,11 @@ const deleteNotifications = async (
   });
 };
 
-// TODO 미확인 알림 조회
-
 export const repository = {
   notification: {
     getList: getNotificationList,
+    getUnread: getUnreadNotifications,
     markAsRead: markAsRead,
     delete: deleteNotifications,
-    // TODO 추가
   },
 };
