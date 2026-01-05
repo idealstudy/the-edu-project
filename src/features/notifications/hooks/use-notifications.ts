@@ -16,15 +16,14 @@ export const useNotifications = () =>
   });
 
 // 미확인 알림 조회
-export const useUnreadNotifications = () => {
-  return useQuery({
+export const useUnreadNotifications = () =>
+  useQuery({
     queryKey: notificationKeys.unread(),
     queryFn: notificationsApi.getUnread,
     staleTime: ONE_MINUTE,
     refetchInterval: ONE_MINUTE,
     refetchOnWindowFocus: true,
   });
-};
 
 // 알림 읽음 처리
 export const useMarkAsRead = () => {

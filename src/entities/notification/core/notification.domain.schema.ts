@@ -20,15 +20,26 @@ const getCategoryKorean = (category: string): string =>
 /* ─────────────────────────────────────────────────────
  * category -> URL 변환 매핑
  * ────────────────────────────────────────────────────*/
-const getTargetUrl = (category: string, targetId: number): string | null => {
+const getTargetUrl = (
+  category: string,
+  metadata: {
+    qnaId?: string;
+    studyRoomId?: string;
+    teachingNoteId?: string;
+    noticeId?: string;
+    homeworkId?: string;
+  }
+): string | null => {
   switch (category) {
     case 'TEACHING_NOTE':
-      return `/study-rooms/1/note/${targetId}`;
+      return `/study-rooms/${metadata.studyRoomId}/note/${metadata.teachingNoteId}`;
     case 'STUDY_ROOM':
-      return `/study-rooms/${targetId}/note`;
-    // TODO URL 확인 후 추가
+      return `/study-rooms/${metadata.studyRoomId}/note`;
     case 'QNA':
+      return `/study-rooms/${metadata.studyRoomId}/qna/${metadata.qnaId}`;
+    // TODO
     case 'HOMEWORK':
+    case 'SYSTEM':
     default:
       return null;
   }
@@ -45,7 +56,7 @@ const NotificationShape = base.schema
     id: true,
     message: true,
     category: true,
-    targetId: true,
+    targetMetadata: true,
     read: true,
   })
   .extend({
@@ -64,7 +75,7 @@ const NotificationShape = base.schema
 const NotificationSchema = NotificationShape.transform((notification) => ({
   ...notification,
   categoryKorean: getCategoryKorean(notification.category),
-  targetUrl: getTargetUrl(notification.category, notification.targetId),
+  targetUrl: getTargetUrl(notification.category, notification.targetMetadata),
   relativeTime: formatDistanceToNow(notification.regDate, {
     addSuffix: true,
     locale: ko,

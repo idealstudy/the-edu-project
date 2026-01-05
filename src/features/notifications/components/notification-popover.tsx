@@ -39,7 +39,8 @@ export function NotificationPopover() {
 
   const notifications = data ?? [];
   const hasNotifications = notifications.length > 0;
-  const unreadCount = unread?.length ?? 0;
+  const unreadNotifications = unread ?? [];
+  const hasUnreadNotifications = unreadNotifications.length > 0;
 
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -62,7 +63,7 @@ export function NotificationPopover() {
 
   // 전체 읽음 처리
   const handleMarkAllRead = () => {
-    if (!unreadCount) return;
+    if (!hasUnreadNotifications) return;
 
     const unreadIds = unread?.map((n) => n.id) ?? [];
     markAsRead.mutate(unreadIds);
@@ -86,24 +87,25 @@ export function NotificationPopover() {
   };
 
   return (
-    <Popover
-      open={isOpen}
-      onOpenChange={setIsOpen}
-    >
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          className="relative flex size-6 cursor-pointer items-center justify-center outline-none"
-          aria-label="알림 확인"
-          onClick={() => {
-            // GNB 알림 아이콘 클릭 이벤트 전송
-            trackGnbAlarmClick(session?.role ?? null);
-          }}
-        >
-          <NotificationIcon hasNotifications={hasNotifications} />
-          <span className="sr-only">알림</span>
-        </button>
-      </PopoverTrigger>
+    <>
+      <Popover
+        open={isOpen}
+        onOpenChange={setIsOpen}
+      >
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className="relative flex size-6 cursor-pointer items-center justify-center outline-none"
+            aria-label="알림 확인"
+            onClick={() => {
+              // GNB 알림 아이콘 클릭 이벤트 전송
+              trackGnbAlarmClick(session?.role ?? null);
+            }}
+          >
+            <NotificationIcon hasNotifications={hasUnreadNotifications} />
+            <span className="sr-only">알림</span>
+          </button>
+        </PopoverTrigger>
 
         <PopoverContent className="mr-4 max-w-80 overflow-hidden p-0">
           <header className="flex items-center justify-between border-b px-6 py-4">
