@@ -26,7 +26,7 @@ export const Header = () => {
   const { logout } = useAuth();
   const handleLogout = async () => {
     logout();
-    
+
     // GNB 로그아웃 클릭 이벤트 전송
     trackGnbLogoutClick(session?.role ?? null);
   };
@@ -111,18 +111,6 @@ export const Header = () => {
         </div>
         {session && (
           <div className="desktop:gap-4 flex items-center gap-1">
-            {/* <Image
-              src={'/img_header_bell.svg'}
-              alt="알림 벨 아이콘"
-              width={24}
-              height={24}
-              className="mr-8 cursor-pointer"
-              onClick={() => {
-                // GNB 알림 아이콘 클릭 이벤트 전송
-                trackGnbAlarmClick(session?.role ?? null);
-              }}
-            />
-            /> */}
             <NotificationPopover />
 
             <DropdownMenu>
@@ -148,9 +136,6 @@ export const Header = () => {
               </DropdownMenu.Content>
             </DropdownMenu>
 
-            {/* <p className="desktop:flex hidden items-center gap-2 text-[14px] font-[600] text-white">
-              {session.nickname}
-            </p> */}
             {session?.role && (
               <div className="desktop:flex hidden items-center rounded-[40px] border px-2 py-[2px] text-[12px] font-[400px] text-[#ffffff]">
                 {roleMetaMap[session.role]?.label}
