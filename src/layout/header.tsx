@@ -11,6 +11,11 @@ import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 // import { useRouter } from 'next/navigation';
 
 import { PRIVATE, PUBLIC } from '@/shared/constants';
+import {
+  trackGnbLogoClick,
+  trackGnbLogoutClick,
+  trackGnbProfileClick,
+} from '@/shared/lib/gtm/trackers';
 import { useMemberStore } from '@/store';
 
 export const Header = () => {
@@ -21,6 +26,9 @@ export const Header = () => {
   const { logout } = useAuth();
   const handleLogout = async () => {
     logout();
+    
+    // GNB 로그아웃 클릭 이벤트 전송
+    trackGnbLogoutClick(session?.role ?? null);
   };
 
   const roleMetaMap = {
@@ -57,6 +65,10 @@ export const Header = () => {
             href={
               session === null ? PUBLIC.CORE.INDEX : PRIVATE.DASHBOARD.INDEX
             }
+            onClick={() => {
+              // GNB 로고 클릭 이벤트 전송
+              trackGnbLogoClick(session?.role ?? null);
+            }}
           >
             <Image
               src={'/logo.svg'}
@@ -105,11 +117,22 @@ export const Header = () => {
               width={24}
               height={24}
               className="mr-8 cursor-pointer"
+              onClick={() => {
+                // GNB 알림 아이콘 클릭 이벤트 전송
+                trackGnbAlarmClick(session?.role ?? null);
+              }}
+            />
             /> */}
             <NotificationPopover />
 
             <DropdownMenu>
-              <DropdownMenu.Trigger className="flex cursor-pointer items-center justify-center">
+              <DropdownMenu.Trigger
+                className="flex cursor-pointer items-center justify-center"
+                onClick={() => {
+                  // GNB 프로필 조회 클릭 이벤트 전송
+                  trackGnbProfileClick(session?.role ?? null);
+                }}
+              >
                 <Image
                   src={'/img_header_profile.svg'}
                   alt="프로필 사진"
