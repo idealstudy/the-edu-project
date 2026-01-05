@@ -35,7 +35,7 @@ jobs:
 
       - name: Add remote to deployment repo (idealstudy/the-edu-project)
         run: |
-          git remote add deployment-repo https://idealstudy:${{ secrets.PERSONAL_REPO_TOKEN }}@github.com/idealstudy/the-edu-project.git
+          git remote add deployment-repo https://${{ secrets.PERSONAL_REPO_TOKEN }}@github.com/idealstudy/the-edu-project.git
 
       - name: Push to same branch on deployment repo
         run: |
@@ -54,5 +54,5 @@ jobs:
           REF="${{ github.event.ref }}"
           BRANCH="${REF#refs/heads/}"
           git init
-          git remote add deployment-repo https://idealstudy:${{ secrets.PERSONAL_REPO_TOKEN }}@github.com/idealstudy/the-edu-project.git
+          git remote add deployment-repo https://${{ secrets.PERSONAL_REPO_TOKEN }}@github.com/idealstudy/the-edu-project.git
           git push deployment-repo --delete "$BRANCH" || true
