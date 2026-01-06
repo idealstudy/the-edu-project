@@ -13,7 +13,8 @@ export type DialogKind =
   | 'delete'
   | 'onConfirm'
   | 'create'
-  | 'invite';
+  | 'invite'
+  | 'select-representative';
 
 export type DialogState =
   | { status: 'idle' }

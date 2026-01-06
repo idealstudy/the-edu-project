@@ -5,6 +5,7 @@ type Props = {
   children: React.ReactNode;
   className?: string;
   action?: React.ReactNode;
+  isOwner?: boolean;
 };
 
 export default function SectionContainer({
@@ -12,6 +13,7 @@ export default function SectionContainer({
   children,
   className,
   action,
+  isOwner = false,
 }: Props) {
   return (
     <div
@@ -22,7 +24,7 @@ export default function SectionContainer({
     >
       <div className="flex justify-between">
         <h3 className="font-headline1-heading">{title}</h3>
-        {action}
+        {isOwner && action}
       </div>
       {children}
     </div>
