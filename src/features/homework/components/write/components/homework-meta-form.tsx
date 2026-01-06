@@ -8,11 +8,11 @@ import {
 import { useGetTeacherNotesList } from '@/features/study-notes/hooks';
 import { StudyNoteGroupPageable } from '@/features/study-notes/model';
 import { TextEditor } from '@/shared/components/editor';
+import { RequiredMark } from '@/shared/components/ui';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 
 import { HomeworkForm } from '../schemas/note';
-import { RequiredMark } from './form-provider';
 import TagInput from './tag-input';
 import TagInputNote from './tag-input-note';
 
@@ -38,6 +38,7 @@ export const HomeworkMetaFields = () => {
     pageable: NOTE_PAGEABLE,
     enabled: !!roomId,
   });
+
   const { data: members } = useConnectMembers(roomId);
   const { isPending } = useWriteStudyNoteMutation();
 
@@ -87,16 +88,16 @@ export const HomeworkMetaFields = () => {
           <Controller
             name="teachingNoteIds"
             control={control}
-            render={() => {
-              return (
-                <TagInputNote
-                  studyNotes={notes?.content ?? []}
-                  placeholder="과제와 연관된 수업노트를 연결해주세요."
-                  error={!!errors.teachingNoteIds}
-                  disabled={isPending}
-                />
-              );
-            }}
+            render={({ field }) => (
+              <TagInputNote
+                studyNotes={notes?.content ?? []}
+                selectedIds={field.value ?? []}
+                onChange={field.onChange}
+                placeholder="과제와 연관된 수업노트를 연결해주세요."
+                error={!!errors.teachingNoteIds}
+                disabled={isPending}
+              />
+            )}
           />
         </Form.Control>
 

@@ -24,8 +24,6 @@ import { StudyNoteGroupContext } from '@/features/study-notes/contexts/study-not
 import { StudyRoomDetailLayout } from '@/features/study-rooms/components/common/layout';
 import { useRole } from '@/shared/hooks/use-role';
 
-// 밑에 내용들은 임시
-
 export default function HomeworkPage() {
   const router = useRouter();
   const pathname = usePathname();
@@ -44,17 +42,21 @@ export default function HomeworkPage() {
   const [limit, setLimit] = useState<HomeworkLimit>(20);
 
   const { role } = useRole();
-  const { id, homeworkId } = useParams();
+  const { id } = useParams();
   const studyRoomId = Number(id);
-  const hwId = Number(homeworkId);
 
   const pageable: HomeworkPageable = {
     page: currentPage,
     size: limit,
     sortKey: sort,
+    keyword: search || undefined,
   };
   const teacherListQuery = useGetTeacherHomeworkList(studyRoomId, pageable);
   const studentListQuery = useGetStudentHomeworkList(studyRoomId, pageable);
+
+  const activeQuery =
+    role === 'ROLE_TEACHER' ? teacherListQuery : studentListQuery;
+  const isLoading = activeQuery.isPending || activeQuery.isFetching;
 
   const Homeworks =
     role === 'ROLE_TEACHER' ? teacherListQuery.data : studentListQuery.data;
@@ -117,19 +119,19 @@ export default function HomeworkPage() {
         <TeacherHomeworkList
           data={teacherListQuery.data?.content ?? []}
           studyRoomId={studyRoomId}
-          homeworkId={hwId}
           pageable={pageable}
           keyword={search}
           onRefresh={teacherListQuery.refetch}
+          isLoading={isLoading}
         />
       ) : (
         <StudentHomeworkList
           data={studentListQuery.data?.content ?? []}
           studyRoomId={studyRoomId}
-          homeworkId={hwId}
           pageable={pageable}
           keyword={search}
           onRefresh={studentListQuery.refetch}
+          isLoading={isLoading}
         />
       )}
     </StudyRoomDetailLayout>

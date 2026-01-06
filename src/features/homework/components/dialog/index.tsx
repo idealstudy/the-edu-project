@@ -13,9 +13,6 @@ export const HomeworkDialog = ({
   dispatch,
   studyRoomId,
   homeworkId,
-  // item,
-  // pageable,
-  // keyword,
   onRefresh,
 }: {
   state: DialogState;
@@ -34,7 +31,7 @@ export const HomeworkDialog = ({
     mutate: removeHomeworkMutate,
     isPending,
     isError,
-  } = useTeacherRemoveHomework(studyRoomId, homeworkId);
+  } = useTeacherRemoveHomework();
 
   if (isPending) {
     return <div>Loading...</div>;
@@ -46,23 +43,27 @@ export const HomeworkDialog = ({
 
   const handleHomeworkDelete = () => {
     if (!isTeacher) {
-      // eslint-disable-next-line no-console
-      console.error('권한 없음: 과제는 선생님만 삭제할 수 있습니다.');
       return;
     }
 
-    removeHomeworkMutate(undefined, {
-      onSuccess: () => {
-        dispatch({ type: 'GO_TO_CONFIRM' });
+    removeHomeworkMutate(
+      {
+        studyRoomId,
+        homeworkId,
       },
-    });
+      {
+        onSuccess: () => {
+          dispatch({ type: 'GO_TO_CONFIRM' });
+        },
+      }
+    );
   };
 
-  if (state.status !== 'open') return null;
+  if (state.status !== 'open') return;
 
   return (
     <>
-      {state.scope === 'note' && state.kind === 'delete' && (
+      {state.scope === 'homework' && state.kind === 'delete' && (
         <ConfirmDialog
           type="delete"
           open
@@ -73,7 +74,7 @@ export const HomeworkDialog = ({
         />
       )}
 
-      {state.scope === 'note' && state.kind === 'onConfirm' && (
+      {state.scope === 'homework' && state.kind === 'onConfirm' && (
         <ConfirmDialog
           type="confirm"
           open

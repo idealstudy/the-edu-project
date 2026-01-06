@@ -11,7 +11,6 @@ import { HomeworkDialog } from './dialog';
 
 export const HomeworkDropdown = ({
   studyRoomId,
-  homeworkId,
   open,
   handleOpen,
   item,
@@ -20,7 +19,6 @@ export const HomeworkDropdown = ({
   onRefresh,
 }: {
   studyRoomId: number;
-  homeworkId: number;
   open: number;
   handleOpen: (id: number) => void;
   item: Homework;
@@ -30,7 +28,6 @@ export const HomeworkDropdown = ({
 }) => {
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
   const handleDelete = () => {
-    // TODO: 수업노트 삭제 API 호출 후 상태 업데이트 로직 넣기
     dispatch({
       type: 'OPEN',
       scope: 'homework',
@@ -49,7 +46,7 @@ export const HomeworkDropdown = ({
           dispatch={dispatch}
           onRefresh={onRefresh}
           studyRoomId={studyRoomId}
-          homeworkId={homeworkId}
+          homeworkId={item.id}
           pageable={pageable}
           keyword={keyword}
           item={item}

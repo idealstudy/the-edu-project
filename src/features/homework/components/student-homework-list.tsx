@@ -3,29 +3,27 @@
 import { useState } from 'react';
 
 import { ListItem } from '@/features/study-rooms/components/common/list-item';
+import { MiniSpinner } from '@/shared/components/loading';
 import { formatYYYYMMDD, getRelativeTimeString } from '@/shared/lib/utils';
 
-import {
-  HomeworkPageable,
-  HomeworkSubmitStatus,
-  StudentHomeworkItem,
-} from '../model/homework.types';
+import { HOMEWORK_SUBMIT_STATUS_LABEL } from '../model/constants';
+import { HomeworkPageable, StudentHomeworkItem } from '../model/homework.types';
 import { HomeworkDropdown } from './dropdown';
 
 export const StudentHomeworkList = ({
   data,
   studyRoomId,
-  homeworkId,
   pageable,
   keyword,
   onRefresh,
+  isLoading,
 }: {
   data: StudentHomeworkItem[];
   studyRoomId: number;
-  homeworkId: number;
   pageable: HomeworkPageable;
   keyword: string;
   onRefresh: () => void;
+  isLoading: boolean;
 }) => {
   const [open, setOpen] = useState(0);
 
@@ -48,14 +46,14 @@ export const StudentHomeworkList = ({
     if (diffDays === 1 || diffDays > 1) return `마감 ${diffDays}일 전`;
   };
 
-  const submmittedStatus = (status: HomeworkSubmitStatus) => {
-    if (status === 'SUBMIT') return '제출 완료';
-    if (status === 'NOT_SUBMIT') return '미제출';
-    if (status === 'LATE_SUBMIT') return '지연 제출';
-    return '';
-  };
-
   // 과제가 없을 시
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-10">
+        <MiniSpinner />
+      </div>
+    );
+  }
   if (data.length === 0) {
     return (
       <div className="flex flex-col items-center gap-2">
@@ -71,7 +69,7 @@ export const StudentHomeworkList = ({
       warn={deadLineDate(item.deadline)}
       title={item.title}
       subtitle={formatYYYYMMDD(item.deadline)}
-      rightTitle={submmittedStatus(item.status)}
+      rightTitle={HOMEWORK_SUBMIT_STATUS_LABEL[item.status]}
       rightSubTitle={getRelativeTimeString(item.modDate)}
       dropdown={
         <HomeworkDropdown
@@ -79,7 +77,6 @@ export const StudentHomeworkList = ({
           handleOpen={handleOpen}
           item={item}
           studyRoomId={studyRoomId}
-          homeworkId={homeworkId}
           pageable={pageable}
           keyword={keyword}
           onRefresh={onRefresh}

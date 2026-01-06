@@ -9,50 +9,65 @@ import { TeacherHomeworkRequest } from '../../model/homework.types';
 import { TeacherHomeworkQueryKey } from '../../service/query-keys';
 
 // 선생님이 과제 생성
-export const useTeacherCreateHomework = (studyRoomId: number) => {
+export const useTeacherCreateHomework = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (body: TeacherHomeworkRequest) =>
-      postTeacherHomeworkCreate(studyRoomId, body),
-    onSuccess: () => {
+    mutationFn: ({
+      studyRoomId,
+      body,
+    }: {
+      studyRoomId: number;
+      body: TeacherHomeworkRequest;
+    }) => postTeacherHomeworkCreate(studyRoomId, body),
+
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: TeacherHomeworkQueryKey.listBase(studyRoomId),
+        queryKey: TeacherHomeworkQueryKey.listBase(variables.studyRoomId),
       });
     },
   });
 };
 
 // 선생님이 과제 삭제
-export const useTeacherRemoveHomework = (
-  studyRoomId: number,
-  homeworkId: number
-) => {
+export const useTeacherRemoveHomework = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => removeTeacherHomework(studyRoomId, homeworkId),
-    onSuccess: () => {
+    mutationFn: ({
+      studyRoomId,
+      homeworkId,
+    }: {
+      studyRoomId: number;
+      homeworkId: number;
+    }) => removeTeacherHomework(studyRoomId, homeworkId),
+
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: TeacherHomeworkQueryKey.listBase(studyRoomId),
+        queryKey: TeacherHomeworkQueryKey.listBase(variables.studyRoomId),
       });
     },
   });
 };
 
 // 선생님이 과제 수정
-export const useTeacherUpdateTeacherHomework = (
-  studyRoomId: number,
-  homeworkId: number
-) => {
+export const useTeacherUpdateHomework = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (body: TeacherHomeworkRequest) =>
-      updateTeacherHomework(studyRoomId, homeworkId, body),
-    onSuccess: () => {
+    mutationFn: ({
+      studyRoomId,
+      homeworkId,
+      body,
+    }: {
+      studyRoomId: number;
+      homeworkId: number;
+      body: TeacherHomeworkRequest;
+    }) => updateTeacherHomework(studyRoomId, homeworkId, body),
+
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: TeacherHomeworkQueryKey.listBase(studyRoomId),
+        queryKey: TeacherHomeworkQueryKey.listBase(variables.studyRoomId),
       });
     },
   });

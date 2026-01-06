@@ -16,17 +16,23 @@ import { HomeworkForm } from '../schemas/note';
 export const HomeworkWriteForm = ({ children }: PropsWithChildren) => {
   const router = useRouter();
   const studyRoomId = useWatch({ name: 'studyRoomId' });
-  const { mutate } = useTeacherCreateHomework(studyRoomId);
+  const { mutate } = useTeacherCreateHomework();
   const { handleSubmit } = useFormContext<HomeworkForm>();
 
   const onSubmit = (data: HomeworkForm) => {
     const parsingData = transformHomeworkFormToServerFormat(data);
 
-    mutate(parsingData, {
-      onSuccess: () => {
-        router.replace(PRIVATE.HOMEWORK.LIST(data.studyRoomId));
+    mutate(
+      {
+        studyRoomId,
+        body: parsingData,
       },
-    });
+      {
+        onSuccess: () => {
+          router.replace(PRIVATE.HOMEWORK.LIST(studyRoomId));
+        },
+      }
+    );
   };
 
   return <Form onSubmit={handleSubmit(onSubmit)}>{children}</Form>;
@@ -41,5 +47,6 @@ function transformHomeworkFormToServerFormat(
     deadline: new Date(formData.deadline).toISOString(),
     studentIds: formData.studentIds?.map((s) => s.id),
     reminderOffsets: formData.reminderOffsets ?? undefined,
+    teachingNoteIds: formData.teachingNoteIds ?? [],
   };
 }

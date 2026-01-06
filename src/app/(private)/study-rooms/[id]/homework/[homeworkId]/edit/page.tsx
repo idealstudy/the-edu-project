@@ -1,8 +1,8 @@
-import { HomeworkFormProvider } from '@/features/dashboard/homework/write/components/form-provider';
-import HomeworkEditForm from '@/features/dashboard/homework/write/components/homework-edit-form';
 import BackLink from '@/features/dashboard/studynote/components/back-link';
 import SelectArea from '@/features/dashboard/studynote/write/components/select-area';
 import WriteArea from '@/features/dashboard/studynote/write/components/write-area';
+import { HomeworkFormProvider } from '@/features/homework/components/write/components/form-provider';
+import HomeworkEditForm from '@/features/homework/components/write/components/homework-edit-form';
 import { ColumnLayout } from '@/layout/column-layout';
 
 type Props = {
@@ -21,7 +21,7 @@ export default async function HomeworkEditPage({ params }: Props) {
       </div>
 
       <HomeworkFormProvider
-        defaultStudyRoomId={studyRoomId}
+        studyRoomId={studyRoomId}
         homeworkId={homeworkId}
         isEditMode={true}
       >

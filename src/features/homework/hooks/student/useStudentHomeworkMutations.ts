@@ -7,63 +7,76 @@ import {
 } from '../../api/student/homework.student.api';
 import { StudentHomeworkQueryKey } from '../../service/query-keys';
 
+type PostStudentHomeworkPayload = {
+  studyRoomId: number;
+  homeworkId: number;
+  content: string;
+};
 // 학생이 과제 제출
-export const usePostStudentHomework = (
-  studyRoomId: number,
-  homeworkId: number
-) => {
+export const usePostStudentHomework = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (content: string) =>
-      postStudentHomework(studyRoomId, homeworkId, { content }),
+    mutationFn: (payload: PostStudentHomeworkPayload) =>
+      postStudentHomework(payload.studyRoomId, payload.homeworkId, {
+        content: payload.content,
+      }),
 
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: StudentHomeworkQueryKey.detail(studyRoomId, homeworkId),
+        queryKey: StudentHomeworkQueryKey.detail(
+          variables.studyRoomId,
+          variables.homeworkId
+        ),
       });
     },
   });
 };
 
+type StudentHomeworkPayload = {
+  studyRoomId: number;
+  homeworkStudentId: number;
+  homeworkId: number;
+  content: string;
+};
+
 // 학생이 제출한 과제 삭제
-export const useRemoveStudentHomework = (
-  studyRoomId: number,
-  homeworkId: number
-) => {
+export const useRemoveStudentHomework = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (homeworkStudentId: number) =>
+    mutationFn: ({ studyRoomId, homeworkStudentId }: StudentHomeworkPayload) =>
       removeStudentHomework(studyRoomId, homeworkStudentId),
 
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: StudentHomeworkQueryKey.detail(studyRoomId, homeworkId),
+        queryKey: StudentHomeworkQueryKey.detail(
+          variables.studyRoomId,
+          variables.homeworkId
+        ),
       });
     },
   });
 };
 
 // 학생이 제출한 과제 수정
-export const useUpdateStudentHomework = (
-  studyRoomId: number,
-  homeworkId: number
-) => {
+export const useUpdateStudentHomework = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({
+      studyRoomId,
       homeworkStudentId,
       content,
-    }: {
-      homeworkStudentId: number;
-      content: string;
-    }) => updateStudentHomework(studyRoomId, homeworkStudentId, { content }),
+    }: StudentHomeworkPayload) =>
+      updateStudentHomework(studyRoomId, homeworkStudentId, { content }),
 
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: StudentHomeworkQueryKey.detail(studyRoomId, homeworkId),
+        queryKey: StudentHomeworkQueryKey.detail(
+          variables.studyRoomId,
+          variables.homeworkId
+        ),
       });
     },
   });

@@ -20,7 +20,7 @@ export const useGetStudentHomeworkList = (
 };
 
 // 학생 과제 상세 내용
-export const useStudentHomeworkDetailQuery = (
+export const useStudentHomeworkDetail = (
   studyRoomId: number,
   homeworkId: number
 ) => {

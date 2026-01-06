@@ -17,7 +17,7 @@ export type HomeworkLimit = 20 | 30;
 
 export type ReminderOffset = 'HOUR_1' | 'HOUR_3' | 'DAY_1';
 
-export type HomeworkSubmitStatus = 'NOT_SUBMIT' | 'SUBMIT' | 'LATE_SUBMIT'; // 서버 enum 확정 필요
+export type HomeworkSubmitStatus = 'NOT_SUBMIT' | 'SUBMIT' | 'LATE_SUBMIT';
 
 export interface HomeworkPageable {
   page: number;
@@ -33,7 +33,7 @@ export interface Homework {
   title: string;
   modDate: string;
   deadline: string;
-  deadlineLabel: 'UPCOMING' | 'TODAY' | 'OVERDUE'; // 서버 enum 확인 필요
+  deadlineLabel: 'UPCOMING' | 'TODAY' | 'OVERDUE';
   dday: number;
 }
 
@@ -50,8 +50,8 @@ export interface TeacherHomeworkListResponse {
   data: PageableResponse<TeacherHomeworkItem>;
 }
 
-/*과제 생성/수정 요청
- */
+// 과제 생성/수정 요청
+
 export interface TeacherHomeworkRequest {
   title: string;
   content: string;

@@ -1,8 +1,8 @@
-import { HomeworkFormProvider } from '@/features/dashboard/homework/write/components/form-provider';
-import { HomeworkWriteForm } from '@/features/dashboard/homework/write/components/write-form';
 import BackLink from '@/features/dashboard/studynote/components/back-link';
 import SelectArea from '@/features/dashboard/studynote/write/components/select-area';
-import WriteArea from '@/features/dashboard/studynote/write/components/write-area';
+import { HomeworkFormProvider } from '@/features/homework/components/write/components/form-provider';
+import { WriteArea } from '@/features/homework/components/write/components/write-area';
+import { HomeworkWriteForm } from '@/features/homework/components/write/components/write-form';
 import { ColumnLayout } from '@/layout/column-layout';
 
 type Props = {
@@ -19,7 +19,7 @@ export default async function StudyNoteHomeworkWritePage({ params }: Props) {
         <BackLink />
       </div>
 
-      <HomeworkFormProvider defaultStudyRoomId={studyRoomId}>
+      <HomeworkFormProvider studyRoomId={studyRoomId}>
         <HomeworkWriteForm>
           <ColumnLayout className="pb-10">
             <SelectArea />

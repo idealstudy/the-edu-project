@@ -21,24 +21,26 @@ const extractTextFromTiptapJSON = (doc: JSONContent): string => {
   return text;
 };
 
-export const contentSchema = z.custom<JSONContent>().superRefine((val, ctx) => {
-  const plainText = extractTextFromTiptapJSON(val);
-  const length = plainText.trim().length;
+export const contentSchema = z
+  .custom<JSONContent>((val) => typeof val === 'object' && val !== null)
+  .superRefine((val, ctx) => {
+    const plainText = extractTextFromTiptapJSON(val);
+    const length = plainText.trim().length;
 
-  if (length < 10) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: '내용은 최소 10자 이상이어야 합니다.',
-    });
-  }
+    if (length < 10) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: '내용은 최소 10자 이상이어야 합니다.',
+      });
+    }
 
-  if (length > 3000) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: '3000자 이상은 입력하실 수 없습니다.',
-    });
-  }
-});
+    if (length > 3000) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: '3000자 이상은 입력하실 수 없습니다.',
+      });
+    }
+  });
 
 export const HomeworkFormSchema = z.object({
   title: z
@@ -47,12 +49,14 @@ export const HomeworkFormSchema = z.object({
     .max(30, '과제 제목은 30자 이하로 입력해주세요.'),
   content: contentSchema,
   deadline: z.string().min(1, '날짜를 선택해 주세요.'),
-  studentIds: z.array(z.custom<CourseTargetStudentInfo>()).optional(),
+  studentIds: z
+    .array(z.custom<CourseTargetStudentInfo>())
+    .min(1, '제출 대상을 최소 1명 이상 선택해 주세요.'),
   reminderOffsets: z
     .array(z.enum(['HOUR_1', 'HOUR_3', 'DAY_1']))
     .nullable()
     .optional(),
-  teachingNoteIds: z.array(z.number()).optional().nullable(),
+  teachingNoteIds: z.array(z.number()).optional(),
   studyRoomId: z.number(),
 });
 

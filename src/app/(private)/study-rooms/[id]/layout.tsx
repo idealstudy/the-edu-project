@@ -39,12 +39,13 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
     segment === 'new' ||
     (secondLastSegment === 'note' && segment === 'new');
 
-  // 상세 페이지인지 확인 (note/[noteId] 또는 qna/[contextId])
+  // 상세 페이지인지 확인 (note/[noteId] 또는 qna/[contextId] 또는 homework/[homeworkId])
   // 편집/작성 페이지는 제외
   const isDetailPage =
     !isEditOrWritePage &&
     ((pathSegments.length > 3 && secondLastSegment === 'qna') ||
-      (pathSegments.length > 3 && secondLastSegment === 'note'));
+      (pathSegments.length > 3 && secondLastSegment === 'note') ||
+      (pathSegments.length > 3 && secondLastSegment === 'homework'));
 
   // 권한 체크
   // Todo: 추후 미들웨어에서 처리하도록 변경

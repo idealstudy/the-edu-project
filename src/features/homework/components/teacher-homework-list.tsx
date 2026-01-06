@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { ListItem } from '@/features/study-rooms/components/common/list-item';
+import { MiniSpinner } from '@/shared/components/loading';
 import { formatYYYYMMDD, getRelativeTimeString } from '@/shared/lib/utils';
 
 import { HomeworkPageable, TeacherHomeworkItem } from '../model/homework.types';
@@ -11,17 +12,17 @@ import { HomeworkDropdown } from './dropdown';
 export const TeacherHomeworkList = ({
   data,
   studyRoomId,
-  homeworkId,
   pageable,
   keyword,
   onRefresh,
+  isLoading,
 }: {
   data: TeacherHomeworkItem[];
   studyRoomId: number;
-  homeworkId: number;
   pageable: HomeworkPageable;
   keyword: string;
   onRefresh: () => void;
+  isLoading: boolean;
 }) => {
   const [open, setOpen] = useState(0);
 
@@ -51,6 +52,13 @@ export const TeacherHomeworkList = ({
   };
 
   // 과제가 없을 시
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-10">
+        <MiniSpinner />
+      </div>
+    );
+  }
   if (data.length === 0) {
     return (
       <p className="flex flex-col items-center">아직 등록한 과제가 없어요.</p>
@@ -71,7 +79,6 @@ export const TeacherHomeworkList = ({
           handleOpen={handleOpen}
           item={item}
           studyRoomId={studyRoomId}
-          homeworkId={homeworkId}
           pageable={pageable}
           keyword={keyword}
           onRefresh={onRefresh}

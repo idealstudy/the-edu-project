@@ -27,6 +27,6 @@ export const useGetTeacherHomeworkDetail = (
   return useQuery({
     queryKey: TeacherHomeworkQueryKey.detail(studyRoomId, homeworkId),
     queryFn: () => getTeacherHomeworkDetail(studyRoomId, homeworkId),
-    enabled: !!studyRoomId,
+    enabled: !!studyRoomId && !!homeworkId,
   });
 };

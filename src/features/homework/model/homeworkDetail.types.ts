@@ -1,4 +1,4 @@
-import type { HomeworkSubmitStatus } from './homework.types';
+import type { HomeworkSubmitStatus, ReminderOffset } from './homework.types';
 import type { HomeworkFeedback } from './homeworkFeedback.types';
 import type { HomeworkSubmission } from './homeworkSubmission.types';
 
@@ -9,7 +9,11 @@ export interface HomeworkDetail {
   content: string;
   deadline: string;
   modifiedAt: string;
-  teachingNoteNameList: string[];
+  reminderOffsets: ReminderOffset[];
+  teachingNoteInfoList: {
+    id: number;
+    name: string;
+  }[];
 }
 
 // 선생님
