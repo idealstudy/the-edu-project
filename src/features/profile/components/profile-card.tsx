@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 
+import ParentProfileExtra from '@/features/profile/components/parent/parent-profile-extra';
 import { ProfileCardDropdown } from '@/features/profile/components/profile-card-dropdown';
 import StudentProfileExtra from '@/features/profile/components/student/student-profile-extra';
 import TeacherProfileExtra from '@/features/profile/components/teacher/teacher-profile-extra';
@@ -22,6 +23,8 @@ export default function ProfileCard({ profile, isOwner }: ProfileAccessProps) {
       profileExtra = <StudentProfileExtra />;
       break;
     case 'ROLE_PARENT':
+      profileExtra = <ParentProfileExtra />;
+      break;
     default:
       profileExtra = <div>잘못된 접근입니다.</div>;
   }

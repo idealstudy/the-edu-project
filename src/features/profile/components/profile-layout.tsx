@@ -1,3 +1,4 @@
+import ParentSections from '@/features/profile/components/parent/parent-sections';
 import ProfileCard from '@/features/profile/components/profile-card';
 import StudentSections from '@/features/profile/components/student/student-sections';
 import TeacherSections from '@/features/profile/components/teacher/teacher-sections';
@@ -28,6 +29,13 @@ export default function ProfileLayout({
       );
       break;
     case 'ROLE_PARENT':
+      sections = (
+        <ParentSections
+          profile={profile}
+          isOwner={isOwner}
+        />
+      );
+      break;
     default:
       sections = <div>잘못된 접근입니다.</div>;
   }
