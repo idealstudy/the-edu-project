@@ -8,7 +8,7 @@ export default function SocialLoginButton() {
   const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${serverEnv.kakaoClientId}&redirect_uri=${serverEnv.backendApiUrl}/auth/kakao/callback&response_type=code`;
 
   return (
-    <div className="flex justify-center">
+    <div className="mt-10 flex justify-center">
       <a href={kakaoAuthUrl}>
         <Image
           src="/auth/kakao_login_large_wide.png"

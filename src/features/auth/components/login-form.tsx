@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 
 import Link from 'next/link';
 
+import SocialLoginButton from '@/features/auth/components/social-login-button';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
@@ -91,6 +92,8 @@ export default function LoginForm() {
       <Link href={'#'}>
         <p className={LoginFormtwStyles.link}>로그인이 안되시나요?</p>
       </Link>
+
+      <SocialLoginButton />
     </Form>
   );
 }
