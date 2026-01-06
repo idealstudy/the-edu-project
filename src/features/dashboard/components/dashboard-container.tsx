@@ -13,6 +13,8 @@ import {
   SUMMARY_CARDS,
 } from '@/features/dashboard/mock';
 import { PRIVATE } from '@/shared/constants';
+import { trackPageView } from '@/shared/lib/gtm/trackers';
+import { useMemberStore } from '@/store';
 
 /* ─────────────────────────────────────────────────────
  * 테스트용 플래그
@@ -23,7 +25,12 @@ export const DashboardContainer = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data, isLoading, isError } = useDashboardQuery();
 
+  const session = useMemberStore((s) => s.member);
+
   React.useEffect(() => {
+    // 대시보드 페이지뷰 이벤트
+    trackPageView('dashboard', {}, session?.role ?? null);
+
     const hasShown = sessionStorage.getItem(ALERT_KEY);
     if (!hasShown) {
       alert(
@@ -31,7 +38,7 @@ export const DashboardContainer = () => {
       );
       sessionStorage.setItem(ALERT_KEY, 'true');
     }
-  }, []);
+  }, [session?.role]);
 
   return (
     <div className="bg-system-background">

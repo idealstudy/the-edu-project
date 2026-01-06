@@ -70,7 +70,12 @@ async function handleRequest(
 
   // 요청 본문 처리
   let requestBody: string | undefined;
-  if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
+  if (
+    method === 'POST' ||
+    method === 'PUT' ||
+    method === 'PATCH' ||
+    method === 'DELETE'
+  ) {
     try {
       requestBody = await request.text();
     } catch {

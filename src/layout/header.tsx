@@ -11,6 +11,11 @@ import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 // import { useRouter } from 'next/navigation';
 
 import { PRIVATE, PUBLIC } from '@/shared/constants';
+import {
+  trackGnbLogoClick,
+  trackGnbLogoutClick,
+  trackGnbProfileClick,
+} from '@/shared/lib/gtm/trackers';
 import { useMemberStore } from '@/store';
 
 export const Header = () => {
@@ -21,6 +26,9 @@ export const Header = () => {
   const { logout } = useAuth();
   const handleLogout = async () => {
     logout();
+
+    // GNB 로그아웃 클릭 이벤트 전송
+    trackGnbLogoutClick(session?.role ?? null);
   };
 
   const roleMetaMap = {
@@ -57,6 +65,10 @@ export const Header = () => {
             href={
               session === null ? PUBLIC.CORE.INDEX : PRIVATE.DASHBOARD.INDEX
             }
+            onClick={() => {
+              // GNB 로고 클릭 이벤트 전송
+              trackGnbLogoClick(session?.role ?? null);
+            }}
           >
             <Image
               src={'/logo.svg'}
@@ -99,17 +111,16 @@ export const Header = () => {
         </div>
         {session && (
           <div className="desktop:gap-4 flex items-center gap-1">
-            {/* <Image
-              src={'/img_header_bell.svg'}
-              alt="알림 벨 아이콘"
-              width={24}
-              height={24}
-              className="mr-8 cursor-pointer"
-            /> */}
             <NotificationPopover />
 
             <DropdownMenu>
-              <DropdownMenu.Trigger className="flex cursor-pointer items-center justify-center">
+              <DropdownMenu.Trigger
+                className="flex cursor-pointer items-center justify-center"
+                onClick={() => {
+                  // GNB 프로필 조회 클릭 이벤트 전송
+                  trackGnbProfileClick(session?.role ?? null);
+                }}
+              >
                 <Image
                   src={'/img_header_profile.svg'}
                   alt="프로필 사진"
@@ -125,9 +136,6 @@ export const Header = () => {
               </DropdownMenu.Content>
             </DropdownMenu>
 
-            {/* <p className="desktop:flex hidden items-center gap-2 text-[14px] font-[600] text-white">
-              {session.nickname}
-            </p> */}
             {session?.role && (
               <div className="desktop:flex hidden items-center rounded-[40px] border px-2 py-[2px] text-[12px] font-[400px] text-[#ffffff]">
                 {roleMetaMap[session.role]?.label}
