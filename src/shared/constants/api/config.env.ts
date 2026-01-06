@@ -29,4 +29,5 @@ export const env = {
 
 export const serverEnv = {
   backendApiUrl: serverBackendUrl,
+  kakaoClientId: sanitize(process.env.KAKAO_CLIENT_ID),
 };
