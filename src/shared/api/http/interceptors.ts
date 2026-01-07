@@ -19,8 +19,12 @@ function isForbidden(e: AxiosError) {
 }
 
 function isProfileIncomplete(e: AxiosError) {
+  const message = getMessage(e);
+
   return (
-    getStatus(e) === 403 && getMessage(e) === 'PROFILE_COMPLETION_REQUIRED'
+    getStatus(e) === 403 &&
+    (message === 'PROFILE_COMPLETION_REQUIRED' ||
+      message?.includes('프로필 완성'))
   );
 }
 
