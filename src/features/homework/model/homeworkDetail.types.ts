@@ -21,6 +21,7 @@ export interface HomeworkDetail {
 export interface HomeworkStudentItem {
   id: number;
   studentName: string;
+  studentId: number;
   status: HomeworkSubmitStatus;
   submission?: HomeworkSubmission;
   feedback?: HomeworkFeedback;
