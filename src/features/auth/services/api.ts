@@ -28,6 +28,14 @@ export const authService = {
         '/api/v1/member/info'
       );
       const validatedResponse = adapters.fromApi.parse(response);
+
+      const memberData = validatedResponse.data;
+
+      if (memberData.role === 'ROLE_MEMBER') {
+        window.location.href = '/select-role';
+        return null;
+      }
+
       return factory.member.create(validatedResponse.data);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e: unknown) {
