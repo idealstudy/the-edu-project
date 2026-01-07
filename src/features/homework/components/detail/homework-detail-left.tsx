@@ -143,7 +143,16 @@ export const HomeworkDetailLeft = ({ studyRoomId, homeworkId }: Props) => {
                 <div>없음</div>
               ) : (
                 data?.homework.teachingNoteInfoList.map((note) => (
-                  <div key={note.id}>{note.name}</div>
+                  <div key={note.id}>
+                    <a
+                      href={`/study-rooms/${studyRoomId}/note/${note.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-orange-scale-orange-50 cursor-pointer"
+                    >
+                      {note.name}
+                    </a>
+                  </div>
                 ))
               )}
             </div>
