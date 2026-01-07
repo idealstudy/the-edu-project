@@ -73,13 +73,16 @@ export const HomeworkFormProvider = ({
       content,
       deadline: homework.deadline.split('T')[0],
       teachingNoteIds: homework.teachingNoteInfoList.map((n) => n.id),
-      studentIds: homeworkDetail.homeworkStudents.map((s) => ({
-        id: s.id,
-        name: s.studentName,
-        // TODO :  parentCount 수정 필요
-        parentCount: 1,
-        role: 'ROLE_STUDENT',
-      })),
+      studentIds: homeworkDetail.homeworkStudents.map((hs) => {
+        const member = members.find((m) => m.id === hs.studentId);
+
+        return {
+          id: hs.studentId,
+          name: hs.studentName,
+          parentCount: member?.parentCount ?? 0,
+          role: 'ROLE_STUDENT',
+        };
+      }),
       reminderOffsets: homework.reminderOffsets ?? [],
       studyRoomId,
     });
