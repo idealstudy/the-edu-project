@@ -46,6 +46,16 @@ const NOTE = {
 } as const;
 
 /* ─────────────────────────────────────────────────────
+ * HOMEWORK
+ * ────────────────────────────────────────────────────*/
+const HOMEWORK = {
+  CREATE: (studyRoomId: number) => `/study-rooms/${studyRoomId}/homework/new`,
+  DETAIL: (studyRoomId: number, homeworkId: number) =>
+    `/study-rooms/${studyRoomId}/homework/${homeworkId}`,
+  LIST: (id: number) => `/study-rooms/${id}/homework`,
+} as const;
+
+/* ─────────────────────────────────────────────────────
  * Export - PUBLIC
  * ────────────────────────────────────────────────────*/
 export const PUBLIC = {
@@ -59,5 +69,6 @@ export const PRIVATE = {
   DASHBOARD,
   ROOM,
   NOTE,
+  HOMEWORK,
   QUESTIONS,
 } as const;

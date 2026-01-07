@@ -15,7 +15,8 @@ import { StudyNoteVisibility } from '../../type';
 import { StudyNoteForm } from '../schemas/note';
 import { useWriteStudyNoteMutation } from '../services/query';
 
-const WriteForm = ({ children }: PropsWithChildren) => {
+// studynote
+export const StudyNoteWriteForm = ({ children }: PropsWithChildren) => {
   const router = useRouter();
   const session = useMemberStore((s) => s.member);
 
@@ -54,8 +55,6 @@ const WriteForm = ({ children }: PropsWithChildren) => {
 
   return <Form onSubmit={handleSubmit(onSubmit)}>{children}</Form>;
 };
-
-export default WriteForm;
 
 function transformVisibility(
   visibility: StudyNoteVisibility,

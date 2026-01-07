@@ -2,24 +2,20 @@
 
 import { useFormContext } from 'react-hook-form';
 
-import { useUpdateStudyNote } from '@/features/study-notes/hooks';
 import { Button } from '@/shared/components/ui/button';
 
-import { StudyNoteForm } from '../schemas/note';
-import { useWriteStudyNoteMutation } from '../services/query';
-
 type SubmitSectionProps = {
+  isPending?: boolean;
   isEditMode?: boolean;
 };
 
-const SubmitSection = ({ isEditMode = false }: SubmitSectionProps) => {
-  const { isPending: isWritePending } = useWriteStudyNoteMutation();
-  const { isPending: isUpdatePending } = useUpdateStudyNote();
+const SubmitSection = ({
+  isPending,
+  isEditMode = false,
+}: SubmitSectionProps) => {
   const {
     formState: { isValid, isSubmitting, isDirty },
-  } = useFormContext<StudyNoteForm>();
-
-  const isPending = isEditMode ? isUpdatePending : isWritePending;
+  } = useFormContext();
 
   // 편집 모드일 때는 변경사항이 있을 때만 활성화
   const isButtonDisabled =

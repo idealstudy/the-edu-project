@@ -20,7 +20,7 @@ type EditFormProps = {
   studyRoomId: number;
 };
 
-const EditForm = ({
+const StudyNoteEditForm = ({
   children,
   noteId,
   studyRoomId,
@@ -122,4 +122,4 @@ function transformFormDataToServerFormat(formData: StudyNoteForm) {
   };
 }
 
-export default EditForm;
+export default StudyNoteEditForm;

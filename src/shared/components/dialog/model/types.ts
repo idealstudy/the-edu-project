@@ -4,6 +4,7 @@ export type DialogScope =
   | 'note'
   | 'invite'
   | 'qna'
+  | 'homework'
   | 'notification';
 
 export type DialogKind =
@@ -26,6 +27,7 @@ export type DialogState =
         initialTitle?: string;
         groupId?: number;
         studyRoomId?: number;
+        homeworkId?: number;
       };
     };
 
@@ -40,6 +42,7 @@ export type DialogAction =
         initialTitle?: string;
         groupId?: number;
         studyRoomId?: number;
+        homeworkId?: number;
       };
     }
   | { type: 'GO_TO_CONFIRM' }
