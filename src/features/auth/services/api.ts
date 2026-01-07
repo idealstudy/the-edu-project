@@ -5,6 +5,7 @@ import {
   CheckEmailDuplicateBody,
   LoginBody,
   SignUpBody,
+  UpdateProfileBody,
   VerifyCodeBody,
 } from '@/features/auth/types';
 import { api } from '@/shared/api';
@@ -42,5 +43,8 @@ export const authService = {
   },
   signUp: async (body: SignUpBody) => {
     return api.public.post('/auth/sign-up', body);
+  },
+  updateProfile: async (body: UpdateProfileBody) => {
+    return api.private.put('/member/members/profile', body);
   },
 };

@@ -2,10 +2,10 @@
 
 import Image from 'next/image';
 
-import { serverEnv } from '@/shared/constants/api';
+import { env, serverEnv } from '@/shared/constants/api';
 
 export default function SocialLoginButton() {
-  const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${serverEnv.kakaoClientId}&redirect_uri=${serverEnv.backendApiUrl}/auth/kakao/callback&response_type=code`;
+  const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${env.kakaoClientId}&redirect_uri=${serverEnv.backendApiUrl}/auth/kakao/callback&response_type=code`;
 
   return (
     <div className="mt-10 flex justify-center">
