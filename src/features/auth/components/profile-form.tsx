@@ -2,6 +2,7 @@
 
 import { Controller, Path, UseFormReturn } from 'react-hook-form';
 
+import { Role } from '@/entities/member';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
@@ -9,7 +10,7 @@ import { Input } from '@/shared/components/ui/input';
 import { RoleRadioGroup } from './role-radio-group';
 
 type ProfileFormFields = {
-  role: 'ROLE_ADMIN' | 'ROLE_PARENT' | 'ROLE_TEACHER' | 'ROLE_STUDENT';
+  role: Role;
   name: string;
 };
 

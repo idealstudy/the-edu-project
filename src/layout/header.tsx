@@ -48,6 +48,10 @@ export const Header = () => {
       label: '선생님',
       className: 'border-key-color-primary text-key-color-primary',
     },
+    ROLE_MEMBER: {
+      label: '회원',
+      className: 'border-white text-white',
+    },
   } as const;
 
   const buttonBase =
