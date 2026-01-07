@@ -7,11 +7,13 @@ import { useRouter } from 'next/navigation';
 import { ProfileForm } from '@/features/auth/components/profile-form';
 import { SocialRegisterForm } from '@/features/auth/schemas/social-register';
 import { useUpdateProfile } from '@/features/auth/services/query';
+import { useSession } from '@/providers';
 import { Form } from '@/shared/components/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 export const SocialSelectRole = () => {
   const router = useRouter();
+  const session = useSession();
   const { mutate: updateProfile, isPending } = useUpdateProfile();
 
   const form = useForm<SocialRegisterForm>({
@@ -25,7 +27,8 @@ export const SocialSelectRole = () => {
 
   const handleSubmit = form.handleSubmit(async (data) => {
     updateProfile(data, {
-      onSuccess: () => {
+      onSuccess: async () => {
+        await session.refresh();
         router.push('/dashboard');
       },
       onError: () => {
