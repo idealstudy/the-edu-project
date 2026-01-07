@@ -21,7 +21,16 @@ beforeEach(() => {
 beforeAll(() => {
   server.listen();
 
-  vi.mock('next/navigation', () => import('next-router-mock'));
+  vi.mock('next/navigation', async () => {
+    const actual = await vi.importActual('next-router-mock');
+
+    return {
+      ...actual,
+      useSearchParams: vi.fn(() => ({
+        get: vi.fn(() => null),
+      })),
+    };
+  });
 });
 
 afterEach(() => server.resetHandlers());
