@@ -4,40 +4,42 @@ import { Dispatch, SetStateAction, useReducer, useState } from 'react';
 
 import Image from 'next/image';
 
+import { Profile } from '@/features/profile/types';
 import { InputDialog } from '@/features/study-rooms/components/common/dialog/input-dialog';
 import { dialogReducer, initialDialogState } from '@/shared/components/dialog';
-import { DropdownMenu } from '@/shared/components/ui';
+import { Button, Dialog, DropdownMenu } from '@/shared/components/ui';
 
 type Props = {
   isOwner: boolean;
-  user: { name: string };
+  profile: Profile;
   setIsEditMode: Dispatch<SetStateAction<boolean>>;
 };
 
-export function ProfileCardDropdown({ isOwner, user, setIsEditMode }: Props) {
+export function ProfileCardDropdown({
+  isOwner,
+  profile,
+  setIsEditMode,
+}: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
+  const [renameDialog, renameDispatch] = useReducer(
+    dialogReducer,
+    initialDialogState
+  );
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
 
   // const handleRename = (name: string) => {
-  // console.log(name);
+  //   console.log(name);
   // };
+
+  const copyProfileLink = (userId: string) => {
+    navigator.clipboard.writeText(
+      `${window.location.origin}/profile/${userId}`
+    );
+    setIsShareDialogOpen(true);
+  };
 
   return (
     <>
-      {dialog.status === 'open' && (
-        <InputDialog
-          isOpen={true}
-          placeholder={user.name || ''}
-          onOpenChange={() => dispatch({ type: 'CLOSE' })}
-          title="이름 변경하기"
-          onSubmit={
-            () => {}
-            // (name) => handleRename(name)
-          }
-          // disabled={isUpdating || !isOwner}
-        />
-      )}
-
       <DropdownMenu
         open={isOpen}
         onOpenChange={() => setIsOpen((prev) => !prev)}
@@ -52,7 +54,10 @@ export function ProfileCardDropdown({ isOwner, user, setIsEditMode }: Props) {
           />
         </DropdownMenu.Trigger>
         <DropdownMenu.Content className="w-[110px] justify-center">
-          <DropdownMenu.Item className="justify-center">
+          <DropdownMenu.Item
+            onClick={() => copyProfileLink(profile.id)}
+            className="justify-center"
+          >
             <p>공유하기</p>
           </DropdownMenu.Item>
           {isOwner && (
@@ -65,12 +70,12 @@ export function ProfileCardDropdown({ isOwner, user, setIsEditMode }: Props) {
               </DropdownMenu.Item>
               <DropdownMenu.Item
                 onClick={() => {
-                  dispatch({
+                  renameDispatch({
                     type: 'OPEN',
-                    scope: 'note',
+                    scope: 'profile',
                     kind: 'rename',
                     payload: {
-                      initialTitle: user.name,
+                      initialTitle: profile.name,
                     },
                   });
                 }}
@@ -82,6 +87,43 @@ export function ProfileCardDropdown({ isOwner, user, setIsEditMode }: Props) {
           )}
         </DropdownMenu.Content>
       </DropdownMenu>
+
+      {/* 이름 변경하기 다이얼로그 */}
+      {renameDialog.status === 'open' && renameDialog.kind === 'rename' && (
+        <InputDialog
+          isOpen={true}
+          placeholder={profile.name || ''}
+          onOpenChange={() => renameDispatch({ type: 'CLOSE' })}
+          title="이름 변경하기"
+          onSubmit={
+            () => {}
+            // (name) => handleRename(name)
+          }
+          // disabled={isUpdating}
+        />
+      )}
+
+      {/* 공유하기 다이얼로그 */}
+      <Dialog
+        isOpen={isShareDialogOpen}
+        onOpenChange={setIsShareDialogOpen}
+      >
+        <Dialog.Content className="max-w-120">
+          <Dialog.Body className="mb-8 text-center">
+            <Dialog.Title>링크가 복사되었습니다.</Dialog.Title>
+          </Dialog.Body>
+          <Dialog.Footer className="flex justify-center">
+            <Dialog.Close asChild>
+              <Button
+                size="xsmall"
+                className="w-30"
+              >
+                확인
+              </Button>
+            </Dialog.Close>
+          </Dialog.Footer>
+        </Dialog.Content>
+      </Dialog>
     </>
   );
 }

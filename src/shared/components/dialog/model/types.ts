@@ -5,7 +5,8 @@ export type DialogScope =
   | 'invite'
   | 'qna'
   | 'homework'
-  | 'notification';
+  | 'notification'
+  | 'profile';
 
 export type DialogKind =
   | 'rename'

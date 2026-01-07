@@ -36,7 +36,7 @@ export default function ProfileCard({ profile, isOwner }: ProfileAccessProps) {
           <h3 className="font-headline1-heading">{profile.name}</h3>
           <ProfileCardDropdown
             isOwner={isOwner}
-            user={profile}
+            profile={profile}
             setIsEditMode={setIsEditMode}
           />
         </div>
