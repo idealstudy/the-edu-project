@@ -98,7 +98,7 @@ const WriteArea = ({ studyRoomId, contextId }: Props) => {
                     <TextEditor
                       value={field.value}
                       onChange={field.onChange}
-                      placeholder="추가로 궁금한 점을 적어주세요..."
+                      placeholder="질문에 대한 답을 적어주세요..."
                     />
                   );
                 }}
