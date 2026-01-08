@@ -11,7 +11,7 @@ export default function ProfileMain(props: ProfileViewerProps) {
   const router = useRouter();
 
   const { data: member } = useCurrentMember(true);
-  const { data: profileData, isLoading } = useMyProfile();
+  const { data: profileData, isLoading } = useMyProfile(member?.id.toString());
 
   if (props.mode === 'owner') {
     if (!member) {

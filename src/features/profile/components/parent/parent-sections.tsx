@@ -11,7 +11,7 @@ export default function ParentSections({
     <>
       <SectionContainer
         isOwner={isOwner}
-        title="김에듀의 활동 리포트"
+        title="학생의 활동 리포트"
       >
         <ComingSoonSection />
       </SectionContainer>
