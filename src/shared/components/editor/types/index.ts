@@ -95,37 +95,58 @@ export type UseAutoSaveReturn = {
 // Upload Types
 // ============================================================================
 
-/** 이미지 업로드 응답 */
-export type UploadImageResponse = {
-  url: string;
+/** 미디어 타겟 타입 */
+export type MediaTargetType = 'TEACHING_NOTE';
+
+/** Presign 요청용 미디어 에셋 */
+export type PresignMediaAsset = {
+  fileName: string;
+  contentType: string;
+  sizeBytes: number;
 };
 
-/** 이미지 업로드 파라미터 */
-export type UploadImageParams = {
-  file: File;
+/** Presign 요청 Body */
+export type PresignBatchRequest = {
+  targetType: MediaTargetType;
+  mediaAssetList: PresignMediaAsset[];
+};
+
+/** Presign 응답 미디어 에셋 */
+export type PresignMediaAssetResponse = {
+  fileName: string;
+  mediaId: string;
+  uploadUrl: string;
+  headers: Record<string, string>;
+};
+
+/** Presign 응답 */
+export type PresignBatchResponse = {
+  status: number;
+  message: string;
+  data: {
+    mediaAssetList: PresignMediaAssetResponse[];
+  };
+};
+
+/** 미디어 업로드 결과 */
+export type MediaUploadResult = {
+  mediaId: string;
+  mediaUrl: string; // media:{mediaId} 형식
+  fileName: string;
+  sizeBytes: number;
 };
 
 /** useImageUpload 훅 옵션 */
 export type UseImageUploadOptions = {
-  onSuccess?: (url: string) => void;
+  targetType?: MediaTargetType;
+  onSuccess?: (result: MediaUploadResult) => void;
   onError?: (error: Error) => void;
-};
-
-/** 파일 업로드 응답 */
-export type FileUploadResponse = {
-  url: string;
-  name: string;
-  size: number;
-};
-
-/** 파일 업로드 파라미터 */
-export type FileUploadParams = {
-  file: File;
 };
 
 /** useFileUpload 훅 옵션 */
 export type UseFileUploadOptions = {
-  onSuccess?: (data: FileUploadResponse) => void;
+  targetType?: MediaTargetType;
+  onSuccess?: (result: MediaUploadResult) => void;
   onError?: (error: Error) => void;
 };
 
@@ -133,6 +154,29 @@ export type UseFileUploadOptions = {
 export type FileValidationResult = {
   valid: boolean;
   error?: string;
+};
+
+// Legacy types for backward compatibility
+/** @deprecated Use MediaUploadResult instead */
+export type UploadImageResponse = {
+  url: string;
+};
+
+/** @deprecated Use PresignMediaAsset instead */
+export type UploadImageParams = {
+  file: File;
+};
+
+/** @deprecated Use MediaUploadResult instead */
+export type FileUploadResponse = {
+  url: string;
+  name: string;
+  size: number;
+};
+
+/** @deprecated Use PresignMediaAsset instead */
+export type FileUploadParams = {
+  file: File;
 };
 
 // ============================================================================

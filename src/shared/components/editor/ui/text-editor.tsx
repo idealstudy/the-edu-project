@@ -105,8 +105,9 @@ export const TextEditor = ({
         if (customImageUpload) {
           url = await customImageUpload(file);
         } else {
-          const response = await uploadAsync(file);
-          url = response.url;
+          const result = await uploadAsync(file);
+          // media:{mediaId} 형식으로 저장
+          url = result.mediaUrl;
         }
 
         currentEditor.chain().focus().setImage({ src: url }).run();
