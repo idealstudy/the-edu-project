@@ -5,6 +5,7 @@ import {
   CheckEmailDuplicateBody,
   LoginBody,
   SignUpBody,
+  UpdateProfileBody,
   VerifyCodeBody,
 } from '@/features/auth/types';
 import { api } from '@/shared/api';
@@ -27,6 +28,14 @@ export const authService = {
         '/api/v1/member/info'
       );
       const validatedResponse = adapters.fromApi.parse(response);
+
+      const memberData = validatedResponse.data;
+
+      if (memberData.role === 'ROLE_MEMBER') {
+        window.location.href = '/select-role';
+        return null;
+      }
+
       return factory.member.create(validatedResponse.data);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e: unknown) {
@@ -42,5 +51,8 @@ export const authService = {
   },
   signUp: async (body: SignUpBody) => {
     return api.public.post('/auth/sign-up', body);
+  },
+  updateProfile: async (body: UpdateProfileBody) => {
+    return api.private.put('/member/members/profile', body);
   },
 };

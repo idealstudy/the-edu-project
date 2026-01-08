@@ -25,6 +25,7 @@ if (!serverBackendUrl) {
 
 export const env = {
   backendApiUrl: publicBackendUrl,
+  kakaoClientId: sanitize(process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID),
 };
 
 export const serverEnv = {
