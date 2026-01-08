@@ -20,9 +20,16 @@ export default function ProfileMain(props: ProfileViewerProps) {
       return null;
     }
 
-    // TODO ROLE_ADMIN, ROLE_MEMBER 처리
-    if (member.role === 'ROLE_ADMIN' /*  || member.role === 'ROLE_MEMBER' */) {
+    // TODO ROLE_ADMIN, ROLE_MEMBER 처리 수정
+    // ROLE_ADMIN: 마이페이지 제공하지 않음
+    if (member.role === 'ROLE_ADMIN') {
       return <div>관리자 마이페이지는 준비 중입니다.</div>;
+    }
+    // ROLE_MEMBER: 역할 선택 페이지로 이동
+    if (member.role === 'ROLE_MEMBER') {
+      // 롤 선택 페이지로 이동
+      router.replace('/select-role');
+      return null;
     }
 
     if (isLoading) {

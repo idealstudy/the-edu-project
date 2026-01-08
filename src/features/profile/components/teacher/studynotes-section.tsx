@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { ProfileData } from '@/features/profile/types';
 import { StudyNote } from '@/features/study-notes/model';
 import { ListItem } from '@/features/study-rooms/components/common/list-item';
-import { formatMMDDWeekday, getRelativeTimeString } from '@/shared/lib';
+import { getRelativeTimeString } from '@/shared/lib';
 
 type Props = {
   profile: ProfileData;
@@ -96,7 +96,6 @@ export default function StudynotesSection({}: Props) {
             ? `${getRelativeTimeString(item.taughtAt)} 작성`
             : `${getRelativeTimeString(item.updatedAt)} 수정`
         }
-        date={formatMMDDWeekday(item.taughtAt)}
         href={`/study-rooms/1/note/${item.id}`}
         id={item.id}
       />
