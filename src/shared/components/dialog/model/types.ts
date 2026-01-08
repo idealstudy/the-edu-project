@@ -5,7 +5,8 @@ export type DialogScope =
   | 'invite'
   | 'qna'
   | 'homework'
-  | 'notification';
+  | 'notification'
+  | 'profile';
 
 export type DialogKind =
   | 'rename'
@@ -13,7 +14,8 @@ export type DialogKind =
   | 'delete'
   | 'onConfirm'
   | 'create'
-  | 'invite';
+  | 'invite'
+  | 'select-representative';
 
 export type DialogState =
   | { status: 'idle' }
