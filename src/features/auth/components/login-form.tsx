@@ -9,6 +9,7 @@ import { useAuth } from '@/features/auth/hooks/use-auth';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
+import { PUBLIC } from '@/shared/constants';
 import { extractErrorMessage } from '@/shared/lib/bff/utils.message';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
@@ -17,7 +18,7 @@ import { LoginFormValues, loginSchema } from '../schemas/login';
 
 const LoginFormtwStyles = {
   wrapper: 'space-y-10 pb-10 pt-4',
-  link: 'text-key-color-primary underline mx-auto w-fit',
+  link: 'text-key-color-primary underline w-fit',
 };
 
 export default function LoginForm() {
@@ -99,9 +100,15 @@ export default function LoginForm() {
           {isLoading ? '로그인 중...' : '계속'}
         </Button>
 
-        <Link href={'#'}>
-          <p className={LoginFormtwStyles.link}>로그인이 안되시나요?</p>
-        </Link>
+        <div className="flex justify-center gap-2">
+          <span>아직 회원이 아니신가요?</span>
+          <Link
+            href={PUBLIC.CORE.SIGNUP}
+            className={LoginFormtwStyles.link}
+          >
+            회원가입
+          </Link>
+        </div>
       </Form>
     </>
   );
