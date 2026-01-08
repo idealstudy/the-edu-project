@@ -7,7 +7,10 @@ import {
   useGetTeacherHomeworkList,
 } from '@/features/homework/hooks/teacher/useTeacherHomeworkQuries';
 import { useQnADetailQuery, useQnAsQuery } from '@/features/qna/services/query';
-import { useGetTeacherNotesList } from '@/features/study-notes/hooks';
+import {
+  useGetStudentNotesList,
+  useGetTeacherNotesList,
+} from '@/features/study-notes/hooks';
 import type { StudentStudyRoom, StudyRoom } from '@/features/study-rooms';
 import { useTeacherStudyRoomDetailQuery } from '@/features/study-rooms';
 import { useMemberStore } from '@/store';
@@ -48,6 +51,13 @@ export const useOnboardingStatus = ({
     studyRoomId: firstRoomId ?? 0,
     pageable: { page: 0, size: 1, sortKey: 'LATEST_EDITED' },
     enabled: isTeacher && !!firstRoomId,
+  });
+
+  // 수업노트 목록 조회 (학생용)
+  const { data: studentNotes } = useGetStudentNotesList({
+    studyRoomId: firstRoomId ?? 0,
+    pageable: { page: 0, size: 1, sortKey: 'LATEST_EDITED' },
+    enabled: !isTeacher && !!firstRoomId,
   });
 
   // QnA 목록 조회 (학생이 질문한 것 확인)
@@ -125,41 +135,33 @@ export const useOnboardingStatus = ({
 
   const hasNotes = useMemo(() => {
     if (!hasRooms || !firstRoomId) return false;
-
-    // 강사: 수업노트 목록 또는 상세 정보에서 확인
+    // 강사: 수업노트 목록에서 실제로 수업노트가 있는지 확인
     if (isTeacher) {
-      // PaginationData 타입 확인
+      // PaginationData 타입 확인 - content 배열이 실제로 존재하고 길이가 0보다 큰지 확인
       if (
         teacherNotes &&
         'content' in teacherNotes &&
         teacherNotes.content &&
+        Array.isArray(teacherNotes.content) &&
         teacherNotes.content.length > 0
       ) {
         return true;
       }
-      if (
-        roomDetail?.numberOfTeachingNote &&
-        roomDetail.numberOfTeachingNote > 0
-      ) {
-        return true;
-      }
-      // 캐시 확인
-      if (checkFromCache?.notes) {
-        return true;
-      }
+      // 수업노트가 없으면 false
+      return false;
     }
 
-    // 학생: 스터디룸에 참여했다면 수업노트가 있을 수 있다고 간주
-    // (실제로는 수업노트 목록을 조회해야 하지만, 온보딩 단계에서는 스터디룸 참여만으로 충분)
-    return true;
-  }, [
-    hasRooms,
-    firstRoomId,
-    isTeacher,
-    teacherNotes,
-    roomDetail,
-    checkFromCache,
-  ]);
+    // 학생: 수업노트 목록에서 실제로 수업노트가 있는지 확인
+    if (
+      studentNotes &&
+      'content' in studentNotes &&
+      studentNotes.content &&
+      studentNotes.content.length > 0
+    ) {
+      return true;
+    }
+    return false;
+  }, [hasRooms, firstRoomId, isTeacher, teacherNotes, studentNotes]);
 
   const hasQuestions = useMemo(() => {
     if (!hasRooms || !firstRoomId) return false;
@@ -232,13 +234,20 @@ export const useOnboardingStatus = ({
       }
     }
 
-    // 학생: 과제 목록에서 확인 (제출 여부는 상관없이 과제가 있으면 완료)
+    // 학생: 과제 목록에서 제출한 과제가 있는지 확인
     if (!isTeacher) {
       if (
         studentHomeworkList?.content &&
         studentHomeworkList.content.length > 0
       ) {
-        return true;
+        // 제출한 과제가 있는지 확인 (SUBMIT 또는 LATE_SUBMIT 상태)
+        const hasSubmitted = studentHomeworkList.content.some(
+          (homework) =>
+            homework.status === 'SUBMIT' || homework.status === 'LATE_SUBMIT'
+        );
+        if (hasSubmitted) {
+          return true;
+        }
       }
     }
 
