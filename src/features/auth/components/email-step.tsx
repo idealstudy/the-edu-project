@@ -76,15 +76,16 @@ export const EmailStep = ({ onNext }: EmailStepProps) => {
       >
         계속
       </Button>
-      <Link
-        className="flex w-fit gap-2 self-center"
-        href={PUBLIC.CORE.LOGIN}
-      >
-        <span className="text-gray-scale-gray-70 underline">
-          이미 가입 하셨나요?
-        </span>
-        로그인
-      </Link>
+
+      <div className="flex justify-center gap-2">
+        <span>이미 가입 하셨나요?</span>
+        <Link
+          href={PUBLIC.CORE.LOGIN}
+          className="text-key-color-primary w-fit underline"
+        >
+          로그인
+        </Link>
+      </div>
     </div>
   );
 };

@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 
 import { env, serverEnv } from '@/shared/constants/api';
@@ -12,21 +11,18 @@ export default function SocialLoginButton() {
   const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${env.kakaoClientId}&redirect_uri=${serverEnv.backendApiUrl}/auth/kakao/callback&response_type=code`;
 
   return (
-    <div className="mt-10 flex flex-col items-center">
+    <div className="my-4 block items-center">
       {error === 'kakao_failed' && (
         <div className="text-system-warning mb-4">
           카카오 로그인에 실패했습니다. 다시 시도해주세요.
         </div>
       )}
 
-      <a href={kakaoAuthUrl}>
-        <Image
-          src="/auth/kakao_login_large_wide.png"
-          alt="카카오 소셜 로그인 버튼"
-          width={400}
-          height={224}
-        />
-      </a>
+      <a
+        href={kakaoAuthUrl}
+        aria-label="카카오로 로그인"
+        className="block h-14 rounded-xl bg-[#FEE500] bg-[url('/auth/kakao_login_large_narrow.png')] bg-contain bg-center bg-no-repeat"
+      ></a>
     </div>
   );
 }

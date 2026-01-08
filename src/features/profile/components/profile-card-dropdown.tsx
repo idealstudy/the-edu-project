@@ -58,7 +58,9 @@ export function ProfileCardDropdown({
           >
             <p>공유하기</p>
           </DropdownMenu.Item>
-          {isOwner && (
+
+          {/* 배포 환경에서 숨김 처리 (false) */}
+          {false && isOwner && (
             <>
               <DropdownMenu.Item
                 onClick={() => setIsEditMode((state) => !state)}
