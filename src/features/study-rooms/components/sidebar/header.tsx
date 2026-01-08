@@ -10,9 +10,11 @@ import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 export const StudyroomSidebarHeader = ({
   dispatch,
   studyRoomName,
+  canManage,
 }: {
   dispatch: Dispatch<DialogAction>;
   studyRoomName?: string;
+  canManage: boolean;
 }) => {
   return (
     <>
@@ -20,34 +22,36 @@ export const StudyroomSidebarHeader = ({
         <p className="desktop:max-w-[260px] text-[28px] leading-tight font-bold">
           {studyRoomName || '스터디룸'}
         </p>
-        <DropdownMenu>
-          <DropdownMenu.Trigger className="flex cursor-pointer items-center justify-center">
-            <Image
-              src="/studyroom/ic-kebab.png"
-              alt="kebab-menu"
-              width={48}
-              height={48}
-              className="cursor-pointer self-start rounded-[8px] border-none p-1 hover:bg-gray-100"
-            />
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Content>
-            <DropdownMenu.Item
-              onClick={() =>
-                dispatch({ type: 'OPEN', scope: 'studyroom', kind: 'rename' })
-              }
-            >
-              편집하기
-            </DropdownMenu.Item>
-            <DropdownMenu.Item
-              variant="danger"
-              onClick={() =>
-                dispatch({ type: 'OPEN', scope: 'studyroom', kind: 'delete' })
-              }
-            >
-              삭제하기
-            </DropdownMenu.Item>
-          </DropdownMenu.Content>
-        </DropdownMenu>
+        {canManage && (
+          <DropdownMenu>
+            <DropdownMenu.Trigger className="flex cursor-pointer items-center justify-center">
+              <Image
+                src="/studyroom/ic-kebab.png"
+                alt="kebab-menu"
+                width={48}
+                height={48}
+                className="cursor-pointer self-start rounded-[8px] border-none p-1 hover:bg-gray-100"
+              />
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content>
+              <DropdownMenu.Item
+                onClick={() =>
+                  dispatch({ type: 'OPEN', scope: 'studyroom', kind: 'rename' })
+                }
+              >
+                편집하기
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                variant="danger"
+                onClick={() =>
+                  dispatch({ type: 'OPEN', scope: 'studyroom', kind: 'delete' })
+                }
+              >
+                삭제하기
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu>
+        )}
       </div>
       <Image
         src="/studyroom/profile.svg"

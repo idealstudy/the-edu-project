@@ -41,6 +41,7 @@ export const StudyroomSidebar = ({
   const { role } = useRole();
   const { mutate: deleteStudyRoom } = useDeleteStudyRoom();
   const { mutate: updateRoomName } = useUpdateStudyRoom();
+
   // 스터디룸 상세 정보 조회 (선생님만)
   const { data: studyRoomDetail } = useTeacherStudyRoomDetailQuery(
     studyRoomId,
@@ -48,6 +49,9 @@ export const StudyroomSidebar = ({
       enabled: role === 'ROLE_TEACHER',
     }
   );
+
+  // 삭제, 수정, 학생 초대 등 관리 권한
+  const canManage = role === 'ROLE_TEACHER';
 
   // TODO: 스터디룸 이름 변경 API 연결
   const handleSubmitRoomRename = (name: string, others: StudyRoomDetail) => {
@@ -133,13 +137,14 @@ export const StudyroomSidebar = ({
         <StudyroomSidebarHeader
           dispatch={dispatch}
           studyRoomName={studyRoomDetail?.name}
+          canManage={canManage}
         />
         <StudyStats
           numberOfTeachingNote={studyRoomDetail?.numberOfTeachingNote}
           numberOfStudents={studyRoomDetail?.studentNames?.length}
           numberOfQuestion={studyRoomDetail?.numberOfQuestion}
         />
-        <StudentInvitation dispatch={dispatch} />
+        {canManage && <StudentInvitation dispatch={dispatch} />}
         {/* 수업노트 탭에서만 보이는 컴포넌트 */}
         {segment === 'note' && (
           <StudyroomGroups
