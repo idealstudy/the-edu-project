@@ -128,9 +128,6 @@ export default function HomeworkPage() {
         <StudentHomeworkList
           data={studentListQuery.data?.content ?? []}
           studyRoomId={studyRoomId}
-          pageable={pageable}
-          keyword={search}
-          onRefresh={studentListQuery.refetch}
           isLoading={isLoading}
         />
       )}
