@@ -16,7 +16,7 @@ interface DashboardCompletedProps {
 export const DashboardCompleted = ({ role }: DashboardCompletedProps) => {
   const member = useMemberStore((s) => s.member);
   const isTeacher = role === 'ROLE_TEACHER';
-  const userName = member?.name || (isTeacher ? ' 선생님' : ' 학생님');
+  const userName = `${member?.name || ''} ${isTeacher ? '선생님' : '학생님'}`;
 
   return (
     <div className="bg-system-background">
@@ -29,7 +29,7 @@ export const DashboardCompleted = ({ role }: DashboardCompletedProps) => {
             <br />
           </h1>
           <p className="text-lg text-white/90">
-            {userName}님, 이제 디에듀의 모든 기능을 활용할 준비가 되었어요
+            {userName}, 이제 디에듀의 모든 기능을 활용할 준비가 되었어요
           </p>
         </section>
 

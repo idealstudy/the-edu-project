@@ -126,7 +126,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
       description:
         '수업 전 예습 자료, 수업 후 복습 자료를 업로드하고 수업노트를 작성하세요',
       icon: Icon.BookText,
-      action: '수업노트 작성하기',
+      action: '수업노트 쓰기',
       href: hasRooms
         ? PRIVATE.NOTE.CREATE(rooms?.[0]?.id ?? 0)
         : PRIVATE.ROOM.CREATE,
@@ -209,7 +209,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
   const completedCount = steps.filter((step) => step.completed).length;
   const totalSteps = steps.length;
 
-  const greeting = `${member?.name}님, 환영합니다!`;
+  const greeting = `${member?.name || ''} ${isTeacher ? '선생님' : '학생님'}, 환영합니다!`;
   const subtitle = isTeacher
     ? `${totalSteps}단계로 체계적인 수업 관리를 시작해보세요`
     : '선생님과 함께하는 학습 공간을 시작해보세요';
@@ -313,7 +313,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
                     <div className="mb-2 flex items-center gap-2">
                       <h3
                         className={cn(
-                          'text-xl font-bold md:text-2xl',
+                          'text-xl font-bold whitespace-nowrap md:text-2xl',
                           isCompleted
                             ? 'text-orange-scale-orange-60'
                             : isLocked
@@ -384,7 +384,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
                     ) : (
                       <Link
                         href={step.href}
-                        className="w-full rounded-lg bg-[#ff4500] px-6 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#e64500] md:px-8 md:py-4 md:text-base"
+                        className="w-full rounded-lg bg-[#ff4500] px-6 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#e64500] md:px-6 md:py-4 md:text-base"
                       >
                         {step.action}
                       </Link>
