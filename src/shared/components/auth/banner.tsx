@@ -18,7 +18,7 @@ export default function AuthBanner() {
         />
       </svg>
 
-      <div className="relative mx-auto flex h-full max-w-[570px] items-center justify-between">
+      <div className="relative mx-auto flex h-full max-w-[570px] items-center justify-between px-4">
         <h1 className="text-[32px] leading-[160%] font-normal tracking-[-0.04em]">
           깔끔한 공부 디에듀, <br />
           <strong>

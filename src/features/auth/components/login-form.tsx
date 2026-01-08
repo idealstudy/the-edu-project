@@ -16,7 +16,7 @@ import { AxiosError } from 'axios';
 import { LoginFormValues, loginSchema } from '../schemas/login';
 
 const LoginFormtwStyles = {
-  wrapper: 'space-y-10 pb-[138px] pt-[42px]',
+  wrapper: 'space-y-10 pb-10 pt-4',
   link: 'text-key-color-primary underline mx-auto w-fit',
 };
 
@@ -55,45 +55,54 @@ export default function LoginForm() {
   const isInValid = Object.keys(errors).length > 0;
 
   return (
-    <Form
-      onSubmit={handleSubmit(onSubmit)}
-      className={LoginFormtwStyles.wrapper}
-    >
-      <Form.Item error={!!errors.email}>
-        <Form.Label>이메일</Form.Label>
-        <Form.Control>
-          <Input
-            type="email"
-            {...register('email')}
-          />
-        </Form.Control>
-        <Form.ErrorMessage>{errors.email?.message}</Form.ErrorMessage>
-      </Form.Item>
-
-      <Form.Item error={!!errors.password}>
-        <Form.Label>비밀번호</Form.Label>
-        <Form.Control>
-          <Input
-            type="password"
-            {...register('password')}
-          />
-        </Form.Control>
-        <Form.ErrorMessage>{errors.password?.message}</Form.ErrorMessage>
-      </Form.Item>
-
-      <Button
-        type="submit"
-        disabled={isLoading || isInValid}
-        className="w-full"
-      >
-        {isLoading ? '로그인 중...' : '계속'}
-      </Button>
-
-      <Link href={'#'}>
-        <p className={LoginFormtwStyles.link}>로그인이 안되시나요?</p>
-      </Link>
-
+    <>
+      <p className="mt-10 w-fit text-[20px] font-medium">소셜 로그인</p>
       <SocialLoginButton />
-    </Form>
+
+      <div className="text-text-sub2 mt-10 flex items-center justify-between gap-1">
+        <hr className="border-line-line2 flex-1 border" />
+        <span>D&apos;edu로 이메일로 로그인</span>
+        <hr className="border-line-line2 flex-1 border" />
+      </div>
+
+      <Form
+        onSubmit={handleSubmit(onSubmit)}
+        className={LoginFormtwStyles.wrapper}
+      >
+        <Form.Item error={!!errors.email}>
+          <Form.Label>이메일</Form.Label>
+          <Form.Control>
+            <Input
+              type="email"
+              {...register('email')}
+            />
+          </Form.Control>
+          <Form.ErrorMessage>{errors.email?.message}</Form.ErrorMessage>
+        </Form.Item>
+
+        <Form.Item error={!!errors.password}>
+          <Form.Label>비밀번호</Form.Label>
+          <Form.Control>
+            <Input
+              type="password"
+              {...register('password')}
+            />
+          </Form.Control>
+          <Form.ErrorMessage>{errors.password?.message}</Form.ErrorMessage>
+        </Form.Item>
+
+        <Button
+          type="submit"
+          disabled={isLoading || isInValid}
+          className="w-full"
+        >
+          {isLoading ? '로그인 중...' : '계속'}
+        </Button>
+
+        <Link href={'#'}>
+          <p className={LoginFormtwStyles.link}>로그인이 안되시나요?</p>
+        </Link>
+      </Form>
+    </>
   );
 }
