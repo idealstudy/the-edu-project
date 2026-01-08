@@ -18,7 +18,7 @@ export default function TeacherProfileExtra({
       <div className="flex justify-between">
         <div className="flex flex-col items-center">
           <Image
-            src="/studyroom/notebook.svg"
+            src="/profile/ic_studynote.svg"
             width={24}
             height={24}
             alt="누적 수업노트"
@@ -32,10 +32,10 @@ export default function TeacherProfileExtra({
         </div>
         <div className="flex flex-col items-center">
           <Image
-            src="/studyroom/notebook.svg"
+            src="/profile/ic_person.svg"
             width={24}
             height={24}
-            alt="누적 수업노트"
+            alt="누적 학생"
           />
           <span className="text-text-sub2 font-label-normal mt-1">
             누적 학생
@@ -46,10 +46,10 @@ export default function TeacherProfileExtra({
         </div>
         <div className="flex flex-col items-center">
           <Image
-            src="/studyroom/notebook.svg"
+            src="/profile/ic_review.svg"
             width={24}
             height={24}
-            alt="누적 수업노트"
+            alt="누적 후기"
           />
           <span className="text-text-sub2 font-label-normal mt-1">
             누적 후기
