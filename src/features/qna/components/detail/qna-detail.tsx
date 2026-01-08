@@ -54,6 +54,38 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
           <div className="font-label-normal flex cursor-default flex-col gap-2">
             <div className="bg-gray-scale-gray-1 text-gray-scale-gray-70 flex w-fit items-center gap-1 rounded-sm px-2 py-1">
               <Image
+                src="/homework/link.svg"
+                width={14}
+                height={14}
+                alt="study-notes"
+                className="h-[14px] w-[14px]"
+              />
+              <span>연결 수업노트</span>
+            </div>
+            <span>수업노트</span>
+            {/* <div>
+              {qnaDetail.?.homework.teachingNoteInfoList.length === 0 ? (
+                <div>없음</div>
+              ) : (
+                data?.homework.teachingNoteInfoList.map((note) => (
+                  <div key={note.id}>
+                    <a
+                      href={`/study-rooms/${studyRoomId}/note/${note.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-orange-scale-orange-50 cursor-pointer"
+                    >
+                      {note.name}
+                    </a>
+                  </div>
+                ))
+              )}
+            </div> */}
+          </div>
+          <hr className="text-gray-scale-gray-10" />
+          <div className="font-label-normal flex cursor-default flex-col gap-2">
+            <div className="bg-gray-scale-gray-1 text-gray-scale-gray-70 flex w-fit items-center gap-1 rounded-sm px-2 py-1">
+              <Image
                 src="/qna/lock.svg"
                 width={14}
                 height={14}

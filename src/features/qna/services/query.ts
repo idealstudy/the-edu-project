@@ -26,6 +26,7 @@ export const useQnAsQuery = (
     pageable: Pageable;
     status?: string;
     sort?: string;
+    searchKeyword?: string;
   }
 ) => {
   return useQuery({

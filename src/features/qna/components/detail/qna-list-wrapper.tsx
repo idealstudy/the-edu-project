@@ -34,6 +34,7 @@ const QuestionListWrapper = ({ studyRoomId, hasBorder }: Props) => {
     pageable,
     status: filter === 'DEFAULT' ? undefined : filter,
     sort,
+    searchKeyword: search.trim() || undefined,
   });
 
   const handleFilterChange = (e: string) => {

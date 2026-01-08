@@ -50,6 +50,7 @@ export const getStudentQnAList = async (args: {
   pageable: Pageable;
   status?: string;
   sort?: string;
+  searchKeyword?: string;
 }) => {
   const response = await api.private.get<
     CommonResponse<PaginationMeta & { content: QnAListItem[] }>
@@ -59,6 +60,7 @@ export const getStudentQnAList = async (args: {
       page: args.pageable.page,
       size: args.pageable.size,
       sort: args.sort ?? args.pageable.sort,
+      searchKeyword: args.searchKeyword,
     },
   });
 
