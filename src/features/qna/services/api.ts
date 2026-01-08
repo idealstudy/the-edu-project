@@ -8,8 +8,13 @@ export const writeQnA = async (args: {
   studyRoomId: number;
   title: string;
   content: string;
+  visibility: string;
 }) => {
-  const data = { title: args.title, content: args.content };
+  const data = {
+    title: args.title,
+    content: args.content,
+    visibility: args.visibility,
+  };
   await api.private.post(`/study-rooms/${args.studyRoomId}/qna`, data);
 };
 

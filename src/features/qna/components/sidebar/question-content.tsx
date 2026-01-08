@@ -131,7 +131,7 @@ const QuestionContent = ({
             open={isOpen}
             onOpenChange={setIsOpen}
           >
-            <DropdownMenu.Trigger className="flex size-8 cursor-pointer items-center justify-center">
+            <DropdownMenu.Trigger className="flex size-8 cursor-pointer items-center justify-center rounded-md transition-colors hover:bg-gray-100">
               <Image
                 src="/studynotes/gray-kebab.svg"
                 width={24}

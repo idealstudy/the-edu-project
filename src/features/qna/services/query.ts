@@ -65,6 +65,7 @@ export const useWriteQnAMutation = () => {
       studyRoomId: number;
       title: string;
       content: string;
+      visibility: string;
     }) => writeQnA(args),
     onSuccess: () => {
       // QNA 목록 쿼리 무효화

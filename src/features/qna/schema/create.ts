@@ -26,6 +26,9 @@ export const QnaACreateFormSchema = z.object({
     .min(1, '질문 제목을 작성해 주세요!')
     .max(50, '질문 제목은 30자 이하로 입력해주세요.'),
   studyRoomId: z.number({ required_error: '스터디룸을 선택해 주세요!' }),
+  visibility: z.enum(['PUBLIC', 'PRIVATE'], {
+    required_error: '공개 범위를 선택해주세요.',
+  }),
   content: z.custom<JSONContent>().superRefine((val, ctx) => {
     const plainText = extractTextFromTiptapJSON(val);
     const length = plainText.trim().length;
@@ -50,6 +53,9 @@ export const QnaACreateFormSchema = z.object({
 export const QnAMessageFormSchema = z.object({
   studyRoomId: z.number({ required_error: '스터디룸을 선택해 주세요!' }),
   contextId: z.number({ required_error: '질문을 선택해 주세요' }),
+  visibility: z.enum(['PUBLIC', 'PRIVATE'], {
+    required_error: '공개 범위를 선택해주세요.',
+  }),
   content: z.custom<JSONContent>().superRefine((val, ctx) => {
     const plainText = extractTextFromTiptapJSON(val);
     const length = plainText.trim().length;

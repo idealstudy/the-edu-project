@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 
 import { ColumnLayout } from '@/layout/column-layout';
 import { TextEditor } from '@/shared/components/editor';
+import { Select } from '@/shared/components/ui';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
@@ -23,6 +24,9 @@ type Props = {
 
 const WriteArea = ({ studyRoomId }: Props) => {
   const router = useRouter();
+  const { watch } = useFormContext<QnACreateForm>();
+
+  const visibility = watch('visibility');
 
   const { mutate, isPending } = useWriteQnAMutation();
   const {
@@ -48,12 +52,14 @@ const WriteArea = ({ studyRoomId }: Props) => {
     studyRoomId: number;
     title: string;
     content: JSONContent;
+    visibility: string;
   }) => {
     mutate(
       {
         studyRoomId,
         title: data.title,
         content: JSON.stringify(data.content),
+        visibility: data.visibility,
       },
       {
         onSuccess: () => {
@@ -62,6 +68,18 @@ const WriteArea = ({ studyRoomId }: Props) => {
       }
     );
   };
+
+  useEffect(() => {
+    const qnaTitle = sessionStorage.getItem('qna-title');
+
+    if (qnaTitle) {
+      setValue('title', qnaTitle, {
+        shouldDirty: false,
+        shouldValidate: true,
+      });
+      sessionStorage.removeItem('qna-title');
+    }
+  }, [setValue]);
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
@@ -130,6 +148,51 @@ const WriteArea = ({ studyRoomId }: Props) => {
               </Form.ErrorMessage>
             )}
           </Form.Item>
+          <hr
+            style={{
+              borderImage:
+                'repeating-linear-gradient(to right, gray 0, gray 4px, transparent 4px, transparent 8px)',
+              borderImageSlice: 1,
+            }}
+          />
+          <Form.Item className="mt-8">
+            <Form.Label className="text-2xl font-semibold">
+              질문의 공개 범위
+            </Form.Label>
+            <Controller
+              name="visibility"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                >
+                  <Select.Trigger
+                    className="w-[240px]"
+                    placeholder="공개 범위 선택"
+                  />
+                  <Select.Content>
+                    <Select.Option value="PUBLIC">보호자 공개</Select.Option>
+                    <Select.Option value="PRIVATE">보호자 비공개</Select.Option>
+                  </Select.Content>
+                </Select>
+              )}
+            />
+
+            {visibility === 'PUBLIC' && (
+              <Form.Description className="text-text-sub2 flex gap-x-[3px] text-sm">
+                <Image
+                  src="/common/info.svg"
+                  alt="info-icon"
+                  width={16}
+                  height={16}
+                />
+                보호자 공개 선택 시, 나와 연결된 보호자도 이 질문을 볼 수
+                있습니다.
+              </Form.Description>
+            )}
+          </Form.Item>
+
           <div className="flex justify-end">
             <Button
               type="submit"
