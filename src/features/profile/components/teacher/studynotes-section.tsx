@@ -1,12 +1,12 @@
 import Image from 'next/image';
 
-import { Profile } from '@/features/profile/types';
+import { ProfileData } from '@/features/profile/types';
 import { StudyNote } from '@/features/study-notes/model';
 import { ListItem } from '@/features/study-rooms/components/common/list-item';
 import { formatMMDDWeekday, getRelativeTimeString } from '@/shared/lib';
 
 type Props = {
-  profile: Profile;
+  profile: ProfileData;
 };
 
 const item: StudyNote = {

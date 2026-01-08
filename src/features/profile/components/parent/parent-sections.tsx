@@ -2,20 +2,11 @@
 
 import ComingSoonSection from '@/features/profile/components/coming-soon-section';
 import SectionContainer from '@/features/profile/components/section-container';
+import { ProfileAccessProps } from '@/features/profile/types';
 
-export type Profile = {
-  id: string;
-  role: string;
-  name: string;
-  intro: string;
-};
-
-type Props = {
-  profile: Profile;
-  isOwner?: boolean;
-};
-
-export default function ParentSections({ isOwner = false }: Props) {
+export default function ParentSections({
+  isOwner = false,
+}: ProfileAccessProps) {
   return (
     <>
       <SectionContainer

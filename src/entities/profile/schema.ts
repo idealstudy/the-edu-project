@@ -12,6 +12,7 @@ const TeacherProfileSchema = z.object({
   email: z.string().email(),
   desc: z.string(),
   teacherNoteCount: z.number().int(),
+  studentCount: z.number().int(),
   reviewCount: z.number().int(),
 });
 

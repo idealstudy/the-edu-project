@@ -8,6 +8,11 @@ import ParentProfileExtra from '@/features/profile/components/parent/parent-prof
 import { ProfileCardDropdown } from '@/features/profile/components/profile-card-dropdown';
 import StudentProfileExtra from '@/features/profile/components/student/student-profile-extra';
 import TeacherProfileExtra from '@/features/profile/components/teacher/teacher-profile-extra';
+import {
+  isParentProfile,
+  isStudentProfile,
+  isTeacherProfile,
+} from '@/features/profile/lib/type-guards';
 import { ProfileAccessProps } from '@/features/profile/types';
 
 export default function ProfileCard({ profile, isOwner }: ProfileAccessProps) {
@@ -15,18 +20,19 @@ export default function ProfileCard({ profile, isOwner }: ProfileAccessProps) {
 
   let profileExtra;
 
-  switch (profile.role) {
-    case 'ROLE_TEACHER':
-      profileExtra = <TeacherProfileExtra />;
-      break;
-    case 'ROLE_STUDENT':
-      profileExtra = <StudentProfileExtra />;
-      break;
-    case 'ROLE_PARENT':
-      profileExtra = <ParentProfileExtra />;
-      break;
-    default:
-      profileExtra = <div>잘못된 접근입니다.</div>;
+  if (isTeacherProfile(profile))
+    profileExtra = (
+      <TeacherProfileExtra
+        teacherNoteCount={profile.teacherNoteCount}
+        studentCount={profile.studentCount}
+        reviewCount={profile.reviewCount}
+        description={profile.description}
+      />
+    );
+  else if (isStudentProfile(profile)) {
+    profileExtra = <StudentProfileExtra learningGoal={profile.learningGoal} />;
+  } else if (isParentProfile(profile)) {
+    profileExtra = <ParentProfileExtra />;
   }
 
   return (
@@ -43,7 +49,7 @@ export default function ProfileCard({ profile, isOwner }: ProfileAccessProps) {
         <p>{profile.email}</p>
       </div>
       <Image
-        src={profile.profileImg ?? '/character/img_signup_type01.png'}
+        src={'/character/img_signup_type01.png'}
         width={280}
         height={280}
         alt={`${profile.name}님의 프로필 이미지`}

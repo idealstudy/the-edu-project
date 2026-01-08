@@ -2,10 +2,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { StudyRoom, Teacher } from '@/features/dashboard/studynote/write/type';
-import { Profile } from '@/features/profile/types';
+import { ProfileData } from '@/features/profile/types';
 
 type Props = {
-  profile: Profile;
+  profile: ProfileData;
 };
 
 const teacher: Teacher = {

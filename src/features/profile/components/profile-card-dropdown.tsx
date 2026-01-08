@@ -4,14 +4,12 @@ import { Dispatch, SetStateAction, useReducer, useState } from 'react';
 
 import Image from 'next/image';
 
-import { Profile } from '@/features/profile/types';
+import { ProfileAccessProps } from '@/features/profile/types';
 import { InputDialog } from '@/features/study-rooms/components/common/dialog/input-dialog';
 import { dialogReducer, initialDialogState } from '@/shared/components/dialog';
 import { Button, Dialog, DropdownMenu } from '@/shared/components/ui';
 
-type Props = {
-  isOwner: boolean;
-  profile: Profile;
+type Props = ProfileAccessProps & {
   setIsEditMode: Dispatch<SetStateAction<boolean>>;
 };
 

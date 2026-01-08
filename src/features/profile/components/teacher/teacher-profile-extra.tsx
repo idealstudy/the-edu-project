@@ -1,6 +1,18 @@
 import Image from 'next/image';
 
-export default function TeacherProfileExtra() {
+interface TeacherProfileExtraProps {
+  teacherNoteCount: number;
+  studentCount: number;
+  reviewCount: number;
+  description: string;
+}
+
+export default function TeacherProfileExtra({
+  teacherNoteCount,
+  studentCount,
+  reviewCount,
+  description,
+}: TeacherProfileExtraProps) {
   return (
     <>
       <div className="flex justify-between">
@@ -15,7 +27,7 @@ export default function TeacherProfileExtra() {
             누적 수업노트
           </span>
           <span className="font-headline2-heading text-key-color-primary">
-            999개
+            {teacherNoteCount.toLocaleString()}개
           </span>
         </div>
         <div className="flex flex-col items-center">
@@ -29,7 +41,7 @@ export default function TeacherProfileExtra() {
             누적 학생
           </span>
           <span className="font-headline2-heading text-key-color-primary">
-            34,900명
+            {studentCount.toLocaleString()}명
           </span>
         </div>
         <div className="flex flex-col items-center">
@@ -43,14 +55,14 @@ export default function TeacherProfileExtra() {
             누적 후기
           </span>
           <span className="font-headline2-heading text-key-color-primary">
-            2,231개
+            {reviewCount.toLocaleString()}개
           </span>
         </div>
       </div>
 
       <div>
         <h4 className="font-body1-heading mb-2">간단 소개</h4>
-        <p>단순한 과외 선생님이 아니라 학생의 멘토가 되어드리겠습니다.</p>
+        <p>{description}</p>
       </div>
     </>
   );
