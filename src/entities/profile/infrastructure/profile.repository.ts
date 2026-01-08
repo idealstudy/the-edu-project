@@ -6,11 +6,12 @@ import { CommonResponse } from '@/types';
 import { adapters } from './profile.adapters';
 
 /* ─────────────────────────────────────────────────────
- * [Read] 내 프로필 조회
+ * [Read] 프로필 조회
  * ────────────────────────────────────────────────────*/
-const getMyProfile = async (): Promise<FrontendProfile> => {
-  const response =
-    await api.private.get<CommonResponse<ProfileDTO>>('/members/profile');
+const getProfile = async (memberId: string): Promise<FrontendProfile> => {
+  const response = await api.public.get<CommonResponse<ProfileDTO>>(
+    `/public/members/profile/${memberId}`
+  );
 
   const validateResponse = adapters.fromApi.parse(response);
 
@@ -19,6 +20,6 @@ const getMyProfile = async (): Promise<FrontendProfile> => {
 
 export const repository = {
   profile: {
-    getMyProfile,
+    getProfile,
   },
 };

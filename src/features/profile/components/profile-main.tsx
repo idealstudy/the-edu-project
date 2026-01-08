@@ -2,8 +2,9 @@
 
 import { useRouter } from 'next/navigation';
 
+import { ProfileRole } from '@/entities/profile';
 import ProfileLayout from '@/features/profile/components/profile-layout';
-import { useMyProfile } from '@/features/profile/hooks/use-profile';
+import { useProfile } from '@/features/profile/hooks/use-profile';
 import { ProfileViewerProps } from '@/features/profile/types';
 import { useCurrentMember } from '@/providers/session/hooks/use-current-member';
 
@@ -11,7 +12,18 @@ export default function ProfileMain(props: ProfileViewerProps) {
   const router = useRouter();
 
   const { data: member } = useCurrentMember(true);
-  const { data: profileData, isLoading } = useMyProfile(member?.id.toString());
+
+  const memberId =
+    props.mode === 'owner' ? member?.id.toString() : props.userId;
+  const { data: profileData, isLoading } = useProfile(memberId);
+
+  if (isLoading) {
+    return <div className="text-center">로딩중...</div>;
+  }
+
+  if (!profileData) {
+    return <div className="text-center">프로필 정보를 불러올 수 없습니다.</div>;
+  }
 
   if (props.mode === 'owner') {
     if (!member) {
@@ -32,16 +44,6 @@ export default function ProfileMain(props: ProfileViewerProps) {
       return null;
     }
 
-    if (isLoading) {
-      return <div className="text-center">로딩중...</div>;
-    }
-
-    if (!profileData) {
-      return (
-        <div className="text-center">프로필 정보를 불러올 수 없습니다.</div>
-      );
-    }
-
     return (
       <ProfileLayout
         profile={{
@@ -55,14 +57,23 @@ export default function ProfileMain(props: ProfileViewerProps) {
   }
 
   // props.mode === 'viewer'
+
+  // role 추론: profileData 필드로 역할 판단
+  let role: ProfileRole;
+  if ('teacherNoteCount' in profileData) {
+    role = 'ROLE_TEACHER';
+  } else if ('learningGoal' in profileData) {
+    role = 'ROLE_STUDENT';
+  } else {
+    role = 'ROLE_PARENT';
+  }
+
   return (
     <ProfileLayout
       profile={{
+        ...profileData,
         id: props.userId,
-        role: 'ROLE_TEACHER',
-        name: '이에듀',
-        email: 'theedu@test.test',
-        description: `안녕하세요, ${props.mode}`,
+        role,
       }}
       isOwner={false}
     />
