@@ -10,6 +10,7 @@ import {
   useStudentStudyRoomsQuery,
   useTeacherStudyRoomsQuery,
 } from '@/features/study-rooms';
+import { StudyRoomsQueryKey } from '@/features/study-rooms/api';
 import { Icon } from '@/shared/components/ui/icon';
 import { PRIVATE } from '@/shared/constants';
 import { cn } from '@/shared/lib/utils';
@@ -44,8 +45,12 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
   useEffect(() => {
     const interval = setInterval(() => {
       // 스터디룸 목록 쿼리 무효화 (다른 탭에서 스터디룸 생성 시 반영)
-      queryClient.invalidateQueries({ queryKey: ['teacherStudyRooms'] });
-      queryClient.invalidateQueries({ queryKey: ['studentStudyRooms'] });
+      queryClient.invalidateQueries({
+        queryKey: StudyRoomsQueryKey.teacherList,
+      });
+      queryClient.invalidateQueries({
+        queryKey: StudyRoomsQueryKey.studentList,
+      });
       // 수업노트 쿼리 무효화 (다른 탭에서 수업노트 작성 시 반영)
       if (firstRoomId) {
         queryClient.invalidateQueries({ queryKey: ['studyNotes'] });
@@ -55,8 +60,12 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
 
     // 페이지 포커스 시에도 즉시 체크
     const handleFocus = () => {
-      queryClient.invalidateQueries({ queryKey: ['teacherStudyRooms'] });
-      queryClient.invalidateQueries({ queryKey: ['studentStudyRooms'] });
+      queryClient.invalidateQueries({
+        queryKey: StudyRoomsQueryKey.teacherList,
+      });
+      queryClient.invalidateQueries({
+        queryKey: StudyRoomsQueryKey.studentList,
+      });
       if (firstRoomId) {
         queryClient.invalidateQueries({ queryKey: ['studyNotes'] });
         queryClient.invalidateQueries({ queryKey: ['qnaList'] });
@@ -79,10 +88,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
     hasQuestions,
     hasAssignments,
     hasFeedback,
-  } = useOnboardingStatus({ rooms });
-
-  // 사용자 닉네임 (없으면 기본값)
-  const userName = member?.name || (isTeacher ? ' 선생님' : ' 님');
+  } = useOnboardingStatus({ role, rooms });
 
   // 학생의 수업노트 확인 여부: 수업노트가 있으면 확인한 것으로 간주
   // (현재 API에 읽음 상태가 없으므로, 수업노트가 있으면 확인한 것으로 간주)
@@ -99,7 +105,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
       action: '스터디룸 만들기',
       href: PRIVATE.ROOM.CREATE,
       completed: hasRooms,
-      color: 'from-orange-100 to-orange-200',
+      color: 'from-orange-scale-orange-1 to-orange-scale-orange-5',
     },
     {
       step: 2,
@@ -112,7 +118,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
         : PRIVATE.ROOM.CREATE,
       completed: hasStudents,
       disabled: !hasRooms, // 스터디룸이 있어야 활성화
-      color: 'from-blue-100 to-blue-200',
+      color: 'from-gray-scale-gray-1 to-gray-scale-gray-5',
     },
     {
       step: 3,
@@ -126,7 +132,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
         : PRIVATE.ROOM.CREATE,
       completed: hasNotes,
       disabled: !hasRooms, // 스터디룸이 있어야 활성화
-      color: 'from-green-100 to-green-200',
+      color: 'from-orange-scale-orange-5 to-orange-scale-orange-10',
     },
     {
       step: 4,
@@ -137,7 +143,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
       href: '#', // TODO: 과제 부여 페이지
       completed: hasAssignments,
       disabled: !hasRooms || !hasStudents,
-      color: 'from-purple-100 to-purple-200',
+      color: 'from-orange-scale-orange-10 to-orange-scale-orange-20',
     },
     {
       step: 5,
@@ -149,7 +155,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
       href: '#', // TODO: 피드백 페이지
       completed: hasFeedback,
       disabled: !hasRooms || !hasStudents,
-      color: 'from-pink-100 to-pink-200',
+      color: 'from-orange-scale-orange-20 to-orange-scale-orange-30',
     },
   ];
 
@@ -162,7 +168,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
       action: '초대 링크 입력하기',
       href: '#', // TODO: 초대 링크 입력 페이지
       completed: hasRooms, // 스터디룸에 참여했으면 완료
-      color: 'from-blue-100 to-blue-200',
+      color: 'from-gray-scale-gray-1 to-gray-scale-gray-5',
     },
     {
       step: 2,
@@ -173,7 +179,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
       href: hasRooms ? PRIVATE.ROOM.DETAIL(rooms?.[0]?.id ?? 0) : '#',
       completed: hasNotesViewed, // 학생의 경우 수업노트가 있으면 확인한 것으로 간주
       disabled: !hasRooms,
-      color: 'from-green-100 to-green-200',
+      color: 'from-orange-scale-orange-5 to-orange-scale-orange-10',
     },
     {
       step: 3,
@@ -184,7 +190,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
       href: '#', // TODO: 과제 목록 페이지
       completed: hasAssignments,
       disabled: !hasRooms,
-      color: 'from-purple-100 to-purple-200',
+      color: 'from-orange-scale-orange-10 to-orange-scale-orange-20',
     },
     {
       step: 4,
@@ -195,7 +201,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
       href: '#', // TODO: 질문 작성 페이지
       completed: hasQuestions,
       disabled: !hasRooms,
-      color: 'from-pink-100 to-pink-200',
+      color: 'from-orange-scale-orange-20 to-orange-scale-orange-30',
     },
   ];
 
@@ -203,7 +209,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
   const completedCount = steps.filter((step) => step.completed).length;
   const totalSteps = steps.length;
 
-  const greeting = `${userName}님, 환영합니다!`;
+  const greeting = `${member?.name}님, 환영합니다!`;
   const subtitle = isTeacher
     ? `${totalSteps}단계로 체계적인 수업 관리를 시작해보세요`
     : '선생님과 함께하는 학습 공간을 시작해보세요';
@@ -248,7 +254,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
                 className={cn(
                   'group relative rounded-2xl border-2 bg-white p-6 transition-all md:p-8',
                   isCompleted
-                    ? 'border-green-300 bg-green-50/50'
+                    ? 'border-orange-scale-orange-30 bg-orange-scale-orange-1'
                     : isLocked
                       ? 'border-gray-200 bg-gray-50 opacity-60'
                       : 'border-gray-200 hover:border-[#ff4500] hover:shadow-lg'
@@ -258,7 +264,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
                   {/* 왼쪽: 단계 번호 배지 (순서 강조) */}
                   <div className="flex shrink-0 items-center gap-4 md:w-32">
                     {isCompleted ? (
-                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 shadow-md">
+                      <div className="from-orange-scale-orange-40 to-orange-scale-orange-50 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br shadow-md">
                         <svg
                           className="h-8 w-8 text-white"
                           fill="none"
@@ -283,7 +289,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
                       >
                         <IconComponent
                           aria-hidden
-                          className="h-8 w-8 text-gray-700"
+                          className="text-orange-scale-orange-50 h-8 w-8"
                         />
                       </div>
                     )}
@@ -292,7 +298,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
                       className={cn(
                         'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg font-bold text-white shadow-md',
                         isCompleted
-                          ? 'bg-green-500'
+                          ? 'bg-orange-scale-orange-50'
                           : isLocked
                             ? 'bg-gray-400'
                             : 'bg-[#ff4500]'
@@ -309,7 +315,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
                         className={cn(
                           'text-xl font-bold md:text-2xl',
                           isCompleted
-                            ? 'text-green-700'
+                            ? 'text-orange-scale-orange-60'
                             : isLocked
                               ? 'text-gray-400'
                               : 'text-gray-900'
@@ -318,7 +324,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
                         {step.title}
                       </h3>
                       {isCompleted && (
-                        <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700">
+                        <span className="bg-orange-scale-orange-1 text-orange-scale-orange-60 rounded-full px-2 py-1 text-xs font-semibold">
                           완료
                         </span>
                       )}
@@ -332,7 +338,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
                       className={cn(
                         'text-sm md:text-base',
                         isCompleted
-                          ? 'text-green-600'
+                          ? 'text-orange-scale-orange-50'
                           : isLocked
                             ? 'text-gray-400'
                             : 'text-gray-600'
@@ -345,7 +351,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
                   {/* 오른쪽: 액션 버튼 */}
                   <div className="flex shrink-0 md:w-40">
                     {isCompleted ? (
-                      <div className="flex w-full items-center justify-center rounded-lg bg-green-100 px-6 py-3 text-center text-sm font-semibold text-green-700 md:px-8 md:py-4 md:text-base">
+                      <div className="bg-orange-scale-orange-1 text-orange-scale-orange-60 flex w-full items-center justify-center rounded-lg px-6 py-3 text-center text-sm font-semibold md:px-8 md:py-4 md:text-base">
                         <svg
                           className="mr-2 h-5 w-5"
                           fill="none"
@@ -393,7 +399,7 @@ export const DashboardOnboarding = ({ role }: DashboardOnboardingProps) => {
                       className={cn(
                         'text-2xl',
                         steps[index + 1]?.completed || step.completed
-                          ? 'text-green-400'
+                          ? 'text-orange-scale-orange-30'
                           : 'text-gray-300'
                       )}
                     >

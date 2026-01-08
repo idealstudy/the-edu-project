@@ -44,7 +44,7 @@ export const DashboardContainer = () => {
     hasQuestions,
     hasAssignments,
     hasFeedback,
-  } = useOnboardingStatus({ rooms });
+  } = useOnboardingStatus({ role, rooms });
 
   // 로딩 중일 때
   if (isLoading) {
@@ -59,7 +59,7 @@ export const DashboardContainer = () => {
 
   // 온보딩 완료 여부 판단
   // 강사: 스터디룸, 학생 초대, 수업노트, 과제, 피드백
-  // 학생: 스터디룸 참여, 수업노트 확인, 과제 제출, 질문
+  // 학생: 스터디룸 참여, 수업노트 확인, 과제 제출, 질문 (피드백 제외)
   const teacherStepsCompleted = [
     hasRooms, // 스터디룸 만들기
     hasStudents, // 학생 초대하기
@@ -72,6 +72,7 @@ export const DashboardContainer = () => {
     hasNotes, // 수업노트 확인하기
     hasAssignments, // 과제 제출하기
     hasQuestions, // 질문하기
+    // 학생은 피드백 받는 것은 온보딩 단계가 아님
   ];
 
   const allStepsCompleted = isTeacher

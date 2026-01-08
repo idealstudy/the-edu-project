@@ -24,7 +24,7 @@ export const DashboardCompleted = ({ role }: DashboardCompletedProps) => {
         {/* 완료 축하 섹션 */}
         <section className="rounded-[32px] bg-gradient-to-br from-[#ff4500] to-[#ff6b35] p-10 text-center text-white shadow-[0_24px_48px_rgba(255,72,5,0.35)]">
           <div className="mb-6 text-6xl">🎉</div>
-          <h1 className="mb-4 text-[32px] leading-[140%] font-bold tracking-[-0.04em]">
+          <h1 className="mb-4 text-[32px] leading-[140%] font-bold tracking-[-0.04em] text-white">
             모든 단계를 완료하셨습니다!
             <br />
           </h1>
