@@ -69,6 +69,12 @@ export const useTeacherUpdateHomework = () => {
       queryClient.invalidateQueries({
         queryKey: TeacherHomeworkQueryKey.listBase(variables.studyRoomId),
       });
+      queryClient.invalidateQueries({
+        queryKey: TeacherHomeworkQueryKey.detail(
+          variables.studyRoomId,
+          variables.homeworkId
+        ),
+      });
     },
   });
 };

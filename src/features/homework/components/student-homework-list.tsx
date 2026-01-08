@@ -1,36 +1,21 @@
 'use client';
 
-import { useState } from 'react';
-
 import { ListItem } from '@/features/study-rooms/components/common/list-item';
 import { MiniSpinner } from '@/shared/components/loading';
 import { formatYYYYMMDD, getRelativeTimeString } from '@/shared/lib/utils';
 
 import { HOMEWORK_SUBMIT_STATUS_LABEL } from '../model/constants';
-import { HomeworkPageable, StudentHomeworkItem } from '../model/homework.types';
-import { HomeworkDropdown } from './dropdown';
+import { StudentHomeworkItem } from '../model/homework.types';
 
 export const StudentHomeworkList = ({
   data,
   studyRoomId,
-  pageable,
-  keyword,
-  onRefresh,
   isLoading,
 }: {
   data: StudentHomeworkItem[];
   studyRoomId: number;
-  pageable: HomeworkPageable;
-  keyword: string;
-  onRefresh: () => void;
   isLoading: boolean;
 }) => {
-  const [open, setOpen] = useState(0);
-
-  const handleOpen = (id: number) => {
-    setOpen(open === id ? 0 : id);
-  };
-
   // 마감일 계산
   const deadLineDate = (date: string) => {
     const today = new Date();
@@ -71,17 +56,6 @@ export const StudentHomeworkList = ({
       subtitle={formatYYYYMMDD(item.deadline)}
       rightTitle={HOMEWORK_SUBMIT_STATUS_LABEL[item.status]}
       rightSubTitle={getRelativeTimeString(item.modDate)}
-      dropdown={
-        <HomeworkDropdown
-          open={open}
-          handleOpen={handleOpen}
-          item={item}
-          studyRoomId={studyRoomId}
-          pageable={pageable}
-          keyword={keyword}
-          onRefresh={onRefresh}
-        />
-      }
       href={`/study-rooms/${studyRoomId}/homework/${item.id}`}
       id={item.id}
     />
