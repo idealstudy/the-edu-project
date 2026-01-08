@@ -170,6 +170,7 @@ export const GA4_EVENTS = {
   GNB_ALARM_CLICK: 'gnb_alarm_click',
   GNB_PROFILE_CLICK: 'gnb_profile_click',
   GNB_LOGOUT_CLICK: 'gnb_logout_click',
+  GNB_MENU_CLICK: 'gnb_menu_click',
 
   // Dashboard
   DASHBOARD_STUDYROOM_CREATE_CLICK: 'dashboard_studyroom_create_click',

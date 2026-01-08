@@ -53,6 +53,10 @@ export const trackGnbLogoutClick = (role?: Role | null) => {
   pushEvent(GA4_EVENTS.GNB_LOGOUT_CLICK, withUserType({}, role));
 };
 
+export const trackGnbMenuClick = (role?: Role | null) => {
+  pushEvent(GA4_EVENTS.GNB_MENU_CLICK, withUserType({}, role));
+};
+
 // ==================== 대시보드 이벤트 ====================
 
 export const trackDashboardStudyroomCreateClick = (role?: Role | null) => {

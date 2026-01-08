@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -7,19 +9,50 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { NotificationPopover } from '@/features/notifications/components/notification-popover';
 // import { useLogoutMutation } from '@/features/auth/services/query';
-
+import {
+  useStudentStudyRoomsQuery,
+  useTeacherStudyRoomsQuery,
+} from '@/features/study-rooms';
+import { HomeIcon, PlusIcon, TextIcon } from '@/shared/components/icons';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
+import {
+  Popover,
+  PopoverClose,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/shared/components/ui/popover';
 import { PRIVATE, PUBLIC } from '@/shared/constants';
+import { useRole } from '@/shared/hooks/use-role';
 import {
   trackGnbLogoClick,
   trackGnbLogoutClick,
   trackGnbProfileClick,
 } from '@/shared/lib/gtm/trackers';
+import { trackGnbMenuClick } from '@/shared/lib/gtm/trackers';
 import { useMemberStore } from '@/store';
 
 export const Header = () => {
   const session = useMemberStore((s) => s.member);
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const { data: teacherStudyRoomList } = useTeacherStudyRoomsQuery({
+    enabled: true,
+  });
+
+  const { data: studentStudyRoomList } = useStudentStudyRoomsQuery({
+    enabled: true,
+  });
+
+  const { role } = useRole();
+
+  // 역할에 따라 적절한 리스트 선택
+  const studyRoomList =
+    role === 'ROLE_TEACHER'
+      ? teacherStudyRoomList
+      : role === 'ROLE_STUDENT'
+        ? studentStudyRoomList
+        : undefined;
 
   const goToMypage = () => {
     router.push('/mypage');
@@ -152,13 +185,67 @@ export const Header = () => {
                 {roleMetaMap[session.role]?.label}
               </div>
             )}
-            <Image
-              src={'/ic_hamburger.svg'}
-              alt="햄버거 메뉴 아이콘"
-              width={24}
-              height={24}
-              className="desktop:hidden mr-4 flex cursor-pointer"
-            />
+            <Popover
+              open={isOpen}
+              onOpenChange={setIsOpen}
+            >
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  aria-label="햄버거 메뉴"
+                  onClick={() => {
+                    trackGnbMenuClick(session?.role ?? null);
+                  }}
+                >
+                  <Image
+                    src={'/ic_hamburger.svg'}
+                    alt="햄버거 메뉴 아이콘"
+                    width={24}
+                    height={24}
+                    className="desktop:hidden mr-4 flex cursor-pointer"
+                  />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent>
+                <Link href={PRIVATE.DASHBOARD.INDEX}>
+                  <HomeIcon />
+                  <span>홈</span>
+                </Link>
+                <div>
+                  <div>
+                    <TextIcon />
+                    <span>스터디룸</span>
+                  </div>
+                  {role === 'ROLE_TEACHER' && (
+                    <Link
+                      href={PRIVATE.ROOM.CREATE}
+                      className="h-9 w-9 justify-center bg-transparent px-0"
+                    >
+                      <PlusIcon />
+                      <span className="sr-only">스터디룸 생성</span>
+                    </Link>
+                  )}
+                </div>
+                <div>
+                  {studyRoomList?.map((item) => (
+                    <Link
+                      href={PRIVATE.ROOM.DETAIL(item.id)}
+                      key={item.id}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+                <PopoverClose asChild>
+                  <button
+                    type="button"
+                    className="cursor-pointer text-sm text-gray-500 hover:text-gray-700"
+                  >
+                    닫기
+                  </button>
+                </PopoverClose>
+              </PopoverContent>
+            </Popover>
           </div>
         )}
         {!session && (
