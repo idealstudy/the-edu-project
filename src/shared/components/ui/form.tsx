@@ -169,6 +169,24 @@ const FormItem = ({
   );
 };
 
+type FormRowProps = React.ComponentPropsWithRef<'div'> & {
+  columns?: 1 | 2 | 3;
+};
+
+const FormRow = ({ className, columns = 1, ...props }: FormRowProps) => {
+  return (
+    <div
+      className={cn(
+        'grid gap-6',
+        columns === 2 && 'grid-cols-2',
+        columns === 3 && 'grid-cols-3',
+        className
+      )}
+      {...props}
+    />
+  );
+};
+
 type FormItemContextValue = {
   id: string;
   errorMessageId: string;
@@ -188,3 +206,4 @@ Form.Control = FormControl;
 Form.Label = FormLabel;
 Form.Description = FormDescription;
 Form.ErrorMessage = FormErrorMessage;
+Form.Row = FormRow;

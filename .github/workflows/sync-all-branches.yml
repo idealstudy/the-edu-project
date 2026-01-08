@@ -33,9 +33,16 @@ jobs:
           git config user.name "park J"
           git config user.email "youremail@example.com"
 
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
       - name: Add remote to deployment repo (idealstudy/the-edu-project)
         run: |
-          git remote add deployment-repo https://idealstudy:${{ secrets.PERSONAL_REPO_TOKEN }}@github.com/idealstudy/the-edu-project.git
+          git remote add deployment-repo git@github.com:idealstudy/the-edu-project.git
 
       - name: Push to same branch on deployment repo
         run: |
@@ -49,10 +56,17 @@ jobs:
     if: github.event_name == 'delete' && github.event.ref_type == 'branch'
     runs-on: ubuntu-latest
     steps:
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
       - name: Delete branch on deployment repo
         run: |
           REF="${{ github.event.ref }}"
           BRANCH="${REF#refs/heads/}"
           git init
-          git remote add deployment-repo https://idealstudy:${{ secrets.PERSONAL_REPO_TOKEN }}@github.com/idealstudy/the-edu-project.git
+          git remote add deployment-repo git@github.com:idealstudy/the-edu-project.git
           git push deployment-repo --delete "$BRANCH" || true

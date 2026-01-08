@@ -15,10 +15,11 @@ const TABS_CONFIG = [
   { value: 'note', label: '수업노트', href: 'note', role: 'all' },
   { value: 'member', label: '학생', href: 'member', role: 'ROLE_TEACHER' },
   { value: 'qna', label: '질문', href: 'qna', role: 'all' },
+  { value: 'homework', label: '과제', href: 'homework', role: 'all' },
 ];
 
 const baseCls =
-  'relative flex h-[55px] min-w-[170px] items-center justify-center gap-2 rounded-t-[12px] border px-5 text-lg transition-colors';
+  'relative flex h-[55px] min-w-[150px] items-center justify-center gap-2 rounded-t-[12px] border px-5 text-lg transition-colors';
 
 export const StudyNoteTab = ({ studyRoomId, mode, path }: Props) => {
   return (
@@ -39,8 +40,8 @@ export const StudyNoteTab = ({ studyRoomId, mode, path }: Props) => {
               className={cn(
                 baseCls,
                 isActive
-                  ? 'text-key-color-primary z-20 border-zinc-200 border-b-transparent bg-white font-semibold'
-                  : 'text-text-sub2 z-10 border-zinc-200 bg-transparent hover:bg-zinc-50'
+                  ? 'text-key-color-primary border-zinc-200 border-b-transparent bg-white font-semibold'
+                  : 'text-text-sub2 border-zinc-200 bg-transparent hover:bg-zinc-50'
               )}
             >
               {tab.label}

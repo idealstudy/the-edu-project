@@ -52,7 +52,12 @@ export default function StepTwo({
   disabled?: boolean;
   onRequestSubmit?: () => void;
 }) {
-  const { control, getValues, setValue } = useFormContext();
+  const {
+    control,
+    getValues,
+    setValue,
+    formState: { isValid },
+  } = useFormContext();
   const title = getValues('basic.title') ?? '';
   const school = useWatch({ control, name: 'schoolInfo.schoolLevel' });
 
@@ -74,6 +79,7 @@ export default function StepTwo({
               <Controller
                 name={el.name}
                 control={control}
+                rules={{ required: true }}
                 render={({ field }) => (
                   <RadioGroup
                     value={field.value}
@@ -85,12 +91,14 @@ export default function StepTwo({
                       <RadioCard.Item
                         key={option.value}
                         value={option.value}
-                        className="border-line-line2 flex h-32 flex-1 items-center justify-center"
+                        className={`border-line-line2 flex h-32 flex-1 cursor-pointer items-center justify-center ${field.value === option.value ? 'border-key-color-primary bg-key-color-primary/10 text-key-color-primary' : ''} `}
                       >
                         <div className="text-center">
                           <p className="font-medium">{option.label}</p>
                           {option.subLabel && (
-                            <p className="text-sm text-gray-500">
+                            <p
+                              className={`text-sm text-gray-500 ${field.value === option.value ? 'text-key-color-primary' : ''}`}
+                            >
                               {option.subLabel}
                             </p>
                           )}
@@ -108,6 +116,7 @@ export default function StepTwo({
                   <Controller
                     name="schoolInfo.schoolLevel"
                     control={control}
+                    rules={{ required: true }}
                     render={({ field }) => (
                       <Select
                         value={field.value}
@@ -137,6 +146,7 @@ export default function StepTwo({
                   <Controller
                     name="schoolInfo.grade"
                     control={control}
+                    rules={{ required: true }}
                     render={({ field }) => (
                       <Select
                         value={field.value}
@@ -145,6 +155,7 @@ export default function StepTwo({
                       >
                         <Select.Trigger
                           placeholder="학년을 선택하세요"
+                          disabled={!school}
                           className="w-[240px]"
                         />
                         <Select.Content>
@@ -179,7 +190,7 @@ export default function StepTwo({
         <Button
           type="button"
           className="w-48"
-          disabled={disabled}
+          disabled={disabled || !isValid}
           onClick={onRequestSubmit}
         >
           {disabled ? '생성 중...' : '완료'}

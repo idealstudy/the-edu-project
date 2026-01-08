@@ -105,5 +105,11 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/api/:path*', '/dashboard/:path*', '/study-rooms/:path*'],
+  matcher: [
+    '/',
+    '/api/:path*',
+    '/dashboard/:path*',
+    '/study-rooms/:path*',
+    '/mypage',
+  ],
 };

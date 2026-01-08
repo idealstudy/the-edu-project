@@ -2,6 +2,7 @@ import { Role } from '@/entities/member';
 import { Pageable } from '@/types/http';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { QnADetailResponse } from '../types';
 import {
   deleteQnA,
   deleteStudentQnAMessage,
@@ -90,7 +91,14 @@ export const useWriteQnAMessageMutation = (role: Role | undefined) => {
     onSuccess: (_, variables) => {
       // QNA 상세 쿼리 무효화
       queryClient.invalidateQueries({
-        queryKey: ['qnaDetail', role, variables],
+        queryKey: [
+          'qnaDetail',
+          role,
+          {
+            studyRoomId: variables.studyRoomId,
+            contextId: variables.contextId,
+          },
+        ],
         refetchType: 'active',
       });
     },
@@ -123,9 +131,8 @@ export const useUpdateQnAMessageMutation = (role: Role | undefined) => {
       throw new Error('role not ready');
     },
     onSuccess: (_, variables) => {
-      // QNA 상세 쿼리 무효화
-      queryClient.invalidateQueries({
-        queryKey: [
+      queryClient.setQueryData<QnADetailResponse>(
+        [
           'qnaDetail',
           role,
           {
@@ -133,8 +140,19 @@ export const useUpdateQnAMessageMutation = (role: Role | undefined) => {
             contextId: variables.contextId,
           },
         ],
-        refetchType: 'active',
-      });
+        (old) => {
+          if (!old) return old;
+
+          return {
+            ...old,
+            messages: old.messages.map((m) =>
+              m.id === variables.messageId
+                ? { ...m, content: variables.content }
+                : m
+            ),
+          };
+        }
+      );
     },
   });
 };

@@ -18,11 +18,13 @@ export const StudyNotesList = ({
   studyRoomId,
   pageable,
   keyword,
+  onRefresh,
 }: {
   data: StudyNote[];
   studyRoomId: number;
   pageable: StudyNoteGroupPageable;
   keyword: string;
+  onRefresh: () => void;
 }) => {
   const [open, setOpen] = useState(0);
 
@@ -104,7 +106,7 @@ export const StudyNotesList = ({
           ? `${getRelativeTimeString(item.taughtAt)} 작성`
           : `${getRelativeTimeString(item.updatedAt)} 수정`
       }
-      date={formatMMDDWeekday(item.taughtAt)}
+      rightTitle={formatMMDDWeekday(item.taughtAt)}
       dropdown={
         <StudyNotesDropdown
           open={open}
@@ -113,6 +115,7 @@ export const StudyNotesList = ({
           studyRoomId={studyRoomId}
           pageable={pageable}
           keyword={keyword}
+          onRefresh={onRefresh}
         />
       }
       href={`/study-rooms/${studyRoomId}/note/${item.id}`}

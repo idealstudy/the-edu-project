@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+// 상태관리 zustand로
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import {
   useParams,
@@ -10,6 +11,8 @@ import {
 } from 'next/navigation';
 
 import { StudyNotesList } from '@/features/study-notes/components/list';
+import { StudyNoteSearchFilterBar } from '@/features/study-notes/components/search-filter-bar';
+import { StudyNoteGroupContext } from '@/features/study-notes/contexts/study-note-group.context';
 import {
   useGetStudentNotesByGroup,
   useGetStudentNotesList,
@@ -28,7 +31,8 @@ export default function StudyNotePage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const selectedGroupId = 'all';
+  const ctx = useContext(StudyNoteGroupContext);
+  const selectedGroupId = ctx?.selectedGroupId ?? 'all';
 
   const currentPage = useMemo(() => {
     const raw = searchParams.get('page');
@@ -90,6 +94,16 @@ export default function StudyNotePage() {
     enabled: isGroupSelected && role === 'ROLE_STUDENT',
   });
 
+  // 현재 선택된 query 결정
+  const currentQuery =
+    selectedGroupId === 'all'
+      ? role === 'ROLE_TEACHER'
+        ? teacherListQuery
+        : studentListQuery
+      : role === 'ROLE_TEACHER'
+        ? teacherByGroupQuery
+        : studentByGroupQuery;
+
   const studyNotesByGroupId =
     role === 'ROLE_TEACHER'
       ? teacherByGroupQuery.data
@@ -140,12 +154,16 @@ export default function StudyNotePage() {
 
   return (
     <StudyRoomDetailLayout
-      search={search}
-      sort={sort}
-      limit={limit}
-      onSearch={handleSearch}
-      onSortChange={handleSortChange}
-      onLimitChange={handleLimitChange}
+      filter={
+        <StudyNoteSearchFilterBar
+          search={search}
+          sort={sort}
+          limit={limit}
+          onSearch={handleSearch}
+          onSortChange={handleSortChange}
+          onLimitChange={handleLimitChange}
+        />
+      }
       page={page}
     >
       <StudyNotesList
@@ -157,6 +175,7 @@ export default function StudyNotePage() {
         studyRoomId={studyRoomId}
         pageable={pageable}
         keyword={search}
+        onRefresh={currentQuery.refetch}
       />
     </StudyRoomDetailLayout>
   );

@@ -99,8 +99,6 @@ export const ConfirmDialog = ({
             variant={variant === 'delete' ? 'secondary' : 'secondary'}
             onClick={() => {
               onConfirm?.();
-              // 확인 후 닫기를 호출부에서 제어하려면 이 줄 제거
-              close();
             }}
             disabled={pending}
           >

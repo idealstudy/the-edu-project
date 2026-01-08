@@ -12,7 +12,8 @@ export const RequiredMark = () => {
   return <span className="text-key-color-primary"> *</span>;
 };
 
-const StudyNoteFormProvider = ({
+// 스터디 노트
+export const StudyNoteFormProvider = ({
   defaultStudyRoomId,
   noteId,
   isEditMode = false,
@@ -94,5 +95,3 @@ const StudyNoteFormProvider = ({
 
   return <FormProvider {...methods}>{children}</FormProvider>;
 };
-
-export default StudyNoteFormProvider;

@@ -18,6 +18,16 @@ function isForbidden(e: AxiosError) {
   return getStatus(e) === 403;
 }
 
+function isProfileIncomplete(e: AxiosError) {
+  const message = getMessage(e);
+
+  return (
+    getStatus(e) === 403 &&
+    (message === 'PROFILE_COMPLETION_REQUIRED' ||
+      message?.includes('프로필 완성'))
+  );
+}
+
 function isUnauthorized(e: AxiosError) {
   return getStatus(e) === 401;
 }
@@ -45,6 +55,11 @@ export const installHttpInterceptors = () => {
     async (error: AxiosError) => {
       const cfg = (error.config || {}) as RetryableConfig;
       if (!error.response) return Promise.reject(error);
+
+      if (isProfileIncomplete(error)) {
+        window.location.href = '/select-role';
+        return Promise.reject(error);
+      }
 
       if (isForbidden(error)) {
         throw new ForbiddenError(getMessage(error) ?? '접근이 거부되었습니다.');

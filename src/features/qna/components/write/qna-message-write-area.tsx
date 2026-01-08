@@ -8,6 +8,8 @@ import { TextEditor } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { useRole } from '@/shared/hooks/use-role';
+import { trackReplyCreateClick } from '@/shared/lib/gtm/trackers';
+import { useMemberStore } from '@/store';
 import { JSONContent } from '@tiptap/react';
 
 import { QnAMessageForm } from '../../schema/create';
@@ -20,6 +22,7 @@ type Props = {
 
 const WriteArea = ({ studyRoomId, contextId }: Props) => {
   const { role } = useRole();
+  const session = useMemberStore((s) => s.member);
 
   const { mutate, isPending } = useWriteQnAMessageMutation(role);
   const {
@@ -53,6 +56,16 @@ const WriteArea = ({ studyRoomId, contextId }: Props) => {
     contextId: number;
     content: JSONContent;
   }) => {
+    // 답글 작성 클릭 이벤트
+    trackReplyCreateClick(
+      {
+        room_id: studyRoomId,
+        question_id: contextId,
+        user_id: session?.id ?? 0,
+      },
+      session?.role ?? null
+    );
+
     mutate(
       {
         studyRoomId,

@@ -1,0 +1,129 @@
+'use client';
+
+import { useState } from 'react';
+
+import Image from 'next/image';
+
+import { cn } from '@/shared/lib/utils';
+
+// Session9: 자주 묻는 질문
+export function Session9() {
+  return (
+    <section className="w-full bg-white px-4 py-12 md:px-6 md:py-16 lg:px-8 lg:py-20">
+      <div className="mx-auto max-w-4xl">
+        <div className="mb-12 text-center">
+          <p className="text-3xl font-bold tracking-[-0.05em] md:text-4xl lg:text-5xl">
+            자주 묻는 질문
+          </p>
+        </div>
+
+        <div className="flex items-center justify-center">
+          <FAQAccordion />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const FAQAccordion = () => {
+  const [activeTab, setActiveTab] = useState<number | null>(null);
+
+  const tabs = [
+    {
+      question: '디에듀는 어떻게 사용하나요?',
+      answer: [
+        '강사로 가입하시면 스터디룸을 만들고 학생을 초대할 수 있습니다.',
+        '학생은 선생님의 초대 링크를 통해 온라인 스터디룸에 참여하게 됩니다.',
+        '수업노트 작성, 과제 부여, 질문 답변 등 모든 기능을 한 곳에서 관리할 수 있습니다.',
+      ],
+    },
+    {
+      question: '학생은 어떻게 초대받나요?',
+      answer: [
+        '강사가 스터디룸을 만든 후 초대 링크를 생성합니다.',
+        '초대 링크를 학생에게 전달하면, 학생은 링크를 통해 온라인 스터디룸에 참여할 수 있습니다.',
+        '초대받은 학생은 선생님의 전용 스터디룸에서 수업 자료, 과제, 피드백을 모두 확인할 수 있습니다.',
+      ],
+    },
+    {
+      question: '과제와 질문 관리는 어떻게 하나요?',
+      answer: [
+        '과제를 부여하면 자동으로 학생에게 알림과 리마인더가 전송됩니다.',
+        '학생이 제출한 과제에 피드백을 작성할 수 있습니다.',
+        '학생의 질문에 실시간으로 답변할 수 있으며, 모든 대화 내용이 기록됩니다.',
+      ],
+    },
+    {
+      question: '수업 전후 자료 관리는 어떻게 하나요?',
+      answer: [
+        '수업 전 예습 자료를 업로드하여 학생이 미리 준비할 수 있도록 합니다.',
+        '수업 후 복습 자료와 수업노트를 작성하여 학생이 언제든지 다시 볼 수 있습니다.',
+        '모든 자료는 스터디룸에 체계적으로 정리되어 관리됩니다.',
+      ],
+    },
+    {
+      question: '무료로 사용할 수 있나요?',
+      answer: [
+        '네, 디에듀는 기본 기능을 무료로 사용할 수 있습니다.',
+        '강사 등록 후 바로 스터디룸을 만들고 학생을 초대할 수 있습니다.',
+        '추가 기능은 곧 출시될 예정입니다.',
+      ],
+    },
+  ];
+
+  return (
+    <div className="w-full cursor-auto bg-white">
+      {/* 질문 목록 */}
+      <div className="flex flex-col gap-2">
+        {tabs.map((item, index) => (
+          <div
+            key={index}
+            className="cursor-pointer"
+          >
+            <button
+              onClick={() => setActiveTab(activeTab === index ? null : index)}
+              className={cn(
+                'flex min-h-[88px] w-full cursor-pointer items-center justify-between border-[1px] px-6 py-6 text-left transition-colors md:px-10 md:py-8',
+                'hover:bg-[rgb(255,69,0)] hover:text-white'
+              )}
+            >
+              <p className="text-base font-bold tracking-[-0.05em] md:text-xl">
+                {item.question}
+              </p>
+              <Image
+                src="/ic-arrow-right.svg"
+                alt="화살표"
+                width={24}
+                height={24}
+                className={cn(
+                  'ml-4 inline-block shrink-0 transition-transform duration-300',
+                  activeTab === index && 'rotate-90'
+                )}
+              />
+            </button>
+
+            {/* 답변 */}
+            {activeTab === index && (
+              <div className="border-x-[1px] border-t border-b-[1px] border-t-[#E0E0E0] px-6 py-6 text-[#1A1A1A] md:px-10 md:py-8">
+                <div className="text-sm leading-relaxed font-normal tracking-[-0.05em] md:text-base md:leading-[27px]">
+                  {Array.isArray(item.answer) ? (
+                    item.answer.map((line, i) => (
+                      <p
+                        key={i}
+                        className="mb-2 last:mb-0"
+                      >
+                        {line}
+                      </p>
+                    ))
+                  ) : (
+                    <p>{item.answer}</p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};

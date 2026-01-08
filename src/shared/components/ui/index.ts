@@ -14,3 +14,4 @@ export { Icon } from './icon';
 export { Form } from './form';
 export { Accordion } from './accordion';
 export { Dialog } from './dialog';
+export { RequiredMark } from './required-mark';

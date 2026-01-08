@@ -9,17 +9,21 @@ export const ListItem = ({
   id,
   href,
   icon,
-  date,
+  warn,
+  rightTitle,
   dropdown,
+  rightSubTitle,
 }: {
   title: React.ReactNode;
   subtitle?: string;
   icon?: React.ReactNode;
+  warn?: string;
   id: number;
   href: string;
   tag?: React.ReactNode;
-  date?: string;
+  rightTitle?: string;
   dropdown?: React.ReactNode;
+  rightSubTitle?: string;
 }) => {
   return (
     <Link
@@ -29,6 +33,11 @@ export const ListItem = ({
     >
       <div className="flex flex-row items-center gap-3">
         {icon}
+        {warn && (
+          <span className="inline-flex items-center rounded-full bg-red-50 px-1.5 py-0.5 text-[11px] font-semibold text-red-500 ring-1 ring-red-100">
+            {warn}
+          </span>
+        )}
         <div className="flex flex-col items-start justify-between">
           <div className="flex flex-row items-center gap-2">
             <p>{title}</p>
@@ -39,14 +48,19 @@ export const ListItem = ({
           </p>
         </div>
       </div>
-      <div className="flex flex-row items-center gap-1">
-        <p className="text-gray-scale-gray-70">{date}</p>
-        <div
-          className="flex shrink-0 flex-row items-center"
-          onClick={(e) => e.preventDefault()}
-        >
-          {dropdown}
+      <div className="flex flex-col items-end">
+        <div className="flex flex-row items-center gap-1">
+          <p className="text-gray-scale-gray-70">{rightTitle}</p>
+          <div
+            className="flex shrink-0 flex-row items-center"
+            onClick={(e) => e.preventDefault()}
+          >
+            {dropdown}
+          </div>
         </div>
+        <p className="font-caption-normal text-gray-scale-gray-60">
+          {rightSubTitle}
+        </p>
       </div>
     </Link>
   );

@@ -7,14 +7,18 @@ import { useRouter } from 'next/navigation';
 
 import { Form } from '@/shared/components/ui/form';
 import { PRIVATE } from '@/shared/constants';
+import { trackStudynoteCreateSuccess } from '@/shared/lib/gtm/trackers';
+import { useMemberStore } from '@/store';
 
 import { STUDY_NOTE_VISIBILITY } from '../../constant';
 import { StudyNoteVisibility } from '../../type';
 import { StudyNoteForm } from '../schemas/note';
 import { useWriteStudyNoteMutation } from '../services/query';
 
-const WriteForm = ({ children }: PropsWithChildren) => {
+// studynote
+export const StudyNoteWriteForm = ({ children }: PropsWithChildren) => {
   const router = useRouter();
+  const session = useMemberStore((s) => s.member);
 
   const { mutate } = useWriteStudyNoteMutation();
   const { handleSubmit } = useFormContext<StudyNoteForm>();
@@ -23,6 +27,26 @@ const WriteForm = ({ children }: PropsWithChildren) => {
     const parsingData = transformFormDataToServerFormat(data);
     mutate(parsingData, {
       onSuccess: () => {
+        // 수업노트 저장 성공 이벤트
+        const content = data.content;
+        const contentString = JSON.stringify(content);
+        const hasContent = contentString.length > 2; // '{}'보다 큰지 확인
+
+        trackStudynoteCreateSuccess(
+          {
+            room_id: data.studyRoomId,
+            group_id: data.teachingNoteGroupId ?? null,
+            has_group: !!data.teachingNoteGroupId,
+            has_title: !!data.title,
+            has_student: (data.studentIds?.length ?? 0) > 0,
+            study_date: data.taughtAt || null,
+            has_content: hasContent,
+            image_count: 0, // TODO: 실제 이미지 개수 추적 필요
+            visibility:
+              data.visibility === 'TEACHER_ONLY' ? 'PRIVATE' : 'PUBLIC',
+          },
+          session?.role ?? null
+        );
         const roomId = data.studyRoomId;
         router.replace(PRIVATE.NOTE.LIST(roomId));
       },
@@ -31,8 +55,6 @@ const WriteForm = ({ children }: PropsWithChildren) => {
 
   return <Form onSubmit={handleSubmit(onSubmit)}>{children}</Form>;
 };
-
-export default WriteForm;
 
 function transformVisibility(
   visibility: StudyNoteVisibility,

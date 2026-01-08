@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useParams, usePathname, useRouter } from 'next/navigation';
 
+import { HomeworkTabShell } from '@/features/homework/components/homework-tab-shell';
 import { StudyNoteTab } from '@/features/study-notes/components/study-note-tab';
-import StudyNoteTabShell from '@/features/study-notes/components/study-note-tab-shell';
+import { StudyNoteTabShell } from '@/features/study-notes/components/study-note-tab-shell';
+import { StudyNoteGroupContext } from '@/features/study-notes/contexts/study-note-group.context';
 import { StudyroomSidebar } from '@/features/study-rooms/components/sidebar';
 import { ColumnLayout } from '@/layout/column-layout';
 import { useRole } from '@/shared/hooks/use-role';
@@ -21,10 +23,15 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
   const router = useRouter();
   const studyRoomId = Number(params.id);
 
+  const [selectedGroupId, setSelectedGroupId] = useState<number | 'all'>('all');
+
   // URL에서 segment 추출: /study-rooms/1/qna/4 -> '4'
   const pathSegments = path.split('/').filter(Boolean);
   const segment = pathSegments[pathSegments.length - 1];
   const secondLastSegment = pathSegments[pathSegments.length - 2];
+
+  // note인지 homework 인지
+  const isNoteOrHw = segment === 'note' || segment === 'homework';
 
   // 편집/작성 페이지인지 확인 (note/[noteId]/edit 또는 note/new)
   const isEditOrWritePage =
@@ -32,12 +39,13 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
     segment === 'new' ||
     (secondLastSegment === 'note' && segment === 'new');
 
-  // 상세 페이지인지 확인 (note/[noteId] 또는 qna/[contextId])
+  // 상세 페이지인지 확인 (note/[noteId] 또는 qna/[contextId] 또는 homework/[homeworkId])
   // 편집/작성 페이지는 제외
   const isDetailPage =
     !isEditOrWritePage &&
     ((pathSegments.length > 3 && secondLastSegment === 'qna') ||
-      (pathSegments.length > 3 && secondLastSegment === 'note'));
+      (pathSegments.length > 3 && secondLastSegment === 'note') ||
+      (pathSegments.length > 3 && secondLastSegment === 'homework'));
 
   // 권한 체크
   // Todo: 추후 미들웨어에서 처리하도록 변경
@@ -61,32 +69,43 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
   }
 
   return (
-    <ColumnLayout>
-      <ColumnLayout.Left>
-        <StudyroomSidebar
-          studyRoomId={studyRoomId}
-          segment={segment}
-        />
-      </ColumnLayout.Left>
-      <ColumnLayout.Right className="desktop:max-w-[740px] flex h-[400px] flex-col gap-3 rounded-[12px] px-8">
-        <div>
-          <StudyNoteTab
-            mode={role}
+    <StudyNoteGroupContext.Provider
+      value={{ selectedGroupId, setSelectedGroupId }}
+    >
+      <ColumnLayout>
+        <ColumnLayout.Left>
+          <StudyroomSidebar
             studyRoomId={studyRoomId}
-            path={segment!}
+            segment={segment}
+            selectedGroupId={selectedGroupId}
+            onSelectGroup={setSelectedGroupId}
           />
-          <div className="border-line-line1 flex flex-col gap-9 rounded-tr-[12px] rounded-b-[12px] border bg-white p-8">
-            <StudyNoteTabShell
+        </ColumnLayout.Left>
+        <ColumnLayout.Right className="desktop:max-w-[740px] flex h-[400px] flex-col gap-3 rounded-[12px] px-8">
+          <div>
+            <StudyNoteTab
               mode={role}
-              path={segment!}
               studyRoomId={studyRoomId}
+              path={segment!}
             />
-            {segment !== 'note' && children}
+            <div className="border-line-line1 flex flex-col gap-9 rounded-tr-[12px] rounded-b-[12px] border bg-white p-8">
+              <StudyNoteTabShell
+                mode={role}
+                path={segment!}
+                studyRoomId={studyRoomId}
+              />
+              <HomeworkTabShell
+                mode={role}
+                path={segment!}
+                studyRoomId={studyRoomId}
+              />
+              {!isNoteOrHw && children}
+            </div>
           </div>
-        </div>
-        {segment === 'note' && children}
-      </ColumnLayout.Right>
-    </ColumnLayout>
+          {isNoteOrHw && children}
+        </ColumnLayout.Right>
+      </ColumnLayout>
+    </StudyNoteGroupContext.Provider>
   );
 };
 
