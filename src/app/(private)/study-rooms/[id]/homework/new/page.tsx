@@ -1,6 +1,6 @@
 import BackLink from '@/features/dashboard/studynote/components/back-link';
 import SelectArea from '@/features/dashboard/studynote/write/components/select-area';
-import { HomeworkFormProvider } from '@/features/homework/components/write/components/form-provider';
+import { HomeworkFormProvider } from '@/features/homework/components/write/components/homework-form-provider';
 import { WriteArea } from '@/features/homework/components/write/components/write-area';
 import { HomeworkWriteForm } from '@/features/homework/components/write/components/write-form';
 import { ColumnLayout } from '@/layout/column-layout';
