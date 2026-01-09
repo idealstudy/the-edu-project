@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import { useSearchInvitation } from '@/features/study-rooms';
 
 export type Invitee = {

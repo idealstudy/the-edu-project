@@ -21,6 +21,20 @@ const extractTextFromTiptapJSON = (doc: JSONContent): string => {
   return text;
 };
 
+// 마감일 컨트롤
+const normalizeDate = (date: Date) =>
+  new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+const deadlineSchema = z
+  .string()
+  .min(1, '날짜를 선택해 주세요.')
+  .refine((value) => {
+    const today = normalizeDate(new Date());
+    const deadlineDate = normalizeDate(new Date(value));
+
+    return deadlineDate >= today;
+  }, '마감일은 오늘 이후 날짜여야 합니다.');
+
 export const contentSchema = z
   .custom<JSONContent>((val) => typeof val === 'object' && val !== null)
   .superRefine((val, ctx) => {
@@ -48,7 +62,7 @@ export const HomeworkFormSchema = z.object({
     .min(1, '과제 제목을 입력해 주세요.')
     .max(30, '과제 제목은 30자 이하로 입력해주세요.'),
   content: contentSchema,
-  deadline: z.string().min(1, '날짜를 선택해 주세요.'),
+  deadline: deadlineSchema,
   studentIds: z
     .array(z.custom<CourseTargetStudentInfo>())
     .min(1, '제출 대상을 최소 1명 이상 선택해 주세요.'),

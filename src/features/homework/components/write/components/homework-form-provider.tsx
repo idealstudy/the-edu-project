@@ -51,7 +51,7 @@ export const HomeworkFormProvider = ({
     },
   });
 
-  /**  edit 모드 초기화  */
+  /*  edit 모드 초기화  */
   useEffect(() => {
     if (!isEditMode || !homeworkDetail || !members || !notes || isPending)
       return;
