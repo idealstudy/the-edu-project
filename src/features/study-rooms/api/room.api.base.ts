@@ -33,6 +33,7 @@ export interface TeacherStudyRoomRequests {
 
 export interface StudentStudyRoomRequests {
   getStudyRooms(): Promise<StudentStudyRoom[]>;
+  getStudyRoomDetail(studyRoomId: number): Promise<StudyRoomDetail>;
   getStudentStudyNoteGroup(args: GroupApiArgs): Promise<GroupListResponse>;
   acceptInvitation(
     invitationId: number | string

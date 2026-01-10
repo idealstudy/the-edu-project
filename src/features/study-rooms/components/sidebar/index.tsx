@@ -9,7 +9,10 @@ import { InputDialog } from '@/features/study-rooms/components/common/dialog/inp
 import { StudyroomGroups } from '@/features/study-rooms/components/sidebar/groups';
 import { InvitationDialog } from '@/features/study-rooms/components/student-invitation/InvitationDialog';
 import StudentInvitation from '@/features/study-rooms/components/student-invitation/StudentInvitation';
-import { useTeacherStudyRoomDetailQuery } from '@/features/study-rooms/hooks';
+import {
+  useStudentStudyRoomDetailQuery,
+  useTeacherStudyRoomDetailQuery,
+} from '@/features/study-rooms/hooks';
 import { ColumnLayout } from '@/layout/column-layout';
 import {
   dialogReducer,
@@ -42,13 +45,25 @@ export const StudyroomSidebar = ({
   const { mutate: deleteStudyRoom } = useDeleteStudyRoom();
   const { mutate: updateRoomName } = useUpdateStudyRoom();
 
-  // 스터디룸 상세 정보 조회 (선생님만)
-  const { data: studyRoomDetail } = useTeacherStudyRoomDetailQuery(
+  // 스터디룸 상세 정보 조회 (선생님)
+  const { data: teacherStudyRoomDetail } = useTeacherStudyRoomDetailQuery(
     studyRoomId,
     {
       enabled: role === 'ROLE_TEACHER',
     }
   );
+
+  // 스터디룸 상세 정보 조회 (학생)
+  const { data: studentStudyRoomDetail } = useStudentStudyRoomDetailQuery(
+    studyRoomId,
+    {
+      enabled: role === 'ROLE_STUDENT',
+    }
+  );
+
+  let studyRoomDetail: StudyRoomDetail | undefined;
+  if (role === 'ROLE_TEACHER') studyRoomDetail = teacherStudyRoomDetail;
+  if (role === 'ROLE_STUDENT') studyRoomDetail = studentStudyRoomDetail;
 
   // 삭제, 수정, 학생 초대 등 관리 권한
   const canManage = role === 'ROLE_TEACHER';
@@ -144,6 +159,8 @@ export const StudyroomSidebar = ({
           numberOfStudents={studyRoomDetail?.studentNames?.length}
           numberOfQuestion={studyRoomDetail?.numberOfQuestion}
         />
+
+        {/* 학생 초대 버튼 - 선생님만 노출 */}
         {canManage && <StudentInvitation dispatch={dispatch} />}
         {/* 수업노트 탭에서만 보이는 컴포넌트 */}
         {segment === 'note' && (

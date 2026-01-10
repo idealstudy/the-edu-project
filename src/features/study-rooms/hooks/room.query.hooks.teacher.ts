@@ -24,7 +24,7 @@ export const createTeacherStudyRoomHooks = (
       enabled: options?.enabled ?? true,
     });
 
-  // 스터디룸 상세 조회
+  // 스터디룸 상세 조회 (선생님)
   const useTeacherStudyRoomDetailQuery = (
     studyRoomId: number,
     options?: { enabled?: boolean }
