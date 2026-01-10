@@ -171,10 +171,6 @@ export const StudyroomSidebar = ({
             handleSelectGroupId={onSelectGroup}
           />
         )}
-        {/* TODO: 마지막 활동 시간 추가 */}
-        <div className="font-body2-normal text-gray-scale-gray-60 flex items-end justify-end">
-          <p className="text-right">마지막 활동 3일전</p>
-        </div>
       </ColumnLayout.Left>
     </>
   );
