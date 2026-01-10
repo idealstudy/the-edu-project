@@ -152,6 +152,7 @@ export const StudyroomSidebar = ({
         <StudyroomSidebarHeader
           dispatch={dispatch}
           studyRoomName={studyRoomDetail?.name}
+          teacherName={studyRoomDetail?.teacherName}
           canManage={canManage}
         />
         <StudyStats
