@@ -96,7 +96,7 @@ export interface InvitationPayload {
 
 export interface SearchInvitationPayload {
   studyRoomId: number;
-  email: string;
+  keyword: string;
 }
 
 export interface DeleteStudyRoomPayload {

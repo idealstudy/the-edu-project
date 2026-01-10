@@ -16,6 +16,6 @@ export const StudyRoomsGroupQueryKey = {
 // 학생 초대
 export const InvitationQueryKey = {
   all: ['invitations'] as const,
-  search: (studyRoomId: number, email: string) =>
-    ['invitations', 'search', studyRoomId, email] as const,
+  search: (studyRoomId: number, keyword: string) =>
+    ['invitations', 'search', studyRoomId, keyword] as const,
 };

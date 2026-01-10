@@ -73,7 +73,7 @@ export const InvitationSearchResult = ({
             aria-selected="false"
             aria-describedby="invitation-result-0"
             aria-label={`${invitation.searchResult?.inviteeName}, ${invitation.searchResult?.role}, ${invitation.searchResult?.connectedGuardianCount} — ${
-              invitation.searchResult?.canInvite ? '초대 가능' : '이미 초대됨'
+              invitation.searchResult?.canInvite ? '초대 가능' : '초대 완료'
             }. 초대하기`}
             variant="outlined"
             className="hover:border-key-color-primary flex w-full cursor-pointer items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 hover:bg-transparent active:bg-transparent"
@@ -110,7 +110,7 @@ export const InvitationSearchResult = ({
               id="invitation-result-0-status"
               className="text-md font-semibold text-gray-500"
             >
-              {invitation.searchResult?.canInvite ? '초대 가능' : '이미 초대됨'}
+              {invitation.searchResult?.canInvite ? '초대 가능' : '초대 완료'}
             </p>
           </Button>
         )}

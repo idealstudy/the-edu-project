@@ -66,7 +66,7 @@ export const createTeacherStudyRoomApi = (
   ): Promise<Invitation> => {
     const response = await base.client.get<ApiResponse<Invitation>>(
       `${base.teacherBasePath}/${args.studyRoomId}/search`,
-      { params: { email: args.email } }
+      { params: { keyword: args.keyword } }
     );
     return response.data;
   };

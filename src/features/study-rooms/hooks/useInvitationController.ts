@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useSearchInvitation } from '@/features/study-rooms';
 
@@ -35,22 +35,19 @@ export const useInvitationController = (
   studyRoomId: number
 ): InvitationController => {
   // TODO: 추후 리듀서로 리팩토링 예정
-  const [isSearch, setIsSearch] = React.useState(false);
+  const [isSearch, setIsSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResult, setSearchResult] = useState<null | Invitee>(null);
   const [invitees, setInvitees] = useState<Map<string, Invitee>>(new Map());
-  const [shouldSearch, setShouldSearch] = useState(false);
 
-  const { data } = useSearchInvitation({
+  const { refetch, data } = useSearchInvitation({
     studyRoomId,
-    email: searchQuery,
-    enabled: shouldSearch && !!searchQuery.trim(),
+    keyword: searchQuery,
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (data) {
       setSearchResult(data);
-      setShouldSearch(false);
     }
   }, [data]);
 
@@ -58,13 +55,13 @@ export const useInvitationController = (
   const closeSearch = () => setIsSearch(false);
   const toggle = () => setIsSearch((prev: boolean) => !prev);
 
-  const search = (query?: string) => {
-    setSearchQuery(query ?? '');
-    setShouldSearch(true);
+  const search = async () => {
+    if (!searchQuery.trim()) return;
+    await refetch();
   };
 
   const addUser = () => {
-    if (!searchResult) return alert('사용자가 없어용');
+    if (!searchResult) return;
     setInvitees((prev) => {
       const next = new Map(prev);
       return next.set(searchResult.inviteeEmail, searchResult);

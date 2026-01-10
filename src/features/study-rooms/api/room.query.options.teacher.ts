@@ -32,9 +32,9 @@ export const createTeacherStudyRoomQueryOptions = (
     });
 
   // 초대 검색 (이메일)
-  const searchInvitation = (args: { studyRoomId: number; email: string }) =>
+  const searchInvitation = (args: { studyRoomId: number; keyword: string }) =>
     queryOptions({
-      queryKey: InvitationQueryKey.search(args.studyRoomId, args.email),
+      queryKey: InvitationQueryKey.search(args.studyRoomId, args.keyword),
       queryFn: () => api.invitations.search(args),
       ...opt,
       staleTime: 10_000,

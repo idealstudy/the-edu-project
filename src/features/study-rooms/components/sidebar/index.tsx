@@ -121,6 +121,7 @@ export const StudyroomSidebar = ({
             description="삭제된 스터디룸은 복구할 수 없습니다."
           />
         )}
+
       {dialog.status === 'open' &&
         dialog.kind === 'rename' &&
         dialog.scope === 'studyroom' &&
