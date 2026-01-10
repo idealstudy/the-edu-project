@@ -44,7 +44,7 @@ const InviteMemberPage = () => {
           <InvitationField
             labelledById="invite-label"
             invitation={invitation}
-            placeholder="초대할 학생을 검색후 선택해 주세요."
+            placeholder="초대할 학생을 검색 후 선택해 주세요."
           />
           <aside
             role="note"

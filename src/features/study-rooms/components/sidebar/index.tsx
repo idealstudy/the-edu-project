@@ -143,7 +143,7 @@ export const StudyroomSidebar = ({
           <InvitationDialog
             isOpen={true}
             title="스터디룸에 학생 초대"
-            placeholder="초대할 학생을 검색후 선택해 주세요."
+            placeholder="초대할 학생을 검색 후 선택해 주세요."
             studyRoomId={studyRoomId}
             onOpenChange={() => dispatch({ type: 'CLOSE' })}
           />
