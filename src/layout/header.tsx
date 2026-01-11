@@ -17,8 +17,12 @@ import { HomeIcon, PlusIcon, TextIcon } from '@/shared/components/icons';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 import {
   Popover,
-  PopoverClose,
   PopoverContent,
+  PopoverItem,
+  PopoverLink,
+  PopoverNav,
+  PopoverSection,
+  PopoverSeparator,
   PopoverTrigger,
 } from '@/shared/components/ui/popover';
 import { PRIVATE, PUBLIC } from '@/shared/constants';
@@ -193,6 +197,7 @@ export const Header = () => {
                 <button
                   type="button"
                   aria-label="햄버거 메뉴"
+                  className="desktop:hidden mr-4 flex h-10 w-10 items-center justify-center rounded-lg transition-colors hover:bg-gray-800"
                   onClick={() => {
                     trackGnbMenuClick(session?.role ?? null);
                   }}
@@ -202,48 +207,110 @@ export const Header = () => {
                     alt="햄버거 메뉴 아이콘"
                     width={24}
                     height={24}
-                    className="desktop:hidden mr-4 flex cursor-pointer"
                   />
                 </button>
               </PopoverTrigger>
-              <PopoverContent>
-                <Link href={PRIVATE.DASHBOARD.INDEX}>
-                  <HomeIcon />
-                  <span>홈</span>
-                </Link>
-                <div>
-                  <div>
-                    <TextIcon />
-                    <span>스터디룸</span>
-                  </div>
-                  {role === 'ROLE_TEACHER' && (
-                    <Link
-                      href={PRIVATE.ROOM.CREATE}
-                      className="h-9 w-9 justify-center bg-transparent px-0"
-                    >
-                      <PlusIcon />
-                      <span className="sr-only">스터디룸 생성</span>
-                    </Link>
-                  )}
-                </div>
-                <div>
-                  {studyRoomList?.map((item) => (
-                    <Link
-                      href={PRIVATE.ROOM.DETAIL(item.id)}
-                      key={item.id}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
-                <PopoverClose asChild>
-                  <button
-                    type="button"
-                    className="cursor-pointer text-sm text-gray-500 hover:text-gray-700"
+              <PopoverContent
+                align="end"
+                className="w-[320px]"
+              >
+                <PopoverNav>
+                  {/* 홈 링크 */}
+                  <PopoverLink
+                    href={PRIVATE.DASHBOARD.INDEX}
+                    onClick={() => setIsOpen(false)}
                   >
-                    닫기
-                  </button>
-                </PopoverClose>
+                    <HomeIcon />
+                    <span>홈</span>
+                  </PopoverLink>
+
+                  {/* 스터디룸 섹션 */}
+                  <div className="mt-2 flex flex-col gap-1">
+                    <PopoverSection
+                      action={
+                        role === 'ROLE_TEACHER' ? (
+                          <Link
+                            href={PRIVATE.ROOM.CREATE}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 transition-colors hover:bg-gray-200"
+                            onClick={() => setIsOpen(false)}
+                            aria-label="스터디룸 생성"
+                          >
+                            <PlusIcon />
+                          </Link>
+                        ) : null
+                      }
+                    >
+                      <TextIcon />
+                      <span>스터디룸</span>
+                    </PopoverSection>
+
+                    {/* 스터디룸 리스트 */}
+                    {studyRoomList && studyRoomList.length > 0 ? (
+                      <div className="flex flex-col gap-1">
+                        {studyRoomList.map((item) => (
+                          <PopoverLink
+                            key={item.id}
+                            href={PRIVATE.ROOM.DETAIL(item.id)}
+                            onClick={() => setIsOpen(false)}
+                            className="text-gray-600 hover:text-gray-900"
+                          >
+                            {item.name}
+                          </PopoverLink>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="px-3 py-2 text-sm text-gray-400">
+                        스터디룸이 없습니다
+                      </p>
+                    )}
+                  </div>
+
+                  <PopoverSeparator />
+
+                  {/* 프로필 정보 */}
+                  <div className="flex items-center justify-between px-3 py-2">
+                    <div className="flex items-center gap-3">
+                      <Image
+                        src={'/img_header_profile.svg'}
+                        alt="프로필 사진"
+                        width={40}
+                        height={40}
+                        className="rounded-full"
+                      />
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-900">
+                          {session?.name || '사용자'}
+                        </span>
+                        {session?.role && (
+                          <span className="text-xs text-gray-500">
+                            {roleMetaMap[session.role]?.label}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 액션 버튼들 */}
+                  <div className="mt-2 flex flex-col gap-1">
+                    <PopoverItem
+                      onClick={() => {
+                        goToMypage();
+                        setIsOpen(false);
+                      }}
+                    >
+                      마이페이지
+                    </PopoverItem>
+                    <PopoverItem
+                      variant="danger"
+                      onClick={() => {
+                        handleLogout();
+                        setIsOpen(false);
+                      }}
+                    >
+                      로그아웃
+                    </PopoverItem>
+                  </div>
+                </PopoverNav>
               </PopoverContent>
             </Popover>
           </div>
