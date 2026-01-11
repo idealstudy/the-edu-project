@@ -99,7 +99,7 @@ export const SLASH_COMMAND_GROUPS: SlashCommandGroup[] = [
         icon: 'heading1',
         keywords: ['heading', 'h1', '제목', '헤딩', 'title'],
         command: (editor) => {
-          editor.chain().focus().toggleHeading({ level: 1 }).run();
+          editor.chain().focus().setHeading({ level: 1 }).run();
         },
       },
       {
@@ -109,7 +109,7 @@ export const SLASH_COMMAND_GROUPS: SlashCommandGroup[] = [
         icon: 'heading2',
         keywords: ['heading', 'h2', '제목', '헤딩', 'subtitle'],
         command: (editor) => {
-          editor.chain().focus().toggleHeading({ level: 2 }).run();
+          editor.chain().focus().setHeading({ level: 2 }).run();
         },
       },
       {
@@ -119,7 +119,7 @@ export const SLASH_COMMAND_GROUPS: SlashCommandGroup[] = [
         icon: 'heading3',
         keywords: ['heading', 'h3', '제목', '헤딩'],
         command: (editor) => {
-          editor.chain().focus().toggleHeading({ level: 3 }).run();
+          editor.chain().focus().setHeading({ level: 3 }).run();
         },
       },
     ],
@@ -265,7 +265,7 @@ export const SLASH_COMMAND_GROUPS: SlashCommandGroup[] = [
         icon: 'code',
         keywords: ['code', 'codeblock', '코드', '스니펫'],
         command: (editor) => {
-          editor.chain().focus().toggleCodeBlock().run();
+          editor.chain().focus().setCodeBlock().run();
         },
       },
       {
@@ -275,7 +275,7 @@ export const SLASH_COMMAND_GROUPS: SlashCommandGroup[] = [
         icon: 'quote',
         keywords: ['quote', 'blockquote', '인용', '인용문'],
         command: (editor) => {
-          editor.chain().focus().toggleBlockquote().run();
+          editor.chain().focus().setBlockquote().run();
         },
       },
       {

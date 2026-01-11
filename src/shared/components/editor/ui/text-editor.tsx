@@ -69,6 +69,8 @@ export const TextEditor = ({
   // useRef는 반드시 컴포넌트 최상단에서 호출
   const editorRef = useRef<Editor | null>(null);
   const prevValueRef = useRef<string>('');
+  // 에디터 자체에서 변경이 발생했는지 추적
+  const isInternalChangeRef = useRef(false);
 
   const extensions = useMemo(
     () =>
@@ -158,7 +160,11 @@ export const TextEditor = ({
     content: value,
     editable: !readOnly,
     autofocus: autoFocus,
-    onUpdate: ({ editor: updatedEditor }) => onChange(updatedEditor.getJSON()),
+    onUpdate: ({ editor: updatedEditor }) => {
+      // 에디터 내부에서 발생한 변경임을 표시
+      isInternalChangeRef.current = true;
+      onChange(updatedEditor.getJSON());
+    },
     editorProps: {
       attributes: {
         class: cn(
@@ -210,6 +216,14 @@ export const TextEditor = ({
   // 폼이 reset()으로 업데이트될 때 에디터도 함께 업데이트되도록 함
   useEffect(() => {
     if (!editor || !value) return;
+
+    // 에디터 내부에서 발생한 변경이면 setContent를 호출하지 않음
+    // (커서 위치가 리셋되는 것을 방지)
+    if (isInternalChangeRef.current) {
+      isInternalChangeRef.current = false;
+      prevValueRef.current = JSON.stringify(value);
+      return;
+    }
 
     const newContentStr = JSON.stringify(value);
 

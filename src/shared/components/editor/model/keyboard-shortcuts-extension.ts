@@ -27,6 +27,13 @@ export const KeyboardShortcuts = Extension.create<KeyboardShortcutsOptions>({
     };
 
     return {
+      // Ctrl+Z / Cmd+Z: Input rule 변환 되돌리기 우선 처리
+      // "- " 입력 후 글머리 기호로 전환된 경우, undo 시 일반 "- "로 되돌림
+      'Mod-z': () => {
+        // undoInputRule이 성공하면 true 반환 (input rule 변환 되돌림)
+        // 실패하면 false 반환하여 기본 undo 동작 수행
+        return this.editor.commands.undoInputRule();
+      },
       // Ctrl+K: 링크 추가
       'Mod-k': () => {
         const { selection } = this.editor.state;
