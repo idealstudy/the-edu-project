@@ -1,8 +1,13 @@
 'use client';
 
-import { type ReactNode, forwardRef } from 'react';
+import {
+  type ComponentPropsWithoutRef,
+  type ReactNode,
+  forwardRef,
+} from 'react';
 
 import Link from 'next/link';
+import type { LinkProps } from 'next/link';
 
 import { cn } from '@/shared/lib/utils';
 import * as PopoverPrimitive from '@radix-ui/react-popover';
@@ -33,19 +38,17 @@ const PopoverClose = PopoverPrimitive.Close;
 const PopoverArrow = PopoverPrimitive.Arrow;
 
 // PopoverLink - Link 컴포넌트를 사용하는 아이템
-interface PopoverLinkProps {
+interface PopoverLinkProps extends Omit<LinkProps, 'href'> {
   href: string;
   children: ReactNode;
   className?: string;
-  onClick?: () => void;
 }
 
 const PopoverLink = forwardRef<HTMLAnchorElement, PopoverLinkProps>(
-  ({ href, children, className, onClick, ...props }, ref) => (
+  ({ href, children, className, ...props }, ref) => (
     <Link
       ref={ref}
       href={href}
-      onClick={onClick}
       className={cn(
         'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100',
         className
@@ -59,19 +62,16 @@ const PopoverLink = forwardRef<HTMLAnchorElement, PopoverLinkProps>(
 PopoverLink.displayName = 'PopoverLink';
 
 // PopoverItem - 버튼 형태의 아이템
-interface PopoverItemProps {
+interface PopoverItemProps extends ComponentPropsWithoutRef<'button'> {
   children: ReactNode;
-  className?: string;
-  onClick?: () => void;
   variant?: 'default' | 'danger';
 }
 
 const PopoverItem = forwardRef<HTMLButtonElement, PopoverItemProps>(
-  ({ children, className, onClick, variant = 'default', ...props }, ref) => (
+  ({ children, className, variant = 'default', ...props }, ref) => (
     <button
       ref={ref}
       type="button"
-      onClick={onClick}
       className={cn(
         'w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors',
         variant === 'default' && 'text-gray-700 hover:bg-gray-100',
@@ -87,9 +87,7 @@ const PopoverItem = forwardRef<HTMLButtonElement, PopoverItemProps>(
 PopoverItem.displayName = 'PopoverItem';
 
 // PopoverSeparator - 구분선
-interface PopoverSeparatorProps {
-  className?: string;
-}
+interface PopoverSeparatorProps extends ComponentPropsWithoutRef<'div'> {}
 
 const PopoverSeparator = forwardRef<HTMLDivElement, PopoverSeparatorProps>(
   ({ className, ...props }, ref) => (
@@ -103,9 +101,8 @@ const PopoverSeparator = forwardRef<HTMLDivElement, PopoverSeparatorProps>(
 PopoverSeparator.displayName = 'PopoverSeparator';
 
 // PopoverSection - 섹션 헤더
-interface PopoverSectionProps {
+interface PopoverSectionProps extends ComponentPropsWithoutRef<'div'> {
   children: ReactNode;
-  className?: string;
   action?: ReactNode;
 }
 
@@ -126,9 +123,8 @@ const PopoverSection = forwardRef<HTMLDivElement, PopoverSectionProps>(
 PopoverSection.displayName = 'PopoverSection';
 
 // PopoverNav - 네비게이션 래퍼
-interface PopoverNavProps {
+interface PopoverNavProps extends ComponentPropsWithoutRef<'nav'> {
   children: ReactNode;
-  className?: string;
 }
 
 const PopoverNav = forwardRef<HTMLElement, PopoverNavProps>(
