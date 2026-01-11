@@ -19,3 +19,9 @@ export const useVerifyCode = () => {
     mutationFn: authService.verifyCode,
   });
 };
+
+export const useUpdateProfile = () => {
+  return useMutation({
+    mutationFn: authService.updateProfile,
+  });
+};

@@ -3,6 +3,6 @@ import { dto } from '@/entities/notification/infrastructure';
 import { z } from 'zod';
 
 export type NotificationDTO = z.infer<typeof dto.schema>;
-export type NotificationType = z.infer<typeof dto.type>;
+export type NotificationCategory = z.infer<typeof dto.category>;
 
 export type FrontendNotification = z.infer<typeof domain.schema>;

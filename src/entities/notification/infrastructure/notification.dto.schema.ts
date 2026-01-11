@@ -30,5 +30,5 @@ export const dto = {
   schema: NotificationDtoSchema,
   envelope: NotificationEnvelopeSchema,
   response: NotificationAnyResponseSchema,
-  type: base.type,
+  category: base.category,
 };

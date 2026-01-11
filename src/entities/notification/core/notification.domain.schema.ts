@@ -4,15 +4,46 @@ import { ko } from 'date-fns/locale';
 import { z } from 'zod';
 
 /* ─────────────────────────────────────────────────────
- * type -> category 변환 매핑
+ * category -> 한글 변환 매핑
  * ────────────────────────────────────────────────────*/
-const TYPE_TO_CATEGORY_MAP = {
+const CATEGORY_TO_KOREAN: Record<string, string> = {
   SYSTEM: '공지사항',
-  CONNECTION_REQUEST: '연결 요청',
+  HOMEWORK: '과제',
+  TEACHING_NOTE: '수업노트',
+  STUDY_ROOM: '스터디룸 초대',
+  QNA: '질문',
 };
 
-const getCategory = (type: string): string =>
-  TYPE_TO_CATEGORY_MAP[type as keyof typeof TYPE_TO_CATEGORY_MAP];
+const getCategoryKorean = (category: string): string =>
+  CATEGORY_TO_KOREAN[category as keyof typeof CATEGORY_TO_KOREAN] || '기타';
+
+/* ─────────────────────────────────────────────────────
+ * category -> URL 변환 매핑
+ * ────────────────────────────────────────────────────*/
+const getTargetUrl = (
+  category: string,
+  metadata: {
+    qnaId?: string;
+    studyRoomId?: string;
+    teachingNoteId?: string;
+    noticeId?: string;
+    homeworkId?: string;
+  }
+): string | null => {
+  switch (category) {
+    case 'TEACHING_NOTE':
+      return `/study-rooms/${metadata.studyRoomId}/note/${metadata.teachingNoteId}`;
+    case 'STUDY_ROOM':
+      return `/study-rooms/${metadata.studyRoomId}/note`;
+    case 'QNA':
+      return `/study-rooms/${metadata.studyRoomId}/qna/${metadata.qnaId}`;
+    // TODO
+    case 'HOMEWORK':
+    case 'SYSTEM':
+    default:
+      return null;
+  }
+};
 
 /* ─────────────────────────────────────────────────────
  * base 스키마를 가공하여 도메인 기본 구조 생성
@@ -24,8 +55,8 @@ const NotificationShape = base.schema
   .required({
     id: true,
     message: true,
-    type: true,
-    targetId: true,
+    category: true,
+    targetMetadata: true,
     read: true,
   })
   .extend({
@@ -43,7 +74,8 @@ const NotificationShape = base.schema
  * ────────────────────────────────────────────────────*/
 const NotificationSchema = NotificationShape.transform((notification) => ({
   ...notification,
-  category: getCategory(notification.type),
+  categoryKorean: getCategoryKorean(notification.category),
+  targetUrl: getTargetUrl(notification.category, notification.targetMetadata),
   relativeTime: formatDistanceToNow(notification.regDate, {
     addSuffix: true,
     locale: ko,
@@ -54,5 +86,5 @@ const NotificationSchema = NotificationShape.transform((notification) => ({
 export const domain = {
   schema: NotificationSchema,
   shape: NotificationShape,
-  type: base.type,
+  category: base.category,
 };

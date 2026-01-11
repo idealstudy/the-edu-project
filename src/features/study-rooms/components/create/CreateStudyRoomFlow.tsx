@@ -25,6 +25,8 @@ import {
   initialDialogState,
 } from '@/shared/components/dialog';
 import { Form } from '@/shared/components/ui/form';
+import { trackStudyroomCreateSuccess } from '@/shared/lib/gtm/trackers';
+import { useMemberStore } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 export const ORDER = ['basic', 'profile'] as const;
@@ -80,6 +82,7 @@ export default function CreateStudyRoomFlow() {
 
   const { isStepValid } = useStepValidate(methods, step);
   const { mutate, isPending } = useCreateStudyRoom();
+  const session = useMemberStore((s) => s.member);
 
   const handleNext = async () => {
     const names = fieldsPerStep[step];
@@ -103,13 +106,22 @@ export default function CreateStudyRoomFlow() {
       methods.handleSubmit((data: StudyRoomFormValues) => {
         mutate(data, {
           onSuccess: (result) => {
+            // 스터디룸 생성 성공 이벤트
+            trackStudyroomCreateSuccess(
+              {
+                user_id: session?.id ?? 0,
+                title_length: data.name?.length ?? 0,
+                description_length: data.description?.length ?? 0,
+              },
+              session?.role ?? null
+            );
             // 스펙상 id는 항상 옴 (fallback은 의도적으로 생략)
             router.replace(buildNextRoute(result.id, condition));
           },
         });
       })();
     },
-    [isPending, methods, mutate, router]
+    [isPending, methods, mutate, router, session]
   );
 
   return (

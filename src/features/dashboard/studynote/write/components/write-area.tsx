@@ -2,8 +2,10 @@
 
 import Image from 'next/image';
 
+import { useUpdateStudyNote } from '@/features/study-notes/hooks';
 import { ColumnLayout } from '@/layout/column-layout';
 
+import { useWriteStudyNoteMutation } from '../services/query';
 import MetaSection from './meta-section';
 import SubmitSection from './submit-section';
 import VisibilitySection from './visiblity-section';
@@ -13,6 +15,12 @@ type WriteAreaProps = {
 };
 
 const WriteArea = ({ isEditMode = false }: WriteAreaProps) => {
+  // note
+  const { isPending: isCreateNotePending } = useWriteStudyNoteMutation();
+  const { isPending: isUpdateNotePending } = useUpdateStudyNote();
+
+  const isPending = isEditMode ? isUpdateNotePending : isCreateNotePending;
+
   return (
     <ColumnLayout.Right className="desktop:max-w-[740px] border-line-line1 h-fit w-full rounded-xl border bg-white px-8 py-10">
       <div className="flex w-full justify-between">
@@ -21,7 +29,10 @@ const WriteArea = ({ isEditMode = false }: WriteAreaProps) => {
             {isEditMode ? '수업노트 편집' : '수업노트 작성'}
           </div>
           <h1 className="mt-2 text-[32px] font-bold">
-            어떤 수업을 <br /> 진행하셨나요?
+            <>
+              어떤 수업을 <br />
+              진행하셨나요?
+            </>
           </h1>
         </span>
         <Image
@@ -33,15 +44,21 @@ const WriteArea = ({ isEditMode = false }: WriteAreaProps) => {
       </div>
       <div className="space-y-8">
         <MetaSection />
-        <hr
-          style={{
-            borderImage:
-              'repeating-linear-gradient(to right, gray 0, gray 4px, transparent 4px, transparent 8px)',
-            borderImageSlice: 1,
-          }}
+        <>
+          <hr
+            style={{
+              borderImage:
+                'repeating-linear-gradient(to right, gray 0, gray 4px, transparent 4px, transparent 8px)',
+              borderImageSlice: 1,
+            }}
+          />
+          <VisibilitySection />
+        </>
+
+        <SubmitSection
+          isPending={isPending}
+          isEditMode={isEditMode}
         />
-        <VisibilitySection />
-        <SubmitSection isEditMode={isEditMode} />
       </div>
     </ColumnLayout.Right>
   );

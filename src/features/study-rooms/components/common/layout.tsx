@@ -1,24 +1,12 @@
-import { SearchFilterBar } from '@/features/study-notes/components/search-filter-bar';
-import { StudyNoteLimit, StudyNoteSortKey } from '@/features/study-notes/model';
 import { Pagination } from '@/shared/components/ui/pagination';
 
 export const StudyRoomDetailLayout = ({
+  filter,
   children,
-  search,
-  sort,
-  limit,
-  onSearch,
-  onSortChange,
-  onLimitChange,
   page,
 }: {
+  filter?: React.ReactNode;
   children: React.ReactNode;
-  search: string;
-  sort: StudyNoteSortKey;
-  limit: StudyNoteLimit;
-  onSearch: (value: string) => void;
-  onSortChange: (value: StudyNoteSortKey) => void;
-  onLimitChange: (value: StudyNoteLimit) => void;
   page: {
     page: number;
     totalPages: number;
@@ -28,14 +16,7 @@ export const StudyRoomDetailLayout = ({
   return (
     <div className="border-line-line1 flex flex-col gap-6 rounded-[12px] border bg-white p-6 px-8">
       <div className="flex flex-col gap-3">
-        <SearchFilterBar
-          search={search}
-          sort={sort}
-          limit={limit}
-          onSearch={onSearch}
-          onSortChange={onSortChange}
-          onLimitChange={onLimitChange}
-        />
+        {filter}
         {children}
       </div>
       <Pagination {...page} />

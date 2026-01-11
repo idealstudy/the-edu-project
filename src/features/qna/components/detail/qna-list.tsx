@@ -1,9 +1,13 @@
+'use client';
+
 import { useState } from 'react';
 
 import Link from 'next/link';
 
 import { useRole } from '@/shared/hooks/use-role';
+import { trackQuestionClick } from '@/shared/lib/gtm/trackers';
 import { getRelativeTimeString } from '@/shared/lib/utils';
+import { useMemberStore } from '@/store';
 
 import { QnAListItem } from '../../types';
 import QuestionDropDown from './qna-dropdown';
@@ -15,10 +19,16 @@ type Props = {
 
 export default function QuestionList({ studyRoomId, data }: Props) {
   const { role } = useRole();
+  const session = useMemberStore((s) => s.member);
   const [open, setOpen] = useState(0);
 
   const handleOpen = (id: number) => {
     setOpen(open === id ? 0 : id);
+  };
+
+  const handleQuestionClick = (questionId: number) => {
+    // 질문 클릭 이벤트
+    trackQuestionClick(studyRoomId, questionId, session?.role ?? null);
   };
 
   return (
@@ -30,6 +40,7 @@ export default function QuestionList({ studyRoomId, data }: Props) {
               key={question.id}
               className="font-body2-normal hover:bg-gray-scale-gray-1 desktop:max-w-[740px] flex h-[66px] w-full flex-row items-center justify-between gap-4 bg-white px-4 py-3 hover:rounded-[12px]"
               href={`/study-rooms/${studyRoomId}/qna/${question.id}`}
+              onClick={() => handleQuestionClick(question.id)}
             >
               <div className="flex flex-row items-center gap-3">
                 <div className="flex flex-col items-start justify-between">
