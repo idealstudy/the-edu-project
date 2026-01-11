@@ -1,11 +1,10 @@
 'use client';
 
+/* eslint-disable @next/next/no-img-element -- 에디터에서 blob URL, S3 presigned URL 등 동적 이미지 소스 처리 필요 */
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import Image from 'next/image';
-
 import { NodeViewProps, NodeViewWrapper } from '@tiptap/react';
-import { Download, Maximize2, Minimize2, X } from 'lucide-react';
+import { Download, ImageIcon, Maximize2, Minimize2, X } from 'lucide-react';
 
 export const ResizableImageNode = ({
   node,
@@ -30,8 +29,13 @@ export const ResizableImageNode = ({
     'right'
   );
   const [showControls, setShowControls] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   const isEditable = editor.isEditable;
+
+  // media:// 프로토콜인지 확인 (아직 resolve 안된 상태)
+  const isMediaProtocol = src?.startsWith('media://');
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent, direction: 'left' | 'right') => {
@@ -110,17 +114,58 @@ export const ResizableImageNode = ({
         onMouseLeave={() => !isResizing && setShowControls(false)}
         contentEditable={false}
       >
-        <Image
-          src={src}
-          alt={alt || ''}
-          title={title}
-          width={width || 300}
-          height={0}
-          className={`block h-auto max-w-full ${selected ? 'ring-2 ring-blue-500' : ''}`}
-          style={{ width: width ? `${width}px` : 'auto' }}
-          draggable={false}
-          unoptimized
-        />
+        {/* 로딩 상태 또는 media:// 프로토콜일 때 placeholder 표시 */}
+        {(isLoading || isMediaProtocol) && !hasError && (
+          <div
+            className="flex items-center justify-center rounded-lg bg-gray-100"
+            style={{
+              width: width ? `${width}px` : '300px',
+              minHeight: '150px',
+            }}
+          >
+            <div className="flex flex-col items-center gap-2 text-gray-400">
+              <ImageIcon className="h-8 w-8 animate-pulse" />
+              {isMediaProtocol ? (
+                <span className="text-xs">이미지 업로드 중...</span>
+              ) : (
+                <span className="text-xs">이미지 로딩 중...</span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* 에러 상태 */}
+        {hasError && (
+          <div
+            className="flex items-center justify-center rounded-lg bg-gray-100"
+            style={{
+              width: width ? `${width}px` : '300px',
+              minHeight: '150px',
+            }}
+          >
+            <div className="flex flex-col items-center gap-2 text-gray-400">
+              <ImageIcon className="h-8 w-8" />
+              <span className="text-xs">이미지를 불러올 수 없습니다</span>
+            </div>
+          </div>
+        )}
+
+        {/* 실제 이미지 - media:// 프로토콜이 아닐 때만 렌더링 */}
+        {!isMediaProtocol && !hasError && (
+          <img
+            src={src}
+            alt={alt || ''}
+            title={title}
+            className={`block h-auto max-w-full rounded-lg ${selected ? 'ring-2 ring-blue-500' : ''} ${isLoading ? 'hidden' : ''}`}
+            style={{ width: width ? `${width}px` : 'auto' }}
+            draggable={false}
+            onLoad={() => setIsLoading(false)}
+            onError={() => {
+              setIsLoading(false);
+              setHasError(true);
+            }}
+          />
+        )}
 
         {/* 컨트롤 오버레이 */}
         {isEditable && (showControls || selected) && (
@@ -135,15 +180,17 @@ export const ResizableImageNode = ({
               <X className="h-3 w-3" />
             </button>
 
-            {/* 다운로드 버튼 */}
-            <button
-              type="button"
-              onClick={handleDownload}
-              className="absolute top-2 right-10 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-gray-900/60 text-white transition-opacity hover:bg-gray-900/80"
-              title="다운로드"
-            >
-              <Download className="h-3 w-3" />
-            </button>
+            {/* 다운로드 버튼 - media:// 프로토콜이 아닐 때만 표시 */}
+            {!isMediaProtocol && (
+              <button
+                type="button"
+                onClick={handleDownload}
+                className="absolute top-2 right-10 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-gray-900/60 text-white transition-opacity hover:bg-gray-900/80"
+                title="다운로드"
+              >
+                <Download className="h-3 w-3" />
+              </button>
+            )}
 
             {/* 정렬 컨트롤 */}
             <div className="absolute bottom-2 left-1/2 z-10 flex -translate-x-1/2 gap-1 rounded-md bg-gray-900/60 p-1">

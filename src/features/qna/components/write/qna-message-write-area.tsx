@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import { ColumnLayout } from '@/layout/column-layout';
-import { TextEditor } from '@/shared/components/editor';
+import { TextEditor, prepareContentForSave } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { useRole } from '@/shared/hooks/use-role';
@@ -66,11 +66,14 @@ const WriteArea = ({ studyRoomId, contextId }: Props) => {
       session?.role ?? null
     );
 
+    const { contentString, mediaIds } = prepareContentForSave(data.content);
+
     mutate(
       {
         studyRoomId,
         contextId,
-        content: JSON.stringify(data.content),
+        content: contentString,
+        mediaIds,
       },
       {
         onSuccess: () => {
@@ -99,6 +102,7 @@ const WriteArea = ({ studyRoomId, contextId }: Props) => {
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="질문에 대한 답을 적어주세요..."
+                      targetType="QNA"
                     />
                   );
                 }}

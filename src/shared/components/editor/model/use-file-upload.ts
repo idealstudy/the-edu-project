@@ -52,10 +52,14 @@ const uploadFileApi = async ({
     throw new Error('파일 업로드에 실패했습니다.');
   }
 
-  // 3. media://{mediaId} 형식으로 반환
+  // 3. 미리보기용 blob URL 생성
+  const previewUrl = URL.createObjectURL(file);
+
+  // 4. media://{mediaId} 형식과 미리보기 URL 함께 반환
   return {
     mediaId: mediaAsset.mediaId,
     mediaUrl: `media://${mediaAsset.mediaId}`,
+    previewUrl, // 미리보기용으로 사용
     fileName: file.name,
     sizeBytes: file.size,
   };

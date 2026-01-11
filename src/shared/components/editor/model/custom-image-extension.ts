@@ -18,6 +18,7 @@ declare module '@tiptap/core' {
         title?: string;
         width?: number;
         align?: 'left' | 'center' | 'right';
+        mediaId?: string; // 저장 시 media://{mediaId} 형식으로 변환하기 위한 ID
       }) => ReturnType;
     };
   }
@@ -62,6 +63,9 @@ export const CustomImage = Node.create<ImageOptions>({
       },
       align: {
         default: 'center',
+      },
+      mediaId: {
+        default: null,
       },
     };
   },

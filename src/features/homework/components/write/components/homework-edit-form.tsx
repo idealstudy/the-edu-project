@@ -6,6 +6,7 @@ import { useFormContext } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 
 import { useTeacherUpdateHomework } from '@/features/homework/hooks/teacher/useTeacherHomeworkMutations';
+import { prepareContentForSave } from '@/shared/components/editor';
 import { Form } from '@/shared/components/ui/form';
 
 import { HomeworkForm } from '../schemas/note';
@@ -52,13 +53,16 @@ const HomeworkEditForm = ({
 };
 
 function transformFormDataToServerFormat(formData: HomeworkForm) {
+  const { contentString, mediaIds } = prepareContentForSave(formData.content);
+
   return {
     title: formData.title,
-    content: JSON.stringify(formData.content),
+    content: contentString,
     deadline: new Date(formData.deadline).toISOString(),
     reminderOffsets: formData.reminderOffsets ?? [],
     teachingNoteIds: formData.teachingNoteIds ?? [],
     studentIds: formData.studentIds?.map((s) => s.id) ?? [],
+    mediaIds,
   };
 }
 

@@ -141,6 +141,36 @@
   margin: 0.5rem 0;
 }
 
+/* Ordered List - Depth 2 (a. b. c.) */
+.notion-editor-content ol ol,
+.notion-editor-content .notion-ordered-list .notion-ordered-list {
+  list-style-type: lower-alpha;
+}
+
+/* Ordered List - Depth 3 (i. ii. iii.) */
+.notion-editor-content ol ol ol,
+.notion-editor-content .notion-ordered-list .notion-ordered-list .notion-ordered-list {
+  list-style-type: lower-roman;
+}
+
+/* Ordered List - Depth 4 (back to decimal) */
+.notion-editor-content ol ol ol ol,
+.notion-editor-content .notion-ordered-list .notion-ordered-list .notion-ordered-list .notion-ordered-list {
+  list-style-type: decimal;
+}
+
+/* Ordered List - Depth 5 (a. b. c.) */
+.notion-editor-content ol ol ol ol ol,
+.notion-editor-content .notion-ordered-list .notion-ordered-list .notion-ordered-list .notion-ordered-list .notion-ordered-list {
+  list-style-type: lower-alpha;
+}
+
+/* Ordered List - Depth 6 (i. ii. iii.) */
+.notion-editor-content ol ol ol ol ol ol,
+.notion-editor-content .notion-ordered-list .notion-ordered-list .notion-ordered-list .notion-ordered-list .notion-ordered-list .notion-ordered-list {
+  list-style-type: lower-roman;
+}
+
 /* List Items */
 .notion-editor-content li,
 .notion-editor-content .notion-list-item {

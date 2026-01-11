@@ -161,3 +161,87 @@ export const filterSlashCommands = (query: string): SlashCommandGroup[] => {
     ),
   })).filter((group) => group.items.length > 0);
 };
+
+// ============================================================================
+// Content Transform Helpers
+// ============================================================================
+
+type EditorContent = {
+  type?: string;
+  content?: EditorContent[];
+  attrs?: Record<string, unknown>;
+  [key: string]: unknown;
+};
+
+type TransformResult = {
+  content: EditorContent;
+  mediaIds: string[];
+};
+
+/**
+ * 에디터 content를 저장용으로 변환합니다.
+ * - 이미지 노드의 src를 media://{mediaId} 형식으로 변환
+ * - mediaIds 배열 추출
+ *
+ * @param content 에디터에서 가져온 JSONContent
+ * @returns 변환된 content와 mediaIds 배열
+ */
+export const transformContentForSave = (
+  content: EditorContent
+): TransformResult => {
+  const mediaIds: string[] = [];
+
+  const transformNode = (node: EditorContent): EditorContent => {
+    // 이미지 노드 처리
+    if (node.type === 'image' && node.attrs) {
+      const attrs = node.attrs as Record<string, unknown>;
+      const mediaId = attrs.mediaId as string | undefined;
+
+      if (mediaId) {
+        mediaIds.push(mediaId);
+        // src를 media://{mediaId} 형식으로 변환하고, 원본 mediaId 속성은 제거
+        return {
+          ...node,
+          attrs: {
+            ...attrs,
+            src: `media://${mediaId}`,
+            mediaId: undefined, // 저장 시 mediaId 속성 제거
+          },
+        };
+      }
+    }
+
+    // 자식 노드가 있으면 재귀적으로 처리
+    if (node.content && Array.isArray(node.content)) {
+      return {
+        ...node,
+        content: node.content.map(transformNode),
+      };
+    }
+
+    return node;
+  };
+
+  return {
+    content: transformNode(content),
+    mediaIds,
+  };
+};
+
+/**
+ * 저장용 content JSON 문자열과 mediaIds를 반환합니다.
+ *
+ * @param content 에디터에서 가져온 JSONContent
+ * @returns { contentString, mediaIds }
+ */
+export const prepareContentForSave = (
+  content: EditorContent
+): { contentString: string; mediaIds: string[] } => {
+  const { content: transformedContent, mediaIds } =
+    transformContentForSave(content);
+
+  return {
+    contentString: JSON.stringify(transformedContent),
+    mediaIds,
+  };
+};

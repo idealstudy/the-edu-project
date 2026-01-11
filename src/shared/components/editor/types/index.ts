@@ -96,7 +96,7 @@ export type UseAutoSaveReturn = {
 // ============================================================================
 
 /** 미디어 타겟 타입 */
-export type MediaTargetType = 'TEACHING_NOTE';
+export type MediaTargetType = 'TEACHING_NOTE' | 'QNA' | 'HOMEWORK';
 
 /** Presign 요청용 미디어 에셋 */
 export type PresignMediaAsset = {
@@ -131,7 +131,8 @@ export type PresignBatchResponse = {
 /** 미디어 업로드 결과 */
 export type MediaUploadResult = {
   mediaId: string;
-  mediaUrl: string; // media:{mediaId} 형식
+  mediaUrl: string; // media://{mediaId} 형식 (저장용)
+  previewUrl: string; // 미리보기용 URL (blob URL 또는 presigned URL)
   fileName: string;
   sizeBytes: number;
 };

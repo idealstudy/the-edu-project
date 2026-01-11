@@ -45,6 +45,8 @@ export {
   getFileExtension,
   getAllSlashCommands,
   filterSlashCommands,
+  transformContentForSave,
+  prepareContentForSave,
 } from './utils';
 
 // Types

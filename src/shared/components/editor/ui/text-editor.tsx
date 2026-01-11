@@ -3,7 +3,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { UPLOAD_ERROR_MESSAGES } from '@/shared/components/editor/constants';
 import { createNotionExtensions } from '@/shared/components/editor/model/extensions';
 import { useImageUpload } from '@/shared/components/editor/model/use-image-upload';
-import { TextEditorProps } from '@/shared/components/editor/types';
+import {
+  MediaTargetType,
+  TextEditorProps,
+} from '@/shared/components/editor/types';
 import {
   getUploadErrorMessage,
   validateImageFile,
@@ -34,6 +37,8 @@ export type NotionEditorProps = TextEditorProps & {
   maxHeight?: string;
   /** 읽기 전용 */
   readOnly?: boolean;
+  /** 미디어 업로드 타겟 타입 (TEACHING_NOTE, QNA, HOMEWORK 등) */
+  targetType?: MediaTargetType;
   /** 커스텀 이미지 업로드 핸들러 (제공하지 않으면 기본 API 사용) */
   onImageUpload?: (file: File) => Promise<string>;
   /** 커스텀 파일 업로드 핸들러 */
@@ -59,6 +64,7 @@ export const TextEditor = ({
   minHeight = '200px',
   maxHeight = '600px',
   readOnly = false,
+  targetType = 'TEACHING_NOTE',
   onImageUpload: customImageUpload,
   onFileUpload: customFileUpload,
   onError,
@@ -82,6 +88,7 @@ export const TextEditor = ({
   );
 
   const { uploadAsync } = useImageUpload({
+    targetType,
     onError: (error) => {
       onError?.(error.message || UPLOAD_ERROR_MESSAGES.UPLOAD_FAILED);
     },
@@ -102,17 +109,22 @@ export const TextEditor = ({
       setIsUploading(true);
 
       try {
-        let url: string;
-
         if (customImageUpload) {
-          url = await customImageUpload(file);
+          const url = await customImageUpload(file);
+          currentEditor.chain().focus().setImage({ src: url }).run();
         } else {
           const result = await uploadAsync(file);
-          // media:{mediaId} 형식으로 저장
-          url = result.mediaUrl;
+          // previewUrl을 사용하여 이미지 표시, mediaId도 저장
+          // 저장 시에는 mediaId를 사용하여 media://{mediaId} 형식으로 변환
+          currentEditor
+            .chain()
+            .focus()
+            .setImage({
+              src: result.previewUrl,
+              mediaId: result.mediaId,
+            })
+            .run();
         }
-
-        currentEditor.chain().focus().setImage({ src: url }).run();
       } catch (error) {
         const errorMessage =
           error instanceof Error
