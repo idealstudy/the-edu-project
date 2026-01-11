@@ -45,7 +45,7 @@ export const TeacherHomeworkDetail = ({ studyRoomId, homeworkId }: Props) => {
           return (
             <div
               key={student.id}
-              className="flex flex-col gap-3"
+              className="my-6 flex flex-col gap-3"
             >
               {/* 학생 제출 */}
               <TeacherHomeworkSubmissionContent
