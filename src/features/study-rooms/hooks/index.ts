@@ -18,7 +18,8 @@ const studentHooks = createStudentStudyRoomHooks(studentStudyRoomApi);
 
 const teacherHooks = createTeacherStudyRoomHooks(teacherStudyRoomApi);
 
-export const { useStudentStudyRoomsQuery } = studentHooks;
+export const { useStudentStudyRoomsQuery, useStudentStudyRoomDetailQuery } =
+  studentHooks;
 
 export const {
   useTeacherStudyRoomsQuery,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useSearchInvitation } from '@/features/study-rooms';
 
@@ -17,7 +17,7 @@ export type InvitationController = {
   // state
   isSearch: boolean;
   searchQuery: string;
-  searchResult: Invitee | null;
+  searchResult: Invitee[] | null;
   invitees: Map<string, Invitee>;
   // intent-level
   openSearch: () => void;
@@ -25,8 +25,8 @@ export type InvitationController = {
   toggle: () => void;
 
   setSearchQuery: (query: string) => void;
-  search: (query?: string) => Promise<void> | void;
-  addUser: () => void;
+  search: (query: string) => Promise<void> | void;
+  addUser: (user: Invitee) => void;
   removeUser: (email: string) => void;
   removeLast: () => void;
 };
@@ -35,39 +35,57 @@ export const useInvitationController = (
   studyRoomId: number
 ): InvitationController => {
   // TODO: 추후 리듀서로 리팩토링 예정
-  const [isSearch, setIsSearch] = React.useState(false);
+  const [isSearch, setIsSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResult, setSearchResult] = useState<null | Invitee>(null);
+  const [searchResult, setSearchResult] = useState<null | Invitee[]>(null);
   const [invitees, setInvitees] = useState<Map<string, Invitee>>(new Map());
-  const [shouldSearch, setShouldSearch] = useState(false);
 
-  const { data } = useSearchInvitation({
+  const { refetch, data, isError } = useSearchInvitation({
     studyRoomId,
-    email: searchQuery,
-    enabled: shouldSearch && !!searchQuery.trim(),
+    keyword: searchQuery,
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
+    setSearchResult(null);
+  }, [searchQuery]);
+
+  useEffect(() => {
     if (data) {
       setSearchResult(data);
-      setShouldSearch(false);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (isError) {
+      setSearchResult([]);
+    }
+  }, [isError]);
 
   const openSearch = () => setIsSearch(true);
   const closeSearch = () => setIsSearch(false);
   const toggle = () => setIsSearch((prev: boolean) => !prev);
 
-  const search = (query?: string) => {
-    setSearchQuery(query ?? '');
-    setShouldSearch(true);
+  const search = async (query?: string) => {
+    const q = query?.trim() ?? '';
+    setSearchQuery(q);
+    setSearchResult(null);
+
+    if (!q) return;
+
+    const result = await refetch();
+    if (result.data) {
+      setSearchResult(result.data);
+    } else {
+      setSearchResult([]);
+    }
   };
 
-  const addUser = () => {
-    if (!searchResult) return alert('사용자가 없어용');
+  const addUser = (user: Invitee) => {
+    if (!searchResult) return;
+
     setInvitees((prev) => {
       const next = new Map(prev);
-      return next.set(searchResult.inviteeEmail, searchResult);
+      return next.set(user.inviteeEmail, user);
     });
 
     closeSearch();

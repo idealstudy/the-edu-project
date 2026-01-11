@@ -81,7 +81,7 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
             onSelectGroup={setSelectedGroupId}
           />
         </ColumnLayout.Left>
-        <ColumnLayout.Right className="desktop:max-w-[740px] flex h-[400px] flex-col gap-3 rounded-[12px] px-8">
+        <ColumnLayout.Right className="desktop:max-w-[740px] desktop:px-8 flex h-[400px] flex-col gap-3 rounded-[12px]">
           <div>
             <StudyNoteTab
               mode={role}

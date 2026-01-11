@@ -1,5 +1,5 @@
+import { Invitee } from '@/features/study-rooms/hooks/useInvitationController';
 import type {
-  Invitation,
   MemberInvitation,
   SearchInvitationPayload,
   StudentStudyRoom,
@@ -26,13 +26,14 @@ export interface TeacherStudyRoomRequests {
       studyRoomId: number;
       emails: string[];
     }): Promise<MemberInvitation>;
-    search(args: SearchInvitationPayload): Promise<Invitation>;
+    search(args: SearchInvitationPayload): Promise<Invitee[]>;
   };
   getStudyNoteGroup(args: GroupApiArgs): Promise<GroupListResponse>;
 }
 
 export interface StudentStudyRoomRequests {
   getStudyRooms(): Promise<StudentStudyRoom[]>;
+  getStudyRoomDetail(studyRoomId: number): Promise<StudyRoomDetail>;
   getStudentStudyNoteGroup(args: GroupApiArgs): Promise<GroupListResponse>;
   acceptInvitation(
     invitationId: number | string
@@ -50,7 +51,7 @@ export interface StudyRoomRequests {
       studyRoomId: number;
       emails: string[];
     }): Promise<MemberInvitation>;
-    search(args: SearchInvitationPayload): Promise<Invitation>;
+    search(args: SearchInvitationPayload): Promise<Invitee[]>;
   };
   getStudyNoteGroup(args: GroupApiArgs): Promise<GroupListResponse>;
 
