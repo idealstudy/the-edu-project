@@ -2,9 +2,10 @@
 
 import { type ReactNode, useEffect } from 'react';
 
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
-import { SessionGuardFallback, useSession } from '@/providers';
+import { useSession } from '@/providers';
+import { FullScreenLoader } from '@/shared/components/loading';
 import { PUBLIC } from '@/shared/constants/route';
 
 interface SessionGuardProps {
@@ -13,15 +14,27 @@ interface SessionGuardProps {
   fallback?: ReactNode;
 }
 
-const DEFAULT_FALLBACK = <SessionGuardFallback />;
+const SessionGuardFallback = () => {
+  return <FullScreenLoader title={'디에듀를 불러오는 중...'} />;
+};
 
 export const SessionGuard = ({
   children,
   redirectTo = PUBLIC.CORE.LOGIN,
-  fallback = DEFAULT_FALLBACK,
+  fallback,
 }: SessionGuardProps) => {
   const router = useRouter();
   const { status } = useSession();
+  const pathname = usePathname();
+
+  const resolvedFallback =
+    fallback ?? (status === 'loading' ? <SessionGuardFallback /> : null);
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      router.replace('/dashboard');
+    }
+  }, [status, router]);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -29,8 +42,12 @@ export const SessionGuard = ({
     }
   }, [status, router, redirectTo]);
 
+  if (pathname.startsWith('/login') || pathname.startsWith('/register')) {
+    return <>{children}</>;
+  }
+
   if (status === 'authenticated') return <>{children}</>;
-  if (status === 'loading') return <>{fallback}</>;
+  if (status === 'loading') return <>{resolvedFallback}</>;
   if (status === 'error') {
     return (
       <div className="flex h-screen flex-col items-center justify-center text-white">
@@ -42,5 +59,5 @@ export const SessionGuard = ({
     );
   }
 
-  return <>{fallback}</>;
+  return <>{resolvedFallback}</>;
 };
