@@ -6,6 +6,8 @@ import { Controller, useFormContext } from 'react-hook-form';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
+// import { useGetTeacherNotesList } from '@/features/study-notes/hooks';
+// import { StudyNoteGroupPageable } from '@/features/study-notes/model';
 import { ColumnLayout } from '@/layout/column-layout';
 import { TextEditor } from '@/shared/components/editor';
 import { Select } from '@/shared/components/ui';
@@ -18,6 +20,8 @@ import { QnACreateForm } from '../../schema/create';
 import { useWriteQnAMutation } from '../../services/query';
 import { RequiredMark } from './qna-form-provider';
 
+// import { TagInputQna } from './tag-input-qna';
+
 type Props = {
   studyRoomId: number;
 };
@@ -27,6 +31,19 @@ const WriteArea = ({ studyRoomId }: Props) => {
   const { watch } = useFormContext<QnACreateForm>();
 
   const visibility = watch('visibility');
+  // const roomId = watch('studyRoomId');
+
+  // const NOTE_PAGEABLE: StudyNoteGroupPageable = {
+  //   page: 0,
+  //   size: 20,
+  //   sortKey: 'LATEST_EDITED',
+  // };
+
+  // const { data: notes } = useGetTeacherNotesList({
+  //   studyRoomId: roomId,
+  //   pageable: NOTE_PAGEABLE,
+  //   enabled: !!roomId,
+  // });
 
   const { mutate, isPending } = useWriteQnAMutation();
   const {
@@ -118,6 +135,37 @@ const WriteArea = ({ studyRoomId }: Props) => {
               {errors.title?.message}
             </Form.ErrorMessage>
           </Form.Item>
+
+          {/* 수업노트 연결 1:1
+          <Form.Item error={!!errors.teachingNoteId}>
+            <Form.Label>
+              수업노트 연결
+              <RequiredMark />
+            </Form.Label>
+
+            <Form.Control>
+              <Controller
+                name="teachingNoteId"
+                control={control}
+                render={({ field }) => (
+                  <TagInputQna
+                    studyNotes={notes?.content ?? []}
+                    selectedId={field.value}
+                    onChange={field.onChange}
+                    placeholder="질문과 연관된 수업노트를 연결해주세요."
+                    error={!!errors.teachingNoteId}
+                    disabled={isPending}
+                  />
+                )}
+              />
+            </Form.Control>
+
+            {errors.teachingNoteId && (
+              <Form.ErrorMessage className="text-system-warning text-sm">
+                {errors.teachingNoteId.message}
+              </Form.ErrorMessage>
+            )}
+          </Form.Item> */}
 
           {/* 내용 */}
           <Form.Item error={!!errors.content}>
