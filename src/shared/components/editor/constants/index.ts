@@ -230,29 +230,32 @@ export const SLASH_COMMAND_GROUPS: SlashCommandGroup[] = [
           }
         },
       },
-      {
-        id: 'linkPreview',
-        title: '링크 미리보기',
-        description: 'URL의 미리보기 카드를 삽입합니다.',
-        icon: 'externalLink',
-        keywords: ['preview', 'card', 'og', '미리보기', '카드', '프리뷰'],
-        command: (editor) => {
-          const url = window.prompt('URL을 입력하세요:');
-          if (url) {
-            editor
-              .chain()
-              .focus()
-              .insertContent({
-                type: 'linkPreview',
-                attrs: {
-                  url,
-                  loading: true,
-                },
-              })
-              .run();
-          }
-        },
-      },
+      /**
+       * TODO: 백엔드 구현 후 주석 해제
+       */
+      // {
+      //   id: 'linkPreview',
+      //   title: '링크 미리보기',
+      //   description: 'URL의 미리보기 카드를 삽입합니다.',
+      //   icon: 'externalLink',
+      //   keywords: ['preview', 'card', 'og', '미리보기', '카드', '프리뷰'],
+      //   command: (editor) => {
+      //     const url = window.prompt('URL을 입력하세요:');
+      //     if (url) {
+      //       editor
+      //         .chain()
+      //         .focus()
+      //         .insertContent({
+      //           type: 'linkPreview',
+      //           attrs: {
+      //             url,
+      //             loading: true,
+      //           },
+      //         })
+      //         .run();
+      //     }
+      //   },
+      // },
     ],
   },
   {
