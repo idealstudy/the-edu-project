@@ -50,7 +50,7 @@ export interface MyHomeworkStudent {
 }
 
 // 다른 학생 제출 요약
-export interface OtherHomeworkStudentItem {
+export interface OtherHomeworkStudent {
   studentName: string;
   status: HomeworkSubmitStatus;
   modifiedSubmissionAt: string | null;
@@ -61,7 +61,7 @@ export interface OtherHomeworkStudentItem {
 export interface StudentHomeworkDetailData {
   homework: HomeworkDetail;
   myHomeworkStudent: MyHomeworkStudent;
-  otherHomeworkStudents: OtherHomeworkStudentItem[];
+  otherHomeworkStudents: OtherHomeworkStudent[];
 }
 
 export interface StudentHomeworkDetailResponse {
