@@ -9,26 +9,6 @@ export const StudyStats = ({
   numberOfStudents?: number;
   numberOfQuestion?: number;
 }) => {
-  // TODO: 매핑 방식으로 변경하려고 했으나 SVG 오류
-  // const studyIcons: { name: string; Icon: IconCmp; count: string }[] = [
-  //   {
-  //     name: '수업노트',
-  //     Icon: Icon.Notebook,
-  //     count: '999장',
-  //   },
-  //   {
-  //     name: '학생',
-  //     Icon: Icon.Person,
-  //     count: '999명',
-  //   },
-
-  //   {
-  //     name: '질문',
-  //     Icon: Icon.Question,
-  //     count: '999개',
-  //   },
-  // ];
-
   return (
     <ul className="flex items-center justify-between px-3 py-4">
       <li
@@ -53,7 +33,7 @@ export const StudyStats = ({
           학생
         </p>
         <p className="font-headline2-heading text-key-color-primary text-center">
-          {numberOfStudents != null ? `${numberOfStudents}명` : ''}
+          {numberOfStudents != null ? `${numberOfStudents}명` : '0명'}
         </p>
       </li>
       <li

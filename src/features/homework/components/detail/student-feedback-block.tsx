@@ -9,7 +9,7 @@ import { parseEditorContent } from '../../lib/parse-editor-content';
 
 type ReadonlyFeedbackProps = {
   content: string;
-  regDate: string;
+  regDate: string | null;
 };
 
 // 학생이 다른 학생 과제에 남겨진 피드백을 보지 못하게 하는 ui
@@ -18,6 +18,7 @@ export const StudentFeedbackBlock = ({
   regDate,
 }: ReadonlyFeedbackProps) => {
   const parsedContent = parseEditorContent(content);
+  if (!regDate) return null;
 
   return (
     <div className="border-line-line1 flex flex-col gap-5 rounded-xl border bg-white px-8 py-8">

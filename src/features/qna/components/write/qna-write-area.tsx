@@ -63,6 +63,18 @@ const WriteArea = ({ studyRoomId }: Props) => {
     );
   };
 
+  useEffect(() => {
+    const qnaTitle = sessionStorage.getItem('qna-title');
+
+    if (qnaTitle) {
+      setValue('title', qnaTitle, {
+        shouldDirty: false,
+        shouldValidate: true,
+      });
+      sessionStorage.removeItem('qna-title');
+    }
+  }, [setValue]);
+
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
       <ColumnLayout.Right className="desktop:min-w-[740px] border-line-line1 h-fit w-full rounded-xl border bg-white px-8 py-10">
@@ -92,6 +104,7 @@ const WriteArea = ({ studyRoomId }: Props) => {
               <Input
                 {...register('title')}
                 type="text"
+                // value={qnaTitle || }
                 placeholder="질문의 제목을 입력해주세요."
                 disabled={isPending}
               />
