@@ -9,6 +9,16 @@ import {
 } from '@/shared/components/editor';
 import type { TextEditorValue } from '@/shared/components/editor';
 import type { Meta, StoryObj } from '@storybook/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      staleTime: 1000 * 60 * 5,
+    },
+  },
+});
 
 const meta = {
   title: 'ui/TextEditor',
@@ -16,6 +26,13 @@ const meta = {
     layout: 'centered',
   },
   tags: ['autodocs'],
+  decorators: [
+    (Story) => (
+      <QueryClientProvider client={queryClient}>
+        <Story />
+      </QueryClientProvider>
+    ),
+  ],
 } satisfies Meta<typeof TextEditor>;
 
 export default meta;
