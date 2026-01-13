@@ -149,25 +149,43 @@
 
 /* Ordered List - Depth 3 (i. ii. iii.) */
 .notion-editor-content ol ol ol,
-.notion-editor-content .notion-ordered-list .notion-ordered-list .notion-ordered-list {
+.notion-editor-content
+  .notion-ordered-list
+  .notion-ordered-list
+  .notion-ordered-list {
   list-style-type: lower-roman;
 }
 
 /* Ordered List - Depth 4 (back to decimal) */
 .notion-editor-content ol ol ol ol,
-.notion-editor-content .notion-ordered-list .notion-ordered-list .notion-ordered-list .notion-ordered-list {
+.notion-editor-content
+  .notion-ordered-list
+  .notion-ordered-list
+  .notion-ordered-list
+  .notion-ordered-list {
   list-style-type: decimal;
 }
 
 /* Ordered List - Depth 5 (a. b. c.) */
 .notion-editor-content ol ol ol ol ol,
-.notion-editor-content .notion-ordered-list .notion-ordered-list .notion-ordered-list .notion-ordered-list .notion-ordered-list {
+.notion-editor-content
+  .notion-ordered-list
+  .notion-ordered-list
+  .notion-ordered-list
+  .notion-ordered-list
+  .notion-ordered-list {
   list-style-type: lower-alpha;
 }
 
 /* Ordered List - Depth 6 (i. ii. iii.) */
 .notion-editor-content ol ol ol ol ol ol,
-.notion-editor-content .notion-ordered-list .notion-ordered-list .notion-ordered-list .notion-ordered-list .notion-ordered-list .notion-ordered-list {
+.notion-editor-content
+  .notion-ordered-list
+  .notion-ordered-list
+  .notion-ordered-list
+  .notion-ordered-list
+  .notion-ordered-list
+  .notion-ordered-list {
   list-style-type: lower-roman;
 }
 
@@ -184,7 +202,13 @@
 /* Task List */
 .notion-editor-content .notion-task-list {
   list-style: none;
-  padding-left: 0;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+/* Task list가 비어있을 때 placeholder 위치 조정 */
+.notion-editor-content .notion-task-list.is-empty::before {
+  margin-left: 1.5rem;
 }
 
 .notion-editor-content .notion-task-item {
