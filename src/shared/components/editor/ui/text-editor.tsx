@@ -50,14 +50,20 @@ export const TextEditor = ({
     [placeholder, enableSlashCommand]
   );
 
-  const { uploadAsync: uploadImageAsync } = useImageUpload({
+  const {
+    uploadAsync: uploadImageAsync,
+    uploadBatchAsync: uploadImageBatchAsync,
+  } = useImageUpload({
     targetType,
     onError: (error) => {
       onError?.(error.message || UPLOAD_ERROR_MESSAGES.UPLOAD_FAILED);
     },
   });
 
-  const { uploadAsync: uploadFileAsync } = useFileUpload({
+  const {
+    uploadAsync: uploadFileAsync,
+    uploadBatchAsync: uploadFileBatchAsync,
+  } = useFileUpload({
     targetType,
     onError: (error) => {
       onError?.(error.message || UPLOAD_ERROR_MESSAGES.UPLOAD_FAILED);
@@ -194,6 +200,195 @@ export const TextEditor = ({
     [customImageUpload, uploadImageAsync, onError]
   );
 
+  // 배치 이미지 업로드 핸들러
+  const handleImageBatchUpload = useCallback(
+    async (files: File[]) => {
+      const currentEditor = editorRef.current;
+      if (!currentEditor || files.length === 0) return;
+
+      // 각 파일 검증 및 업로드 정보 생성
+      const uploadInfos = files
+        .map((file) => {
+          const validation = validateImageFile(file);
+          if (!validation.valid) {
+            onError?.(validation.error || UPLOAD_ERROR_MESSAGES.UPLOAD_FAILED);
+            return null;
+          }
+
+          const blobUrl = URL.createObjectURL(file);
+          const uploadId = `upload-${Date.now()}-${Math.random()}`;
+
+          return { file, blobUrl, uploadId };
+        })
+        .filter((info): info is NonNullable<typeof info> => info !== null);
+
+      if (uploadInfos.length === 0) return;
+
+      // 모든 이미지를 한 번에 삽입 (focus는 한 번만)
+      const imageNodes = uploadInfos.map(({ blobUrl, uploadId }) => ({
+        type: 'image',
+        attrs: {
+          src: blobUrl,
+          isUploading: true,
+          mediaId: uploadId,
+        },
+      }));
+
+      currentEditor.chain().focus().insertContent(imageNodes).run();
+
+      try {
+        if (customImageUpload) {
+          // 커스텀 업로드는 순차 처리
+          for (const { file, blobUrl, uploadId } of uploadInfos) {
+            try {
+              const url = await customImageUpload(file);
+              let nodePos: number | null = null;
+
+              currentEditor.state.doc.descendants((node, pos) => {
+                if (
+                  nodePos === null &&
+                  node.type.name === 'image' &&
+                  node.attrs.mediaId === uploadId
+                ) {
+                  nodePos = pos;
+                  return false;
+                }
+              });
+
+              if (nodePos !== null) {
+                const node = currentEditor.state.doc.nodeAt(nodePos);
+                if (node) {
+                  const transaction = currentEditor.state.tr.setNodeMarkup(
+                    nodePos,
+                    undefined,
+                    {
+                      ...node.attrs,
+                      src: url,
+                      isUploading: false,
+                    }
+                  );
+                  currentEditor.view.dispatch(transaction);
+                }
+              }
+
+              URL.revokeObjectURL(blobUrl);
+            } catch (error) {
+              // 실패한 이미지 제거
+              let nodePos: number | null = null;
+              let nodeSize = 0;
+
+              currentEditor.state.doc.descendants((node, pos) => {
+                if (
+                  nodePos === null &&
+                  node.type.name === 'image' &&
+                  node.attrs.mediaId === uploadId
+                ) {
+                  nodePos = pos;
+                  nodeSize = node.nodeSize;
+                  return false;
+                }
+              });
+
+              if (nodePos !== null) {
+                const transaction = currentEditor.state.tr.delete(
+                  nodePos,
+                  nodePos + nodeSize
+                );
+                currentEditor.view.dispatch(transaction);
+              }
+
+              URL.revokeObjectURL(blobUrl);
+
+              const errorMessage =
+                error instanceof Error
+                  ? getUploadErrorMessage(error)
+                  : UPLOAD_ERROR_MESSAGES.UPLOAD_FAILED;
+
+              onError?.(errorMessage);
+            }
+          }
+        } else {
+          // 배치 업로드 API 사용
+          const results = await uploadImageBatchAsync(
+            uploadInfos.map((info) => info.file)
+          );
+
+          // 업로드 결과를 각 노드에 반영
+          results.forEach((result, index) => {
+            const uploadInfo = uploadInfos[index];
+            if (!uploadInfo) return;
+
+            const { uploadId } = uploadInfo;
+            let nodePos: number | null = null;
+
+            currentEditor.state.doc.descendants((node, pos) => {
+              if (
+                nodePos === null &&
+                node.type.name === 'image' &&
+                node.attrs.mediaId === uploadId
+              ) {
+                nodePos = pos;
+                return false;
+              }
+            });
+
+            if (nodePos !== null) {
+              const node = currentEditor.state.doc.nodeAt(nodePos);
+              if (node) {
+                const transaction = currentEditor.state.tr.setNodeMarkup(
+                  nodePos,
+                  undefined,
+                  {
+                    ...node.attrs,
+                    mediaId: result.mediaId,
+                    isUploading: false,
+                  }
+                );
+                currentEditor.view.dispatch(transaction);
+              }
+            }
+          });
+        }
+      } catch (error) {
+        // 배치 업로드 전체 실패 시 모든 임시 이미지 제거
+        for (const { blobUrl, uploadId } of uploadInfos) {
+          let nodePos: number | null = null;
+          let nodeSize = 0;
+
+          currentEditor.state.doc.descendants((node, pos) => {
+            if (
+              nodePos === null &&
+              node.type.name === 'image' &&
+              node.attrs.mediaId === uploadId
+            ) {
+              nodePos = pos;
+              nodeSize = node.nodeSize;
+              return false;
+            }
+          });
+
+          if (nodePos !== null) {
+            const transaction = currentEditor.state.tr.delete(
+              nodePos,
+              nodePos + nodeSize
+            );
+            currentEditor.view.dispatch(transaction);
+          }
+
+          URL.revokeObjectURL(blobUrl);
+        }
+
+        const errorMessage =
+          error instanceof Error
+            ? getUploadErrorMessage(error)
+            : UPLOAD_ERROR_MESSAGES.UPLOAD_FAILED;
+
+        onError?.(errorMessage);
+      }
+    },
+    [customImageUpload, uploadImageBatchAsync, onError]
+  );
+
   // 파일 업로드 핸들러
   const handleFileUpload = useCallback(
     async (file: File) => {
@@ -328,6 +523,198 @@ export const TextEditor = ({
     [customFileUpload, uploadFileAsync, onError]
   );
 
+  // 배치 파일 업로드 핸들러
+  const handleFileBatchUpload = useCallback(
+    async (files: File[]) => {
+      const currentEditor = editorRef.current;
+      if (!currentEditor || files.length === 0) return;
+
+      // 각 파일 검증 및 업로드 정보 생성
+      const uploadInfos = files
+        .map((file) => {
+          const validation = validateAttachmentFile(file);
+          if (!validation.valid) {
+            onError?.(validation.error || UPLOAD_ERROR_MESSAGES.UPLOAD_FAILED);
+            return null;
+          }
+
+          const uploadId = `upload-${Date.now()}-${Math.random()}`;
+          const blobUrl = URL.createObjectURL(file);
+
+          return { file, blobUrl, uploadId };
+        })
+        .filter((info): info is NonNullable<typeof info> => info !== null);
+
+      if (uploadInfos.length === 0) return;
+
+      // 모든 파일을 한 번에 삽입 (focus는 한 번만)
+      const fileNodes = uploadInfos.map(({ file, uploadId }) => ({
+        type: 'fileAttachment',
+        attrs: {
+          name: file.name,
+          size: file.size,
+          mediaId: uploadId,
+          isUploading: true,
+        },
+      }));
+
+      currentEditor.chain().focus().insertContent(fileNodes).run();
+
+      try {
+        if (customFileUpload) {
+          // 커스텀 업로드는 순차 처리
+          for (const { blobUrl, uploadId, file } of uploadInfos) {
+            try {
+              const url = await customFileUpload(file);
+              let nodePos: number | null = null;
+
+              currentEditor.state.doc.descendants((node, pos) => {
+                if (
+                  nodePos === null &&
+                  node.type.name === 'fileAttachment' &&
+                  node.attrs.mediaId === uploadId
+                ) {
+                  nodePos = pos;
+                  return false;
+                }
+              });
+
+              if (nodePos !== null) {
+                const node = currentEditor.state.doc.nodeAt(nodePos);
+                if (node) {
+                  const transaction = currentEditor.state.tr.setNodeMarkup(
+                    nodePos,
+                    undefined,
+                    {
+                      ...node.attrs,
+                      url,
+                      isUploading: false,
+                    }
+                  );
+                  currentEditor.view.dispatch(transaction);
+                }
+              }
+
+              URL.revokeObjectURL(blobUrl);
+            } catch (error) {
+              // 실패한 파일 제거
+              let nodePos: number | null = null;
+              let nodeSize = 0;
+
+              currentEditor.state.doc.descendants((node, pos) => {
+                if (
+                  nodePos === null &&
+                  node.type.name === 'fileAttachment' &&
+                  node.attrs.mediaId === uploadId
+                ) {
+                  nodePos = pos;
+                  nodeSize = node.nodeSize;
+                  return false;
+                }
+              });
+
+              if (nodePos !== null) {
+                const transaction = currentEditor.state.tr.delete(
+                  nodePos,
+                  nodePos + nodeSize
+                );
+                currentEditor.view.dispatch(transaction);
+              }
+
+              URL.revokeObjectURL(blobUrl);
+
+              const errorMessage =
+                error instanceof Error
+                  ? getUploadErrorMessage(error)
+                  : UPLOAD_ERROR_MESSAGES.UPLOAD_FAILED;
+
+              onError?.(errorMessage);
+            }
+          }
+        } else {
+          // 배치 업로드 API 사용
+          const results = await uploadFileBatchAsync(
+            uploadInfos.map((info) => info.file)
+          );
+
+          // 업로드 결과를 각 노드에 반영
+          results.forEach((result, index) => {
+            const uploadInfo = uploadInfos[index];
+            if (!uploadInfo) return;
+
+            const { uploadId } = uploadInfo;
+            let nodePos: number | null = null;
+
+            currentEditor.state.doc.descendants((node, pos) => {
+              if (
+                nodePos === null &&
+                node.type.name === 'fileAttachment' &&
+                node.attrs.mediaId === uploadId
+              ) {
+                nodePos = pos;
+                return false;
+              }
+            });
+
+            if (nodePos !== null) {
+              const node = currentEditor.state.doc.nodeAt(nodePos);
+              if (node) {
+                const transaction = currentEditor.state.tr.setNodeMarkup(
+                  nodePos,
+                  undefined,
+                  {
+                    ...node.attrs,
+                    name: result.fileName,
+                    size: result.sizeBytes,
+                    mediaId: result.mediaId,
+                    isUploading: false,
+                  }
+                );
+                currentEditor.view.dispatch(transaction);
+              }
+            }
+          });
+        }
+      } catch (error) {
+        // 배치 업로드 전체 실패 시 모든 임시 파일 제거
+        for (const { blobUrl, uploadId } of uploadInfos) {
+          let nodePos: number | null = null;
+          let nodeSize = 0;
+
+          currentEditor.state.doc.descendants((node, pos) => {
+            if (
+              nodePos === null &&
+              node.type.name === 'fileAttachment' &&
+              node.attrs.mediaId === uploadId
+            ) {
+              nodePos = pos;
+              nodeSize = node.nodeSize;
+              return false;
+            }
+          });
+
+          if (nodePos !== null) {
+            const transaction = currentEditor.state.tr.delete(
+              nodePos,
+              nodePos + nodeSize
+            );
+            currentEditor.view.dispatch(transaction);
+          }
+
+          URL.revokeObjectURL(blobUrl);
+        }
+
+        const errorMessage =
+          error instanceof Error
+            ? getUploadErrorMessage(error)
+            : UPLOAD_ERROR_MESSAGES.UPLOAD_FAILED;
+
+        onError?.(errorMessage);
+      }
+    },
+    [customFileUpload, uploadFileBatchAsync, onError]
+  );
+
   const editor = useEditor({
     extensions,
     content: value,
@@ -351,21 +738,47 @@ export const TextEditor = ({
       },
       handleDrop: (view, event, slice, moved) => {
         if (!moved && event.dataTransfer?.files?.length) {
-          const file = event.dataTransfer.files[0];
-          if (file) {
-            // 이미지 파일인 경우
+          const files = Array.from(event.dataTransfer.files);
+
+          // 이미지 파일과 일반 파일 분리
+          const imageFiles: File[] = [];
+          const attachmentFiles: File[] = [];
+
+          files.forEach((file) => {
             if (file.type.startsWith('image/')) {
-              event.preventDefault();
-              handleImageUpload(file);
-              return true;
+              const validation = validateImageFile(file);
+              if (validation.valid) {
+                imageFiles.push(file);
+              }
+            } else {
+              const validation = validateAttachmentFile(file);
+              if (validation.valid) {
+                attachmentFiles.push(file);
+              }
             }
-            // 일반 파일인 경우 (첨부 파일)
-            const fileValidation = validateAttachmentFile(file);
-            if (fileValidation.valid) {
-              event.preventDefault();
-              handleFileUpload(file);
-              return true;
+          });
+
+          // 파일이 있으면 업로드
+          if (imageFiles.length > 0 || attachmentFiles.length > 0) {
+            event.preventDefault();
+
+            if (imageFiles.length > 0) {
+              if (imageFiles.length === 1 && imageFiles[0]) {
+                handleImageUpload(imageFiles[0]);
+              } else {
+                handleImageBatchUpload(imageFiles);
+              }
             }
+
+            if (attachmentFiles.length > 0) {
+              if (attachmentFiles.length === 1 && attachmentFiles[0]) {
+                handleFileUpload(attachmentFiles[0]);
+              } else {
+                handleFileBatchUpload(attachmentFiles);
+              }
+            }
+
+            return true;
           }
         }
         return false;
@@ -373,30 +786,50 @@ export const TextEditor = ({
       handlePaste: (view, event) => {
         const items = event.clipboardData?.items;
         if (items) {
+          const imageFiles: File[] = [];
+          const attachmentFiles: File[] = [];
+
+          // 모든 아이템을 순회하며 파일 수집
           for (const item of items) {
-            // 이미지 붙여넣기
-            if (item.type.startsWith('image/')) {
-              event.preventDefault();
+            if (item.kind === 'file') {
               const file = item.getAsFile();
               if (file) {
-                handleImageUpload(file);
-                return true;
-              }
-            }
-          }
-          // 파일 붙여넣기 (일부 브라우저에서 지원)
-          for (const item of items) {
-            if (item.kind === 'file' && !item.type.startsWith('image/')) {
-              const file = item.getAsFile();
-              if (file) {
-                const fileValidation = validateAttachmentFile(file);
-                if (fileValidation.valid) {
-                  event.preventDefault();
-                  handleFileUpload(file);
-                  return true;
+                if (item.type.startsWith('image/')) {
+                  const validation = validateImageFile(file);
+                  if (validation.valid) {
+                    imageFiles.push(file);
+                  }
+                } else {
+                  const validation = validateAttachmentFile(file);
+                  if (validation.valid) {
+                    attachmentFiles.push(file);
+                  }
                 }
               }
             }
+          }
+
+          // 파일이 있으면 업로드
+          if (imageFiles.length > 0 || attachmentFiles.length > 0) {
+            event.preventDefault();
+
+            if (imageFiles.length > 0) {
+              if (imageFiles.length === 1 && imageFiles[0]) {
+                handleImageUpload(imageFiles[0]);
+              } else {
+                handleImageBatchUpload(imageFiles);
+              }
+            }
+
+            if (attachmentFiles.length > 0) {
+              if (attachmentFiles.length === 1 && attachmentFiles[0]) {
+                handleFileUpload(attachmentFiles[0]);
+              } else {
+                handleFileBatchUpload(attachmentFiles);
+              }
+            }
+
+            return true;
           }
         }
         return false;

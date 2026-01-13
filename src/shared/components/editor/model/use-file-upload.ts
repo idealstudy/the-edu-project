@@ -13,6 +13,11 @@ type UploadFileParams = {
   targetType: MediaTargetType;
 };
 
+type UploadFileBatchParams = {
+  files: File[];
+  targetType: MediaTargetType;
+};
+
 const uploadFileApi = async ({
   file,
   targetType,
@@ -55,6 +60,58 @@ const uploadFileApi = async ({
   };
 };
 
+// 배치 업로드 API
+const uploadFileBatchApi = async ({
+  files,
+  targetType,
+}: UploadFileBatchParams): Promise<MediaUploadResult[]> => {
+  if (files.length === 0) {
+    return [];
+  }
+
+  // 모든 파일에 대한 Presign URL 요청
+  const presignData = await api.private.post<PresignBatchResponse>(
+    '/common/media/presign-batch',
+    {
+      targetType,
+      mediaAssetList: files.map((file) => ({
+        fileName: file.name,
+        contentType: file.type,
+        sizeBytes: file.size,
+      })),
+    }
+  );
+
+  // 모든 파일을 병렬로 업로드
+  const uploadPromises = presignData.data.mediaAssetList.map(
+    async (mediaAsset, index) => {
+      const file = files[index];
+      if (!file || !mediaAsset) {
+        throw new Error('파일 업로드 정보를 가져오는데 실패했습니다.');
+      }
+
+      const uploadResponse = await fetch(mediaAsset.uploadUrl, {
+        method: 'PUT',
+        headers: mediaAsset.headers,
+        body: file,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error(`${file.name} 업로드에 실패했습니다.`);
+      }
+
+      return {
+        mediaId: mediaAsset.mediaId,
+        mediaUrl: `media://${mediaAsset.mediaId}`,
+        fileName: file.name,
+        sizeBytes: file.size,
+      };
+    }
+  );
+
+  return Promise.all(uploadPromises);
+};
+
 export const useFileUpload = (options?: UseFileUploadOptions) => {
   const targetType = options?.targetType ?? 'TEACHING_NOTE';
 
@@ -68,11 +125,20 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
     },
   });
 
+  const batchMutation = useMutation({
+    mutationFn: (files: File[]) => uploadFileBatchApi({ files, targetType }),
+  });
+
   return {
     upload: mutation.mutate,
     uploadAsync: mutation.mutateAsync,
-    isUploading: mutation.isPending,
-    error: mutation.error,
-    reset: mutation.reset,
+    uploadBatch: batchMutation.mutate,
+    uploadBatchAsync: batchMutation.mutateAsync,
+    isUploading: mutation.isPending || batchMutation.isPending,
+    error: mutation.error || batchMutation.error,
+    reset: () => {
+      mutation.reset();
+      batchMutation.reset();
+    },
   };
 };
