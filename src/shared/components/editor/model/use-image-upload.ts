@@ -13,14 +13,11 @@ type UploadImageParams = {
   targetType: MediaTargetType;
 };
 
-/**
- * Presign URL을 요청하고 실제 파일을 업로드한 후 mediaId를 반환합니다.
- */
 const uploadImageApi = async ({
   file,
   targetType,
 }: UploadImageParams): Promise<MediaUploadResult> => {
-  // 1. Presign URL 요청
+  // Presign URL 요청
   const presignData = await api.private.post<PresignBatchResponse>(
     '/common/media/presign-batch',
     {
@@ -41,7 +38,7 @@ const uploadImageApi = async ({
     throw new Error('이미지 업로드 정보를 가져오는데 실패했습니다.');
   }
 
-  // 2. Presigned URL로 실제 파일 업로드
+  // Presigned URL로 파일 업로드
   const uploadResponse = await fetch(mediaAsset.uploadUrl, {
     method: 'PUT',
     headers: mediaAsset.headers,
@@ -52,14 +49,9 @@ const uploadImageApi = async ({
     throw new Error('이미지 업로드에 실패했습니다.');
   }
 
-  // 3. 미리보기용 blob URL 생성
-  const previewUrl = URL.createObjectURL(file);
-
-  // 4. media://{mediaId} 형식과 미리보기 URL 함께 반환
   return {
     mediaId: mediaAsset.mediaId,
     mediaUrl: `media://${mediaAsset.mediaId}`,
-    previewUrl, // 에디터에서 미리보기용으로 사용
     fileName: file.name,
     sizeBytes: file.size,
   };

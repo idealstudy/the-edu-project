@@ -14,6 +14,8 @@ declare module '@tiptap/core' {
         url: string;
         name: string;
         size: number;
+        mediaId?: string;
+        isUploading?: boolean;
       }) => ReturnType;
     };
   }
@@ -42,6 +44,12 @@ export const FileAttachment = Node.create<FileAttachmentOptions>({
       },
       size: {
         default: 0,
+      },
+      mediaId: {
+        default: null,
+      },
+      isUploading: {
+        default: false,
       },
     };
   },

@@ -1,14 +1,13 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { UPLOAD_ERROR_MESSAGES } from '@/shared/components/editor/constants';
 import { createNotionExtensions } from '@/shared/components/editor/model/extensions';
+import { useFileUpload } from '@/shared/components/editor/model/use-file-upload';
 import { useImageUpload } from '@/shared/components/editor/model/use-image-upload';
-import {
-  MediaTargetType,
-  TextEditorProps,
-} from '@/shared/components/editor/types';
+import { NotionEditorProps } from '@/shared/components/editor/types';
 import {
   getUploadErrorMessage,
+  validateAttachmentFile,
   validateImageFile,
 } from '@/shared/components/editor/utils';
 import { cn } from '@/shared/lib';
@@ -18,38 +17,6 @@ import { EditorContent, useEditor } from '@tiptap/react';
 import '../styles/text-editor.css';
 import { BubbleMenuToolbar } from './bubble-menu-toolbar';
 import { EditorToolbar } from './editor-toolbar';
-import { ImageUploadOverlay } from './image-upload-overlay';
-
-export type NotionEditorProps = TextEditorProps & {
-  /** 다크모드 활성화 */
-  darkMode?: boolean;
-  /** 자동 포커스 */
-  autoFocus?: boolean;
-  /** 슬래시 커맨드 활성화 */
-  enableSlashCommand?: boolean;
-  /** 툴바 표시 여부 */
-  showToolbar?: boolean;
-  /** 버블 메뉴 표시 여부 */
-  showBubbleMenu?: boolean;
-  /** 최소 높이 */
-  minHeight?: string;
-  /** 최대 높이 */
-  maxHeight?: string;
-  /** 읽기 전용 */
-  readOnly?: boolean;
-  /** 미디어 업로드 타겟 타입 (TEACHING_NOTE, QNA, HOMEWORK 등) */
-  targetType?: MediaTargetType;
-  /** 커스텀 이미지 업로드 핸들러 (제공하지 않으면 기본 API 사용) */
-  onImageUpload?: (file: File) => Promise<string>;
-  /** 커스텀 파일 업로드 핸들러 */
-  onFileUpload?: (
-    file: File
-  ) => Promise<{ url: string; name: string; size: number }>;
-  /** 에러 핸들러 */
-  onError?: (message: string) => void;
-  /** 접근성 레이블 */
-  ariaLabel?: string;
-};
 
 export const TextEditor = ({
   className,
@@ -70,12 +37,8 @@ export const TextEditor = ({
   onError,
   ariaLabel,
 }: NotionEditorProps) => {
-  const [isUploading, setIsUploading] = useState(false);
-
-  // useRef는 반드시 컴포넌트 최상단에서 호출
   const editorRef = useRef<Editor | null>(null);
   const prevValueRef = useRef<string>('');
-  // 에디터 자체에서 변경이 발생했는지 추적
   const isInternalChangeRef = useRef(false);
 
   const extensions = useMemo(
@@ -87,14 +50,21 @@ export const TextEditor = ({
     [placeholder, enableSlashCommand]
   );
 
-  const { uploadAsync } = useImageUpload({
+  const { uploadAsync: uploadImageAsync } = useImageUpload({
     targetType,
     onError: (error) => {
       onError?.(error.message || UPLOAD_ERROR_MESSAGES.UPLOAD_FAILED);
     },
   });
 
-  // 이미지 업로드 핸들러 - editorRef를 사용하여 순환 참조 방지
+  const { uploadAsync: uploadFileAsync } = useFileUpload({
+    targetType,
+    onError: (error) => {
+      onError?.(error.message || UPLOAD_ERROR_MESSAGES.UPLOAD_FAILED);
+    },
+  });
+
+  // 이미지 업로드 핸들러 - 낙관적 업데이트 적용
   const handleImageUpload = useCallback(
     async (file: File) => {
       const currentEditor = editorRef.current;
@@ -106,65 +76,256 @@ export const TextEditor = ({
         return;
       }
 
-      setIsUploading(true);
+      // 즉시 blob URL로 이미지를 삽입하여 즉각적인 피드백 제공
+      const blobUrl = URL.createObjectURL(file);
+      const uploadId = `upload-${Date.now()}-${Math.random()}`;
 
+      currentEditor
+        .chain()
+        .focus()
+        .setImage({
+          src: blobUrl,
+          isUploading: true,
+          mediaId: uploadId,
+        })
+        .run();
+
+      // 백그라운드에서 업로드 진행
       try {
         if (customImageUpload) {
           const url = await customImageUpload(file);
-          currentEditor.chain().focus().setImage({ src: url }).run();
+          let nodePos: number | null = null;
+
+          currentEditor.state.doc.descendants((node, pos) => {
+            if (
+              nodePos === null &&
+              node.type.name === 'image' &&
+              node.attrs.mediaId === uploadId
+            ) {
+              nodePos = pos;
+              return false;
+            }
+          });
+
+          if (nodePos !== null) {
+            const node = currentEditor.state.doc.nodeAt(nodePos);
+            if (node) {
+              const transaction = currentEditor.state.tr.setNodeMarkup(
+                nodePos,
+                undefined,
+                {
+                  ...node.attrs,
+                  src: url,
+                  isUploading: false,
+                }
+              );
+              currentEditor.view.dispatch(transaction);
+            }
+          }
+
+          URL.revokeObjectURL(blobUrl);
         } else {
-          const result = await uploadAsync(file);
-          // previewUrl을 사용하여 이미지 표시, mediaId도 저장
-          // 저장 시에는 mediaId를 사용하여 media://{mediaId} 형식으로 변환
-          currentEditor
-            .chain()
-            .focus()
-            .setImage({
-              src: result.previewUrl,
-              mediaId: result.mediaId,
-            })
-            .run();
+          const result = await uploadImageAsync(file);
+          let nodePos: number | null = null;
+
+          currentEditor.state.doc.descendants((node, pos) => {
+            if (
+              nodePos === null &&
+              node.type.name === 'image' &&
+              node.attrs.mediaId === uploadId
+            ) {
+              nodePos = pos;
+              return false;
+            }
+          });
+
+          if (nodePos !== null) {
+            const node = currentEditor.state.doc.nodeAt(nodePos);
+            if (node) {
+              // blob URL 유지, mediaId만 업데이트 (저장 시 변환용)
+              const transaction = currentEditor.state.tr.setNodeMarkup(
+                nodePos,
+                undefined,
+                {
+                  ...node.attrs,
+                  mediaId: result.mediaId,
+                  isUploading: false,
+                }
+              );
+              currentEditor.view.dispatch(transaction);
+            }
+          }
         }
       } catch (error) {
+        // 업로드 실패 시 이미지 노드 제거
+        let nodePos: number | null = null;
+        let nodeSize = 0;
+
+        currentEditor.state.doc.descendants((node, pos) => {
+          if (
+            nodePos === null &&
+            node.type.name === 'image' &&
+            node.attrs.mediaId === uploadId
+          ) {
+            nodePos = pos;
+            nodeSize = node.nodeSize;
+            return false;
+          }
+        });
+
+        if (nodePos !== null) {
+          const transaction = currentEditor.state.tr.delete(
+            nodePos,
+            nodePos + nodeSize
+          );
+          currentEditor.view.dispatch(transaction);
+        }
+
+        URL.revokeObjectURL(blobUrl);
+
         const errorMessage =
           error instanceof Error
             ? getUploadErrorMessage(error)
             : UPLOAD_ERROR_MESSAGES.UPLOAD_FAILED;
 
         onError?.(errorMessage);
-      } finally {
-        setIsUploading(false);
       }
     },
-    [customImageUpload, uploadAsync, onError]
+    [customImageUpload, uploadImageAsync, onError]
   );
 
   // 파일 업로드 핸들러
   const handleFileUpload = useCallback(
     async (file: File) => {
       const currentEditor = editorRef.current;
-      if (!currentEditor || !customFileUpload) return;
+      if (!currentEditor) return;
 
-      setIsUploading(true);
+      const validation = validateAttachmentFile(file);
+      if (!validation.valid) {
+        onError?.(validation.error || UPLOAD_ERROR_MESSAGES.UPLOAD_FAILED);
+        return;
+      }
+
+      const uploadId = `upload-${Date.now()}-${Math.random()}`;
+      const blobUrl = URL.createObjectURL(file);
+
+      currentEditor
+        .chain()
+        .focus()
+        .insertContent({
+          type: 'fileAttachment',
+          attrs: {
+            url: blobUrl,
+            name: file.name,
+            size: file.size,
+            mediaId: uploadId,
+            isUploading: true,
+          },
+        })
+        .run();
 
       try {
-        const { url, name, size } = await customFileUpload(file);
+        if (customFileUpload) {
+          const { url, name, size } = await customFileUpload(file);
+          let nodePos: number | null = null;
 
-        currentEditor
-          .chain()
-          .focus()
-          .insertContent({
-            type: 'fileAttachment',
-            attrs: { url, name, size },
-          })
-          .run();
-      } catch {
-        onError?.(UPLOAD_ERROR_MESSAGES.UPLOAD_FAILED);
-      } finally {
-        setIsUploading(false);
+          currentEditor.state.doc.descendants((node, pos) => {
+            if (
+              nodePos === null &&
+              node.type.name === 'fileAttachment' &&
+              node.attrs.mediaId === uploadId
+            ) {
+              nodePos = pos;
+              return false;
+            }
+          });
+
+          if (nodePos !== null) {
+            const node = currentEditor.state.doc.nodeAt(nodePos);
+            if (node) {
+              const transaction = currentEditor.state.tr.setNodeMarkup(
+                nodePos,
+                undefined,
+                {
+                  ...node.attrs,
+                  url,
+                  name,
+                  size,
+                  isUploading: false,
+                }
+              );
+              currentEditor.view.dispatch(transaction);
+            }
+          }
+
+          URL.revokeObjectURL(blobUrl);
+        } else {
+          const result = await uploadFileAsync(file);
+          let nodePos: number | null = null;
+
+          currentEditor.state.doc.descendants((node, pos) => {
+            if (
+              nodePos === null &&
+              node.type.name === 'fileAttachment' &&
+              node.attrs.mediaId === uploadId
+            ) {
+              nodePos = pos;
+              return false;
+            }
+          });
+
+          if (nodePos !== null) {
+            const node = currentEditor.state.doc.nodeAt(nodePos);
+            if (node) {
+              // blob URL 유지, mediaId와 메타데이터만 업데이트
+              const transaction = currentEditor.state.tr.setNodeMarkup(
+                nodePos,
+                undefined,
+                {
+                  ...node.attrs,
+                  name: result.fileName,
+                  size: result.sizeBytes,
+                  mediaId: result.mediaId,
+                  isUploading: false,
+                }
+              );
+              currentEditor.view.dispatch(transaction);
+            }
+          }
+        }
+      } catch (error) {
+        let nodePos: number | null = null;
+        let nodeSize = 0;
+
+        currentEditor.state.doc.descendants((node, pos) => {
+          if (
+            nodePos === null &&
+            node.type.name === 'fileAttachment' &&
+            node.attrs.mediaId === uploadId
+          ) {
+            nodePos = pos;
+            nodeSize = node.nodeSize;
+            return false;
+          }
+        });
+
+        if (nodePos !== null) {
+          const transaction = currentEditor.state.tr.delete(
+            nodePos,
+            nodePos + nodeSize
+          );
+          currentEditor.view.dispatch(transaction);
+        }
+
+        const errorMessage =
+          error instanceof Error
+            ? getUploadErrorMessage(error)
+            : UPLOAD_ERROR_MESSAGES.UPLOAD_FAILED;
+
+        onError?.(errorMessage);
       }
     },
-    [customFileUpload, onError]
+    [customFileUpload, uploadFileAsync, onError]
   );
 
   const editor = useEditor({
@@ -191,10 +352,20 @@ export const TextEditor = ({
       handleDrop: (view, event, slice, moved) => {
         if (!moved && event.dataTransfer?.files?.length) {
           const file = event.dataTransfer.files[0];
-          if (file?.type.startsWith('image/')) {
-            event.preventDefault();
-            handleImageUpload(file);
-            return true;
+          if (file) {
+            // 이미지 파일인 경우
+            if (file.type.startsWith('image/')) {
+              event.preventDefault();
+              handleImageUpload(file);
+              return true;
+            }
+            // 일반 파일인 경우 (첨부 파일)
+            const fileValidation = validateAttachmentFile(file);
+            if (fileValidation.valid) {
+              event.preventDefault();
+              handleFileUpload(file);
+              return true;
+            }
           }
         }
         return false;
@@ -203,12 +374,27 @@ export const TextEditor = ({
         const items = event.clipboardData?.items;
         if (items) {
           for (const item of items) {
+            // 이미지 붙여넣기
             if (item.type.startsWith('image/')) {
               event.preventDefault();
               const file = item.getAsFile();
               if (file) {
                 handleImageUpload(file);
                 return true;
+              }
+            }
+          }
+          // 파일 붙여넣기 (일부 브라우저에서 지원)
+          for (const item of items) {
+            if (item.kind === 'file' && !item.type.startsWith('image/')) {
+              const file = item.getAsFile();
+              if (file) {
+                const fileValidation = validateAttachmentFile(file);
+                if (fileValidation.valid) {
+                  event.preventDefault();
+                  handleFileUpload(file);
+                  return true;
+                }
               }
             }
           }
@@ -224,13 +410,11 @@ export const TextEditor = ({
     editorRef.current = editor;
   }, [editor]);
 
-  // content prop이 변경되면 에디터 내용 업데이트
-  // 폼이 reset()으로 업데이트될 때 에디터도 함께 업데이트되도록 함
+  // 외부에서 content가 변경되면 에디터 동기화
   useEffect(() => {
     if (!editor || !value) return;
 
-    // 에디터 내부에서 발생한 변경이면 setContent를 호출하지 않음
-    // (커서 위치가 리셋되는 것을 방지)
+    // 내부 변경은 무시 (커서 위치 보존)
     if (isInternalChangeRef.current) {
       isInternalChangeRef.current = false;
       prevValueRef.current = JSON.stringify(value);
@@ -239,7 +423,6 @@ export const TextEditor = ({
 
     const newContentStr = JSON.stringify(value);
 
-    // 이전 값과 비교하여 불필요한 setContent 호출 방지
     if (prevValueRef.current !== newContentStr) {
       prevValueRef.current = newContentStr;
       editor.commands.setContent(value);
@@ -282,7 +465,7 @@ export const TextEditor = ({
           editor={editor}
           darkMode={darkMode}
           onImageUpload={handleImageUpload}
-          onFileUpload={customFileUpload ? handleFileUpload : undefined}
+          onFileUpload={handleFileUpload}
         />
       )}
       {showBubbleMenu && !readOnly && (
@@ -292,12 +475,6 @@ export const TextEditor = ({
         />
       )}
       <EditorContent editor={editor} />
-
-      {/* 이미지 업로드 로딩 오버레이 */}
-      <ImageUploadOverlay
-        isUploading={isUploading}
-        darkMode={darkMode}
-      />
     </div>
   );
 };

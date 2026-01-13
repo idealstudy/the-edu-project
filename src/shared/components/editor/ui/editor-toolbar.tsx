@@ -108,8 +108,10 @@ export const EditorToolbar = ({
       const file = event.target.files?.[0];
       if (file) {
         const validation = validateAttachmentFile(file);
-        if (validation.valid && onFileUpload) {
-          onFileUpload(file);
+        if (validation.valid) {
+          onFileUpload?.(file);
+        } else {
+          alert(validation.error);
         }
       }
       event.target.value = '';

@@ -181,6 +181,7 @@ type TransformResult = {
 /**
  * 에디터 content를 저장용으로 변환합니다.
  * - 이미지 노드의 src를 media://{mediaId} 형식으로 변환
+ * - 파일 첨부 노드의 url을 media://{mediaId} 형식으로 변환
  * - mediaIds 배열 추출
  *
  * @param content 에디터에서 가져온 JSONContent
@@ -205,6 +206,25 @@ export const transformContentForSave = (
           attrs: {
             ...attrs,
             src: `media://${mediaId}`,
+            mediaId: undefined, // 저장 시 mediaId 속성 제거
+          },
+        };
+      }
+    }
+
+    // 파일 첨부 노드 처리
+    if (node.type === 'fileAttachment' && node.attrs) {
+      const attrs = node.attrs as Record<string, unknown>;
+      const mediaId = attrs.mediaId as string | undefined;
+
+      if (mediaId) {
+        mediaIds.push(mediaId);
+        // url을 media://{mediaId} 형식으로 변환하고, 원본 mediaId 속성은 제거
+        return {
+          ...node,
+          attrs: {
+            ...attrs,
+            url: `media://${mediaId}`,
             mediaId: undefined, // 저장 시 mediaId 속성 제거
           },
         };

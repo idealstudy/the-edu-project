@@ -13,12 +13,13 @@ export const ResizableImageNode = ({
   editor,
   selected,
 }: NodeViewProps) => {
-  const { src, alt, title, width, align } = node.attrs as {
+  const { src, alt, title, width, align, isUploading } = node.attrs as {
     src: string;
     alt?: string;
     title?: string;
     width?: number;
     align?: 'left' | 'center' | 'right';
+    isUploading?: boolean;
   };
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -33,9 +34,8 @@ export const ResizableImageNode = ({
   const [hasError, setHasError] = useState(false);
 
   const isEditable = editor.isEditable;
-
-  // media:// 프로토콜인지 확인 (아직 resolve 안된 상태)
   const isMediaProtocol = src?.startsWith('media://');
+  const isBlobUrl = src?.startsWith('blob:');
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent, direction: 'left' | 'right') => {
@@ -114,8 +114,8 @@ export const ResizableImageNode = ({
         onMouseLeave={() => !isResizing && setShowControls(false)}
         contentEditable={false}
       >
-        {/* 로딩 상태 또는 media:// 프로토콜일 때 placeholder 표시 */}
-        {(isLoading || isMediaProtocol) && !hasError && (
+        {/* media:// 프로토콜 로딩 상태 */}
+        {isMediaProtocol && !hasError && (
           <div
             className="flex items-center justify-center rounded-lg bg-gray-100"
             style={{
@@ -125,11 +125,7 @@ export const ResizableImageNode = ({
           >
             <div className="flex flex-col items-center gap-2 text-gray-400">
               <ImageIcon className="h-8 w-8 animate-pulse" />
-              {isMediaProtocol ? (
-                <span className="text-xs">이미지 업로드 중...</span>
-              ) : (
-                <span className="text-xs">이미지 로딩 중...</span>
-              )}
+              <span className="text-xs">이미지 업로드 중...</span>
             </div>
           </div>
         )}
@@ -150,27 +146,37 @@ export const ResizableImageNode = ({
           </div>
         )}
 
-        {/* 실제 이미지 - media:// 프로토콜이 아닐 때만 렌더링 */}
+        {/* 이미지 렌더링 */}
         {!isMediaProtocol && !hasError && (
-          <img
-            src={src}
-            alt={alt || ''}
-            title={title}
-            className={`block h-auto max-w-full rounded-lg ${selected ? 'ring-2 ring-blue-500' : ''} ${isLoading ? 'hidden' : ''}`}
-            style={{ width: width ? `${width}px` : 'auto' }}
-            draggable={false}
-            onLoad={() => setIsLoading(false)}
-            onError={() => {
-              setIsLoading(false);
-              setHasError(true);
-            }}
-          />
+          <div className="relative">
+            <img
+              src={src}
+              alt={alt || ''}
+              title={title}
+              className={`block h-auto max-w-full rounded-lg ${selected ? 'ring-2 ring-blue-500' : ''} ${isLoading && !isBlobUrl ? 'hidden' : ''}`}
+              style={{ width: width ? `${width}px` : 'auto' }}
+              draggable={false}
+              onLoad={() => setIsLoading(false)}
+              onError={() => {
+                setIsLoading(false);
+                setHasError(true);
+              }}
+            />
+            {/* 업로드 중 오버레이 */}
+            {isUploading && (
+              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/30">
+                <div className="flex flex-col items-center gap-2">
+                  <ImageIcon className="h-6 w-6 animate-pulse text-white" />
+                  <span className="text-xs text-white">업로드 중...</span>
+                </div>
+              </div>
+            )}
+          </div>
         )}
 
-        {/* 컨트롤 오버레이 */}
+        {/* 편집 컨트롤 */}
         {isEditable && (showControls || selected) && (
           <>
-            {/* 삭제 버튼 */}
             <button
               type="button"
               onClick={() => deleteNode()}
@@ -180,7 +186,6 @@ export const ResizableImageNode = ({
               <X className="h-3 w-3" />
             </button>
 
-            {/* 다운로드 버튼 - media:// 프로토콜이 아닐 때만 표시 */}
             {!isMediaProtocol && (
               <button
                 type="button"
@@ -192,7 +197,6 @@ export const ResizableImageNode = ({
               </button>
             )}
 
-            {/* 정렬 컨트롤 */}
             <div className="absolute bottom-2 left-1/2 z-10 flex -translate-x-1/2 gap-1 rounded-md bg-gray-900/60 p-1">
               <button
                 type="button"
@@ -297,7 +301,6 @@ export const ResizableImageNode = ({
               </button>
             </div>
 
-            {/* 크기 조절 핸들 - 왼쪽 */}
             <div
               className="absolute top-1/2 left-0 z-10 flex h-12 w-3 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize items-center justify-center rounded bg-blue-500 opacity-0 transition-opacity group-hover:opacity-100"
               onMouseDown={(e) => handleMouseDown(e, 'left')}
@@ -305,7 +308,6 @@ export const ResizableImageNode = ({
               <Minimize2 className="h-3 w-3 rotate-45 text-white" />
             </div>
 
-            {/* 크기 조절 핸들 - 오른쪽 */}
             <div
               className="absolute top-1/2 right-0 z-10 flex h-12 w-3 translate-x-1/2 -translate-y-1/2 cursor-ew-resize items-center justify-center rounded bg-blue-500 opacity-0 transition-opacity group-hover:opacity-100"
               onMouseDown={(e) => handleMouseDown(e, 'right')}

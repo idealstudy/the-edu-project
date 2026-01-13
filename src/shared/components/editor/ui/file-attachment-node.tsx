@@ -34,10 +34,11 @@ const getFileIcon = (filename: string) => {
 };
 
 export const FileAttachmentNode = ({ node }: NodeViewProps) => {
-  const { url, name, size } = node.attrs as {
+  const { url, name, size, isUploading } = node.attrs as {
     url: string;
     name: string;
     size: number;
+    isUploading?: boolean;
   };
 
   const handleDownload = () => {
@@ -54,7 +55,11 @@ export const FileAttachmentNode = ({ node }: NodeViewProps) => {
   return (
     <NodeViewWrapper className="file-attachment-wrapper my-2">
       <div
-        className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 p-3 transition-colors hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+        className={`flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 p-3 transition-colors ${
+          isUploading
+            ? 'opacity-60'
+            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+        } dark:border-gray-700 dark:bg-gray-800`}
         contentEditable={false}
       >
         {getFileIcon(name)}
@@ -63,17 +68,24 @@ export const FileAttachmentNode = ({ node }: NodeViewProps) => {
             {name}
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            {formatFileSize(size)}
+            {isUploading ? '업로드 중...' : formatFileSize(size)}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={handleDownload}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700 dark:hover:bg-gray-600 dark:hover:text-gray-300"
-          title="다운로드"
-        >
-          <Download className="h-4 w-4" />
-        </button>
+        {!isUploading && (
+          <button
+            type="button"
+            onClick={handleDownload}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700 dark:hover:bg-gray-600 dark:hover:text-gray-300"
+            title="다운로드"
+          >
+            <Download className="h-4 w-4" />
+          </button>
+        )}
+        {isUploading && (
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" />
+          </div>
+        )}
       </div>
     </NodeViewWrapper>
   );

@@ -1,6 +1,5 @@
 // UI Components
 export { TextEditor } from './ui/text-editor';
-export type { NotionEditorProps } from './ui/text-editor';
 export { TextViewer } from './ui/text-viewer';
 export { EditorToolbar } from './ui/editor-toolbar';
 export { BubbleMenuToolbar } from './ui/bubble-menu-toolbar';
