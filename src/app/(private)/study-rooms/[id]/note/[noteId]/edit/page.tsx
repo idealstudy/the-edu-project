@@ -16,9 +16,7 @@ export default async function StudyNoteEditPage({ params }: Props) {
 
   return (
     <>
-      <div className="mb-6">
-        <BackLink />
-      </div>
+      <BackLink />
 
       <StudyNoteFormProvider
         defaultStudyRoomId={studyRoomId}

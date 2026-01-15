@@ -6,7 +6,7 @@ const ColumnLayout = ({ className, children, ...props }: ColumnLayoutProps) => {
   return (
     <main
       className={cn(
-        'desktop:flex-row flex w-full flex-col justify-center gap-5 py-10',
+        'desktop:flex-row desktop:py-8 flex w-full flex-col justify-center gap-5 py-4',
         className
       )}
       {...props}
@@ -26,7 +26,7 @@ const ColumnLayoutLeft = ({
   return (
     <section
       className={cn(
-        'desktop:w-[360px] desktop:sticky top-[calc(var(--spacing-header-height)+40px)] shrink-0',
+        'desktop:w-[360px] desktop:sticky top-[calc(var(--spacing-header-height)+40px)] w-full shrink-0',
         className
       )}
       {...props}

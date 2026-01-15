@@ -15,9 +15,7 @@ export default async function StudyNoteHomeworkWritePage({ params }: Props) {
 
   return (
     <>
-      <div className="mr-5">
-        <BackLink />
-      </div>
+      <BackLink />
 
       <HomeworkFormProvider studyRoomId={studyRoomId}>
         <HomeworkWriteForm>

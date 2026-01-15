@@ -111,7 +111,7 @@ export default function StepTwo({
             )}
 
             {el.type === 'select' && (
-              <div className="my-6 flex gap-3">
+              <div className="max-desktop:flex-col my-6 flex gap-3">
                 <Form.Item>
                   <Controller
                     name="schoolInfo.schoolLevel"
@@ -125,7 +125,7 @@ export default function StepTwo({
                       >
                         <Select.Trigger
                           placeholder="학교를 선택하세요"
-                          className="w-[240px]"
+                          className="max-desktop:w-full w-[240px]"
                         />
                         <Select.Content>
                           {el.options.school.map((option) => (
@@ -156,7 +156,7 @@ export default function StepTwo({
                         <Select.Trigger
                           placeholder="학년을 선택하세요"
                           disabled={!school}
-                          className="w-[240px]"
+                          className="max-desktop:w-full w-[240px]"
                         />
                         <Select.Content>
                           {el.options.grade
@@ -183,13 +183,13 @@ export default function StepTwo({
         );
       })}
 
-      <div className="flex items-center justify-between space-y-4">
+      <div className="max-desktop:flex-col flex items-center justify-between space-y-4">
         <p className="text-muted-foreground bg-key-color-secondary text-text-sub2 rounded-md p-2 text-sm">
           작성하신 정보는 더 나은 디에듀 서비스를 제공하는데에 활용됩니다.
         </p>
         <Button
           type="button"
-          className="w-48"
+          className="max-desktop:w-full w-48"
           disabled={disabled || !isValid}
           onClick={onRequestSubmit}
         >
