@@ -125,20 +125,20 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
         <div className="flex">
           <Form.Control>
             <Input
-              className="border-r-0"
+              className="border-r-0 rounded-r-none"
               defaultValue={form.getValues('email')}
               readOnly
             />
           </Form.Control>
           <Button
             variant="secondary"
-            className="h-[56px]"
+            className="h-[56px] rounded-l-none shrink-0"
             disabled={!canResend}
             onClick={onSendButtonClick}
           >
-            {resendCountdown !== null
-              ? `${resendCountdown}초 후 재전송`
-              : '전송'}
+            {
+              canResend ? '전송' : `${resendCountdown} 초 후 재전송`
+            }
           </Button>
         </div>
       </Form.Item>
@@ -149,14 +149,14 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
             <Input
               disabled={emailCodeVerified}
               maxLength={VERIFICATION_CODE_LENGTH}
-              className="border-r-0"
+              className="border-r-0 rounded-r-none"
               placeholder="이메일로 전송된 숫자 코드 여섯자리"
               {...form.register('verificationCode')}
             />
           </Form.Control>
 
           <Button
-            className="h-[56px]"
+            className="h-[56px] rounded-l-none shrink-0"
             onClick={onVerifyCodeButtonClick}
             disabled={
               emailCodeVerified ||
