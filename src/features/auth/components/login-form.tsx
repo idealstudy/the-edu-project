@@ -53,7 +53,8 @@ export default function LoginForm() {
   };
 
   const isLoading = isLoggingIn || isSubmitting;
-  const isInValid = Object.keys(errors).length > 0;
+  const isServerError = errors.password?.type === 'server';
+  // const isInValid = Object.keys(errors).length > 0;
 
   return (
     <>
@@ -81,7 +82,8 @@ export default function LoginForm() {
           <Form.ErrorMessage>{errors.email?.message}</Form.ErrorMessage>
         </Form.Item>
 
-        <Form.Item error={!!errors.password}>
+        <Form.Item error={isServerError}>
+        {/* <Form.Item> */}
           <Form.Label>비밀번호</Form.Label>
           <Form.Control>
             <Input
@@ -94,7 +96,8 @@ export default function LoginForm() {
 
         <Button
           type="submit"
-          disabled={isLoading || isInValid}
+          // disabled={isLoading || isInValid}
+          disabled={isLoading}
           className="w-full"
         >
           {isLoading ? '로그인 중...' : '계속'}
