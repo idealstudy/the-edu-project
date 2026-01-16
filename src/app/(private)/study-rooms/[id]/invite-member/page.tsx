@@ -31,7 +31,7 @@ const InviteMemberPage = () => {
   };
 
   return (
-    <div className="desktop:pl-sidebar-width flex flex-col bg-[#F9F9F9]">
+    <div className="flex flex-col bg-[#F9F9F9]">
       {/*<Sidebar />*/}
       <ColumnLayout className="h-[calc(100vh-theme(space.header-height))] container mx-auto flex flex-col items-center overflow-auto pt-0">
         <section className="w-3/4">
@@ -75,13 +75,14 @@ const InviteMemberPage = () => {
               </li>
             </ul>
           </aside>
-          <div className="mt-10 flex items-center justify-between space-y-4">
+
+          <div className="mt-10 flex flex-col gap-4">
             <p className="text-muted-foreground bg-key-color-secondary mb-0 rounded-md p-2 text-sm">
               학생을 초대하지 않아도 스터디룸 기능을 먼저 사용할 수 있어요
             </p>
             <Button
               type="button"
-              className="w-[140px]"
+              className="w-[140px] self-end"
               disabled={!invitation.invitees.size || isPending}
               onClick={handleSubmit}
             >
