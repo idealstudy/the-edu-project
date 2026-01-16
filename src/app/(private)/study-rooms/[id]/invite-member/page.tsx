@@ -33,7 +33,7 @@ const InviteMemberPage = () => {
   return (
     <div className="flex flex-col bg-[#F9F9F9]">
       {/*<Sidebar />*/}
-      <ColumnLayout className="h-[calc(100vh-theme(space.header-height))] container mx-auto flex flex-col items-center overflow-auto pt-0">
+      <ColumnLayout className="container mx-auto flex flex-col items-center overflow-auto py-10">
         <section className="w-3/4">
           <h3
             id="invite-label"

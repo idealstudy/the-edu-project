@@ -62,7 +62,7 @@ export default function StepTwo({
   const school = useWatch({ control, name: 'schoolInfo.schoolLevel' });
 
   React.useEffect(() => {
-    setValue('schoolInfo.grade', '', { shouldValidate: true });
+    setValue('schoolInfo.grade', undefined, { shouldValidate: true });
   }, [school, setValue]);
 
   return (
@@ -146,16 +146,16 @@ export default function StepTwo({
                   <Controller
                     name="schoolInfo.grade"
                     control={control}
-                    rules={{ required: true }}
+                    rules={{ required: school !== 'OTHER' }}
                     render={({ field }) => (
                       <Select
-                        value={field.value}
+                        value={field.value ?? ''}
                         name={field.name}
                         onValueChange={field.onChange}
                       >
                         <Select.Trigger
                           placeholder="학년을 선택하세요"
-                          disabled={!school}
+                          disabled={!school || school === 'OTHER'}
                           className="max-desktop:w-full w-[240px]"
                         />
                         <Select.Content>
@@ -183,13 +183,13 @@ export default function StepTwo({
         );
       })}
 
-      <div className="max-desktop:flex-col flex items-center justify-between space-y-4">
+      <div className="flex flex-col gap-4">
         <p className="text-muted-foreground bg-key-color-secondary text-text-sub2 rounded-md p-2 text-sm">
           작성하신 정보는 더 나은 디에듀 서비스를 제공하는데에 활용됩니다.
         </p>
         <Button
           type="button"
-          className="max-desktop:w-full w-48"
+          className="max-desktop:w-full w-48 self-end"
           disabled={disabled || !isValid}
           onClick={onRequestSubmit}
         >
