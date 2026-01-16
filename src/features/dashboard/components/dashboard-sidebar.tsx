@@ -11,7 +11,8 @@ import {
 import { HomeIcon, PlusIcon, SettingIcon } from '@/shared/components/icons';
 import { Sidebar } from '@/shared/components/sidebar';
 import { PRIVATE } from '@/shared/constants/route';
-import { useRole } from '@/shared/hooks/use-role';
+// import { useRole } from '@/shared/hooks/use-role';
+import { useMemberStore } from '@/store';
 
 export const DashboardSidebar = () => {
   // [CRITICAL TODO: API 구현 누락] useDashboardQuery의 데이터(data)를 사용할 수 있도록 백엔드 API 및 바인딩 작업을 즉시 진행해야 합니다.
@@ -21,15 +22,18 @@ export const DashboardSidebar = () => {
   /* ─────────────────────────────────────────────────────
    * 역할에 따라 다른 쿼리 사용
    * ────────────────────────────────────────────────────*/
+  const session = useMemberStore((s) => s.member);
+  const role = session?.role;
+  const isTeacher = role === "ROLE_TEACHER";
   const { data: teacherStudyRoomList } = useTeacherStudyRoomsQuery({
-    enabled: true,
+    enabled: isTeacher,
   });
 
   const { data: studentStudyRoomList } = useStudentStudyRoomsQuery({
-    enabled: true,
+    enabled: !isTeacher,
   });
 
-  const { role } = useRole();
+  
 
   // 역할에 따라 적절한 리스트 선택
   const studyRoomList =
