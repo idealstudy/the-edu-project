@@ -35,7 +35,7 @@ export const useQnAsQuery = (
       if (role === 'ROLE_STUDENT') return getStudentQnAList(args);
       throw new Error('role not ready');
     },
-    enabled: role === 'ROLE_TEACHER' || role === 'ROLE_STUDENT',
+    enabled: args.studyRoomId === 0 ? false : role === 'ROLE_TEACHER' || role === 'ROLE_STUDENT',
   });
 };
 
@@ -50,7 +50,7 @@ export const useQnADetailQuery = (
       if (role === 'ROLE_STUDENT') return getStudentQnADetail(args);
       throw new Error('role not ready');
     },
-    enabled: role === 'ROLE_TEACHER' || role === 'ROLE_STUDENT',
+    enabled: args.contextId === 0 ? false : role === 'ROLE_TEACHER' || role === 'ROLE_STUDENT',
     staleTime: 0,
     refetchOnMount: 'always',
     refetchOnReconnect: true,
