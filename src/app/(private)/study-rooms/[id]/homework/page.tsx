@@ -51,8 +51,8 @@ export default function HomeworkPage() {
     sortKey: sort,
     keyword: search || undefined,
   };
-  const teacherListQuery = useGetTeacherHomeworkList(studyRoomId, pageable);
-  const studentListQuery = useGetStudentHomeworkList(studyRoomId, pageable);
+  const teacherListQuery = useGetTeacherHomeworkList(role, studyRoomId, pageable);
+  const studentListQuery = useGetStudentHomeworkList(role, studyRoomId, pageable);
 
   const activeQuery =
     role === 'ROLE_TEACHER' ? teacherListQuery : studentListQuery;
