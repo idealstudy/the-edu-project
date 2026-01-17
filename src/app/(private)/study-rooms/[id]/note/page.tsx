@@ -73,6 +73,11 @@ export default function StudyNotePage() {
   const studyNotes =
     role === 'ROLE_TEACHER' ? teacherListQuery.data : studentListQuery.data;
 
+  const isPending =
+    role === 'ROLE_TEACHER'
+      ? teacherListQuery.isPending
+      : studentListQuery.isPending;
+
   // ------------------------------------------------------------------
   // 그룹별 목록 조회
   // TODO: 추후 엔티티분리
@@ -172,6 +177,7 @@ export default function StudyNotePage() {
             ? studyNotes?.content || []
             : studyNotesByGroupId?.content || []
         }
+        isPending={isPending}
         studyRoomId={studyRoomId}
         pageable={pageable}
         keyword={search}

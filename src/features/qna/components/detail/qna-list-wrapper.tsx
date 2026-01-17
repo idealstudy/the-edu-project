@@ -29,7 +29,7 @@ const QuestionListWrapper = ({ studyRoomId, hasBorder }: Props) => {
     sort: [],
   };
 
-  const { data: qnaList } = useQnAsQuery(role, {
+  const { data: qnaList, isPending } = useQnAsQuery(role, {
     studyRoomId,
     pageable,
     status: filter === 'DEFAULT' ? undefined : filter,
@@ -83,6 +83,7 @@ const QuestionListWrapper = ({ studyRoomId, hasBorder }: Props) => {
           <QuestionList
             studyRoomId={studyRoomId}
             data={qnaList?.content || []}
+            isPending={isPending}
           />
         </div>
         <Pagination {...page} />
