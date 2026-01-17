@@ -6,11 +6,8 @@ import { ColumnLayout } from '@/layout/column-layout';
 
 export default function CreateStudyRoomPage() {
   return (
-    <div className="desktop:pl-sidebar-width flex flex-col bg-[#F9F9F9]">
-      {/*<Sidebar />*/}
-      <div className="container mx-auto mb-6">
-        <BackLink />
-      </div>
+    <div className="flex flex-col bg-[#F9F9F9]">
+      <BackLink />
       <ColumnLayout className="container mx-auto">
         <CreateStudyRoomFlow />
       </ColumnLayout>

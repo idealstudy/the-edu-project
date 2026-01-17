@@ -28,8 +28,10 @@ const getTargetUrl = (
     teachingNoteId?: string;
     noticeId?: string;
     homeworkId?: string;
-  }
+  } | null
 ): string | null => {
+  if (!metadata) return null;
+
   switch (category) {
     case 'TEACHING_NOTE':
       return `/study-rooms/${metadata.studyRoomId}/note/${metadata.teachingNoteId}`;

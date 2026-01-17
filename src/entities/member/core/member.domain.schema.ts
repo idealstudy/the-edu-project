@@ -1,6 +1,6 @@
-import { getDisplayName } from '@/entities/member';
 import { z } from 'zod';
 
+import { getDisplayName } from '../mapper/member.mapper';
 import { base } from '../schema';
 
 const toUndef = (v: unknown) => (v === null ? undefined : v);

@@ -69,7 +69,7 @@ export const StudyroomSidebarHeader = ({
       <Image
         src="/studyroom/profile.svg"
         alt="study-room-profile"
-        className="bg-orange-scale-orange-1 rounded-[12px] p-[14px]"
+        className="bg-orange-scale-orange-1 place-self-center rounded-[12px] p-[14px]"
         width={300}
         height={300}
       />

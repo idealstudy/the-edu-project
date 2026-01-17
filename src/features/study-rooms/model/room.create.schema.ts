@@ -32,10 +32,12 @@ export const CreateStudyRoomSchema = z.object({
       schoolLevel: z.enum(['HIGH', 'MIDDLE', 'ELEMENTARY', 'OTHER'], {
         required_error: '학교를 선택해주세요.',
       }),
-      grade: z.coerce.number().int().min(1, '학년을 선택해주세요.'),
+      grade: z.coerce.number().int().optional(),
     })
     .refine(
       ({ schoolLevel, grade }) => {
+        if (schoolLevel === 'OTHER') return grade == null;
+        if (grade == null) return false;
         if (schoolLevel === 'ELEMENTARY') return grade >= 1 && grade <= 6;
         return grade >= 1 && grade <= 3;
       },
