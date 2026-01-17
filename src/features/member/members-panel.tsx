@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import { MemberListItem } from '@/features/member/member-list-item';
-import { SearchFilterBar } from '@/features/qna/components/detail/search-filter-bar';
+import { StudyNoteSearchFilterBar } from '@/features/study-notes/components/search-filter-bar';
 import { useGetTeacherNoteMembers } from '@/features/study-notes/hooks';
 import { useMemberFilter } from '@/features/study-notes/hooks/use-member-filter';
 import { StudyNoteLimit, StudyNoteSortKey } from '@/features/study-notes/model';
@@ -17,7 +17,7 @@ type Props = {
 export default function MembersPanel({ studyRoomId }: Props) {
   const [currentPage, setCurrentPage] = useState(0);
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<StudyNoteSortKey>('LATEST');
+  const [sort, setSort] = useState<StudyNoteSortKey>('LATEST_EDITED');
   const [limit, setLimit] = useState<StudyNoteLimit>(20);
 
   const { data, isLoading } = useGetTeacherNoteMembers({
@@ -40,7 +40,7 @@ export default function MembersPanel({ studyRoomId }: Props) {
   return (
     <div className="mx-auto w-full max-w-3xl rounded-2xl border border-zinc-200 bg-white">
       <div className="border-b border-zinc-200 p-4">
-        <SearchFilterBar
+        <StudyNoteSearchFilterBar
           search={search}
           sort={sort}
           limit={limit}

@@ -1,4 +1,5 @@
 // 수업노트 그룹 생성
+import { StudyRoomDetail } from '@/features/study-rooms/model';
 import { api } from '@/shared/api';
 
 export const createStudyNoteGroup = async (params: {
@@ -30,6 +31,22 @@ export const deleteStudyNoteGroup = async ({
   return await api.private.delete(
     `/teacher/teaching-note-groups/${teachingNoteGroupId}`
   );
+};
+
+// 스터디룸 제목 변경
+export const updateStudyRoom = async ({
+  studyRoomId,
+  others,
+  name,
+}: {
+  studyRoomId: number;
+  others: StudyRoomDetail;
+  name: string;
+}) => {
+  return await api.private.put(`/teacher/study-rooms/${studyRoomId}`, {
+    ...others,
+    name,
+  });
 };
 
 export const deleteStudyRoom = async ({

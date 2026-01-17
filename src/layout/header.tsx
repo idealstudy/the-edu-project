@@ -1,52 +1,79 @@
 'use client';
 
+import { useState } from 'react';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
-// import { useLogoutMutation } from '@/features/auth/services/query';
-
+import { NotificationPopover } from '@/features/notifications/components/notification-popover';
+import {
+  useStudentStudyRoomsQuery,
+  useTeacherStudyRoomsQuery,
+} from '@/features/study-rooms';
+import type {
+  StudentStudyRoom,
+  StudyRoom,
+} from '@/features/study-rooms/model/types';
+import { HomeIcon, PlusIcon, TextIcon } from '@/shared/components/icons';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
-// import { useRouter } from 'next/navigation';
-
-import { PRIVATE, PUBLIC } from '@/shared/constants';
+import {
+  Popover,
+  PopoverContent,
+  PopoverItem,
+  PopoverLink,
+  PopoverNav,
+  PopoverSection,
+  PopoverSeparator,
+  PopoverTrigger,
+} from '@/shared/components/ui/popover';
+import {
+  BUTTON_BASE,
+  FEEDBACK_BUTTON_BASE,
+  PRIVATE,
+  PUBLIC,
+  ROLE_META_MAP,
+} from '@/shared/constants';
+import {
+  trackGnbLogoClick,
+  trackGnbLogoutClick,
+  trackGnbMenuClick,
+  trackGnbProfileClick,
+} from '@/shared/lib/gtm/trackers';
 import { useMemberStore } from '@/store';
 
 export const Header = () => {
   const session = useMemberStore((s) => s.member);
+  const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
 
-  // const router = useRouter();
-  // const { mutate: logout } = useLogoutMutation();
-  const { logout } = useAuth();
-  const handleLogout = () => {
-    void logout();
-    // TODO: 세션 유효한지 확인하는 API / Logout API 부재로
-    // window.location 사용 => 추후에 router.replace로 변경
-    window.location.replace(PUBLIC.CORE.INDEX);
-    // router.replace(ROUTE.HOME);
+  // 역할에 따라 조건부로 API 호출
+  const { data: teacherStudyRoomList } = useTeacherStudyRoomsQuery({
+    enabled: session?.role === 'ROLE_TEACHER',
+  });
+
+  const { data: studentStudyRoomList } = useStudentStudyRoomsQuery({
+    enabled: session?.role === 'ROLE_STUDENT',
+  });
+
+  // 역할에 따라 적절한 리스트 선택
+  const studyRoomList: StudyRoom[] | StudentStudyRoom[] | undefined =
+    session?.role === 'ROLE_TEACHER'
+      ? teacherStudyRoomList
+      : session?.role === 'ROLE_STUDENT'
+        ? studentStudyRoomList
+        : undefined;
+
+  const goToMypage = () => {
+    router.push('/mypage');
   };
 
-  const roleMetaMap = {
-    ROLE_ADMIN: {
-      label: '관리자',
-      className: 'border-white text-white',
-    },
-    ROLE_STUDENT: {
-      label: '학생',
-      className: 'border-white text-white',
-    },
-    ROLE_PARENT: {
-      label: '보호자',
-      className: 'border-orange-scale-orange-20 text-orange-scale-orange-20',
-    },
-    ROLE_TEACHER: {
-      label: '선생님',
-      className: 'border-key-color-primary text-key-color-primary',
-    },
-  } as const;
-
-  const buttonBase =
-    'cursor-pointer border border-[#1A1A1A] px-6 py-3 text-base font-bold text-white';
+  const { logout } = useAuth();
+  const handleLogout = () => {
+    logout();
+    trackGnbLogoutClick(session?.role ?? null);
+  };
 
   return (
     <header className="h-header-height fixed top-0 right-0 left-0 z-10 flex items-center border-b border-gray-200 bg-[#1A1A1A] px-8">
@@ -56,6 +83,10 @@ export const Header = () => {
             href={
               session === null ? PUBLIC.CORE.INDEX : PRIVATE.DASHBOARD.INDEX
             }
+            onClick={() => {
+              // GNB 로고 클릭 이벤트 전송
+              trackGnbLogoClick(session?.role ?? null);
+            }}
           >
             <Image
               src={'/logo.svg'}
@@ -71,6 +102,20 @@ export const Header = () => {
             width={44}
             height={20}
           />
+          <Link
+            href="https://forms.gle/ktLvekAsKTkqTcpQ6"
+            className={`${FEEDBACK_BUTTON_BASE} ml-2`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              src="/ic_question_mark.svg"
+              alt="피드백"
+              width={16}
+              height={16}
+            />
+            소중한 의견 보내기
+          </Link>
           {session && (
             <>
               {/* <Link
@@ -79,73 +124,181 @@ export const Header = () => {
               >
                 대시보드
               </Link> */}
-              <Link
-                href=""
-                className="mx-2 text-white"
-                onClick={() => {
-                  alert('서비스 준비 중입니다');
-                }}
-              >
-                공지사항
-              </Link>
             </>
           )}
         </div>
         {session && (
-          <div className="flex items-center">
-            <Image
-              src={'/img_header_bell.svg'}
-              alt="알림 벨 아이콘"
-              width={24}
-              height={24}
-              className="mr-8 cursor-pointer"
-            />
+          <div className="desktop:gap-4 flex items-center gap-1">
+            <NotificationPopover />
 
             <DropdownMenu>
-              <DropdownMenu.Trigger className="flex cursor-pointer items-center justify-center">
+              <DropdownMenu.Trigger
+                className="flex cursor-pointer items-center justify-center"
+                onClick={() => {
+                  // GNB 프로필 조회 클릭 이벤트 전송
+                  trackGnbProfileClick(session?.role ?? null);
+                }}
+              >
                 <Image
                   src={'/img_header_profile.svg'}
                   alt="프로필 사진"
                   width={48}
                   height={48}
-                  className="desktop:flex mr-4 hidden cursor-pointer rounded-full"
+                  className="desktop:flex hidden cursor-pointer rounded-full"
                 />
               </DropdownMenu.Trigger>
               <DropdownMenu.Content>
+                <DropdownMenu.Item onClick={() => goToMypage()}>
+                  마이페이지
+                </DropdownMenu.Item>
                 <DropdownMenu.Item onClick={() => handleLogout()}>
                   로그아웃
                 </DropdownMenu.Item>
               </DropdownMenu.Content>
             </DropdownMenu>
 
-            <p className="desktop:flex mr-2 hidden items-center gap-2 text-[14px] font-[600] text-white">
-              {session.nickname}
-            </p>
             {session?.role && (
-              <div className="desktop:flex hidden items-center gap-2 rounded-[40px] border px-2 py-[2px] text-[12px] font-[400px] text-[#ffffff]">
-                {roleMetaMap[session.role]?.label}
+              <div className="desktop:flex hidden items-center rounded-[40px] border px-2 py-[2px] text-[12px] font-[400px] text-[#ffffff]">
+                {ROLE_META_MAP[session.role]?.label}
               </div>
             )}
-            <Image
-              src={'/ic_hamburger.svg'}
-              alt="햄버거 메뉴 아이콘"
-              width={24}
-              height={24}
-              className="desktop:hidden mr-4 flex cursor-pointer"
-            />
+            <Popover
+              open={isOpen}
+              onOpenChange={setIsOpen}
+            >
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  aria-label="햄버거 메뉴"
+                  className="desktop:hidden mr-4 flex h-10 w-10 items-center justify-center rounded-lg transition-colors hover:bg-gray-800"
+                  onClick={() => {
+                    trackGnbMenuClick(session?.role ?? null);
+                  }}
+                >
+                  <Image
+                    src={'/ic_hamburger.svg'}
+                    alt="햄버거 메뉴 아이콘"
+                    width={24}
+                    height={24}
+                  />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="end"
+                className="w-[320px]"
+              >
+                <PopoverNav>
+                  {/* 홈 링크 */}
+                  <PopoverLink
+                    href={PRIVATE.DASHBOARD.INDEX}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <HomeIcon />
+                    <span>홈</span>
+                  </PopoverLink>
+
+                  {/* 스터디룸 섹션 */}
+                  <div className="mt-2 flex flex-col gap-1">
+                    <PopoverSection
+                      action={
+                        session?.role === 'ROLE_TEACHER' ? (
+                          <Link
+                            href={PRIVATE.ROOM.CREATE}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 transition-colors hover:bg-gray-200"
+                            onClick={() => setIsOpen(false)}
+                            aria-label="스터디룸 생성"
+                          >
+                            <PlusIcon />
+                          </Link>
+                        ) : null
+                      }
+                    >
+                      <TextIcon />
+                      <span>스터디룸</span>
+                    </PopoverSection>
+
+                    {/* 스터디룸 리스트 */}
+                    {studyRoomList && studyRoomList.length > 0 ? (
+                      <div className="flex flex-col gap-1">
+                        {studyRoomList.map((item) => (
+                          <PopoverLink
+                            key={item.id}
+                            href={PRIVATE.ROOM.DETAIL(item.id)}
+                            onClick={() => setIsOpen(false)}
+                            className="text-gray-600 hover:text-gray-900"
+                          >
+                            {item.name}
+                          </PopoverLink>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="px-3 py-2 text-sm text-gray-400">
+                        스터디룸이 없습니다
+                      </p>
+                    )}
+                  </div>
+
+                  <PopoverSeparator />
+
+                  {/* 프로필 정보 */}
+                  <div className="flex items-center justify-between px-3 py-2">
+                    <div className="flex items-center gap-3">
+                      <Image
+                        src={'/img_header_profile.svg'}
+                        alt="프로필 사진"
+                        width={40}
+                        height={40}
+                        className="rounded-full"
+                      />
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-900">
+                          {session?.name || '사용자'}
+                        </span>
+                        {session?.role && (
+                          <span className="text-xs text-gray-500">
+                            {ROLE_META_MAP[session.role]?.label}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 액션 버튼들 */}
+                  <div className="mt-2 flex flex-col gap-1">
+                    <PopoverItem
+                      onClick={() => {
+                        goToMypage();
+                        setIsOpen(false);
+                      }}
+                    >
+                      마이페이지
+                    </PopoverItem>
+                    <PopoverItem
+                      variant="danger"
+                      onClick={() => {
+                        handleLogout();
+                        setIsOpen(false);
+                      }}
+                    >
+                      로그아웃
+                    </PopoverItem>
+                  </div>
+                </PopoverNav>
+              </PopoverContent>
+            </Popover>
           </div>
         )}
         {!session && (
           <div className="flex gap-5">
             <Link
               href={PUBLIC.CORE.LOGIN}
-              className={buttonBase}
+              className={BUTTON_BASE}
             >
               로그인
             </Link>
             <Link
               href={PUBLIC.CORE.SIGNUP}
-              className={`${buttonBase} bg-key-color-primary hover:bg-key-color-secondary`}
+              className={`${BUTTON_BASE} bg-key-color-primary hover:bg-key-color-secondary`}
             >
               디에듀 시작하기
             </Link>

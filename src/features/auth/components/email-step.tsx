@@ -6,6 +6,8 @@ import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 import { PUBLIC } from '@/shared/constants/route';
+import { extractErrorMessage } from '@/shared/lib/bff/utils.message';
+import { AxiosError } from 'axios';
 
 import { useCheckEmailDuplicate } from '../services/query';
 import { useRegisterFormContext } from './register-form-context-provider';
@@ -28,10 +30,26 @@ export const EmailStep = ({ onNext }: EmailStepProps) => {
         onSuccess: () => {
           onNext();
         },
-        onError: () => {
+        onError: (error: unknown) => {
+          // 서버 메시지 우선 사용, 없으면 기본 메시지
+          let message = '이미 사용중인 이메일입니다.';
+
+          if (error instanceof AxiosError) {
+            const serverMessage = extractErrorMessage(error.response?.data);
+            if (serverMessage) {
+              message = serverMessage;
+            } else if (error.response?.status === 500) {
+              message = '서버 오류가 발생했습니다. 잠시 후 다시 시도하주세요.';
+            } else if (!error.response) {
+              message = '네트워크 오류가 발생했습니다. 연결을 확인해주세요.';
+            }
+          } else if (error instanceof Error) {
+            message = error.message || message;
+          }
+
           form.setError('email', {
             type: 'server',
-            message: '이미 사용중인 이메일입니다.',
+            message,
           });
         },
       }
@@ -58,15 +76,16 @@ export const EmailStep = ({ onNext }: EmailStepProps) => {
       >
         계속
       </Button>
-      <Link
-        className="flex w-fit gap-2 self-center"
-        href={PUBLIC.CORE.LOGIN}
-      >
-        <span className="text-gray-scale-gray-70 underline">
-          이미 가입 하셨나요?
-        </span>
-        로그인
-      </Link>
+
+      <div className="flex justify-center gap-2">
+        <span>이미 가입 하셨나요?</span>
+        <Link
+          href={PUBLIC.CORE.LOGIN}
+          className="text-key-color-primary w-fit underline"
+        >
+          로그인
+        </Link>
+      </div>
     </div>
   );
 };

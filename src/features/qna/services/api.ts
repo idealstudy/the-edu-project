@@ -104,3 +104,79 @@ export const getTeacherQnADetail = async (args: {
 
   return response.data;
 };
+
+// PATCH /api/study-rooms/{studyRoomId}/qna/{contextId}/messages/{messageId} - 학생 메시지 수정
+export const updateStudentQnAMessage = async (args: {
+  studyRoomId: number;
+  contextId: number;
+  messageId: number;
+  content: string;
+}) => {
+  await api.private.patch(
+    `/study-rooms/${args.studyRoomId}/qna/${args.contextId}/messages/${args.messageId}`,
+    { content: args.content }
+  );
+};
+
+// DELETE /api/study-rooms/{studyRoomId}/qna/{contextId}/messages/{messageId} - 학생 메시지 삭제
+export const deleteStudentQnAMessage = async (args: {
+  studyRoomId: number;
+  contextId: number;
+  messageId: number;
+}) => {
+  await api.private.delete(
+    `/study-rooms/${args.studyRoomId}/qna/${args.contextId}/messages/${args.messageId}`
+  );
+};
+
+// PATCH /api/study-rooms/{studyRoomId}/qna/{contextId}/messages/{messageId} - 선생님 메시지 수정
+// 백엔드 스펙: PATCH/DELETE는 /api/study-rooms/... 사용 (학생/선생님 공통)
+// answers는 POST만 존재하고, 수정/삭제는 messages 엔드포인트 사용
+export const updateTeacherQnAMessage = async (args: {
+  studyRoomId: number;
+  contextId: number;
+  messageId: number;
+  content: string;
+}) => {
+  await api.private.patch(
+    `/study-rooms/${args.studyRoomId}/qna/${args.contextId}/messages/${args.messageId}`,
+    { content: args.content }
+  );
+};
+
+// DELETE /api/study-rooms/{studyRoomId}/qna/{contextId}/messages/{messageId} - 선생님 메시지 삭제
+// 백엔드 스펙: PATCH/DELETE는 /api/study-rooms/... 사용 (학생/선생님 공통)
+// answers는 POST만 존재하고, 수정/삭제는 messages 엔드포인트 사용
+export const deleteTeacherQnAMessage = async (args: {
+  studyRoomId: number;
+  contextId: number;
+  messageId: number;
+}) => {
+  await api.private.delete(
+    `/study-rooms/${args.studyRoomId}/qna/${args.contextId}/messages/${args.messageId}`
+  );
+};
+
+// PATCH /api/study-rooms/{studyRoomId}/qna/{contextId} - QNA 질문 제목 수정
+// 학생: 본인 QnA만, 선생님: 모든 QnA
+export const updateQnATitle = async (args: {
+  studyRoomId: number;
+  contextId: number;
+  title: string;
+}) => {
+  await api.private.patch(
+    `/study-rooms/${args.studyRoomId}/qna/${args.contextId}`,
+    { title: args.title }
+  );
+};
+
+// DELETE /api/study-rooms/{studyRoomId}/qna/{contextId} - QNA 컨텍스트(질문) 삭제
+// 학생: 본인 QnA만, 선생님: 모든 QnA
+export const deleteQnA = async (args: {
+  studyRoomId: number;
+  contextId: number;
+}) => {
+  await api.private.delete(
+    `/study-rooms/${args.studyRoomId}/qna/${args.contextId}`
+  );
+};

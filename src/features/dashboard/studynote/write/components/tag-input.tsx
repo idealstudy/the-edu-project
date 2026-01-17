@@ -18,6 +18,7 @@ type TagInputProps = {
   selected: CourseTargetStudentInfo[] | undefined;
   onChange: (selected: CourseTargetStudentInfo[]) => void;
   error?: boolean;
+  placeholder: string;
   disabled?: boolean;
 };
 
@@ -26,6 +27,7 @@ export default function TagInput({
   selected = [],
   onChange,
   error,
+  placeholder,
   disabled,
 }: TagInputProps) {
   const [input, setInput] = React.useState('');
@@ -73,7 +75,7 @@ export default function TagInput({
             }}
           >
             {selected.length <= 0 ? (
-              '이 수업을 들은 학생을 선택해 주세요'
+              `${placeholder}`
             ) : (
               <>
                 {/* 선택된 학생 태그들 */}
@@ -131,7 +133,7 @@ export default function TagInput({
 
           {filtered.length === 0 ? (
             <div className="p-4 text-center text-gray-400">
-              검색 결과가 없습니다
+              검색 결과가 없습니다.
             </div>
           ) : (
             <div className="mt-4 flex max-h-[150px] flex-wrap gap-2 overflow-y-auto">

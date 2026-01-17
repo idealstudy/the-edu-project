@@ -1,4 +1,12 @@
-export type DialogScope = 'group' | 'studyroom' | 'note' | 'invite';
+export type DialogScope =
+  | 'group'
+  | 'studyroom'
+  | 'note'
+  | 'invite'
+  | 'qna'
+  | 'homework'
+  | 'notification'
+  | 'profile';
 
 export type DialogKind =
   | 'rename'
@@ -6,7 +14,8 @@ export type DialogKind =
   | 'delete'
   | 'onConfirm'
   | 'create'
-  | 'invite';
+  | 'invite'
+  | 'select-representative';
 
 export type DialogState =
   | { status: 'idle' }
@@ -20,6 +29,7 @@ export type DialogState =
         initialTitle?: string;
         groupId?: number;
         studyRoomId?: number;
+        homeworkId?: number;
       };
     };
 
@@ -34,6 +44,7 @@ export type DialogAction =
         initialTitle?: string;
         groupId?: number;
         studyRoomId?: number;
+        homeworkId?: number;
       };
     }
   | { type: 'GO_TO_CONFIRM' }

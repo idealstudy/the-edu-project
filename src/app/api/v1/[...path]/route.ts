@@ -15,6 +15,19 @@ if (!serverEnv.backendApiUrl) throw new Error('BASE_URL is not defined');
  *
  * 특정 라우트(/api/v1/auth/login 등)가 있으면 해당 라우트가 우선 처리됩니다.
  */
+/**
+ * ROLE_* 값을 API 경로 prefix로 변환
+ * - ROLE_TEACHER → teacher
+ * - ROLE_STUDENT → student
+ */
+function normalizeRoleInPath(segments: string[]): string[] {
+  return segments.map((segment) => {
+    if (segment === 'ROLE_TEACHER') return 'teacher';
+    if (segment === 'ROLE_STUDENT') return 'student';
+    return segment;
+  });
+}
+
 async function handleRequest(
   request: NextRequest,
   context: { params: Promise<{ path: string[] }> }
@@ -23,7 +36,9 @@ async function handleRequest(
   const { searchParams } = request.nextUrl;
   const params = await context.params;
   const pathSegments = params.path;
-  const backendPath = `/${pathSegments.join('/')}`;
+  // ROLE_* 값을 API 경로 prefix로 변환
+  const normalizedSegments = normalizeRoleInPath(pathSegments);
+  const backendPath = `/${normalizedSegments.join('/')}`;
 
   // 쿼리 파라미터 추가
   const queryString = searchParams.toString();
@@ -55,7 +70,12 @@ async function handleRequest(
 
   // 요청 본문 처리
   let requestBody: string | undefined;
-  if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
+  if (
+    method === 'POST' ||
+    method === 'PUT' ||
+    method === 'PATCH' ||
+    method === 'DELETE'
+  ) {
     try {
       requestBody = await request.text();
     } catch {
@@ -64,12 +84,36 @@ async function handleRequest(
     }
   }
 
+  // 개발 환경에서 백엔드 요청 로그
+  console.log('[BFF] → Backend Request:', {
+    method,
+    url: backendUrl,
+    hasCookies: !!cookieHeader,
+    hasBody: !!requestBody,
+    cookieNames: cookieHeader
+      ? cookieHeader
+          .split(';')
+          .map((c) => c.split('=')[0]?.trim() ?? '')
+          .filter(Boolean)
+      : [],
+  });
+
   // 백엔드로 요청 전송
   const backendResponse = await fetch(backendUrl, {
     method,
     headers: requestHeaders,
     body: requestBody,
     cache: 'no-store',
+  });
+
+  // 개발 환경에서 백엔드 응답 로그
+  const responseClone = backendResponse.clone();
+  const responseText: string = await responseClone.text();
+  console.log('[BFF] ← Backend Response:', {
+    status: backendResponse.status,
+    statusText: backendResponse.statusText,
+    bodyLength: responseText.length,
+    preview: responseText.substring(0, 300),
   });
 
   // 응답 본문 파싱

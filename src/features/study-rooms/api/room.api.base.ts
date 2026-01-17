@@ -1,11 +1,12 @@
+import { Invitee } from '@/features/study-rooms/hooks/useInvitationController';
 import type {
-  Invitation,
   MemberInvitation,
   SearchInvitationPayload,
   StudentStudyRoom,
   StudyNoteGroup,
   StudyRoom,
   StudyRoomClient,
+  StudyRoomDetail,
 } from '@/features/study-rooms/model';
 import { StudyRoomFormValues } from '@/features/study-rooms/model/room.create.schema';
 import { api } from '@/shared/api';
@@ -18,19 +19,21 @@ export type InvitationAcceptResponse = unknown;
 
 export interface TeacherStudyRoomRequests {
   getStudyRooms(): Promise<StudyRoom[]>;
+  getStudyRoomDetail(studyRoomId: number): Promise<StudyRoomDetail>;
   create(payload: StudyRoomFormValues): Promise<StudyRoom>;
   invitations: {
     send(args: {
       studyRoomId: number;
       emails: string[];
     }): Promise<MemberInvitation>;
-    search(args: SearchInvitationPayload): Promise<Invitation>;
+    search(args: SearchInvitationPayload): Promise<Invitee[]>;
   };
   getStudyNoteGroup(args: GroupApiArgs): Promise<GroupListResponse>;
 }
 
 export interface StudentStudyRoomRequests {
   getStudyRooms(): Promise<StudentStudyRoom[]>;
+  getStudyRoomDetail(studyRoomId: number): Promise<StudyRoomDetail>;
   getStudentStudyNoteGroup(args: GroupApiArgs): Promise<GroupListResponse>;
   acceptInvitation(
     invitationId: number | string
@@ -48,7 +51,7 @@ export interface StudyRoomRequests {
       studyRoomId: number;
       emails: string[];
     }): Promise<MemberInvitation>;
-    search(args: SearchInvitationPayload): Promise<Invitation>;
+    search(args: SearchInvitationPayload): Promise<Invitee[]>;
   };
   getStudyNoteGroup(args: GroupApiArgs): Promise<GroupListResponse>;
 

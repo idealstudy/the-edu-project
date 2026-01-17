@@ -4,17 +4,21 @@ import { useForm } from 'react-hook-form';
 
 import Link from 'next/link';
 
+import SocialLoginButton from '@/features/auth/components/social-login-button';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
+import { PUBLIC } from '@/shared/constants';
+import { extractErrorMessage } from '@/shared/lib/bff/utils.message';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AxiosError } from 'axios';
 
 import { LoginFormValues, loginSchema } from '../schemas/login';
 
 const LoginFormtwStyles = {
-  wrapper: 'space-y-10 pb-[138px] pt-[42px]',
-  link: 'text-key-color-primary underline mx-auto w-fit',
+  wrapper: 'space-y-10 pb-10 pt-4',
+  link: 'text-key-color-primary underline w-fit',
 };
 
 export default function LoginForm() {
@@ -33,9 +37,16 @@ export default function LoginForm() {
   const onSubmit = async (data: LoginFormValues) => {
     login(data, {
       onError: (error) => {
+        let message = '로그인에 실패하였습니다. 잠시 후 다시 시도하주세요.';
+
+        if (error instanceof AxiosError) {
+          const serverMessage = extractErrorMessage(error.response?.data);
+          message = serverMessage || message;
+        }
+
         setError('password', {
           type: 'server',
-          message: error.message || '서버에서 에러가 발생하였습니다.',
+          message,
         });
       },
     });
@@ -45,43 +56,60 @@ export default function LoginForm() {
   const isInValid = Object.keys(errors).length > 0;
 
   return (
-    <Form
-      onSubmit={handleSubmit(onSubmit)}
-      className={LoginFormtwStyles.wrapper}
-    >
-      <Form.Item error={!!errors.email}>
-        <Form.Label>이메일</Form.Label>
-        <Form.Control>
-          <Input
-            type="email"
-            {...register('email')}
-          />
-        </Form.Control>
-        <Form.ErrorMessage>{errors.email?.message}</Form.ErrorMessage>
-      </Form.Item>
+    <>
+      <p className="mt-10 w-fit text-[20px] font-medium">소셜 로그인</p>
+      <SocialLoginButton />
 
-      <Form.Item error={!!errors.password}>
-        <Form.Label>비밀번호</Form.Label>
-        <Form.Control>
-          <Input
-            type="password"
-            {...register('password')}
-          />
-        </Form.Control>
-        <Form.ErrorMessage>{errors.password?.message}</Form.ErrorMessage>
-      </Form.Item>
+      <div className="text-text-sub2 mt-10 flex items-center justify-between gap-1">
+        <hr className="border-line-line2 flex-1 border" />
+        <span>D&apos;edu로 이메일로 로그인</span>
+        <hr className="border-line-line2 flex-1 border" />
+      </div>
 
-      <Button
-        type="submit"
-        disabled={isLoading || isInValid}
-        className="w-full"
+      <Form
+        onSubmit={handleSubmit(onSubmit)}
+        className={LoginFormtwStyles.wrapper}
       >
-        {isLoading ? '로그인 중...' : '계속'}
-      </Button>
+        <Form.Item error={!!errors.email}>
+          <Form.Label>이메일</Form.Label>
+          <Form.Control>
+            <Input
+              type="email"
+              {...register('email')}
+            />
+          </Form.Control>
+          <Form.ErrorMessage>{errors.email?.message}</Form.ErrorMessage>
+        </Form.Item>
 
-      <Link href={'#'}>
-        <p className={LoginFormtwStyles.link}>로그인이 안되시나요?</p>
-      </Link>
-    </Form>
+        <Form.Item error={!!errors.password}>
+          <Form.Label>비밀번호</Form.Label>
+          <Form.Control>
+            <Input
+              type="password"
+              {...register('password')}
+            />
+          </Form.Control>
+          <Form.ErrorMessage>{errors.password?.message}</Form.ErrorMessage>
+        </Form.Item>
+
+        <Button
+          type="submit"
+          disabled={isLoading || isInValid}
+          className="w-full"
+        >
+          {isLoading ? '로그인 중...' : '계속'}
+        </Button>
+
+        <div className="flex justify-center gap-2">
+          <span>아직 회원이 아니신가요?</span>
+          <Link
+            href={PUBLIC.CORE.SIGNUP}
+            className={LoginFormtwStyles.link}
+          >
+            회원가입
+          </Link>
+        </div>
+      </Form>
+    </>
   );
 }

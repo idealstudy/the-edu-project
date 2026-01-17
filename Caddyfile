@@ -7,8 +7,8 @@ app.dev.the-edu.site {
 
     # 스프링
     @api path /api/*
-    reverse_proxy @api https://api.dev.the-edu.site {
-    header_up Host api.dev.the-edu.site
+    reverse_proxy @api https://api.dev.d-edu.site {
+    header_up Host api.dev.d-edu.site
     # 필요시 원본 Host 유지하려면(아래 주석 해제)
     # header_up Host {http.reverse_proxy.upstream.hostport}
     }

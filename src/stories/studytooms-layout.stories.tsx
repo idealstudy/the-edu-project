@@ -39,12 +39,6 @@ export const Default: Story = {
   render: () => (
     <div className="w-[740px]">
       <StudyRoomDetailLayout
-        search=""
-        sort="LATEST"
-        limit={20}
-        onSearch={() => {}}
-        onSortChange={() => {}}
-        onLimitChange={() => {}}
         page={{
           page: 0,
           totalPages: 10,
@@ -87,6 +81,7 @@ export const Default: Story = {
           studyRoomId={1}
           pageable={{ page: 0, size: 20, sortKey: 'LATEST_EDITED' }}
           keyword=""
+          onRefresh={() => {}}
         />
       </StudyRoomDetailLayout>
     </div>
@@ -97,12 +92,6 @@ export const StudyroomStudentsListItem: Story = {
   render: () => (
     <div className="w-[740px]">
       <StudyRoomDetailLayout
-        search=""
-        sort="LATEST"
-        limit={20}
-        onSearch={() => {}}
-        onSortChange={() => {}}
-        onLimitChange={() => {}}
         page={{
           page: 0,
           totalPages: 10,
@@ -121,7 +110,6 @@ export const StudyroomStudentsListItem: Story = {
             </div>
           }
           subtitle="kimdedu@dedu.com"
-          date="3일전 가입"
           href="/"
           icon={
             <Image

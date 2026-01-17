@@ -19,8 +19,12 @@ const RoleRadioGroupItem = ({
   return (
     <RadioGroupPrimitives.Item
       className={cn(
-        'text-gray-scale-gray-50 border-gray-scale-gray-10 flex h-[180px] w-[174px] cursor-pointer flex-col items-center justify-center gap-2 border pt-6 pb-3 font-medium',
-        'mock-[state=checked]:border-line-primary mock-[state=checked]:text-text-main mock-[state=checked]:outline-key-color-primary mock-[state=checked]:outline-1',
+        // 기본 스타일
+        'text-gray-scale-gray-50 border-gray-scale-gray-10 flex h-[180px] w-[174px] cursor-pointer flex-col items-center justify-center gap-2 border pt-6 pb-3 font-medium transition-all duration-200',
+        // 호버 효과
+        'hover:border-key-color-primary hover:bg-orange-scale-orange-1 hover:text-text-main',
+        // 선택된 상태 (Radix UI는 data-[state=checked] 사용)
+        'data-[state=checked]:border-key-color-primary data-[state=checked]:bg-orange-scale-orange-1 data-[state=checked]:text-text-main data-[state=checked]:outline-key-color-primary data-[state=checked]:shadow-[0_4px_12px_rgba(255,72,5,0.15)] data-[state=checked]:outline data-[state=checked]:outline-2',
         className
       )}
       {...props}
@@ -52,7 +56,7 @@ export const RoleRadioGroup = ({
         <Image
           width={100}
           height={124}
-          src="/img_signup_type01.png"
+          src="/character/img_signup_type01.png"
           alt="선생님"
         />
         선생님
@@ -61,7 +65,7 @@ export const RoleRadioGroup = ({
         <Image
           width={108}
           height={124}
-          src="/img_signup_type02.png"
+          src="/character/img_signup_type02.png"
           alt="학생"
         />
         학생
@@ -70,7 +74,7 @@ export const RoleRadioGroup = ({
         <Image
           width={132}
           height={120}
-          src="/img_signup_type03.png"
+          src="/character/img_signup_type03.png"
           alt="학부모"
         />
         학부모

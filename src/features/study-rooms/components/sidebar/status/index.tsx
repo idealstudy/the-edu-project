@@ -1,26 +1,14 @@
 // type IconCmp = React.ComponentType<React.SVGProps<SVGSVGElement>>;
 
-export const StudyStats = () => {
-  // TODO: 매핑 방식으로 변경하려고 했으나 SVG 오류
-  // const studyIcons: { name: string; Icon: IconCmp; count: string }[] = [
-  //   {
-  //     name: '수업노트',
-  //     Icon: Icon.Notebook,
-  //     count: '999장',
-  //   },
-  //   {
-  //     name: '학생',
-  //     Icon: Icon.Person,
-  //     count: '999명',
-  //   },
-
-  //   {
-  //     name: '질문',
-  //     Icon: Icon.Question,
-  //     count: '999개',
-  //   },
-  // ];
-
+export const StudyStats = ({
+  numberOfTeachingNote,
+  numberOfStudents,
+  numberOfQuestion,
+}: {
+  numberOfTeachingNote?: number;
+  numberOfStudents?: number;
+  numberOfQuestion?: number;
+}) => {
   return (
     <ul className="flex items-center justify-between px-3 py-4">
       <li
@@ -33,7 +21,7 @@ export const StudyStats = () => {
           수업노트
         </p>
         <p className="font-headline2-heading text-key-color-primary text-center">
-          999장
+          {numberOfTeachingNote != null ? `${numberOfTeachingNote}장` : '0장'}
         </p>
       </li>
       <li
@@ -45,7 +33,7 @@ export const StudyStats = () => {
           학생
         </p>
         <p className="font-headline2-heading text-key-color-primary text-center">
-          999명
+          {numberOfStudents != null ? `${numberOfStudents}명` : '0명'}
         </p>
       </li>
       <li
@@ -57,7 +45,7 @@ export const StudyStats = () => {
           질문
         </p>
         <p className="font-headline2-heading text-key-color-primary text-center">
-          999개
+          {numberOfQuestion != null ? `${numberOfQuestion}개` : '0개'}
         </p>
       </li>
     </ul>

@@ -33,26 +33,40 @@ jobs:
           git config user.name "park J"
           git config user.email "youremail@example.com"
 
-      - name: Add remote to team repo (the-edu)
+      - name: Set up SSH
         run: |
-          git remote add personal-repo https://the-edu:${{ secrets.PERSONAL_REPO_TOKEN }}@github.com/the-edu/the-edu-project.git
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-      - name: Push to same branch on team repo
+      - name: Add remote to deployment repo (idealstudy/the-edu-project)
+        run: |
+          git remote add deployment-repo git@github.com:idealstudy/the-edu-project.git
+
+      - name: Push to same branch on deployment repo
         run: |
           BRANCH="${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}"
-          git push -f personal-repo HEAD:"$BRANCH"
+          git push -f deployment-repo HEAD:"$BRANCH"
 
       - name: Cleanup remote
-        run: git remote remove personal-repo
+        run: git remote remove deployment-repo
 
   sync-delete:
     if: github.event_name == 'delete' && github.event.ref_type == 'branch'
     runs-on: ubuntu-latest
     steps:
-      - name: Delete branch on team repo
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Delete branch on deployment repo
         run: |
           REF="${{ github.event.ref }}"
           BRANCH="${REF#refs/heads/}"
           git init
-          git remote add personal-repo https://the-edu:${{ secrets.PERSONAL_REPO_TOKEN }}@github.com/the-edu/the-edu-project.git
-          git push personal-repo --delete "$BRANCH" || true
+          git remote add deployment-repo git@github.com:idealstudy/the-edu-project.git
+          git push deployment-repo --delete "$BRANCH" || true

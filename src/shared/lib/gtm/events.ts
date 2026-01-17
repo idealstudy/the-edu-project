@@ -1,0 +1,271 @@
+/**
+ * GA4 이벤트 타입 정의
+ *
+ * 확장 가능한 구조로 이벤트를 관리합니다.
+ * 새로운 이벤트 추가 시 이 파일에 타입을 정의하면 타입 안전성이 보장됩니다.
+ */
+import type { Role } from '@/entities/member';
+
+import { getGaUserType } from '../gtm';
+
+/**
+ * 공통 파라미터 타입
+ */
+export interface CommonEventParams {
+  user_type: 'teacher' | 'student' | 'guardian' | 'not';
+}
+
+/**
+ * room_id가 포함된 이벤트 파라미터
+ */
+export interface RoomEventParams extends CommonEventParams {
+  room_id: number;
+}
+
+/**
+ * 스터디룸 생성 이벤트 파라미터
+ */
+export interface StudyroomCreateParams extends CommonEventParams {
+  user_id: number;
+  title_length: number;
+  description_length: number;
+}
+
+/**
+ * 수업노트 작성 진입 이벤트 파라미터
+ */
+export interface StudynoteCreateEnterParams extends RoomEventParams {
+  has_title: boolean;
+  title_length: number;
+}
+
+/**
+ * 수업노트 작성/저장 이벤트 파라미터
+ */
+export interface StudynoteCreateParams extends RoomEventParams {
+  has_group: boolean;
+  has_title: boolean;
+  has_student: boolean;
+  study_date: string | null;
+  has_content: boolean;
+  image_count: number;
+  visibility: 'PUBLIC' | 'PRIVATE';
+}
+
+/**
+ * 수업노트 복제 이벤트 파라미터
+ */
+export interface StudynoteDuplicateParams extends RoomEventParams {
+  note_id: number;
+  group_id: number | null;
+  has_title: boolean;
+  has_student: boolean;
+  date: string | null;
+  has_content: boolean;
+  visibility: 'PUBLIC' | 'PRIVATE';
+}
+
+/**
+ * 스터디룸 제목 수정 이벤트 파라미터
+ */
+export interface StudyroomTitleUpdateParams extends RoomEventParams {
+  has_title: boolean;
+  title_length: number;
+}
+
+/**
+ * 노트 그룹 생성/수정/삭제 이벤트 파라미터
+ */
+export interface StudynoteGroupParams extends RoomEventParams {
+  group_id?: number;
+  has_title: boolean;
+  title_length: number;
+  user_id: number;
+}
+
+/**
+ * 학생 초대 이벤트 파라미터
+ */
+export interface StudentInviteParams extends RoomEventParams {
+  from_user_id: number;
+  to_user_id: string; // 현재 이메일이나 추후 ID로
+}
+
+/**
+ * 수업종료 이벤트 파라미터
+ */
+export interface StudyroomEndParams extends RoomEventParams {
+  teacher_id: number;
+  student_id: number;
+}
+
+/**
+ * 질문 작성 이벤트 파라미터
+ */
+export interface QuestionCreateParams extends RoomEventParams {
+  user_id: number;
+  has_title: boolean;
+  title_length: number;
+  has_content: boolean;
+  content_length: number;
+}
+
+/**
+ * 답글 작성 이벤트 파라미터
+ */
+export interface ReplyCreateParams extends RoomEventParams {
+  question_id: number;
+  user_id: number;
+}
+
+/**
+ * 과제 작성 이벤트 파라미터
+ */
+export interface HomeworkCreateParams extends RoomEventParams {
+  user_id: number;
+  has_title: boolean;
+  title_length: number;
+  has_content: boolean;
+  content_length: number;
+  due_in_days: number | null;
+}
+
+/**
+ * 과제 제출 이벤트 파라미터
+ */
+export interface HomeworkSubmitParams extends RoomEventParams {
+  has_content: boolean;
+  content_length: number;
+  has_image: boolean;
+  image_count: number;
+}
+
+/**
+ * 과제 피드백 작성 이벤트 파라미터
+ */
+export interface HomeworkReplyParams extends RoomEventParams {
+  has_content: boolean;
+  content_length: number;
+}
+
+/**
+ * 검색/필터 이벤트 파라미터
+ */
+export interface StudynoteFilterParams extends RoomEventParams {
+  sort_method?: string;
+  page_size?: number;
+  search_keyword?: string;
+}
+
+/**
+ * 이벤트 이름 상수
+ */
+export const GA4_EVENTS = {
+  // Auth
+  SIGNUP_SUCCESS: 'signup_success',
+  LOGIN_SUCCESS: 'login_success',
+
+  // GNB
+  GNB_LOGO_CLICK: 'gnb_logo_click',
+  GNB_ALARM_CLICK: 'gnb_alarm_click',
+  GNB_PROFILE_CLICK: 'gnb_profile_click',
+  GNB_LOGOUT_CLICK: 'gnb_logout_click',
+  GNB_MENU_CLICK: 'gnb_menu_click',
+
+  // Dashboard
+  DASHBOARD_STUDYROOM_CREATE_CLICK: 'dashboard_studyroom_create_click',
+  DASHBOARD_MAIN_BANNER_CLICK: 'dashboard_main_banner_click',
+  DASHBOARD_STUDYNOTE_CLICK: 'dashboard_studynote_click',
+
+  // Page View
+  DASHBOARD_PAGE_VIEW: 'dashboard_page_view',
+  STUDYNOTE_DETAIL_PAGE_VIEW: 'studynote_detail_page_view',
+
+  // Studyroom
+  STUDYROOM_CREATE_CLICK: 'studyroom_create_click',
+  STUDYROOM_CREATE_SUCCESS: 'studyroom_create_success',
+  STUDYROOM_STUDENT_INVITE_OPEN: 'studyroom_student_invite_open',
+  STUDYROOM_TITLE_UPDATE_OPEN: 'studyroom_title_update_open',
+  STUDYROOM_TITLE_UPDATE_CLICK: 'studyroom_title_update_click',
+  STUDYROOM_TITLE_UPDATE_SUCCESS: 'studyroom_title_update_success',
+  STUDYROOM_TITLE_UPDATE_FAIL: 'studyroom_title_update_fail',
+  STUDYROOM_DELETE_OPEN: 'studyroom_delete_open',
+  STUDYROOM_DELETE_CLICK: 'studyroom_delete_click',
+  STUDYROOM_DELETE_SUCCESS: 'studyroom_delete_success',
+  STUDYROOM_DELETE_FAIL: 'studyroom_delete_fail',
+  STUDYROOM_DELETE_CANCEL_CLICK: 'studyroom_delete_cancel_click',
+
+  // Studyroom Tabs
+  STUDYROOM_STUDYNOTE_TAB_CLICK: 'studyroom_studynote_tab_click',
+  STUDYROOM_STUDENT_TAB_CLICK: 'studyroom_student_tab_click',
+  STUDYROOM_QUESTION_TAB_CLICK: 'studyroom_question_tab_click',
+  STUDYROOM_HOMEWORK_TAB_CLICK: 'studyroom_homework_tab_click',
+
+  // Studynote
+  STUDYROOM_STUDYNOTE_CREATE_ENTER: 'studyroom_studynote_create_enter',
+  STUDYROOM_STUDYNOTE_CLICK: 'studyroom_studynote_click',
+  STUDYNOTE_CREATE_CLICK: 'studynote_create_click',
+  STUDYNOTE_CREATE_SUCCESS: 'studynote_create_success',
+  STUDYNOTE_CREATE_FAIL: 'studynote_create_fail',
+  STUDYNOTE_UPDATE_OPEN: 'studynote_update_open',
+  STUDYNOTE_DUPLICATE_CLICK: 'studynote_duplicate_click',
+  STUDYNOTE_DUPLICATE_SUCCESS: 'studynote_duplicate_success',
+  STUDYNOTE_DUPLICATE_FAIL: 'studynote_duplicate_fail',
+  STUDYNOTE_DELETE_OPEN: 'studynote_delete_open',
+
+  // Studynote Group
+  STUDYNOTE_GROUP_CREATE_OPEN: 'studynote_group_create_open',
+  STUDYNOTE_GROUP_CREATE_CLICK: 'studynote_group_create_click',
+  STUDYNOTE_GROUP_CREATE_SUCCESS: 'studynote_group_create_success',
+  STUDYNOTE_GROUP_CREATE_FAIL: 'studynote_group_create_fail',
+  STUDYNOTE_GROUP_UPDATE_OPEN: 'studynote_group_update_open',
+  STUDYNOTE_GROUP_TITLE_UPDATE_CLICK: 'studynote_group_title_update_click',
+  STUDYNOTE_GROUP_TITLE_UPDATE_SUCCESS: 'studynote_group_title_update_success',
+  STUDYNOTE_GROUP_TITLE_UPDATE_FAIL: 'studynote_group_title_update_fail',
+  STUDYNOTE_GROUP_DELETE_OPEN: 'studynote_group_delete_open',
+  STUDYNOTE_GROUP_DELETE_CLICK: 'studynote_group_delete_click',
+  STUDYNOTE_GROUP_DELETE_SUCCESS: 'studynote_group_delete_success',
+  STUDYNOTE_GROUP_DELETE_FAIL: 'studynote_group_delete_fail',
+  STUDYNOTE_GROUP_DELETE_CANCEL_CLICK: 'studynote_group_delete_cancel_click',
+  STUDYNOTE_GROUP_CLICK: 'studynote_group_click',
+  STUDYNOTE_GROUP_UPDATE_CLICK: 'studynote_group_update_click',
+
+  // Studynote Filter/Search
+  STUDYNOTE_LIST_ARRANGE_FILTER_CLICK: 'studynote_list_arrange_filter_click',
+  STUDYNOTE_LIST_SEARCH_CLICK: 'studynote_list_search_click',
+
+  // Student
+  STUDYROOM_STUDENT_PROFILE_ENTER: 'studyroom_student_profile_enter',
+  STUDENT_INVITE_CLICK: 'student_invite_click',
+  STUDENT_INVITE_SUCCESS: 'student_invite_success',
+  STUDENT_INVITE_FAIL: 'student_invite_fail',
+  STUDENT_REMOVE_SELECTED: 'studyroom_student_remove_selected',
+  STUDENT_REMOVE_CONFIRMED: 'student_remove_confirmed',
+  STUDYROOM_STUDENT_END_CONFIRMED: 'studyroom_student_end_confirmed',
+
+  // Question
+  STUDYROOM_QUESTION_CREATE_ENTER: 'studyroom_question_create_enter',
+  STUDYROOM_QUESTION_CLICK: 'studyroom_question_click',
+  QUESTION_CREATE_CLICK: 'question_create_click',
+  REPLY_CREATE_CLICK: 'reply_create_click',
+
+  // Homework
+  STUDYROOM_HOMEWORK_CREATE_ENTER: 'studyroom_homework_create_enter',
+  STUDYROOM_HOMEWORK_CLICK: 'studyroom_homework_click',
+  HOMEWORK_CREATE_CLICK: 'homework_create_click',
+  HOMEWORK_SUBMIT_CLICK: 'homework_submit_click',
+  HOMEWORK_REPLY_CREATE_CLICK: 'homework_reply_create_click',
+} as const;
+
+/**
+ * user_type을 자동으로 추가하는 헬퍼 함수
+ */
+export const withUserType = <T extends object>(
+  params: Omit<T, 'user_type'>,
+  role?: Role | null
+): Record<string, unknown> => {
+  return {
+    ...params,
+    user_type: getGaUserType(role),
+  };
+};

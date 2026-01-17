@@ -20,11 +20,11 @@ type Props = {
   onLimitChange: (value: StudyNoteLimit) => void;
 };
 
-const SORT_OPTIONS: Array<{ value: StudyNoteSortKey; label: string }> = [
-  { value: 'LATEST', label: '최근 편집순' },
-  { value: 'OLDEST', label: '오래된순' },
-  { value: 'ALPHABETICAL', label: '가나다순' },
-  // { value: 'TAUGHT', label: '수업일자순' },
+const NOTE_SORT_OPTIONS: Array<{ value: StudyNoteSortKey; label: string }> = [
+  { value: 'LATEST_EDITED', label: '최근 편집순' },
+  { value: 'OLDEST_EDITED', label: '오래된순' },
+  { value: 'TITLE_ASC', label: '가나다순' },
+  { value: 'TAUGHT_AT_ASC', label: '수업일자순' },
 ];
 
 const LIMIT_OPTIONS: Array<{ value: StudyNoteLimit; label: string }> = [
@@ -39,7 +39,7 @@ const SELECT_STYLES = {
     'flex h-[32px] border-b-0 text-center w-full font-body2-normal justify-center items-center',
 };
 
-export const SearchFilterBar = ({
+export const StudyNoteSearchFilterBar = ({
   search,
   sort,
   limit,
@@ -62,7 +62,7 @@ export const SearchFilterBar = ({
             data-position="right-2"
           />
           <Select.Content>
-            {SORT_OPTIONS.map((option) => (
+            {NOTE_SORT_OPTIONS.map((option) => (
               <Select.Option
                 key={option.value}
                 value={option.value}

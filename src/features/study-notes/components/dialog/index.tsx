@@ -2,13 +2,15 @@
 
 import { useStudyNoteDetailQuery } from '@/features/dashboard/studynote/detail/service/query';
 import {
-  useRemoveNoteFromGroup,
+  // useRemoveNoteFromGroup,
+  useRemoveStudyNote,
   useUpdateStudyNote,
 } from '@/features/study-notes/hooks';
 import {
   StudyNote,
   StudyNoteGroupPageable,
 } from '@/features/study-notes/model';
+// TODO : study-rooms 의 컴포넌트 쓰고 있네 나중에 shared 로 옮겨야지 않을까요? - @성진
 import { ConfirmDialog } from '@/features/study-rooms/components/common/dialog/confirm-dialog';
 import { InputDialog } from '@/features/study-rooms/components/common/dialog/input-dialog';
 import type { DialogAction, DialogState } from '@/shared/components/dialog';
@@ -23,6 +25,7 @@ export const StudyNotesDialog = ({
   item,
   pageable,
   keyword,
+  onRefresh,
 }: {
   state: DialogState;
   dispatch: (action: DialogAction) => void;
@@ -30,6 +33,7 @@ export const StudyNotesDialog = ({
   item: StudyNote;
   pageable: StudyNoteGroupPageable;
   keyword: string;
+  onRefresh: () => void;
 }) => {
   const { role } = useRole();
   const isTeacher = role === 'ROLE_TEACHER';
@@ -41,7 +45,8 @@ export const StudyNotesDialog = ({
 
   const { mutate: updateStudyNote, isPending: isUpdating } =
     useUpdateStudyNote();
-  const { mutate: removeNoteMutate } = useRemoveNoteFromGroup();
+  // const { mutate: removeNoteMutate } = useRemoveNoteFromGroup();
+  const { mutate: removeNoteMutate } = useRemoveStudyNote();
 
   if (isPending) {
     return <div>Loading...</div>;
@@ -69,6 +74,12 @@ export const StudyNotesDialog = ({
         taughtAt: item.taughtAt,
         studentIds: data?.studentInfos?.map((student) => student.studentId),
         pageable: pageable,
+      },
+      {
+        onSuccess: () => {
+          onRefresh(); // refetch
+          dispatch({ type: 'CLOSE' });
+        },
       }
       // {
       //   onError: (error) => {
@@ -128,6 +139,7 @@ export const StudyNotesDialog = ({
           studyNoteId={item.id}
           pageable={pageable}
           keyword={keyword}
+          onRefresh={onRefresh}
         />
       )}
 
@@ -147,6 +159,7 @@ export const StudyNotesDialog = ({
           type="confirm"
           open
           dispatch={dispatch}
+          onRefresh={onRefresh}
           description="수업노트가 삭제되었습니다."
         />
       )}

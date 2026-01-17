@@ -1,26 +1,42 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 
 import { useDashboardQuery } from '@/features/dashboard';
-import { HomeIcon, PlusIcon, SettingIcon } from '@/shared/components/icons';
+import {
+  useStudentStudyRoomsQuery,
+  useTeacherStudyRoomsQuery,
+} from '@/features/study-rooms';
+import { HomeIcon, PlusIcon } from '@/shared/components/icons';
 import { Sidebar } from '@/shared/components/sidebar';
 import { PRIVATE } from '@/shared/constants/route';
-
-/* ─────────────────────────────────────────────────────
- * 더미 데이터: 실제에선 서버/쿼리로 대체
- * ────────────────────────────────────────────────────*/
-const studyRoomList = [
-  { id: 1, text: '나의 첫 스터디룸...' },
-  { id: 2, text: '은광여고 여름방학 특강반...' },
-  { id: 3, text: '오버플로우 확인용 오버플로우 확인용' },
-];
+import { useRole } from '@/shared/hooks/use-role';
 
 export const DashboardSidebar = () => {
   // [CRITICAL TODO: API 구현 누락] useDashboardQuery의 데이터(data)를 사용할 수 있도록 백엔드 API 및 바인딩 작업을 즉시 진행해야 합니다.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data, isLoading, isError } = useDashboardQuery();
+
+  /* ─────────────────────────────────────────────────────
+   * 역할에 따라 다른 쿼리 사용
+   * ────────────────────────────────────────────────────*/
+  const { data: teacherStudyRoomList } = useTeacherStudyRoomsQuery({
+    enabled: true,
+  });
+
+  const { data: studentStudyRoomList } = useStudentStudyRoomsQuery({
+    enabled: true,
+  });
+
+  const { role } = useRole();
+
+  // 역할에 따라 적절한 리스트 선택
+  const studyRoomList =
+    role === 'ROLE_TEACHER'
+      ? teacherStudyRoomList
+      : role === 'ROLE_STUDENT'
+        ? studentStudyRoomList
+        : undefined;
 
   return (
     <Sidebar>
@@ -35,32 +51,43 @@ export const DashboardSidebar = () => {
           <Sidebar.SectionIcon />
           <Sidebar.HeaderText>스터디룸</Sidebar.HeaderText>
         </div>
-        <Sidebar.Item
-          href={PRIVATE.ROOM.CREATE}
-          className="h-9 w-9 justify-center bg-transparent px-0"
-        >
-          <PlusIcon />
-          <span className="sr-only">스터디룸 생성</span>
-        </Sidebar.Item>
+        {/* 선생님만 스터디룸 생성 버튼 표시 */}
+        {role === 'ROLE_TEACHER' && (
+          <Sidebar.Item
+            href={PRIVATE.ROOM.CREATE}
+            className="h-9 w-9 justify-center bg-transparent px-0"
+          >
+            <PlusIcon />
+            <span className="sr-only">스터디룸 생성</span>
+          </Sidebar.Item>
+        )}
       </Sidebar.Header>
 
-      <Sidebar.List>
-        {studyRoomList.map((item) => (
-          <Sidebar.ListItem
-            key={item.id}
-            item={item}
-          />
-        ))}
-      </Sidebar.List>
+      <Sidebar.ScrollArea>
+        <Sidebar.List>
+          {studyRoomList?.map((item) => (
+            <Sidebar.ListItem
+              key={item.id}
+              item={{
+                id: item.id,
+                text: item.name,
+              }}
+            />
+          ))}
+        </Sidebar.List>
+      </Sidebar.ScrollArea>
 
-      <Sidebar.Item href={PRIVATE.DASHBOARD.SETTINGS}>
+      {/* 기능 추가 전까지 잠시 주석 (private -> dashboard 안에 있는 settings 페이지도 삭제 완) */}
+      {/* <Sidebar.Item href={PRIVATE.DASHBOARD.SETTINGS}>
         <SettingIcon />
         <Sidebar.Text>환경설정</Sidebar.Text>
-      </Sidebar.Item>
+      </Sidebar.Item> */}
 
-      <div className="absolute right-0 bottom-0 p-4">
-        <Link
-          href={PRIVATE.DASHBOARD.INQUIRY}
+      <div className="mt-auto flex justify-end p-4">
+        <a
+          href={'https://pf.kakao.com/_LMcpn'}
+          target="_blank"
+          rel="noopener noreferrer"
           className="text-gray-scale-gray-50 hover:bg-gray-scale-gray-5 flex items-center gap-2 rounded-lg text-[14px] font-semibold"
         >
           <Sidebar.Text>디에듀에 문의하기</Sidebar.Text>
@@ -70,7 +97,7 @@ export const DashboardSidebar = () => {
             width={16}
             height={16}
           />
-        </Link>
+        </a>
       </div>
     </Sidebar>
   );

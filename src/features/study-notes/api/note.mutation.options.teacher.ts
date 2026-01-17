@@ -41,6 +41,16 @@ export type RemoveMutationVar = RemoveArgs & {
   pageable: StudyNoteGroupPageable;
 };
 
+export type DeleteArgs = {
+  studyNoteId: number;
+  studyRoomId: number;
+};
+
+export type DeleteMutationVar = DeleteArgs & {
+  pageable: StudyNoteGroupPageable;
+  groupId?: number | null;
+};
+
 export const createTeacherNoteMutationOptions = (
   api: TeacherNotesApi,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -135,5 +145,41 @@ export const createTeacherNoteMutationOptions = (
     }),
   });
 
-  return { update, moveToGroup, removeFromGroup, refetchMembers };
+  const removeStudyNote = () => ({
+    mutationFn: (args: DeleteMutationVar) =>
+      api.removeStudyNote({ studyNoteId: args.studyNoteId }),
+
+    onSuccess: (_: unknown, vars: DeleteMutationVar) => {
+      const invalidateKeys: Array<{ key: QueryKey }> = [
+        { key: StudyNoteQueryKey.listPrefix(vars.studyRoomId) },
+        {
+          key: StudyNoteQueryKey.list(
+            vars.studyRoomId,
+            vars.pageable.page,
+            vars.pageable.size,
+            vars.pageable.sortKey
+          ),
+        },
+      ];
+
+      if (vars.groupId != null) {
+        invalidateKeys.push({
+          key: StudyNoteQueryKey.byGroupPrefix(vars.studyRoomId, vars.groupId),
+        });
+      }
+
+      return {
+        invalidate: invalidateKeys,
+        remove: [{ key: StudyNoteQueryKey.detail(vars.studyNoteId) }],
+      };
+    },
+  });
+
+  return {
+    update,
+    moveToGroup,
+    removeFromGroup,
+    refetchMembers,
+    removeStudyNote,
+  };
 };

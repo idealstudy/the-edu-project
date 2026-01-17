@@ -26,4 +26,9 @@ export const abilityMatrixByRole: Record<Role, Matrix> = {
     note: { read: true, create: false, update: false, delete: false },
     comment: { read: true, create: true, update: false, delete: false },
   },
+  ROLE_MEMBER: {
+    room: { read: false, create: false, update: false, delete: false },
+    note: { read: false, create: false, update: false, delete: false },
+    comment: { read: false, create: false, update: false, delete: false },
+  },
 };

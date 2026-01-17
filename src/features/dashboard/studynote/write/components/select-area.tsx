@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
 import { ColumnLayout } from '@/layout/column-layout';
 import { Form } from '@/shared/components/ui/form';
@@ -32,16 +33,20 @@ const SelectArea = () => {
   const [open, setOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState(false);
 
-  // useEffect(() => {
-  //   const givenRoomId = sessionStorage.getItem('studyroom-id');
-  //   if (givenRoomId) setValue('studyRoomId', Number(givenRoomId));
-  //   sessionStorage.removeItem('studyroom-id');
-  // }, [setValue]);
+  const pathname = usePathname();
+  const segments = pathname.split('/').filter(Boolean);
+  const tab = segments[2]; // note / homework
+
+  useEffect(() => {
+    const givenRoomId = sessionStorage.getItem('studyroom-id');
+    if (givenRoomId) setValue('studyRoomId', Number(givenRoomId));
+    sessionStorage.removeItem('studyroom-id');
+  }, [setValue]);
 
   return (
     <ColumnLayout.Left className="border-line-line1 h-fit rounded-xl border bg-white px-8 py-10">
       <Image
-        src="/studyroom/study-room-profile.svg"
+        src="/studyroom/profile.svg"
         alt="select-area"
         width={300}
         height={300}
@@ -126,66 +131,69 @@ const SelectArea = () => {
           )}
         </Form.Item>
       </div>
+      {tab === 'note' ? (
+        <>
+          <Form.Item error={!!errors.title}>
+            <Form.Label className="text-text-sub2 text-base font-semibold">
+              수업노트 그룹
+            </Form.Label>
+            <Form.Control>
+              <Controller
+                name="teachingNoteGroupId"
+                control={control}
+                rules={{ required: '공개 범위를 선택해주세요.' }}
+                render={({ field }) => {
+                  const value =
+                    field.value == null ? undefined : String(field.value);
+                  return (
+                    <Select
+                      defaultValue=""
+                      value={value}
+                      onValueChange={(v) => {
+                        if (v === 'add') {
+                          setOpenGroup(true);
+                          return;
+                        }
+                        field.onChange(Number(v));
+                      }}
+                    >
+                      <Select.Trigger
+                        placeholder="없음"
+                        className="mt-[9px]"
+                      />
+                      <Select.Content>
+                        {Array.isArray(studyNoteGroups?.content) &&
+                          studyNoteGroups.content.length > 0 &&
+                          studyNoteGroups.content.map((group) => (
+                            <Select.Option
+                              key={group.id}
+                              value={String(group.id)}
+                            >
+                              {group.title}
+                            </Select.Option>
+                          ))}
 
-      <Form.Item error={!!errors.title}>
-        <Form.Label className="text-text-sub2 text-base font-semibold">
-          수업노트 그룹
-        </Form.Label>
-        <Form.Control>
-          <Controller
-            name="teachingNoteGroupId"
-            control={control}
-            rules={{ required: '공개 범위를 선택해주세요.' }}
-            render={({ field }) => {
-              const value =
-                field.value == null ? undefined : String(field.value);
-              return (
-                <Select
-                  defaultValue=""
-                  value={value}
-                  onValueChange={(v) => {
-                    if (v === 'add') {
-                      setOpenGroup(true);
-                      return;
-                    }
-                    field.onChange(Number(v));
-                  }}
-                >
-                  <Select.Trigger
-                    placeholder="없음"
-                    className="mt-[9px]"
-                  />
-                  <Select.Content>
-                    {Array.isArray(studyNoteGroups?.content) &&
-                      studyNoteGroups.content.length > 0 &&
-                      studyNoteGroups.content.map((group) => (
-                        <Select.Option
-                          key={group.id}
-                          value={String(group.id)}
-                        >
-                          {group.title}
+                        {/* 데이터가 없거나, 항상 맨 아래 “추가하기” 노출 */}
+                        <Select.Option value="add">
+                          <button className="flex w-full cursor-pointer items-center justify-between gap-1 leading-[140%]">
+                            <PlusIcon />
+                            <span>추가하기</span>
+                          </button>
                         </Select.Option>
-                      ))}
-
-                    {/* 데이터가 없거나, 항상 맨 아래 “추가하기” 노출 */}
-                    <Select.Option value="add">
-                      <button className="flex w-full cursor-pointer items-center justify-between gap-1 leading-[140%]">
-                        <PlusIcon />
-                        <span>추가하기</span>
-                      </button>
-                    </Select.Option>
-                  </Select.Content>
-                </Select>
-              );
-            }}
-          />
-        </Form.Control>
-        {errors.teachingNoteGroupId && (
-          <Form.ErrorMessage className="text-system-warning text-sm">
-            {errors.teachingNoteGroupId.message}
-          </Form.ErrorMessage>
-        )}
-      </Form.Item>
+                      </Select.Content>
+                    </Select>
+                  );
+                }}
+              />
+            </Form.Control>
+            {errors.teachingNoteGroupId && (
+              <Form.ErrorMessage className="text-system-warning text-sm">
+                {errors.teachingNoteGroupId.message}
+              </Form.ErrorMessage>
+            )}
+          </Form.Item>
+        </>
+      ) : null}
 
       <AddGroupDialog
         open={openGroup}

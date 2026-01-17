@@ -3,16 +3,17 @@ import {
   TeacherStudyRoomRequests,
   createStudyRoomBaseApi,
 } from '@/features/study-rooms/api';
+import { Invitee } from '@/features/study-rooms/hooks/useInvitationController';
 import type { CommonResponse, Pageable, PaginationData } from '@/types/http';
 
 import type {
   ApiResponse,
-  Invitation,
   MemberInvitation,
   SearchInvitationPayload,
   StudyNoteGroup,
   StudyRoom,
   StudyRoomClient,
+  StudyRoomDetail,
 } from '../model/types';
 
 export const createTeacherStudyRoomApi = (
@@ -20,10 +21,20 @@ export const createTeacherStudyRoomApi = (
 ): TeacherStudyRoomRequests => {
   const base = createStudyRoomBaseApi(client);
 
-  // 스터디룸 조회
+  // 스터디룸 목록 조회
   const getStudyRooms = async (): Promise<StudyRoom[]> => {
     const response = await base.client.get<CommonResponse<StudyRoom[]>>(
       base.teacherBasePath
+    );
+    return response.data;
+  };
+
+  // 스터디룸 상세 조회
+  const getStudyRoomDetail = async (
+    studyRoomId: number
+  ): Promise<StudyRoomDetail> => {
+    const response = await base.client.get<CommonResponse<StudyRoomDetail>>(
+      `${base.teacherBasePath}/${studyRoomId}`
     );
     return response.data;
   };
@@ -52,10 +63,10 @@ export const createTeacherStudyRoomApi = (
   // 초대할 사용자 검색
   const searchInvitation = async (
     args: SearchInvitationPayload
-  ): Promise<Invitation> => {
-    const response = await base.client.get<ApiResponse<Invitation>>(
+  ): Promise<Invitee[]> => {
+    const response = await base.client.get<ApiResponse<Invitee[]>>(
       `${base.teacherBasePath}/${args.studyRoomId}/search`,
-      { params: { email: args.email } }
+      { params: { keyword: args.keyword } }
     );
     return response.data;
   };
@@ -76,6 +87,7 @@ export const createTeacherStudyRoomApi = (
 
   return {
     getStudyRooms,
+    getStudyRoomDetail,
     create,
     invitations: { send: sendInvitation, search: searchInvitation },
     getStudyNoteGroup,

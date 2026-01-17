@@ -15,10 +15,11 @@ const TABS_CONFIG = [
   { value: 'note', label: '수업노트', href: 'note', role: 'all' },
   { value: 'member', label: '학생', href: 'member', role: 'ROLE_TEACHER' },
   { value: 'qna', label: '질문', href: 'qna', role: 'all' },
+  { value: 'homework', label: '과제', href: 'homework', role: 'all' },
 ];
 
 const baseCls =
-  'relative flex h-[55px] min-w-[170px] items-center justify-center gap-2 rounded-t-[12px] border px-5 text-lg transition-colors';
+  'relative flex h-[55px] desktop:min-w-[150px] items-center justify-center gap-2 rounded-t-[12px] border px-5 text-lg transition-colors';
 
 export const StudyNoteTab = ({ studyRoomId, mode, path }: Props) => {
   return (

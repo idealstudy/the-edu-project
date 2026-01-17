@@ -22,3 +22,8 @@ export type SignUpBody = {
   acceptOptionalTerm: boolean;
   role: Role;
 };
+
+export type UpdateProfileBody = {
+  name: string;
+  role: Role;
+};

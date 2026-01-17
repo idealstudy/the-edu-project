@@ -5,6 +5,7 @@ const MemberRoleSchema = z.enum([
   'ROLE_PARENT',
   'ROLE_TEACHER',
   'ROLE_STUDENT',
+  'ROLE_MEMBER',
 ]);
 
 const MemberSchema = z.object({

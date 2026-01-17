@@ -9,6 +9,11 @@ import { InvitationField } from '@/features/study-rooms/components/student-invit
 import { useInvitationController } from '@/features/study-rooms/hooks/useInvitationController';
 import { Button } from '@/shared/components/ui/button';
 import { Dialog } from '@/shared/components/ui/dialog';
+import {
+  trackStudentInviteClick,
+  trackStudentInviteSuccess,
+} from '@/shared/lib/gtm/trackers';
+import { useMemberStore } from '@/store';
 
 export const InvitationDialog = ({
   isOpen,
@@ -27,11 +32,44 @@ export const InvitationDialog = ({
 }) => {
   const invitation = useInvitationController(studyRoomId);
   const { mutate: sendInvitation, isPending } = useSendInvitation();
+  const session = useMemberStore((s) => s.member);
 
   const handleSubmit = () => {
     const emails = Array.from(invitation.invitees.keys());
     if (!emails.length) return;
-    sendInvitation({ studyRoomId, emails });
+
+    // 학생 초대 클릭 이벤트
+    // TODO: to_user_id는 실제 초대된 사용자 ID로 변경 필요
+    const toUserId = ''; // 초대된 학생의 ID (API 응답에서 받아와야 함)
+    trackStudentInviteClick(
+      {
+        room_id: studyRoomId,
+        from_user_id: session?.id ?? 0,
+        to_user_id: toUserId, // TODO: 실제 초대된 사용자 ID로 변경 필요 (현재 API 응답에 userId 없음)
+      },
+      session?.role ?? null
+    );
+
+    sendInvitation(
+      { studyRoomId, emails },
+      {
+        onSuccess: (data) => {
+          // 학생 초대 성공 이벤트
+          // TODO: data에서 실제 초대된 사용자 ID 추출 (현재는 email만 있음)
+          const successEmails = data?.successEmailList || [];
+          successEmails.forEach((success) => {
+            trackStudentInviteSuccess(
+              {
+                room_id: studyRoomId,
+                from_user_id: session?.id ?? 0,
+                to_user_id: success.name, // TODO: 실제 초대된 사용자 ID로 변경 필요 (현재 API 응답에 userId 없음)
+              },
+              session?.role ?? null
+            );
+          });
+        },
+      }
+    );
   };
 
   return (

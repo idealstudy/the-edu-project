@@ -29,6 +29,7 @@ export const GroupMoveDialog = ({
   studyNoteId,
   pageable,
   keyword,
+  onRefresh,
 }: {
   open: boolean;
   dispatch: (action: DialogAction) => void;
@@ -36,6 +37,7 @@ export const GroupMoveDialog = ({
   studyNoteId: number;
   pageable: StudyNoteGroupPageable;
   keyword: string;
+  onRefresh: () => void;
 }) => {
   const [selectedGroup, setSelectedGroup] = useState<string | null>('all');
   const { role } = useRole();
@@ -74,18 +76,20 @@ export const GroupMoveDialog = ({
         sortKey: pageable.sortKey,
       },
     };
+
+    const onSuccess = () => {
+      onRefresh();
+      dispatch({ type: 'CLOSE' });
+    };
+
     if (selectedGroup === null || selectedGroup === 'none') {
-      removeNoteMutation({
-        ...mutationArgs,
-        groupId: null,
-      });
+      removeNoteMutation({ ...mutationArgs, groupId: null }, { onSuccess });
     } else {
-      moveNoteMutation({
-        ...mutationArgs,
-        groupId: Number(selectedGroup),
-      });
+      moveNoteMutation(
+        { ...mutationArgs, groupId: Number(selectedGroup) },
+        { onSuccess }
+      );
     }
-    dispatch({ type: 'CLOSE' });
   };
 
   if (isPending) {
@@ -170,15 +174,13 @@ export const GroupMoveDialog = ({
               취소
             </Button>
           </Dialog.Close>
-          <Dialog.Close asChild>
-            <Button
-              className="w-[120px]"
-              size="xsmall"
-              onClick={handleSave}
-            >
-              저장
-            </Button>
-          </Dialog.Close>
+          <Button
+            className="w-[120px]"
+            size="xsmall"
+            onClick={handleSave}
+          >
+            저장
+          </Button>
         </Dialog.Footer>
       </Dialog.Content>
     </Dialog>

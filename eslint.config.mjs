@@ -36,6 +36,17 @@ const eslintConfig = [
       '@typescript-eslint/no-empty-object-type': 'off',
     },
   },
+  // api/v1/ 경로와 middleware에서 로깅 허용
+  {
+    files: [
+      'src/app/api/v1/**/*.ts',
+      'src/app/api/v1/**/*.tsx',
+      'src/middleware.ts',
+    ],
+    rules: {
+      'no-console': 'off',
+    },
+  },
 
   {
     ignores: [

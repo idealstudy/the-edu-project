@@ -2,91 +2,93 @@
 
 import React from 'react';
 
-import { useDashboardQuery } from '@/features/dashboard';
-import { DashboardSummaryCard } from '@/features/dashboard/components/dashboard-card';
-import { DashboardContents } from '@/features/dashboard/components/dashboard-contents';
-import { ContentsCard } from '@/features/dashboard/components/dashboard-contents-card';
-import { DashboardCtx } from '@/features/dashboard/components/dashboard-ctx';
+import { DashboardCompleted } from '@/features/dashboard/components/completed';
+import { DashboardOnboarding } from '@/features/dashboard/components/onboarding';
+import { useOnboardingStatus } from '@/features/dashboard/hooks/use-onboarding-status';
 import {
-  MY_STUDY_ROOMS,
-  RECENT_STUDY_NOTES,
-  SUMMARY_CARDS,
-} from '@/features/dashboard/mock';
-import { PRIVATE } from '@/shared/constants';
+  useStudentStudyRoomsQuery,
+  useTeacherStudyRoomsQuery,
+} from '@/features/study-rooms';
+import { trackPageView } from '@/shared/lib/gtm/trackers';
+import { useMemberStore } from '@/store';
 
-/* ─────────────────────────────────────────────────────
- * 테스트용 플래그
- * ────────────────────────────────────────────────────*/
-const ALERT_KEY = 'dashboard_welcome_alert_shown';
 export const DashboardContainer = () => {
-  // [CRITICAL TODO: API 구현 누락] useDashboardQuery의 데이터(data)를 사용할 수 있도록 백엔드 API 및 바인딩 작업을 즉시 진행해야 합니다.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { data, isLoading, isError } = useDashboardQuery();
+  const session = useMemberStore((s) => s.member);
+  const role = session?.role;
+  const isTeacher = role === 'ROLE_TEACHER';
+
+  // 역할에 따라 다른 쿼리 사용
+  const { data: teacherRooms, isLoading: isLoadingTeacher } =
+    useTeacherStudyRoomsQuery({
+      enabled: isTeacher,
+    });
+  const { data: studentRooms, isLoading: isLoadingStudent } =
+    useStudentStudyRoomsQuery({
+      enabled: !isTeacher,
+    });
+
+  const rooms = isTeacher ? teacherRooms : studentRooms;
+  const isLoading = isTeacher ? isLoadingTeacher : isLoadingStudent;
 
   React.useEffect(() => {
-    const hasShown = sessionStorage.getItem(ALERT_KEY);
-    if (!hasShown) {
-      alert(
-        '선생님, 환영합니다! 개인 정보 바인딩은 다음 업데이트를 통해 제공될 예정입니다.'
-      );
-      sessionStorage.setItem(ALERT_KEY, 'true');
-    }
-  }, []);
+    // 대시보드 페이지뷰 이벤트
+    trackPageView('dashboard', {}, role ?? null);
+  }, [role]);
 
-  return (
-    <div className="bg-system-background">
-      <div className="mx-auto flex w-full max-w-[1120px] flex-col gap-8 px-6 pt-12 pb-24">
-        {/* 대시보드 헤더 */}
-        <section className="rounded-[32px] bg-white p-10 shadow-[0_24px_48px_rgba(255,72,5,0.08)]">
-          <p className="text-text-sub2 text-sm">
-            오늘은 학생들과 함께 성장하는 하루에요
-          </p>
-          <h1 className="text-text-main mt-2 text-[32px] leading-[140%] font-bold tracking-[-0.04em]">
-            디에듀 선생님 안녕하세요!
-          </h1>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {SUMMARY_CARDS.map((card) => (
-              <DashboardSummaryCard
-                key={card.id}
-                card={card}
-              />
-            ))}
-          </div>
-        </section>
+  // 온보딩 완료 여부 체크 (스터디룸 존재 여부만 확인)
+  // TODO: 전체 조회 API가 생기면 상세 체크하도록 변경
+  const {
+    hasRooms,
+    hasStudents,
+    hasNotes,
+    hasQuestions,
+    hasAssignments,
+    hasFeedback,
+  } = useOnboardingStatus({ role, rooms });
 
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-          <DashboardContents
-            title="내 스터디룸"
-            description="오늘도 학생들과 함께할 준비가 끝났어요"
-            buttonText="새로 만들기"
-            buttonHref={PRIVATE.ROOM.CREATE}
-            buttonVariant="primary"
-          >
-            {MY_STUDY_ROOMS.map((room) => (
-              <ContentsCard.Room
-                key={room.id}
-                room={room}
-              />
-            ))}
-          </DashboardContents>
-          <DashboardContents
-            title="최근 수업노트"
-            description="다시 확인하고 싶은 수업 기록을 모아봤어요"
-            buttonText="전체보기"
-            buttonHref={PRIVATE.DASHBOARD.INDEX}
-            buttonVariant="outlined"
-          >
-            {RECENT_STUDY_NOTES.map((note) => (
-              <ContentsCard.Note
-                key={note.id}
-                note={note}
-              />
-            ))}
-          </DashboardContents>
+  // 로딩 중일 때
+  if (isLoading) {
+    return (
+      <div className="bg-system-background">
+        <div className="mx-auto flex w-full max-w-[1120px] items-center justify-center px-6 pt-12 pb-24">
+          <div className="text-text-sub2 text-center">로딩 중...</div>
         </div>
-
-        <DashboardCtx />
       </div>
-    </div>
-  );
+    );
+  }
+
+  // 온보딩 완료 여부 판단
+  // 강사: 스터디룸, 학생 초대, 수업노트, 과제, 피드백
+  // 학생: 스터디룸 참여, 수업노트 확인, 과제 제출, 질문 (피드백 제외)
+  const teacherStepsCompleted = [
+    hasRooms, // 스터디룸 만들기
+    hasStudents, // 학생 초대하기
+    hasNotes, // 수업노트 작성하기
+    hasAssignments, // 과제 부여하기
+    hasFeedback, // 피드백 주기
+  ];
+  const studentStepsCompleted = [
+    hasRooms, // 선생님 초대 받기
+    hasNotes, // 수업노트 확인하기
+    hasAssignments, // 과제 제출하기
+    hasQuestions, // 질문하기
+    // 학생은 피드백 받는 것은 온보딩 단계가 아님
+  ];
+
+  const allStepsCompleted = isTeacher
+    ? teacherStepsCompleted.every((completed) => completed)
+    : studentStepsCompleted.every((completed) => completed);
+
+  // 온보딩 완료 여부에 따라 다른 화면 표시
+  if (!role) {
+    return null; // 역할이 없으면 아무것도 표시하지 않음
+  }
+
+  // 온보딩 완료: 축하 화면 표시
+  if (allStepsCompleted) {
+    return <DashboardCompleted role={role} />;
+  }
+
+  // 온보딩 진행 중: 온보딩 화면 표시
+  return <DashboardOnboarding role={role} />;
 };

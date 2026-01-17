@@ -26,6 +26,25 @@ export type StudyRoom = {
   visibility: 'PUBLIC' | 'PRIVATE';
 };
 
+export type StudyRoomDetail = {
+  id: number;
+  name: string;
+  description: string;
+  teacherId: number;
+  teacherName: string;
+  visibility: 'PUBLIC' | 'PRIVATE';
+  modality: 'ONLINE' | 'OFFLINE' | 'HYBRID';
+  classForm: 'ONE_ON_ONE' | 'GROUP';
+  subjectType: string;
+  schoolInfo: {
+    schoolLevel: string;
+    grade: number;
+  };
+  numberOfTeachingNote: number;
+  studentNames: string[];
+  numberOfQuestion: number;
+};
+
 export type StudentStudyRoom = {
   id: number;
   name: string;
@@ -77,7 +96,7 @@ export interface InvitationPayload {
 
 export interface SearchInvitationPayload {
   studyRoomId: number;
-  email: string;
+  keyword: string;
 }
 
 export interface DeleteStudyRoomPayload {

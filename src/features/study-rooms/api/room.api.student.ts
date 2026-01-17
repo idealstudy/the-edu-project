@@ -2,6 +2,7 @@ import {
   StudentStudyRoom,
   StudyNoteGroup,
   StudyRoomClient,
+  StudyRoomDetail,
 } from '@/features/study-rooms';
 import {
   InvitationAcceptResponse,
@@ -23,6 +24,16 @@ export const createStudentStudyRoomApi = (
     return response.data;
   };
 
+  // 스터디룸 상세 조회
+  const getStudyRoomDetail = async (
+    studyRoomId: number
+  ): Promise<StudyRoomDetail> => {
+    const response = await base.client.get<CommonResponse<StudyRoomDetail>>(
+      `${base.studentBasePath}/${studyRoomId}`
+    );
+    return response.data;
+  };
+
   // 수업노트 그룹 조회
   const getStudentStudyNoteGroup = async (args: {
     studyRoomId: number;
@@ -30,10 +41,10 @@ export const createStudentStudyRoomApi = (
   }): Promise<PaginationData<StudyNoteGroup>> => {
     const response = await base.client.get<
       CommonResponse<PaginationData<StudyNoteGroup>>
-    >(
-      `${base.teacherBasePath}/${args.studyRoomId}/teaching-note-groups`, // API 경로가 /teacher로 되어 있어 그대로 사용
-      { params: args.pageable, paramsSerializer: { indexes: null } }
-    );
+    >(`${base.studentBasePath}/${args.studyRoomId}/teaching-note-groups`, {
+      params: args.pageable,
+      paramsSerializer: { indexes: null },
+    });
     return response.data;
   };
 
@@ -53,6 +64,7 @@ export const createStudentStudyRoomApi = (
 
   return {
     getStudyRooms,
+    getStudyRoomDetail,
     getStudentStudyNoteGroup,
     acceptInvitation,
   };

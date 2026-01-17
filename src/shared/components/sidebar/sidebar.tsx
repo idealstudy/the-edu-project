@@ -55,7 +55,7 @@ const SidebarRoot = ({ children }: { children: ReactNode }) => {
         'desktop:flex'
       )}
     >
-      <aside className="bg-system-background-alt w-sidebar-width relative flex-1 flex-col overflow-y-auto rounded-r-[12px] border-y border-r border-[#D9D9D9] p-3">
+      <aside className="bg-system-background-alt w-sidebar-width relative flex-1 flex-col overflow-hidden rounded-r-[12px] border-y border-r border-[#D9D9D9] p-3">
         {children}
       </aside>
     </div>
@@ -87,7 +87,7 @@ const SidebarItem = ({
     <Link
       href={href}
       className={cn(
-        'flex h-[58px] items-center gap-2 rounded-lg px-5 font-bold',
+        'flex min-h-[58px] items-center gap-2 rounded-lg px-5 font-bold',
         isActive
           ? 'text-key-color-primary bg-[#FFF4F1]'
           : 'hover:bg-gray-scale-gray-5',
@@ -107,6 +107,7 @@ const SidebarItem = ({
 interface BaseSidebarItem {
   id: number;
   text: string;
+  // href는 내부에서 item.id로 자동 생성되므로 필요 없음
 }
 
 interface CommonRoomFields {
@@ -163,14 +164,19 @@ const SidebarList = <TItem extends BaseSidebarItem>({
   return <ul className="flex flex-col" />;
 };
 
+const SidebarScrollArea = ({ children }: { children: ReactNode }) => {
+  return <div className="max-h-none min-h-0 overflow-y-auto">{children}</div>;
+};
+
 /* ─────────────────────────────────────────────────────
  * Sidebar.ListItem(스터디룸 목록 개별 아이템)
  * ────────────────────────────────────────────────────*/
 const SidebarListItem = ({ item }: { item: BaseSidebarItem }) => {
   const { pathname } = useSidebarContext();
+  // item.id를 사용해서 자동으로 상세 페이지 경로 생성
   const detailHref = PRIVATE.ROOM.DETAIL(item.id);
-  const isActive = pathname === detailHref;
-
+  const roomBasePath = `/study-rooms/${item.id}`;
+  const isActive = pathname?.startsWith(roomBasePath) ?? false;
   return (
     <li>
       <Sidebar.Item
@@ -259,5 +265,6 @@ Sidebar.ListItem = SidebarListItem;
 Sidebar.Header = SidebarHeader;
 Sidebar.HeaderText = SidebarHeaderText;
 Sidebar.SectionIcon = SidebarSectionIcon;
+Sidebar.ScrollArea = SidebarScrollArea;
 
 export { Sidebar };

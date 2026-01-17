@@ -8,6 +8,7 @@ import { Form } from '@/shared/components/ui/form';
 import { PUBLIC } from '@/shared/constants';
 import { useCheckboxGroup } from '@/shared/hooks/use-checkbox-group';
 import { createContextFactory } from '@/shared/lib/context';
+import { trackSignupSuccess } from '@/shared/lib/gtm/trackers';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { RegisterForm } from '../schemas/register';
@@ -49,6 +50,7 @@ export const RegisterFormContextProvider = ({
 
   const form = useForm<RegisterForm>({
     resolver: zodResolver(RegisterForm),
+    mode: 'onChange', // 실시간 검증 활성화
     defaultValues: {
       email: '',
       verificationCode: '',
@@ -82,6 +84,8 @@ export const RegisterFormContextProvider = ({
       },
       {
         onSuccess: () => {
+          // 회원가입 성공 이벤트
+          trackSignupSuccess(data.role ?? null);
           router.replace(PUBLIC.CORE.INDEX);
         },
         onError: () => {
