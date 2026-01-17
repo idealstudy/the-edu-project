@@ -2,7 +2,6 @@
 
 import Image from 'next/image';
 
-import { useDashboardQuery } from '@/features/dashboard';
 import {
   useStudentStudyRoomsQuery,
   useTeacherStudyRoomsQuery,
@@ -14,8 +13,7 @@ import { useRole } from '@/shared/hooks/use-role';
 
 export const DashboardSidebar = () => {
   // [CRITICAL TODO: API 구현 누락] useDashboardQuery의 데이터(data)를 사용할 수 있도록 백엔드 API 및 바인딩 작업을 즉시 진행해야 합니다.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { data, isLoading, isError } = useDashboardQuery();
+  // const { data, isLoading, isError } = useDashboardQuery();
 
   /* ─────────────────────────────────────────────────────
    * 역할에 따라 다른 쿼리 사용

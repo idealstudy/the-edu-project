@@ -64,7 +64,9 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
   // 상세 페이지는 sidebar 없이 전체 레이아웃 사용
   if (isDetailPage) {
     return (
-      <ColumnLayout className="items-start gap-6 p-6">{children}</ColumnLayout>
+      <ColumnLayout className="desktop:p-6 items-start gap-6">
+        {children}
+      </ColumnLayout>
     );
   }
 

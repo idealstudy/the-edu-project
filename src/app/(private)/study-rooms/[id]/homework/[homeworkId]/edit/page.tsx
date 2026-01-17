@@ -16,9 +16,7 @@ export default async function HomeworkEditPage({ params }: Props) {
 
   return (
     <>
-      <div className="mb-6">
-        <BackLink />
-      </div>
+      <BackLink />
 
       <HomeworkFormProvider
         studyRoomId={studyRoomId}

@@ -35,6 +35,7 @@ import {
   PUBLIC,
   ROLE_META_MAP,
 } from '@/shared/constants';
+import { cn } from '@/shared/lib';
 import {
   trackGnbLogoClick,
   trackGnbLogoutClick,
@@ -104,7 +105,7 @@ export const Header = () => {
           />
           <Link
             href="https://forms.gle/ktLvekAsKTkqTcpQ6"
-            className={`${FEEDBACK_BUTTON_BASE} ml-2`}
+            className={cn(FEEDBACK_BUTTON_BASE, 'ml-2', 'max-desktop:hidden')}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -116,16 +117,6 @@ export const Header = () => {
             />
             소중한 의견 보내기
           </Link>
-          {session && (
-            <>
-              {/* <Link
-                href={ROUTE.DASHBOARD.HOME}
-                className="mx-2 text-white"
-              >
-                대시보드
-              </Link> */}
-            </>
-          )}
         </div>
         {session && (
           <div className="desktop:gap-4 flex items-center gap-1">
@@ -162,6 +153,7 @@ export const Header = () => {
                 {ROLE_META_MAP[session.role]?.label}
               </div>
             )}
+
             <Popover
               open={isOpen}
               onOpenChange={setIsOpen}
@@ -170,7 +162,7 @@ export const Header = () => {
                 <button
                   type="button"
                   aria-label="햄버거 메뉴"
-                  className="desktop:hidden mr-4 flex h-10 w-10 items-center justify-center rounded-lg transition-colors hover:bg-gray-800"
+                  className="desktop:hidden flex h-10 w-10 items-center justify-center rounded-lg transition-colors hover:bg-gray-800"
                   onClick={() => {
                     trackGnbMenuClick(session?.role ?? null);
                   }}
@@ -219,7 +211,7 @@ export const Header = () => {
 
                     {/* 스터디룸 리스트 */}
                     {studyRoomList && studyRoomList.length > 0 ? (
-                      <div className="flex flex-col gap-1">
+                      <div className="flex max-h-50 flex-col gap-1 overflow-auto">
                         {studyRoomList.map((item) => (
                           <PopoverLink
                             key={item.id}
@@ -283,22 +275,47 @@ export const Header = () => {
                       로그아웃
                     </PopoverItem>
                   </div>
+
+                  <div className="mt-2 flex flex-col gap-1">
+                    <Link
+                      href="https://forms.gle/ktLvekAsKTkqTcpQ6"
+                      className="text-gray-scale-gray-30 flex items-center justify-end gap-1.5 text-sm font-semibold"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Image
+                        src="/ic_question_mark.svg"
+                        alt="피드백"
+                        width={16}
+                        height={16}
+                      />
+                      소중한 의견 보내기
+                    </Link>
+                  </div>
                 </PopoverNav>
               </PopoverContent>
             </Popover>
           </div>
         )}
+
         {!session && (
           <div className="flex gap-5">
             <Link
               href={PUBLIC.CORE.LOGIN}
-              className={BUTTON_BASE}
+              className={cn(
+                BUTTON_BASE,
+                'max-desktop:border-line-line1 max-desktop:py-2'
+              )}
             >
               로그인
             </Link>
             <Link
               href={PUBLIC.CORE.SIGNUP}
-              className={`${BUTTON_BASE} bg-key-color-primary hover:bg-key-color-secondary`}
+              className={cn(
+                BUTTON_BASE,
+                'bg-key-color-primary hover:bg-key-color-secondary',
+                'max-desktop:hidden'
+              )}
             >
               디에듀 시작하기
             </Link>

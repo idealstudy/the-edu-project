@@ -30,7 +30,7 @@ export const TeacherHomeworkDetail = ({ studyRoomId, homeworkId }: Props) => {
         homeworkId={homeworkId}
       />
 
-      <ColumnLayout.Right className="desktop:min-w-[740px] flex w-full flex-col gap-3 rounded-[12px]">
+      <ColumnLayout.Right className="desktop:max-w-[600px] flex w-full flex-col gap-3 rounded-[12px]">
         {/* 선생님이 낸 과제 */}
         <TeacherHomeworkContent
           content={data.homework.content ?? ''}

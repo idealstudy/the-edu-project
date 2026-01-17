@@ -141,7 +141,10 @@ export const HomeworkMetaFields = () => {
       </Form.Item>
 
       {/* 마감 기한 + 리마인드 알림 */}
-      <Form.Row columns={2}>
+      <Form.Row
+        columns={2}
+        className="max-desktop:grid-cols-1"
+      >
         <Form.Item error={!!errors.deadline}>
           <Form.Label>
             마감 기한

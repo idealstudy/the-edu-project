@@ -14,27 +14,29 @@ const BackLink = ({
 }) => {
   const router = useRouter();
   return (
-    <button
-      className={cn(
-        'text-text-sub2 flex items-center gap-[6px] text-xl leading-[160%] tracking-[-4%]',
-        className
-      )}
-      onClick={() => router.back()}
-    >
-      {children ? (
-        children
-      ) : (
-        <>
-          <Image
-            src="/common/arrow-left.svg"
-            alt="back-link"
-            width={20}
-            height={20}
-          />
-          <p>이전으로</p>
-        </>
-      )}
-    </button>
+    <div>
+      <button
+        className={cn(
+          'text-text-sub2 flex cursor-pointer items-center gap-[6px] pt-4 text-xl leading-[160%] tracking-[-4%]',
+          className
+        )}
+        onClick={() => router.back()}
+      >
+        {children ? (
+          children
+        ) : (
+          <>
+            <Image
+              src="/common/arrow-left.svg"
+              alt="back-link"
+              width={20}
+              height={20}
+            />
+            <p>이전으로</p>
+          </>
+        )}
+      </button>
+    </div>
   );
 };
 
