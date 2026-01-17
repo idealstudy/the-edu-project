@@ -6,16 +6,18 @@ import {
 } from '../../api/student/homework.student.api';
 import { HomeworkPageable } from '../../model/homework.types';
 import { StudentHomeworkQueryKey } from '../../service/query-keys';
+import { Role } from '@/entities/member';
 
 // 학생 과제 리스트
 export const useGetStudentHomeworkList = (
+  role: Role | undefined,
   studyRoomId: number,
   query: HomeworkPageable
 ) => {
   return useQuery({
     queryKey: StudentHomeworkQueryKey.list(studyRoomId, query),
     queryFn: () => getStudentHomeworkList(studyRoomId, query),
-    enabled: !!studyRoomId,
+    enabled: role === "ROLE_STUDENT" && !!studyRoomId,
   });
 };
 

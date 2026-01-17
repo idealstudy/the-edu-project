@@ -6,16 +6,18 @@ import {
 } from '../../api/teacher/homework.teacher.api';
 import { HomeworkPageable } from '../../model/homework.types';
 import { TeacherHomeworkQueryKey } from '../../service/query-keys';
+import { Role } from '@/entities/member';
 
 // 과제 리스트를 불러옴
 export const useGetTeacherHomeworkList = (
+  role: Role | undefined,
   studyRoomId: number,
   query: HomeworkPageable
 ) => {
   return useQuery({
     queryKey: TeacherHomeworkQueryKey.list(studyRoomId, query),
     queryFn: () => getTeacherHomeworkList(studyRoomId, query),
-    enabled: !!studyRoomId,
+    enabled: role === "ROLE_TEACHER" && !!studyRoomId,
   });
 };
 

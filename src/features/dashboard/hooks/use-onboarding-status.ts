@@ -75,12 +75,14 @@ export const useOnboardingStatus = ({
 
   // 과제 목록 조회 (강사용)
   const { data: teacherHomeworkList } = useGetTeacherHomeworkList(
+    role,
     firstRoomId ?? 0,
     { page: 0, size: 20, sortKey: 'LATEST_EDITED' }
   );
 
   // 과제 목록 조회 (학생용)
   const { data: studentHomeworkList } = useGetStudentHomeworkList(
+    role,
     firstRoomId ?? 0,
     { page: 0, size: 20, sortKey: 'LATEST_EDITED' }
   );
