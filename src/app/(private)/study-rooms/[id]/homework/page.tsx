@@ -56,7 +56,7 @@ export default function HomeworkPage() {
 
   const activeQuery =
     role === 'ROLE_TEACHER' ? teacherListQuery : studentListQuery;
-  const isLoading = activeQuery.isPending || activeQuery.isFetching;
+  const isPending = activeQuery.isPending;
 
   const Homeworks =
     role === 'ROLE_TEACHER' ? teacherListQuery.data : studentListQuery.data;
@@ -122,13 +122,13 @@ export default function HomeworkPage() {
           pageable={pageable}
           keyword={search}
           onRefresh={teacherListQuery.refetch}
-          isLoading={isLoading}
+          isPending={isPending}
         />
       ) : (
         <StudentHomeworkList
           data={studentListQuery.data?.content ?? []}
           studyRoomId={studyRoomId}
-          isLoading={isLoading}
+          isPending={isPending}
         />
       )}
     </StudyRoomDetailLayout>
