@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { StudyNoteQueryKey } from '@/entities/study-note';
 import { StudyNoteDetailQueryKey } from '@/features/dashboard/studynote/detail/service/query-options';
 import { useUpdateStudyNote } from '@/features/study-notes/hooks';
+import { prepareContentForSave } from '@/shared/components/editor';
 import { Form } from '@/shared/components/ui/form';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -109,16 +110,18 @@ function transformVisibility(
 
 function transformFormDataToServerFormat(formData: StudyNoteForm) {
   const isGuardianVisible = formData.isGuardianVisible ?? false;
+  const { contentString, mediaIds } = prepareContentForSave(formData.content);
 
   return {
     title: formData.title,
-    content: JSON.stringify(formData.content),
+    content: contentString,
     visibility: transformVisibility(
       formData.visibility as StudyNoteVisibility,
       isGuardianVisible
     ),
     taughtAt: new Date(formData.taughtAt).toISOString(),
     studentIds: formData.studentIds?.map((student) => student.id) ?? [],
+    mediaIds,
   };
 }
 

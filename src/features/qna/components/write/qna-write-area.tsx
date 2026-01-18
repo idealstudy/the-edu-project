@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { ColumnLayout } from '@/layout/column-layout';
-import { TextEditor } from '@/shared/components/editor';
+import { TextEditor, prepareContentForSave } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
@@ -49,11 +49,14 @@ const WriteArea = ({ studyRoomId }: Props) => {
     title: string;
     content: JSONContent;
   }) => {
+    const { contentString, mediaIds } = prepareContentForSave(data.content);
+
     mutate(
       {
         studyRoomId,
         title: data.title,
-        content: JSON.stringify(data.content),
+        content: contentString,
+        mediaIds,
       },
       {
         onSuccess: () => {
@@ -130,6 +133,7 @@ const WriteArea = ({ studyRoomId }: Props) => {
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="질문 내용을 입력해주세요..."
+                      targetType="QNA"
                     />
                   );
                 }}

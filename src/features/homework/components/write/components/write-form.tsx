@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 
 import { useTeacherCreateHomework } from '@/features/homework/hooks/teacher/useTeacherHomeworkMutations';
 import { TeacherHomeworkRequest } from '@/features/homework/model/homework.types';
+import { prepareContentForSave } from '@/shared/components/editor';
 import { Form } from '@/shared/components/ui/form';
 import { PRIVATE } from '@/shared/constants';
 
@@ -41,12 +42,15 @@ export const HomeworkWriteForm = ({ children }: PropsWithChildren) => {
 function transformHomeworkFormToServerFormat(
   formData: HomeworkForm
 ): TeacherHomeworkRequest {
+  const { contentString, mediaIds } = prepareContentForSave(formData.content);
+
   return {
     title: formData.title,
-    content: JSON.stringify(formData.content),
+    content: contentString,
     deadline: new Date(formData.deadline).toISOString(),
     studentIds: formData.studentIds?.map((s) => s.id),
     reminderOffsets: formData.reminderOffsets ?? undefined,
     teachingNoteIds: formData.teachingNoteIds ?? [],
+    mediaIds,
   };
 }

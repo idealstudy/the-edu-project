@@ -8,6 +8,7 @@ import { useGetTeacherNoteMembers } from '@/features/study-notes/hooks';
 import { useMemberFilter } from '@/features/study-notes/hooks/use-member-filter';
 import { StudyNoteLimit, StudyNoteSortKey } from '@/features/study-notes/model';
 import { transformMembersData } from '@/features/study-notes/model/transform';
+import { MiniSpinner } from '@/shared/components/loading';
 import { Pagination } from '@/shared/components/ui/pagination';
 
 type Props = {
@@ -20,7 +21,7 @@ export default function MembersPanel({ studyRoomId }: Props) {
   const [sort, setSort] = useState<StudyNoteSortKey>('LATEST_EDITED');
   const [limit, setLimit] = useState<StudyNoteLimit>(20);
 
-  const { data, isLoading } = useGetTeacherNoteMembers({
+  const { data, isPending } = useGetTeacherNoteMembers({
     studyRoomId,
     page: currentPage,
     size: limit,
@@ -29,10 +30,10 @@ export default function MembersPanel({ studyRoomId }: Props) {
   const members = transformMembersData(data?.data);
   const filteredMembers = useMemberFilter(members, search, sort);
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <div className="mx-auto flex h-64 w-full max-w-3xl items-center justify-center rounded-2xl border border-zinc-200 bg-white">
-        <p className="text-sm text-zinc-500">로딩 중...</p>
+        <MiniSpinner />
       </div>
     );
   }

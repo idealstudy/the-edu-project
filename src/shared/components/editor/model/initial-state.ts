@@ -1,4 +1,4 @@
-import { TextEditorValue } from '@/shared/components/editor/model/types';
+import { TextEditorValue } from '@/shared/components/editor/types';
 
 export const initialTextEditorValue: TextEditorValue = {
   type: 'doc',
