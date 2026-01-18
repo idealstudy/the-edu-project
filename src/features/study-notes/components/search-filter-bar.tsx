@@ -50,7 +50,7 @@ export const StudyNoteSearchFilterBar = ({
   const [localSearch, setLocalSearch] = useState(search);
 
   return (
-    <div className="items-cente flex justify-between gap-4">
+    <div className="flex items-center justify-between gap-4">
       <div className="flex gap-[10px]">
         <Select
           value={sort}

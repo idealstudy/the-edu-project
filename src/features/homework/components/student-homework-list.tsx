@@ -10,11 +10,11 @@ import { StudentHomeworkItem } from '../model/homework.types';
 export const StudentHomeworkList = ({
   data,
   studyRoomId,
-  isLoading,
+  isPending,
 }: {
   data: StudentHomeworkItem[];
   studyRoomId: number;
-  isLoading: boolean;
+  isPending: boolean;
 }) => {
   // 마감일 계산
   const deadLineDate = (date: string) => {
@@ -32,7 +32,7 @@ export const StudentHomeworkList = ({
   };
 
   // 과제가 없을 시
-  if (isLoading) {
+  if (isPending) {
     return (
       <div className="flex justify-center py-10">
         <MiniSpinner />

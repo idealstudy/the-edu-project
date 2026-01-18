@@ -170,7 +170,7 @@ export default function CreateStudyRoomFlow() {
             dispatch={dialogDispatch}
             variant="confirm-cancel"
             title="학생을 지금 초대하시겠어요?"
-            description="지금 초대하면 초대 화면으로, 나중에 하시면 대시보드로 이동합니다."
+            description="지금 초대하면 초대 화면으로, 나중에 하시면 스터디룸으로 이동합니다."
             confirmText="지금 초대하기"
             cancelText="나중에 할게요"
             pending={isPending}

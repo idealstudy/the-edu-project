@@ -11,9 +11,8 @@ export default async function QnAWritePage({ params }: Props) {
 
   return (
     <main>
-      <div className="mb-6">
-        <BackLink />
-      </div>
+      <BackLink />
+
       <ColumnLayout>
         <QnAWriteDetail studyRoomId={Number(resolvedParams.id)} />
       </ColumnLayout>
