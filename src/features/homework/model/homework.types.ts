@@ -59,6 +59,7 @@ export interface TeacherHomeworkRequest {
   reminderOffsets?: ReminderOffset[];
   teachingNoteIds?: number[];
   studentIds?: number[];
+  mediaIds?: string[];
 }
 
 //  학생 과제 목록 아이템

@@ -65,6 +65,7 @@ export const useWriteQnAMutation = () => {
       studyRoomId: number;
       title: string;
       content: string;
+      mediaIds?: string[];
     }) => writeQnA(args),
     onSuccess: () => {
       // QNA 목록 쿼리 무효화
@@ -83,6 +84,7 @@ export const useWriteQnAMessageMutation = (role: Role | undefined) => {
       studyRoomId: number;
       contextId: number;
       content: string;
+      mediaIds?: string[];
     }) => {
       if (role === 'ROLE_TEACHER') return writeTeacherQnAMessage(args);
       if (role === 'ROLE_STUDENT') return writeStudentQnAMessage(args);
