@@ -130,7 +130,7 @@ export function Session4() {
                 ) : (
                   <Link
                     href={step.href}
-                    className="w-full rounded-lg bg-[#ff4500] px-6 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#e64500] md:px-8 md:py-4 md:text-base"
+                    className="w-full rounded-lg bg-[#ff4500] px-6 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#e64500] md:px-5 md:py-4 md:text-base"
                   >
                     {step.action}
                   </Link>
