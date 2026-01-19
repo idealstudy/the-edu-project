@@ -6,6 +6,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useConnectMembers } from '@/features/dashboard/studynote/write/services/query';
 import { useGetTeacherHomeworkDetail } from '@/features/homework/hooks/teacher/useTeacherHomeworkQuries';
 import { useGetTeacherNotesList } from '@/features/study-notes/hooks';
+import { nowForInput } from '@/shared/lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { HomeworkForm, HomeworkFormSchema } from '../schemas/note';
@@ -43,7 +44,7 @@ export const HomeworkFormProvider = ({
     defaultValues: {
       title: '',
       content: {},
-      deadline: new Date().toISOString().split('T')[0],
+      deadline: nowForInput(),
       studentIds: [],
       reminderOffsets: [],
       teachingNoteIds: [],
@@ -69,10 +70,22 @@ export const HomeworkFormProvider = ({
       };
     }
 
+    // 서버: 2026-01-20T01:13:00
+    // input: 2026-01-20T01:13
+    const normalizeDeadlineForInput = (deadline?: string) => {
+      if (!deadline) return '';
+      return deadline.slice(0, 16);
+    };
+    const deadlineForInput = normalizeDeadlineForInput(homework.deadline);
+
+    const isPastDeadline = (deadline?: string) => {
+      if (!deadline) return false;
+      return new Date(deadline) < new Date();
+    };
     methods.reset({
       title: homework.title,
       content,
-      deadline: homework.deadline.split('T')[0],
+      deadline: deadlineForInput,
       teachingNoteIds: homework.teachingNoteInfoList.map((n) => n.id),
       studentIds: homeworkDetail.homeworkStudents.map((hs) => {
         const member = members.find((m) => m.id === hs.studentId);
@@ -87,6 +100,14 @@ export const HomeworkFormProvider = ({
       reminderOffsets: homework.reminderOffsets ?? [],
       studyRoomId,
     });
+
+    if (isPastDeadline(deadlineForInput)) {
+      methods.setError('deadline', {
+        type: 'manual',
+        message:
+          '이미 지난 마감 기한입니다. 마감 기한을 현재 이후로 수정해 주세요.',
+      });
+    }
   }, [
     isEditMode,
     homeworkDetail,
