@@ -43,7 +43,6 @@ const HomeworkEditForm = ({
       {
         onSuccess: () => {
           router.replace(`/study-rooms/${studyRoomId}/homework/${homeworkId}`);
-          router.refresh();
         },
       }
     );

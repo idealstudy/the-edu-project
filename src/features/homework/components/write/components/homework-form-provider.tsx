@@ -6,6 +6,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useConnectMembers } from '@/features/dashboard/studynote/write/services/query';
 import { useGetTeacherHomeworkDetail } from '@/features/homework/hooks/teacher/useTeacherHomeworkQuries';
 import { useGetTeacherNotesList } from '@/features/study-notes/hooks';
+import { nowForInput } from '@/shared/lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { HomeworkForm, HomeworkFormSchema } from '../schemas/note';
@@ -36,11 +37,6 @@ export const HomeworkFormProvider = ({
 
   /* 학생 목록 */
   const { data: members } = useConnectMembers(studyRoomId);
-
-  const nowForInput = () => {
-    const d = new Date();
-    return d.toISOString().slice(0, 16);
-  };
 
   const methods = useForm<HomeworkForm>({
     resolver: zodResolver(HomeworkFormSchema),
