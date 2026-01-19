@@ -21,9 +21,11 @@ export interface NotesBaseApi<TList> {
 }
 
 export const createNotesBaseApi = <TList>(role: Role): NotesBaseApi<TList> => {
-  // BFF에서 ROLE_* → teacher/student 변환 처리
+  // BFF에서 ROLE_* → teacher/student 변환 처리하지 않고 직접 처리하도록 수정
+  const rolePath = role === 'ROLE_TEACHER' ? 'teacher' : 'student';
+
   const roomPath = (studyRoomId: number) =>
-    `/${role}/study-rooms/${studyRoomId}`;
+    `/${rolePath}/study-rooms/${studyRoomId}`;
 
   return {
     async getNotes({ studyRoomId, pageable }) {

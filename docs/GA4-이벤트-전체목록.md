@@ -96,6 +96,7 @@
 | `gnb_alarm_click` | `trackGnbAlarmClick` | - | ✅ 구현됨 | |
 | `gnb_profile_click` | `trackGnbProfileClick` | - | ✅ 구현됨 | |
 | `gnb_logout_click` | `trackGnbLogoutClick` | - | ✅ 구현됨 | |
+| `gnb_menu_click` | `trackGnbMenuClick` | - | ✅ 구현됨 | |
 
 ---
 

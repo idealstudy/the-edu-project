@@ -9,18 +9,21 @@ import type {
   StudyNoteGroupPageable,
 } from '@/features/study-notes/model';
 import { ListItem } from '@/features/study-rooms/components/common/list-item';
+import { MiniSpinner } from '@/shared/components/loading';
 import { formatMMDDWeekday, getRelativeTimeString } from '@/shared/lib/utils';
 
 import { StudyNotesDropdown } from './dropdown';
 
 export const StudyNotesList = ({
   data,
+  isPending,
   studyRoomId,
   pageable,
   keyword,
   onRefresh,
 }: {
   data: StudyNote[];
+  isPending: boolean;
   studyRoomId: number;
   pageable: StudyNoteGroupPageable;
   keyword: string;
@@ -88,6 +91,21 @@ export const StudyNotesList = ({
         return null;
     }
   };
+
+  if (isPending) {
+    return (
+      <div className="flex justify-center py-10">
+        <MiniSpinner />
+      </div>
+    );
+  }
+  if (data.length === 0) {
+    return (
+      <p className="flex flex-col items-center">
+        아직 등록된 수업노트가 없어요.
+      </p>
+    );
+  }
 
   return data.map((item) => (
     <ListItem

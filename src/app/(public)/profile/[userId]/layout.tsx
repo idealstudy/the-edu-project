@@ -6,7 +6,7 @@ type LayoutProps = {
 
 export default async function ProfileLayout({ children }: LayoutProps) {
   return (
-    <main className="bg-[#F9F9F9]">
+    <main className="px-grid-margin bg-[#F9F9F9]">
       <ColumnLayout>{children}</ColumnLayout>
     </main>
   );

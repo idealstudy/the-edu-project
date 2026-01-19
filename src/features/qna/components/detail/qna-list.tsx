@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import Link from 'next/link';
 
+import { MiniSpinner } from '@/shared/components/loading';
 import { useRole } from '@/shared/hooks/use-role';
 import { trackQuestionClick } from '@/shared/lib/gtm/trackers';
 import { getRelativeTimeString } from '@/shared/lib/utils';
@@ -15,9 +16,10 @@ import QuestionDropDown from './qna-dropdown';
 type Props = {
   studyRoomId: number;
   data: QnAListItem[];
+  isPending: boolean;
 };
 
-export default function QuestionList({ studyRoomId, data }: Props) {
+export default function QuestionList({ studyRoomId, data, isPending }: Props) {
   const { role } = useRole();
   const session = useMemberStore((s) => s.member);
   const [open, setOpen] = useState(0);
@@ -30,6 +32,8 @@ export default function QuestionList({ studyRoomId, data }: Props) {
     // 질문 클릭 이벤트
     trackQuestionClick(studyRoomId, questionId, session?.role ?? null);
   };
+
+  if (isPending) return <MiniSpinner />;
 
   return (
     <div className="gap-2">
@@ -95,11 +99,8 @@ export default function QuestionList({ studyRoomId, data }: Props) {
           </span>
         </div>
       ) : (
-        // TODO: 로딩 UI 필요
         <div className="mt-2 w-full text-center">
-          <span className="text-gray-scale-gray-20">
-            질문을 불러오고 있습니다
-          </span>
+          <MiniSpinner />
         </div>
       )}
     </div>

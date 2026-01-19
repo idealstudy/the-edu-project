@@ -9,7 +9,7 @@ import type { StudyRoomFormValues } from '@/features/study-rooms/model';
 import { BaseQueryOptions } from '@/shared/lib/query';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-type SearchArgs = { studyRoomId: number; email: string; enabled?: boolean };
+type SearchArgs = { studyRoomId: number; keyword: string; enabled?: boolean };
 
 export const createTeacherStudyRoomHooks = (
   api: TeacherStudyRoomRequests,
@@ -24,7 +24,7 @@ export const createTeacherStudyRoomHooks = (
       enabled: options?.enabled ?? true,
     });
 
-  // 스터디룸 상세 조회
+  // 스터디룸 상세 조회 (선생님)
   const useTeacherStudyRoomDetailQuery = (
     studyRoomId: number,
     options?: { enabled?: boolean }
@@ -34,14 +34,14 @@ export const createTeacherStudyRoomHooks = (
       enabled: options?.enabled ?? true,
     });
 
-  // 이메일 초대 검색
+  // 사용자 이름 초대 검색
   const useSearchInvitation = (args: SearchArgs) =>
     useQuery({
       ...qo.searchInvitation({
         studyRoomId: args.studyRoomId,
-        email: args.email,
+        keyword: args.keyword,
       }),
-      enabled: args.enabled ?? args.email.trim().length > 0,
+      enabled: false,
     });
 
   // 스터디룸 생성

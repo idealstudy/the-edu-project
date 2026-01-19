@@ -11,11 +11,10 @@ export default async function HomeworkDetailPage({ params }: Props) {
   const studyRoomId = Number(resolvedParams.id);
   const homeworkId = Number(resolvedParams.homeworkId);
   return (
-    <div className="flex-col">
-      <div className="mb-6">
-        <BackLink />
-      </div>
-      <ColumnLayout className="items-start gap-6 p-6">
+    <div className="w-full flex-col">
+      <BackLink />
+
+      <ColumnLayout className="desktop:p-6 items-start gap-6">
         <HomeworkDetailRoleSwitch
           studyRoomId={studyRoomId}
           homeworkId={homeworkId}

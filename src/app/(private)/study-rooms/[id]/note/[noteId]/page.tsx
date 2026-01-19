@@ -15,13 +15,14 @@ export default async function StudyNoteDetailPage({ params }: Props) {
   return (
     <>
       <PageViewTracker pageName="studynote_detail" />
-      <div className="mb-6">
+      <div className="w-full flex-col">
         <BackLink />
+
+        <ColumnLayout className="desktop:p-6 items-start gap-6">
+          <StudyNoteDetailMetaSection id={resolvedParams.noteId} />
+          <StudyNoteDetailContentsSection id={resolvedParams.noteId} />
+        </ColumnLayout>
       </div>
-      <ColumnLayout className="items-start gap-6 p-6">
-        <StudyNoteDetailMetaSection id={resolvedParams.noteId} />
-        <StudyNoteDetailContentsSection id={resolvedParams.noteId} />
-      </ColumnLayout>
     </>
   );
 }

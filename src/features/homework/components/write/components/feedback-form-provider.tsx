@@ -3,7 +3,7 @@
 import { FormProvider, useForm } from 'react-hook-form';
 
 import { HomeworkFeedbackForm } from '../schemas/create';
-import { FeedbackWriteArea } from './Feedback-write-area';
+import { FeedbackWriteArea } from './feedback-write-area';
 
 type HomeworkContentProps = {
   studyRoomId: number;

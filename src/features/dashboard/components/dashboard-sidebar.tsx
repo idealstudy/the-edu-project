@@ -1,22 +1,19 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 
-import { useDashboardQuery } from '@/features/dashboard';
 import {
   useStudentStudyRoomsQuery,
   useTeacherStudyRoomsQuery,
 } from '@/features/study-rooms';
-import { HomeIcon, PlusIcon, SettingIcon } from '@/shared/components/icons';
+import { HomeIcon, PlusIcon } from '@/shared/components/icons';
 import { Sidebar } from '@/shared/components/sidebar';
 import { PRIVATE } from '@/shared/constants/route';
 import { useRole } from '@/shared/hooks/use-role';
 
 export const DashboardSidebar = () => {
   // [CRITICAL TODO: API 구현 누락] useDashboardQuery의 데이터(data)를 사용할 수 있도록 백엔드 API 및 바인딩 작업을 즉시 진행해야 합니다.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { data, isLoading, isError } = useDashboardQuery();
+  // const { data, isLoading, isError } = useDashboardQuery();
 
   /* ─────────────────────────────────────────────────────
    * 역할에 따라 다른 쿼리 사용
@@ -78,14 +75,17 @@ export const DashboardSidebar = () => {
         </Sidebar.List>
       </Sidebar.ScrollArea>
 
-      <Sidebar.Item href={PRIVATE.DASHBOARD.SETTINGS}>
+      {/* 기능 추가 전까지 잠시 주석 (private -> dashboard 안에 있는 settings 페이지도 삭제 완) */}
+      {/* <Sidebar.Item href={PRIVATE.DASHBOARD.SETTINGS}>
         <SettingIcon />
         <Sidebar.Text>환경설정</Sidebar.Text>
-      </Sidebar.Item>
+      </Sidebar.Item> */}
 
       <div className="mt-auto flex justify-end p-4">
-        <Link
-          href={PRIVATE.DASHBOARD.INQUIRY}
+        <a
+          href={'https://pf.kakao.com/_LMcpn'}
+          target="_blank"
+          rel="noopener noreferrer"
           className="text-gray-scale-gray-50 hover:bg-gray-scale-gray-5 flex items-center gap-2 rounded-lg text-[14px] font-semibold"
         >
           <Sidebar.Text>디에듀에 문의하기</Sidebar.Text>
@@ -95,7 +95,7 @@ export const DashboardSidebar = () => {
             width={16}
             height={16}
           />
-        </Link>
+        </a>
       </div>
     </Sidebar>
   );

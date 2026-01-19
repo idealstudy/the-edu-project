@@ -131,7 +131,7 @@ const QuestionContent = ({
             open={isOpen}
             onOpenChange={setIsOpen}
           >
-            <DropdownMenu.Trigger className="flex size-8 cursor-pointer items-center justify-center rounded-md transition-colors hover:bg-gray-100">
+            <DropdownMenu.Trigger className="flex size-8 cursor-pointer items-center justify-center rounded-md hover:bg-gray-100">
               <Image
                 src="/studynotes/gray-kebab.svg"
                 width={24}
@@ -166,6 +166,7 @@ const QuestionContent = ({
             value={editContent || parsedContent}
             onChange={(value) => setEditContent(value)}
             placeholder="내용을 수정하세요..."
+            targetType="QNA"
           />
           <div className="flex justify-end gap-2">
             <Button

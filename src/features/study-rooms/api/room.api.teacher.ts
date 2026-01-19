@@ -3,11 +3,11 @@ import {
   TeacherStudyRoomRequests,
   createStudyRoomBaseApi,
 } from '@/features/study-rooms/api';
+import { Invitee } from '@/features/study-rooms/hooks/useInvitationController';
 import type { CommonResponse, Pageable, PaginationData } from '@/types/http';
 
 import type {
   ApiResponse,
-  Invitation,
   MemberInvitation,
   SearchInvitationPayload,
   StudyNoteGroup,
@@ -63,10 +63,10 @@ export const createTeacherStudyRoomApi = (
   // 초대할 사용자 검색
   const searchInvitation = async (
     args: SearchInvitationPayload
-  ): Promise<Invitation> => {
-    const response = await base.client.get<ApiResponse<Invitation>>(
+  ): Promise<Invitee[]> => {
+    const response = await base.client.get<ApiResponse<Invitee[]>>(
       `${base.teacherBasePath}/${args.studyRoomId}/search`,
-      { params: { email: args.email } }
+      { params: { keyword: args.keyword } }
     );
     return response.data;
   };

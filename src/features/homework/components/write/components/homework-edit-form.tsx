@@ -41,8 +41,8 @@ const HomeworkEditForm = ({
         },
       },
       {
-        onSuccess: async () => {
-          router.replace(`/study-rooms/${studyRoomId}/homework`);
+        onSuccess: () => {
+          router.replace(`/study-rooms/${studyRoomId}/homework/${homeworkId}`);
         },
       }
     );
@@ -55,7 +55,7 @@ function transformFormDataToServerFormat(formData: HomeworkForm) {
   return {
     title: formData.title,
     content: JSON.stringify(formData.content),
-    deadline: new Date(formData.deadline).toISOString(),
+    deadline: formData.deadline,
     reminderOffsets: formData.reminderOffsets ?? [],
     teachingNoteIds: formData.teachingNoteIds ?? [],
     studentIds: formData.studentIds?.map((s) => s.id) ?? [],

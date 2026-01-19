@@ -36,9 +36,22 @@ export const HomeworkDetailLeft = ({ studyRoomId, homeworkId }: Props) => {
   const { mutate } = useTeacherRemoveHomework();
 
   // 마감기한 계산
-  const deadLineTime = (time: string) => {
+  const deadLineTime = (time?: string) => {
     if (!time) return '없음';
-    return time.split('T')[0];
+
+    const date = new Date(time);
+
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+
+    const period = hours < 12 ? '오전' : '오후';
+    hours = hours % 12 || 12;
+
+    return `${year}.${month}.${day} ${period} ${hours}시 ${minutes}분`;
   };
 
   // 진행중 or 마감

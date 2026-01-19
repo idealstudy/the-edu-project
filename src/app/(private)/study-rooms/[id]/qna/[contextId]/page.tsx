@@ -12,11 +12,10 @@ export default async function QuestionDetailPage({ params }: Props) {
   const contextId = Number(resolvedParams.contextId);
 
   return (
-    <div className="flex-col">
-      <div className="mb-6">
-        <BackLink />
-      </div>
-      <ColumnLayout className="items-start gap-6 p-6">
+    <div className="w-full flex-col">
+      <BackLink />
+
+      <ColumnLayout className="desktop:p-6 items-start gap-6">
         <QuestionDetail
           studyRoomId={studyRoomId}
           contextId={contextId}

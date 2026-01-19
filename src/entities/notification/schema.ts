@@ -28,7 +28,7 @@ const NotificationSchema = z.object({
   id: z.number().int().nonnegative(),
   message: z.string(),
   category: NotificationCategorySchema,
-  targetMetadata: TargetMetadataSchema,
+  targetMetadata: TargetMetadataSchema.nullable(),
   regDate: z.string().nullable(),
   read: z.boolean(),
 });

@@ -15,14 +15,14 @@ export const TeacherHomeworkList = ({
   pageable,
   keyword,
   onRefresh,
-  isLoading,
+  isPending,
 }: {
   data: TeacherHomeworkItem[];
   studyRoomId: number;
   pageable: HomeworkPageable;
   keyword: string;
   onRefresh: () => void;
-  isLoading: boolean;
+  isPending: boolean;
 }) => {
   const [open, setOpen] = useState(0);
 
@@ -52,7 +52,7 @@ export const TeacherHomeworkList = ({
   };
 
   // 과제가 없을 시
-  if (isLoading) {
+  if (isPending) {
     return (
       <div className="flex justify-center py-10">
         <MiniSpinner />

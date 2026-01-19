@@ -141,7 +141,10 @@ export const HomeworkMetaFields = () => {
       </Form.Item>
 
       {/* 마감 기한 + 리마인드 알림 */}
-      <Form.Row columns={2}>
+      <Form.Row
+        columns={2}
+        className="max-desktop:grid-cols-1"
+      >
         <Form.Item error={!!errors.deadline}>
           <Form.Label>
             마감 기한
@@ -150,7 +153,7 @@ export const HomeworkMetaFields = () => {
           <Form.Control>
             <Input
               {...register('deadline')}
-              type="date"
+              type="datetime-local"
               disabled={isPending}
             />
           </Form.Control>
@@ -197,6 +200,7 @@ export const HomeworkMetaFields = () => {
                   value={field.value}
                   onChange={field.onChange}
                   placeholder="수업 내용을 입력해주세요..."
+                  targetType="HOMEWORK"
                 />
               );
             }}

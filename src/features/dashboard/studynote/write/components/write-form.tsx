@@ -5,6 +5,7 @@ import { useFormContext } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
 
+import { prepareContentForSave } from '@/shared/components/editor';
 import { Form } from '@/shared/components/ui/form';
 import { PRIVATE } from '@/shared/constants';
 import { trackStudynoteCreateSuccess } from '@/shared/lib/gtm/trackers';
@@ -77,10 +78,13 @@ function transformVisibility(
 function transformFormDataToServerFormat(formData: StudyNoteForm) {
   const isGuardianVisible = formData.isGuardianVisible ?? false;
 
+  // content를 저장용으로 변환 (blob URL -> media://{mediaId})
+  const { contentString, mediaIds } = prepareContentForSave(formData.content);
+
   return {
     studyRoomId: formData.studyRoomId,
     title: formData.title,
-    content: JSON.stringify(formData.content),
+    content: contentString,
     visibility: transformVisibility(
       formData.visibility as StudyNoteVisibility,
       isGuardianVisible
@@ -88,5 +92,6 @@ function transformFormDataToServerFormat(formData: StudyNoteForm) {
     taughtAt: new Date(formData.taughtAt).toISOString(),
     studentIds: formData.studentIds?.map((student) => student.id),
     teachingNoteGroupId: formData.teachingNoteGroupId,
+    mediaIds, // 이미지 mediaId 배열 추가
   };
 }

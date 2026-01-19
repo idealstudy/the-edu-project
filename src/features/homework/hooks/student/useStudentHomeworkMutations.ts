@@ -11,6 +11,7 @@ type PostStudentHomeworkPayload = {
   studyRoomId: number;
   homeworkId: number;
   content: string;
+  mediaIds?: string[];
 };
 // 학생이 과제 제출
 export const usePostStudentHomework = () => {

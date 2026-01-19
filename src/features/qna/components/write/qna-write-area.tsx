@@ -71,6 +71,8 @@ const WriteArea = ({ studyRoomId }: Props) => {
     content: JSONContent;
     visibility: string;
   }) => {
+    // const { contentString, mediaIds } = prepareContentForSave(data.content);
+
     mutate(
       {
         studyRoomId,
@@ -127,6 +129,7 @@ const WriteArea = ({ studyRoomId }: Props) => {
               <Input
                 {...register('title')}
                 type="text"
+                // value={qnaTitle || }
                 placeholder="질문의 제목을 입력해주세요."
                 disabled={isPending}
               />
@@ -183,6 +186,7 @@ const WriteArea = ({ studyRoomId }: Props) => {
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="질문 내용을 입력해주세요..."
+                      targetType="QNA"
                     />
                   );
                 }}
