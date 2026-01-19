@@ -7,6 +7,7 @@ export interface HomeworkDetail {
   teacherName: string;
   title: string;
   content: string;
+  resolvedContent?: { content: string };
   deadline: string;
   modifiedAt: string;
   reminderOffsets: ReminderOffset[];

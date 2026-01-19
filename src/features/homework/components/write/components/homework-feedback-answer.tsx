@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Image from 'next/image';
 
@@ -9,7 +9,11 @@ import {
   useUpdateTeacherHomeworkFeedback,
 } from '@/features/homework/hooks/teacher/useTeacherHomeworkFeedbackMutations';
 import { parseEditorContent } from '@/features/homework/lib/parse-editor-content';
-import { TextEditor, TextViewer } from '@/shared/components/editor';
+import {
+  TextEditor,
+  TextViewer,
+  prepareContentForSave,
+} from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 import { useRole } from '@/shared/hooks/use-role';
@@ -36,6 +40,11 @@ export const FeedbackAnswer = ({
   const [editContent, setEditContent] = useState<JSONContent | null>(null);
   const [localContent, setLocalContent] = useState(content);
 
+  // content prop이 변경되면 localContent 동기화 (쿼리 refetch 후)
+  useEffect(() => {
+    setLocalContent(content);
+  }, [content]);
+
   const { role } = useRole();
 
   const { mutate: updateMessage, isPending: isUpdating } =
@@ -54,16 +63,17 @@ export const FeedbackAnswer = ({
 
   const handleSave = () => {
     if (!editContent) return;
+    const { contentString } = prepareContentForSave(editContent);
+
     updateMessage(
       {
         studyRoomId,
         homeworkId,
         homeworkStudentId,
-        content: JSON.stringify(editContent),
+        content: contentString,
       },
       {
         onSuccess: () => {
-          setLocalContent(JSON.stringify(editContent));
           setIsEditing(false);
           setEditContent(null);
         },
