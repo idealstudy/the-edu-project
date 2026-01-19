@@ -1,5 +1,5 @@
 import { Role } from '@/entities/member';
-import { StudyRoomsGroupQueryKey } from '@/features/study-rooms';
+import { StudyRoomsGroupQueryKey } from '@/entities/study-note-group/infrastructure';
 import type { StudyNoteGroup } from '@/features/study-rooms/model/types';
 import type { Pageable, PaginationMeta } from '@/types/http';
 import { infiniteQueryOptions } from '@tanstack/react-query';

@@ -1,9 +1,6 @@
 import { StudyNoteQueryKey } from '@/entities/study-note';
-import {
-  StudyRoomDetail,
-  StudyRoomsGroupQueryKey,
-  StudyRoomsQueryKey,
-} from '@/features/study-rooms';
+import { StudyRoomsGroupQueryKey } from '@/entities/study-note-group/infrastructure';
+import { StudyRoomDetail, StudyRoomsQueryKey } from '@/features/study-rooms';
 import { useMutation } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -19,9 +16,16 @@ export const useCreateStudyNoteGroup = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createStudyNoteGroup,
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: [StudyRoomsGroupQueryKey.all],
+        queryKey: [
+          StudyRoomsGroupQueryKey.all,
+          {
+            pageable: { page: 0, size: 20, sort: ['desc'] },
+            studyRoomId: variables.studyRoomId,
+          },
+          'ROLE_TEACHER',
+        ],
       });
     },
   });
@@ -35,13 +39,24 @@ export const useUpdateStudyNoteGroup = () => {
       title: string;
       studyRoomId: number;
     }) => updateStudyNoteGroup(args),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: [StudyRoomsGroupQueryKey.all],
+        queryKey: [
+          StudyRoomsGroupQueryKey.all,
+          {
+            pageable: { page: 0, size: 20, sort: ['desc'] },
+            studyRoomId: variables.studyRoomId,
+          },
+          'ROLE_TEACHER',
+        ],
       });
 
-      queryClient.invalidateQueries({
-        queryKey: [StudyNoteQueryKey.byGroupId],
+      queryClient.refetchQueries({
+        queryKey: StudyNoteQueryKey.all,
+      });
+
+      queryClient.removeQueries({
+        queryKey: StudyNoteQueryKey.all,
       });
     },
   });
@@ -52,13 +67,24 @@ export const useDeleteStudyNoteGroup = () => {
   return useMutation({
     mutationFn: (args: { teachingNoteGroupId: number; studyRoomId: number }) =>
       deleteStudyNoteGroup(args),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: [StudyRoomsGroupQueryKey.all],
+        queryKey: [
+          StudyRoomsGroupQueryKey.all,
+          {
+            pageable: { page: 0, size: 20, sort: ['desc'] },
+            studyRoomId: variables.studyRoomId,
+          },
+          'ROLE_TEACHER',
+        ],
       });
 
-      queryClient.invalidateQueries({
-        queryKey: [StudyNoteQueryKey.byGroupId],
+      queryClient.refetchQueries({
+        queryKey: StudyNoteQueryKey.all,
+      });
+
+      queryClient.removeQueries({
+        queryKey: StudyNoteQueryKey.all,
       });
     },
   });
