@@ -100,11 +100,36 @@ export const useUpdateStudyRoom = () => {
       others: StudyRoomDetail;
     }) => updateStudyRoom(args),
 
-    onSuccess: (_, variables) => {
-      const id = variables.studyRoomId;
+    onMutate: async ({ studyRoomId, name }) => {
+      // 이전 데이터 백업
+      const previous = queryClient.getQueryData(
+        StudyRoomsQueryKey.detail(studyRoomId)
+      );
+
+      // Optimistic Update: UI 즉시 반영
+      queryClient.setQueryData<StudyRoomDetail | undefined>(
+        StudyRoomsQueryKey.detail(studyRoomId),
+        (old) => (old ? { ...old, name } : undefined)
+      );
+
+      return { previous };
+    },
+
+    onError: (_, variables, context) => {
+      // 실패 시 롤백
+      queryClient.setQueryData(
+        StudyRoomsQueryKey.detail(variables.studyRoomId),
+        context?.previous
+      );
+    },
+
+    onSettled: (_, __, variables) => {
+      // 서버 데이터와 동기화
       queryClient.invalidateQueries({
-        queryKey: StudyRoomsQueryKey.detail(id),
+        queryKey: StudyRoomsQueryKey.detail(variables.studyRoomId),
       });
+
+      // 사이드바 갱신
       queryClient.invalidateQueries({
         queryKey: StudyRoomsQueryKey.teacherList,
       });
