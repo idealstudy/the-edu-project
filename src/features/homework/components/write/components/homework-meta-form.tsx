@@ -153,7 +153,7 @@ export const HomeworkMetaFields = () => {
           <Form.Control>
             <Input
               {...register('deadline')}
-              type="date"
+              type="datetime-local"
               disabled={isPending}
             />
           </Form.Control>
