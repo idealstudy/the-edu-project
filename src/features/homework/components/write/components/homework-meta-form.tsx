@@ -153,7 +153,7 @@ export const HomeworkMetaFields = () => {
           <Form.Control>
             <Input
               {...register('deadline')}
-              type="date"
+              type="datetime-local"
               disabled={isPending}
             />
           </Form.Control>
@@ -200,6 +200,7 @@ export const HomeworkMetaFields = () => {
                   value={field.value}
                   onChange={field.onChange}
                   placeholder="수업 내용을 입력해주세요..."
+                  targetType="HOMEWORK"
                 />
               );
             }}

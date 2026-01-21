@@ -5,7 +5,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import { usePostStudentHomework } from '@/features/homework/hooks/student/useStudentHomeworkMutations';
 import { ColumnLayout } from '@/layout/column-layout';
-import { TextEditor } from '@/shared/components/editor';
+import { TextEditor, prepareContentForSave } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 
@@ -46,11 +46,14 @@ export const WriteFormArea = ({ studyRoomId, homeworkId }: Props) => {
   const isButtonDisabled = !isValid || isPending || isSubmitting;
 
   const onSubmit = (data: StudentHomeworkForm) => {
+    const { contentString, mediaIds } = prepareContentForSave(data.content);
+
     mutate(
       {
         studyRoomId,
         homeworkId,
-        content: JSON.stringify(data.content),
+        content: contentString,
+        mediaIds,
       },
       {
         onSuccess: () => {
@@ -76,6 +79,7 @@ export const WriteFormArea = ({ studyRoomId, homeworkId }: Props) => {
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="제출할 과제를 작성해 주세요..."
+                      targetType="HOMEWORK"
                     />
                   );
                 }}

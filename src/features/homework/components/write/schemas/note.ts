@@ -22,18 +22,16 @@ const extractTextFromTiptapJSON = (doc: JSONContent): string => {
 };
 
 // 마감일 컨트롤
-const normalizeDate = (date: Date) =>
-  new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
 const deadlineSchema = z
   .string()
   .min(1, '날짜를 선택해 주세요.')
   .refine((value) => {
-    const today = normalizeDate(new Date());
-    const deadlineDate = normalizeDate(new Date(value));
+    const now = new Date();
+    const deadlineDate = new Date(value);
 
-    return deadlineDate >= today;
-  }, '마감일은 오늘 이후 날짜여야 합니다.');
+    return deadlineDate >= now;
+  }, '마감일은 현재 시점 이후여야 합니다.');
 
 export const contentSchema = z
   .custom<JSONContent>((val) => typeof val === 'object' && val !== null)

@@ -1,4 +1,4 @@
-import { ToolbarProps } from '@/shared/components/editor/model/types';
+import { ToolbarProps } from '@/shared/components/editor/types';
 import { cn } from '@/shared/lib';
 import { useEditorState } from '@tiptap/react';
 import {
