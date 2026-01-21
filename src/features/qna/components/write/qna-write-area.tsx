@@ -6,11 +6,11 @@ import { Controller, useFormContext } from 'react-hook-form';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-// import { useGetTeacherNotesList } from '@/features/study-notes/hooks';
-// import { StudyNoteGroupPageable } from '@/features/study-notes/model';
+import { useGetTeacherNotesList } from '@/features/study-notes/hooks';
+import { StudyNoteGroupPageable } from '@/features/study-notes/model';
 import { ColumnLayout } from '@/layout/column-layout';
-import { TextEditor } from '@/shared/components/editor';
-import { Select } from '@/shared/components/ui';
+import { TextEditor, prepareContentForSave } from '@/shared/components/editor';
+import { RequiredMark, Select } from '@/shared/components/ui';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
@@ -18,9 +18,8 @@ import { JSONContent } from '@tiptap/react';
 
 import { QnACreateForm } from '../../schema/create';
 import { useWriteQnAMutation } from '../../services/query';
-import { RequiredMark } from './qna-form-provider';
-
-// import { TagInputQna } from './tag-input-qna';
+import { QnAVisibility } from '../../types';
+import { TagInputQna } from './tag-input-qna';
 
 type Props = {
   studyRoomId: number;
@@ -31,19 +30,19 @@ const WriteArea = ({ studyRoomId }: Props) => {
   const { watch } = useFormContext<QnACreateForm>();
 
   const visibility = watch('visibility');
-  // const roomId = watch('studyRoomId');
+  const roomId = watch('studyRoomId');
 
-  // const NOTE_PAGEABLE: StudyNoteGroupPageable = {
-  //   page: 0,
-  //   size: 20,
-  //   sortKey: 'LATEST_EDITED',
-  // };
+  const NOTE_PAGEABLE: StudyNoteGroupPageable = {
+    page: 0,
+    size: 20,
+    sortKey: 'LATEST_EDITED',
+  };
 
-  // const { data: notes } = useGetTeacherNotesList({
-  //   studyRoomId: roomId,
-  //   pageable: NOTE_PAGEABLE,
-  //   enabled: !!roomId,
-  // });
+  const { data: notes } = useGetTeacherNotesList({
+    studyRoomId: roomId,
+    pageable: NOTE_PAGEABLE,
+    enabled: !!roomId,
+  });
 
   const { mutate, isPending } = useWriteQnAMutation();
   const {
@@ -69,16 +68,19 @@ const WriteArea = ({ studyRoomId }: Props) => {
     studyRoomId: number;
     title: string;
     content: JSONContent;
-    visibility: string;
+    visibility: QnAVisibility;
+    relatedTeachingNoteId: number | null;
   }) => {
-    // const { contentString, mediaIds } = prepareContentForSave(data.content);
+    const { contentString, mediaIds } = prepareContentForSave(data.content);
 
     mutate(
       {
         studyRoomId,
         title: data.title,
-        content: JSON.stringify(data.content),
+        content: contentString,
         visibility: data.visibility,
+        mediaIds: mediaIds,
+        relatedTeachingNoteId: data.relatedTeachingNoteId!,
       },
       {
         onSuccess: () => {
@@ -129,7 +131,6 @@ const WriteArea = ({ studyRoomId }: Props) => {
               <Input
                 {...register('title')}
                 type="text"
-                // value={qnaTitle || }
                 placeholder="질문의 제목을 입력해주세요."
                 disabled={isPending}
               />
@@ -139,8 +140,8 @@ const WriteArea = ({ studyRoomId }: Props) => {
             </Form.ErrorMessage>
           </Form.Item>
 
-          {/* 수업노트 연결 1:1
-          <Form.Item error={!!errors.teachingNoteId}>
+          {/* 수업노트 연결 1:1 */}
+          <Form.Item error={!!errors.relatedTeachingNoteId}>
             <Form.Label>
               수업노트 연결
               <RequiredMark />
@@ -148,7 +149,7 @@ const WriteArea = ({ studyRoomId }: Props) => {
 
             <Form.Control>
               <Controller
-                name="teachingNoteId"
+                name="relatedTeachingNoteId"
                 control={control}
                 render={({ field }) => (
                   <TagInputQna
@@ -156,19 +157,19 @@ const WriteArea = ({ studyRoomId }: Props) => {
                     selectedId={field.value}
                     onChange={field.onChange}
                     placeholder="질문과 연관된 수업노트를 연결해주세요."
-                    error={!!errors.teachingNoteId}
+                    error={!!errors.relatedTeachingNoteId}
                     disabled={isPending}
                   />
                 )}
               />
             </Form.Control>
 
-            {errors.teachingNoteId && (
+            {errors.relatedTeachingNoteId && (
               <Form.ErrorMessage className="text-system-warning text-sm">
-                {errors.teachingNoteId.message}
+                {errors.relatedTeachingNoteId.message}
               </Form.ErrorMessage>
             )}
-          </Form.Item> */}
+          </Form.Item>
 
           {/* 내용 */}
           <Form.Item error={!!errors.content}>
@@ -209,7 +210,8 @@ const WriteArea = ({ studyRoomId }: Props) => {
           />
           <Form.Item className="mt-8">
             <Form.Label className="text-2xl font-semibold">
-              질문의 공개 범위
+              공개 범위
+              <RequiredMark />
             </Form.Label>
             <Controller
               name="visibility"
@@ -224,14 +226,18 @@ const WriteArea = ({ studyRoomId }: Props) => {
                     placeholder="공개 범위 선택"
                   />
                   <Select.Content>
-                    <Select.Option value="PUBLIC">보호자 공개</Select.Option>
-                    <Select.Option value="PRIVATE">보호자 비공개</Select.Option>
+                    <Select.Option value="STUDENT_AND_PARENT">
+                      보호자 공개
+                    </Select.Option>
+                    <Select.Option value="STUDENT_ONLY">
+                      보호자 비공개
+                    </Select.Option>
                   </Select.Content>
                 </Select>
               )}
             />
 
-            {visibility === 'PUBLIC' && (
+            {visibility === 'STUDENT_AND_PARENT' && (
               <Form.Description className="text-text-sub2 flex gap-x-[3px] text-sm">
                 <Image
                   src="/common/info.svg"

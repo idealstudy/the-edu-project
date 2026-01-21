@@ -2,15 +2,18 @@ import { JSONContent } from '@tiptap/react';
 import { z } from 'zod';
 
 const extractTextFromTiptapJSON = (doc: JSONContent): string => {
-  if (!doc || !doc.content) return '';
-
+  if (!doc || doc.type !== 'doc' || !Array.isArray(doc.content)) {
+    return '';
+  }
   let text = '';
 
   const traverse = (nodes: JSONContent[]) => {
     nodes.forEach((node) => {
-      if (node.type === 'text' && node.text) {
+      if (node.type === 'text' && typeof node.text === 'string') {
         text += node.text;
-      } else if (node.content) {
+      }
+
+      if (Array.isArray(node.content)) {
         traverse(node.content);
       }
     });
@@ -26,10 +29,18 @@ export const QnaACreateFormSchema = z.object({
     .min(1, '질문 제목을 작성해 주세요!')
     .max(50, '질문 제목은 30자 이하로 입력해주세요.'),
   studyRoomId: z.number({ required_error: '스터디룸을 선택해 주세요!' }),
-  teachingNoteIds: z.number({
-    required_error: '연결할 수업노트를 선택해 주세요.',
-  }),
-  visibility: z.enum(['PUBLIC', 'PRIVATE'], {
+  relatedTeachingNoteId: z
+    .number()
+    .nullable()
+    .superRefine((v, ctx) => {
+      if (v === null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: '연결할 수업노트를 선택해 주세요.',
+        });
+      }
+    }),
+  visibility: z.enum(['STUDENT_AND_PARENT', 'STUDENT_ONLY'], {
     required_error: '공개 범위를 선택해주세요.',
   }),
   content: z.custom<JSONContent>().superRefine((val, ctx) => {
@@ -50,15 +61,9 @@ export const QnaACreateFormSchema = z.object({
       });
     }
   }),
-  // isGuardianVisible: z.boolean().optional(),
 });
 
 export const QnAMessageFormSchema = z.object({
-  studyRoomId: z.number({ required_error: '스터디룸을 선택해 주세요!' }),
-  contextId: z.number({ required_error: '질문을 선택해 주세요' }),
-  visibility: z.enum(['PUBLIC', 'PRIVATE'], {
-    required_error: '공개 범위를 선택해주세요.',
-  }),
   content: z.custom<JSONContent>().superRefine((val, ctx) => {
     const plainText = extractTextFromTiptapJSON(val);
     const length = plainText.trim().length;

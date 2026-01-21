@@ -3,8 +3,10 @@
 import { Key } from 'react';
 
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { ColumnLayout } from '@/layout/column-layout';
+import { MiniSpinner } from '@/shared/components/loading';
 import { useRole } from '@/shared/hooks/use-role';
 import { cn } from '@/shared/lib/utils';
 
@@ -31,7 +33,11 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
     contextId,
   });
 
-  if (isPending) return;
+  const qnaVisibility = (visibility: string) => {
+    return visibility === 'STUDENT_ONLY' ? '보호자 비공개' : '보호자 공개';
+  };
+
+  if (isPending) return <MiniSpinner />;
 
   return (
     <>
@@ -45,7 +51,6 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
                 : 'text-gray-scale-gray-60'
             )}
           >
-            {/* TODO: 임시 타입경고 제거 */}
             {qnaDetail &&
               statusMessage[qnaDetail?.status as keyof typeof statusMessage]}
           </span>
@@ -62,25 +67,17 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
               />
               <span>연결 수업노트</span>
             </div>
-            <span>수업노트</span>
-            {/* <div>
-              {qnaDetail.?.homework.teachingNoteInfoList.length === 0 ? (
-                <div>없음</div>
-              ) : (
-                data?.homework.teachingNoteInfoList.map((note) => (
-                  <div key={note.id}>
-                    <a
-                      href={`/study-rooms/${studyRoomId}/note/${note.id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-orange-scale-orange-50 cursor-pointer"
-                    >
-                      {note.name}
-                    </a>
-                  </div>
-                ))
-              )}
-            </div> */}
+            <div>
+              <Link
+                href={`/study-rooms/${studyRoomId}/note/${qnaDetail?.relatedTeachingNote.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-orange-scale-orange-50"
+              >
+                {qnaDetail?.relatedTeachingNote.title ??
+                  '연결된 수업노트가 없습니다.'}
+              </Link>
+            </div>
           </div>
           <hr className="text-gray-scale-gray-10" />
           <div className="font-label-normal flex cursor-default flex-col gap-2">
@@ -94,7 +91,7 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
               />
               <span>공개범위</span>
             </div>
-            <span>보호자 공개</span>
+            <span>{qnaVisibility(qnaDetail?.visibility ?? '-')}</span>
           </div>
         </div>
       </ColumnLayout.Left>
@@ -132,7 +129,7 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
               );
           }
         )}
-        <QnAMessageFormProvider>
+        <QnAMessageFormProvider key={contextId}>
           <WriteArea
             studyRoomId={studyRoomId}
             contextId={contextId}

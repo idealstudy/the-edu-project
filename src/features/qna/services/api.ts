@@ -1,20 +1,25 @@
 import { api } from '@/shared/api';
 import { CommonResponse, Pageable, PaginationMeta } from '@/types/http';
 
-import { QnADetailResponse, QnAListItem } from '../types';
+import { QnADetailResponse, QnAListItem, QnAVisibility } from '../types';
 
 // POST /api/study-rooms/{studyRoomId}/qna - 질문 생성
 export const writeQnA = async (args: {
   studyRoomId: number;
   title: string;
   content: string;
-  visibility: string;
+  visibility: QnAVisibility;
+  mediaIds?: string[];
+  relatedTeachingNoteId?: number;
 }) => {
   const data = {
     title: args.title,
     content: args.content,
     visibility: args.visibility,
+    mediaIds: args.mediaIds ?? [],
+    relatedTeachingNoteId: args.relatedTeachingNoteId ?? null,
   };
+
   await api.private.post(`/study-rooms/${args.studyRoomId}/qna`, data);
 };
 
@@ -59,7 +64,7 @@ export const getStudentQnAList = async (args: {
       status: args.status,
       page: args.pageable.page,
       size: args.pageable.size,
-      sort: args.sort ?? args.pageable.sort,
+      sort: args.sort,
       searchKeyword: args.searchKeyword,
     },
   });
@@ -85,6 +90,7 @@ export const getTeacherQnAList = async (args: {
   pageable: Pageable;
   status?: string;
   sort?: string;
+  searchKeyword?: string;
 }) => {
   const response = await api.private.get<
     CommonResponse<PaginationMeta & { content: QnAListItem[] }>
@@ -93,7 +99,8 @@ export const getTeacherQnAList = async (args: {
       status: args.status,
       page: args.pageable.page,
       size: args.pageable.size,
-      sort: args.sort ?? args.pageable.sort,
+      sort: args.sort,
+      searchKeyword: args.searchKeyword,
     },
   });
 

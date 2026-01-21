@@ -2,7 +2,7 @@ import { Role } from '@/entities/member';
 import { Pageable } from '@/types/http';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { QnADetailResponse } from '../types';
+import { QnADetailResponse, QnAVisibility } from '../types';
 import {
   deleteQnA,
   deleteStudentQnAMessage,
@@ -66,7 +66,9 @@ export const useWriteQnAMutation = () => {
       studyRoomId: number;
       title: string;
       content: string;
-      visibility: string;
+      visibility: QnAVisibility;
+      mediaIds?: string[];
+      relatedTeachingNoteId?: number;
     }) => writeQnA(args),
     onSuccess: () => {
       // QNA 목록 쿼리 무효화
