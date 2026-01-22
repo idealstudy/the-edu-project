@@ -21,7 +21,7 @@ export const getPublicTeachers = async (params?: {
   };
 
   const response = await api.public.get<CommonResponse<PublicTeachersResponse>>(
-    '/api/public/teachers',
+    '/public/teachers',
     { params: requestParams }
   );
   return response.data;
@@ -42,7 +42,7 @@ export const getPublicStudyRooms = async (params?: {
 
   const response = await api.public.get<
     CommonResponse<PublicStudyRoomsResponse>
-  >('/api/public/study-rooms', { params: requestParams });
+  >('/public/study-rooms', { params: requestParams });
   return response.data;
 };
 
