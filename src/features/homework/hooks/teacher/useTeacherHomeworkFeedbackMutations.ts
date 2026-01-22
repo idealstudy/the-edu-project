@@ -11,6 +11,7 @@ type TeacherHomeworkFeedbackPayload = {
   homeworkId: number;
   homeworkStudentId: number;
   content?: string;
+  mediaIds?: string[];
 };
 
 // 선생님이 피드백 생성

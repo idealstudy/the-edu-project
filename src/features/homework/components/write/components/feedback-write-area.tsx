@@ -5,7 +5,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import { usePostTeacherHomeworkFeedback } from '@/features/homework/hooks/teacher/useTeacherHomeworkFeedbackMutations';
 import { ColumnLayout } from '@/layout/column-layout';
-import { TextEditor } from '@/shared/components/editor';
+import { TextEditor, prepareContentForSave } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 
@@ -59,12 +59,15 @@ export const FeedbackWriteArea = ({
   const isButtonDisabled = !isValid || isPending || isSubmitting;
 
   const onSubmit = (data: HomeworkFeedbackForm) => {
+    const { contentString, mediaIds } = prepareContentForSave(data.content);
+
     mutate(
       {
         studyRoomId,
         homeworkId,
         homeworkStudentId,
-        content: JSON.stringify(data.content),
+        content: contentString,
+        mediaIds,
       },
       {
         onSuccess: () => {
@@ -91,6 +94,7 @@ export const FeedbackWriteArea = ({
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="피드백을 작성해 주세요..."
+                      targetType="HOMEWORK"
                     />
                   );
                 }}

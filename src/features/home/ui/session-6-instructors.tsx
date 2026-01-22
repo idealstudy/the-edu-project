@@ -44,7 +44,7 @@ export function Session6() {
             </p>
           </div>
           <Link
-            href={PUBLIC.CORE.INDEX}
+            href="/teachers"
             className="hidden text-sm font-medium text-[#ff4500] hover:underline md:block md:text-base"
           >
             전체 강사 보기

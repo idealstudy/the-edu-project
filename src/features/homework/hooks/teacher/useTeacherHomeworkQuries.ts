@@ -28,5 +28,6 @@ export const useGetTeacherHomeworkDetail = (
     queryKey: TeacherHomeworkQueryKey.detail(studyRoomId, homeworkId),
     queryFn: () => getTeacherHomeworkDetail(studyRoomId, homeworkId),
     enabled: !!studyRoomId && !!homeworkId,
+    staleTime: 0,
   });
 };

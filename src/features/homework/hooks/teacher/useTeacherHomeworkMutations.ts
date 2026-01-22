@@ -65,16 +65,18 @@ export const useTeacherUpdateHomework = () => {
       body: TeacherHomeworkRequest;
     }) => updateTeacherHomework(studyRoomId, homeworkId, body),
 
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: TeacherHomeworkQueryKey.listBase(variables.studyRoomId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: TeacherHomeworkQueryKey.detail(
-          variables.studyRoomId,
-          variables.homeworkId
-        ),
-      });
+    onSuccess: async (_data, variables) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: TeacherHomeworkQueryKey.listBase(variables.studyRoomId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: TeacherHomeworkQueryKey.detail(
+            variables.studyRoomId,
+            variables.homeworkId
+          ),
+        }),
+      ]);
     },
   });
 };
