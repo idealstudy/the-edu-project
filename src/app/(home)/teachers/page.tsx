@@ -38,9 +38,7 @@ export default function TeachersPage() {
       <div className="mx-auto max-w-7xl px-6 py-12">
         {/* 헤더 */}
         <div className="mb-8 text-center">
-          <h1 className="font-title-heading text-text-main mb-4">
-            신규 강사 프로필
-          </h1>
+          <h1 className="font-title-heading text-text-main mb-4">디에듀 101</h1>
           <p className="font-body1-normal text-text-sub1">
             최근 가입한 선생님들의 프로필과 스터디룸을 확인해보세요
           </p>
