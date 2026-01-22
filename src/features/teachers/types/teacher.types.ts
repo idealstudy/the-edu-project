@@ -12,6 +12,7 @@ export interface PublicTeacherProfile {
   studyRoomCount: number;
   joinedAt: string;
   isNewTeacher?: boolean; // 신규 가입 여부 (예: 30일 이내)
+  //   regDate: string; // 가입일
 }
 
 // 공개 스터디룸 타입 (기존 StudyRoom 확장)
