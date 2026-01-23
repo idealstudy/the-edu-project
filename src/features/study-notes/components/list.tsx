@@ -17,6 +17,7 @@ import { StudyNotesDropdown } from './dropdown';
 export const StudyNotesList = ({
   data,
   isPending,
+  isError,
   studyRoomId,
   pageable,
   keyword,
@@ -25,6 +26,7 @@ export const StudyNotesList = ({
 }: {
   data: StudyNote[];
   isPending: boolean;
+  isError: boolean;
   studyRoomId: number;
   pageable: StudyNoteGroupPageable;
   keyword: string;
@@ -106,6 +108,14 @@ export const StudyNotesList = ({
     return (
       <p className="flex flex-col items-center">
         아직 등록된 수업노트가 없어요.
+      </p>
+    );
+  }
+
+  if (isError) {
+    return (
+      <p className="flex flex-col items-center">
+        수업노트를 불러오지 못했어요.
       </p>
     );
   }
