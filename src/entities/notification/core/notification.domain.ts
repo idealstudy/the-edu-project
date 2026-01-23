@@ -1,4 +1,4 @@
-import { base } from '@/entities/notification/schema';
+import { dto } from '@/entities/notification/infrastructure';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { z } from 'zod';
@@ -48,11 +48,11 @@ const getTargetUrl = (
 };
 
 /* ─────────────────────────────────────────────────────
- * base 스키마를 가공하여 도메인 기본 구조 생성
+ * DTO 스키마를 Domain 스키마로 변환
  * - regDate를 Date 객체로 변환
  * - nullable 처리
  * ────────────────────────────────────────────────────*/
-const NotificationShape = base.schema
+const NotificationShape = dto.schema
   .partial()
   .required({
     id: true,
@@ -69,10 +69,11 @@ const NotificationShape = base.schema
   });
 
 /* ─────────────────────────────────────────────────────
- * shape에 transform 추가하여 추가 필드 생성
- * - category 추가: type을 한글로 변환
- * - relativeTime 추가: '0시간 전' 형식
- * - isRead 추가
+ * Domain 스키마 (비즈니스 로직 포함)
+ * - categoryKorean: 카테고리 한글 변환
+ * - targetUrl: 카테고리별 URL 생성
+ * - relativeTime: 상대 시간 표시
+ * - isRead: 읽음 상태
  * ────────────────────────────────────────────────────*/
 const NotificationSchema = NotificationShape.transform((notification) => ({
   ...notification,
@@ -87,6 +88,4 @@ const NotificationSchema = NotificationShape.transform((notification) => ({
 
 export const domain = {
   schema: NotificationSchema,
-  shape: NotificationShape,
-  category: base.category,
 };
