@@ -4,7 +4,11 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 
-import { TextEditor, TextViewer } from '@/shared/components/editor';
+import {
+  TextEditor,
+  TextViewer,
+  prepareContentForSave,
+} from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 import { useRole } from '@/shared/hooks/use-role';
@@ -83,12 +87,14 @@ const QuestionAnswer = ({
 
   const handleSave = () => {
     if (!editContent) return;
+    const { contentString } = prepareContentForSave(editContent);
+
     updateMessage(
       {
         studyRoomId,
         contextId,
         messageId: id,
-        content: JSON.stringify(editContent),
+        content: contentString,
       },
       {
         onSuccess: () => {

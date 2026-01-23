@@ -59,9 +59,10 @@ export const HomeworkFormProvider = ({
 
     const { homework } = homeworkDetail;
 
+    const contentString = homework.resolvedContent?.content || homework.content;
     let content;
     try {
-      content = JSON.parse(homework.content);
+      content = JSON.parse(contentString);
     } catch {
       content = {
         type: 'doc',

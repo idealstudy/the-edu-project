@@ -72,6 +72,7 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
             authorType: string;
             id: Key | null | undefined;
             content: string;
+            resolvedContent?: { content: string };
             regDate: string;
             authorName: string;
           }) => {
@@ -80,7 +81,7 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
                 <QuestionAnswer
                   key={msg.id}
                   id={Number(msg.id)}
-                  content={msg.content}
+                  content={msg.resolvedContent?.content || msg.content}
                   regDate={msg.regDate}
                   studyRoomId={studyRoomId}
                   contextId={contextId}
@@ -91,7 +92,7 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
                 <QuestionContent
                   key={msg.id}
                   id={Number(msg.id)}
-                  content={msg.content}
+                  content={msg.resolvedContent?.content || msg.content}
                   authorName={msg.authorName}
                   regDate={msg.regDate}
                   studyRoomId={studyRoomId}
