@@ -182,6 +182,7 @@ export default function StudyNotePage() {
         pageable={pageable}
         keyword={search}
         onRefresh={currentQuery.refetch}
+        canManage={role === 'ROLE_TEACHER'}
       />
     </StudyRoomDetailLayout>
   );

@@ -20,6 +20,7 @@ export const StudyNotesList = ({
   studyRoomId,
   pageable,
   keyword,
+  canManage,
   onRefresh,
 }: {
   data: StudyNote[];
@@ -27,6 +28,7 @@ export const StudyNotesList = ({
   studyRoomId: number;
   pageable: StudyNoteGroupPageable;
   keyword: string;
+  canManage: boolean;
   onRefresh: () => void;
 }) => {
   const [open, setOpen] = useState(0);
@@ -99,6 +101,7 @@ export const StudyNotesList = ({
       </div>
     );
   }
+
   if (data.length === 0) {
     return (
       <p className="flex flex-col items-center">
@@ -126,15 +129,17 @@ export const StudyNotesList = ({
       }
       rightTitle={formatMMDDWeekday(item.taughtAt)}
       dropdown={
-        <StudyNotesDropdown
-          open={open}
-          handleOpen={handleOpen}
-          item={item}
-          studyRoomId={studyRoomId}
-          pageable={pageable}
-          keyword={keyword}
-          onRefresh={onRefresh}
-        />
+        canManage ? (
+          <StudyNotesDropdown
+            open={open}
+            handleOpen={handleOpen}
+            item={item}
+            studyRoomId={studyRoomId}
+            pageable={pageable}
+            keyword={keyword}
+            onRefresh={onRefresh}
+          />
+        ) : null
       }
       href={`/study-rooms/${studyRoomId}/note/${item.id}`}
       id={item.id}
