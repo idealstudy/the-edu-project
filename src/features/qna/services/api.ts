@@ -1,7 +1,12 @@
 import { api } from '@/shared/api';
 import { CommonResponse, Pageable, PaginationMeta } from '@/types/http';
 
-import { QnADetailResponse, QnAListItem, QnAVisibility } from '../types';
+import {
+  QnADetailResponse,
+  QnAListItem,
+  QnAStatus,
+  QnAVisibility,
+} from '../types';
 
 // POST /api/study-rooms/{studyRoomId}/qna - 질문 생성
 export const writeQnA = async (args: {
@@ -192,5 +197,17 @@ export const deleteQnA = async (args: {
 }) => {
   await api.private.delete(
     `/study-rooms/${args.studyRoomId}/qna/${args.contextId}`
+  );
+};
+
+// PATCH qna 상태 수정
+export const updateQnAStatus = async (args: {
+  studyRoomId: number;
+  contextId: number;
+  status: QnAStatus;
+}) => {
+  await api.private.patch(
+    `/teacher/study-rooms/${args.studyRoomId}/qna/${args.contextId}/status`,
+    { status: args.status }
   );
 };

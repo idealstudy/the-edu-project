@@ -34,8 +34,18 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
   });
 
   const qnaVisibility = (visibility: string) => {
-    return visibility === 'STUDENT_ONLY' ? '보호자 비공개' : '보호자 공개';
+    if (visibility === 'STUDENT_ONLY') return '보호자 비공개';
+    else if (visibility === 'STUDENT_AND_PARENT') return '보호자 공개';
+    else return '-';
   };
+
+  // 학생의 질문의 유무 체크
+  const hasStudentQnA =
+    qnaDetail?.messages.some((m) => m.authorType === 'ROLE_STUDENT') ?? false;
+
+  // 질문/답변 작성 여부
+  const canWrite =
+    role === 'ROLE_STUDENT' || (role === 'ROLE_TEACHER' && hasStudentQnA);
 
   if (isPending) return <MiniSpinner />;
 
@@ -68,15 +78,20 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
               <span>연결 수업노트</span>
             </div>
             <div>
-              <Link
-                href={`/study-rooms/${studyRoomId}/note/${qnaDetail?.relatedTeachingNote.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-orange-scale-orange-50"
-              >
-                {qnaDetail?.relatedTeachingNote.title ??
-                  '연결된 수업노트가 없습니다.'}
-              </Link>
+              {qnaDetail?.relatedTeachingNote ? (
+                <Link
+                  href={`/study-rooms/${studyRoomId}/note/${qnaDetail.relatedTeachingNote.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-orange-scale-orange-50"
+                >
+                  {qnaDetail.relatedTeachingNote.title}
+                </Link>
+              ) : (
+                <span className="text-gray-scale-gray-40">
+                  연결된 수업노트가 없습니다.
+                </span>
+              )}
             </div>
           </div>
           <hr className="text-gray-scale-gray-10" />
@@ -113,6 +128,7 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
                   regDate={msg.regDate}
                   studyRoomId={studyRoomId}
                   contextId={contextId}
+                  qnaDetail={qnaDetail}
                 />
               );
             else if (msg.authorType === 'ROLE_STUDENT')
@@ -125,16 +141,19 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
                   regDate={msg.regDate}
                   studyRoomId={studyRoomId}
                   contextId={contextId}
+                  qnaDetail={qnaDetail}
                 />
               );
           }
         )}
-        <QnAMessageFormProvider key={contextId}>
-          <WriteArea
-            studyRoomId={studyRoomId}
-            contextId={contextId}
-          />
-        </QnAMessageFormProvider>
+        {canWrite && (
+          <QnAMessageFormProvider key={contextId}>
+            <WriteArea
+              studyRoomId={studyRoomId}
+              contextId={contextId}
+            />
+          </QnAMessageFormProvider>
+        )}
       </ColumnLayout.Right>
     </>
   );

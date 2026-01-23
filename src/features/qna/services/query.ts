@@ -2,7 +2,7 @@ import { Role } from '@/entities/member';
 import { Pageable } from '@/types/http';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { QnADetailResponse, QnAVisibility } from '../types';
+import { QnADetailResponse, QnAStatus, QnAVisibility } from '../types';
 import {
   deleteQnA,
   deleteStudentQnAMessage,
@@ -11,6 +11,7 @@ import {
   getStudentQnAList,
   getTeacherQnADetail,
   getTeacherQnAList,
+  updateQnAStatus,
   updateQnATitle,
   updateStudentQnAMessage,
   updateTeacherQnAMessage,
@@ -240,6 +241,40 @@ export const useDeleteQnAContextMutation = () => {
       // QNA 목록 쿼리 무효화
       queryClient.invalidateQueries({
         queryKey: ['qnaList'],
+        refetchType: 'active',
+      });
+    },
+  });
+};
+
+// QNA Status 수정
+export const useUpdateQnAStatus = (role: Role | undefined) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (args: {
+      studyRoomId: number;
+      contextId: number;
+      status: QnAStatus;
+    }) => updateQnAStatus(args),
+
+    onSuccess: (_data, variables) => {
+      // QnA 목록 무효화 (선생님 기준)
+      queryClient.invalidateQueries({
+        queryKey: ['qnaList'],
+        refetchType: 'active',
+      });
+
+      // QnA 상세 무효화 (현재 role 기준)
+      queryClient.invalidateQueries({
+        queryKey: [
+          'qnaDetail',
+          role,
+          {
+            studyRoomId: variables.studyRoomId,
+            contextId: variables.contextId,
+          },
+        ],
         refetchType: 'active',
       });
     },
