@@ -1,30 +1,17 @@
 'use client';
 
-import React, { Dispatch } from 'react';
+import React from 'react';
 
 import Image from 'next/image';
 
-import { DialogAction } from '@/shared/components/dialog';
 import { Button } from '@/shared/components/ui/button';
 
-const StudentInvitation = ({
-  dispatch,
-}: {
-  dispatch: Dispatch<DialogAction>;
-}) => {
-  const handleClick = () => {
-    dispatch({
-      type: 'OPEN',
-      scope: 'studyroom',
-      kind: 'invite',
-    });
-  };
-
+const StudentInvitation = ({ onClick }: { onClick: () => void }) => {
   return (
     <Button
       className="border-key-color-primary text-key-color-primary hover:bg-key-color-secondary/20 gap-2 rounded-xl font-semibold"
       variant="outlined"
-      onClick={handleClick}
+      onClick={onClick}
     >
       <Image
         src="/studynotes/invite_student.svg"
