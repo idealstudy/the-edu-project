@@ -1,6 +1,6 @@
 'use client';
 
-import { useReducer, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
@@ -43,16 +43,7 @@ export const StudyroomSidebar = ({
   const searchParams = useSearchParams();
   const isOpenInvite = searchParams.get('invite') === 'open';
 
-  const [dialog, dispatch] = useReducer(
-    dialogReducer,
-    isOpenInvite
-      ? {
-          status: 'open',
-          kind: 'invite',
-          scope: 'studyroom',
-        }
-      : initialDialogState
-  );
+  const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
   const [deleteNoticeMsg, setDeleteNoticeMsg] =
     useState('수업노트 그룹이 삭제되었습니다.');
   const { role } = useRole();
@@ -110,13 +101,31 @@ export const StudyroomSidebar = ({
     router.push('/dashboard');
   };
 
+  // 초대 다이얼로그 열기
+  const openInvitation = () => {
+    const params = new URLSearchParams(searchParams);
+    params.set('invite', 'open');
+    router.replace(`${pathname}?${params.toString()}`);
+  };
+
   // 초대 다이얼로그 닫기
   const closeInvitation = () => {
     const params = new URLSearchParams(searchParams);
     params.delete('invite');
     router.replace(`${pathname}${params.size ? `?${params.toString()}` : ''}`);
-    dispatch({ type: 'CLOSE' });
   };
+
+  useEffect(() => {
+    if (isOpenInvite) {
+      dispatch({
+        type: 'OPEN',
+        kind: 'invite',
+        scope: 'studyroom',
+      });
+    } else {
+      dispatch({ type: 'CLOSE' });
+    }
+  }, [isOpenInvite]);
 
   if (!segment) return null;
   return (
@@ -185,7 +194,7 @@ export const StudyroomSidebar = ({
         />
 
         {/* 학생 초대 버튼 - 선생님만 노출 */}
-        {canManage && <StudentInvitation dispatch={dispatch} />}
+        {canManage && <StudentInvitation onClick={openInvitation} />}
         {/* 수업노트 탭에서만 보이는 컴포넌트 */}
         {segment === 'note' && (
           <StudyroomGroups
