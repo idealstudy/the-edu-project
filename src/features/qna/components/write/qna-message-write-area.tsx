@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import { ColumnLayout } from '@/layout/column-layout';
-import { TextEditor, prepareContentForSave } from '@/shared/components/editor';
+import { TextEditor } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { useRole } from '@/shared/hooks/use-role';
@@ -27,35 +26,14 @@ const WriteArea = ({ studyRoomId, contextId }: Props) => {
   const { mutate, isPending } = useWriteQnAMessageMutation(role);
   const {
     handleSubmit,
-    setValue,
     control,
     reset,
     formState: { errors, isValid, isSubmitting },
   } = useFormContext<QnAMessageForm>();
 
-  useEffect(() => {
-    if (studyRoomId != null) {
-      setValue('studyRoomId', studyRoomId, {
-        shouldDirty: false,
-        shouldValidate: true,
-      });
-    }
-
-    if (contextId != null) {
-      setValue('contextId', contextId, {
-        shouldDirty: false,
-        shouldValidate: true,
-      });
-    }
-  }, [studyRoomId, contextId, setValue]);
-
   const isButtonDisabled = !isValid || isPending || isSubmitting;
 
-  const onSubmit = (data: {
-    studyRoomId: number;
-    contextId: number;
-    content: JSONContent;
-  }) => {
+  const onSubmit = (data: { content: JSONContent }) => {
     // 답글 작성 클릭 이벤트
     trackReplyCreateClick(
       {
@@ -66,14 +44,11 @@ const WriteArea = ({ studyRoomId, contextId }: Props) => {
       session?.role ?? null
     );
 
-    const { contentString, mediaIds } = prepareContentForSave(data.content);
-
     mutate(
       {
         studyRoomId,
         contextId,
-        content: contentString,
-        mediaIds,
+        content: JSON.stringify(data.content),
       },
       {
         onSuccess: () => {
@@ -101,8 +76,11 @@ const WriteArea = ({ studyRoomId, contextId }: Props) => {
                     <TextEditor
                       value={field.value}
                       onChange={field.onChange}
-                      placeholder="질문에 대한 답을 적어주세요..."
-                      targetType="QNA"
+                      placeholder={
+                        role === 'ROLE_TEACHER'
+                          ? '질문에 대한 답변을 적어주세요...'
+                          : '추가로 궁금한 점을 적어주세요...'
+                      }
                     />
                   );
                 }}
