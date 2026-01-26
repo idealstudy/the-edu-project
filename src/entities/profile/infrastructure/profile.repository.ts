@@ -18,8 +18,16 @@ const getProfile = async (memberId: string): Promise<FrontendProfile> => {
   return profileMapper.toDomain(validateResponse.data ?? []);
 };
 
+/* ─────────────────────────────────────────────────────
+ * [Update] 회원 정보 수정
+ * ────────────────────────────────────────────────────*/
+const updateUserName = async (name: string): Promise<void> => {
+  await api.private.patch('/members/name', { name });
+};
+
 export const repository = {
   profile: {
     getProfile,
+    updateUserName,
   },
 };

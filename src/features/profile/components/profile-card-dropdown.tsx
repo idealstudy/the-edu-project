@@ -4,6 +4,7 @@ import { Dispatch, SetStateAction, useReducer, useState } from 'react';
 
 import Image from 'next/image';
 
+import { useUpdateUserName } from '@/features/profile/hooks/use-profile';
 import { ProfileAccessProps } from '@/features/profile/types';
 import {
   InputDialog,
@@ -28,9 +29,12 @@ export function ProfileCardDropdown({
   );
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
 
-  // const handleRename = (name: string) => {
-  //   console.log(name);
-  // };
+  const updateUserNameMutation = useUpdateUserName();
+
+  const handleRename = (name: string) => {
+    updateUserNameMutation.mutate(name);
+    renameDispatch({ type: 'CLOSE' });
+  };
 
   const copyProfileLink = (userId: string) => {
     navigator.clipboard.writeText(
@@ -61,9 +65,7 @@ export function ProfileCardDropdown({
           >
             <p>공유하기</p>
           </DropdownMenu.Item>
-
-          {/* 배포 환경에서 숨김 처리 (false) */}
-          {false && isOwner && (
+          {isOwner && (
             <>
               <DropdownMenu.Item
                 onClick={() => setIsEditMode((state) => !state)}
@@ -98,11 +100,8 @@ export function ProfileCardDropdown({
           placeholder={profile.name || ''}
           onOpenChange={() => renameDispatch({ type: 'CLOSE' })}
           title="이름 변경하기"
-          onSubmit={
-            () => {}
-            // (name) => handleRename(name)
-          }
-          // disabled={isUpdating}
+          onSubmit={(name) => handleRename(name)}
+          disabled={updateUserNameMutation.isPending}
         />
       )}
 
