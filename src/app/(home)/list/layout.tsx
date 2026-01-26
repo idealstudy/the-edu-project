@@ -15,7 +15,7 @@ export default function ListLayout({
   const sortBy = searchParams.get('sort') ?? 'NEWEST';
 
   const isTeachers = pathname === '/list/teachers';
-  const isStudyRooms = pathname === '/list/study-rooms-list';
+  const isStudyRooms = pathname === '/list/study-rooms';
 
   const createHref = (sort: string) => `${pathname}?sort=${sort}`;
 
@@ -37,7 +37,7 @@ export default function ListLayout({
               강사 프로필
             </Button>
           </Link>
-          <Link href={`/list/study-rooms-list?sort=${sortBy}`}>
+          <Link href={`/list/study-rooms?sort=${sortBy}`}>
             <Button variant={isStudyRooms ? 'primary' : 'outlined'}>
               스터디룸 목록
             </Button>
