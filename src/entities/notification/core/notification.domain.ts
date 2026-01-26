@@ -39,8 +39,8 @@ const getTargetUrl = (
       return `/study-rooms/${metadata.studyRoomId}/note`;
     case 'QNA':
       return `/study-rooms/${metadata.studyRoomId}/qna/${metadata.qnaId}`;
-    // TODO
     case 'HOMEWORK':
+      return `/study-rooms/${metadata.studyRoomId}/homework/${metadata.homeworkId}`;
     case 'SYSTEM':
     default:
       return null;
