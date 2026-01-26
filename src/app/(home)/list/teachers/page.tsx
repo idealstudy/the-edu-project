@@ -6,11 +6,11 @@ import { usePublicTeachersQuery } from '@/features/list/api/teacher.public.query
 import { TeacherCard } from '@/features/list/components/teacher-card';
 import { MiniSpinner } from '@/shared/components/loading';
 
-type SortOption = 'NEWEST' | 'OLDEST' | 'ALPHABETICAL';
+type SortOption = 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
 
 export default function TeachersListPage() {
   const searchParams = useSearchParams();
-  const sortBy = (searchParams.get('sort') ?? 'NEWEST') as SortOption;
+  const sortBy = (searchParams.get('sort') ?? 'LATEST') as SortOption;
 
   const { data, isLoading } = usePublicTeachersQuery({
     page: 0,

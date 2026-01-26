@@ -12,7 +12,7 @@ export default function ListLayout({
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const sortBy = searchParams.get('sort') ?? 'NEWEST';
+  const sortBy = searchParams.get('sort') ?? 'LATEST';
 
   const isTeachers = pathname === '/list/teachers';
   const isStudyRooms = pathname === '/list/study-rooms';
@@ -46,7 +46,7 @@ export default function ListLayout({
 
         {/* 정렬 */}
         <div className="mb-6 flex justify-end gap-2">
-          {(['NEWEST', 'OLDEST', 'ALPHABETICAL'] as const).map((sort) => (
+          {(['LATEST', 'OLDEST', 'ALPHABETICAL'] as const).map((sort) => (
             <Link
               key={sort}
               href={createHref(sort)}
@@ -55,7 +55,7 @@ export default function ListLayout({
                 size="xsmall"
                 variant={sortBy === sort ? 'primary' : 'outlined'}
               >
-                {sort === 'NEWEST'
+                {sort === 'LATEST'
                   ? '최신순'
                   : sort === 'OLDEST'
                     ? '오래된순'

@@ -6,11 +6,11 @@ import { usePublicStudyRoomsQuery } from '@/features/list/api/teacher.public.que
 import { StudyRoomCard } from '@/features/list/components/study-room-card';
 import { MiniSpinner } from '@/shared/components/loading';
 
-type SortOption = 'NEWEST' | 'OLDEST' | 'ALPHABETICAL';
+type SortOption = 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
 
 export default function StudyRoomListPage() {
   const searchParams = useSearchParams();
-  const sortBy = (searchParams.get('sort') ?? 'NEWEST') as SortOption;
+  const sortBy = (searchParams.get('sort') ?? 'LATEST') as SortOption;
 
   const { data, isLoading } = usePublicStudyRoomsQuery({
     page: 0,

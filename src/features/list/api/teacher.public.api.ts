@@ -11,12 +11,12 @@ import type {
 export const getPublicTeachers = async (params?: {
   page?: number;
   size?: number;
-  sort?: 'NEWEST' | 'OLDEST' | 'ALPHABETICAL';
+  sort?: 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
   isNewTeacher?: boolean; // TBD: 신규 강사 필터링
 }): Promise<PublicTeachersResponse> => {
   const requestParams = {
     ...params,
-    sort: params?.sort ?? 'NEWEST', // 기본값 NEWEST
+    sort: params?.sort ?? 'LATEST', // 기본값 LATEST
     // TODO: isNewTeacher 필터링 지원 (TBD)
   };
 
@@ -31,12 +31,12 @@ export const getPublicTeachers = async (params?: {
 export const getPublicStudyRooms = async (params?: {
   page?: number;
   size?: number;
-  sort?: 'NEWEST' | 'OLDEST' | 'ALPHABETICAL';
+  sort?: 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
   teacherId?: number; // TBD: 강사별 필터링
 }): Promise<PublicStudyRoomsResponse> => {
   const requestParams = {
     ...params,
-    sort: params?.sort ?? 'NEWEST', // 기본값 NEWEST
+    sort: params?.sort ?? 'LATEST', // 기본값 LATEST
     // TODO: teacherId 필터링 지원 (TBD)
   };
 
