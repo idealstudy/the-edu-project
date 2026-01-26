@@ -8,7 +8,7 @@ export const Preparing = () => {
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center bg-gradient-to-b from-[#FCFBFA] to-[#FFE7E2] px-6">
       <div className="relative w-full max-w-[400px]">
-        <div className="absolute -top-10 -right-4 z-0 animate-bounce md:-right-10">
+        <div className="absolute -top-5 -right-4 z-0 animate-bounce md:-right-10">
           <div className="relative rotate-[10deg] rounded-2xl bg-[#FF6B4A] px-5 py-2 text-white shadow-xl">
             <span className="text-xl font-black tracking-widest uppercase md:text-base">
               Coming Soon
@@ -17,11 +17,15 @@ export const Preparing = () => {
           </div>
         </div>
 
-        <Image
-          src="/character/img_coming_soon01.png"
-          alt="Preparing"
-          className="h-auto w-full"
-        />
+        <div className="relative aspect-[4/4] w-full max-w-[400px]">
+          <Image
+            src="/character/img_coming_soon01.png"
+            alt="Preparing"
+            fill
+            className="object-contain"
+            priority
+          />
+        </div>
       </div>
 
       <div className="mt-10 text-center">
