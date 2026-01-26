@@ -33,7 +33,11 @@ export const TeacherHomeworkDetail = ({ studyRoomId, homeworkId }: Props) => {
       <ColumnLayout.Right className="desktop:max-w-[600px] flex w-full flex-col gap-3 rounded-[12px]">
         {/* 선생님이 낸 과제 */}
         <TeacherHomeworkContent
-          content={data.homework.content ?? ''}
+          content={
+            data.homework.resolvedContent?.content ??
+            data.homework.content ??
+            ''
+          }
           authorName={data.homework.teacherName ?? '-'}
           regDate={data.homework.modifiedAt ?? '-'}
         />
@@ -50,7 +54,11 @@ export const TeacherHomeworkDetail = ({ studyRoomId, homeworkId }: Props) => {
               {/* 학생 제출 */}
               <TeacherHomeworkSubmissionContent
                 homeworkStudentId={student.id}
-                content={student.submission.content ?? '-'}
+                content={
+                  student.submission.resolvedContent?.content ??
+                  student.submission.content ??
+                  '-'
+                }
                 authorName={student.studentName ?? '-'}
                 regDate={student.submission.modifiedSubmissionAt ?? '-'}
                 submitStatus={student.status}
@@ -62,7 +70,11 @@ export const TeacherHomeworkDetail = ({ studyRoomId, homeworkId }: Props) => {
               {/* 해당 학생의 피드백 */}
               {student.feedback && (
                 <FeedbackAnswer
-                  content={student.feedback.content ?? ''}
+                  content={
+                    student.feedback.resolvedContent?.content ??
+                    student.feedback.content ??
+                    ''
+                  }
                   regDate={student.feedback.modifiedFeedbackAt ?? ''}
                   studyRoomId={studyRoomId}
                   homeworkId={homeworkId}

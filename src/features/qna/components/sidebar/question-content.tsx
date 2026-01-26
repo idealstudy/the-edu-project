@@ -3,8 +3,13 @@
 import { useState } from 'react';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
-import { TextEditor, TextViewer } from '@/shared/components/editor';
+import {
+  TextEditor,
+  TextViewer,
+  prepareContentForSave,
+} from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 import { useRole } from '@/shared/hooks/use-role';
@@ -12,9 +17,11 @@ import { getRelativeTimeString } from '@/shared/lib/utils';
 import { JSONContent } from '@tiptap/react';
 
 import {
+  useDeleteQnAContextMutation,
   useDeleteQnAMessageMutation,
   useUpdateQnAMessageMutation,
 } from '../../services/query';
+import { QnADetailResponse } from '../../types';
 
 type Props = {
   id: number;
@@ -23,6 +30,7 @@ type Props = {
   regDate: string;
   studyRoomId: number;
   contextId: number;
+  qnaDetail: QnADetailResponse;
 };
 
 const QuestionContent = ({
@@ -32,11 +40,18 @@ const QuestionContent = ({
   regDate,
   studyRoomId,
   contextId,
+  qnaDetail,
 }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState<JSONContent | null>(null);
+
+  const router = useRouter();
+
   const { role } = useRole();
+
+  const { mutate: deleteQnA } = useDeleteQnAContextMutation();
+
   const { mutate: updateMessage, isPending: isUpdating } =
     useUpdateQnAMessageMutation(role);
   const { mutate: deleteMessage, isPending: isDeleting } =
@@ -84,12 +99,14 @@ const QuestionContent = ({
 
   const handleSave = () => {
     if (!editContent) return;
+    const { contentString } = prepareContentForSave(editContent);
+
     updateMessage(
       {
         studyRoomId,
         contextId,
         messageId: id,
-        content: JSON.stringify(editContent),
+        content: contentString,
       },
       {
         onSuccess: () => {
@@ -108,14 +125,38 @@ const QuestionContent = ({
   };
 
   const handleDelete = () => {
-    // TODO : 모달 구현 필요
-    if (confirm('정말 삭제하시겠습니까?')) {
-      deleteMessage({
-        studyRoomId,
-        contextId,
-        messageId: id,
-      });
+    const studentQuestionCount = qnaDetail.messages.filter(
+      (m) => m.authorType === 'ROLE_STUDENT'
+    ).length;
+
+    if (studentQuestionCount === 1) {
+      if (!confirm('마지막 질문을 삭제하면 질문 방이 삭제 됩니다.')) {
+        return;
+      }
+
+      deleteQnA(
+        {
+          studyRoomId,
+          contextId,
+        },
+        {
+          onSuccess: () => {
+            router.push(`/study-rooms/${studyRoomId}/qna`);
+          },
+        }
+      );
+
+      return;
     }
+
+    if (!confirm('정말 삭제하시겠습니까?')) return;
+
+    deleteMessage({
+      studyRoomId,
+      contextId,
+      messageId: id,
+    });
+
     setIsOpen(false);
   };
 

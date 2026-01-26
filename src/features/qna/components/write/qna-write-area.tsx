@@ -6,8 +6,11 @@ import { Controller, useFormContext } from 'react-hook-form';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
+import { useGetTeacherNotesList } from '@/features/study-notes/hooks';
+import { StudyNoteGroupPageable } from '@/features/study-notes/model';
 import { ColumnLayout } from '@/layout/column-layout';
 import { TextEditor, prepareContentForSave } from '@/shared/components/editor';
+import { RequiredMark, Select } from '@/shared/components/ui';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
@@ -15,7 +18,8 @@ import { JSONContent } from '@tiptap/react';
 
 import { QnACreateForm } from '../../schema/create';
 import { useWriteQnAMutation } from '../../services/query';
-import { RequiredMark } from './qna-form-provider';
+import { QnAVisibility } from '../../types';
+import { TagInputQna } from './tag-input-qna';
 
 type Props = {
   studyRoomId: number;
@@ -23,6 +27,22 @@ type Props = {
 
 const WriteArea = ({ studyRoomId }: Props) => {
   const router = useRouter();
+  const { watch } = useFormContext<QnACreateForm>();
+
+  const visibility = watch('visibility');
+  const roomId = watch('studyRoomId');
+
+  const NOTE_PAGEABLE: StudyNoteGroupPageable = {
+    page: 0,
+    size: 20,
+    sortKey: 'LATEST_EDITED',
+  };
+
+  const { data: notes } = useGetTeacherNotesList({
+    studyRoomId: roomId,
+    pageable: NOTE_PAGEABLE,
+    enabled: !!roomId,
+  });
 
   const { mutate, isPending } = useWriteQnAMutation();
   const {
@@ -48,6 +68,8 @@ const WriteArea = ({ studyRoomId }: Props) => {
     studyRoomId: number;
     title: string;
     content: JSONContent;
+    visibility: QnAVisibility;
+    relatedTeachingNoteId: number | null;
   }) => {
     const { contentString, mediaIds } = prepareContentForSave(data.content);
 
@@ -56,7 +78,9 @@ const WriteArea = ({ studyRoomId }: Props) => {
         studyRoomId,
         title: data.title,
         content: contentString,
-        mediaIds,
+        visibility: data.visibility,
+        mediaIds: mediaIds,
+        relatedTeachingNoteId: data.relatedTeachingNoteId!,
       },
       {
         onSuccess: () => {
@@ -107,7 +131,6 @@ const WriteArea = ({ studyRoomId }: Props) => {
               <Input
                 {...register('title')}
                 type="text"
-                // value={qnaTitle || }
                 placeholder="질문의 제목을 입력해주세요."
                 disabled={isPending}
               />
@@ -115,6 +138,37 @@ const WriteArea = ({ studyRoomId }: Props) => {
             <Form.ErrorMessage className="text-system-warning text-sm">
               {errors.title?.message}
             </Form.ErrorMessage>
+          </Form.Item>
+
+          {/* 수업노트 연결 1:1 */}
+          <Form.Item error={!!errors.relatedTeachingNoteId}>
+            <Form.Label>
+              수업노트 연결
+              <RequiredMark />
+            </Form.Label>
+
+            <Form.Control>
+              <Controller
+                name="relatedTeachingNoteId"
+                control={control}
+                render={({ field }) => (
+                  <TagInputQna
+                    studyNotes={notes?.content ?? []}
+                    selectedId={field.value}
+                    onChange={field.onChange}
+                    placeholder="질문과 연관된 수업노트를 연결해주세요."
+                    error={!!errors.relatedTeachingNoteId}
+                    disabled={isPending}
+                  />
+                )}
+              />
+            </Form.Control>
+
+            {errors.relatedTeachingNoteId && (
+              <Form.ErrorMessage className="text-system-warning text-sm">
+                {errors.relatedTeachingNoteId.message}
+              </Form.ErrorMessage>
+            )}
           </Form.Item>
 
           {/* 내용 */}
@@ -147,6 +201,56 @@ const WriteArea = ({ studyRoomId }: Props) => {
               </Form.ErrorMessage>
             )}
           </Form.Item>
+          <hr
+            style={{
+              borderImage:
+                'repeating-linear-gradient(to right, gray 0, gray 4px, transparent 4px, transparent 8px)',
+              borderImageSlice: 1,
+            }}
+          />
+          <Form.Item className="mt-8">
+            <Form.Label className="text-2xl font-semibold">
+              공개 범위
+              <RequiredMark />
+            </Form.Label>
+            <Controller
+              name="visibility"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                >
+                  <Select.Trigger
+                    className="w-[240px]"
+                    placeholder="공개 범위 선택"
+                  />
+                  <Select.Content>
+                    <Select.Option value="STUDENT_AND_PARENT">
+                      보호자 공개
+                    </Select.Option>
+                    <Select.Option value="STUDENT_ONLY">
+                      보호자 비공개
+                    </Select.Option>
+                  </Select.Content>
+                </Select>
+              )}
+            />
+
+            {visibility === 'STUDENT_AND_PARENT' && (
+              <Form.Description className="text-text-sub2 flex gap-x-[3px] text-sm">
+                <Image
+                  src="/common/info.svg"
+                  alt="info-icon"
+                  width={16}
+                  height={16}
+                />
+                보호자 공개 선택 시, 나와 연결된 보호자도 이 질문을 볼 수
+                있습니다.
+              </Form.Description>
+            )}
+          </Form.Item>
+
           <div className="flex justify-end">
             <Button
               type="submit"
