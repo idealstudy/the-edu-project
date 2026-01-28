@@ -8,7 +8,7 @@ const TeacherOnboardingShape = dto.teacher;
 
 /* ─────────────────────────────────────────────────────
  * Domain 스키마 (비즈니스 로직 포함)
- * - progressPercentage: 진행률 퍼센트
+ * - completedStepNumber: 완료된 스텝 수
  * - isCompleted: 온보딩 완료 여부
  * - steps: 단계(type, status: completed | next | locked)
  * ────────────────────────────────────────────────────*/
@@ -39,9 +39,7 @@ const TeacherOnboardingSchema = TeacherOnboardingShape.transform(
 
     return {
       ...onboarding,
-      progressPercentage: Math.round(
-        (onboarding.currentProgress / onboarding.totalSteps) * 100
-      ).toFixed(0),
+      completedStepNumber: onboarding.currentProgress,
       isCompleted: onboarding.currentProgress >= onboarding.totalSteps,
       steps,
     };
