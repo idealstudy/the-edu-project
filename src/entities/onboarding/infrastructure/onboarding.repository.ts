@@ -17,7 +17,13 @@ const getTeacherOnboarding = async () => {
  * [Create] 온보딩 단계 완료 처리
  * ────────────────────────────────────────────────────*/
 const saveTeacherOnboarding = async (stepType: TeacherOnboardingStepType) => {
-  await api.bff.client.post('/api/teacher/onboarding', { stepType });
+  await api.bff.client.post(
+    '/api/teacher/onboarding',
+    { stepType },
+    {
+      withCredentials: true,
+    }
+  );
 };
 
 export const repository = {

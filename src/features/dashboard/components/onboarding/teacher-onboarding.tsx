@@ -113,6 +113,13 @@ export const TeacherOnboarding = () => {
 
   // 페이지 포커스 시에도 즉시 체크
   useEffect(() => {
+    const interval = setInterval(() => {
+      // 스터디룸 목록 쿼리 무효화 (다른 탭에서 스터디룸 생성 시 반영)
+      queryClient.invalidateQueries({
+        queryKey: onboardingKeys.teacher(),
+      });
+    }, 3000); // 3초마다 체크
+
     const handleFocus = () => {
       queryClient.invalidateQueries({
         queryKey: onboardingKeys.teacher(),
@@ -121,6 +128,7 @@ export const TeacherOnboarding = () => {
 
     window.addEventListener('focus', handleFocus);
     return () => {
+      clearInterval(interval);
       window.removeEventListener('focus', handleFocus);
     };
   }, [queryClient]);
