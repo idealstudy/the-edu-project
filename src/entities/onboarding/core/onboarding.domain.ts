@@ -26,7 +26,8 @@ const TeacherOnboardingSchema = TeacherOnboardingShape.transform(
 
     const getStatus = (stepType: TeacherOnboardingStepType) => {
       if (completedStepNames.includes(stepType)) return 'completed' as const;
-      if (onboarding.nextStep === stepType) return 'next' as const;
+      if (onboarding.nextStep != null && onboarding.nextStep === stepType)
+        return 'next' as const;
       return 'locked' as const;
     };
 
@@ -40,7 +41,7 @@ const TeacherOnboardingSchema = TeacherOnboardingShape.transform(
     return {
       ...onboarding,
       completedStepNumber: onboarding.currentProgress,
-      isCompleted: onboarding.currentProgress >= onboarding.totalSteps,
+      isCompleted: onboarding.nextStep == null,
       steps,
     };
   }

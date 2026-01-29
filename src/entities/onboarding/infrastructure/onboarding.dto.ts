@@ -21,7 +21,7 @@ const OnboardingStepSchema = z.object({
  * ────────────────────────────────────────────────────*/
 const TeacherOnboardingDtoSchema = z.object({
   completedSteps: z.array(OnboardingStepSchema),
-  nextStep: z.string(),
+  nextStep: z.string().nullable(),
   totalSteps: z.number(),
   currentProgress: z.number(),
 });
