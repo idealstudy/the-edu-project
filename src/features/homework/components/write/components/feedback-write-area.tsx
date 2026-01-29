@@ -74,6 +74,7 @@ export const FeedbackWriteArea = ({
           reset({ content: {} });
           setIsClicked(false);
         },
+        onError: () => {},
       }
     );
   };
@@ -108,7 +109,14 @@ export const FeedbackWriteArea = ({
               </Form.ErrorMessage>
             )}
           </Form.Item>
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outlined"
+              onClick={() => setIsClicked(false)}
+              disabled={isSubmitting}
+            >
+              취소
+            </Button>
             <Button
               type="submit"
               disabled={isButtonDisabled}
