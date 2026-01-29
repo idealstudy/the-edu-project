@@ -57,7 +57,7 @@ export const OnboardingStep = ({
           >
             <IconComponent
               aria-hidden
-              className="text-orange-scale-orange-50 h-8 w-8"
+              className="text-orange-scale-orange-50 h-6 w-6"
             />
           </div>
         )}
