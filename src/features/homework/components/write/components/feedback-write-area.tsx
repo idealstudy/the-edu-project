@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
+import { useUpdateTeacherOnboarding } from '@/features/dashboard/hooks/use-update-onboarding';
 import { usePostTeacherHomeworkFeedback } from '@/features/homework/hooks/teacher/useTeacherHomeworkFeedbackMutations';
 import { ColumnLayout } from '@/layout/column-layout';
 import { TextEditor, prepareContentForSave } from '@/shared/components/editor';
@@ -33,6 +34,7 @@ export const FeedbackWriteArea = ({
     reset,
     formState: { errors, isValid, isSubmitting },
   } = useFormContext<HomeworkFeedbackForm>();
+  const { sendOnboarding } = useUpdateTeacherOnboarding('GIVE_FEEDBACK');
 
   useEffect(() => {
     if (studyRoomId != null) {
@@ -73,6 +75,8 @@ export const FeedbackWriteArea = ({
         onSuccess: () => {
           reset({ content: {} });
           setIsClicked(false);
+          // 온보딩 반영
+          sendOnboarding();
         },
       }
     );
