@@ -1,4 +1,5 @@
 import { profileKeys, repository } from '@/entities/profile';
+import { ProfileUpdateForm } from '@/features/profile/schema/schema';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 // 프로필 조회
@@ -22,5 +23,24 @@ export const useUpdateUserName = () => {
         queryKey: profileKeys.all,
       });
     },
+  });
+};
+
+export const useTeacherUpdateProfile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: ProfileUpdateForm) => {
+      const promises = [];
+
+      if (data.desc)
+        promises.push(repository.profile.updateTeacherDescription(data.desc));
+
+      // TODO 프로필 사진, 공개 범위 설정 추가
+
+      return Promise.all(promises);
+    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: profileKeys.all }),
   });
 };

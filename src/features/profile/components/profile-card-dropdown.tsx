@@ -68,7 +68,7 @@ export function ProfileCardDropdown({
           {isOwner && (
             <>
               <DropdownMenu.Item
-                onClick={() => setIsEditMode((state) => !state)}
+                onClick={() => setIsEditMode(true)}
                 className="justify-center"
               >
                 수정하기
