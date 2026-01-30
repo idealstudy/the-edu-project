@@ -58,7 +58,7 @@ export const TeacherOnboarding = () => {
       icon: Icon.Person,
       action: '학생 초대하기',
       href: teacherHasRooms
-        ? PRIVATE.ROOM.DETAIL(rooms?.[0]?.id ?? 0)
+        ? PRIVATE.ROOM.DETAIL(firstRoomId ?? 0)
         : PRIVATE.ROOM.CREATE,
       status: steps?.INVITE_STUDENT?.status,
       disabled: !teacherHasRooms,
@@ -72,7 +72,7 @@ export const TeacherOnboarding = () => {
       icon: Icon.BookText,
       action: '수업노트 쓰기',
       href: teacherHasRooms
-        ? PRIVATE.NOTE.CREATE(rooms?.[0]?.id ?? 0)
+        ? PRIVATE.NOTE.CREATE(firstRoomId ?? 0)
         : PRIVATE.ROOM.CREATE,
       status: steps?.CREATE_CLASS_NOTE?.status,
       disabled: !teacherHasRooms,
