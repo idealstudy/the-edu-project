@@ -25,6 +25,7 @@ import {
   StudyNoteSortKey,
 } from '@/features/study-notes/model';
 import { StudyRoomDetailLayout } from '@/features/study-rooms/components/common/layout';
+import { MiniSpinner } from '@/shared/components/loading';
 import { useRole } from '@/shared/hooks/use-role';
 
 export default function StudyNotePage() {
@@ -70,14 +71,6 @@ export default function StudyNotePage() {
     enabled: role === 'ROLE_STUDENT',
   });
 
-  const studyNotes =
-    role === 'ROLE_TEACHER' ? teacherListQuery.data : studentListQuery.data;
-
-  const isPending =
-    role === 'ROLE_TEACHER'
-      ? teacherListQuery.isPending
-      : studentListQuery.isPending;
-
   // ------------------------------------------------------------------
   // 그룹별 목록 조회
   // TODO: 추후 엔티티분리
@@ -108,11 +101,6 @@ export default function StudyNotePage() {
       : role === 'ROLE_TEACHER'
         ? teacherByGroupQuery
         : studentByGroupQuery;
-
-  const studyNotesByGroupId =
-    role === 'ROLE_TEACHER'
-      ? teacherByGroupQuery.data
-      : studentByGroupQuery.data;
 
   const setPage = useCallback(
     (page: number, { replace = false }: { replace?: boolean } = {}) => {
@@ -150,12 +138,13 @@ export default function StudyNotePage() {
 
   const page = {
     page: currentPage,
-    totalPages:
-      selectedGroupId === 'all'
-        ? studyNotes?.totalPages || 1
-        : studyNotesByGroupId?.totalPages || 1,
+    totalPages: currentQuery.data?.totalPages ?? 1,
     onPageChange: handlePageChange,
   };
+
+  if (!role) {
+    return <MiniSpinner />;
+  }
 
   return (
     <StudyRoomDetailLayout
@@ -172,16 +161,14 @@ export default function StudyNotePage() {
       page={page}
     >
       <StudyNotesList
-        data={
-          selectedGroupId === 'all'
-            ? studyNotes?.content || []
-            : studyNotesByGroupId?.content || []
-        }
-        isPending={isPending}
+        data={currentQuery.data?.content ?? []}
+        isPending={currentQuery.isPending}
+        isError={currentQuery.isError}
         studyRoomId={studyRoomId}
         pageable={pageable}
         keyword={search}
         onRefresh={currentQuery.refetch}
+        canManage={role === 'ROLE_TEACHER'}
       />
     </StudyRoomDetailLayout>
   );
