@@ -4,9 +4,9 @@ import { ConfirmDialog } from '@/features/study-rooms/components/common/dialog/c
 import { InputDialog } from '@/features/study-rooms/components/common/dialog/input-dialog';
 import { DialogAction, DialogState } from '@/shared/components/dialog';
 
-import { useDeleteStudyNoteGroup } from '../services/query';
 import {
   useCreateStudyNoteGroup,
+  useDeleteStudyNoteGroup,
   useUpdateStudyNoteGroup,
 } from '../services/query';
 
@@ -29,6 +29,7 @@ export const StudyroomGroupDialogs = ({
 
   const handleCreateGroup = (title: string) => {
     createStudyNoteGroup({ studyRoomId, title });
+    dispatch({ type: 'CLOSE' });
   };
   const handleRename = (name: string) => {
     updateStudyNoteGroup({
