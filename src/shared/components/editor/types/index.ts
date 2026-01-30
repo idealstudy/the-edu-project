@@ -199,6 +199,25 @@ export type LinkPreviewData = {
   siteName?: string;
 };
 
+/** 링크 임베드 API 응답 */
+export type LinkEmbedResponse = {
+  status: number;
+  message: string;
+  data: {
+    available: boolean;
+    embed: {
+      id: number;
+      url: string;
+      title: string;
+      description: string;
+      siteName: string;
+      imageUrl: string;
+      faviconUrl: string;
+      fetchedAt: string;
+    } | null;
+  };
+};
+
 /** useLinkPreview 훅 옵션 */
 export type UseLinkPreviewOptions = {
   onSuccess?: (data: LinkPreviewData) => void;
