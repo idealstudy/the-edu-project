@@ -24,7 +24,10 @@ const TargetMetadataSchema = z.object({
   homeworkId: z.string().optional(),
 });
 
-const NotificationSchema = z.object({
+/* ─────────────────────────────────────────────────────
+ * api 응답(DTO 객체)
+ * ────────────────────────────────────────────────────*/
+const NotificationDtoSchema = z.object({
   id: z.number().int().nonnegative(),
   message: z.string(),
   category: NotificationCategorySchema,
@@ -33,7 +36,8 @@ const NotificationSchema = z.object({
   read: z.boolean(),
 });
 
-export const base = {
+export const dto = {
+  schema: NotificationDtoSchema,
+  arraySchema: z.array(NotificationDtoSchema),
   category: NotificationCategorySchema,
-  schema: NotificationSchema,
 };

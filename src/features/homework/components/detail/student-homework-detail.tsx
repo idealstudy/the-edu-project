@@ -79,7 +79,11 @@ export const StudentHomeworkDetail = ({ studyRoomId, homeworkId }: Props) => {
         {/* 선생님이 낸 과제 */}
         {data.homework && (
           <StudentHomeworkContent
-            content={data.homework.content ?? '-'}
+            content={
+              data.homework.resolvedContent?.content ??
+              data.homework.content ??
+              '-'
+            }
             authorName={data.homework.teacherName ?? '-'}
             regDate={data.homework.modifiedAt ?? '-'}
           />
@@ -95,7 +99,11 @@ export const StudentHomeworkDetail = ({ studyRoomId, homeworkId }: Props) => {
               >
                 <StudentSubmissionContent
                   homeworkStudentId={item.data.id}
-                  content={item.data.submission?.content ?? '-'}
+                  content={
+                    item.data.submission?.resolvedContent?.content ??
+                    item.data.submission?.content ??
+                    '-'
+                  }
                   authorName={item.data.studentName}
                   regDate={item.data.submission?.modifiedSubmissionAt ?? '-'}
                   submitStatus={item.data.status}
@@ -105,7 +113,11 @@ export const StudentHomeworkDetail = ({ studyRoomId, homeworkId }: Props) => {
 
                 {item.data.feedback && (
                   <FeedbackAnswer
-                    content={item.data.feedback.content ?? ''}
+                    content={
+                      item.data.feedback.resolvedContent?.content ??
+                      item.data.feedback.content ??
+                      ''
+                    }
                     regDate={item.data.feedback.modifiedFeedbackAt ?? ''}
                     studyRoomId={studyRoomId}
                     homeworkId={homeworkId}

@@ -11,7 +11,7 @@ export const TeachersQueryKey = {
   list: (params?: {
     page?: number;
     size?: number;
-    sort?: 'NEWEST' | 'OLDEST' | 'ALPHABETICAL';
+    sort?: 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
     isNewTeacher?: boolean;
   }) => ['publicTeachers', 'list', params] as const,
   detail: (id: number) => ['publicTeachers', 'detail', id] as const,
@@ -22,7 +22,7 @@ export const StudyRoomsQueryKey = {
   list: (params?: {
     page?: number;
     size?: number;
-    sort?: 'NEWEST' | 'OLDEST' | 'ALPHABETICAL';
+    sort?: 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
     teacherId?: number;
   }) => ['publicStudyRooms', 'list', params] as const,
 };
@@ -30,7 +30,7 @@ export const StudyRoomsQueryKey = {
 export const usePublicTeachersQuery = (params?: {
   page?: number;
   size?: number;
-  sort?: 'NEWEST' | 'OLDEST' | 'ALPHABETICAL';
+  sort?: 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
   isNewTeacher?: boolean;
 }) => {
   return useQuery({
@@ -43,7 +43,7 @@ export const usePublicTeachersQuery = (params?: {
 export const usePublicStudyRoomsQuery = (params?: {
   page?: number;
   size?: number;
-  sort?: 'NEWEST' | 'OLDEST' | 'ALPHABETICAL';
+  sort?: 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
   teacherId?: number;
 }) => {
   return useQuery({

@@ -4,7 +4,11 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 
-import { TextEditor, TextViewer } from '@/shared/components/editor';
+import {
+  TextEditor,
+  TextViewer,
+  prepareContentForSave,
+} from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 import { useRole } from '@/shared/hooks/use-role';
@@ -14,7 +18,9 @@ import { JSONContent } from '@tiptap/react';
 import {
   useDeleteQnAMessageMutation,
   useUpdateQnAMessageMutation,
+  useUpdateQnAStatus,
 } from '../../services/query';
+import { QnADetailResponse } from '../../types';
 
 type Props = {
   id: number;
@@ -22,6 +28,7 @@ type Props = {
   regDate: string;
   studyRoomId: number;
   contextId: number;
+  qnaDetail: QnADetailResponse;
 };
 
 const QuestionAnswer = ({
@@ -30,6 +37,7 @@ const QuestionAnswer = ({
   regDate,
   studyRoomId,
   contextId,
+  qnaDetail,
 }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -40,6 +48,8 @@ const QuestionAnswer = ({
     useUpdateQnAMessageMutation(role);
   const { mutate: deleteMessage, isPending: isDeleting } =
     useDeleteQnAMessageMutation(role);
+
+  const { mutate: updateQnAStatus } = useUpdateQnAStatus(role);
 
   // JSONContent 파싱
   let parsedContent: JSONContent = {
@@ -83,12 +93,14 @@ const QuestionAnswer = ({
 
   const handleSave = () => {
     if (!editContent) return;
+    const { contentString } = prepareContentForSave(editContent);
+
     updateMessage(
       {
         studyRoomId,
         contextId,
         messageId: id,
-        content: JSON.stringify(editContent),
+        content: contentString,
       },
       {
         onSuccess: () => {
@@ -107,12 +119,29 @@ const QuestionAnswer = ({
   };
 
   const handleDelete = () => {
+    const remainingTeacherMessages = qnaDetail.messages.filter(
+      (m) => m.authorType === 'ROLE_TEACHER' && m.id !== id
+    ).length;
     if (confirm('정말 삭제하시겠습니까?')) {
-      deleteMessage({
-        studyRoomId,
-        contextId,
-        messageId: id,
-      });
+      deleteMessage(
+        {
+          studyRoomId,
+          contextId,
+          messageId: id,
+        },
+        {
+          // 삭제 시 만약 선생님의 답글이 하나도 없다면 상태를 '피드백 대기'로 전환
+          onSuccess: () => {
+            if (remainingTeacherMessages === 0) {
+              updateQnAStatus({
+                studyRoomId,
+                contextId,
+                status: 'PENDING',
+              });
+            }
+          },
+        }
+      );
     }
     setIsOpen(false);
   };

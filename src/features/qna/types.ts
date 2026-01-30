@@ -8,6 +8,8 @@ export type QnAFilter = 'DEFAULT' | 'PENDING' | 'COMPLETED';
 
 export type QnAStatus = 'PENDING' | 'COMPLETED';
 
+export type QnAVisibility = 'STUDENT_AND_PARENT' | 'STUDENT_ONLY';
+
 export interface QnAListItem {
   id: number;
   title: string;
@@ -33,6 +35,8 @@ export interface QnADetailResponse {
   id: number;
   title: string;
   status: QnAStatus;
+  visibility: QnAVisibility;
+  relatedTeachingNote: TeachingNote;
   viewCount: number;
   authorName: string;
   regDate: string;
@@ -45,4 +49,9 @@ export interface QnAMessage {
   authorType: Role;
   authorName: string;
   regDate: string;
+}
+
+export interface TeachingNote {
+  id: number;
+  title: string;
 }

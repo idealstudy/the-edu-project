@@ -36,7 +36,6 @@ export const StudyNotesDropdown = ({
   };
 
   const handleDelete = () => {
-    // TODO: 수업노트 삭제 API 호출 후 상태 업데이트 로직 넣기
     dispatch({
       type: 'OPEN',
       scope: 'note',
@@ -107,7 +106,7 @@ export const StudyNotesDropdown = ({
           </DropdownMenu.Item>
           <DropdownMenu.Item asChild>
             <Link
-              href={`/dashboard/study-note/${item.id}/write`}
+              href={`/study-rooms/${studyRoomId}/note/${item.id}/edit`}
               className="justify-center border-none focus:ring-0 focus:outline-none"
             >
               편집하기

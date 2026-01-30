@@ -1,8 +1,8 @@
 'use client';
 
-import { useReducer, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { ConfirmDialog } from '@/features/study-rooms/components/common/dialog/confirm-dialog';
 import { InputDialog } from '@/features/study-rooms/components/common/dialog/input-dialog';
@@ -37,6 +37,11 @@ export const StudyroomSidebar = ({
   onSelectGroup: (id: number | 'all') => void;
 }) => {
   const router = useRouter();
+
+  // 초대 다이얼로그 open 확인
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const isOpenInvite = searchParams.get('invite') === 'open';
 
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
   const [deleteNoticeMsg, setDeleteNoticeMsg] =
@@ -96,6 +101,32 @@ export const StudyroomSidebar = ({
     router.push('/dashboard');
   };
 
+  // 초대 다이얼로그 열기
+  const openInvitation = () => {
+    const params = new URLSearchParams(searchParams);
+    params.set('invite', 'open');
+    router.replace(`${pathname}?${params.toString()}`);
+  };
+
+  // 초대 다이얼로그 닫기
+  const closeInvitation = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete('invite');
+    router.replace(`${pathname}${params.size ? `?${params.toString()}` : ''}`);
+  };
+
+  useEffect(() => {
+    if (isOpenInvite) {
+      dispatch({
+        type: 'OPEN',
+        kind: 'invite',
+        scope: 'studyroom',
+      });
+    } else {
+      dispatch({ type: 'CLOSE' });
+    }
+  }, [isOpenInvite]);
+
   if (!segment) return null;
   return (
     <>
@@ -145,7 +176,7 @@ export const StudyroomSidebar = ({
             title="스터디룸에 학생 초대"
             placeholder="초대할 학생을 검색 후 선택해 주세요."
             studyRoomId={studyRoomId}
-            onOpenChange={() => dispatch({ type: 'CLOSE' })}
+            onOpenChange={closeInvitation}
           />
         )}
 
@@ -163,7 +194,7 @@ export const StudyroomSidebar = ({
         />
 
         {/* 학생 초대 버튼 - 선생님만 노출 */}
-        {canManage && <StudentInvitation dispatch={dispatch} />}
+        {canManage && <StudentInvitation onClick={openInvitation} />}
         {/* 수업노트 탭에서만 보이는 컴포넌트 */}
         {segment === 'note' && (
           <StudyroomGroups

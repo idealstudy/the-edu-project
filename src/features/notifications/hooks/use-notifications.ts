@@ -1,5 +1,4 @@
-import { notificationKeys } from '@/entities/notification';
-import { notificationsApi } from '@/features/notifications/api/notifications.api';
+import { notificationKeys, repository } from '@/entities/notification';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 const ONE_MINUTE = 60 * 1000;
@@ -9,7 +8,7 @@ const ONE_MINUTE = 60 * 1000;
 export const useNotifications = () =>
   useQuery({
     queryKey: notificationKeys.list(),
-    queryFn: notificationsApi.getList,
+    queryFn: repository.notification.getList,
     staleTime: ONE_MINUTE,
     refetchInterval: ONE_MINUTE,
     refetchOnWindowFocus: true,
@@ -19,7 +18,7 @@ export const useNotifications = () =>
 export const useUnreadNotifications = () =>
   useQuery({
     queryKey: notificationKeys.unread(),
-    queryFn: notificationsApi.getUnread,
+    queryFn: repository.notification.getUnread,
     staleTime: ONE_MINUTE,
     refetchInterval: ONE_MINUTE,
     refetchOnWindowFocus: true,
@@ -31,7 +30,7 @@ export const useMarkAsRead = () => {
 
   return useMutation({
     mutationFn: (notificationIds: number[]) =>
-      notificationsApi.markAsRead(notificationIds),
+      repository.notification.markAsRead(notificationIds),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: notificationKeys.all,
@@ -46,7 +45,7 @@ export const useDeleteNotifications = () => {
 
   return useMutation({
     mutationFn: (notificationIds: number[]) =>
-      notificationsApi.delete(notificationIds),
+      repository.notification.delete(notificationIds),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: notificationKeys.all,

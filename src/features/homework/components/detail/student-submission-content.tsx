@@ -1,8 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Image from 'next/image';
 
-import { TextEditor, TextViewer } from '@/shared/components/editor';
+import {
+  TextEditor,
+  TextViewer,
+  prepareContentForSave,
+} from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 import { getRelativeTimeString } from '@/shared/lib/utils';
@@ -40,6 +44,11 @@ export const StudentSubmissionContent = ({
   const [editContent, setEditContent] = useState<JSONContent | null>(null);
   const [localContent, setLocalContent] = useState(content);
 
+  // content prop이 변경되면 localContent 동기화 (쿼리 refetch 후)
+  useEffect(() => {
+    setLocalContent(content);
+  }, [content]);
+
   const parsedContent = parseEditorContent(localContent);
 
   const { mutate: deleteHomework, isPending: isDeleting } =
@@ -54,17 +63,18 @@ export const StudentSubmissionContent = ({
 
   const handleSave = () => {
     if (!editContent) return;
+    const { contentString } = prepareContentForSave(editContent);
+
     updateHomework(
       {
         studyRoomId,
         homeworkStudentId,
         homeworkId,
-        content: JSON.stringify(editContent),
+        content: contentString,
       },
 
       {
         onSuccess: () => {
-          setLocalContent(JSON.stringify(editContent));
           setIsEditing(false);
           setEditContent(null);
         },
