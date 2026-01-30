@@ -24,18 +24,6 @@ export const StudentOnboarding = () => {
 
   // 주기적으로 쿼리를 무효화하여 실시간으로 완료 상태 업데이트
   useEffect(() => {
-    const interval = setInterval(() => {
-      // 스터디룸 목록 쿼리 무효화 (다른 탭에서 스터디룸 생성 시 반영)
-      queryClient.invalidateQueries({
-        queryKey: StudyRoomsQueryKey.studentList,
-      });
-      // 수업노트 쿼리 무효화 (다른 탭에서 수업노트 작성 시 반영)
-      if (firstRoomId) {
-        queryClient.invalidateQueries({ queryKey: ['studyNotes'] });
-        queryClient.invalidateQueries({ queryKey: ['qnaList'] });
-      }
-    }, 3000); // 3초마다 체크
-
     // 페이지 포커스 시에도 즉시 체크
     const handleFocus = () => {
       queryClient.invalidateQueries({
@@ -49,7 +37,6 @@ export const StudentOnboarding = () => {
 
     window.addEventListener('focus', handleFocus);
     return () => {
-      clearInterval(interval);
       window.removeEventListener('focus', handleFocus);
     };
   }, [queryClient, firstRoomId]);

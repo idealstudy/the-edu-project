@@ -7,7 +7,6 @@ export const useTeacherOnboardingQuery = (options?: { enabled?: boolean }) =>
     queryKey: onboardingKeys.teacher(),
     queryFn: () => repository.teacher.getTeacherOnboarding(),
     staleTime: 1000 * 60 * 5,
-    refetchInterval: 1000 * 60 * 5,
     enabled: options?.enabled,
   });
 
