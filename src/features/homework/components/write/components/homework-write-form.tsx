@@ -59,15 +59,10 @@ function transformHomeworkFormToServerFormat(
   return {
     title: formData.title,
     content: contentString,
-    deadline: normalizeDeadline(formData.deadline),
+    deadline: new Date(formData.deadline).toISOString(),
     studentIds: formData.studentIds?.map((s) => s.id),
     reminderOffsets: formData.reminderOffsets ?? undefined,
     teachingNoteIds: formData.teachingNoteIds ?? [],
     mediaIds,
   };
-}
-
-function normalizeDeadline(value: string) {
-  // "2026-02-01T08:50" → "2026-02-01T08:50:00"
-  return value.length === 16 ? `${value}:00` : value;
 }
