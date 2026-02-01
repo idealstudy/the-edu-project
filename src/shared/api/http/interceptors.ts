@@ -1,6 +1,6 @@
 import { ensureRefreshSession } from '@/shared/api';
+import { ShowErrorToast } from '@/shared/lib';
 import { AuthError } from '@/shared/lib/error';
-import { ShowErrorToast } from '@/shared/lib/toast';
 import { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 import { http } from './http.transport';

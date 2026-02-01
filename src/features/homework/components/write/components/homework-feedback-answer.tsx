@@ -17,6 +17,7 @@ import {
 import { Button } from '@/shared/components/ui/button';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 import { useRole } from '@/shared/hooks/use-role';
+import { ShowErrorToast, getApiError } from '@/shared/lib';
 import { getRelativeTimeString } from '@/shared/lib/utils';
 import { JSONContent } from '@tiptap/react';
 
@@ -39,6 +40,8 @@ export const FeedbackAnswer = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState<JSONContent | null>(null);
   const [localContent, setLocalContent] = useState(content);
+
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // content prop이 변경되면 localContent 동기화 (쿼리 refetch 후)
   useEffect(() => {
@@ -63,6 +66,9 @@ export const FeedbackAnswer = ({
 
   const handleSave = () => {
     if (!editContent) return;
+
+    setSubmitError(null);
+
     const { contentString } = prepareContentForSave(editContent);
 
     updateMessage(
@@ -74,8 +80,17 @@ export const FeedbackAnswer = ({
       },
       {
         onSuccess: () => {
+          setSubmitError(null);
           setIsEditing(false);
           setEditContent(null);
+        },
+        onError: (error) => {
+          const apiError = getApiError(error);
+          if (!apiError) {
+            setSubmitError('피드백 수정 중 오류가 발생했습니다.');
+            return;
+          }
+          setSubmitError(apiError.message);
         },
       }
     );
@@ -88,12 +103,26 @@ export const FeedbackAnswer = ({
 
   const handleDelete = () => {
     if (confirm('정말 삭제하시겠습니까?')) {
-      deleteMessage({
-        studyRoomId,
-        homeworkId,
-        homeworkStudentId,
-        content,
-      });
+      deleteMessage(
+        {
+          studyRoomId,
+          homeworkId,
+          homeworkStudentId,
+          content,
+        },
+        {
+          onError: (error) => {
+            const apiError = getApiError(error);
+
+            if (!apiError) {
+              ShowErrorToast('API_ERROR', '피드백 삭제에 실패했습니다.');
+              return;
+            }
+
+            ShowErrorToast('API_ERROR', apiError.message);
+          },
+        }
+      );
     }
     setIsOpen(false);
   };
@@ -152,20 +181,27 @@ export const FeedbackAnswer = ({
             placeholder="내용을 수정하세요..."
             targetType="HOMEWORK"
           />
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="outlined"
-              onClick={handleCancel}
-              disabled={isUpdating}
-            >
-              취소
-            </Button>
-            <Button
-              onClick={handleSave}
-              disabled={isUpdating || !editContent}
-            >
-              {isUpdating ? '저장 중...' : '저장'}
-            </Button>
+          <div className="space-y-2">
+            {submitError && (
+              <p className="text-system-warning text-right text-sm">
+                {submitError}
+              </p>
+            )}
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outlined"
+                onClick={handleCancel}
+                disabled={isUpdating}
+              >
+                취소
+              </Button>
+              <Button
+                onClick={handleSave}
+                disabled={isUpdating || !editContent}
+              >
+                {isUpdating ? '저장 중...' : '저장'}
+              </Button>
+            </div>
           </div>
         </div>
       ) : (

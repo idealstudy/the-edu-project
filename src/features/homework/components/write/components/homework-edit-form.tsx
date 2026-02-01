@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 
 import { useTeacherUpdateHomework } from '@/features/homework/hooks/teacher/useTeacherHomeworkMutations';
 import { Form } from '@/shared/components/ui/form';
+import { ShowErrorToast, getApiError } from '@/shared/lib';
 
 import { HomeworkForm } from '../schemas/note';
 
@@ -43,6 +44,16 @@ const HomeworkEditForm = ({
       {
         onSuccess: () => {
           router.replace(`/study-rooms/${studyRoomId}/homework/${homeworkId}`);
+        },
+        onError: (error) => {
+          const apiError = getApiError(error);
+
+          if (!apiError) {
+            ShowErrorToast('API_ERROR', '과제 수정에 실패했습니다.');
+            return;
+          }
+
+          ShowErrorToast('API_ERROR', apiError.message);
         },
       }
     );
