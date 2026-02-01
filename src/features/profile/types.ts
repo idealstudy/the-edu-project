@@ -1,15 +1,10 @@
-import { FrontendProfile, ProfileRole } from '@/entities/profile';
+import { ProfileWithMeta } from '@/entities/profile';
 
 export type ProfileViewerProps =
   | { mode: 'owner' }
   | { mode: 'viewer'; userId: string };
 
-export type ProfileData = FrontendProfile & {
-  id: string;
-  role: ProfileRole;
-};
-
 export type ProfileAccessProps = {
-  profile: ProfileData;
+  profile: ProfileWithMeta;
   isOwner: boolean;
 };
