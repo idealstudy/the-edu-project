@@ -62,8 +62,6 @@ export const FeedbackWriteArea = ({
   const isButtonDisabled = !isValid || isPending || isSubmitting;
 
   const onSubmit = (data: HomeworkFeedbackForm) => {
-    setSubmitError('피드백 저장 중 오류가 발생했습니다.');
-
     // 실패 후 submitError가 남을 수 있기 때문.
     setSubmitError(null);
 
