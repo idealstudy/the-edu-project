@@ -2,14 +2,14 @@
 
 import Image from 'next/image';
 
-import SubmitSection from '@/features/dashboard/studynote/write/components/submit-section';
 import {
   useTeacherCreateHomework,
   useTeacherUpdateHomework,
 } from '@/features/homework/hooks/teacher/useTeacherHomeworkMutations';
 import { ColumnLayout } from '@/layout/column-layout';
 
-import { MetaSection } from './meta-section';
+import { HomeworkMetaFields } from './homework-meta-form';
+import SubmitSection from './submit-section';
 
 type WriteAreaProps = {
   isEditMode?: boolean;
@@ -41,7 +41,7 @@ export const WriteArea = ({ isEditMode = false }: WriteAreaProps) => {
         />
       </div>
       <div className="space-y-8">
-        <MetaSection />
+        <HomeworkMetaFields />
 
         <SubmitSection
           isPending={isPending}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import { usePostTeacherHomeworkFeedback } from '@/features/homework/hooks/teacher/useTeacherHomeworkFeedbackMutations';
@@ -8,6 +8,7 @@ import { ColumnLayout } from '@/layout/column-layout';
 import { TextEditor, prepareContentForSave } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
+import { getApiError } from '@/shared/lib';
 
 import { HomeworkFeedbackForm } from '../schemas/create';
 
@@ -34,6 +35,8 @@ export const FeedbackWriteArea = ({
     formState: { errors, isValid, isSubmitting },
   } = useFormContext<HomeworkFeedbackForm>();
 
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
   useEffect(() => {
     if (studyRoomId != null) {
       setValue('studyRoomId', studyRoomId, {
@@ -59,6 +62,9 @@ export const FeedbackWriteArea = ({
   const isButtonDisabled = !isValid || isPending || isSubmitting;
 
   const onSubmit = (data: HomeworkFeedbackForm) => {
+    // 실패 후 submitError가 남을 수 있기 때문.
+    setSubmitError(null);
+
     const { contentString, mediaIds } = prepareContentForSave(data.content);
 
     mutate(
@@ -72,9 +78,26 @@ export const FeedbackWriteArea = ({
       {
         onSuccess: () => {
           reset({ content: {} });
+          setSubmitError(null);
           setIsClicked(false);
         },
-        onError: () => {},
+        onError: (error) => {
+          const apiError = getApiError(error);
+          if (!apiError) {
+            setSubmitError('피드백 저장 중 오류가 발생했습니다.');
+            return;
+          }
+          switch (apiError.code) {
+            case 'MEMBER_NOT_EXIST':
+            case 'STUDY_ROOM_NOT_EXIST':
+            case 'HOMEWORK_STUDENT_NOT_EXIST':
+              setSubmitError(apiError.message);
+              break;
+
+            default:
+              setSubmitError('피드백 작성에 실패했습니다.');
+          }
+        },
       }
     );
   };
@@ -109,21 +132,28 @@ export const FeedbackWriteArea = ({
               </Form.ErrorMessage>
             )}
           </Form.Item>
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="outlined"
-              onClick={() => setIsClicked(false)}
-              disabled={isSubmitting}
-            >
-              취소
-            </Button>
-            <Button
-              type="submit"
-              disabled={isButtonDisabled}
-              className="w-[200px] rounded-sm"
-            >
-              작성하기
-            </Button>
+          <div className="space-y-2">
+            {submitError && (
+              <p className="text-system-warning text-right text-sm">
+                {submitError}
+              </p>
+            )}
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outlined"
+                onClick={() => setIsClicked(false)}
+                disabled={isSubmitting}
+              >
+                취소
+              </Button>
+              <Button
+                type="submit"
+                disabled={isButtonDisabled}
+                className="w-[200px] rounded-sm"
+              >
+                작성하기
+              </Button>
+            </div>
           </div>
         </div>
       </ColumnLayout.Right>
