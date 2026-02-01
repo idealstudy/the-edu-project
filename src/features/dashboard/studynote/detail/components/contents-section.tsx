@@ -9,6 +9,7 @@ import EllipsisIcon from '@/assets/icons/ellipsis-vertical.svg';
 import { useStudyNoteDetailQuery } from '@/features/dashboard/studynote/detail/service/query';
 import { ColumnLayout } from '@/layout/column-layout';
 import { TextViewer } from '@/shared/components/editor';
+import { useRole } from '@/shared/hooks';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
@@ -16,6 +17,9 @@ const StudyNoteDetailContentsSection = ({ id }: { id: string }) => {
   const { data } = useStudyNoteDetailQuery(Number(id));
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
+
+  const { role } = useRole();
+  const canManage = role === 'ROLE_TEACHER';
 
   if (!data) return null;
 
@@ -52,45 +56,47 @@ const StudyNoteDetailContentsSection = ({ id }: { id: string }) => {
         </div>
 
         {/* 메뉴 버튼 */}
-        <div className="relative">
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="text-text-sub2 hover:text-text-main rounded p-1 transition-colors"
-            aria-label="메뉴"
-          >
-            <EllipsisIcon className="h-5 w-5" />
-          </button>
+        {canManage && (
+          <div className="relative">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-text-sub2 hover:text-text-main cursor-pointer rounded p-1 transition-colors"
+              aria-label="메뉴"
+            >
+              <EllipsisIcon className="h-5 w-5" />
+            </button>
 
-          {/* 드롭다운 메뉴 */}
-          {isMenuOpen && (
-            <>
-              <div
-                className="fixed inset-0 z-10"
-                onClick={() => setIsMenuOpen(false)}
-              />
-              <div className="border-line-line1 absolute top-8 right-0 z-20 w-32 overflow-hidden rounded-lg border bg-white shadow-lg">
-                <button
-                  onClick={() => {
-                    handleEdit();
-                    setIsMenuOpen(false);
-                  }}
-                  className="text-text-main hover:bg-background-gray font-body2-normal w-full px-4 py-3 text-center transition-colors"
-                >
-                  편집하기
-                </button>
-                <button
-                  onClick={() => {
-                    handleDelete();
-                    setIsMenuOpen(false);
-                  }}
-                  className="text-key-color-primary hover:bg-background-gray font-body2-normal w-full px-4 py-3 text-center transition-colors"
-                >
-                  삭제하기
-                </button>
-              </div>
-            </>
-          )}
-        </div>
+            {/* 드롭다운 메뉴 */}
+            {isMenuOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setIsMenuOpen(false)}
+                />
+                <div className="border-line-line1 absolute top-8 right-0 z-20 w-32 overflow-hidden rounded-lg border bg-white shadow-lg">
+                  <button
+                    onClick={() => {
+                      handleEdit();
+                      setIsMenuOpen(false);
+                    }}
+                    className="text-text-main hover:bg-background-gray font-body2-normal w-full px-4 py-3 text-center transition-colors"
+                  >
+                    편집하기
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleDelete();
+                      setIsMenuOpen(false);
+                    }}
+                    className="text-key-color-primary hover:bg-background-gray font-body2-normal w-full px-4 py-3 text-center transition-colors"
+                  >
+                    삭제하기
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       <TextViewer value={content} />
