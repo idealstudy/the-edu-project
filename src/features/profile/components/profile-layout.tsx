@@ -1,5 +1,5 @@
 import ParentSections from '@/features/profile/components/parent/parent-sections';
-import ProfileCard from '@/features/profile/components/profile-card';
+import ProfileCard from '@/features/profile/components/profile-card/profile-card';
 import StudentSections from '@/features/profile/components/student/student-sections';
 import TeacherSections from '@/features/profile/components/teacher/teacher-sections';
 import { ProfileAccessProps } from '@/features/profile/types';
