@@ -4,8 +4,6 @@ import { useEffect, useReducer, useState } from 'react';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { ConfirmDialog } from '@/features/study-rooms/components/common/dialog/confirm-dialog';
-import { InputDialog } from '@/features/study-rooms/components/common/dialog/input-dialog';
 import { StudyroomGroups } from '@/features/study-rooms/components/sidebar/groups';
 import { InvitationDialog } from '@/features/study-rooms/components/student-invitation/InvitationDialog';
 import StudentInvitation from '@/features/study-rooms/components/student-invitation/StudentInvitation';
@@ -14,6 +12,10 @@ import {
   useTeacherStudyRoomDetailQuery,
 } from '@/features/study-rooms/hooks';
 import { ColumnLayout } from '@/layout/column-layout';
+import {
+  InputDialog,
+  StudyroomConfirmDialog,
+} from '@/shared/components/dialog';
 import {
   dialogReducer,
   initialDialogState,
@@ -131,7 +133,7 @@ export const StudyroomSidebar = ({
   return (
     <>
       {dialog.status === 'open' && dialog.kind === 'onConfirm' && (
-        <ConfirmDialog
+        <StudyroomConfirmDialog
           type="confirm"
           open={true}
           dispatch={dispatch}
@@ -143,7 +145,7 @@ export const StudyroomSidebar = ({
       {dialog.status === 'open' &&
         dialog.kind === 'delete' &&
         dialog.scope === 'studyroom' && (
-          <ConfirmDialog
+          <StudyroomConfirmDialog
             type="delete"
             open={true}
             dispatch={dispatch}

@@ -31,8 +31,6 @@ export const useTeacherCreateHomework = () => {
 
 // 선생님이 과제 삭제
 export const useTeacherRemoveHomework = () => {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: ({
       studyRoomId,
@@ -41,12 +39,6 @@ export const useTeacherRemoveHomework = () => {
       studyRoomId: number;
       homeworkId: number;
     }) => removeTeacherHomework(studyRoomId, homeworkId),
-
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: TeacherHomeworkQueryKey.listBase(variables.studyRoomId),
-      });
-    },
   });
 };
 

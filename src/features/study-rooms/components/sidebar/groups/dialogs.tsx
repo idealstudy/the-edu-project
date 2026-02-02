@@ -1,8 +1,11 @@
 'use client';
 
-import { ConfirmDialog } from '@/features/study-rooms/components/common/dialog/confirm-dialog';
-import { InputDialog } from '@/features/study-rooms/components/common/dialog/input-dialog';
-import { DialogAction, DialogState } from '@/shared/components/dialog';
+import {
+  DialogAction,
+  DialogState,
+  InputDialog,
+  StudyroomConfirmDialog,
+} from '@/shared/components/dialog';
 
 import {
   useCreateStudyNoteGroup,
@@ -82,7 +85,7 @@ export const StudyroomGroupDialogs = ({
       {dialog.status === 'open' &&
         dialog.scope === 'group' &&
         dialog.kind === 'delete' && (
-          <ConfirmDialog
+          <StudyroomConfirmDialog
             type="delete"
             open={true}
             dispatch={dispatch}
@@ -95,7 +98,7 @@ export const StudyroomGroupDialogs = ({
       {dialog.status === 'open' &&
         dialog.scope === 'group' &&
         dialog.kind === 'onConfirm' && (
-          <ConfirmDialog
+          <StudyroomConfirmDialog
             type="confirm"
             open={true}
             dispatch={dispatch}

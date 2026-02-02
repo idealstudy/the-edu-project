@@ -1,8 +1,10 @@
 'use client';
 
-// TODO : study-rooms 의 컴포넌트 쓰고 있네 나중에 shared 로 옮겨야지 않을까요? - @성진
-import { ConfirmDialog } from '@/features/study-rooms/components/common/dialog/confirm-dialog';
-import type { DialogAction, DialogState } from '@/shared/components/dialog';
+import {
+  type DialogAction,
+  type DialogState,
+  StudyroomConfirmDialog,
+} from '@/shared/components/dialog';
 import { useRole } from '@/shared/hooks/use-role';
 
 import { useTeacherRemoveHomework } from '../../hooks/teacher/useTeacherHomeworkMutations';
@@ -27,15 +29,7 @@ export const HomeworkDialog = ({
   const { role } = useRole();
   const isTeacher = role === 'ROLE_TEACHER';
 
-  const {
-    mutate: removeHomeworkMutate,
-    isPending,
-    isError,
-  } = useTeacherRemoveHomework();
-
-  if (isPending) {
-    return <div>Loading...</div>;
-  }
+  const { mutate: removeHomeworkMutate, isError } = useTeacherRemoveHomework();
 
   if (isError) {
     return <div>Error</div>;
@@ -59,12 +53,12 @@ export const HomeworkDialog = ({
     );
   };
 
-  if (state.status !== 'open') return;
+  if (state.status !== 'open') return null;
 
   return (
     <>
       {state.scope === 'homework' && state.kind === 'delete' && (
-        <ConfirmDialog
+        <StudyroomConfirmDialog
           type="delete"
           open
           dispatch={dispatch}
@@ -75,7 +69,7 @@ export const HomeworkDialog = ({
       )}
 
       {state.scope === 'homework' && state.kind === 'onConfirm' && (
-        <ConfirmDialog
+        <StudyroomConfirmDialog
           type="confirm"
           open
           dispatch={dispatch}
