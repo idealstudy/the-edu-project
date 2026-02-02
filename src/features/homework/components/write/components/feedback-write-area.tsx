@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
+import { useUpdateTeacherOnboarding } from '@/features/dashboard/hooks/use-update-onboarding';
 import { usePostTeacherHomeworkFeedback } from '@/features/homework/hooks/teacher/useTeacherHomeworkFeedbackMutations';
 import { ColumnLayout } from '@/layout/column-layout';
 import { TextEditor, prepareContentForSave } from '@/shared/components/editor';
@@ -34,6 +35,7 @@ export const FeedbackWriteArea = ({
     reset,
     formState: { errors, isValid, isSubmitting },
   } = useFormContext<HomeworkFeedbackForm>();
+  const { sendOnboarding } = useUpdateTeacherOnboarding('GIVE_FEEDBACK');
 
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -80,6 +82,8 @@ export const FeedbackWriteArea = ({
           reset({ content: {} });
           setSubmitError(null);
           setIsClicked(false);
+          // 온보딩 반영
+          sendOnboarding();
         },
         onError: (error) => {
           const apiError = getApiError(error);

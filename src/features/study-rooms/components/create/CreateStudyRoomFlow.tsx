@@ -5,6 +5,7 @@ import { FieldPath, FormProvider, useForm } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
 
+import { useUpdateTeacherOnboarding } from '@/features/dashboard/hooks/use-update-onboarding';
 import {
   CreateStudyRoomSchema,
   useCreateStudyRoom,
@@ -58,6 +59,8 @@ export default function CreateStudyRoomFlow() {
     dialogReducer,
     initialDialogState
   );
+
+  const { sendOnboarding } = useUpdateTeacherOnboarding('CREATE_STUDY_ROOM');
 
   const getCurrentStep = (s: StepState) => s.order[s.index];
   const step = getCurrentStep(state)!;
@@ -116,12 +119,13 @@ export default function CreateStudyRoomFlow() {
               session?.role ?? null
             );
             // 스펙상 id는 항상 옴 (fallback은 의도적으로 생략)
+            sendOnboarding(); // 온보딩 반영
             router.replace(buildNextRoute(result.id, condition));
           },
         });
       })();
     },
-    [isPending, methods, mutate, router, session]
+    [isPending, methods, mutate, router, session, sendOnboarding]
   );
 
   return (
