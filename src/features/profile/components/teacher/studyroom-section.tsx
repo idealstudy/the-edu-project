@@ -76,7 +76,7 @@ export default function StudyroomSection({}: Props) {
       {studyRooms.map((studyRoom, idx) => (
         <Link
           href="#"
-          className="hover:bg-gray-scale-gray-1 flex items-center gap-3 px-4 hover:rounded-xl"
+          className="hover:bg-gray-scale-gray-1 flex items-center gap-3 p-4 hover:rounded-xl"
           key={idx}
         >
           <Image
