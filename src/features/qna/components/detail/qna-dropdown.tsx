@@ -2,9 +2,12 @@ import { useReducer } from 'react';
 
 import Image from 'next/image';
 
-import { ConfirmDialog } from '@/features/study-rooms/components/common/dialog/confirm-dialog';
-import { InputDialog } from '@/features/study-rooms/components/common/dialog/input-dialog';
-import { dialogReducer, initialDialogState } from '@/shared/components/dialog';
+import {
+  InputDialog,
+  StudyroomConfirmDialog,
+  dialogReducer,
+  initialDialogState,
+} from '@/shared/components/dialog';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 
 import {
@@ -78,7 +81,7 @@ export default function QuestionDropDown({
           )}
 
           {dialog.kind === 'delete' && (
-            <ConfirmDialog
+            <StudyroomConfirmDialog
               type="delete"
               open={true}
               dispatch={dispatch}
@@ -89,7 +92,7 @@ export default function QuestionDropDown({
           )}
 
           {dialog.kind === 'onConfirm' && (
-            <ConfirmDialog
+            <StudyroomConfirmDialog
               type="confirm"
               open={true}
               dispatch={dispatch}

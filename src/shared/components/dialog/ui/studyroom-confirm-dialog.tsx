@@ -3,7 +3,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Dialog } from '@/shared/components/ui/dialog';
 import { cn } from '@/shared/lib/utils';
 
-export const ConfirmDialog = ({
+export const StudyroomConfirmDialog = ({
   type,
   open,
   dispatch,

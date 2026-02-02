@@ -1,8 +1,10 @@
 'use client';
 
-// TODO : study-rooms 의 컴포넌트 쓰고 있네 나중에 shared 로 옮겨야지 않을까요? - @성진
-import { ConfirmDialog } from '@/features/study-rooms/components/common/dialog/confirm-dialog';
-import type { DialogAction, DialogState } from '@/shared/components/dialog';
+import {
+  type DialogAction,
+  type DialogState,
+  StudyroomConfirmDialog,
+} from '@/shared/components/dialog';
 import { useRole } from '@/shared/hooks/use-role';
 
 import { useTeacherRemoveHomework } from '../../hooks/teacher/useTeacherHomeworkMutations';
@@ -56,7 +58,7 @@ export const HomeworkDialog = ({
   return (
     <>
       {state.scope === 'homework' && state.kind === 'delete' && (
-        <ConfirmDialog
+        <StudyroomConfirmDialog
           type="delete"
           open
           dispatch={dispatch}
@@ -67,7 +69,7 @@ export const HomeworkDialog = ({
       )}
 
       {state.scope === 'homework' && state.kind === 'onConfirm' && (
-        <ConfirmDialog
+        <StudyroomConfirmDialog
           type="confirm"
           open
           dispatch={dispatch}

@@ -5,8 +5,11 @@ import { Dispatch, SetStateAction, useReducer, useState } from 'react';
 import Image from 'next/image';
 
 import { ProfileAccessProps } from '@/features/profile/types';
-import { InputDialog } from '@/features/study-rooms/components/common/dialog/input-dialog';
-import { dialogReducer, initialDialogState } from '@/shared/components/dialog';
+import {
+  InputDialog,
+  dialogReducer,
+  initialDialogState,
+} from '@/shared/components/dialog';
 import { Button, Dialog, DropdownMenu } from '@/shared/components/ui';
 
 type Props = ProfileAccessProps & {
