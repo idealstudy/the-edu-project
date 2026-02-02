@@ -144,7 +144,9 @@ export const EditorToolbar = ({
   const handleEmbedSubmit = useCallback(async () => {
     if (embedUrl) {
       // YouTube, Vimeo 등의 URL 파싱
-      const { parseEmbedUrl } = await import('../model/embed-extension');
+      const { parseEmbedUrl, getEmbedTypeFromUrl } = await import(
+        '../model/embed-extension'
+      );
       const parsed = parseEmbedUrl(embedUrl);
 
       if (parsed) {
@@ -195,15 +197,28 @@ export const EditorToolbar = ({
           if (foundPos !== null) {
             const tr = state.tr;
             if (result.available && result.data) {
-              // available: true → 링크 미리보기 카드로 업데이트
-              tr.setNodeMarkup(foundPos, undefined, {
-                url: result.data.url,
-                title: result.data.title,
-                description: result.data.description,
-                image: result.data.image,
-                siteName: result.data.siteName,
-                loading: false,
-              });
+              if (
+                result.data.embedType === 'OEMBED' &&
+                result.data.embedUrl &&
+                state.schema.nodes.embed
+              ) {
+                tr.setNodeMarkup(foundPos, state.schema.nodes.embed, {
+                  url: result.data.url,
+                  type: getEmbedTypeFromUrl(result.data.embedUrl),
+                  embedUrl: result.data.embedUrl,
+                  title: result.data.title,
+                });
+              } else {
+                // available: true → 링크 미리보기 카드로 업데이트
+                tr.setNodeMarkup(foundPos, undefined, {
+                  url: result.data.url,
+                  title: result.data.title,
+                  description: result.data.description,
+                  image: result.data.image,
+                  siteName: result.data.siteName,
+                  loading: false,
+                });
+              }
             } else {
               // available: false → 노드 삭제하고 일반 링크로 교체
               const node = state.doc.nodeAt(foundPos);

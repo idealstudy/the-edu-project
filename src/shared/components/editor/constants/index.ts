@@ -1,5 +1,6 @@
 import { api } from '@/shared/api';
 
+import { getEmbedTypeFromUrl } from '../model/embed-extension';
 import { LinkEmbedResponse, SlashCommandGroup } from '../types';
 
 // ============================================================================
@@ -279,16 +280,29 @@ export const SLASH_COMMAND_GROUPS: SlashCommandGroup[] = [
               if (foundPos !== null) {
                 const tr = state.tr;
                 if (result.data.available && result.data.embed) {
-                  // available: true → 링크 미리보기 카드로 업데이트
                   const { embed } = result.data;
-                  tr.setNodeMarkup(foundPos, undefined, {
-                    url: embed.url,
-                    title: embed.title,
-                    description: embed.description,
-                    image: embed.imageUrl,
-                    siteName: embed.siteName,
-                    loading: false,
-                  });
+                  if (
+                    embed.embedType === 'OEMBED' &&
+                    embed.embedUrl &&
+                    state.schema.nodes.embed
+                  ) {
+                    tr.setNodeMarkup(foundPos, state.schema.nodes.embed, {
+                      url: embed.url,
+                      type: getEmbedTypeFromUrl(embed.embedUrl),
+                      embedUrl: embed.embedUrl,
+                      title: embed.title,
+                    });
+                  } else {
+                    // available: true → 링크 미리보기 카드로 업데이트
+                    tr.setNodeMarkup(foundPos, undefined, {
+                      url: embed.url,
+                      title: embed.title,
+                      description: embed.description,
+                      image: embed.imageUrl,
+                      siteName: embed.siteName,
+                      loading: false,
+                    });
+                  }
                 } else {
                   // available: false → 노드 삭제하고 일반 링크로 교체
                   const node = state.doc.nodeAt(foundPos);

@@ -197,6 +197,8 @@ export type LinkPreviewData = {
   description?: string;
   image?: string;
   siteName?: string;
+  embedType?: string;
+  embedUrl?: string;
 };
 
 /** 링크 임베드 API 응답 */
@@ -208,6 +210,8 @@ export type LinkEmbedResponse = {
     embed: {
       id: number;
       url: string;
+      embedType?: string;
+      embedUrl?: string;
       title: string;
       description: string;
       siteName: string;

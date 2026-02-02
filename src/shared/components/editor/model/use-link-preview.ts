@@ -41,6 +41,8 @@ const fetchLinkPreview = async (
       description: embed.description,
       image: embed.imageUrl,
       siteName: embed.siteName,
+      embedType: embed.embedType,
+      embedUrl: embed.embedUrl,
     },
   };
 };
