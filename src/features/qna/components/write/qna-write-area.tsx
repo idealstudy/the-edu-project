@@ -14,6 +14,8 @@ import { RequiredMark, Select } from '@/shared/components/ui';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
+import { ShowErrorToast, getApiError } from '@/shared/lib';
+import { classifyQnaError } from '@/shared/lib/errors';
 import { JSONContent } from '@tiptap/react';
 
 import { QnACreateForm } from '../../schema/create';
@@ -49,6 +51,7 @@ const WriteArea = ({ studyRoomId }: Props) => {
     handleSubmit,
     register,
     setValue,
+    setError,
     control,
     formState: { errors, isValid, isSubmitting },
   } = useFormContext<QnACreateForm>();
@@ -85,6 +88,46 @@ const WriteArea = ({ studyRoomId }: Props) => {
       {
         onSuccess: () => {
           router.replace(`/study-rooms/${studyRoomId}/qna`);
+        },
+        onError: (error) => {
+          const apiError = getApiError(error);
+
+          if (!apiError) {
+            ShowErrorToast('API_ERROR', '질문 작성에 실패했습니다.');
+            return;
+          }
+
+          const type = classifyQnaError(apiError.code);
+
+          // 공통: 어떤 에러든 일단 서버가 준 메시지를 토스트로 보여줌
+          ShowErrorToast(
+            'API_ERROR',
+            apiError.message || '알 수 없는 에러가 발생했습니다.'
+          );
+          switch (type) {
+            case 'FIELD':
+              // 수업노트 연결 실패 혹은 필수값 누락 시 해당 필드에 에러 표시
+              setError('relatedTeachingNoteId', {
+                type: 'server',
+                message: apiError.message,
+              });
+              break;
+
+            case 'AUTH':
+              setTimeout(() => {
+                router.push('/login');
+              }, 1500);
+              break;
+
+            case 'CONTEXT':
+              setTimeout(() => {
+                router.replace(`/study-rooms/${studyRoomId}/qna`);
+              }, 1500);
+              break;
+
+            default:
+              break;
+          }
         },
       }
     );
@@ -257,7 +300,7 @@ const WriteArea = ({ studyRoomId }: Props) => {
               disabled={isButtonDisabled}
               className="w-[200px] rounded-sm"
             >
-              작성하기
+              {isSubmitting ? '등록 중...' : '작성하기'}
             </Button>
           </div>
         </div>

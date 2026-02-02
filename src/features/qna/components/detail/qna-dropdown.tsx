@@ -6,6 +6,8 @@ import { ConfirmDialog } from '@/features/study-rooms/components/common/dialog/c
 import { InputDialog } from '@/features/study-rooms/components/common/dialog/input-dialog';
 import { dialogReducer, initialDialogState } from '@/shared/components/dialog';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
+import { ShowErrorToast, getApiError } from '@/shared/lib';
+import { classifyQnaError } from '@/shared/lib/errors';
 
 import {
   useDeleteQnAContextMutation,
@@ -43,6 +45,31 @@ export default function QuestionDropDown({
         onSuccess: () => {
           dispatch({ type: 'CLOSE' });
         },
+        onError: (error) => {
+          const apiError = getApiError(error);
+
+          if (!apiError) {
+            ShowErrorToast('API_ERROR', '질문 제목 수정에 실패했습니다.');
+            return;
+          }
+
+          const type = classifyQnaError(apiError.code);
+
+          ShowErrorToast('API_ERROR', apiError.message);
+
+          switch (type) {
+            case 'AUTH':
+              dispatch({ type: 'CLOSE' });
+              break;
+
+            case 'CONTEXT':
+              dispatch({ type: 'CLOSE' });
+              break;
+
+            default:
+              break;
+          }
+        },
       }
     );
   };
@@ -56,6 +83,33 @@ export default function QuestionDropDown({
       {
         onSuccess: () => {
           dispatch({ type: 'GO_TO_CONFIRM' });
+        },
+        onError: (error) => {
+          const apiError = getApiError(error);
+
+          if (!apiError) {
+            ShowErrorToast('API_ERROR', '질문 삭제에 실패했습니다.');
+            dispatch({ type: 'CLOSE' });
+            return;
+          }
+
+          const type = classifyQnaError(apiError.code);
+
+          ShowErrorToast('API_ERROR', apiError.message);
+
+          switch (type) {
+            case 'AUTH':
+              dispatch({ type: 'CLOSE' });
+              break;
+
+            case 'CONTEXT':
+              dispatch({ type: 'CLOSE' });
+              break;
+
+            default:
+              dispatch({ type: 'CLOSE' });
+              break;
+          }
         },
       }
     );
