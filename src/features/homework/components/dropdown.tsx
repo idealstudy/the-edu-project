@@ -40,18 +40,17 @@ export const HomeworkDropdown = ({
 
   return (
     <>
-      {dialog.status === 'open' && (
-        <HomeworkDialog
-          state={dialog}
-          dispatch={dispatch}
-          onRefresh={onRefresh}
-          studyRoomId={studyRoomId}
-          homeworkId={item.id}
-          pageable={pageable}
-          keyword={keyword}
-          item={item}
-        />
-      )}
+      <HomeworkDialog
+        state={dialog}
+        dispatch={dispatch}
+        onRefresh={onRefresh}
+        studyRoomId={studyRoomId}
+        homeworkId={item.id}
+        pageable={pageable}
+        keyword={keyword}
+        item={item}
+      />
+
       <DropdownMenu
         open={open === item.id}
         onOpenChange={() => handleOpen(item.id)}
@@ -61,8 +60,8 @@ export const HomeworkDropdown = ({
             src="/studynotes/gray-kebab.svg"
             width={24}
             height={24}
-            alt="study-notes"
-            className="hover:bg-gray-scale-gray-5 cursor-pointer rounded" // 3단 점을 누르는건지 수업노트를 누르는건지 구분 필요
+            alt="homework"
+            className="hover:bg-gray-scale-gray-5 cursor-pointer rounded"
             onClick={() => handleOpen(item.id)}
           />
         </DropdownMenu.Trigger>

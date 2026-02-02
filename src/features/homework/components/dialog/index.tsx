@@ -27,15 +27,7 @@ export const HomeworkDialog = ({
   const { role } = useRole();
   const isTeacher = role === 'ROLE_TEACHER';
 
-  const {
-    mutate: removeHomeworkMutate,
-    isPending,
-    isError,
-  } = useTeacherRemoveHomework();
-
-  if (isPending) {
-    return <div>Loading...</div>;
-  }
+  const { mutate: removeHomeworkMutate, isError } = useTeacherRemoveHomework();
 
   if (isError) {
     return <div>Error</div>;
@@ -59,7 +51,7 @@ export const HomeworkDialog = ({
     );
   };
 
-  if (state.status !== 'open') return;
+  if (state.status !== 'open') return null;
 
   return (
     <>
