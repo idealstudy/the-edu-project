@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { ColumnLayout } from '@/layout';
 import { DropdownMenu } from '@/shared/components/ui';
 import { useRole } from '@/shared/hooks';
-import { cn } from '@/shared/lib';
+import { ShowErrorToast, cn, getApiError } from '@/shared/lib';
 
 import { useStudentHomeworkDetail } from '../../hooks/student/useStudentHomeworkQuries';
 import { useTeacherRemoveHomework } from '../../hooks/teacher/useTeacherHomeworkMutations';
@@ -74,10 +74,24 @@ export const HomeworkDetailLeft = ({ studyRoomId, homeworkId }: Props) => {
 
   const handleDelete = () => {
     if (confirm('정말 삭제하시겠습니까?')) {
-      mutate({
-        studyRoomId,
-        homeworkId,
-      });
+      mutate(
+        {
+          studyRoomId,
+          homeworkId,
+        },
+        {
+          onError: (error) => {
+            const apiError = getApiError(error);
+
+            if (!apiError) {
+              ShowErrorToast('API_ERROR', '과제 삭제에 실패했습니다.');
+              return;
+            }
+
+            ShowErrorToast('API_ERROR', apiError.message);
+          },
+        }
+      );
       router.push(`/study-rooms/${studyRoomId}/homework`);
     }
     setIsOpen(false);

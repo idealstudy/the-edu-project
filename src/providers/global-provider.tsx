@@ -4,6 +4,7 @@ import {
   InterceptorProvider,
   QueryProvider,
   SessionProvider,
+  ToastProvider,
 } from '@/providers';
 import { checkCookie } from '@/shared/lib';
 
@@ -17,6 +18,7 @@ export const GlobalProvider = async ({ children }: Props) => {
     <InterceptorProvider>
       <QueryProvider>
         <SessionProvider initialHasSession={hasSession}>
+          <ToastProvider />
           {children}
         </SessionProvider>
       </QueryProvider>

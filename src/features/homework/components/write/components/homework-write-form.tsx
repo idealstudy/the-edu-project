@@ -11,6 +11,7 @@ import { TeacherHomeworkRequest } from '@/features/homework/model/homework.types
 import { prepareContentForSave } from '@/shared/components/editor';
 import { Form } from '@/shared/components/ui/form';
 import { PRIVATE } from '@/shared/constants';
+import { ShowErrorToast, getApiError } from '@/shared/lib';
 
 import { HomeworkForm } from '../schemas/note';
 
@@ -18,6 +19,7 @@ import { HomeworkForm } from '../schemas/note';
 export const HomeworkWriteForm = ({ children }: PropsWithChildren) => {
   const router = useRouter();
   const studyRoomId = useWatch({ name: 'studyRoomId' });
+
   const { mutate } = useTeacherCreateHomework();
   const { handleSubmit } = useFormContext<HomeworkForm>();
   const { sendOnboarding } = useUpdateTeacherOnboarding('ASSIGN_ASSIGNMENT');
@@ -35,6 +37,16 @@ export const HomeworkWriteForm = ({ children }: PropsWithChildren) => {
           router.replace(PRIVATE.HOMEWORK.LIST(studyRoomId));
           // 온보딩 반영
           sendOnboarding();
+        },
+        onError: (error) => {
+          const apiError = getApiError(error);
+
+          if (!apiError) {
+            ShowErrorToast('API_ERROR', '과제 제출에 실패했습니다.');
+            return;
+          }
+
+          ShowErrorToast('API_ERROR', apiError.message);
         },
       }
     );
