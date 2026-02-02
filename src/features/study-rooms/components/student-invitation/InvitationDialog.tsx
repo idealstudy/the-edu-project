@@ -4,6 +4,7 @@ import React from 'react';
 
 import Image from 'next/image';
 
+import { useUpdateTeacherOnboarding } from '@/features/dashboard/hooks/use-update-onboarding';
 import { useSendInvitation } from '@/features/study-rooms';
 import { InvitationField } from '@/features/study-rooms/components/student-invitation/InvitationField';
 import { useInvitationController } from '@/features/study-rooms/hooks/useInvitationController';
@@ -33,6 +34,7 @@ export const InvitationDialog = ({
   const invitation = useInvitationController(studyRoomId);
   const { mutate: sendInvitation, isPending } = useSendInvitation();
   const session = useMemberStore((s) => s.member);
+  const { sendOnboarding } = useUpdateTeacherOnboarding('INVITE_STUDENT');
 
   const handleSubmit = () => {
     const emails = Array.from(invitation.invitees.keys());
@@ -67,6 +69,9 @@ export const InvitationDialog = ({
               session?.role ?? null
             );
           });
+          // 온보딩 반영
+          sendOnboarding();
+          onOpenChange();
         },
       }
     );
@@ -120,15 +125,14 @@ export const InvitationDialog = ({
           </aside>
         </Dialog.Body>
         <Dialog.Footer className="mt-6 justify-end">
-          <Dialog.Close asChild>
-            <Button
-              className="w-[140px]"
-              disabled={!invitation.invitees.size || !!error || isPending}
-              onClick={handleSubmit}
-            >
-              {isPending ? '초대 중…' : '초대하기'}
-            </Button>
-          </Dialog.Close>
+          <Button
+            className="w-[140px]"
+            type="button"
+            disabled={!invitation.invitees.size || !!error || isPending}
+            onClick={handleSubmit}
+          >
+            {isPending ? '초대 중…' : '초대하기'}
+          </Button>
         </Dialog.Footer>
       </Dialog.Content>
     </Dialog>

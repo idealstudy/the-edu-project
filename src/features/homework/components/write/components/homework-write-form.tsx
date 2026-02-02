@@ -5,6 +5,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
 
+import { useUpdateTeacherOnboarding } from '@/features/dashboard/hooks/use-update-onboarding';
 import { useTeacherCreateHomework } from '@/features/homework/hooks/teacher/useTeacherHomeworkMutations';
 import { TeacherHomeworkRequest } from '@/features/homework/model/homework.types';
 import { prepareContentForSave } from '@/shared/components/editor';
@@ -21,6 +22,7 @@ export const HomeworkWriteForm = ({ children }: PropsWithChildren) => {
 
   const { mutate } = useTeacherCreateHomework();
   const { handleSubmit } = useFormContext<HomeworkForm>();
+  const { sendOnboarding } = useUpdateTeacherOnboarding('ASSIGN_ASSIGNMENT');
 
   const onSubmit = (data: HomeworkForm) => {
     const parsingData = transformHomeworkFormToServerFormat(data);
@@ -33,6 +35,8 @@ export const HomeworkWriteForm = ({ children }: PropsWithChildren) => {
       {
         onSuccess: () => {
           router.replace(PRIVATE.HOMEWORK.LIST(studyRoomId));
+          // 온보딩 반영
+          sendOnboarding();
         },
         onError: (error) => {
           const apiError = getApiError(error);
