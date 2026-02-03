@@ -4,11 +4,9 @@ import React from 'react';
 
 import { DashboardCompleted } from '@/features/dashboard/components/completed';
 import { DashboardOnboarding } from '@/features/dashboard/components/onboarding';
+import { useTeacherOnboardingQuery } from '@/features/dashboard/hooks/use-onboarding-query';
 import { useOnboardingStatus } from '@/features/dashboard/hooks/use-onboarding-status';
-import {
-  useStudentStudyRoomsQuery,
-  useTeacherStudyRoomsQuery,
-} from '@/features/study-rooms';
+import { useStudentStudyRoomsQuery } from '@/features/study-rooms';
 import { trackPageView } from '@/shared/lib/gtm/trackers';
 import { useMemberStore } from '@/store';
 
@@ -17,17 +15,18 @@ export const DashboardContainer = () => {
   const role = session?.role;
   const isTeacher = role === 'ROLE_TEACHER';
 
-  // 역할에 따라 다른 쿼리 사용
-  const { data: teacherRooms, isLoading: isLoadingTeacher } =
-    useTeacherStudyRoomsQuery({
-      enabled: isTeacher,
-    });
+  // 강사 온보딩 조회
+  const { data: teacherOnboarding, isLoading: isLoadingTeacher } =
+    useTeacherOnboardingQuery({ enabled: isTeacher });
+  // 학생 온보딩 완료 확인을 위한 study rooms 조회
   const { data: studentRooms, isLoading: isLoadingStudent } =
     useStudentStudyRoomsQuery({
       enabled: !isTeacher,
     });
 
-  const rooms = isTeacher ? teacherRooms : studentRooms;
+  // 역할에 따른 rooms 데이터
+  const rooms = isTeacher ? undefined : studentRooms;
+  // 로딩 중 여부
   const isLoading = isTeacher ? isLoadingTeacher : isLoadingStudent;
 
   React.useEffect(() => {
@@ -37,14 +36,8 @@ export const DashboardContainer = () => {
 
   // 온보딩 완료 여부 체크 (스터디룸 존재 여부만 확인)
   // TODO: 전체 조회 API가 생기면 상세 체크하도록 변경
-  const {
-    hasRooms,
-    hasStudents,
-    hasNotes,
-    hasQuestions,
-    hasAssignments,
-    hasFeedback,
-  } = useOnboardingStatus({ role, rooms });
+  const { hasRooms, hasNotes, hasAssignments, hasQuestions } =
+    useOnboardingStatus({ rooms });
 
   // 로딩 중일 때
   if (isLoading) {
@@ -58,15 +51,9 @@ export const DashboardContainer = () => {
   }
 
   // 온보딩 완료 여부 판단
-  // 강사: 스터디룸, 학생 초대, 수업노트, 과제, 피드백
-  // 학생: 스터디룸 참여, 수업노트 확인, 과제 제출, 질문 (피드백 제외)
-  const teacherStepsCompleted = [
-    hasRooms, // 스터디룸 만들기
-    hasStudents, // 학생 초대하기
-    hasNotes, // 수업노트 작성하기
-    hasAssignments, // 과제 부여하기
-    hasFeedback, // 피드백 주기
-  ];
+  // 강사: 스터디룸, 학생 초대, 수업노트, 과제, 피드백 - query로 조회
+  // 학생: 스터디룸 참여, 수업노트 확인, 과제 제출, 질문 (피드백 제외) - hook으로 조회
+  const teacherAllStepsCompleted = teacherOnboarding?.isCompleted;
   const studentStepsCompleted = [
     hasRooms, // 선생님 초대 받기
     hasNotes, // 수업노트 확인하기
@@ -76,7 +63,7 @@ export const DashboardContainer = () => {
   ];
 
   const allStepsCompleted = isTeacher
-    ? teacherStepsCompleted.every((completed) => completed)
+    ? teacherAllStepsCompleted
     : studentStepsCompleted.every((completed) => completed);
 
   // 온보딩 완료 여부에 따라 다른 화면 표시

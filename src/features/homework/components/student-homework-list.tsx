@@ -21,14 +21,15 @@ export const StudentHomeworkList = ({
     const today = new Date();
     const end = new Date(date);
 
-    today.setHours(0, 0, 0, 0);
-    end.setHours(0, 0, 0, 0);
+    const diffMs = end.getTime() - today.getTime();
 
-    const diffDays = Math.ceil(
-      (end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    if (diffDays < 0 || diffDays === 0) return '마감';
-    if (diffDays === 1 || diffDays > 1) return `마감 ${diffDays}일 전`;
+    if (diffMs <= 0) return '마감';
+
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return '마감 임박';
+
+    return `마감 ${diffDays}일 전`;
   };
 
   // 과제가 없을 시

@@ -59,10 +59,8 @@ export const HomeworkDetailLeft = ({ studyRoomId, homeworkId }: Props) => {
     if (!data?.homework.deadline) return false;
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
 
     const deadlineDate = new Date(data.homework.deadline);
-    deadlineDate.setHours(0, 0, 0, 0);
 
     return today >= deadlineDate;
   };

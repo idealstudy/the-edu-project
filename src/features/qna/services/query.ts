@@ -28,6 +28,7 @@ export const useQnAsQuery = (
     status?: string;
     sort?: string;
     searchKeyword?: string;
+    enabled?: boolean;
   }
 ) => {
   return useQuery({
@@ -37,7 +38,9 @@ export const useQnAsQuery = (
       if (role === 'ROLE_STUDENT') return getStudentQnAList(args);
       throw new Error('role not ready');
     },
-    enabled: role === 'ROLE_TEACHER' || role === 'ROLE_STUDENT',
+    enabled:
+      (args.enabled ?? true) &&
+      (role === 'ROLE_TEACHER' || role === 'ROLE_STUDENT'),
   });
 };
 
