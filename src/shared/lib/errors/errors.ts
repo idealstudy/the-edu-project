@@ -40,6 +40,7 @@ export function classifyHomeworkError(code?: string): ApiErrorType {
   switch (code) {
     case 'STUDY_ROOM_NOT_EXIST':
     case 'HOMEWORK_STUDENT_NOT_EXIST':
+    case 'HOMEWORK_NOT_EXIST':
       return 'CONTEXT';
 
     case 'MEMBER_NOT_EXIST':

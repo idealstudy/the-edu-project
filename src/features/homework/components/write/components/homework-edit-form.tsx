@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 
 import { useTeacherUpdateHomework } from '@/features/homework/hooks/teacher/useTeacherHomeworkMutations';
 import { Form } from '@/shared/components/ui/form';
-import { ShowErrorToast, getApiError } from '@/shared/lib';
+import { classifyHomeworkError, handleApiError } from '@/shared/lib/errors';
 
 import { HomeworkForm } from '../schemas/note';
 
@@ -23,7 +23,7 @@ const HomeworkEditForm = ({
 }: PropsWithChildren<EditFormProps>) => {
   const router = useRouter();
   const { mutate: updateHomework } = useTeacherUpdateHomework();
-  const { handleSubmit } = useFormContext<HomeworkForm>();
+  const { handleSubmit, setError } = useFormContext<HomeworkForm>();
 
   const onSubmit = (data: HomeworkForm) => {
     const parsingData = transformFormDataToServerFormat(data);
@@ -46,14 +46,25 @@ const HomeworkEditForm = ({
           router.replace(`/study-rooms/${studyRoomId}/homework/${homeworkId}`);
         },
         onError: (error) => {
-          const apiError = getApiError(error);
+          handleApiError(error, classifyHomeworkError, {
+            onField: (msg) => {
+              setError('root', { message: msg });
+            },
 
-          if (!apiError) {
-            ShowErrorToast('API_ERROR', '과제 수정에 실패했습니다.');
-            return;
-          }
+            onContext: () => {
+              setTimeout(() => {
+                router.replace(`/study-rooms/${studyRoomId}/homework`);
+              }, 1500);
+            },
 
-          ShowErrorToast('API_ERROR', apiError.message);
+            onAuth: () => {
+              setTimeout(() => {
+                router.replace('/login');
+              }, 1500);
+            },
+
+            onUnknown: () => {},
+          });
         },
       }
     );

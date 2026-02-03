@@ -11,7 +11,7 @@ import { TeacherHomeworkRequest } from '@/features/homework/model/homework.types
 import { prepareContentForSave } from '@/shared/components/editor';
 import { Form } from '@/shared/components/ui/form';
 import { PRIVATE } from '@/shared/constants';
-import { ShowErrorToast, getApiError } from '@/shared/lib';
+import { classifyHomeworkError, handleApiError } from '@/shared/lib/errors';
 
 import { HomeworkForm } from '../schemas/note';
 
@@ -21,7 +21,7 @@ export const HomeworkWriteForm = ({ children }: PropsWithChildren) => {
   const studyRoomId = useWatch({ name: 'studyRoomId' });
 
   const { mutate } = useTeacherCreateHomework();
-  const { handleSubmit } = useFormContext<HomeworkForm>();
+  const { handleSubmit, setError } = useFormContext<HomeworkForm>();
   const { sendOnboarding } = useUpdateTeacherOnboarding('ASSIGN_ASSIGNMENT');
 
   const onSubmit = (data: HomeworkForm) => {
@@ -39,14 +39,25 @@ export const HomeworkWriteForm = ({ children }: PropsWithChildren) => {
           sendOnboarding();
         },
         onError: (error) => {
-          const apiError = getApiError(error);
+          handleApiError(error, classifyHomeworkError, {
+            onField: (msg) => {
+              setError('root', { message: msg });
+            },
 
-          if (!apiError) {
-            ShowErrorToast('API_ERROR', '과제 제출에 실패했습니다.');
-            return;
-          }
+            onAuth: () => {
+              setTimeout(() => {
+                router.replace('/login');
+              }, 1500);
+            },
 
-          ShowErrorToast('API_ERROR', apiError.message);
+            onContext: () => {
+              setTimeout(() => {
+                router.replace(`/study-rooms/${studyRoomId}/homework`);
+              }, 1500);
+            },
+
+            onUnknown: () => {},
+          });
         },
       }
     );

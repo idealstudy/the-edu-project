@@ -1,11 +1,14 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
 import {
   type DialogAction,
   type DialogState,
   StudyroomConfirmDialog,
 } from '@/shared/components/dialog';
 import { useRole } from '@/shared/hooks/use-role';
+import { classifyHomeworkError, handleApiError } from '@/shared/lib/errors';
 
 import { useTeacherRemoveHomework } from '../../hooks/teacher/useTeacherHomeworkMutations';
 import { Homework, HomeworkPageable } from '../../model/homework.types';
@@ -29,11 +32,9 @@ export const HomeworkDialog = ({
   const { role } = useRole();
   const isTeacher = role === 'ROLE_TEACHER';
 
-  const { mutate: removeHomeworkMutate, isError } = useTeacherRemoveHomework();
+  const { mutate: removeHomeworkMutate } = useTeacherRemoveHomework();
 
-  if (isError) {
-    return <div>Error</div>;
-  }
+  const router = useRouter();
 
   const handleHomeworkDelete = () => {
     if (!isTeacher) {
@@ -48,6 +49,22 @@ export const HomeworkDialog = ({
       {
         onSuccess: () => {
           dispatch({ type: 'GO_TO_CONFIRM' });
+        },
+        onError: (error) => {
+          handleApiError(error, classifyHomeworkError, {
+            onContext: () => {
+              dispatch({ type: 'CLOSE' });
+              setTimeout(() => {
+                router.replace(`/study-rooms/${studyRoomId}/homework`);
+              }, 1500);
+            },
+            onAuth: () => {
+              dispatch({ type: 'CLOSE' });
+            },
+            onUnknown: () => {
+              dispatch({ type: 'CLOSE' });
+            },
+          });
         },
       }
     );
