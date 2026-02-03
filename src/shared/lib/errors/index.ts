@@ -1,1 +1,2 @@
-export * from './qna-error';
+export * from './errors';
+export { handleApiError } from './error-handler';
