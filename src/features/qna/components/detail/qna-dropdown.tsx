@@ -9,8 +9,7 @@ import {
   initialDialogState,
 } from '@/shared/components/dialog';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
-import { ShowErrorToast, getApiError } from '@/shared/lib';
-import { classifyQnaError } from '@/shared/lib/errors';
+import { classifyQnaError, handleApiError } from '@/shared/lib/errors';
 
 import {
   useDeleteQnAContextMutation,
@@ -49,29 +48,12 @@ export default function QuestionDropDown({
           dispatch({ type: 'CLOSE' });
         },
         onError: (error) => {
-          const apiError = getApiError(error);
-
-          if (!apiError) {
-            ShowErrorToast('API_ERROR', '질문 제목 수정에 실패했습니다.');
-            return;
-          }
-
-          const type = classifyQnaError(apiError.code);
-
-          ShowErrorToast('API_ERROR', apiError.message);
-
-          switch (type) {
-            case 'AUTH':
-              dispatch({ type: 'CLOSE' });
-              break;
-
-            case 'CONTEXT':
-              dispatch({ type: 'CLOSE' });
-              break;
-
-            default:
-              break;
-          }
+          handleApiError(error, classifyQnaError, {
+            onContext: () => dispatch({ type: 'CLOSE' }),
+            onAuth: () => dispatch({ type: 'CLOSE' }),
+            onUnknown: () => dispatch({ type: 'CLOSE' }),
+            // onField일 때는 수정 폼을 유지하기 위해 아무것도 넘기지 않거나 별도 처리
+          });
         },
       }
     );
@@ -88,31 +70,12 @@ export default function QuestionDropDown({
           dispatch({ type: 'GO_TO_CONFIRM' });
         },
         onError: (error) => {
-          const apiError = getApiError(error);
-
-          if (!apiError) {
-            ShowErrorToast('API_ERROR', '질문 삭제에 실패했습니다.');
-            dispatch({ type: 'CLOSE' });
-            return;
-          }
-
-          const type = classifyQnaError(apiError.code);
-
-          ShowErrorToast('API_ERROR', apiError.message);
-
-          switch (type) {
-            case 'AUTH':
-              dispatch({ type: 'CLOSE' });
-              break;
-
-            case 'CONTEXT':
-              dispatch({ type: 'CLOSE' });
-              break;
-
-            default:
-              dispatch({ type: 'CLOSE' });
-              break;
-          }
+          handleApiError(error, classifyQnaError, {
+            onContext: () => dispatch({ type: 'CLOSE' }),
+            onAuth: () => dispatch({ type: 'CLOSE' }),
+            onField: () => dispatch({ type: 'CLOSE' }),
+            onUnknown: () => dispatch({ type: 'CLOSE' }),
+          });
         },
       }
     );

@@ -18,8 +18,7 @@ import {
 import { Button } from '@/shared/components/ui/button';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 import { useRole } from '@/shared/hooks/use-role';
-import { ShowErrorToast, getApiError } from '@/shared/lib';
-import { classifyQnaError } from '@/shared/lib/errors';
+import { classifyQnaError, handleApiError } from '@/shared/lib/errors';
 import { getRelativeTimeString } from '@/shared/lib/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { JSONContent } from '@tiptap/react';
@@ -68,6 +67,12 @@ const QuestionContent = ({
     useUpdateQnAMessageMutation(role);
   const { mutate: deleteMessage, isPending: isDeleting } =
     useDeleteQnAMessageMutation(role);
+
+  // 에디터 상태 초기화
+  const resetEditor = () => {
+    setIsEditing(false);
+    setEditContent(null);
+  };
 
   // JSONContent 파싱
   let parsedContent: JSONContent = {
@@ -126,25 +131,12 @@ const QuestionContent = ({
           setEditContent(null);
         },
         onError: (error) => {
-          const apiError = getApiError(error);
-
-          if (!apiError) {
-            ShowErrorToast('API_ERROR', '질문 수정에 실패했습니다.');
-            return;
-          }
-
-          const type = classifyQnaError(apiError.code);
-          ShowErrorToast('API_ERROR', apiError.message);
-
-          switch (type) {
-            case 'AUTH':
-            case 'CONTEXT':
-              setIsEditing(false);
-              setEditContent(null);
-              break;
-            default:
-              break;
-          }
+          handleApiError(error, classifyQnaError, {
+            onField: () => {},
+            onContext: resetEditor,
+            onAuth: resetEditor,
+            onUnknown: resetEditor,
+          });
         },
       }
     );
@@ -184,12 +176,12 @@ const QuestionContent = ({
             router.replace(`/study-rooms/${studyRoomId}/qna`);
           },
           onError: (error) => {
-            const apiError = getApiError(error);
-            ShowErrorToast(
-              'API_ERROR',
-              apiError?.message ?? '삭제에 실패했습니다.'
-            );
-            dispatch({ type: 'CLOSE' });
+            handleApiError(error, classifyQnaError, {
+              onContext: () => dispatch({ type: 'CLOSE' }),
+              onAuth: () => dispatch({ type: 'CLOSE' }),
+              onField: () => dispatch({ type: 'CLOSE' }),
+              onUnknown: () => dispatch({ type: 'CLOSE' }),
+            });
           },
         }
       );
@@ -202,12 +194,12 @@ const QuestionContent = ({
             dispatch({ type: 'GO_TO_CONFIRM' });
           },
           onError: (error) => {
-            const apiError = getApiError(error);
-            ShowErrorToast(
-              'API_ERROR',
-              apiError?.message ?? '삭제에 실패했습니다.'
-            );
-            dispatch({ type: 'CLOSE' });
+            handleApiError(error, classifyQnaError, {
+              onContext: () => dispatch({ type: 'CLOSE' }),
+              onAuth: () => dispatch({ type: 'CLOSE' }),
+              onField: () => dispatch({ type: 'CLOSE' }),
+              onUnknown: () => dispatch({ type: 'CLOSE' }),
+            });
           },
         }
       );

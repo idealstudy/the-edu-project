@@ -17,8 +17,7 @@ import {
 import { Button } from '@/shared/components/ui/button';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 import { useRole } from '@/shared/hooks/use-role';
-import { ShowErrorToast, getApiError } from '@/shared/lib';
-import { classifyQnaError } from '@/shared/lib/errors';
+import { classifyQnaError, handleApiError } from '@/shared/lib/errors';
 import { getRelativeTimeString } from '@/shared/lib/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { JSONContent } from '@tiptap/react';
@@ -62,6 +61,12 @@ const QuestionAnswer = ({
     useDeleteQnAMessageMutation(role);
 
   const { mutate: updateQnAStatus } = useUpdateQnAStatus(role);
+
+  // 에디터 상태 초기화
+  const resetEditor = () => {
+    setIsEditing(false);
+    setEditContent(null);
+  };
 
   // JSONContent 파싱
   let parsedContent: JSONContent = {
@@ -122,25 +127,13 @@ const QuestionAnswer = ({
           // 같은 페이지에 있으므로 자동으로 업데이트됨
         },
         onError: (error) => {
-          const apiError = getApiError(error);
-
-          if (!apiError) {
-            ShowErrorToast('API_ERROR', '답글 수정에 실패했습니다.');
-            return;
-          }
-
-          const type = classifyQnaError(apiError.code);
-          ShowErrorToast('API_ERROR', apiError.message);
-
-          switch (type) {
-            case 'AUTH':
-            case 'CONTEXT':
-              setIsEditing(false);
-              setEditContent(null);
-              break;
-            default:
-              break;
-          }
+          handleApiError(error, classifyQnaError, {
+            // onField일 때는 수정 폼을 유지하기 위해 아무것도 넘기지 않거나 별도 처리
+            onField: () => {},
+            onAuth: resetEditor,
+            onContext: resetEditor,
+            onUnknown: resetEditor,
+          });
         },
       }
     );
@@ -176,23 +169,19 @@ const QuestionAnswer = ({
               { studyRoomId, contextId, status: 'PENDING' },
               {
                 onError: (error) => {
-                  const apiError = getApiError(error);
-                  ShowErrorToast(
-                    'API_ERROR',
-                    apiError?.message ?? '질문 상태 업데이트에 실패했습니다.'
-                  );
+                  handleApiError(error, classifyQnaError, {});
                 },
               }
             );
           }
         },
         onError: (error) => {
-          const apiError = getApiError(error);
-          ShowErrorToast(
-            'API_ERROR',
-            apiError?.message ?? '답글 삭제에 실패했습니다.'
-          );
-          dispatch({ type: 'CLOSE' });
+          handleApiError(error, classifyQnaError, {
+            onContext: () => dispatch({ type: 'CLOSE' }),
+            onAuth: () => dispatch({ type: 'CLOSE' }),
+            onUnknown: () => dispatch({ type: 'CLOSE' }),
+            onField: () => dispatch({ type: 'CLOSE' }),
+          });
         },
       }
     );

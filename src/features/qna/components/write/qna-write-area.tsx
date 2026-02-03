@@ -14,8 +14,7 @@ import { RequiredMark, Select } from '@/shared/components/ui';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
-import { ShowErrorToast, getApiError } from '@/shared/lib';
-import { classifyQnaError } from '@/shared/lib/errors';
+import { classifyQnaError, handleApiError } from '@/shared/lib/errors';
 import { JSONContent } from '@tiptap/react';
 
 import { QnACreateForm } from '../../schema/create';
@@ -90,44 +89,28 @@ const WriteArea = ({ studyRoomId }: Props) => {
           router.replace(`/study-rooms/${studyRoomId}/qna`);
         },
         onError: (error) => {
-          const apiError = getApiError(error);
-
-          if (!apiError) {
-            ShowErrorToast('API_ERROR', '질문 작성에 실패했습니다.');
-            return;
-          }
-
-          const type = classifyQnaError(apiError.code);
-
-          // 공통: 어떤 에러든 일단 서버가 준 메시지를 토스트로 보여줌
-          ShowErrorToast(
-            'API_ERROR',
-            apiError.message || '알 수 없는 에러가 발생했습니다.'
-          );
-          switch (type) {
-            case 'FIELD':
-              // 수업노트 연결 실패 혹은 필수값 누락 시 해당 필드에 에러 표시
-              setError('relatedTeachingNoteId', {
+          handleApiError(error, classifyQnaError, {
+            onField: (msg) => {
+              setError('content', {
                 type: 'server',
-                message: apiError.message,
+                message: msg,
               });
-              break;
+            },
 
-            case 'AUTH':
-              setTimeout(() => {
-                router.push('/login');
-              }, 1500);
-              break;
-
-            case 'CONTEXT':
+            // 사용자가 toast 에러를 읽을 시간을 위한 setTimeout
+            onContext: () => {
               setTimeout(() => {
                 router.replace(`/study-rooms/${studyRoomId}/qna`);
               }, 1500);
-              break;
-
-            default:
-              break;
-          }
+            },
+            onAuth: () => {
+              setTimeout(() => {
+                // TODO: 로그아웃이 안되어 있다면..? -> 강제 로그아웃
+                router.replace(`/login`);
+              }, 1500);
+            },
+            onUnknown: () => {},
+          });
         },
       }
     );
