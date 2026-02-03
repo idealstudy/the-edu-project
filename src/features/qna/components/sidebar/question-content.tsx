@@ -5,8 +5,11 @@ import { useReducer, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-import { ConfirmDialog } from '@/features/study-rooms/components/common/dialog/confirm-dialog';
-import { dialogReducer, initialDialogState } from '@/shared/components/dialog';
+import {
+  StudyroomConfirmDialog,
+  dialogReducer,
+  initialDialogState,
+} from '@/shared/components/dialog';
 import {
   TextEditor,
   TextViewer,
@@ -225,7 +228,7 @@ const QuestionContent = ({
       {dialog.status === 'open' && dialog.scope === 'qna' && (
         <>
           {dialog.kind === 'delete' && (
-            <ConfirmDialog
+            <StudyroomConfirmDialog
               type="delete"
               open={true}
               dispatch={dispatch}
@@ -240,7 +243,7 @@ const QuestionContent = ({
           )}
 
           {dialog.kind === 'onConfirm' && (
-            <ConfirmDialog
+            <StudyroomConfirmDialog
               type="confirm"
               open={true}
               dispatch={dispatch}
