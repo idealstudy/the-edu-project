@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import {
   TextEditor,
@@ -9,6 +10,7 @@ import {
 } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
+import { classifyHomeworkError, handleApiError } from '@/shared/lib/errors';
 import { getRelativeTimeString } from '@/shared/lib/utils';
 import { JSONContent } from '@tiptap/react';
 
@@ -44,6 +46,8 @@ export const StudentSubmissionContent = ({
   const [editContent, setEditContent] = useState<JSONContent | null>(null);
   const [localContent, setLocalContent] = useState(content);
 
+  const router = useRouter();
+
   // content prop이 변경되면 localContent 동기화 (쿼리 refetch 후)
   useEffect(() => {
     setLocalContent(content);
@@ -78,6 +82,26 @@ export const StudentSubmissionContent = ({
           setIsEditing(false);
           setEditContent(null);
         },
+        onError: (error) => {
+          handleApiError(error, classifyHomeworkError, {
+            // TODO : setError 추가..?
+            onField: () => {},
+
+            onContext: () => {
+              setTimeout(() => {
+                router.replace(`/study-rooms/${studyRoomId}/homework`);
+              }, 1500);
+            },
+
+            onAuth: () => {
+              setTimeout(() => {
+                router.replace('/login');
+              }, 1500);
+            },
+
+            onUnknown: () => {},
+          });
+        },
       }
     );
   };
@@ -92,12 +116,27 @@ export const StudentSubmissionContent = ({
 
     if (!isConfirmed) return;
 
-    deleteHomework({
-      studyRoomId,
-      homeworkId,
-      homeworkStudentId,
-      content,
-    });
+    deleteHomework(
+      {
+        studyRoomId,
+        homeworkId,
+        homeworkStudentId,
+        content,
+      },
+      {
+        onError: (error) => {
+          handleApiError(error, classifyHomeworkError, {
+            onContext: () => {
+              setTimeout(() => {
+                router.replace(`/study-rooms/${studyRoomId}/homework`);
+              }, 1500);
+            },
+            onAuth: () => {},
+            onUnknown: () => {},
+          });
+        },
+      }
+    );
   };
 
   return (

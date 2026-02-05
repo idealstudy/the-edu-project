@@ -17,7 +17,7 @@ import {
 import { Button } from '@/shared/components/ui/button';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 import { useRole } from '@/shared/hooks/use-role';
-import { ShowErrorToast, getApiError } from '@/shared/lib';
+import { classifyHomeworkError, handleApiError } from '@/shared/lib/errors';
 import { getRelativeTimeString } from '@/shared/lib/utils';
 import { JSONContent } from '@tiptap/react';
 
@@ -41,8 +41,6 @@ export const FeedbackAnswer = ({
   const [editContent, setEditContent] = useState<JSONContent | null>(null);
   const [localContent, setLocalContent] = useState(content);
 
-  const [submitError, setSubmitError] = useState<string | null>(null);
-
   // content prop이 변경되면 localContent 동기화 (쿼리 refetch 후)
   useEffect(() => {
     setLocalContent(content);
@@ -64,10 +62,14 @@ export const FeedbackAnswer = ({
     setIsOpen(false);
   };
 
+  // 에디터 초기화
+  const resetEditor = () => {
+    setIsEditing(false);
+    setEditContent(null);
+  };
+
   const handleSave = () => {
     if (!editContent) return;
-
-    setSubmitError(null);
 
     const { contentString } = prepareContentForSave(editContent);
 
@@ -80,17 +82,15 @@ export const FeedbackAnswer = ({
       },
       {
         onSuccess: () => {
-          setSubmitError(null);
           setIsEditing(false);
           setEditContent(null);
         },
         onError: (error) => {
-          const apiError = getApiError(error);
-          if (!apiError) {
-            setSubmitError('피드백 수정 중 오류가 발생했습니다.');
-            return;
-          }
-          setSubmitError(apiError.message);
+          handleApiError(error, classifyHomeworkError, {
+            onContext: resetEditor,
+            onAuth: resetEditor,
+            onUnknown: () => {}, // 필요 시 에디터 포커스 로직 정도만 추가
+          });
         },
       }
     );
@@ -112,14 +112,11 @@ export const FeedbackAnswer = ({
         },
         {
           onError: (error) => {
-            const apiError = getApiError(error);
-
-            if (!apiError) {
-              ShowErrorToast('API_ERROR', '피드백 삭제에 실패했습니다.');
-              return;
-            }
-
-            ShowErrorToast('API_ERROR', apiError.message);
+            handleApiError(error, classifyHomeworkError, {
+              onContext: () => setIsOpen(false),
+              onAuth: () => setIsOpen(false),
+              onUnknown: () => setIsOpen(false),
+            });
           },
         }
       );
@@ -182,11 +179,6 @@ export const FeedbackAnswer = ({
             targetType="HOMEWORK"
           />
           <div className="space-y-2">
-            {submitError && (
-              <p className="text-system-warning text-right text-sm">
-                {submitError}
-              </p>
-            )}
             <div className="flex justify-end gap-2">
               <Button
                 variant="outlined"

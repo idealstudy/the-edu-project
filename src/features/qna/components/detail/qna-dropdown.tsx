@@ -9,6 +9,7 @@ import {
   initialDialogState,
 } from '@/shared/components/dialog';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
+import { classifyQnaError, handleApiError } from '@/shared/lib/errors';
 
 import {
   useDeleteQnAContextMutation,
@@ -46,6 +47,14 @@ export default function QuestionDropDown({
         onSuccess: () => {
           dispatch({ type: 'CLOSE' });
         },
+        onError: (error) => {
+          handleApiError(error, classifyQnaError, {
+            onContext: () => dispatch({ type: 'CLOSE' }),
+            onAuth: () => dispatch({ type: 'CLOSE' }),
+            onUnknown: () => dispatch({ type: 'CLOSE' }),
+            // onField일 때는 수정 폼을 유지하기 위해 아무것도 넘기지 않거나 별도 처리
+          });
+        },
       }
     );
   };
@@ -59,6 +68,14 @@ export default function QuestionDropDown({
       {
         onSuccess: () => {
           dispatch({ type: 'GO_TO_CONFIRM' });
+        },
+        onError: (error) => {
+          handleApiError(error, classifyQnaError, {
+            onContext: () => dispatch({ type: 'CLOSE' }),
+            onAuth: () => dispatch({ type: 'CLOSE' }),
+            onField: () => dispatch({ type: 'CLOSE' }),
+            onUnknown: () => dispatch({ type: 'CLOSE' }),
+          });
         },
       }
     );

@@ -1,7 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+
+import { useRouter } from 'next/navigation';
 
 import { useUpdateTeacherOnboarding } from '@/features/dashboard/hooks/use-update-onboarding';
 import { usePostTeacherHomeworkFeedback } from '@/features/homework/hooks/teacher/useTeacherHomeworkFeedbackMutations';
@@ -9,7 +11,7 @@ import { ColumnLayout } from '@/layout/column-layout';
 import { TextEditor, prepareContentForSave } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
-import { getApiError } from '@/shared/lib';
+import { classifyHomeworkError, handleApiError } from '@/shared/lib/errors';
 
 import { HomeworkFeedbackForm } from '../schemas/create';
 
@@ -31,13 +33,14 @@ export const FeedbackWriteArea = ({
   const {
     handleSubmit,
     setValue,
+    setError,
     control,
     reset,
     formState: { errors, isValid, isSubmitting },
   } = useFormContext<HomeworkFeedbackForm>();
   const { sendOnboarding } = useUpdateTeacherOnboarding('GIVE_FEEDBACK');
 
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (studyRoomId != null) {
@@ -64,9 +67,6 @@ export const FeedbackWriteArea = ({
   const isButtonDisabled = !isValid || isPending || isSubmitting;
 
   const onSubmit = (data: HomeworkFeedbackForm) => {
-    // 실패 후 submitError가 남을 수 있기 때문.
-    setSubmitError(null);
-
     const { contentString, mediaIds } = prepareContentForSave(data.content);
 
     mutate(
@@ -80,27 +80,32 @@ export const FeedbackWriteArea = ({
       {
         onSuccess: () => {
           reset({ content: {} });
-          setSubmitError(null);
           setIsClicked(false);
           // 온보딩 반영
           sendOnboarding();
         },
         onError: (error) => {
-          const apiError = getApiError(error);
-          if (!apiError) {
-            setSubmitError('피드백 저장 중 오류가 발생했습니다.');
-            return;
-          }
-          switch (apiError.code) {
-            case 'MEMBER_NOT_EXIST':
-            case 'STUDY_ROOM_NOT_EXIST':
-            case 'HOMEWORK_STUDENT_NOT_EXIST':
-              setSubmitError(apiError.message);
-              break;
-
-            default:
-              setSubmitError('피드백 작성에 실패했습니다.');
-          }
+          handleApiError(error, classifyHomeworkError, {
+            onField: (msg) => {
+              setError('content', {
+                type: 'server',
+                message: msg,
+              });
+            },
+            onContext: () => {
+              setTimeout(() => {
+                router.replace(
+                  `/study-rooms/${studyRoomId}/homework/${homeworkId}`
+                );
+              }, 1500);
+            },
+            onAuth: () => {
+              setTimeout(() => {
+                router.replace('/login');
+              }, 1500);
+            },
+            onUnknown: () => {},
+          });
         },
       }
     );
@@ -137,11 +142,6 @@ export const FeedbackWriteArea = ({
             )}
           </Form.Item>
           <div className="space-y-2">
-            {submitError && (
-              <p className="text-system-warning text-right text-sm">
-                {submitError}
-              </p>
-            )}
             <div className="flex justify-end gap-2">
               <Button
                 variant="outlined"
