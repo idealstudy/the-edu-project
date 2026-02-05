@@ -2,6 +2,7 @@
 
 import { useGetTeacherHomeworkDetail } from '@/features/homework/hooks/teacher/useTeacherHomeworkQuries';
 import { ColumnLayout } from '@/layout/column-layout';
+import { DialogAction, DialogState } from '@/shared/components/dialog';
 import { MiniSpinner } from '@/shared/components/loading';
 
 import { FeedbackAnswer } from '../write/components/homework-feedback-answer';
@@ -12,9 +13,16 @@ import { TeacherHomeworkSubmissionContent } from './teacher-submission-content';
 type Props = {
   studyRoomId: number;
   homeworkId: number;
+  dialog: DialogState;
+  dispatch: (action: DialogAction) => void;
 };
 
-export const TeacherHomeworkDetail = ({ studyRoomId, homeworkId }: Props) => {
+export const TeacherHomeworkDetail = ({
+  studyRoomId,
+  homeworkId,
+  dialog,
+  dispatch,
+}: Props) => {
   const { data, isPending } = useGetTeacherHomeworkDetail(
     studyRoomId,
     homeworkId
@@ -28,6 +36,8 @@ export const TeacherHomeworkDetail = ({ studyRoomId, homeworkId }: Props) => {
       <HomeworkDetailLeft
         studyRoomId={studyRoomId}
         homeworkId={homeworkId}
+        dialog={dialog}
+        dispatch={dispatch}
       />
 
       <ColumnLayout.Right className="desktop:max-w-[740px] flex w-full flex-col gap-3 rounded-[12px]">
@@ -79,6 +89,8 @@ export const TeacherHomeworkDetail = ({ studyRoomId, homeworkId }: Props) => {
                   studyRoomId={studyRoomId}
                   homeworkId={homeworkId}
                   homeworkStudentId={student.id}
+                  dialog={dialog}
+                  dispatch={dispatch}
                 />
               )}
             </div>

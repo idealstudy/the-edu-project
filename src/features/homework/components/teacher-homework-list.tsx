@@ -12,8 +12,6 @@ import { HomeworkDropdown } from './dropdown';
 export const TeacherHomeworkList = ({
   data,
   studyRoomId,
-  pageable,
-  keyword,
   onRefresh,
   isPending,
 }: {
@@ -80,8 +78,6 @@ export const TeacherHomeworkList = ({
           handleOpen={handleOpen}
           item={item}
           studyRoomId={studyRoomId}
-          pageable={pageable}
-          keyword={keyword}
           onRefresh={onRefresh}
         />
       }

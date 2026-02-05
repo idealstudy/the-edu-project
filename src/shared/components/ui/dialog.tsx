@@ -60,7 +60,7 @@ const DialogContent = ({
         {...props}
       >
         {children}
-        <DialogClose />
+        {/* <DialogClose /> */}
       </DialogPrimitives.Content>
     </DialogPrimitives.Portal>
   );
@@ -154,16 +154,16 @@ const DialogTrigger = ({ children, ...props }: DialogTriggerProps) => {
   );
 };
 
-const DialogClose = () => {
-  return (
-    <DialogPrimitives.Close
-      className="absolute top-9 right-9 flex size-[24px] cursor-pointer items-center justify-center"
-      aria-label="닫기"
-    >
-      <XIcon />
-    </DialogPrimitives.Close>
-  );
-};
+// const DialogClose = () => {
+//   return (
+//     <DialogPrimitives.Close
+//       className="absolute top-9 right-9 flex size-[24px] cursor-pointer items-center justify-center"
+//       aria-label="닫기"
+//     >
+//       <XIcon />
+//     </DialogPrimitives.Close>
+//   );
+// };
 
 Dialog.Trigger = DialogTrigger;
 Dialog.Close = DialogPrimitives.Close;
@@ -176,22 +176,22 @@ Dialog.Description = DialogDescription;
 
 export { Dialog };
 
-const XIcon = () => {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="17"
-      height="17"
-      viewBox="0 0 17 17"
-      fill="none"
-    >
-      <path
-        d="M1 16L8.5 8.5L16 16M16 1L8.49857 8.5L1 1"
-        stroke="black"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-};
+// const XIcon = () => {
+//   return (
+//     <svg
+//       xmlns="http://www.w3.org/2000/svg"
+//       width="17"
+//       height="17"
+//       viewBox="0 0 17 17"
+//       fill="none"
+//     >
+//       <path
+//         d="M1 16L8.5 8.5L16 16M16 1L8.49857 8.5L1 1"
+//         stroke="black"
+//         strokeWidth="1.5"
+//         strokeLinecap="round"
+//         strokeLinejoin="round"
+//       />
+//     </svg>
+//   );
+// };
