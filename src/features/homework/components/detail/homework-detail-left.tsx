@@ -6,35 +6,39 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { ColumnLayout } from '@/layout';
+import { DialogAction, DialogState } from '@/shared/components/dialog';
 import { DropdownMenu } from '@/shared/components/ui';
 import { useRole } from '@/shared/hooks';
 import { cn } from '@/shared/lib';
-import { classifyHomeworkError, handleApiError } from '@/shared/lib/errors';
 
 import { useStudentHomeworkDetail } from '../../hooks/student/useStudentHomeworkQuries';
-import { useTeacherRemoveHomework } from '../../hooks/teacher/useTeacherHomeworkMutations';
 import { useGetTeacherHomeworkDetail } from '../../hooks/teacher/useTeacherHomeworkQuries';
+import { HomeworkDialog } from '../dialog';
 
 type Props = {
   studyRoomId: number;
   homeworkId: number;
+  dialog: DialogState;
+  dispatch: (action: DialogAction) => void;
 };
 
-export const HomeworkDetailLeft = ({ studyRoomId, homeworkId }: Props) => {
+export const HomeworkDetailLeft = ({
+  studyRoomId,
+  homeworkId,
+  dialog,
+  dispatch,
+}: Props) => {
   const router = useRouter();
   const { role } = useRole();
   const [isOpen, setIsOpen] = useState(false);
 
   const teacherQuery = useGetTeacherHomeworkDetail(studyRoomId, homeworkId);
-
   const studentQuery = useStudentHomeworkDetail(studyRoomId, homeworkId);
 
   const data = role === 'ROLE_TEACHER' ? teacherQuery.data : studentQuery.data;
 
   const isPending =
     role === 'ROLE_TEACHER' ? teacherQuery.isPending : studentQuery.isPending;
-
-  const { mutate } = useTeacherRemoveHomework();
 
   // 마감기한 계산
   const deadLineTime = (time?: string) => {
@@ -72,39 +76,32 @@ export const HomeworkDetailLeft = ({ studyRoomId, homeworkId }: Props) => {
   };
 
   const handleDelete = () => {
-    if (confirm('정말 삭제하시겠습니까?')) {
-      mutate(
-        {
-          studyRoomId,
-          homeworkId,
-        },
-        {
-          onError: (error) => {
-            handleApiError(error, classifyHomeworkError, {
-              onContext: () => {
-                setTimeout(() => {
-                  router.replace(`/study-rooms/${studyRoomId}/homework`);
-                }, 1500);
-              },
-              onAuth: () => {
-                setIsOpen(false);
-              },
-              onUnknown: () => {
-                setIsOpen(false);
-              },
-            });
-          },
-        }
-      );
-      router.push(`/study-rooms/${studyRoomId}/homework`);
-    }
     setIsOpen(false);
+    dispatch({
+      type: 'OPEN',
+      scope: 'homework',
+      kind: 'delete',
+      payload: {
+        homeworkId: homeworkId,
+      },
+    });
+  };
+
+  const onPushList = () => {
+    router.push(`/study-rooms/${studyRoomId}/homework`);
   };
 
   if (isPending) return <div>로딩중...</div>;
 
   return (
     <>
+      <HomeworkDialog
+        state={dialog}
+        dispatch={dispatch}
+        studyRoomId={studyRoomId}
+        homeworkId={homeworkId}
+        onPushList={onPushList}
+      />
       <ColumnLayout.Left className="rounded-[12px] bg-white">
         <div className="border-line-line1 flex flex-col gap-5 rounded-xl border bg-white p-10">
           <div className="flex items-center justify-between">

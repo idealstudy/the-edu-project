@@ -1,7 +1,10 @@
 'use client';
 
+import { useReducer } from 'react';
+
 import { StudentHomeworkDetail } from '@/features/homework/components/detail/student-homework-detail';
 import { TeacherHomeworkDetail } from '@/features/homework/components/detail/teacher-homework-detail';
+import { dialogReducer, initialDialogState } from '@/shared/components/dialog';
 import { useRole } from '@/shared/hooks';
 
 type Props = {
@@ -14,12 +17,15 @@ export default function HomeworkDetailRoleSwitch({
   homeworkId,
 }: Props) {
   const { role } = useRole();
+  const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
 
   if (role === 'ROLE_TEACHER') {
     return (
       <TeacherHomeworkDetail
         studyRoomId={studyRoomId}
         homeworkId={homeworkId}
+        dialog={dialog}
+        dispatch={dispatch}
       />
     );
   }
@@ -28,6 +34,8 @@ export default function HomeworkDetailRoleSwitch({
     <StudentHomeworkDetail
       studyRoomId={studyRoomId}
       homeworkId={homeworkId}
+      dialog={dialog}
+      dispatch={dispatch}
     />
   );
 }
