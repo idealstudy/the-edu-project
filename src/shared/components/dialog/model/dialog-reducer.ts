@@ -1,4 +1,4 @@
-import { DialogAction, DialogState } from '@/shared/components/dialog';
+import { DialogAction, DialogState } from './types';
 
 export const initialDialogState: DialogState = { status: 'idle' };
 
