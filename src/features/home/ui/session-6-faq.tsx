@@ -4,16 +4,24 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 
+import { cn } from '@/shared/lib';
+
 // Session6: FAQ
 export function Session6() {
   return (
-    <section className="flex flex-col gap-6 px-4.5 py-8">
+    <section
+      className={cn(
+        'flex flex-col gap-6 px-4.5 py-8',
+        'tablet:px-20 tablet:py-12 tablet:gap-8'
+      )}
+    >
       <h1 className="font-headline1-heading">자주 묻는 질문</h1>
       <FAQAccordion />
     </section>
   );
 }
 
+// FAQAccordion 컴포넌트
 const FAQAccordion = () => {
   const [activeTab, setActiveTab] = useState<number | null>(null);
 
@@ -70,7 +78,10 @@ const FAQAccordion = () => {
           {/* 질문 */}
           <button
             onClick={() => setActiveTab(activeTab === index ? null : index)}
-            className="font-body2-heading flex w-full cursor-pointer px-6 py-5 text-start"
+            className={cn(
+              'font-body2-heading flex w-full cursor-pointer px-6 py-5 text-start',
+              'tablet:p-8 tablet:font-headline2-heading'
+            )}
           >
             <p className="flex-1">{item.question}</p>
             <Image
@@ -78,18 +89,27 @@ const FAQAccordion = () => {
               alt="화살표"
               width={16}
               height={16}
-              className={activeTab === index ? 'rotate-90' : ''}
+              className={cn(
+                'aspect-auto w-4',
+                'tablet:w-6',
+                activeTab === index && 'rotate-90'
+              )}
             />
           </button>
 
           <hr
-            className="border-line-line1 mx-6 border-t"
+            className={cn('border-line-line1 mx-6 border', 'tablet:mx-8')}
             aria-hidden
           />
 
           {/* 답변 */}
           {activeTab === index && (
-            <div className="space-y-2 px-6 py-5">
+            <div
+              className={cn(
+                'font-label-normal space-y-2 px-6 py-5',
+                'tablet:p-8 tablet:font-body2-normal'
+              )}
+            >
               {item.answer.map((line, i) => (
                 <p key={i}>{line}</p>
               ))}
