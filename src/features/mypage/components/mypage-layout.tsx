@@ -1,11 +1,15 @@
-import ParentSections from '@/features/profile/components/parent-sections';
-import StudentSections from '@/features/profile/components/student-sections';
-import TeacherSections from '@/features/profile/components/teacher-sections';
-import { ProfileAccessProps } from '@/features/profile/types';
+import { ProfileWithMeta } from '@/entities/profile';
+import EditableProfileCard from '@/features/mypage/components/editable-profile-card';
+import ParentSections from '@/features/mypage/components/parent-sections';
+import StudentSections from '@/features/mypage/components/student-sections';
+import TeacherSections from '@/features/mypage/components/teacher-sections';
 import { ColumnLayout } from '@/layout';
-import ProfileCard from '@/shared/components/profile/profile-card/profile-card';
 
-export default function ProfileLayout({ profile }: ProfileAccessProps) {
+export default function MypageLayout({
+  profile,
+}: {
+  profile: ProfileWithMeta;
+}) {
   let sections;
 
   switch (profile.role) {
@@ -26,7 +30,7 @@ export default function ProfileLayout({ profile }: ProfileAccessProps) {
     <>
       <ColumnLayout.Left>
         <div className="border-line-line1 flex flex-col gap-9 rounded-xl border bg-white p-8">
-          <ProfileCard profile={profile} />
+          <EditableProfileCard profile={profile} />
         </div>
       </ColumnLayout.Left>
       <ColumnLayout.Right className="desktop:max-w-[740px] desktop:px-8">

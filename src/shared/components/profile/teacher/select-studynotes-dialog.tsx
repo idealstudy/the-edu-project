@@ -4,9 +4,9 @@ import { useEffect, useReducer, useState } from 'react';
 
 import Image from 'next/image';
 
-import StudynotesItem from '@/features/profile/components/teacher/studynotes-item';
 import { StudyNote } from '@/features/study-notes/model';
 import { dialogReducer, initialDialogState } from '@/shared/components/dialog';
+import StudynotesItem from '@/shared/components/profile/teacher/studynotes-item';
 import { Button, Dialog, Input } from '@/shared/components/ui';
 
 const STUDY_NOTES: StudyNote[] = [

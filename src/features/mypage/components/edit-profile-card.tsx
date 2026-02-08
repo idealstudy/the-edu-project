@@ -37,6 +37,7 @@ export default function EditProfileCard({
   const { role } = useRole();
   const isTeacher = role === 'ROLE_TEACHER';
 
+  // TODO API 연결 수정 예정
   const teacherUpdateProfileMutation = useTeacherUpdateProfile();
 
   const updateProfileMutation = isTeacher

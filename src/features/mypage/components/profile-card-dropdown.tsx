@@ -4,8 +4,8 @@ import { Dispatch, SetStateAction, useReducer, useState } from 'react';
 
 import Image from 'next/image';
 
+import { ProfileWithMeta } from '@/entities/profile';
 import { useUpdateUserName } from '@/features/profile/hooks/use-profile';
-import { ProfileAccessProps } from '@/features/profile/types';
 import {
   InputDialog,
   dialogReducer,
@@ -13,15 +13,12 @@ import {
 } from '@/shared/components/dialog';
 import { Button, Dialog, DropdownMenu } from '@/shared/components/ui';
 
-type Props = ProfileAccessProps & {
+type Props = {
+  profile: ProfileWithMeta;
   setIsEditMode: Dispatch<SetStateAction<boolean>>;
 };
 
-export function ProfileCardDropdown({
-  isOwner,
-  profile,
-  setIsEditMode,
-}: Props) {
+export function ProfileCardDropdown({ profile, setIsEditMode }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [renameDialog, renameDispatch] = useReducer(
     dialogReducer,
@@ -65,31 +62,27 @@ export function ProfileCardDropdown({
           >
             <p>공유하기</p>
           </DropdownMenu.Item>
-          {isOwner && (
-            <>
-              <DropdownMenu.Item
-                onClick={() => setIsEditMode(true)}
-                className="justify-center"
-              >
-                수정하기
-              </DropdownMenu.Item>
-              <DropdownMenu.Item
-                onClick={() => {
-                  renameDispatch({
-                    type: 'OPEN',
-                    scope: 'profile',
-                    kind: 'rename',
-                    payload: {
-                      initialTitle: profile.name,
-                    },
-                  });
-                }}
-                className="justify-center"
-              >
-                <p className="text-nowrap">이름 변경하기</p>
-              </DropdownMenu.Item>
-            </>
-          )}
+          <DropdownMenu.Item
+            onClick={() => setIsEditMode(true)}
+            className="justify-center"
+          >
+            수정하기
+          </DropdownMenu.Item>
+          <DropdownMenu.Item
+            onClick={() => {
+              renameDispatch({
+                type: 'OPEN',
+                scope: 'profile',
+                kind: 'rename',
+                payload: {
+                  initialTitle: profile.name,
+                },
+              });
+            }}
+            className="justify-center"
+          >
+            <p className="text-nowrap">이름 변경하기</p>
+          </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu>
 

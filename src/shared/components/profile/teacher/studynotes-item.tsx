@@ -1,6 +1,6 @@
-import { SelectedListItem } from '@/features/profile/components/teacher/selected-list-item';
 import StudyNoteVisibilityIcon from '@/features/study-notes/components/studynote-visibility-icon';
 import { StudyNote } from '@/features/study-notes/model';
+import { SelectedListItem } from '@/shared/components/profile/teacher/selected-list-item';
 import { ListItem } from '@/shared/components/ui/list-item';
 import { getRelativeTimeString } from '@/shared/lib';
 

@@ -1,22 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import Image from 'next/image';
 
-import EditProfileCard from '@/features/profile/components/profile-card/edit-profile-card';
-import ParentProfileExtra from '@/features/profile/components/profile-card/parent-profile-extra';
-import { ProfileCardDropdown } from '@/features/profile/components/profile-card/profile-card-dropdown';
-import StudentProfileExtra from '@/features/profile/components/profile-card/student-profile-extra';
-import TeacherProfileExtra from '@/features/profile/components/profile-card/teacher-profile-extra';
+import { ProfileWithMeta } from '@/entities/profile';
+import EditProfileCard from '@/features/mypage/components/edit-profile-card';
 import {
   isParentProfile,
   isStudentProfile,
   isTeacherProfile,
 } from '@/features/profile/lib/type-guards';
-import { ProfileAccessProps } from '@/features/profile/types';
+import ParentProfileExtra from '@/shared/components/profile/profile-card/parent-profile-extra';
+import StudentProfileExtra from '@/shared/components/profile/profile-card/student-profile-extra';
+import TeacherProfileExtra from '@/shared/components/profile/profile-card/teacher-profile-extra';
 
-export default function ProfileCard({ profile, isOwner }: ProfileAccessProps) {
+export default function ProfileCard({
+  profile,
+  action,
+}: {
+  profile: ProfileWithMeta;
+  action?: React.ReactNode;
+}) {
   const [isEditMode, setIsEditMode] = useState(false);
   let profileExtra;
 
@@ -53,11 +58,7 @@ export default function ProfileCard({ profile, isOwner }: ProfileAccessProps) {
             전체 공개
           </span>
 
-          <ProfileCardDropdown
-            isOwner={isOwner}
-            profile={profile}
-            setIsEditMode={setIsEditMode}
-          />
+          {action && action}
         </div>
         <p>{profile.email}</p>
       </div>
