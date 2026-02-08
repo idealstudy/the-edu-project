@@ -28,11 +28,12 @@ export const SessionProvider = ({
 
   // 쿼리상태 변환
   const status: SessionStatus = useMemo(() => {
+    if (!initialHasSession && !member) return 'unauthenticated';
     if (isPending) return 'loading';
     if (isError) return 'error';
     if (member) return 'authenticated';
     return 'unauthenticated';
-  }, [isPending, isError, member]);
+  }, [initialHasSession, isPending, isError, member]);
 
   // Context Value
   const value: SessionContextValue = useMemo(

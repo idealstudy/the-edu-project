@@ -2,7 +2,7 @@
 
 import { type ReactNode, useEffect } from 'react';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import { useSession } from '@/providers';
 import { FullScreenLoader } from '@/shared/components/loading';
@@ -25,26 +25,15 @@ export const SessionGuard = ({
 }: SessionGuardProps) => {
   const router = useRouter();
   const { status } = useSession();
-  const pathname = usePathname();
 
   const resolvedFallback =
     fallback ?? (status === 'loading' ? <SessionGuardFallback /> : null);
-
-  useEffect(() => {
-    if (status === 'authenticated') {
-      router.replace('/dashboard');
-    }
-  }, [status, router]);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.replace(redirectTo);
     }
   }, [status, router, redirectTo]);
-
-  if (pathname.startsWith('/login') || pathname.startsWith('/register')) {
-    return <>{children}</>;
-  }
 
   if (status === 'authenticated') return <>{children}</>;
   if (status === 'loading') return <>{resolvedFallback}</>;
