@@ -2,10 +2,14 @@ import { useReducer } from 'react';
 
 import Image from 'next/image';
 
-import { ConfirmDialog } from '@/features/study-rooms/components/common/dialog/confirm-dialog';
-import { InputDialog } from '@/features/study-rooms/components/common/dialog/input-dialog';
-import { dialogReducer, initialDialogState } from '@/shared/components/dialog';
+import {
+  InputDialog,
+  StudyroomConfirmDialog,
+  dialogReducer,
+  initialDialogState,
+} from '@/shared/components/dialog';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
+import { classifyQnaError, handleApiError } from '@/shared/lib/errors';
 
 import {
   useDeleteQnAContextMutation,
@@ -43,6 +47,14 @@ export default function QuestionDropDown({
         onSuccess: () => {
           dispatch({ type: 'CLOSE' });
         },
+        onError: (error) => {
+          handleApiError(error, classifyQnaError, {
+            onContext: () => dispatch({ type: 'CLOSE' }),
+            onAuth: () => dispatch({ type: 'CLOSE' }),
+            onUnknown: () => dispatch({ type: 'CLOSE' }),
+            // onField일 때는 수정 폼을 유지하기 위해 아무것도 넘기지 않거나 별도 처리
+          });
+        },
       }
     );
   };
@@ -56,6 +68,14 @@ export default function QuestionDropDown({
       {
         onSuccess: () => {
           dispatch({ type: 'GO_TO_CONFIRM' });
+        },
+        onError: (error) => {
+          handleApiError(error, classifyQnaError, {
+            onContext: () => dispatch({ type: 'CLOSE' }),
+            onAuth: () => dispatch({ type: 'CLOSE' }),
+            onField: () => dispatch({ type: 'CLOSE' }),
+            onUnknown: () => dispatch({ type: 'CLOSE' }),
+          });
         },
       }
     );
@@ -78,7 +98,7 @@ export default function QuestionDropDown({
           )}
 
           {dialog.kind === 'delete' && (
-            <ConfirmDialog
+            <StudyroomConfirmDialog
               type="delete"
               open={true}
               dispatch={dispatch}
@@ -89,7 +109,7 @@ export default function QuestionDropDown({
           )}
 
           {dialog.kind === 'onConfirm' && (
-            <ConfirmDialog
+            <StudyroomConfirmDialog
               type="confirm"
               open={true}
               dispatch={dispatch}

@@ -5,6 +5,8 @@ export type DialogScope =
   | 'invite'
   | 'qna'
   | 'homework'
+  | 'homework-feedback'
+  | 'homework-student'
   | 'notification'
   | 'profile';
 
@@ -30,6 +32,9 @@ export type DialogState =
         groupId?: number;
         studyRoomId?: number;
         homeworkId?: number;
+        homeworkStudentId?: number;
+        content?: string;
+        isLast?: boolean;
       };
     };
 
@@ -45,6 +50,9 @@ export type DialogAction =
         groupId?: number;
         studyRoomId?: number;
         homeworkId?: number;
+        homeworkStudentId?: number;
+        content?: string;
+        isLast?: boolean;
       };
     }
   | { type: 'GO_TO_CONFIRM' }

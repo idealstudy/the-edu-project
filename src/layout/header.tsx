@@ -117,6 +117,12 @@ export const Header = () => {
             />
             소중한 의견 보내기
           </Link>
+          <Link
+            href="/list/teachers"
+            className="hover:text-orange-scale-orange-50 max-desktop:hidden ml-4 text-sm font-medium text-white transition-colors"
+          >
+            디에듀 101 목록
+          </Link>
         </div>
         {session && (
           <div className="desktop:gap-4 flex items-center gap-1">
@@ -187,6 +193,14 @@ export const Header = () => {
                   >
                     <HomeIcon />
                     <span>홈</span>
+                  </PopoverLink>
+
+                  {/* 강사 프로필 링크 */}
+                  <PopoverLink
+                    href="/teachers"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <span>강사 프로필</span>
                   </PopoverLink>
 
                   {/* 스터디룸 섹션 */}

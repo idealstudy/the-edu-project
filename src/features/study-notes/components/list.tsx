@@ -17,16 +17,20 @@ import { StudyNotesDropdown } from './dropdown';
 export const StudyNotesList = ({
   data,
   isPending,
+  isError,
   studyRoomId,
   pageable,
   keyword,
+  canManage,
   onRefresh,
 }: {
   data: StudyNote[];
   isPending: boolean;
+  isError: boolean;
   studyRoomId: number;
   pageable: StudyNoteGroupPageable;
   keyword: string;
+  canManage: boolean;
   onRefresh: () => void;
 }) => {
   const [open, setOpen] = useState(0);
@@ -99,10 +103,19 @@ export const StudyNotesList = ({
       </div>
     );
   }
+
   if (data.length === 0) {
     return (
       <p className="flex flex-col items-center">
         아직 등록된 수업노트가 없어요.
+      </p>
+    );
+  }
+
+  if (isError) {
+    return (
+      <p className="flex flex-col items-center">
+        수업노트를 불러오지 못했어요.
       </p>
     );
   }
@@ -126,15 +139,17 @@ export const StudyNotesList = ({
       }
       rightTitle={formatMMDDWeekday(item.taughtAt)}
       dropdown={
-        <StudyNotesDropdown
-          open={open}
-          handleOpen={handleOpen}
-          item={item}
-          studyRoomId={studyRoomId}
-          pageable={pageable}
-          keyword={keyword}
-          onRefresh={onRefresh}
-        />
+        canManage ? (
+          <StudyNotesDropdown
+            open={open}
+            handleOpen={handleOpen}
+            item={item}
+            studyRoomId={studyRoomId}
+            pageable={pageable}
+            keyword={keyword}
+            onRefresh={onRefresh}
+          />
+        ) : null
       }
       href={`/study-rooms/${studyRoomId}/note/${item.id}`}
       id={item.id}

@@ -1,1 +1,1 @@
-export { domain } from './notification.domain.schema';
+export { domain } from './notification.domain';

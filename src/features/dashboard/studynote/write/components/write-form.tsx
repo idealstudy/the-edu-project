@@ -5,6 +5,7 @@ import { useFormContext } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
 
+import { useUpdateTeacherOnboarding } from '@/features/dashboard/hooks/use-update-onboarding';
 import { prepareContentForSave } from '@/shared/components/editor';
 import { Form } from '@/shared/components/ui/form';
 import { PRIVATE } from '@/shared/constants';
@@ -20,6 +21,7 @@ import { useWriteStudyNoteMutation } from '../services/query';
 export const StudyNoteWriteForm = ({ children }: PropsWithChildren) => {
   const router = useRouter();
   const session = useMemberStore((s) => s.member);
+  const { sendOnboarding } = useUpdateTeacherOnboarding('CREATE_CLASS_NOTE');
 
   const { mutate } = useWriteStudyNoteMutation();
   const { handleSubmit } = useFormContext<StudyNoteForm>();
@@ -50,6 +52,8 @@ export const StudyNoteWriteForm = ({ children }: PropsWithChildren) => {
         );
         const roomId = data.studyRoomId;
         router.replace(PRIVATE.NOTE.LIST(roomId));
+        // 온보딩 반영
+        sendOnboarding();
       },
     });
   };

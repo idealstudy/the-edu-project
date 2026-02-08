@@ -3,11 +3,14 @@
 import { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
+import { useRouter } from 'next/navigation';
+
 import { usePostStudentHomework } from '@/features/homework/hooks/student/useStudentHomeworkMutations';
 import { ColumnLayout } from '@/layout/column-layout';
 import { TextEditor, prepareContentForSave } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
+import { classifyHomeworkError, handleApiError } from '@/shared/lib/errors';
 
 import { StudentHomeworkForm } from '../schemas/create';
 
@@ -22,10 +25,13 @@ export const WriteFormArea = ({ studyRoomId, homeworkId }: Props) => {
   const {
     handleSubmit,
     setValue,
+    setError,
     control,
     reset,
     formState: { errors, isValid, isSubmitting },
   } = useFormContext<StudentHomeworkForm>();
+
+  const router = useRouter();
 
   useEffect(() => {
     if (studyRoomId != null) {
@@ -58,6 +64,27 @@ export const WriteFormArea = ({ studyRoomId, homeworkId }: Props) => {
       {
         onSuccess: () => {
           reset({ content: {} });
+        },
+        onError: (error) => {
+          handleApiError(error, classifyHomeworkError, {
+            onField: (msg) => {
+              setError('root', { message: msg });
+            },
+
+            onAuth: () => {
+              setTimeout(() => {
+                router.replace('/login');
+              }, 1500);
+            },
+
+            onContext: () => {
+              setTimeout(() => {
+                router.replace(`/study-rooms/${studyRoomId}/homework`);
+              }, 1500);
+            },
+
+            onUnknown: () => {},
+          });
         },
       }
     );

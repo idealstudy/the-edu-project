@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { dialogReducer, initialDialogState } from '@/shared/components/dialog';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 
-import { Homework, HomeworkPageable } from '../model/homework.types';
+import { Homework } from '../model/homework.types';
 import { HomeworkDialog } from './dialog';
 
 export const HomeworkDropdown = ({
@@ -14,16 +14,12 @@ export const HomeworkDropdown = ({
   open,
   handleOpen,
   item,
-  pageable,
-  keyword,
   onRefresh,
 }: {
   studyRoomId: number;
   open: number;
   handleOpen: (id: number) => void;
   item: Homework;
-  pageable: HomeworkPageable;
-  keyword: string;
   onRefresh: () => void;
 }) => {
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
@@ -40,18 +36,14 @@ export const HomeworkDropdown = ({
 
   return (
     <>
-      {dialog.status === 'open' && (
-        <HomeworkDialog
-          state={dialog}
-          dispatch={dispatch}
-          onRefresh={onRefresh}
-          studyRoomId={studyRoomId}
-          homeworkId={item.id}
-          pageable={pageable}
-          keyword={keyword}
-          item={item}
-        />
-      )}
+      <HomeworkDialog
+        state={dialog}
+        dispatch={dispatch}
+        onRefresh={onRefresh}
+        studyRoomId={studyRoomId}
+        homeworkId={item.id}
+      />
+
       <DropdownMenu
         open={open === item.id}
         onOpenChange={() => handleOpen(item.id)}
@@ -61,8 +53,8 @@ export const HomeworkDropdown = ({
             src="/studynotes/gray-kebab.svg"
             width={24}
             height={24}
-            alt="study-notes"
-            className="hover:bg-gray-scale-gray-5 cursor-pointer rounded" // 3단 점을 누르는건지 수업노트를 누르는건지 구분 필요
+            alt="homework"
+            className="hover:bg-gray-scale-gray-5 cursor-pointer rounded"
             onClick={() => handleOpen(item.id)}
           />
         </DropdownMenu.Trigger>
@@ -79,7 +71,7 @@ export const HomeworkDropdown = ({
           <DropdownMenu.Item
             variant="danger"
             className="justify-center"
-            onClick={() => handleDelete()}
+            onClick={handleDelete}
           >
             삭제하기
           </DropdownMenu.Item>

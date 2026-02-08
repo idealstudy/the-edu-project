@@ -3,8 +3,10 @@
 import { Key } from 'react';
 
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { ColumnLayout } from '@/layout/column-layout';
+import { MiniSpinner } from '@/shared/components/loading';
 import { useRole } from '@/shared/hooks/use-role';
 import { cn } from '@/shared/lib/utils';
 
@@ -31,7 +33,21 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
     contextId,
   });
 
-  if (isPending) return;
+  const qnaVisibility = (visibility: string) => {
+    if (visibility === 'STUDENT_ONLY') return '보호자 비공개';
+    else if (visibility === 'STUDENT_AND_PARENT') return '보호자 공개';
+    else return '-';
+  };
+
+  // 학생의 질문의 유무 체크
+  const hasStudentQnA =
+    qnaDetail?.messages.some((m) => m.authorType === 'ROLE_STUDENT') ?? false;
+
+  // 질문/답변 작성 여부
+  const canWrite =
+    role === 'ROLE_STUDENT' || (role === 'ROLE_TEACHER' && hasStudentQnA);
+
+  if (isPending) return <MiniSpinner />;
 
   return (
     <>
@@ -45,11 +61,39 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
                 : 'text-gray-scale-gray-60'
             )}
           >
-            {/* TODO: 임시 타입경고 제거 */}
             {qnaDetail &&
               statusMessage[qnaDetail?.status as keyof typeof statusMessage]}
           </span>
           <h3 className="font-headline1-heading">{qnaDetail?.title}</h3>
+          <hr className="text-gray-scale-gray-10" />
+          <div className="font-label-normal flex cursor-default flex-col gap-2">
+            <div className="bg-gray-scale-gray-1 text-gray-scale-gray-70 flex w-fit items-center gap-1 rounded-sm px-2 py-1">
+              <Image
+                src="/homework/link.svg"
+                width={14}
+                height={14}
+                alt="study-notes"
+                className="h-[14px] w-[14px]"
+              />
+              <span>연결 수업노트</span>
+            </div>
+            <div>
+              {qnaDetail?.relatedTeachingNote ? (
+                <Link
+                  href={`/study-rooms/${studyRoomId}/note/${qnaDetail.relatedTeachingNote.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-orange-scale-orange-50"
+                >
+                  {qnaDetail.relatedTeachingNote.title}
+                </Link>
+              ) : (
+                <span className="text-gray-scale-gray-40">
+                  연결된 수업노트가 없습니다.
+                </span>
+              )}
+            </div>
+          </div>
           <hr className="text-gray-scale-gray-10" />
           <div className="font-label-normal flex cursor-default flex-col gap-2">
             <div className="bg-gray-scale-gray-1 text-gray-scale-gray-70 flex w-fit items-center gap-1 rounded-sm px-2 py-1">
@@ -62,7 +106,7 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
               />
               <span>공개범위</span>
             </div>
-            <span>보호자 공개</span>
+            <span>{qnaVisibility(qnaDetail?.visibility ?? '-')}</span>
           </div>
         </div>
       </ColumnLayout.Left>
@@ -85,6 +129,7 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
                   regDate={msg.regDate}
                   studyRoomId={studyRoomId}
                   contextId={contextId}
+                  qnaDetail={qnaDetail}
                 />
               );
             else if (msg.authorType === 'ROLE_STUDENT')
@@ -97,16 +142,19 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
                   regDate={msg.regDate}
                   studyRoomId={studyRoomId}
                   contextId={contextId}
+                  qnaDetail={qnaDetail}
                 />
               );
           }
         )}
-        <QnAMessageFormProvider>
-          <WriteArea
-            studyRoomId={studyRoomId}
-            contextId={contextId}
-          />
-        </QnAMessageFormProvider>
+        {canWrite && (
+          <QnAMessageFormProvider key={contextId}>
+            <WriteArea
+              studyRoomId={studyRoomId}
+              contextId={contextId}
+            />
+          </QnAMessageFormProvider>
+        )}
       </ColumnLayout.Right>
     </>
   );

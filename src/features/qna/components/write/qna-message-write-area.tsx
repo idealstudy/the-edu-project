@@ -1,13 +1,15 @@
 'use client';
 
-import { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
+import { useRouter } from 'next/navigation';
+
 import { ColumnLayout } from '@/layout/column-layout';
-import { TextEditor, prepareContentForSave } from '@/shared/components/editor';
+import { TextEditor } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { useRole } from '@/shared/hooks/use-role';
+import { classifyQnaError, handleApiError } from '@/shared/lib/errors';
 import { trackReplyCreateClick } from '@/shared/lib/gtm/trackers';
 import { useMemberStore } from '@/store';
 import { JSONContent } from '@tiptap/react';
@@ -24,38 +26,20 @@ const WriteArea = ({ studyRoomId, contextId }: Props) => {
   const { role } = useRole();
   const session = useMemberStore((s) => s.member);
 
+  const router = useRouter();
+
   const { mutate, isPending } = useWriteQnAMessageMutation(role);
   const {
     handleSubmit,
-    setValue,
     control,
     reset,
+    setError,
     formState: { errors, isValid, isSubmitting },
   } = useFormContext<QnAMessageForm>();
 
-  useEffect(() => {
-    if (studyRoomId != null) {
-      setValue('studyRoomId', studyRoomId, {
-        shouldDirty: false,
-        shouldValidate: true,
-      });
-    }
-
-    if (contextId != null) {
-      setValue('contextId', contextId, {
-        shouldDirty: false,
-        shouldValidate: true,
-      });
-    }
-  }, [studyRoomId, contextId, setValue]);
-
   const isButtonDisabled = !isValid || isPending || isSubmitting;
 
-  const onSubmit = (data: {
-    studyRoomId: number;
-    contextId: number;
-    content: JSONContent;
-  }) => {
+  const onSubmit = (data: { content: JSONContent }) => {
     // 답글 작성 클릭 이벤트
     trackReplyCreateClick(
       {
@@ -66,14 +50,11 @@ const WriteArea = ({ studyRoomId, contextId }: Props) => {
       session?.role ?? null
     );
 
-    const { contentString, mediaIds } = prepareContentForSave(data.content);
-
     mutate(
       {
         studyRoomId,
         contextId,
-        content: contentString,
-        mediaIds,
+        content: JSON.stringify(data.content),
       },
       {
         onSuccess: () => {
@@ -81,6 +62,30 @@ const WriteArea = ({ studyRoomId, contextId }: Props) => {
           reset({ content: {} });
           // 쿼리 무효화는 mutation hook에서 처리되므로 라우팅 불필요
           // 같은 페이지에 있으므로 자동으로 업데이트됨
+        },
+        onError: (error) => {
+          handleApiError(error, classifyQnaError, {
+            onField: (msg) => {
+              setError('content', {
+                type: 'server',
+                message: msg,
+              });
+            },
+
+            // 사용자가 toast 에러를 읽을 시간을 위한 setTimeout
+            onContext: () => {
+              setTimeout(() => {
+                router.replace(`/study-rooms/${studyRoomId}/qna`);
+              }, 1500);
+            },
+            onAuth: () => {
+              setTimeout(() => {
+                // TODO: 로그아웃이 안되어 있다면..? -> 강제 로그아웃
+                router.replace(`/login`);
+              }, 1500);
+            },
+            onUnknown: () => {},
+          });
         },
       }
     );
@@ -101,8 +106,11 @@ const WriteArea = ({ studyRoomId, contextId }: Props) => {
                     <TextEditor
                       value={field.value}
                       onChange={field.onChange}
-                      placeholder="질문에 대한 답을 적어주세요..."
-                      targetType="QNA"
+                      placeholder={
+                        role === 'ROLE_TEACHER'
+                          ? '질문에 대한 답변을 적어주세요...'
+                          : '추가로 궁금한 점을 적어주세요...'
+                      }
                     />
                   );
                 }}
@@ -122,7 +130,7 @@ const WriteArea = ({ studyRoomId, contextId }: Props) => {
               disabled={isButtonDisabled}
               className="w-[200px] rounded-sm"
             >
-              작성하기
+              {isSubmitting ? '등록 중...' : '작성하기'}
             </Button>
           </div>
         </div>

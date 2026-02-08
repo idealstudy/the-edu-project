@@ -3,11 +3,15 @@
 import { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
+import { useRouter } from 'next/navigation';
+
+import { useUpdateTeacherOnboarding } from '@/features/dashboard/hooks/use-update-onboarding';
 import { usePostTeacherHomeworkFeedback } from '@/features/homework/hooks/teacher/useTeacherHomeworkFeedbackMutations';
 import { ColumnLayout } from '@/layout/column-layout';
 import { TextEditor, prepareContentForSave } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
+import { classifyHomeworkError, handleApiError } from '@/shared/lib/errors';
 
 import { HomeworkFeedbackForm } from '../schemas/create';
 
@@ -29,10 +33,14 @@ export const FeedbackWriteArea = ({
   const {
     handleSubmit,
     setValue,
+    setError,
     control,
     reset,
     formState: { errors, isValid, isSubmitting },
   } = useFormContext<HomeworkFeedbackForm>();
+  const { sendOnboarding } = useUpdateTeacherOnboarding('GIVE_FEEDBACK');
+
+  const router = useRouter();
 
   useEffect(() => {
     if (studyRoomId != null) {
@@ -73,6 +81,31 @@ export const FeedbackWriteArea = ({
         onSuccess: () => {
           reset({ content: {} });
           setIsClicked(false);
+          // 온보딩 반영
+          sendOnboarding();
+        },
+        onError: (error) => {
+          handleApiError(error, classifyHomeworkError, {
+            onField: (msg) => {
+              setError('content', {
+                type: 'server',
+                message: msg,
+              });
+            },
+            onContext: () => {
+              setTimeout(() => {
+                router.replace(
+                  `/study-rooms/${studyRoomId}/homework/${homeworkId}`
+                );
+              }, 1500);
+            },
+            onAuth: () => {
+              setTimeout(() => {
+                router.replace('/login');
+              }, 1500);
+            },
+            onUnknown: () => {},
+          });
         },
       }
     );
@@ -108,14 +141,23 @@ export const FeedbackWriteArea = ({
               </Form.ErrorMessage>
             )}
           </Form.Item>
-          <div className="flex justify-end">
-            <Button
-              type="submit"
-              disabled={isButtonDisabled}
-              className="w-[200px] rounded-sm"
-            >
-              작성하기
-            </Button>
+          <div className="space-y-2">
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outlined"
+                onClick={() => setIsClicked(false)}
+                disabled={isSubmitting}
+              >
+                취소
+              </Button>
+              <Button
+                type="submit"
+                disabled={isButtonDisabled}
+                className="w-[200px] rounded-sm"
+              >
+                작성하기
+              </Button>
+            </div>
           </div>
         </div>
       </ColumnLayout.Right>
