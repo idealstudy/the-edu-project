@@ -16,7 +16,7 @@ export const StudyRoomCard = ({ studyRoom }: StudyRoomCardProps) => {
       href={`/study-rooms/${studyRoom.id}`}
       className={cn(
         'border-gray-scale-gray-10 overflow-hidden rounded-2xl border-[1.5px] bg-white transition-all duration-300',
-        'hover:border-key-color-primary hover:ring-key-color-primary hover:shadow-xl hover:ring-2'
+        'hover:scale-105 hover:shadow-xl'
       )}
     >
       {/* 상단 영역 */}
