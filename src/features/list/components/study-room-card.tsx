@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { cn } from '@/shared/lib';
@@ -16,74 +15,27 @@ export const StudyRoomCard = ({ studyRoom }: StudyRoomCardProps) => {
     <Link
       href={`/study-rooms/${studyRoom.id}`}
       className={cn(
-        'group border-line-line1 relative overflow-hidden rounded-xl border',
-        'bg-system-background-alt transition-all',
-        'hover:border-key-color-primary hover:shadow-md'
+        'border-gray-scale-gray-10 overflow-hidden rounded-2xl border-[1.5px] bg-white transition-all duration-300',
+        'hover:border-key-color-primary hover:ring-key-color-primary hover:shadow-xl hover:ring-2'
       )}
     >
-      {/* 스터디룸 이미지 */}
-      <div className="from-orange-scale-orange-10 to-orange-scale-orange-30 aspect-video w-full overflow-hidden bg-gradient-to-br">
-        {studyRoom.studyRoomImageUrl ? (
-          <Image
-            src={studyRoom.studyRoomImageUrl}
-            alt={studyRoom.name}
-            width={400}
-            height={225}
-            className="h-full w-full object-cover transition-transform group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-6xl">
-            📚
-          </div>
-        )}
+      {/* 상단 영역 */}
+      <div className="bg-orange-scale-orange-1 flex flex-col gap-[10px] p-6">
+        <h3 className="font-body1-heading text-gray-scale-gray-95 line-clamp-1">
+          {studyRoom.name}
+        </h3>
+        <p className="font-body2-normal text-gray-scale-gray-70 line-clamp-2 min-h-[50px]">
+          {studyRoom.description}
+        </p>
       </div>
 
-      <div className="flex flex-col gap-3 p-5">
-        {/* 강사 정보 */}
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 overflow-hidden rounded-full bg-gray-200">
-            {studyRoom.teacherProfileImageUrl ? (
-              <Image
-                src={studyRoom.teacherProfileImageUrl}
-                alt={studyRoom.teacherName}
-                width={40}
-                height={40}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-sm text-gray-500">
-                {studyRoom.teacherName.charAt(0)}
-              </div>
-            )}
-          </div>
-          <div>
-            <div className="font-label-heading text-text-main">
-              {studyRoom.teacherName} 선생님
-            </div>
-            {studyRoom.subjectType && (
-              <div className="font-caption-normal text-text-sub2">
-                {studyRoom.subjectType}
-              </div>
-            )}
-          </div>
+      {/* 하단 영역 */}
+      <div className="border-gray-scale-gray-10 border-t-[1. flex flex-col gap-[8px] border-t-0 bg-white p-6">
+        <div className="font-label-heading bg-orange-scale-orange-5 text-orange-scale-orange-50 flex h-[24px] w-fit items-center justify-center rounded-[4px] px-[8px] text-[12px]">
+          영어
         </div>
-
-        {/* 스터디룸 정보 */}
-        <div>
-          <h4 className="font-body1-heading text-text-main mb-2">
-            {studyRoom.name}
-          </h4>
-          <p className="font-label-normal text-text-sub1 mb-3 line-clamp-2">
-            {studyRoom.description}
-          </p>
-        </div>
-
-        {/* 통계 */}
-        <div className="font-caption-normal text-text-sub2 flex items-center gap-4">
-          {studyRoom.studentCount !== undefined && (
-            <span>👥 {studyRoom.studentCount}명</span>
-          )}
-          {studyRoom.grade && <span>📚 {studyRoom.grade}</span>}
+        <div className="font-body1-heading text-gray-scale-gray-95 line-clamp-1">
+          {studyRoom.teacherName} 선생님
         </div>
       </div>
     </Link>
