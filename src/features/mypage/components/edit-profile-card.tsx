@@ -5,12 +5,8 @@ import { useForm } from 'react-hook-form';
 
 import Image from 'next/image';
 
-import { ProfileWithMeta } from '@/entities/profile';
+import { FrontendBasicInfo } from '@/entities/teacher/types';
 import { useTeacherUpdateProfile } from '@/features/profile/hooks/use-profile';
-import {
-  isStudentProfile,
-  isTeacherProfile,
-} from '@/features/profile/lib/type-guards';
 import {
   ProfileFormSchema,
   ProfileUpdateForm,
@@ -22,20 +18,18 @@ import {
   RequiredMark,
   Select,
 } from '@/shared/components/ui';
-import { useRole } from '@/shared/hooks';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 interface EditProfileCardProps {
-  profile: ProfileWithMeta;
+  basicInfo: FrontendBasicInfo;
   setIsEditMode: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function EditProfileCard({
-  profile,
+  basicInfo,
   setIsEditMode,
 }: EditProfileCardProps) {
-  const { role } = useRole();
-  const isTeacher = role === 'ROLE_TEACHER';
+  const isTeacher = basicInfo.role === 'ROLE_TEACHER';
 
   // TODO API 연결 수정 예정
   const teacherUpdateProfileMutation = useTeacherUpdateProfile();
@@ -54,10 +48,9 @@ export default function EditProfileCard({
   } = useForm<ProfileUpdateForm>({
     resolver: zodResolver(ProfileFormSchema),
     defaultValues: {
-      desc: isTeacherProfile(profile)
-        ? profile.description
-        : isStudentProfile(profile)
-          ? profile.learningGoal
+      desc:
+        basicInfo.role === 'ROLE_TEACHER'
+          ? (basicInfo.simpleIntroduction ?? '')
           : '',
     },
     mode: 'onChange',
@@ -75,15 +68,15 @@ export default function EditProfileCard({
       className="flex flex-col gap-8"
     >
       <div>
-        <h3 className="font-headline1-heading">{profile.name}</h3>
-        <p>{profile.email}</p>
+        <h3 className="font-headline1-heading">{basicInfo.name}</h3>
+        <p>{basicInfo.email}</p>
       </div>
 
       <Image
         src={'/character/img_signup_type01.png'}
         width={280}
         height={280}
-        alt={`${profile.name}님의 프로필 이미지`}
+        alt={`${basicInfo.name}님의 프로필 이미지`}
         className="aspect-square self-center rounded-full border border-gray-400 object-cover"
       />
 

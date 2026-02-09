@@ -1,8 +1,9 @@
-import { ProfileWithMeta } from '@/entities/profile';
 import ComingSoonSection from '@/shared/components/profile/coming-soon-section';
 import SectionContainer from '@/shared/components/profile/section-container';
 
-export default function TeacherSections({}: { profile: ProfileWithMeta }) {
+export default function TeacherSections() {
+  // TODO API 조회
+
   return (
     <>
       <SectionContainer title="활동 요약">

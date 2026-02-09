@@ -1,8 +1,7 @@
-import { ProfileWithMeta } from '@/entities/profile';
 import ComingSoonSection from '@/shared/components/profile/coming-soon-section';
 import SectionContainer from '@/shared/components/profile/section-container';
 
-export default function StudentSections({}: { profile: ProfileWithMeta }) {
+export default function StudentSections() {
   return (
     <>
       <SectionContainer title="누적 활동 리포트">

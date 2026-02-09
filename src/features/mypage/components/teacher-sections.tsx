@@ -1,9 +1,8 @@
-import { ProfileWithMeta } from '@/entities/profile';
 import ComingSoonSection from '@/shared/components/profile/coming-soon-section';
 import SectionContainer from '@/shared/components/profile/section-container';
 import SelectStudynotesDialog from '@/shared/components/profile/teacher/select-studynotes-dialog';
 
-export default function TeacherSections({}: { profile: ProfileWithMeta }) {
+export default function TeacherSections() {
   return (
     <>
       <SectionContainer title="활동 요약">

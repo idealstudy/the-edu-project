@@ -1,53 +1,41 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-
-import MypageLayout from '@/features/mypage/components/mypage-layout';
-import { useProfile } from '@/features/profile/hooks/use-profile';
-import { useCurrentMember } from '@/providers/session/hooks/use-current-member';
+import EditableProfileCard from '@/features/mypage/components/editable-profile-card';
+import ParentSections from '@/features/mypage/components/parent-sections';
+import StudentSections from '@/features/mypage/components/student-sections';
+import TeacherSections from '@/features/mypage/components/teacher-sections';
+import { ColumnLayout } from '@/layout';
+import { useRole } from '@/shared/hooks';
 
 export default function MypageMain() {
-  const router = useRouter();
+  const { role } = useRole();
 
-  const { data: member } = useCurrentMember(true);
+  let sections;
 
-  // TODO 새 API로 수정 예정 (memberId 제거)
-  const memberId = member?.id.toString();
-  const { data: profileData, isLoading } = useProfile(memberId);
-
-  if (isLoading) {
-    return <div className="text-center">로딩중...</div>;
-  }
-
-  if (!profileData) {
-    return <div className="text-center">프로필 정보를 불러올 수 없습니다.</div>;
-  }
-
-  if (!member) {
-    alert('로그인이 필요합니다.');
-    router.replace('/login');
-    return null;
-  }
-
-  // TODO ROLE_ADMIN, ROLE_MEMBER 처리 수정
-  // ROLE_ADMIN: 마이페이지 제공하지 않음
-  if (member.role === 'ROLE_ADMIN') {
-    return <div>관리자 마이페이지는 준비 중입니다.</div>;
-  }
-  // ROLE_MEMBER: 역할 선택 페이지로 이동
-  if (member.role === 'ROLE_MEMBER') {
-    // 롤 선택 페이지로 이동
-    router.replace('/select-role');
-    return null;
+  switch (role) {
+    case 'ROLE_TEACHER':
+      sections = <TeacherSections />;
+      break;
+    case 'ROLE_STUDENT':
+      sections = <StudentSections />;
+      break;
+    case 'ROLE_PARENT':
+      sections = <ParentSections />;
+      break;
+    default:
+      return <div>잘못된 접근입니다.</div>;
   }
 
   return (
-    <MypageLayout
-      profile={{
-        ...profileData,
-        id: member.id.toString(),
-        role: member.role,
-      }}
-    />
+    <>
+      <ColumnLayout.Left>
+        <div className="border-line-line1 flex flex-col gap-9 rounded-xl border bg-white p-8">
+          <EditableProfileCard role={role} />
+        </div>
+      </ColumnLayout.Left>
+      <ColumnLayout.Right className="desktop:max-w-[740px] desktop:px-8">
+        <div className="flex flex-col gap-3">{sections}</div>
+      </ColumnLayout.Right>
+    </>
   );
 }
