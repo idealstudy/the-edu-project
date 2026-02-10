@@ -19,13 +19,6 @@ const getProfile = async (memberId: string): Promise<FrontendProfile> => {
 };
 
 /* ─────────────────────────────────────────────────────
- * [Update] 회원 이름 변경
- * ────────────────────────────────────────────────────*/
-const updateUserName = async (name: string): Promise<void> => {
-  await api.private.patch('/members/name', { name });
-};
-
-/* ─────────────────────────────────────────────────────
  * [Update] 선생님 간단 소개 변경
  * ────────────────────────────────────────────────────*/
 const updateTeacherDescription = async (description: string): Promise<void> => {
@@ -35,7 +28,6 @@ const updateTeacherDescription = async (description: string): Promise<void> => {
 export const repository = {
   profile: {
     getProfile,
-    updateUserName,
     updateTeacherDescription,
   },
 };

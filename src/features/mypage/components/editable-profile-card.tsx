@@ -41,7 +41,6 @@ export default function EditableProfileCard({ role }: { role: Role }) {
       basicInfo={basicInfo}
       action={
         <ProfileCardDropdown
-          basicInfo={basicInfo}
           profileId={memberId}
           setIsEditMode={setIsEditMode}
         />

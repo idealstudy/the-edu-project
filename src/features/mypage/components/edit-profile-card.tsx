@@ -1,7 +1,7 @@
 'use client';
 
 import { Dispatch, SetStateAction } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
 import Image from 'next/image';
 
@@ -44,10 +44,13 @@ export default function EditProfileCard({
     handleSubmit,
     // setError,
     reset,
+    control,
     formState: { errors /* isSubmitting */ },
   } = useForm<ProfileUpdateForm>({
     resolver: zodResolver(ProfileFormSchema),
     defaultValues: {
+      name: basicInfo.name,
+      isProfilePublic: basicInfo.isProfilePublic,
       desc:
         basicInfo.role === 'ROLE_TEACHER'
           ? (basicInfo.simpleIntroduction ?? '')
@@ -68,8 +71,22 @@ export default function EditProfileCard({
       className="flex flex-col gap-8"
     >
       <div>
-        <h3 className="font-headline1-heading">{basicInfo.name}</h3>
-        <p>{basicInfo.email}</p>
+        <Form.Item error={!!errors.name}>
+          <Form.Label>
+            이름
+            <RequiredMark />
+          </Form.Label>
+
+          <Form.Control>
+            <Input
+              {...register('name')}
+              placeholder="이름를 입력해 주세요."
+            />
+          </Form.Control>
+          {errors.name?.message && (
+            <Form.ErrorMessage>{errors.name.message}</Form.ErrorMessage>
+          )}
+        </Form.Item>
       </div>
 
       <Image
@@ -80,28 +97,33 @@ export default function EditProfileCard({
         className="aspect-square self-center rounded-full border border-gray-400 object-cover"
       />
 
-      {/* TODO 공개 범위 연결 */}
-      <Form.Item>
+      <Form.Item error={!!errors.isProfilePublic}>
         <Form.Label>
           공개 범위
           <RequiredMark />
         </Form.Label>
 
-        <Select defaultValue="PUBLIC">
-          <Select.Trigger className="w-[240px]" />
+        <Controller
+          name="isProfilePublic"
+          control={control}
+          render={({ field }) => (
+            <Select
+              value={field.value ? 'public' : 'private'}
+              onValueChange={(v) => field.onChange(v === 'public')}
+            >
+              <Select.Trigger />
 
-          <Select.Content>
-            <Select.Option value="PUBLIC">전체 공개</Select.Option>
-            <Select.Option value="PRIVATE">비공개</Select.Option>
-          </Select.Content>
-        </Select>
+              <Select.Content>
+                <Select.Option value="public">공개</Select.Option>
+                <Select.Option value="private">비공개</Select.Option>
+              </Select.Content>
+            </Select>
+          )}
+        />
       </Form.Item>
 
       <Form.Item error={!!errors.desc}>
-        <Form.Label>
-          간단 소개
-          <RequiredMark />
-        </Form.Label>
+        <Form.Label>간단 소개</Form.Label>
 
         <Form.Control>
           <Input

@@ -12,20 +12,6 @@ export const useProfile = (memberId?: string) =>
     enabled: !!memberId,
   });
 
-// 이름 변경
-export const useUpdateUserName = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (name: string) => repository.profile.updateUserName(name),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: profileKeys.all,
-      });
-    },
-  });
-};
-
 export const useTeacherUpdateProfile = () => {
   const queryClient = useQueryClient();
 

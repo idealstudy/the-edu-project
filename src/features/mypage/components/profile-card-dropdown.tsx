@@ -1,42 +1,20 @@
 'use client';
 
-import { Dispatch, SetStateAction, useReducer, useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 
 import Image from 'next/image';
 
-import { FrontendBasicInfo } from '@/entities/teacher/types';
-import { useUpdateUserName } from '@/features/profile/hooks/use-profile';
-import {
-  InputDialog,
-  dialogReducer,
-  initialDialogState,
-} from '@/shared/components/dialog';
 import { Button, Dialog, DropdownMenu } from '@/shared/components/ui';
 
 type Props = {
-  basicInfo: FrontendBasicInfo;
   profileId: string;
   setIsEditMode: Dispatch<SetStateAction<boolean>>;
 };
 
-export function ProfileCardDropdown({
-  basicInfo,
-  profileId,
-  setIsEditMode,
-}: Props) {
+export function ProfileCardDropdown({ profileId, setIsEditMode }: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const [renameDialog, renameDispatch] = useReducer(
-    dialogReducer,
-    initialDialogState
-  );
+
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
-
-  const updateUserNameMutation = useUpdateUserName();
-
-  const handleRename = (name: string) => {
-    updateUserNameMutation.mutate(name);
-    renameDispatch({ type: 'CLOSE' });
-  };
 
   const copyProfileLink = (userId: string) => {
     navigator.clipboard.writeText(
@@ -73,35 +51,8 @@ export function ProfileCardDropdown({
           >
             수정하기
           </DropdownMenu.Item>
-          <DropdownMenu.Item
-            onClick={() => {
-              renameDispatch({
-                type: 'OPEN',
-                scope: 'profile',
-                kind: 'rename',
-                payload: {
-                  initialTitle: basicInfo.name,
-                },
-              });
-            }}
-            className="justify-center"
-          >
-            <p className="text-nowrap">이름 변경하기</p>
-          </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu>
-
-      {/* 이름 변경하기 다이얼로그 */}
-      {renameDialog.status === 'open' && renameDialog.kind === 'rename' && (
-        <InputDialog
-          isOpen={true}
-          placeholder={basicInfo.name || ''}
-          onOpenChange={() => renameDispatch({ type: 'CLOSE' })}
-          title="이름 변경하기"
-          onSubmit={(name) => handleRename(name)}
-          disabled={updateUserNameMutation.isPending}
-        />
-      )}
 
       {/* 공유하기 다이얼로그 */}
       <Dialog
