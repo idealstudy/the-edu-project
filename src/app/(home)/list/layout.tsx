@@ -3,9 +3,12 @@
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
+import { DashboardSidebar } from '@/features/dashboard/components/dashboard-sidebar';
 import BackLink from '@/features/dashboard/studynote/components/back-link';
 import { SortKey } from '@/features/qna/types';
+import { useSession } from '@/providers';
 import { Select } from '@/shared/components/ui';
+import { cn } from '@/shared/lib';
 
 export default function ListLayout({
   children,
@@ -15,7 +18,9 @@ export default function ListLayout({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { status } = useSession();
 
+  const isAuthenticated = status === 'authenticated';
   const sortBy = searchParams.get('sort') ?? 'LATEST';
   const subjectBy = searchParams.get('subject') ?? 'ALL';
 
@@ -50,105 +55,120 @@ export default function ListLayout({
   };
 
   return (
-    <div className="mb-4 min-h-screen w-full bg-white">
-      <div className="bg-system-background w-full">
-        <div className="mx-auto max-w-[1440px] px-4 pt-8 md:px-8 lg:px-20">
-          <BackLink />
+    <div className="flex min-h-screen w-full">
+      {/* 사이드바 영역: 로그인 시에만 노출 */}
+      {isAuthenticated && <DashboardSidebar />}
 
-          <div className="mt-4 mb-10">
-            <h1 className="font-title-heading text-2xl leading-[135%] tracking-tight lg:text-3xl">
-              디에듀와 함께하는 선생님과 스터디룸을 만나보세요
-            </h1>
+      <main
+        className={cn(
+          'flex-1 transition-all duration-300',
+          isAuthenticated ? 'desktop:pl-[280px]' : 'pl-0'
+        )}
+      >
+        <div className="mb-4 min-h-screen w-full bg-white">
+          <div className="bg-system-background w-full">
+            <div className="mx-auto max-w-[1440px] px-4 pt-8 md:px-8 lg:px-20">
+              <BackLink />
+
+              <div className="mt-4 mb-10">
+                <h1 className="font-title-heading text-2xl leading-[135%] tracking-tight lg:text-3xl">
+                  디에듀와 함께하는 선생님과 스터디룸을 만나보세요
+                </h1>
+              </div>
+
+              {/* 탭 메뉴 */}
+              <div className="relative flex gap-6 lg:gap-10">
+                <Link
+                  href={`/list/teachers?sort=${sortBy}&subject=${subjectBy}`}
+                >
+                  <div
+                    className={cn(
+                      'relative cursor-pointer px-4 pb-4 text-lg leading-[135%] transition-all lg:text-[24px]',
+                      isTeachers
+                        ? 'font-[700] text-[#1A1A1A]'
+                        : 'font-[400] text-[#AAAAAA]'
+                    )}
+                  >
+                    선생님 프로필
+                    {isTeachers && (
+                      <div className="absolute bottom-0 left-0 h-[4px] w-full bg-[#FF5C35]" />
+                    )}
+                  </div>
+                </Link>
+                <Link
+                  href={`/list/study-rooms?sort=${sortBy}&subject=${subjectBy}`}
+                >
+                  <div
+                    className={cn(
+                      'relative cursor-pointer px-4 pb-4 text-lg leading-[135%] transition-all lg:text-[24px]',
+                      isStudyRooms
+                        ? 'font-[700] text-[#1A1A1A]'
+                        : 'font-[400] text-[#AAAAAA]'
+                    )}
+                  >
+                    스터디룸
+                    {isStudyRooms && (
+                      <div className="absolute bottom-0 left-0 h-[4px] w-full bg-[#FF5C35]" />
+                    )}
+                  </div>
+                </Link>
+              </div>
+            </div>
           </div>
 
-          {/* 탭 메뉴 */}
-          <div className="relative flex gap-6 lg:gap-10">
-            <Link href={`/list/teachers?sort=${sortBy}&subject=${subjectBy}`}>
-              <div
-                className={`relative cursor-pointer px-4 pb-4 text-lg leading-[135%] transition-all lg:text-[24px] ${
-                  isTeachers
-                    ? 'font-[700] text-[#1A1A1A]'
-                    : 'font-[400] text-[#AAAAAA]'
-                }`}
-              >
-                선생님 프로필
-                {isTeachers && (
-                  <div className="absolute bottom-0 left-0 h-[4px] w-full bg-[#FF5C35]" />
-                )}
+          {/* 하단 리스트 및 필터 영역 */}
+          <div className="w-full bg-white">
+            <div className="mx-auto max-w-[1440px] px-4 py-8 md:px-8 lg:px-20">
+              {/* 정렬 필터 */}
+              <div className="mb-6 flex gap-2">
+                <Select
+                  value={sortBy}
+                  onValueChange={(v) => updateFilter('sort', v)}
+                >
+                  <Select.Trigger
+                    className={SELECT_STYLES.trigger}
+                    placeholder="최신순"
+                  />
+                  <Select.Content>
+                    {SORT_OPTIONS.map((o) => (
+                      <Select.Option
+                        key={o.value}
+                        value={o.value}
+                        className={SELECT_STYLES.option}
+                      >
+                        {o.label}
+                      </Select.Option>
+                    ))}
+                  </Select.Content>
+                </Select>
+
+                <Select
+                  value={subjectBy}
+                  onValueChange={(v) => updateFilter('subject', v)}
+                >
+                  <Select.Trigger
+                    className={SELECT_STYLES.trigger}
+                    placeholder="전체 과목"
+                  />
+                  <Select.Content>
+                    {SORT_SUBJECT_OPTIONS.map((o) => (
+                      <Select.Option
+                        key={o.value}
+                        value={o.value}
+                        className={SELECT_STYLES.option}
+                      >
+                        {o.label}
+                      </Select.Option>
+                    ))}
+                  </Select.Content>
+                </Select>
               </div>
-            </Link>
-            <Link
-              href={`/list/study-rooms?sort=${sortBy}&subject=${subjectBy}`}
-            >
-              <div
-                className={`relative cursor-pointer px-4 pb-4 text-lg leading-[135%] transition-all lg:text-[24px] ${
-                  isStudyRooms
-                    ? 'font-[700] text-[#1A1A1A]'
-                    : 'font-[400] text-[#AAAAAA]'
-                }`}
-              >
-                스터디룸
-                {isStudyRooms && (
-                  <div className="absolute bottom-0 left-0 h-[4px] w-full bg-[#FF5C35]" />
-                )}
-              </div>
-            </Link>
+
+              <div>{children}</div>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* 2. 하단 리스트 및 필터 영역 */}
-      <div className="w-full bg-white">
-        <div className="mx-auto max-w-[1440px] px-4 py-8 md:px-8 lg:px-20">
-          {/* 정렬 필터 */}
-          <div className="mb-6 flex gap-2">
-            <Select
-              value={sortBy}
-              onValueChange={(v) => updateFilter('sort', v)}
-            >
-              <Select.Trigger
-                className={SELECT_STYLES.trigger}
-                placeholder="최신순"
-              />
-              <Select.Content>
-                {SORT_OPTIONS.map((o) => (
-                  <Select.Option
-                    key={o.value}
-                    value={o.value}
-                    className={SELECT_STYLES.option}
-                  >
-                    {o.label}
-                  </Select.Option>
-                ))}
-              </Select.Content>
-            </Select>
-
-            <Select
-              value={subjectBy}
-              onValueChange={(v) => updateFilter('subject', v)}
-            >
-              <Select.Trigger
-                className={SELECT_STYLES.trigger}
-                placeholder="전체 과목"
-              />
-              <Select.Content>
-                {SORT_SUBJECT_OPTIONS.map((o) => (
-                  <Select.Option
-                    key={o.value}
-                    value={o.value}
-                    className={SELECT_STYLES.option}
-                  >
-                    {o.label}
-                  </Select.Option>
-                ))}
-              </Select.Content>
-            </Select>
-          </div>
-
-          {/* children 본문 */}
-          <div>{children}</div>
-        </div>
-      </div>
+      </main>
     </div>
   );
 }
