@@ -12,6 +12,8 @@ interface TeacherCardProps {
 }
 
 export const TeacherCard = ({ teacher }: TeacherCardProps) => {
+  const teacherImg = teacher.id % 2 === 0 ? '1' : '2';
+
   return (
     <Link
       href={`/profile/${teacher.id}`}
@@ -26,19 +28,18 @@ export const TeacherCard = ({ teacher }: TeacherCardProps) => {
         </div>
       )}
 
-      <div className="relative h-[80px] w-[80px] shrink-0 overflow-hidden rounded-full bg-amber-950 md:h-[100px] md:w-[100px]">
-        {teacher.profileImageUrl ? (
+      <div className="border-gray-scale-gray-95 relative h-[80px] w-[80px] shrink-0 overflow-hidden rounded-full border bg-gray-50 p-1 md:h-[100px] md:w-[100px]">
+        <div className="relative h-full w-full overflow-hidden rounded-full">
           <Image
-            src={teacher.profileImageUrl}
+            src={
+              teacher.profileImageUrl ??
+              `/character/img_profile_teacher0${teacherImg}.png`
+            }
             alt={teacher.name}
             fill
             className="object-cover"
           />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-[12px] text-white">
-            이미지
-          </div>
-        )}
+        </div>
       </div>
 
       {/* 정보 영역 */}
