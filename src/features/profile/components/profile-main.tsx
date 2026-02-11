@@ -11,7 +11,7 @@ export default function ProfileMain({ userId }: { userId: string }) {
     name: profileData?.name || '',
     email: profileData?.email || '',
     isProfilePublic: true,
-    simpleIntroduction: null,
+    simpleIntroduction: '',
     role: 'ROLE_TEACHER',
     profilePublicKorean: '공개',
   };

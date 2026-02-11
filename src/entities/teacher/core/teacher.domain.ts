@@ -29,6 +29,9 @@ const BasicInfoDomainSchema = BasicInfoDomainShape.transform((basicInfo) => ({
   profilePublicKorean: getProfilePublicKorean(basicInfo.isProfilePublic),
 }));
 
+/**
+ * 내보내기
+ */
 export const domain = {
   basicInfo: BasicInfoDomainSchema,
 };

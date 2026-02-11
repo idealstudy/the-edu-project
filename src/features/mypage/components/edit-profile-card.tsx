@@ -5,12 +5,15 @@ import { Controller, useForm } from 'react-hook-form';
 
 import Image from 'next/image';
 
-import { FrontendBasicInfo } from '@/entities/teacher/types';
-import { useTeacherUpdateProfile } from '@/features/profile/hooks/use-profile';
 import {
-  ProfileFormSchema,
-  ProfileUpdateForm,
-} from '@/features/profile/schema/schema';
+  FrontendBasicInfo,
+  UpdateBasicInfoPayload,
+} from '@/entities/teacher/types';
+import { useUpdateTeacherBasicInfo } from '@/features/mypage/hooks/teacher/use-basic-info';
+import {
+  BasicInfoForm,
+  BasicInfoFormSchema,
+} from '@/features/mypage/schema/schema';
 import {
   Button,
   Form,
@@ -32,12 +35,12 @@ export default function EditProfileCard({
   const isTeacher = basicInfo.role === 'ROLE_TEACHER';
 
   // TODO API 연결 수정 예정
-  const teacherUpdateProfileMutation = useTeacherUpdateProfile();
+  const updateTeacherBasicInfoMutation = useUpdateTeacherBasicInfo();
 
   const updateProfileMutation = isTeacher
-    ? teacherUpdateProfileMutation
+    ? updateTeacherBasicInfoMutation
     : // TODO 학생으로 변경
-      teacherUpdateProfileMutation;
+      updateTeacherBasicInfoMutation;
 
   const {
     register,
@@ -46,12 +49,12 @@ export default function EditProfileCard({
     reset,
     control,
     formState: { errors /* isSubmitting */ },
-  } = useForm<ProfileUpdateForm>({
-    resolver: zodResolver(ProfileFormSchema),
+  } = useForm<BasicInfoForm>({
+    resolver: zodResolver(BasicInfoFormSchema),
     defaultValues: {
       name: basicInfo.name,
       isProfilePublic: basicInfo.isProfilePublic,
-      desc:
+      simpleIntroduction:
         basicInfo.role === 'ROLE_TEACHER'
           ? (basicInfo.simpleIntroduction ?? '')
           : '',
@@ -59,7 +62,7 @@ export default function EditProfileCard({
     mode: 'onChange',
   });
 
-  const onSubmit = async (data: ProfileUpdateForm) => {
+  const onSubmit = async (data: UpdateBasicInfoPayload) => {
     await updateProfileMutation.mutateAsync(data);
 
     setIsEditMode(false);
@@ -122,17 +125,19 @@ export default function EditProfileCard({
         />
       </Form.Item>
 
-      <Form.Item error={!!errors.desc}>
+      <Form.Item error={!!errors.simpleIntroduction}>
         <Form.Label>간단 소개</Form.Label>
 
         <Form.Control>
           <Input
-            {...register('desc')}
+            {...register('simpleIntroduction')}
             placeholder="간단 소개를 입력해 주세요."
           />
         </Form.Control>
-        {errors.desc?.message && (
-          <Form.ErrorMessage>{errors.desc.message}</Form.ErrorMessage>
+        {errors.simpleIntroduction?.message && (
+          <Form.ErrorMessage>
+            {errors.simpleIntroduction.message}
+          </Form.ErrorMessage>
         )}
       </Form.Item>
 

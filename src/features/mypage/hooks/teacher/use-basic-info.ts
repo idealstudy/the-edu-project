@@ -1,6 +1,7 @@
 import { teacherKeys } from '@/entities/teacher/infrastructure/teacher.keys';
 import { repository } from '@/entities/teacher/infrastructure/teacher.repository';
-import { useQuery } from '@tanstack/react-query';
+import { UpdateBasicInfoPayload } from '@/entities/teacher/types';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 // [GET] 선생님 기본 정보 조회
 export const useTeacherBasicInfo = (options?: { enabled?: boolean }) =>
@@ -11,3 +12,18 @@ export const useTeacherBasicInfo = (options?: { enabled?: boolean }) =>
     gcTime: 30 * 60 * 1000,
     enabled: options?.enabled ?? true,
   });
+
+// [PATCH] 선생님 기본 정보 변경
+export const useUpdateTeacherBasicInfo = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (basicInfo: UpdateBasicInfoPayload) =>
+      repository.basicInfo.updateBasicInfo(basicInfo),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: teacherKeys.basicInfo(),
+      });
+    },
+  });
+};
