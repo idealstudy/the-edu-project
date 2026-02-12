@@ -3,3 +3,8 @@ export { SettingIcon } from './setting-icon';
 export { TextIcon } from './text-icon';
 export { ListIcon } from './list-icon';
 export { HomeIcon } from './home-icon';
+export { RoomIcon } from './room-icon';
+export { CoiledBookIcon } from './coiled-book-icon';
+export { UserPlusIcon } from './user-plus-icon';
+export { ChatIcon } from './chat-icon';
+export { PenIcon } from './pen-icon';
