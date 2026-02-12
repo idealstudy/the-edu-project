@@ -25,7 +25,7 @@ import { useRole } from '@/shared/hooks/use-role';
 import { StudyRoomDetail } from '../../model';
 import { StudyroomSidebarHeader } from './header';
 import { useDeleteStudyRoom, useUpdateStudyRoom } from './services/query';
-import { StudyStats } from './status';
+import { StudyIntro, StudyStats } from './status';
 
 export const StudyroomSidebar = ({
   studyRoomId,
@@ -194,7 +194,7 @@ export const StudyroomSidebar = ({
           numberOfStudents={studyRoomDetail?.studentNames?.length}
           numberOfQuestion={studyRoomDetail?.numberOfQuestion}
         />
-
+        <StudyIntro description={studyRoomDetail?.description} />
         {/* 학생 초대 버튼 - 선생님만 노출 */}
         {canManage && <StudentInvitation onClick={openInvitation} />}
         {/* 수업노트 탭에서만 보이는 컴포넌트 */}

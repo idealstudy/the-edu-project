@@ -51,3 +51,16 @@ export const StudyStats = ({
     </ul>
   );
 };
+
+export const StudyIntro = ({ description }: { description?: string }) => {
+  if (!description) return null;
+
+  return (
+    <div className="flex flex-col gap-2">
+      <h4 className="font-body1-heading">소개</h4>
+      <p className="font-body2-normal text-text-sub2 whitespace-pre-wrap">
+        {description}
+      </p>
+    </div>
+  );
+};
