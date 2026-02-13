@@ -12,7 +12,7 @@ export default function DashboardLayout({
     <SessionGuard>
       <main className="desktop:pl-sidebar-width flex flex-col bg-[#F9F9F9]">
         <DashboardSidebar />
-        <div className="px-grid-margin w-full">{children}</div>
+        <div className="w-full">{children}</div>
       </main>
     </SessionGuard>
   );

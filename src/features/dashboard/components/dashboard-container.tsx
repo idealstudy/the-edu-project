@@ -10,6 +10,8 @@ import { useStudentStudyRoomsQuery } from '@/features/study-rooms';
 import { trackPageView } from '@/shared/lib/gtm/trackers';
 import { useMemberStore } from '@/store';
 
+import DashboardTeacher from './teacher';
+
 export const DashboardContainer = () => {
   const session = useMemberStore((s) => s.member);
   const role = session?.role;
@@ -69,6 +71,11 @@ export const DashboardContainer = () => {
   // 온보딩 완료 여부에 따라 다른 화면 표시
   if (!role) {
     return null; // 역할이 없으면 아무것도 표시하지 않음
+  }
+
+  // 강사 대시보드 표시
+  if (isTeacher) {
+    return <DashboardTeacher />;
   }
 
   // 온보딩 완료: 축하 화면 표시
