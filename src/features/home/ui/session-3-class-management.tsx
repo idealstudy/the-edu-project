@@ -30,7 +30,10 @@ export function Session3() {
       }
     >
       <div
-        className={cn('flex flex-col gap-3', 'tablet:gap-5 tablet:flex-row')}
+        className={cn(
+          'flex w-full flex-col gap-3',
+          'tablet:gap-5 tablet:flex-row'
+        )}
       >
         <Image
           src="/home/im_card_2_mobile.png"
@@ -40,21 +43,34 @@ export function Session3() {
           className="tablet:hidden"
         />
 
-        <div className={cn('grid grid-cols-1 gap-5', 'max-tablet:contents')}>
+        <div
+          className={cn('grid flex-1 grid-cols-1 gap-5', 'max-tablet:contents')}
+        >
           {/* 후기 1 */}
           <div
             className={cn(
               "bg-background-orange h-31 w-full rounded-lg bg-[url('/home/im_review_1.png')] bg-[length:100px_100px] bg-[position:right_6px_bottom] bg-no-repeat",
-              'tablet:h-full'
+              'tablet:h-full',
+              'desktop:bg-[length:150px_150px]'
             )}
           >
             <div className={cn('space-y-3 px-5 pt-5.5')}>
-              <p className="font-body2-heading text-nowrap">
+              <p
+                className={cn(
+                  'font-body2-heading text-nowrap',
+                  'desktop:font-headline1-heading'
+                )}
+              >
                 디에듀에 잘 정리해놓으면
                 <br />
                 아이들이 찾아보기 쉬운 거 같아요
               </p>
-              <span className="font-caption-heading text-text-sub2">
+              <span
+                className={cn(
+                  'font-caption-heading text-text-sub2',
+                  'desktop:font-body1-normal'
+                )}
+              >
                 박O혁 선생님
               </span>
             </div>
@@ -63,16 +79,27 @@ export function Session3() {
           <div
             className={cn(
               "bg-background-orange h-31 w-full rounded-lg bg-[url('/home/im_review_2.png')] bg-[length:100px_100px] bg-[position:right_6px_bottom] bg-no-repeat",
-              'tablet:h-full'
+              'tablet:h-full',
+              'desktop:bg-[length:150px_150px]'
             )}
           >
             <div className="space-y-3 px-5 pt-5.5">
-              <p className={'font-body2-heading'}>
+              <p
+                className={cn(
+                  'font-body2-heading text-nowrap',
+                  'desktop:font-headline1-heading'
+                )}
+              >
                 수업 내용이 한 곳에 모여
                 <br />
                 있으니 복습하기 좋아요
               </p>
-              <span className="font-caption-heading text-text-sub2">
+              <span
+                className={cn(
+                  'font-caption-heading text-text-sub2',
+                  'desktop:font-body1-normal'
+                )}
+              >
                 김O연 선생님
               </span>
             </div>
@@ -84,7 +111,7 @@ export function Session3() {
           width={517}
           height={543}
           alt="스터디룸 화면"
-          className={cn('aspect-auto', 'max-tablet:hidden tablet:w-86')}
+          className={cn('max-tablet:hidden', 'tablet:w-86', 'desktop:w-[517]')}
         />
       </div>
     </SessionContainer>

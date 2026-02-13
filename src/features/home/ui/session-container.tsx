@@ -17,17 +17,13 @@ export function SessionContainer({
   children,
 }: SessionContainerProps) {
   return (
-    <section
-      className={cn(
-        'flex flex-col items-center gap-6 px-4.5 py-8',
-        'tablet:gap-8 tablet:px-20 tablet:py-12'
-      )}
-    >
-      <div className="gap flex flex-col items-center">
+    <section className={cn('flex flex-col items-center gap-6', 'tablet:gap-8')}>
+      <div className="flex flex-col items-center">
         <span
           className={cn(
-            'font-body2-heading text-key-color-primary bg-orange-scale-orange-5 mb-4 rounded-lg px-4 py-2',
-            'tablet:px-6 tablet:py-3'
+            'font-body2-heading text-orange-7 bg-orange-2 mb-4 rounded-lg px-4 py-2',
+            'tablet:px-6 tablet:py-3',
+            'desktop:font-headline1-heading desktop:py-4 desktop:px-6'
           )}
         >
           {tag}
@@ -35,15 +31,17 @@ export function SessionContainer({
         <h2
           className={cn(
             'font-headline2-heading mb-2 text-center',
-            'tablet:font-headline1-heading'
+            'tablet:font-headline1-heading',
+            'desktop:font-display-2'
           )}
         >
           {title}
         </h2>
         <p
           className={cn(
-            'text-gray-90 font-label-normal text-center',
-            'tablet:font-body2-normal'
+            'text-gray-11 font-label-normal text-center',
+            'tablet:font-body2-normal',
+            'desktop:font-headline1-normal'
           )}
         >
           {description}

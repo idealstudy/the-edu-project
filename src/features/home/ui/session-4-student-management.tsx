@@ -40,7 +40,7 @@ export function Session4() {
         width={1344}
         height={800}
         alt="온보딩 화면"
-        className="max-tablet:hidden aspect-auto w-full"
+        className="max-tablet:hidden"
       />
     </SessionContainer>
   );

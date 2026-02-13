@@ -40,7 +40,7 @@ export function Session2() {
         width={1344}
         height={800}
         alt="수업 기록 관리 화면"
-        className="max-tablet:hidden aspect-auto w-full"
+        className="max-tablet:hidden"
       />
     </SessionContainer>
   );

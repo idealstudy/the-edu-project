@@ -11,11 +11,14 @@ export function Session6() {
   return (
     <section
       className={cn(
-        'flex flex-col gap-6 px-4.5 py-8',
-        'tablet:px-20 tablet:py-12 tablet:gap-8'
+        'mx-auto my-8 flex w-81 flex-col gap-6',
+        'tablet:my-12 tablet:gap-8 tablet:w-152',
+        'desktop:my-20 desktop:w-228'
       )}
     >
-      <h1 className="font-headline1-heading">자주 묻는 질문</h1>
+      <h1 className={cn('font-headline1-heading', 'desktop:font-display-2')}>
+        자주 묻는 질문
+      </h1>
       <FAQAccordion />
     </section>
   );
@@ -79,7 +82,7 @@ const FAQAccordion = () => {
           <button
             onClick={() => setActiveTab(activeTab === index ? null : index)}
             className={cn(
-              'font-body2-heading flex w-full cursor-pointer px-6 py-5 text-start',
+              'font-body2-heading hover:bg-orange-7 flex w-full cursor-pointer px-6 py-5 text-start hover:text-white',
               'tablet:p-8 tablet:font-headline2-heading'
             )}
           >
@@ -97,23 +100,25 @@ const FAQAccordion = () => {
             />
           </button>
 
-          <hr
-            className={cn('border-line-line1 mx-6 border', 'tablet:mx-8')}
-            aria-hidden
-          />
-
           {/* 답변 */}
           {activeTab === index && (
-            <div
-              className={cn(
-                'font-label-normal space-y-2 px-6 py-5',
-                'tablet:p-8 tablet:font-body2-normal'
-              )}
-            >
-              {item.answer.map((line, i) => (
-                <p key={i}>{line}</p>
-              ))}
-            </div>
+            <>
+              <hr
+                className={cn('border-line-line1 mx-6 border', 'tablet:mx-8')}
+                aria-hidden
+              />
+
+              <div
+                className={cn(
+                  'font-label-normal space-y-2 px-6 py-5',
+                  'tablet:p-8 tablet:font-body2-normal'
+                )}
+              >
+                {item.answer.map((line, i) => (
+                  <p key={i}>{line}</p>
+                ))}
+              </div>
+            </>
           )}
         </div>
       ))}
