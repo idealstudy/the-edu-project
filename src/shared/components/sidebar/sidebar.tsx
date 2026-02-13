@@ -70,6 +70,7 @@ type SidebarItemProps = {
   children: ReactNode;
   className?: string;
   isActive?: boolean;
+  matchPath?: string;
 };
 
 const SidebarItem = ({
@@ -77,10 +78,13 @@ const SidebarItem = ({
   children,
   className,
   isActive: propIsActive,
+  matchPath,
 }: SidebarItemProps) => {
   const { pathname } = useSidebarContext();
   const isActive =
-    propIsActive !== undefined ? propIsActive : pathname === href;
+    propIsActive ??
+    (matchPath ? pathname?.startsWith(matchPath) : pathname === href);
+
   const isCreatePage = href === PRIVATE.ROOM.CREATE;
 
   return (

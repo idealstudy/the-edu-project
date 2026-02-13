@@ -7,15 +7,19 @@ import { TeacherCard } from '@/features/list/components/teacher-card';
 import { MiniSpinner } from '@/shared/components/loading';
 
 type SortOption = 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
+type SortSubjectOption = 'ALL' | 'KOREAN' | 'ENGLISH' | 'MATH' | 'OTHER';
 
 export default function TeachersListPage() {
   const searchParams = useSearchParams();
-  const sortBy = (searchParams.get('sort') ?? 'LATEST') as SortOption;
+
+  const sort = (searchParams.get('sort') ?? 'LATEST') as SortOption;
+  const subject = (searchParams.get('subject') ?? 'ALL') as SortSubjectOption;
 
   const { data, isLoading } = usePublicTeachersQuery({
     page: 0,
     size: 20,
-    sort: sortBy,
+    sort: sort,
+    subject: subject,
   });
 
   if (isLoading) {

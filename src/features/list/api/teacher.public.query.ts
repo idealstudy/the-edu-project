@@ -6,12 +6,15 @@ import {
   getTeacherPublicProfile,
 } from './teacher.public.api';
 
+type SortOption = 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
+type SortSubjectOption = 'ALL' | 'KOREAN' | 'ENGLISH' | 'MATH' | 'OTHER';
+
 export const TeachersQueryKey = {
   all: ['publicTeachers'] as const,
   list: (params?: {
     page?: number;
     size?: number;
-    sort?: 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
+    sort?: SortOption;
     isNewTeacher?: boolean;
   }) => ['publicTeachers', 'list', params] as const,
   detail: (id: number) => ['publicTeachers', 'detail', id] as const,
@@ -22,7 +25,8 @@ export const StudyRoomsQueryKey = {
   list: (params?: {
     page?: number;
     size?: number;
-    sort?: 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
+    sort?: SortOption;
+    // subject?:SortSubjectOption;
     teacherId?: number;
   }) => ['publicStudyRooms', 'list', params] as const,
 };
@@ -30,7 +34,8 @@ export const StudyRoomsQueryKey = {
 export const usePublicTeachersQuery = (params?: {
   page?: number;
   size?: number;
-  sort?: 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
+  sort?: SortOption;
+  subject?: SortSubjectOption;
   isNewTeacher?: boolean;
 }) => {
   return useQuery({
@@ -43,7 +48,8 @@ export const usePublicTeachersQuery = (params?: {
 export const usePublicStudyRoomsQuery = (params?: {
   page?: number;
   size?: number;
-  sort?: 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
+  sort?: SortOption;
+  subject?: SortSubjectOption;
   teacherId?: number;
 }) => {
   return useQuery({
