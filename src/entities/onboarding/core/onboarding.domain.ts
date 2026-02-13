@@ -1,4 +1,4 @@
-import { dto } from '../infrastructure';
+import { dto } from '../infrastructure/onboarding.dto';
 import type { TeacherOnboardingStepType } from '../types';
 
 /* ─────────────────────────────────────────────────────

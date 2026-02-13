@@ -2,6 +2,7 @@
 
 import { useStudentHomeworkDetail } from '@/features/homework/hooks/student/useStudentHomeworkQuries';
 import { ColumnLayout } from '@/layout/column-layout';
+import { DialogAction, DialogState } from '@/shared/components/dialog';
 import { MiniSpinner } from '@/shared/components/loading';
 
 import {
@@ -19,6 +20,8 @@ import { StudentSubmissionContent } from './student-submission-content';
 type Props = {
   studyRoomId: number;
   homeworkId: number;
+  dialog: DialogState;
+  dispatch: (action: DialogAction) => void;
 };
 
 type TimelineItem =
@@ -34,7 +37,12 @@ type TimelineItem =
     };
 
 // 학생 과제 디테일 화면
-export const StudentHomeworkDetail = ({ studyRoomId, homeworkId }: Props) => {
+export const StudentHomeworkDetail = ({
+  studyRoomId,
+  homeworkId,
+  dialog,
+  dispatch,
+}: Props) => {
   const { data, isPending } = useStudentHomeworkDetail(studyRoomId, homeworkId);
 
   if (isPending) return <MiniSpinner />;
@@ -73,6 +81,8 @@ export const StudentHomeworkDetail = ({ studyRoomId, homeworkId }: Props) => {
       <HomeworkDetailLeft
         studyRoomId={studyRoomId}
         homeworkId={homeworkId}
+        dialog={dialog}
+        dispatch={dispatch}
       />
 
       <ColumnLayout.Right className="desktop:min-w-[740px] flex w-full flex-col gap-3 rounded-[12px]">
@@ -109,6 +119,8 @@ export const StudentHomeworkDetail = ({ studyRoomId, homeworkId }: Props) => {
                   submitStatus={item.data.status}
                   studyRoomId={studyRoomId}
                   homeworkId={homeworkId}
+                  dialog={dialog}
+                  dispatch={dispatch}
                 />
 
                 {item.data.feedback && (
@@ -122,6 +134,8 @@ export const StudentHomeworkDetail = ({ studyRoomId, homeworkId }: Props) => {
                     studyRoomId={studyRoomId}
                     homeworkId={homeworkId}
                     homeworkStudentId={item.data.id}
+                    dialog={dialog}
+                    dispatch={dispatch}
                   />
                 )}
               </div>

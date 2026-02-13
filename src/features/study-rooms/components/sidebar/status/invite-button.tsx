@@ -4,8 +4,11 @@ import { useReducer } from 'react';
 
 import Image from 'next/image';
 
-import { InputDialog } from '@/features/study-rooms/components/common/dialog/input-dialog';
-import { dialogReducer, initialDialogState } from '@/shared/components/dialog';
+import {
+  InputDialog,
+  dialogReducer,
+  initialDialogState,
+} from '@/shared/components/dialog';
 import { Button } from '@/shared/components/ui/button';
 
 export const InviteButton = () => {
