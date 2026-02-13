@@ -1,5 +1,7 @@
 'use client';
 
+import { IoIosArrowForward } from 'react-icons/io';
+
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -55,7 +57,8 @@ export const TeacherCard = ({ teacher }: TeacherCardProps) => {
         <hr className="my-1 border-gray-100" />
 
         <div className="group-hover:text-key-color-primary mt-1 flex items-center justify-end text-[14px] font-medium text-gray-400 transition-colors md:text-[14px]">
-          스터디룸 바로가기 <span className="ml-1 text-[10px]">&gt;</span>
+          스터디룸 바로가기
+          <IoIosArrowForward className="ml-1 h-[16px] w-[16px]" />
         </div>
       </div>
     </Link>
