@@ -8,3 +8,5 @@ export { CoiledBookIcon } from './coiled-book-icon';
 export { UserPlusIcon } from './user-plus-icon';
 export { ChatIcon } from './chat-icon';
 export { PenIcon } from './pen-icon';
+export { ArrowDownIcon } from './arrow-down-icon';
+export { ArrowRightIcon } from './arrow-right-icon';
