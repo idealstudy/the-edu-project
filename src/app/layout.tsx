@@ -26,7 +26,7 @@ export default function RootLayout({
       className={`${pretendard.variable} font-pretendard`}
       suppressHydrationWarning
     >
-      <body className="antialiased">
+      <body className="bg-[#F9F9F9] antialiased">
         {/* GTM Head 스니펫 */}
         {gtmId && (
           <>

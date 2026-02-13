@@ -16,7 +16,7 @@ export const StudyroomSidebarHeader = ({
   dispatch: Dispatch<DialogAction>;
   studyRoomName?: string;
   teacherName?: string;
-  canManage: boolean;
+  canManage?: boolean;
 }) => {
   return (
     <>
