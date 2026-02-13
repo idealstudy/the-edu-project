@@ -11,15 +11,15 @@ export function Session1() {
     <section
       className={cn(
         'mx-auto flex flex-col items-center gap-3 px-4.5 py-8',
-        'tablet:w-[608] tablet:p-0 tablet:items-start tablet:gap-10 tablet:my-12',
-        'desktop:w-[912] desktop:my-20 desktop:gap-8'
+        'tablet:w-[608px] tablet:p-0 tablet:items-start tablet:gap-10 tablet:my-12',
+        'desktop:w-[912px] desktop:my-20 desktop:gap-8'
       )}
     >
       <Image
         src="/home/im_intro_1.png"
         width={200}
         height={200}
-        alt=""
+        alt="인트로 이미지"
         className="tablet:hidden"
       />
 
@@ -66,7 +66,7 @@ export function Session1() {
           src="/home/im_intro_1.png"
           width={300}
           height={300}
-          alt=""
+          alt="인트로 이미지"
           className={cn(
             'aspect-square w-50',
             'max-tablet:hidden',

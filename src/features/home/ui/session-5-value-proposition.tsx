@@ -47,7 +47,7 @@ export function Session5() {
             </h2>
             <p
               className={cn(
-                'text-gray-90 font-label-normal',
+                'text-gray-11 font-label-normal',
                 'tablet:font-body1-normal',
                 'desktop:font-title-normal'
               )}

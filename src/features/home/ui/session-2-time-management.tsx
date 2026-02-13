@@ -29,7 +29,7 @@ export function Session2() {
       }
     >
       <Image
-        src="/home/im_card_1_moblie.png"
+        src="/home/im_card_1_mobile.png"
         width={324}
         height={342}
         alt="수업 기록 관리 화면"

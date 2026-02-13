@@ -111,7 +111,11 @@ export function Session3() {
           width={517}
           height={543}
           alt="스터디룸 화면"
-          className={cn('max-tablet:hidden', 'tablet:w-86', 'desktop:w-[517]')}
+          className={cn(
+            'max-tablet:hidden',
+            'tablet:w-86',
+            'desktop:w-[517px]'
+          )}
         />
       </div>
     </SessionContainer>

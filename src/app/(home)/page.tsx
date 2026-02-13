@@ -9,7 +9,7 @@ import {
 import { Footer } from '@/layout/footer';
 import { cn } from '@/shared/lib';
 
-export default function home() {
+export default function HomePage() {
   return (
     <main className="flex flex-col">
       <Session1 />
@@ -17,8 +17,8 @@ export default function home() {
       <div
         className={cn(
           'mx-auto my-8 flex w-81 flex-col gap-8',
-          'tablet:my-12 tablet:w-[608] tablet:gap-12',
-          'desktop:my-20 desktop:w-[912] desktop:gap-25'
+          'tablet:my-12 tablet:w-[608px] tablet:gap-12',
+          'desktop:my-20 desktop:w-[912px] desktop:gap-25'
         )}
       >
         <Session2 />
