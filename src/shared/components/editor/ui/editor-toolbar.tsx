@@ -42,6 +42,7 @@ type EditorToolbarProps = {
   darkMode?: boolean;
   onImageUpload?: (file: File) => void;
   onFileUpload?: (file: File) => void;
+  onOpenLinkDialog?: () => void;
 };
 
 export const EditorToolbar = ({
@@ -49,11 +50,10 @@ export const EditorToolbar = ({
   darkMode = false,
   onImageUpload,
   onFileUpload,
+  onOpenLinkDialog,
 }: EditorToolbarProps) => {
   const imageInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [showLinkInput, setShowLinkInput] = useState(false);
-  const [linkUrl, setLinkUrl] = useState('');
   const [showEmbedInput, setShowEmbedInput] = useState(false);
   const [embedUrl, setEmbedUrl] = useState('');
 
@@ -122,23 +122,8 @@ export const EditorToolbar = ({
     [onFileUpload]
   );
 
-  const handleLinkSubmit = useCallback(() => {
-    if (linkUrl) {
-      editor
-        .chain()
-        .focus()
-        .extendMarkRange('link')
-        .setLink({ href: linkUrl })
-        .run();
-    }
-    setShowLinkInput(false);
-    setLinkUrl('');
-  }, [editor, linkUrl]);
-
   const handleRemoveLink = useCallback(() => {
     editor.chain().focus().unsetLink().run();
-    setShowLinkInput(false);
-    setLinkUrl('');
   }, [editor]);
 
   const handleEmbedSubmit = useCallback(async () => {
@@ -468,64 +453,20 @@ export const EditorToolbar = ({
             />
           </>
         )}
-        <div className="relative">
-          <ToolbarButton
-            active={editorState.isLink || showLinkInput}
-            onClick={() => {
-              if (editorState.isLink) {
-                handleRemoveLink();
-              } else {
-                setShowLinkInput(!showLinkInput);
-              }
-            }}
-            darkMode={darkMode}
-            title={editorState.isLink ? '링크 제거' : '링크 추가 (Ctrl+K)'}
-          >
-            <Link size={16} />
-          </ToolbarButton>
-          {showLinkInput && (
-            <div
-              className={cn(
-                'absolute top-full left-0 z-50 mt-1 flex items-center gap-1 rounded-md border p-1 shadow-lg',
-                darkMode
-                  ? 'border-gray-scale-gray-70 bg-gray-scale-gray-80'
-                  : 'border-line-line2 bg-gray-scale-white'
-              )}
-            >
-              <input
-                type="url"
-                value={linkUrl}
-                onChange={(e) => setLinkUrl(e.target.value)}
-                placeholder="URL 입력"
-                className={cn(
-                  'w-48 rounded px-2 py-1 text-sm outline-none',
-                  darkMode
-                    ? 'bg-gray-scale-gray-90 text-gray-scale-white placeholder:text-gray-scale-gray-50'
-                    : 'bg-background-gray text-text-main placeholder:text-text-sub'
-                )}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleLinkSubmit();
-                  } else if (e.key === 'Escape') {
-                    setShowLinkInput(false);
-                    setLinkUrl('');
-                  }
-                }}
-                autoFocus
-              />
-              <button
-                type="button"
-                onClick={handleLinkSubmit}
-                className={cn(
-                  'rounded px-2 py-1 text-xs font-medium',
-                  'bg-key-color-primary text-gray-scale-white hover:bg-key-color-primary/80'
-                )}
-              >
-                확인
-              </button>
-            </div>
-          )}
-        </div>
+        <ToolbarButton
+          active={editorState.isLink}
+          onClick={() => {
+            if (editorState.isLink) {
+              handleRemoveLink();
+              return;
+            }
+            onOpenLinkDialog?.();
+          }}
+          darkMode={darkMode}
+          title={editorState.isLink ? '링크 제거' : '링크 추가 (Ctrl+K)'}
+        >
+          <Link size={16} />
+        </ToolbarButton>
         <div className="relative">
           <ToolbarButton
             active={showEmbedInput}
