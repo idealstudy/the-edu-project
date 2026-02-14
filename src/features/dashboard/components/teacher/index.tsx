@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useTeacherOnboardingQuery } from '@/features/dashboard/hooks/use-onboarding-query';
 import { useTeacherStudyRoomsQuery } from '@/features/study-rooms';
 import { PRIVATE } from '@/shared/constants';
-import { cn } from '@/shared/lib';
 
 import { useDashboardQuery } from '../../hooks';
 import DashboardHeader from '../dashboard-header';
@@ -77,12 +76,11 @@ const DashboardTeacher = () => {
   const StudyroomContent = useCallback(
     () => (
       <StudyroomSectionContent
-        hasStudyRooms={hasStudyRooms ?? false}
         studyRooms={studyRoomsList ?? []}
         onStudyRoomClick={handleStudyRoomClick}
       />
     ),
-    [hasStudyRooms, studyRoomsList, handleStudyRoomClick]
+    [studyRoomsList, handleStudyRoomClick]
   );
 
   return (
@@ -91,12 +89,7 @@ const DashboardTeacher = () => {
       <main className="tablet:gap-12 desktop:gap-20 bg-gray-white tablet:py-12 desktop:pb-100 tablet:px-20 relative flex w-full flex-col gap-8 px-4.5 py-8">
         {!teacherOnboarding?.isCompleted && <Onboarding />}
         <div className="tablet:gap-25 flex w-full flex-col gap-8">
-          <div
-            className={cn(
-              'tablet:gap-12 flex w-full flex-col gap-8',
-              'desktop-large:griddesktop-large:grid-cols-2 desktop-large:gap-x-15.5 desktop-large:gap-y-25'
-            )}
-          >
+          <div className="tablet:gap-12 flex w-full flex-col gap-8">
             {/* 공통: 질문 섹션 */}
             <SingleSection
               title="답변이 필요한 질문"

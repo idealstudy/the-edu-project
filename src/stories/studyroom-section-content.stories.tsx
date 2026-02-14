@@ -27,7 +27,6 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    hasStudyRooms: true,
     studyRooms: mockStudyRooms,
     onStudyRoomClick: () => {},
   },
@@ -35,7 +34,6 @@ export const Default: Story = {
 
 export const LongTitles: Story = {
   args: {
-    hasStudyRooms: true,
     studyRooms: mockStudyRoomsWithLongTitles,
     onStudyRoomClick: () => {},
   },

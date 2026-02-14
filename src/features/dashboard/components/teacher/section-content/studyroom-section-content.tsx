@@ -13,7 +13,6 @@ const ANIMATION_DURATION = 400;
 const TABLET_BREAKPOINT = 768;
 
 type StudyroomSectionContentProps = {
-  hasStudyRooms: boolean;
   studyRooms: {
     id: number;
     name: string;
@@ -22,7 +21,6 @@ type StudyroomSectionContentProps = {
 };
 
 const StudyroomSectionContent = ({
-  hasStudyRooms,
   studyRooms,
   onStudyRoomClick,
 }: StudyroomSectionContentProps) => {
@@ -110,7 +108,7 @@ const StudyroomSectionContent = ({
           if (e.key === 'ArrowRight') goToNext();
         }}
       >
-        {!hasStudyRooms && (
+        {!studyRooms.length && (
           <p className="font-body2-normal text-orange-7">
             상단을 참고해 스터디룸을 생성해주세요.
           </p>
