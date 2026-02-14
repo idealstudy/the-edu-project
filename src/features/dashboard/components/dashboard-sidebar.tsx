@@ -6,9 +6,9 @@ import {
   useStudentStudyRoomsQuery,
   useTeacherStudyRoomsQuery,
 } from '@/features/study-rooms';
-import { HomeIcon, PlusIcon } from '@/shared/components/icons';
+import { FindingIcon, HomeIcon, PlusIcon } from '@/shared/components/icons';
 import { Sidebar } from '@/shared/components/sidebar';
-import { PRIVATE } from '@/shared/constants/route';
+import { PRIVATE, PUBLIC } from '@/shared/constants/route';
 import { useRole } from '@/shared/hooks/use-role';
 
 export const DashboardSidebar = () => {
@@ -75,12 +75,20 @@ export const DashboardSidebar = () => {
         </Sidebar.List>
       </Sidebar.ScrollArea>
 
+      <Sidebar.Item
+        href={PUBLIC.CORE.LIST.TEACHERS}
+        matchPath="/list"
+      >
+        <FindingIcon className="shrink-0" />
+
+        <Sidebar.Text>선생님 둘러보기</Sidebar.Text>
+      </Sidebar.Item>
+
       {/* 기능 추가 전까지 잠시 주석 (private -> dashboard 안에 있는 settings 페이지도 삭제 완) */}
       {/* <Sidebar.Item href={PRIVATE.DASHBOARD.SETTINGS}>
         <SettingIcon />
         <Sidebar.Text>환경설정</Sidebar.Text>
       </Sidebar.Item> */}
-
       <div className="mt-auto flex justify-end p-4">
         <a
           href={'https://pf.kakao.com/_LMcpn'}
