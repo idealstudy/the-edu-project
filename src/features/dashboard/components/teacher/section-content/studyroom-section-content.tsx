@@ -96,17 +96,17 @@ const StudyroomSectionContent = ({
   if (totalCount === 0) return null;
 
   return (
-    <div className="flex w-full flex-col gap-8">
-      <div
-        className="relative w-full cursor-pointer overflow-hidden select-none"
-        onClick={handleAreaClick}
+    <div className="flex w-full flex-col items-center gap-8">
+      <button
+        type="button"
+        className="relative w-fit cursor-pointer overflow-hidden border-0 bg-transparent select-none"
+        onClick={() => onStudyRoomClick(studyRooms[currentIndex]?.id ?? 0)}
         onContextMenu={(e) => e.preventDefault()}
-        role="button"
-        tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === 'ArrowLeft') goToPrev();
           if (e.key === 'ArrowRight') goToNext();
         }}
+        aria-label="스터디룸 이미지"
       >
         {!studyRooms.length && (
           <p className="font-body2-normal text-orange-7">
@@ -158,19 +158,17 @@ const StudyroomSectionContent = ({
             </div>
           </div>
         </div>
-      </div>
+      </button>
 
       {/* 스터디룸 타이틀 */}
       <div
-        className="tablet:w-[300px] mx-auto flex h-6 w-[200px] cursor-pointer items-center gap-2 select-none"
+        className="tablet:w-[300px] mx-auto flex h-6 w-[200px] items-center gap-2 select-none"
         onClick={handleAreaClick}
         onContextMenu={(e) => e.preventDefault()}
-        role="button"
-        tabIndex={0}
       >
         <button
           type="button"
-          className="flex h-6 w-8 shrink-0 items-center justify-center border-0 bg-transparent px-1"
+          className="flex h-6 w-8 shrink-0 cursor-pointer items-center justify-center border-0 bg-transparent px-1"
           onClick={(e) => {
             e.stopPropagation();
             goToPrev();
@@ -181,9 +179,11 @@ const StudyroomSectionContent = ({
           <ChevronLeftIcon className="h-6 w-6" />
         </button>
 
-        <div
-          className="h-6 min-w-0 flex-1 overflow-hidden"
+        <button
+          type="button"
+          className="h-6 min-w-0 flex-1 cursor-pointer overflow-hidden"
           onClick={() => onStudyRoomClick(studyRooms[currentIndex]?.id ?? 0)}
+          aria-label="현재 스터디룸 이름"
         >
           <div
             className="flex flex-nowrap items-center"
@@ -215,11 +215,11 @@ const StudyroomSectionContent = ({
               {studyRooms[nextIndex]?.name}
             </div>
           </div>
-        </div>
+        </button>
 
         <button
           type="button"
-          className="flex h-6 w-8 shrink-0 items-center justify-center border-0 bg-transparent px-1"
+          className="flex h-6 w-8 shrink-0 cursor-pointer items-center justify-center border-0 bg-transparent px-1"
           onClick={(e) => {
             e.stopPropagation();
             goToNext();
