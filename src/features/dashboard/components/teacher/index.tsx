@@ -1,3 +1,5 @@
+import { useCallback } from 'react';
+
 import { useRouter } from 'next/navigation';
 
 import { useTeacherOnboardingQuery } from '@/features/dashboard/hooks/use-onboarding-query';
@@ -40,17 +42,48 @@ const DashboardTeacher = () => {
   }));
 
   // 페이지 이동 함수
-  const handleStudyRoomClick = (studyRoomId: number) => {
-    router.push(PRIVATE.ROOM.DETAIL(studyRoomId));
-  };
-  const handleNoteClick = (studyRoomId: number, noteId: number) => {
-    router.push(PRIVATE.NOTE.DETAIL(studyRoomId, noteId));
-  };
-  const handleNewNoteClick = () => {
+  const handleStudyRoomClick = useCallback(
+    (studyRoomId: number) => {
+      router.push(PRIVATE.ROOM.DETAIL(studyRoomId));
+    },
+    [router]
+  );
+  const handleNoteClick = useCallback(
+    (studyRoomId: number, noteId: number) => {
+      router.push(PRIVATE.NOTE.DETAIL(studyRoomId, noteId));
+    },
+    [router]
+  );
+  const handleNewNoteClick = useCallback(() => {
     const studyRoomId = studyRoomsList[0]?.id ?? 0;
     if (studyRoomId === 0) return;
     router.push(PRIVATE.NOTE.CREATE(studyRoomId));
-  };
+  }, [router, studyRoomsList]);
+
+  // 섹션 내부 콘텐츠 컴포넌트 정의
+  const QnAContent = useCallback(() => <QnASectionContent />, []);
+  const NoteContent = useCallback(
+    () => (
+      <NoteSectionContent
+        hasStudyRooms={hasStudyRooms ?? false}
+        notes={notes}
+        onClickNewNote={handleNewNoteClick}
+        onClickNote={handleNoteClick}
+      />
+    ),
+    [hasStudyRooms, notes, handleNewNoteClick, handleNoteClick]
+  );
+  const StudentsContent = useCallback(() => <StudentsSectionContent />, []);
+  const StudyroomContent = useCallback(
+    () => (
+      <StudyroomSectionContent
+        hasStudyRooms={hasStudyRooms ?? false}
+        studyRooms={studyRoomsList ?? []}
+        onStudyRoomClick={handleStudyRoomClick}
+      />
+    ),
+    [hasStudyRooms, studyRoomsList, handleStudyRoomClick]
+  );
 
   return (
     <div className="flex w-full flex-col">
@@ -69,7 +102,7 @@ const DashboardTeacher = () => {
               title="답변이 필요한 질문"
               description="아직 답변하지 않은 질문만 추렸어요."
             >
-              <QnASectionContent />
+              <QnAContent />
             </SingleSection>
             {/* tablet ~ desktop: 스터디룸 섹션 */}
             <SingleSection
@@ -77,11 +110,7 @@ const DashboardTeacher = () => {
               description="과제가 쌓일수록 바뀌는 스터디룸으로 진행 상황을 확인해보세요."
               className="tablet:flex hidden"
             >
-              <StudyroomSectionContent
-                hasStudyRooms={hasStudyRooms ?? false}
-                studyRooms={studyRoomsList ?? []}
-                onStudyRoomClick={handleStudyRoomClick}
-              />
+              <StudyroomContent />
             </SingleSection>
 
             {/* mobile: 수업노트, 학생목록, 스터디룸 섹션 */}
@@ -89,20 +118,9 @@ const DashboardTeacher = () => {
               title="필요한 정보들을 한눈에 확인해봐요"
               tabs={['수업노트', '학생목록', '스터디룸']}
               content={[
-                <NoteSectionContent
-                  hasStudyRooms={hasStudyRooms ?? false}
-                  key="note"
-                  notes={notes}
-                  onClickNewNote={handleNewNoteClick}
-                  onClickNote={handleNoteClick}
-                />,
-                <StudentsSectionContent key="students" />,
-                <StudyroomSectionContent
-                  key="studyrooms"
-                  hasStudyRooms={hasStudyRooms ?? false}
-                  studyRooms={studyRoomsList ?? []}
-                  onStudyRoomClick={handleStudyRoomClick}
-                />,
+                <NoteContent key="note" />,
+                <StudentsContent key="students" />,
+                <StudyroomContent key="studyrooms" />,
               ]}
               className="tablet:hidden"
             />
@@ -111,14 +129,8 @@ const DashboardTeacher = () => {
               title="필요한 정보들을 한눈에 확인해봐요"
               tabs={['수업노트', '학생목록']}
               content={[
-                <NoteSectionContent
-                  hasStudyRooms={hasStudyRooms ?? false}
-                  key="note"
-                  notes={notes}
-                  onClickNewNote={handleNewNoteClick}
-                  onClickNote={handleNoteClick}
-                />,
-                <StudentsSectionContent key="students" />,
+                <NoteContent key="note" />,
+                <StudentsContent key="students" />,
               ]}
               className="tablet:flex hidden"
             />
