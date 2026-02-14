@@ -1,3 +1,4 @@
+export { AddNoteIcon } from './add-note-icon';
 export { PlusIcon } from './plus-icon';
 export { SettingIcon } from './setting-icon';
 export { TextIcon } from './text-icon';
