@@ -6,6 +6,7 @@ import {
   Session5,
   Session6,
 } from '@/features/home';
+import FloatingCTA from '@/features/home/ui/floating-cta';
 import { Footer } from '@/layout/footer';
 import { cn } from '@/shared/lib';
 
@@ -29,6 +30,8 @@ export default function HomePage() {
       <Session5 />
       <Session6 />
       <Footer />
+
+      <FloatingCTA />
     </main>
   );
 }

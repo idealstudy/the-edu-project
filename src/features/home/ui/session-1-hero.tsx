@@ -86,7 +86,7 @@ export function Session1() {
             'tablet:h-13.5 tablet:px-12 tablet:font-body2-normal'
           )}
         >
-          <Link href="/list/teachers">등록된 선생님 보러가기</Link>
+          <Link href={PUBLIC.CORE.LIST.TEACHERS}>등록된 선생님 보러가기</Link>
         </Button>
         <Button
           size="xsmall"
