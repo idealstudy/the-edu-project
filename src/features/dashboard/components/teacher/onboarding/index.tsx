@@ -12,9 +12,9 @@ import {
   RoomIcon,
   UserPlusIcon,
 } from '@/shared/components/icons';
-import { Icon } from '@/shared/components/ui/icon';
 import { cn } from '@/shared/lib';
 
+import { OnboardingControlButton } from './onboarding-control-button';
 import { OnboardingStep } from './onboarding-step';
 import { OnboardingStepGroup } from './onboarding-step-group';
 
@@ -53,7 +53,7 @@ const TeacherOnboarding = () => {
             학생을 초대해주세요
           </span>
         )}
-        <OnboardingCloseButton
+        <OnboardingControlButton
           canClose={isInviteStudentCompleted}
           isExpanded={isExpanded}
           onClose={() => setIsVisible(false)}
@@ -114,58 +114,5 @@ const ONBOARDING_STEPS = [
   label: string;
   icon: ComponentType<{ className?: string }>;
 }[];
-
-interface OnboardingCloseButtonProps {
-  canClose: boolean;
-  isExpanded: boolean;
-  onClose: () => void;
-  onExpandToggle: () => void;
-}
-
-const OnboardingCloseButton = ({
-  canClose,
-  isExpanded,
-  onClose,
-  onExpandToggle,
-}: OnboardingCloseButtonProps) => (
-  <>
-    {canClose && (
-      <button
-        type="button"
-        onClick={onClose}
-        className="text-body2-normal text-gray-10 tablet:block hidden shrink-0"
-      >
-        닫기
-      </button>
-    )}
-    <div className="tablet:hidden flex shrink-0">
-      {canClose ? (
-        <button
-          type="button"
-          onClick={onClose}
-          className="text-gray-10"
-          aria-label="닫기"
-        >
-          <Icon.X className="size-6" />
-        </button>
-      ) : (
-        <button
-          type="button"
-          onClick={onExpandToggle}
-          className="text-gray-10"
-          aria-expanded={isExpanded}
-          aria-label="접기/펼치기"
-        >
-          <Icon.ChevronDown
-            className={cn(
-              'text-gray-10 size-6 transition-transform',
-              !isExpanded && 'rotate-180'
-            )}
-          />
-        </button>
-      )}
-    </div>
-  </>
-);
 
 export default TeacherOnboarding;
