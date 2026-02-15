@@ -6,7 +6,7 @@ type LayoutProps = {
 
 export default function StudyRoomsLayout({ children }: LayoutProps) {
   return (
-    <main className="bg-[#F9F9F9]">
+    <main>
       <ColumnLayout>{children} </ColumnLayout>
     </main>
   );
