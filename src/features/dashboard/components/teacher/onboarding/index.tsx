@@ -18,6 +18,19 @@ import { OnboardingControlButton } from './onboarding-control-button';
 import { OnboardingStep } from './onboarding-step';
 import { OnboardingStepGroup } from './onboarding-step-group';
 
+// 강사 온보딩 단계
+const ONBOARDING_STEPS = [
+  { type: 'CREATE_STUDY_ROOM', label: '스터디룸 생성', icon: RoomIcon },
+  { type: 'INVITE_STUDENT', label: '학생 초대', icon: UserPlusIcon },
+  { type: 'CREATE_CLASS_NOTE', label: '수업노트 작성', icon: CoiledBookIcon },
+  { type: 'GIVE_FEEDBACK', label: '질문 답변', icon: ChatIcon },
+  { type: 'ASSIGN_ASSIGNMENT', label: '과제 생성', icon: PenIcon },
+] as const satisfies readonly {
+  type: TeacherOnboardingStepType;
+  label: string;
+  icon: ComponentType<{ className?: string }>;
+}[];
+
 const TeacherOnboarding = () => {
   const { data: onboarding } = useTeacherOnboardingQuery();
   const [isVisible, setIsVisible] = useState(true);
@@ -101,18 +114,5 @@ const TeacherOnboarding = () => {
     </div>
   );
 };
-
-/** 이미지 순서: 스터디룸 생성 → 학생 초대 → 수업노트 작성 → 질문 답변 → 과제 생성 */
-const ONBOARDING_STEPS = [
-  { type: 'CREATE_STUDY_ROOM', label: '스터디룸 생성', icon: RoomIcon },
-  { type: 'INVITE_STUDENT', label: '학생 초대', icon: UserPlusIcon },
-  { type: 'CREATE_CLASS_NOTE', label: '수업노트 작성', icon: CoiledBookIcon },
-  { type: 'GIVE_FEEDBACK', label: '질문 답변', icon: ChatIcon },
-  { type: 'ASSIGN_ASSIGNMENT', label: '과제 생성', icon: PenIcon },
-] as const satisfies readonly {
-  type: TeacherOnboardingStepType;
-  label: string;
-  icon: ComponentType<{ className?: string }>;
-}[];
 
 export default TeacherOnboarding;
