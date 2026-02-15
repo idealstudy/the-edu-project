@@ -108,6 +108,9 @@ const StudyroomSectionContent = ({
       </p>
     );
 
+  const studyRoomTitleClassName =
+    'font-headline2-heading text-gray-12 min-w-0 shrink-0 truncate text-center leading-6 tablet:font-headline1-heading text-balance';
+
   return (
     <div className="flex w-full flex-col items-center gap-8">
       <div
@@ -178,19 +181,19 @@ const StudyroomSectionContent = ({
             }}
           >
             <div
-              className="font-headline2-heading text-gray-12 min-w-0 shrink-0 truncate text-center leading-6"
+              className={studyRoomTitleClassName}
               style={{ width: titleViewportWidth, height: 24 }}
             >
               {studyRooms[prevIndex]?.name}
             </div>
             <div
-              className="font-headline2-heading text-gray-12 min-w-0 shrink-0 truncate text-center leading-6"
+              className={studyRoomTitleClassName}
               style={{ width: titleViewportWidth, height: 24 }}
             >
               {studyRooms[currentIndex]?.name}
             </div>
             <div
-              className="font-headline2-heading text-gray-12 min-w-0 shrink-0 truncate text-center leading-6"
+              className={studyRoomTitleClassName}
               style={{ width: titleViewportWidth, height: 24 }}
             >
               {studyRooms[nextIndex]?.name}
