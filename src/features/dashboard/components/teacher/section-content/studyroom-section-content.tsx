@@ -114,11 +114,9 @@ const StudyroomSectionContent = ({
         aria-label="스터디룸 목록"
       >
         {/* 스터디룸 이미지 */}
-        <div className="tablet:h-[300px] tablet:w-[300px] h-[200px] w-[200px] shrink-0 cursor-pointer overflow-hidden">
-          <button
+        <div className="tablet:h-[300px] tablet:w-[300px] h-[200px] w-[200px] shrink-0 overflow-hidden">
+          <div
             className="flex flex-nowrap items-center"
-            onClick={handleStudyRoomImageClick}
-            aria-label={`${studyRooms[currentIndex]?.name ?? '스터디룸'} 스터디룸으로 이동`}
             style={{
               width: slideStep * 3 - IMAGE_GAP,
               gap: IMAGE_GAP,
@@ -131,6 +129,7 @@ const StudyroomSectionContent = ({
             <StudyroomImageButton
               alt={studyRooms[prevIndex]?.name ?? '이전 스터디룸'}
               onClick={handleStudyRoomImageClick}
+              aria-hidden="true"
             />
             <StudyroomImageButton
               alt={studyRooms[currentIndex]?.name ?? '스터디룸'}
@@ -139,8 +138,9 @@ const StudyroomSectionContent = ({
             <StudyroomImageButton
               alt={studyRooms[nextIndex]?.name ?? '다음 스터디룸'}
               onClick={handleStudyRoomImageClick}
+              aria-hidden="true"
             />
-          </button>
+          </div>
         </div>
       </div>
 
