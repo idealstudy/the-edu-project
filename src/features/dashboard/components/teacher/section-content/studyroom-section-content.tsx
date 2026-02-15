@@ -2,16 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 
+import { STUDYROOM_SECTION_CONSTANTS } from './constants';
 import { StudyroomImageButton } from './studyroom-image-button';
-
-// 애니메이션 관련 상수
-const IMAGE_SIZE_MOBILE = 200;
-const IMAGE_SIZE_TABLET = 300;
-const IMAGE_GAP = 32;
-const BUTTON_WIDTH = 32;
-const TITLE_ROW_GAP = 8;
-const ANIMATION_DURATION = 400;
-const TABLET_BREAKPOINT = 768;
 
 type StudyroomSectionContentProps = {
   studyRooms: {
@@ -25,6 +17,15 @@ const StudyroomSectionContent = ({
   studyRooms,
   onStudyRoomClick,
 }: StudyroomSectionContentProps) => {
+  const {
+    IMAGE_SIZE_MOBILE,
+    IMAGE_SIZE_TABLET,
+    IMAGE_GAP,
+    BUTTON_WIDTH,
+    TITLE_ROW_GAP,
+    ANIMATION_DURATION,
+    TABLET_BREAKPOINT,
+  } = STUDYROOM_SECTION_CONSTANTS;
   const [isTablet, setIsTablet] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [translateX, setTranslateX] = useState(
@@ -50,7 +51,7 @@ const StudyroomSectionContent = ({
     handler();
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
-  }, []);
+  }, [TABLET_BREAKPOINT]);
 
   // 애니메이션
   useEffect(() => {
@@ -94,7 +95,7 @@ const StudyroomSectionContent = ({
         setIsAnimating(false);
       }, ANIMATION_DURATION);
     },
-    [isAnimating, totalCount, slideStep]
+    [isAnimating, totalCount, slideStep, ANIMATION_DURATION]
   );
 
   const handleStudyRoomImageClick = () =>
