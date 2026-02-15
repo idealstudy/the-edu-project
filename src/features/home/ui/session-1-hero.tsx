@@ -20,6 +20,7 @@ export function Session1() {
         width={200}
         height={200}
         alt="인트로 이미지"
+        priority
         className="tablet:hidden"
       />
 

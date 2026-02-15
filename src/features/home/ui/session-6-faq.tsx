@@ -16,9 +16,9 @@ export function Session6() {
         'desktop:my-20 desktop:w-228'
       )}
     >
-      <h1 className={cn('font-headline1-heading', 'desktop:font-display-2')}>
+      <h2 className={cn('font-headline1-heading', 'desktop:font-display-2')}>
         자주 묻는 질문
-      </h1>
+      </h2>
       <FAQAccordion />
     </section>
   );
