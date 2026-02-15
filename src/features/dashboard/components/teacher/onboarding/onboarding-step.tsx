@@ -11,7 +11,6 @@ interface OnboardingStepProps {
   label: string;
   variant?: OnboardingStepVariant;
   grouped?: boolean;
-  onClick?: () => void;
   className?: string;
 }
 
@@ -26,13 +25,10 @@ export const OnboardingStep = ({
   label,
   variant = 'incompleted',
   grouped = false,
-  onClick,
   className,
 }: OnboardingStepProps) => {
   return (
-    <button
-      type="button"
-      onClick={onClick}
+    <div
       className={cn(
         'bg-gray-white tablet:w-fit flex w-fit w-full items-center gap-3 rounded-full border-[1.3px] px-4 py-3 transition-colors',
         variantStyles[variant],
@@ -52,6 +48,6 @@ export const OnboardingStep = ({
         <Icon className="size-5" />
       </span>
       <span className="font-body2-heading text-gray-12">{label}</span>
-    </button>
+    </div>
   );
 };
