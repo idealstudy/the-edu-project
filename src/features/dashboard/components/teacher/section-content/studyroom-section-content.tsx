@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import Image from 'next/image';
-
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 
+import { StudyroomImageButton } from './studyroom-image-button';
+
+// 애니메이션 관련 상수
 const IMAGE_SIZE_MOBILE = 200;
 const IMAGE_SIZE_TABLET = 300;
 const IMAGE_GAP = 32;
@@ -79,48 +80,28 @@ const StudyroomSectionContent = ({
     [isAnimating, totalCount, slideStep]
   );
 
-  // 스터디룸 영역 클릭 시 이동
-  const handleAreaClick = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const clickX = e.clientX - rect.left;
-      const isLeftSide = clickX < rect.width / 2;
-      if (isLeftSide) {
-        moveTo('prev');
-      } else {
-        moveTo('next');
-      }
-    },
-    [moveTo]
-  );
+  const handleStudyRoomImageClick = () =>
+    onStudyRoomClick(studyRooms[currentIndex]?.id ?? 0);
 
-  if (totalCount === 0) return null;
+  if (totalCount === 0)
+    return (
+      <p className="font-body2-normal text-orange-7">
+        상단을 참고해 스터디룸을 생성해주세요.
+      </p>
+    );
 
   return (
     <div className="flex w-full flex-col items-center gap-8">
-      <button
-        type="button"
-        className="relative w-fit cursor-pointer overflow-hidden border-0 bg-transparent select-none"
-        onClick={() => onStudyRoomClick(studyRooms[currentIndex]?.id ?? 0)}
-        onContextMenu={(e) => e.preventDefault()}
-        onKeyDown={(e) => {
-          if (e.key === 'ArrowLeft') moveTo('prev');
-          if (e.key === 'ArrowRight') moveTo('next');
-        }}
+      <div
+        className="relative flex w-full items-center justify-center select-none"
         aria-label="스터디룸 이미지"
       >
-        {!studyRooms.length && (
-          <p className="font-body2-normal text-orange-7">
-            상단을 참고해 스터디룸을 생성해주세요.
-          </p>
-        )}
         {/* 스터디룸 이미지 */}
-        <div
-          className="tablet:w-[300px] tablet:h-[300px] mx-auto h-[200px] w-[200px] overflow-hidden"
-          onClick={() => onStudyRoomClick(studyRooms[currentIndex]?.id ?? 0)}
-        >
-          <div
+        <div className="tablet:h-[300px] tablet:w-[300px] h-[200px] w-[200px] shrink-0 cursor-pointer overflow-hidden">
+          <button
             className="flex flex-nowrap items-center"
+            onClick={handleStudyRoomImageClick}
+            aria-label="스터디룸 이미지 이동 버튼"
             style={{
               width: slideStep * 3 - IMAGE_GAP,
               gap: IMAGE_GAP,
@@ -130,43 +111,24 @@ const StudyroomSectionContent = ({
                 : 'none',
             }}
           >
-            <div className="tablet:w-[300px] tablet:h-[300px] h-[200px] w-[200px] shrink-0">
-              <Image
-                src="/studyroom/study-room-opened.png"
-                alt={studyRooms[prevIndex]?.name ?? '이전 스터디룸'}
-                width={IMAGE_SIZE_TABLET}
-                height={IMAGE_SIZE_TABLET}
-                className="h-full w-full object-cover"
-              />
-            </div>
-            <div className="tablet:w-[300px] tablet:h-[300px] h-[200px] w-[200px] shrink-0">
-              <Image
-                src="/studyroom/study-room-opened.png"
-                alt={studyRooms[currentIndex]?.name ?? '스터디룸'}
-                width={IMAGE_SIZE_TABLET}
-                height={IMAGE_SIZE_TABLET}
-                className="h-full w-full object-cover"
-              />
-            </div>
-            <div className="tablet:w-[300px] tablet:h-[300px] h-[200px] w-[200px] shrink-0">
-              <Image
-                src="/studyroom/study-room-opened.png"
-                alt={studyRooms[nextIndex]?.name ?? '다음 스터디룸'}
-                width={IMAGE_SIZE_TABLET}
-                height={IMAGE_SIZE_TABLET}
-                className="h-full w-full object-cover"
-              />
-            </div>
-          </div>
+            <StudyroomImageButton
+              alt={studyRooms[prevIndex]?.name ?? '이전 스터디룸'}
+              onClick={handleStudyRoomImageClick}
+            />
+            <StudyroomImageButton
+              alt={studyRooms[currentIndex]?.name ?? '스터디룸'}
+              onClick={handleStudyRoomImageClick}
+            />
+            <StudyroomImageButton
+              alt={studyRooms[nextIndex]?.name ?? '다음 스터디룸'}
+              onClick={handleStudyRoomImageClick}
+            />
+          </button>
         </div>
-      </button>
+      </div>
 
       {/* 스터디룸 타이틀 */}
-      <div
-        className="tablet:w-[300px] mx-auto flex h-6 w-[200px] items-center gap-2 select-none"
-        onClick={handleAreaClick}
-        onContextMenu={(e) => e.preventDefault()}
-      >
+      <div className="tablet:w-[300px] mx-auto flex h-6 w-[200px] items-center gap-2 select-none">
         <button
           type="button"
           className="flex h-6 w-8 shrink-0 cursor-pointer items-center justify-center border-0 bg-transparent px-1"
