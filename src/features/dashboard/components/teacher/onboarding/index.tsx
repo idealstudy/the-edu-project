@@ -18,19 +18,6 @@ import { cn } from '@/shared/lib';
 import { OnboardingStep } from './onboarding-step';
 import { OnboardingStepGroup } from './onboarding-step-group';
 
-const TITLE_ONBOARDING_MOBILE = (
-  <>
-    먼저 나만의 스터디룸을 생성하고
-    <br />
-    학생을 초대해주세요
-  </>
-);
-const TITLE_ONBOARDING_DESKTOP =
-  '먼저 나만의 스터디룸을 생성하고 학생을 초대해주세요';
-
-const TITLE_INVITE_STUDENT_COMPLETED =
-  '이제 디에듀의 다양한 기능을 이용해보세요!';
-
 const TeacherOnboarding = () => {
   const { data: onboarding } = useTeacherOnboardingQuery();
   const [isVisible, setIsVisible] = useState(true);
@@ -43,15 +30,9 @@ const TeacherOnboarding = () => {
     else return 'incompleted';
   };
 
+  // 학생 초대 완료 여부 - 타이틀 변경, 닫기 가능 여부 결정
   const isInviteStudentCompleted =
     getStepVariant('INVITE_STUDENT') === 'completed';
-
-  /** INVITE_STUDENT 완료 시에만 닫기 가능 */
-  const canClose = isInviteStudentCompleted;
-  /** INVITE_STUDENT 미완료 시 TITLE_ONBOARDING, 완료 시 TITLE_INVITE_STUDENT_COMPLETED */
-  const title = isInviteStudentCompleted
-    ? TITLE_INVITE_STUDENT_COMPLETED
-    : null;
 
   if (!isVisible) return null;
 
@@ -61,20 +42,19 @@ const TeacherOnboarding = () => {
   return (
     <div className={cn('bg-orange-scale-orange-1 rounded-2xl p-8')}>
       <div className="flex w-full items-center justify-between gap-2 text-left">
-        {title ? (
-          <span className={titleClassName}>{title}</span>
+        {isInviteStudentCompleted ? (
+          <span className={titleClassName}>
+            이제 디에듀의 다양한 기능을 이용해보세요!
+          </span>
         ) : (
-          <>
-            <span className={cn(titleClassName, 'tablet:hidden')}>
-              {TITLE_ONBOARDING_MOBILE}
-            </span>
-            <span className={cn(titleClassName, 'tablet:inline hidden')}>
-              {TITLE_ONBOARDING_DESKTOP}
-            </span>
-          </>
+          <span className={titleClassName}>
+            먼저 나만의 스터디룸을 생성하고
+            <br className="tablet:hidden" />
+            학생을 초대해주세요
+          </span>
         )}
         <OnboardingCloseButton
-          canClose={canClose}
+          canClose={isInviteStudentCompleted}
           isExpanded={isExpanded}
           onClose={() => setIsVisible(false)}
           onExpandToggle={() => setIsExpanded((prev) => !prev)}
