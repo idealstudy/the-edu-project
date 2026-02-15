@@ -7,7 +7,7 @@ import { useTeacherStudyRoomsQuery } from '@/features/study-rooms';
 import { PRIVATE } from '@/shared/constants';
 
 import { useDashboardQuery } from '../../hooks';
-import DashboardHeader from '../dashboard-header';
+import DashboardHeader from '../header';
 import SingleSection from '../section/single-section';
 import TabbedSection from '../section/tabbed-section';
 import Onboarding from './onboarding';
