@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 
@@ -32,6 +32,9 @@ const StudyroomSectionContent = ({
   );
   const [isAnimating, setIsAnimating] = useState(false);
   const totalCount = studyRooms.length;
+  const animationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
 
   // 이미지 크기, 슬라이드 거리, 타이틀 뷰포트 너비 계산
   const imageSize = isTablet ? IMAGE_SIZE_TABLET : IMAGE_SIZE_MOBILE;
@@ -54,6 +57,15 @@ const StudyroomSectionContent = ({
     if (!isAnimating) setTranslateX(-slideStep);
   }, [slideStep, isAnimating]);
 
+  // 언마운트 시 setTimeout 정리
+  useEffect(() => {
+    return () => {
+      if (animationTimeoutRef.current) {
+        clearTimeout(animationTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const prevIndex =
     totalCount > 0 ? (currentIndex - 1 + totalCount) % totalCount : 0;
   const nextIndex = totalCount > 0 ? (currentIndex + 1) % totalCount : 0;
@@ -65,7 +77,12 @@ const StudyroomSectionContent = ({
 
       setIsAnimating(true);
       setTranslateX(direction === 'prev' ? 0 : -slideStep * 2);
-      setTimeout(() => {
+
+      if (animationTimeoutRef.current) {
+        clearTimeout(animationTimeoutRef.current);
+      }
+      animationTimeoutRef.current = setTimeout(() => {
+        animationTimeoutRef.current = null;
         setCurrentIndex((prev) => {
           if (direction === 'prev') {
             return prev === 0 ? totalCount - 1 : prev - 1;
