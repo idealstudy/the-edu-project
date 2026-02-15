@@ -26,7 +26,7 @@ export function Session5() {
             src="/home/im_intro_2.png"
             width={400}
             height={400}
-            alt=""
+            alt="디에듀 캐릭터 일러스트"
             className={cn(
               'aspect-auto w-37.5 self-end',
               'tablet:w-50',

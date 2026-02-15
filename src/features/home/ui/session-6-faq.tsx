@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 
+import { FAQ_DATA } from '@/features/home/constants/faq-data';
 import { cn } from '@/shared/lib';
 
 // Session6: FAQ
@@ -28,58 +29,18 @@ export function Session6() {
 const FAQAccordion = () => {
   const [activeTab, setActiveTab] = useState<number | null>(null);
 
-  const tabs = [
-    {
-      question: '디에듀는 어떻게 사용하나요?',
-      answer: [
-        '강사로 가입하시면 스터디룸을 만들고 학생을 초대할 수 있습니다.',
-        '학생은 선생님의 초대 링크를 통해 온라인 스터디룸에 참여하게 됩니다.',
-        '수업노트 작성, 과제 부여, 질문 답변 등 모든 기능을 한 곳에서 관리할 수 있습니다.',
-      ],
-    },
-    {
-      question: '학생은 어떻게 초대받나요?',
-      answer: [
-        '강사가 스터디룸을 만든 후 초대 링크를 생성합니다.',
-        '초대 링크를 학생에게 전달하면, 학생은 링크를 통해 온라인 스터디룸에 참여할 수 있습니다.',
-        '초대받은 학생은 선생님의 전용 스터디룸에서 수업 자료, 과제, 피드백을 모두 확인할 수 있습니다.',
-      ],
-    },
-    {
-      question: '과제와 질문 관리는 어떻게 하나요?',
-      answer: [
-        '과제를 부여하면 자동으로 학생에게 알림과 리마인더가 전송됩니다.',
-        '학생이 제출한 과제에 피드백을 작성할 수 있습니다.',
-        '학생의 질문에 실시간으로 답변할 수 있으며, 모든 대화 내용이 기록됩니다.',
-      ],
-    },
-    {
-      question: '수업 전후 자료 관리는 어떻게 하나요?',
-      answer: [
-        '수업 전 예습 자료를 업로드하여 학생이 미리 준비할 수 있도록 합니다.',
-        '수업 후 복습 자료와 수업노트를 작성하여 학생이 언제든지 다시 볼 수 있습니다.',
-        '모든 자료는 스터디룸에 체계적으로 정리되어 관리됩니다.',
-      ],
-    },
-    {
-      question: '무료로 사용할 수 있나요?',
-      answer: [
-        '네, 디에듀는 기본 기능을 무료로 사용할 수 있습니다.',
-        '강사 등록 후 바로 스터디룸을 만들고 학생을 초대할 수 있습니다.',
-        '추가 기능은 곧 출시될 예정입니다.',
-      ],
-    },
-  ];
-
   return (
     <div className="flex flex-col gap-3">
-      {tabs.map((item, index) => (
+      {FAQ_DATA.map((item, index) => (
         <div
           key={index}
           className="border-gray-scale-gray-95 border"
         >
           {/* 질문 */}
           <button
+            id={`faq-button-${index}`}
+            aria-expanded={activeTab === index}
+            aria-controls={`faq-panel-${index}`}
             onClick={() => setActiveTab(activeTab === index ? null : index)}
             className={cn(
               'font-body2-heading hover:bg-orange-7 flex w-full cursor-pointer px-6 py-5 text-start hover:text-white',
@@ -89,7 +50,7 @@ const FAQAccordion = () => {
             <p className="flex-1">{item.question}</p>
             <Image
               src="/ic-arrow-right.svg"
-              alt="화살표"
+              alt={activeTab === index ? '질문 접기' : '질문 펼치기'}
               width={16}
               height={16}
               className={cn(
@@ -109,6 +70,9 @@ const FAQAccordion = () => {
               />
 
               <div
+                id={`faq-panel-${index}`}
+                role="region"
+                aria-labelledby={`faq-button-${index}`}
                 className={cn(
                   'font-label-normal space-y-2 px-6 py-5',
                   'tablet:p-8 tablet:font-body2-normal'

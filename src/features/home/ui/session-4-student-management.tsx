@@ -32,7 +32,7 @@ export function Session4() {
         src="/home/im_card_3_mobile.png"
         width={324}
         height={342}
-        alt="온보딩 화면"
+        alt="대시보드 화면"
         className="tablet:hidden"
       />
       <Image
