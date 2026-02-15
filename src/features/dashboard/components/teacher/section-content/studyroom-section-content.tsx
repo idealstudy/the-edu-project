@@ -57,40 +57,41 @@ const StudyroomSectionContent = ({
     totalCount > 0 ? (currentIndex - 1 + totalCount) % totalCount : 0;
   const nextIndex = totalCount > 0 ? (currentIndex + 1) % totalCount : 0;
 
-  const goToPrev = useCallback(() => {
-    if (isAnimating || totalCount <= 1) return;
-    setIsAnimating(true);
-    setTranslateX(0);
-    setTimeout(() => {
-      setCurrentIndex((prev) => (prev === 0 ? totalCount - 1 : prev - 1));
-      setTranslateX(-slideStep);
-      setIsAnimating(false);
-    }, ANIMATION_DURATION);
-  }, [isAnimating, totalCount, slideStep]);
+  // 스터디룸 이동
+  const moveTo = useCallback(
+    (direction: 'prev' | 'next') => {
+      if (isAnimating || totalCount <= 1) return;
 
-  const goToNext = useCallback(() => {
-    if (isAnimating || totalCount <= 1) return;
-    setIsAnimating(true);
-    setTranslateX(-slideStep * 2);
-    setTimeout(() => {
-      setCurrentIndex((prev) => (prev === totalCount - 1 ? 0 : prev + 1));
-      setTranslateX(-slideStep);
-      setIsAnimating(false);
-    }, ANIMATION_DURATION);
-  }, [isAnimating, totalCount, slideStep]);
+      setIsAnimating(true);
+      setTranslateX(direction === 'prev' ? 0 : -slideStep * 2);
+      setTimeout(() => {
+        setCurrentIndex((prev) => {
+          if (direction === 'prev') {
+            return prev === 0 ? totalCount - 1 : prev - 1;
+          } else {
+            return prev === totalCount - 1 ? 0 : prev + 1;
+          }
+        });
+        setTranslateX(-slideStep);
+        setIsAnimating(false);
+      }, ANIMATION_DURATION);
+    },
+    [isAnimating, totalCount, slideStep]
+  );
 
+  // 스터디룸 영역 클릭 시 이동
   const handleAreaClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       const rect = e.currentTarget.getBoundingClientRect();
       const clickX = e.clientX - rect.left;
       const isLeftSide = clickX < rect.width / 2;
       if (isLeftSide) {
-        goToPrev();
+        moveTo('prev');
       } else {
-        goToNext();
+        moveTo('next');
       }
     },
-    [goToPrev, goToNext]
+    [moveTo]
   );
 
   if (totalCount === 0) return null;
@@ -103,8 +104,8 @@ const StudyroomSectionContent = ({
         onClick={() => onStudyRoomClick(studyRooms[currentIndex]?.id ?? 0)}
         onContextMenu={(e) => e.preventDefault()}
         onKeyDown={(e) => {
-          if (e.key === 'ArrowLeft') goToPrev();
-          if (e.key === 'ArrowRight') goToNext();
+          if (e.key === 'ArrowLeft') moveTo('prev');
+          if (e.key === 'ArrowRight') moveTo('next');
         }}
         aria-label="스터디룸 이미지"
       >
@@ -171,7 +172,7 @@ const StudyroomSectionContent = ({
           className="flex h-6 w-8 shrink-0 cursor-pointer items-center justify-center border-0 bg-transparent px-1"
           onClick={(e) => {
             e.stopPropagation();
-            goToPrev();
+            moveTo('prev');
           }}
           aria-label="이전 스터디룸"
           disabled={totalCount <= 1}
@@ -222,7 +223,7 @@ const StudyroomSectionContent = ({
           className="flex h-6 w-8 shrink-0 cursor-pointer items-center justify-center border-0 bg-transparent px-1"
           onClick={(e) => {
             e.stopPropagation();
-            goToNext();
+            moveTo('next');
           }}
           aria-label="다음 스터디룸"
           disabled={totalCount <= 1}
