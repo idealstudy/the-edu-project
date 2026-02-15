@@ -17,8 +17,9 @@ export const StudyroomImageButton = ({
     <Image
       src="/studyroom/study-room-opened.png"
       alt={alt}
-      width={200}
-      height={200}
+      width={300}
+      height={300}
+      sizes="(max-width: 767px) 200px, 300px"
       className="h-full w-full object-cover"
     />
   </button>

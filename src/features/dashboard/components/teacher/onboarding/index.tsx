@@ -36,11 +36,9 @@ const TeacherOnboarding = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [isExpanded, setIsExpanded] = useState(true);
 
-  const getStepVariant = (stepType: string) => {
-    const stepStatus =
-      onboarding?.steps?.[stepType as keyof typeof onboarding.steps]?.status;
-    if (stepStatus === 'completed') return stepStatus;
-    else return 'incompleted';
+  const getStepVariant = (stepType: TeacherOnboardingStepType) => {
+    const stepStatus = onboarding?.steps?.[stepType]?.status;
+    return stepStatus === 'completed' ? stepStatus : 'incompleted';
   };
 
   // 학생 초대 완료 여부 - 타이틀 변경, 닫기 가능 여부 결정
