@@ -1,25 +1,43 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { IoIosArrowUp } from 'react-icons/io';
 
 import { cn } from '@/shared/lib';
 
 const SHOW_OFFSET = 240;
 
-// Scroll page to top
+// 위로 이동 버튼
 export const ScrollToTopButton = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const rafIdRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsVisible(window.scrollY > SHOW_OFFSET);
+    const updateVisible = () => {
+      const next = window.scrollY > SHOW_OFFSET;
+      // 이전 값과 다를 때만 실제 상태 변경
+      setIsVisible((prev) => (prev === next ? prev : next));
     };
 
-    handleScroll();
+    const handleScroll = () => {
+      // 이미 예약된 프레임 있으면 스킵 (rAF throttle)
+      if (rafIdRef.current !== null) return;
+
+      rafIdRef.current = window.requestAnimationFrame(() => {
+        rafIdRef.current = null;
+        updateVisible();
+      });
+    };
+
+    updateVisible();
     window.addEventListener('scroll', handleScroll, { passive: true });
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafIdRef.current !== null) {
+        window.cancelAnimationFrame(rafIdRef.current);
+      }
+    };
   }, []);
 
   const handleClick = () => {
@@ -30,7 +48,7 @@ export const ScrollToTopButton = () => {
     <button
       type="button"
       onClick={handleClick}
-      aria-label="Scroll to top"
+      aria-label="맨 위로 이동"
       className={cn(
         'fixed right-4 bottom-10 z-50 cursor-pointer',
         'tablet:right-8',
