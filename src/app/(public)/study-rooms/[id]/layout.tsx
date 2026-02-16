@@ -1,13 +1,16 @@
-import { ColumnLayout } from '@/layout/column-layout';
+// import { ColumnLayout } from '@/layout/column-layout';
+import { Preparing } from '@/shared/components/ui/preparing';
 
-type LayoutProps = {
-  children: React.ReactNode;
-};
+// type LayoutProps = {
+//   children: React.ReactNode;
+// };
 
-export default function StudyRoomsLayout({ children }: LayoutProps) {
+// TODO : api 연결 후 복구 예정
+export default function StudyRoomsLayout() {
   return (
     <main>
-      <ColumnLayout>{children} </ColumnLayout>
+      {/* <ColumnLayout>{children} </ColumnLayout> */}
+      <Preparing />
     </main>
   );
 }
