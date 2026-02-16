@@ -16,7 +16,12 @@ import type {
   StudentStudyRoom,
   StudyRoom,
 } from '@/features/study-rooms/model/types';
-import { HomeIcon, PlusIcon, TextIcon } from '@/shared/components/icons';
+import {
+  FindingIcon,
+  HomeIcon,
+  PlusIcon,
+  TextIcon,
+} from '@/shared/components/icons';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 import {
   Popover,
@@ -192,7 +197,7 @@ export const Header = () => {
                     onClick={() => setIsOpen(false)}
                   >
                     <HomeIcon />
-                    <span>홈</span>
+                    <span>대시보드</span>
                   </PopoverLink>
 
                   {/* 강사 프로필 링크 */}
@@ -243,6 +248,13 @@ export const Header = () => {
                       </p>
                     )}
                   </div>
+                  <PopoverLink
+                    href={PUBLIC.CORE.LIST.TEACHERS}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <FindingIcon />
+                    <span>탐색하기</span>
+                  </PopoverLink>
 
                   <PopoverSeparator />
 
