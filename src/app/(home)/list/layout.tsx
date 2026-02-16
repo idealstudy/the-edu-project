@@ -33,13 +33,16 @@ export default function ListLayout({
     { value: 'ALPHABETICAL', label: '가나다순' },
   ];
 
-  const SORT_SUBJECT_OPTIONS = [
-    { value: 'ALL', label: '전체 과목' },
-    { value: 'KOREAN', label: '국어' },
-    { value: 'ENGLISH', label: '영어' },
-    { value: 'MATH', label: '수학' },
-    { value: 'OTHER', label: '기타' },
-  ];
+  {
+    /* TODO : 추후 업데이트 이후 적용 예정 */
+  }
+  // const SORT_SUBJECT_OPTIONS = [
+  //   { value: 'ALL', label: '전체 과목' },
+  //   { value: 'KOREAN', label: '국어' },
+  //   { value: 'ENGLISH', label: '영어' },
+  //   { value: 'MATH', label: '수학' },
+  //   { value: 'OTHER', label: '기타' },
+  // ];
 
   const SELECT_STYLES = {
     trigger:
@@ -141,8 +144,8 @@ export default function ListLayout({
                     ))}
                   </Select.Content>
                 </Select>
-
-                <Select
+                {/* TODO : 추후 업데이트 이후 적용 예정 */}
+                {/* <Select
                   value={subjectBy}
                   onValueChange={(v) => updateFilter('subject', v)}
                 >
@@ -161,7 +164,7 @@ export default function ListLayout({
                       </Select.Option>
                     ))}
                   </Select.Content>
-                </Select>
+                </Select> */}
               </div>
 
               <div>{children}</div>
