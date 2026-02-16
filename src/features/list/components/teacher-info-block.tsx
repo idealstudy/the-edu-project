@@ -16,7 +16,7 @@ interface TeacherInfoBlockProps {
 export const TeacherInfoBlock = ({
   teacherName,
   showNewBadge = false,
-  subjectLabel = '영어',
+  // subjectLabel = '영어',
   className,
   showDivider = false,
   footer,
@@ -29,9 +29,10 @@ export const TeacherInfoBlock = ({
             NEW
           </div>
         )}
-        <div className="bg-orange-2 text-orange-7 font-label-heading flex w-fit items-center justify-center rounded-[4px] px-[8px] py-[4px]">
+        {/* TODO : 추후 업데이트 이후 적용 예정 */}
+        {/* <div className="bg-orange-2 text-orange-7 font-label-heading flex w-fit items-center justify-center rounded-[4px] px-[8px] py-[4px]">
           {subjectLabel}
-        </div>
+        </div> */}
       </div>
 
       <div className="font-body1-heading text-gray-12 truncate text-lg md:text-xl">
