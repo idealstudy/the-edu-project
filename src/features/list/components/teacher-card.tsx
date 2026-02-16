@@ -24,10 +24,6 @@ export const TeacherCard = ({ teacher }: TeacherCardProps) => {
         'hover:scale-105 hover:shadow-xl'
       )}
     >
-      {/* {teacher.isNewTeacher && ( */}
-
-      {/* // )} */}
-
       <div className="border-gray-12 relative h-[100px] w-[100px] shrink-0 overflow-hidden rounded-full border bg-gray-50 p-1 md:h-[100px] md:w-[100px]">
         <div className="relative h-full w-full overflow-hidden rounded-full">
           <Image
