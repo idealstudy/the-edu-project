@@ -14,6 +14,7 @@ import { RequiredMark, Select } from '@/shared/components/ui';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
+import { classifyQnaError, handleApiError } from '@/shared/lib/errors';
 import { JSONContent } from '@tiptap/react';
 
 import { QnACreateForm } from '../../schema/create';
@@ -49,6 +50,7 @@ const WriteArea = ({ studyRoomId }: Props) => {
     handleSubmit,
     register,
     setValue,
+    setError,
     control,
     formState: { errors, isValid, isSubmitting },
   } = useFormContext<QnACreateForm>();
@@ -85,6 +87,30 @@ const WriteArea = ({ studyRoomId }: Props) => {
       {
         onSuccess: () => {
           router.replace(`/study-rooms/${studyRoomId}/qna`);
+        },
+        onError: (error) => {
+          handleApiError(error, classifyQnaError, {
+            onField: (msg) => {
+              setError('content', {
+                type: 'server',
+                message: msg,
+              });
+            },
+
+            // 사용자가 toast 에러를 읽을 시간을 위한 setTimeout
+            onContext: () => {
+              setTimeout(() => {
+                router.replace(`/study-rooms/${studyRoomId}/qna`);
+              }, 1500);
+            },
+            onAuth: () => {
+              setTimeout(() => {
+                // TODO: 로그아웃이 안되어 있다면..? -> 강제 로그아웃
+                router.replace(`/login`);
+              }, 1500);
+            },
+            onUnknown: () => {},
+          });
         },
       }
     );
@@ -257,7 +283,7 @@ const WriteArea = ({ studyRoomId }: Props) => {
               disabled={isButtonDisabled}
               className="w-[200px] rounded-sm"
             >
-              작성하기
+              {isSubmitting ? '등록 중...' : '작성하기'}
             </Button>
           </div>
         </div>

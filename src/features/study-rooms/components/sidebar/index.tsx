@@ -4,26 +4,28 @@ import { useEffect, useReducer, useState } from 'react';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { ConfirmDialog } from '@/features/study-rooms/components/common/dialog/confirm-dialog';
-import { InputDialog } from '@/features/study-rooms/components/common/dialog/input-dialog';
 import { StudyroomGroups } from '@/features/study-rooms/components/sidebar/groups';
 import { InvitationDialog } from '@/features/study-rooms/components/student-invitation/InvitationDialog';
-import StudentInvitation from '@/features/study-rooms/components/student-invitation/StudentInvitation';
 import {
   useStudentStudyRoomDetailQuery,
   useTeacherStudyRoomDetailQuery,
 } from '@/features/study-rooms/hooks';
 import { ColumnLayout } from '@/layout/column-layout';
 import {
+  InputDialog,
+  StudyroomConfirmDialog,
+} from '@/shared/components/dialog';
+import {
   dialogReducer,
   initialDialogState,
 } from '@/shared/components/dialog/model/dialog-reducer';
+import { SidebarButton } from '@/shared/components/sidebar';
 import { useRole } from '@/shared/hooks/use-role';
 
 import { StudyRoomDetail } from '../../model';
 import { StudyroomSidebarHeader } from './header';
 import { useDeleteStudyRoom, useUpdateStudyRoom } from './services/query';
-import { StudyStats } from './status';
+import { StudyIntro, StudyStats } from './status';
 
 export const StudyroomSidebar = ({
   studyRoomId,
@@ -131,7 +133,7 @@ export const StudyroomSidebar = ({
   return (
     <>
       {dialog.status === 'open' && dialog.kind === 'onConfirm' && (
-        <ConfirmDialog
+        <StudyroomConfirmDialog
           type="confirm"
           open={true}
           dispatch={dispatch}
@@ -143,7 +145,7 @@ export const StudyroomSidebar = ({
       {dialog.status === 'open' &&
         dialog.kind === 'delete' &&
         dialog.scope === 'studyroom' && (
-          <ConfirmDialog
+          <StudyroomConfirmDialog
             type="delete"
             open={true}
             dispatch={dispatch}
@@ -192,9 +194,15 @@ export const StudyroomSidebar = ({
           numberOfStudents={studyRoomDetail?.studentNames?.length}
           numberOfQuestion={studyRoomDetail?.numberOfQuestion}
         />
-
+        <StudyIntro description={studyRoomDetail?.description} />
         {/* 학생 초대 버튼 - 선생님만 노출 */}
-        {canManage && <StudentInvitation onClick={openInvitation} />}
+        {canManage && (
+          <SidebarButton
+            onClick={openInvitation}
+            btnName="학생 초대하기"
+            imgUrl="/studynotes/invite_student.svg"
+          />
+        )}
         {/* 수업노트 탭에서만 보이는 컴포넌트 */}
         {segment === 'note' && (
           <StudyroomGroups

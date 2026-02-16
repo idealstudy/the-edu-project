@@ -5,6 +5,10 @@ const CORE = {
   INDEX: '/',
   LOGIN: '/login',
   SIGNUP: '/register',
+  LIST: {
+    TEACHERS: '/list/teachers',
+    STUDY_ROOMS: '/list/study-rooms',
+  },
   BIZ: '#',
 } as const;
 

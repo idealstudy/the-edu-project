@@ -6,7 +6,15 @@ const ColumnLayout = ({ className, children, ...props }: ColumnLayoutProps) => {
   return (
     <main
       className={cn(
-        'desktop:flex-row desktop:py-8 flex w-full flex-col justify-center gap-5 py-4',
+        // 중앙 정렬 + 최대 너비
+        'mx-auto w-full max-w-[1200px]',
+
+        // 좌우 여백
+        'tablet:px-8 px-4',
+
+        // 레이아웃
+        'desktop:flex-row desktop:py-8 flex flex-col gap-5 py-4',
+
         className
       )}
       {...props}

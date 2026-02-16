@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 
 import { useTeacherUpdateHomework } from '@/features/homework/hooks/teacher/useTeacherHomeworkMutations';
 import { Form } from '@/shared/components/ui/form';
+import { classifyHomeworkError, handleApiError } from '@/shared/lib/errors';
 
 import { HomeworkForm } from '../schemas/note';
 
@@ -22,7 +23,7 @@ const HomeworkEditForm = ({
 }: PropsWithChildren<EditFormProps>) => {
   const router = useRouter();
   const { mutate: updateHomework } = useTeacherUpdateHomework();
-  const { handleSubmit } = useFormContext<HomeworkForm>();
+  const { handleSubmit, setError } = useFormContext<HomeworkForm>();
 
   const onSubmit = (data: HomeworkForm) => {
     const parsingData = transformFormDataToServerFormat(data);
@@ -43,6 +44,27 @@ const HomeworkEditForm = ({
       {
         onSuccess: () => {
           router.replace(`/study-rooms/${studyRoomId}/homework/${homeworkId}`);
+        },
+        onError: (error) => {
+          handleApiError(error, classifyHomeworkError, {
+            onField: (msg) => {
+              setError('root', { message: msg });
+            },
+
+            onContext: () => {
+              setTimeout(() => {
+                router.replace(`/study-rooms/${studyRoomId}/homework`);
+              }, 1500);
+            },
+
+            onAuth: () => {
+              setTimeout(() => {
+                router.replace('/login');
+              }, 1500);
+            },
+
+            onUnknown: () => {},
+          });
         },
       }
     );

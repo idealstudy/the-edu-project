@@ -1,5 +1,14 @@
+export { AddNoteIcon } from './add-note-icon';
 export { PlusIcon } from './plus-icon';
 export { SettingIcon } from './setting-icon';
 export { TextIcon } from './text-icon';
 export { ListIcon } from './list-icon';
 export { HomeIcon } from './home-icon';
+export { RoomIcon } from './room-icon';
+export { CoiledBookIcon } from './coiled-book-icon';
+export { UserPlusIcon } from './user-plus-icon';
+export { ChatIcon } from './chat-icon';
+export { PenIcon } from './pen-icon';
+export { ArrowDownIcon } from './arrow-down-icon';
+export { ArrowRightIcon } from './arrow-right-icon';
+export { FindingIcon } from './finding-icon';

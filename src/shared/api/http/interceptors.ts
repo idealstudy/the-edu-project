@@ -1,6 +1,6 @@
 import { ensureRefreshSession } from '@/shared/api';
+import { ShowErrorToast } from '@/shared/lib';
 import { AuthError } from '@/shared/lib/error';
-import { ShowErrorToast } from '@/shared/lib/toast';
 import { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 import { http } from './http.transport';
@@ -41,7 +41,10 @@ export const installHttpInterceptors = () => {
 
       // 1. 네트워크 에러
       if (!error.response) {
-        ShowErrorToast('NETWORK_ERROR', '네트워크 오류가 발생했습니다.');
+        ShowErrorToast(
+          'NETWORK_ERROR',
+          '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.'
+        );
         throw error;
       }
 
@@ -54,7 +57,16 @@ export const installHttpInterceptors = () => {
       // 3. 401 refresh 실패
       if (isUnauthorized(error)) {
         if (cfg._retry || isRefreshCall(error, cfg)) {
-          ShowErrorToast('SESSION_EXPIRED', '세션이 만료되었습니다.');
+          ShowErrorToast(
+            'SESSION_EXPIRED',
+            '세션이 만료되었습니다. 다시 로그인해 주세요.'
+          );
+          // TODO : 스토어 초기화
+
+          if (typeof window !== 'undefined') {
+            const currentPath = window.location.pathname;
+            window.location.href = `/login?returnUrl=${currentPath}`;
+          }
           throw new AuthError('SESSION_EXPIRED');
         }
 
