@@ -1,8 +1,8 @@
 'use client';
 
 import { StudyStats } from '@/features/study-rooms/components/sidebar/status';
+import { SidebarButton } from '@/shared/components/sidebar';
 
-import { AskTeacherButton } from './ask-teacher-button';
 import { PublicStudyroomSidebarHeader } from './header';
 import { TeacherOtherStudyrooms } from './teacher-other-studyrooms';
 
@@ -30,7 +30,10 @@ export const PublicStudyroomSidebar = () => {
         numberOfQuestion={studyRoomDetail?.numberOfQuestion}
       />
       {/* TODO: 수업 문의하기 연결 */}
-      <AskTeacherButton onClick={() => onClick()} />
+      <SidebarButton
+        onClick={() => onClick()}
+        btnName="수업 문의하기"
+      />
 
       <TeacherOtherStudyrooms />
     </>
