@@ -49,7 +49,7 @@ export function Session3() {
           {/* 후기 1 */}
           <div
             className={cn(
-              "bg-background-orange h-31 w-full rounded-lg bg-[url('/home/im_review_1.png')] bg-[length:100px_100px] bg-[position:right_6px_bottom] bg-no-repeat",
+              "bg-background-orange h-31 w-full rounded-lg bg-[url('/character/img_profile_student02.png')] bg-[length:100px_100px] bg-[position:right_6px_bottom] bg-no-repeat",
               'tablet:h-full',
               'desktop:bg-[length:150px_150px]'
             )}
@@ -78,7 +78,7 @@ export function Session3() {
           {/* 후기 2 */}
           <div
             className={cn(
-              "bg-background-orange h-31 w-full rounded-lg bg-[url('/home/im_review_2.png')] bg-[length:100px_100px] bg-[position:right_6px_bottom] bg-no-repeat",
+              "bg-background-orange h-31 w-full rounded-lg bg-[url('/character/img_profile_teacher02.png')] bg-[length:100px_100px] bg-[position:right_6px_bottom] bg-no-repeat",
               'tablet:h-full',
               'desktop:bg-[length:150px_150px]'
             )}

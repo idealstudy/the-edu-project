@@ -16,7 +16,7 @@ export function Session1() {
       )}
     >
       <Image
-        src="/home/im_intro_1.png"
+        src="/character/img_intro01.png"
         width={200}
         height={200}
         alt="인트로 이미지"
@@ -64,7 +64,7 @@ export function Session1() {
         </div>
 
         <Image
-          src="/home/im_intro_1.png"
+          src="/character/img_intro01.png"
           width={300}
           height={300}
           alt="인트로 이미지"

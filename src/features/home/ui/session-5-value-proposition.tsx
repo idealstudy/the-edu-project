@@ -23,7 +23,7 @@ export function Session5() {
           )}
         >
           <Image
-            src="/home/im_intro_2.png"
+            src="/character/img_intro02.png"
             width={400}
             height={400}
             alt="디에듀 캐릭터 일러스트"
