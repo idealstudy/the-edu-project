@@ -4,15 +4,15 @@ import React, { useState } from 'react';
 
 import Image from 'next/image';
 
-import { FrontendBasicInfo } from '@/entities/teacher/types';
 import EditProfileCard from '@/features/mypage/components/edit-profile-card';
-import TeacherProfileExtra from '@/shared/components/profile/profile-card/teacher-profile-extra';
+import { UserBasicInfo } from '@/features/mypage/types';
+import TeacherProfileExtra from '@/features/profile/components/profile-card/teacher-profile-extra';
 
 export default function ProfileCard({
   basicInfo,
   action,
 }: {
-  basicInfo: FrontendBasicInfo;
+  basicInfo: UserBasicInfo;
   action?: React.ReactNode;
 }) {
   const [isEditMode, setIsEditMode] = useState(false);

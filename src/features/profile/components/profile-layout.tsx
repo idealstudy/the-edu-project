@@ -1,14 +1,12 @@
-import { FrontendBasicInfo } from '@/entities/teacher/types';
-import ParentSections from '@/features/profile/components/parent-sections';
-import StudentSections from '@/features/profile/components/student-sections';
+import { UserBasicInfo } from '@/features/mypage/types';
+import ProfileCard from '@/features/profile/components/profile-card/profile-card';
 import TeacherSections from '@/features/profile/components/teacher-sections';
 import { ColumnLayout } from '@/layout';
-import ProfileCard from '@/shared/components/profile/profile-card/profile-card';
 
 export default function ProfileLayout({
   basicInfo,
 }: {
-  basicInfo: FrontendBasicInfo;
+  basicInfo: UserBasicInfo;
 }) {
   let sections;
 
@@ -16,12 +14,12 @@ export default function ProfileLayout({
     case 'ROLE_TEACHER':
       sections = <TeacherSections />;
       break;
-    case 'ROLE_STUDENT':
-      sections = <StudentSections />;
-      break;
-    case 'ROLE_PARENT':
-      sections = <ParentSections />;
-      break;
+    // case 'ROLE_STUDENT':
+    //   sections = <StudentSections />;
+    //   break;
+    // case 'ROLE_PARENT':
+    //   sections = <ParentSections />;
+    //   break;
     default:
       sections = <div>잘못된 접근입니다.</div>;
   }

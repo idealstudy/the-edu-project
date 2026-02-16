@@ -1,6 +1,6 @@
 import { ProfileWithMeta } from '@/entities/profile';
+import StudynotesItem from '@/features/profile/components/teacher/studynotes-item';
 import { StudyNote } from '@/features/study-notes/model';
-import StudynotesItem from '@/shared/components/profile/teacher/studynotes-item';
 
 const STUDY_NOTE: StudyNote = {
   id: 1,

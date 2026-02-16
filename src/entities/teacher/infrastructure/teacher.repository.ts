@@ -1,8 +1,8 @@
 import { domain } from '@/entities/teacher/core';
 import {
-  BasicInfoDTO,
-  FrontendBasicInfo,
-  UpdateBasicInfoPayload,
+  FrontendTeacherBasicInfo,
+  TeacherBasicInfoDTO,
+  UpdateTeacherBasicInfoPayload,
 } from '@/entities/teacher/types';
 import { api } from '@/shared/api';
 import { unwrapEnvelope } from '@/shared/lib/api-utils';
@@ -20,8 +20,8 @@ const getProfilePublicKorean = (isPublic: boolean): '공개' | '비공개' =>
  * DTO를 Domain 객체로 변환
  */
 const transformBasicInfoToFrontend = (
-  basicInfoDto: BasicInfoDTO
-): FrontendBasicInfo =>
+  basicInfoDto: TeacherBasicInfoDTO
+): FrontendTeacherBasicInfo =>
   domain.basicInfo.parse({
     name: basicInfoDto.name,
     email: basicInfoDto.email,
@@ -34,8 +34,8 @@ const transformBasicInfoToFrontend = (
 /**
  * [Read] 선생님 기본 정보 조회
  */
-const getBasicInfo = async (): Promise<FrontendBasicInfo> => {
-  const response = await api.private.get<CommonResponse<BasicInfoDTO>>(
+const getBasicInfo = async (): Promise<FrontendTeacherBasicInfo> => {
+  const response = await api.private.get<CommonResponse<TeacherBasicInfoDTO>>(
     '/teacher/me/basic-info'
   );
 
@@ -48,7 +48,7 @@ const getBasicInfo = async (): Promise<FrontendBasicInfo> => {
  * [Update] 선생님 기본 정보 변경
  */
 const updateBasicInfo = async (
-  basicInfo: UpdateBasicInfoPayload
+  basicInfo: UpdateTeacherBasicInfoPayload
 ): Promise<void> => {
   const validated = payload.updateBasicInfo.parse(basicInfo);
   await api.private.patch('/teacher/me/basic-info', validated);

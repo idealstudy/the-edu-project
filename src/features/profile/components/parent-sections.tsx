@@ -1,5 +1,5 @@
-import ComingSoonSection from '@/shared/components/profile/coming-soon-section';
-import SectionContainer from '@/shared/components/profile/section-container';
+import ComingSoonSection from '@/features/profile/components/coming-soon-section';
+import SectionContainer from '@/features/profile/components/section-container';
 
 export default function ParentSections() {
   return (

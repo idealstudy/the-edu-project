@@ -5,15 +5,15 @@ import { Controller, useForm } from 'react-hook-form';
 
 import Image from 'next/image';
 
-import {
-  FrontendBasicInfo,
-  UpdateBasicInfoPayload,
-} from '@/entities/teacher/types';
 import { useUpdateTeacherBasicInfo } from '@/features/mypage/hooks/teacher/use-basic-info';
 import {
   BasicInfoForm,
   BasicInfoFormSchema,
 } from '@/features/mypage/schema/schema';
+import {
+  UpdateUserBasicInfoPayload,
+  UserBasicInfo,
+} from '@/features/mypage/types';
 import {
   Button,
   Form,
@@ -24,7 +24,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 
 interface EditProfileCardProps {
-  basicInfo: FrontendBasicInfo;
+  basicInfo: UserBasicInfo;
   setIsEditMode: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -62,7 +62,7 @@ export default function EditProfileCard({
     mode: 'onChange',
   });
 
-  const onSubmit = async (data: UpdateBasicInfoPayload) => {
+  const onSubmit = async (data: UpdateUserBasicInfoPayload) => {
     await updateProfileMutation.mutateAsync(data);
 
     setIsEditMode(false);

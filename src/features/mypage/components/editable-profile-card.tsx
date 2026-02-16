@@ -7,7 +7,7 @@ import { useMemberInfo } from '@/features/member/hooks/use-queries';
 import EditProfileCard from '@/features/mypage/components/edit-profile-card';
 import { ProfileCardDropdown } from '@/features/mypage/components/profile-card-dropdown';
 import { useTeacherBasicInfo } from '@/features/mypage/hooks/teacher/use-basic-info';
-import ProfileCard from '@/shared/components/profile/profile-card/profile-card';
+import ProfileCard from '@/features/profile/components/profile-card/profile-card';
 
 export default function EditableProfileCard({ role }: { role: Role }) {
   const [isEditMode, setIsEditMode] = useState(false);

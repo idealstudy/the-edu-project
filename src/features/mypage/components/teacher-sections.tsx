@@ -1,6 +1,6 @@
-import ComingSoonSection from '@/shared/components/profile/coming-soon-section';
-import SectionContainer from '@/shared/components/profile/section-container';
-import SelectStudynotesDialog from '@/shared/components/profile/teacher/select-studynotes-dialog';
+import ComingSoonSection from '@/features/profile/components/coming-soon-section';
+import SectionContainer from '@/features/profile/components/section-container';
+import SelectStudynotesDialog from '@/features/profile/components/teacher/select-studynotes-dialog';
 
 export default function TeacherSections() {
   return (

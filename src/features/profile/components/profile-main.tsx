@@ -1,5 +1,6 @@
 'use client';
 
+import { UserBasicInfo } from '@/features/mypage/types';
 import ProfileLayout from '@/features/profile/components/profile-layout';
 import { useProfile } from '@/features/profile/hooks/use-profile';
 
@@ -7,7 +8,7 @@ export default function ProfileMain({ userId }: { userId: string }) {
   // TODO 새 API 연결
   const { data: profileData, isLoading } = useProfile(userId);
 
-  const MOCK_PROFILE_DATA = {
+  const MOCK_PROFILE_DATA: UserBasicInfo = {
     name: profileData?.name || '',
     email: profileData?.email || '',
     isProfilePublic: true,

@@ -1,5 +1,5 @@
 import {
-  UpdateBasicInfoPayload,
+  UpdateTeacherBasicInfoPayload,
   repository,
   teacherKeys,
 } from '@/entities/teacher';
@@ -20,7 +20,7 @@ export const useUpdateTeacherBasicInfo = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (basicInfo: UpdateBasicInfoPayload) =>
+    mutationFn: (basicInfo: UpdateTeacherBasicInfoPayload) =>
       repository.basicInfo.updateBasicInfo(basicInfo),
     onSuccess: () => {
       queryClient.invalidateQueries({
