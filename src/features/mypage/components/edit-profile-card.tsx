@@ -5,15 +5,13 @@ import { Controller, useForm } from 'react-hook-form';
 
 import Image from 'next/image';
 
+import { useUpdateStudentBasicInfo } from '@/features/mypage/hooks/student/use-basic-info';
 import { useUpdateTeacherBasicInfo } from '@/features/mypage/hooks/teacher/use-basic-info';
 import {
   BasicInfoForm,
   BasicInfoFormSchema,
 } from '@/features/mypage/schema/schema';
-import {
-  UpdateUserBasicInfoPayload,
-  UserBasicInfo,
-} from '@/features/mypage/types';
+import { UserBasicInfo } from '@/features/mypage/types';
 import {
   Button,
   Form,
@@ -32,15 +30,9 @@ export default function EditProfileCard({
   basicInfo,
   setIsEditMode,
 }: EditProfileCardProps) {
-  const isTeacher = basicInfo.role === 'ROLE_TEACHER';
-
-  // TODO API 연결 수정 예정
+  // TODO Parent API 추가
   const updateTeacherBasicInfoMutation = useUpdateTeacherBasicInfo();
-
-  const updateProfileMutation = isTeacher
-    ? updateTeacherBasicInfoMutation
-    : // TODO 학생으로 변경
-      updateTeacherBasicInfoMutation;
+  const updateStudentBasicInfoMutation = useUpdateStudentBasicInfo();
 
   const {
     register,
@@ -48,7 +40,7 @@ export default function EditProfileCard({
     // setError,
     reset,
     control,
-    formState: { errors /* isSubmitting */ },
+    formState: { errors, isSubmitting, isDirty, isValid },
   } = useForm<BasicInfoForm>({
     resolver: zodResolver(BasicInfoFormSchema),
     defaultValues: {
@@ -56,14 +48,30 @@ export default function EditProfileCard({
       isProfilePublic: basicInfo.isProfilePublic,
       simpleIntroduction:
         basicInfo.role === 'ROLE_TEACHER'
-          ? (basicInfo.simpleIntroduction ?? '')
-          : '',
+          ? basicInfo.simpleIntroduction
+          : undefined,
+      learningGoal:
+        basicInfo.role === 'ROLE_STUDENT'
+          ? basicInfo.learningGoal || ''
+          : undefined,
     },
     mode: 'onChange',
   });
 
-  const onSubmit = async (data: UpdateUserBasicInfoPayload) => {
-    await updateProfileMutation.mutateAsync(data);
+  const onSubmit = async (data: BasicInfoForm) => {
+    if (basicInfo.role === 'ROLE_TEACHER') {
+      await updateTeacherBasicInfoMutation.mutateAsync({
+        name: data.name,
+        isProfilePublic: data.isProfilePublic,
+        simpleIntroduction: data.simpleIntroduction ?? '',
+      });
+    } else if (basicInfo.role === 'ROLE_STUDENT') {
+      await updateStudentBasicInfoMutation.mutateAsync({
+        name: data.name,
+        isProfilePublic: data.isProfilePublic,
+        learningGoal: data.learningGoal ?? '',
+      });
+    }
 
     setIsEditMode(false);
   };
@@ -125,21 +133,39 @@ export default function EditProfileCard({
         />
       </Form.Item>
 
-      <Form.Item error={!!errors.simpleIntroduction}>
-        <Form.Label>간단 소개</Form.Label>
+      {basicInfo.role === 'ROLE_TEACHER' && (
+        <Form.Item error={!!errors.simpleIntroduction}>
+          <Form.Label>간단 소개</Form.Label>
 
-        <Form.Control>
-          <Input
-            {...register('simpleIntroduction')}
-            placeholder="간단 소개를 입력해 주세요."
-          />
-        </Form.Control>
-        {errors.simpleIntroduction?.message && (
-          <Form.ErrorMessage>
-            {errors.simpleIntroduction.message}
-          </Form.ErrorMessage>
-        )}
-      </Form.Item>
+          <Form.Control>
+            <Input
+              {...register('simpleIntroduction')}
+              placeholder="간단 소개를 입력해 주세요."
+            />
+          </Form.Control>
+          {errors.simpleIntroduction?.message && (
+            <Form.ErrorMessage>
+              {errors.simpleIntroduction.message}
+            </Form.ErrorMessage>
+          )}
+        </Form.Item>
+      )}
+
+      {basicInfo.role === 'ROLE_STUDENT' && (
+        <Form.Item error={!!errors.learningGoal}>
+          <Form.Label>학습 목표</Form.Label>
+
+          <Form.Control>
+            <Input
+              {...register('learningGoal')}
+              placeholder="학습 목표를 입력해 주세요."
+            />
+          </Form.Control>
+          {errors.learningGoal?.message && (
+            <Form.ErrorMessage>{errors.learningGoal.message}</Form.ErrorMessage>
+          )}
+        </Form.Item>
+      )}
 
       <div className="flex justify-end gap-2">
         <Button
@@ -157,7 +183,7 @@ export default function EditProfileCard({
           type="submit"
           variant="secondary"
           size="small"
-          disabled={updateProfileMutation.isPending}
+          disabled={isSubmitting || !isDirty || !isValid}
         >
           저장
         </Button>

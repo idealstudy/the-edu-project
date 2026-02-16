@@ -1,9 +1,5 @@
-import {
-  FrontendTeacherBasicInfo,
-  UpdateTeacherBasicInfoPayload,
-} from '@/entities/teacher';
+import { FrontendStudentBasicInfo } from '@/entities/student';
+import { FrontendTeacherBasicInfo } from '@/entities/teacher';
 
-// TODO Student, Parent 추가
-export type UserBasicInfo = FrontendTeacherBasicInfo;
-
-export type UpdateUserBasicInfoPayload = UpdateTeacherBasicInfoPayload;
+// TODO Parent 추가
+export type UserBasicInfo = FrontendTeacherBasicInfo | FrontendStudentBasicInfo;

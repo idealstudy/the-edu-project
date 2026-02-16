@@ -1,11 +1,9 @@
-'use client';
-
-import React, { useState } from 'react';
+import React from 'react';
 
 import Image from 'next/image';
 
-import EditProfileCard from '@/features/mypage/components/edit-profile-card';
 import { UserBasicInfo } from '@/features/mypage/types';
+import StudentProfileExtra from '@/features/profile/components/profile-card/student-profile-extra';
 import TeacherProfileExtra from '@/features/profile/components/profile-card/teacher-profile-extra';
 
 export default function ProfileCard({
@@ -15,26 +13,25 @@ export default function ProfileCard({
   basicInfo: UserBasicInfo;
   action?: React.ReactNode;
 }) {
-  const [isEditMode, setIsEditMode] = useState(false);
   let profileExtra;
 
-  if (basicInfo.role === 'ROLE_TEACHER')
-    profileExtra = (
-      <TeacherProfileExtra
-        teacherNoteCount={0}
-        studentCount={0}
-        reviewCount={0}
-        description={basicInfo.simpleIntroduction || ''}
-      />
-    );
-
-  if (isEditMode)
-    return (
-      <EditProfileCard
-        basicInfo={basicInfo}
-        setIsEditMode={setIsEditMode}
-      />
-    );
+  switch (basicInfo.role) {
+    case 'ROLE_TEACHER':
+      profileExtra = (
+        <TeacherProfileExtra
+          teacherNoteCount={0}
+          studentCount={0}
+          reviewCount={0}
+          description={basicInfo.simpleIntroduction || ''}
+        />
+      );
+      break;
+    case 'ROLE_STUDENT':
+      profileExtra = (
+        <StudentProfileExtra learningGoal={basicInfo.learningGoal || ''} />
+      );
+      break;
+  }
 
   return (
     <>
