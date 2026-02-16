@@ -6,7 +6,6 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { StudyroomGroups } from '@/features/study-rooms/components/sidebar/groups';
 import { InvitationDialog } from '@/features/study-rooms/components/student-invitation/InvitationDialog';
-import StudentInvitation from '@/features/study-rooms/components/student-invitation/StudentInvitation';
 import {
   useStudentStudyRoomDetailQuery,
   useTeacherStudyRoomDetailQuery,
@@ -20,6 +19,7 @@ import {
   dialogReducer,
   initialDialogState,
 } from '@/shared/components/dialog/model/dialog-reducer';
+import { SidebarButton } from '@/shared/components/sidebar';
 import { useRole } from '@/shared/hooks/use-role';
 
 import { StudyRoomDetail } from '../../model';
@@ -196,7 +196,13 @@ export const StudyroomSidebar = ({
         />
         <StudyIntro description={studyRoomDetail?.description} />
         {/* 학생 초대 버튼 - 선생님만 노출 */}
-        {canManage && <StudentInvitation onClick={openInvitation} />}
+        {canManage && (
+          <SidebarButton
+            onClick={openInvitation}
+            btnName="학생 초대하기"
+            imgUrl="/studynotes/invite_student.svg"
+          />
+        )}
         {/* 수업노트 탭에서만 보이는 컴포넌트 */}
         {segment === 'note' && (
           <StudyroomGroups
