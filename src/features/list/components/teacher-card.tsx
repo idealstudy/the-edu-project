@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { cn } from '@/shared/lib';
 
 import { PublicTeacherProfile } from '../types/teacher.types';
+import { TeacherInfoBlock } from './teacher-info-block';
 
 interface TeacherCardProps {
   teacher: PublicTeacherProfile;
@@ -39,29 +40,18 @@ export const TeacherCard = ({ teacher }: TeacherCardProps) => {
       </div>
 
       {/* 정보 영역 */}
-      <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <div className="flex gap-2">
-          {teacher.isNewTeacher && (
-            <div className="bg-orange-7 font-label-heading h-[27px] w-[47px] rounded-full px-2 py-1 text-white">
-              NEW
-            </div>
-          )}
-
-          <div className="bg-orange-2 text-orange-7 font-label-heading flex w-fit items-center justify-center rounded-[4px] px-[8px] py-[4px]">
-            영어
+      <TeacherInfoBlock
+        teacherName={teacher.name}
+        showNewBadge={teacher.isNewTeacher}
+        className="flex-1 gap-1"
+        showDivider
+        footer={
+          <div className="group-hover:text-orange-7 text-gray-10 mt-1 flex items-center justify-end text-[14px] transition-colors md:text-[14px]">
+            스터디룸 바로가기
+            <IoIosArrowForward className="ml-1 h-[16px] w-[16px]" />
           </div>
-        </div>
-        <div className="font-body1-heading text-gray-12 truncate text-lg md:text-xl">
-          {teacher.name} 선생님
-        </div>
-
-        <hr className="my-1 border-gray-100" />
-
-        <div className="group-hover:text-orange-7 text-gray-10 mt-1 flex items-center justify-end text-[14px] transition-colors md:text-[14px]">
-          스터디룸 바로가기
-          <IoIosArrowForward className="ml-1 h-[16px] w-[16px]" />
-        </div>
-      </div>
+        }
+      />
     </Link>
   );
 };

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { cn } from '@/shared/lib';
 
 import { PublicStudyRoom } from '../types/teacher.types';
+import { TeacherInfoBlock } from './teacher-info-block';
 
 interface StudyRoomCardProps {
   studyRoom: PublicStudyRoom;
@@ -30,18 +31,12 @@ export const StudyRoomCard = ({ studyRoom }: StudyRoomCardProps) => {
       </div>
 
       {/* 하단 영역 */}
-      <div className="border-gray-scale-gray-10 flex flex-col gap-[8px] border-t-1 bg-white p-6">
-        <div className="flex gap-2">
-          <div className="bg-orange-7 font-label-heading h-[27px] w-[47px] rounded-full px-2 py-1 text-white">
-            NEW
-          </div>
-          <div className="bg-orange-2 text-orange-7 font-label-heading flex w-fit items-center justify-center rounded-[4px] px-[8px] py-[4px]">
-            영어
-          </div>
-        </div>
-        <div className="font-body1-heading text-gray-12 truncate text-lg md:text-xl">
-          {studyRoom.teacherName} 선생님
-        </div>
+      <div className="border-gray-scale-gray-10 border-t-1 bg-white p-6">
+        <TeacherInfoBlock
+          teacherName={studyRoom.teacherName}
+          // showNewBadge
+          subjectLabel={studyRoom.subjectType ?? '영어'}
+        />
       </div>
     </Link>
   );
