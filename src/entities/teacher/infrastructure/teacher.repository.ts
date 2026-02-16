@@ -1,5 +1,4 @@
-import { domain } from '@/entities/teacher/core/teacher.domain';
-import { dto, payload } from '@/entities/teacher/infrastructure/teacher.dto';
+import { domain } from '@/entities/teacher/core';
 import {
   BasicInfoDTO,
   FrontendBasicInfo,
@@ -8,6 +7,29 @@ import {
 import { api } from '@/shared/api';
 import { unwrapEnvelope } from '@/shared/lib/api-utils';
 import { CommonResponse } from '@/types';
+
+import { dto, payload } from './teacher.dto';
+
+/**
+ * isProfilePublic -> 한글 변환 헬퍼
+ */
+const getProfilePublicKorean = (isPublic: boolean): '공개' | '비공개' =>
+  isPublic ? '공개' : '비공개';
+
+/**
+ * DTO를 Domain 객체로 변환
+ */
+const transformBasicInfoToFrontend = (
+  basicInfoDto: BasicInfoDTO
+): FrontendBasicInfo =>
+  domain.basicInfo.parse({
+    name: basicInfoDto.name,
+    email: basicInfoDto.email,
+    isProfilePublic: basicInfoDto.isProfilePublic,
+    simpleIntroduction: basicInfoDto.simpleIntroduction,
+    role: 'ROLE_TEACHER' as const,
+    profilePublicKorean: getProfilePublicKorean(basicInfoDto.isProfilePublic),
+  });
 
 /**
  * [Read] 선생님 기본 정보 조회
@@ -19,7 +41,7 @@ const getBasicInfo = async (): Promise<FrontendBasicInfo> => {
 
   const basicInfoDto = unwrapEnvelope(response, dto.basicInfo);
 
-  return domain.basicInfo.parse(basicInfoDto);
+  return transformBasicInfoToFrontend(basicInfoDto);
 };
 
 /**

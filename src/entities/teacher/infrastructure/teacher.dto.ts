@@ -13,7 +13,7 @@ const BasicInfoDtoSchema = z.object({
 /**
  * 선생님 기본 정보 Payload
  */
-export const UpdateBasicInfoPayloadSchema = z.object({
+const UpdateBasicInfoPayloadSchema = z.object({
   name: z.string(),
   isProfilePublic: z.boolean(),
   simpleIntroduction: z.string(),

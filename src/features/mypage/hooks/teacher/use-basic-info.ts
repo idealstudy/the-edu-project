@@ -1,6 +1,8 @@
-import { teacherKeys } from '@/entities/teacher/infrastructure/teacher.keys';
-import { repository } from '@/entities/teacher/infrastructure/teacher.repository';
-import { UpdateBasicInfoPayload } from '@/entities/teacher/types';
+import {
+  UpdateBasicInfoPayload,
+  repository,
+  teacherKeys,
+} from '@/entities/teacher';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 // [GET] 선생님 기본 정보 조회
