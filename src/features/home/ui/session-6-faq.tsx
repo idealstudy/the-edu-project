@@ -62,28 +62,26 @@ const FAQAccordion = () => {
           </button>
 
           {/* 답변 */}
-          {activeTab === index && (
-            <>
-              <hr
-                className={cn('border-line-line1 mx-6 border', 'tablet:mx-8')}
-                aria-hidden
-              />
+          <div className={activeTab === index ? '' : 'h-0 overflow-hidden'}>
+            <hr
+              className={cn('border-line-line1 mx-6 border', 'tablet:mx-8')}
+              aria-hidden
+            />
 
-              <div
-                id={`faq-panel-${index}`}
-                role="region"
-                aria-labelledby={`faq-button-${index}`}
-                className={cn(
-                  'font-label-normal space-y-2 px-6 py-5',
-                  'tablet:p-8 tablet:font-body2-normal'
-                )}
-              >
-                {item.answer.map((line, i) => (
-                  <p key={i}>{line}</p>
-                ))}
-              </div>
-            </>
-          )}
+            <div
+              id={`faq-panel-${index}`}
+              role="region"
+              aria-labelledby={`faq-button-${index}`}
+              className={cn(
+                'font-label-normal space-y-2 px-6 py-5',
+                'tablet:p-8 tablet:font-body2-normal'
+              )}
+            >
+              {item.answer.map((line, i) => (
+                <p key={i}>{line}</p>
+              ))}
+            </div>
+          </div>
         </div>
       ))}
     </div>
