@@ -22,9 +22,6 @@ const DashboardTeacher = () => {
   const { data: dashboard } = useDashboardQuery();
   const { data: studyRooms } = useTeacherStudyRoomsQuery();
 
-  // 스터디룸 여부
-  const hasStudyRooms = !!(studyRooms && studyRooms.length > 0);
-
   // 데이터 목록 - API 제공 후에 삭제합니다.
   const notes = useMemo(
     () =>
@@ -51,30 +48,17 @@ const DashboardTeacher = () => {
     },
     [router]
   );
-  const handleNoteClick = useCallback(
-    (studyRoomId: number, noteId: number) => {
-      router.push(PRIVATE.NOTE.DETAIL(studyRoomId, noteId));
-    },
-    [router]
-  );
-  const handleNewNoteClick = useCallback(() => {
-    const studyRoomId = studyRoomsList[0]?.id ?? 0;
-    if (studyRoomId === 0) return;
-    router.push(PRIVATE.NOTE.CREATE(studyRoomId));
-  }, [router, studyRoomsList]);
 
   // 섹션 내부 콘텐츠 컴포넌트 정의
   const noteContent = useMemo(
     () => (
       <NoteSectionContent
         key="note"
-        hasStudyRooms={hasStudyRooms}
         notes={notes}
-        onClickNewNote={handleNewNoteClick}
-        onClickNote={handleNoteClick}
+        lastStudyRoomId={studyRoomsList[studyRoomsList.length - 1]?.id ?? 0}
       />
     ),
-    [hasStudyRooms, notes, handleNewNoteClick, handleNoteClick]
+    [notes, studyRoomsList]
   );
 
   const studentsContent = useMemo(

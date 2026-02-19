@@ -47,17 +47,13 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     notes: [],
-    hasStudyRooms: false,
-    onClickNewNote: () => {},
-    onClickNote: () => {},
+    lastStudyRoomId: 0,
   },
 };
 
 export const WithNotes: Story = {
   args: {
     notes: mockNotes,
-    hasStudyRooms: true,
-    onClickNewNote: () => {},
-    onClickNote: () => {},
+    lastStudyRoomId: 1,
   },
 };
