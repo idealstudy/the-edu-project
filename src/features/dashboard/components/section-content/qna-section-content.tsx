@@ -74,9 +74,9 @@ const QnASectionContent = ({
                 <div className="flex items-center gap-2">
                   {isTeacher && (
                     <>
-                      <div className="bg-gray-2 flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full">
+                      <div className="bg-gray-white border-gray-12 flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full border">
                         <Image
-                          src="/studynotes/student.svg"
+                          src="/character/img_profile_student01.png"
                           alt=""
                           width={24}
                           height={24}
