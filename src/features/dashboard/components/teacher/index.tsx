@@ -99,7 +99,12 @@ const DashboardTeacher = () => {
               title="답변이 필요한 질문"
               description="아직 답변하지 않은 질문만 추렸어요."
             >
-              <QnASectionContent />
+              <QnASectionContent
+                isTeacher={true}
+                questions={[]}
+                studyRoomId={studyRoomsList[0]?.id ?? 0}
+                studyRoomName={studyRoomsList[0]?.name ?? ''}
+              />
             </SingleSection>
             {/* tablet ~ desktop: 스터디룸 섹션 */}
             <SingleSection
