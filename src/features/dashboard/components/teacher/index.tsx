@@ -61,9 +61,16 @@ const DashboardTeacher = () => {
     [notes, studyRoomsList]
   );
 
+  const firstStudyRoomId = studyRoomsList[0]?.id ?? 0;
   const studentsContent = useMemo(
-    () => <StudentsSectionContent key="students" />,
-    []
+    () => (
+      <StudentsSectionContent
+        key="students"
+        students={[]}
+        lastStudyroomId={firstStudyRoomId}
+      />
+    ),
+    [firstStudyRoomId]
   );
 
   const studyroomContent = useMemo(
