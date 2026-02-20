@@ -4,6 +4,7 @@ import { Dispatch, SetStateAction } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import { useUpdateStudentBasicInfo } from '@/features/mypage/hooks/student/use-basic-info';
 import { useUpdateTeacherBasicInfo } from '@/features/mypage/hooks/teacher/use-basic-info';
@@ -19,6 +20,7 @@ import {
   RequiredMark,
   Select,
 } from '@/shared/components/ui';
+import { classifyMypageError, handleApiError } from '@/shared/lib/errors';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 interface EditProfileCardProps {
@@ -30,6 +32,8 @@ export default function EditProfileCard({
   basicInfo,
   setIsEditMode,
 }: EditProfileCardProps) {
+  const router = useRouter();
+
   // TODO Parent API 추가
   const updateTeacherBasicInfoMutation = useUpdateTeacherBasicInfo();
   const updateStudentBasicInfoMutation = useUpdateStudentBasicInfo();
@@ -59,21 +63,32 @@ export default function EditProfileCard({
   });
 
   const onSubmit = async (data: BasicInfoForm) => {
-    if (basicInfo.role === 'ROLE_TEACHER') {
-      await updateTeacherBasicInfoMutation.mutateAsync({
-        name: data.name,
-        isProfilePublic: data.isProfilePublic,
-        simpleIntroduction: data.simpleIntroduction ?? '',
-      });
-    } else if (basicInfo.role === 'ROLE_STUDENT') {
-      await updateStudentBasicInfoMutation.mutateAsync({
-        name: data.name,
-        isProfilePublic: data.isProfilePublic,
-        learningGoal: data.learningGoal ?? '',
+    try {
+      if (basicInfo.role === 'ROLE_TEACHER') {
+        await updateTeacherBasicInfoMutation.mutateAsync({
+          name: data.name,
+          isProfilePublic: data.isProfilePublic,
+          simpleIntroduction: data.simpleIntroduction ?? '',
+        });
+      } else if (basicInfo.role === 'ROLE_STUDENT') {
+        await updateStudentBasicInfoMutation.mutateAsync({
+          name: data.name,
+          isProfilePublic: data.isProfilePublic,
+          learningGoal: data.learningGoal ?? '',
+        });
+      }
+
+      setIsEditMode(false);
+    } catch (error) {
+      handleApiError(error, classifyMypageError, {
+        onAuth: () => {
+          setTimeout(() => {
+            router.replace('/login');
+          }, 1500);
+        },
+        onUnknown: () => {},
       });
     }
-
-    setIsEditMode(false);
   };
 
   return (
