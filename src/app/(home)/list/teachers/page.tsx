@@ -1,5 +1,30 @@
+import type { Metadata } from 'next';
+
+import { SITE_CONFIG } from '@/config/site';
 import { getPublicTeachers } from '@/features/list';
 import { TeacherCard } from '@/features/list/components/teacher-card';
+
+export const metadata: Metadata = {
+  title: `${SITE_CONFIG.name} | 선생님 프로필 목록`,
+  description: '디에듀 선생님 프로필을 최신순/가나다순으로 확인하세요.',
+  alternates: { canonical: `${SITE_CONFIG.url}/list/teachers` },
+  openGraph: {
+    title: `${SITE_CONFIG.name} | 선생님 프로필 목록`,
+    description: '디에듀 선생님 프로필을 최신순/가나다순으로 확인하세요.',
+    url: `${SITE_CONFIG.url}/list/teachers`,
+    siteName: SITE_CONFIG.name,
+    type: 'website',
+    images: [
+      {
+        url: SITE_CONFIG.ogImage,
+        width: 1200,
+        height: 630,
+        alt: '디에듀 선생님 목록',
+      },
+    ],
+  },
+  robots: { index: true, follow: true },
+};
 
 type SortOption = 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
 
