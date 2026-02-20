@@ -15,9 +15,9 @@ import {
 import { cn } from '@/shared/lib';
 
 import { useOnboardingStatus } from '../../hooks/use-onboarding-status';
-import { OnboardingControlButton } from '../teacher/onboarding/onboarding-control-button';
-import { OnboardingStep } from '../teacher/onboarding/onboarding-step';
-import { OnboardingStepGroup } from '../teacher/onboarding/onboarding-step-group';
+import { OnboardingControlButton } from '../onboarding/onboarding-control-button';
+import { OnboardingStep } from '../onboarding/onboarding-step';
+import { OnboardingStepGroup } from '../onboarding/onboarding-step-group';
 
 // 학생 온보딩 단계
 const ONBOARDING_STEPS = [

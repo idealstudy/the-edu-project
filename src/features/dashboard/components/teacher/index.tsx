@@ -14,7 +14,7 @@ import StudentsSectionContent from '../section-content/student-section-content';
 import StudyroomSectionContent from '../section-content/studyroom-section-content';
 import SingleSection from '../section/single-section';
 import TabbedSection from '../section/tabbed-section';
-import Onboarding from './onboarding';
+import TeacherOnboarding from './teacher-onboarding';
 
 const DashboardTeacher = () => {
   const router = useRouter();
@@ -98,7 +98,7 @@ const DashboardTeacher = () => {
     <div className="flex w-full flex-col">
       <DashboardHeader />
       <main className="tablet:gap-12 desktop:gap-20 bg-gray-white tablet:py-12 desktop:pb-100 tablet:px-20 relative flex w-full flex-col gap-8 px-4.5 py-8">
-        {!teacherOnboarding?.isCompleted && <Onboarding />}
+        {!teacherOnboarding?.isCompleted && <TeacherOnboarding />}
         <div className="tablet:gap-25 flex w-full flex-col gap-8">
           <div className="tablet:gap-12 flex w-full flex-col gap-8">
             {/* 공통: 질문 섹션 */}

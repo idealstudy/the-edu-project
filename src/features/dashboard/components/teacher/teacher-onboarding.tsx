@@ -14,9 +14,9 @@ import {
 } from '@/shared/components/icons';
 import { cn } from '@/shared/lib';
 
-import { OnboardingControlButton } from './onboarding-control-button';
-import { OnboardingStep } from './onboarding-step';
-import { OnboardingStepGroup } from './onboarding-step-group';
+import { OnboardingControlButton } from '../onboarding/onboarding-control-button';
+import { OnboardingStep } from '../onboarding/onboarding-step';
+import { OnboardingStepGroup } from '../onboarding/onboarding-step-group';
 
 // 강사 온보딩 단계
 const ONBOARDING_STEPS = [
