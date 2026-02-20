@@ -38,10 +38,10 @@ export const DashboardSidebar = () => {
 
   return (
     <Sidebar>
-      {/* 홈 */}
+      {/* 대시보드 */}
       <Sidebar.Item href={PRIVATE.DASHBOARD.INDEX}>
         <HomeIcon />
-        <Sidebar.Text>홈</Sidebar.Text>
+        <Sidebar.Text>대시보드</Sidebar.Text>
       </Sidebar.Item>
 
       <Sidebar.Header>
@@ -81,7 +81,7 @@ export const DashboardSidebar = () => {
       >
         <FindingIcon className="shrink-0" />
 
-        <Sidebar.Text>선생님 둘러보기</Sidebar.Text>
+        <Sidebar.Text>탐색하기</Sidebar.Text>
       </Sidebar.Item>
 
       {/* 기능 추가 전까지 잠시 주석 (private -> dashboard 안에 있는 settings 페이지도 삭제 완) */}

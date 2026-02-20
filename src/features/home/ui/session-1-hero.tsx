@@ -1,89 +1,104 @@
-'use client';
-
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { Button } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
-import { cn } from '@/shared/lib/utils';
+import { cn } from '@/shared/lib';
 
 // Session1: 히어로
 export function Session1() {
   return (
-    <section className="w-full bg-white px-4 py-8 md:px-6 md:py-12 lg:px-8 lg:py-16">
-      <div className="mx-auto max-w-7xl">
-        {/* 히어로 타이틀 */}
-        <div className="mb-8 text-center md:mb-12">
-          <h1 className="text-3xl leading-tight font-bold tracking-[-0.05em] md:text-4xl lg:text-5xl xl:text-6xl">
-            초1부터 고3까지, 목표 달성을 위한
-            <br className="hidden md:block" />
-            <span className="md:hidden"> </span>
-            1:1 맞춤 수업 관리
+    <section
+      className={cn(
+        'mx-auto flex flex-col items-center gap-3 px-4.5 py-8',
+        'tablet:w-[608px] tablet:p-0 tablet:items-start tablet:gap-10 tablet:my-12',
+        'desktop:w-[912px] desktop:my-20 desktop:gap-8'
+      )}
+    >
+      <Image
+        src="/character/img_intro01.png"
+        width={200}
+        height={200}
+        alt="인트로 이미지"
+        priority
+        className="tablet:hidden"
+      />
+
+      <div className={cn('flex w-full justify-between', 'max-tablet:contents')}>
+        <div
+          className={cn(
+            'flex flex-col items-center gap-2',
+            'tablet:gap-6 tablet:items-start',
+            'desktop:gap-8'
+          )}
+        >
+          <span
+            className={cn(
+              'font-body2-heading text-orange-7',
+              'tablet:font-headline2-heading'
+            )}
+          >
+            디에듀
+          </span>
+          <h1
+            className={cn(
+              'font-headline1-heading text-center',
+              'tablet:font-title-heading tablet:text-left',
+              'desktop:font-display-1'
+            )}
+          >
+            수업 기록부터 <br className="max-desktop:hidden" />
+            학생 관리까지 <br className="desktop:hidden" />한 곳에서
           </h1>
-          <p className="mt-4 text-base text-gray-600 md:mt-6 md:text-lg lg:text-xl">
-            내신부터 수능, 특목고 입시까지 체계적인 학습 관리
+          <p
+            className={cn(
+              'font-label-normal text-gray-11 text-center',
+              'tablet:text-start tablet:font-body1-normal',
+              'desktop:font-title-normal'
+            )}
+          >
+            수업 기록, 학생 숙제와 질문 관리가 하나로
+            <br />
+            연결되는 경험을 만들어갑니다
           </p>
         </div>
 
-        {/* 검색바 */}
-        <div className="mb-6 flex justify-center md:mb-8">
-          <div className="relative w-full max-w-2xl">
-            <input
-              type="text"
-              placeholder="Q 학년, 과목, 선생님 이름으로 검색해보세요"
-              disabled
-              className="w-full rounded-full border-2 border-gray-300 bg-gray-50 px-6 py-4 pl-12 text-base text-gray-500 focus:border-[#ff4500] focus:outline-none md:py-5 md:text-lg"
-            />
-            <Image
-              src="/ic-search.svg"
-              alt="검색"
-              width={24}
-              height={24}
-              className="absolute top-1/2 left-4 -translate-y-1/2 opacity-50"
-            />
-            <div className="absolute top-1/2 right-4 flex -translate-y-1/2 items-center gap-2">
-              <span className="text-xs text-gray-400 md:text-sm">준비 중</span>
-              <div className="h-2 w-2 animate-pulse rounded-full bg-[#ff4500]"></div>
-            </div>
-          </div>
-        </div>
+        <Image
+          src="/character/img_intro01.png"
+          width={300}
+          height={300}
+          alt="인트로 이미지"
+          className={cn(
+            'aspect-square w-50',
+            'max-tablet:hidden',
+            'desktop:w-75'
+          )}
+        />
+      </div>
 
-        {/* 필터 버튼들 */}
-        <div className="mb-8 flex flex-wrap justify-center gap-3 md:mb-12">
-          {[
-            '인기 준비',
-            '수능 대비',
-            '초등 내신',
-            '고등 준비',
-            '초등 영어',
-          ].map((label) => (
-            <button
-              key={label}
-              className="rounded-full border border-gray-300 bg-white px-6 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-[#ff4500] hover:text-[#ff4500] md:px-8 md:py-3 md:text-base"
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        {/* CTA 버튼 */}
-        <div className="flex justify-center gap-4">
-          <Link
-            href={PUBLIC.CORE.SIGNUP}
-            className={cn(
-              'rounded-lg bg-[#ff4500] px-8 py-4 text-base font-bold text-white transition-colors hover:bg-[#e64500] md:px-10 md:py-5 md:text-lg'
-            )}
-          >
-            강사로 시작하기
-          </Link>
-          <Link
-            href={PUBLIC.CORE.BIZ}
-            className={cn(
-              'rounded-lg border-2 border-gray-300 bg-white px-8 py-4 text-base font-medium text-gray-700 transition-colors hover:bg-gray-50 md:px-10 md:py-5 md:text-lg'
-            )}
-          >
-            체험해보기
-          </Link>
-        </div>
+      {/* CTA 버튼 */}
+      <div className={cn('grid grid-cols-2 gap-2', 'tablet:flex')}>
+        <Button
+          variant="secondary"
+          size="xsmall"
+          asChild
+          className={cn(
+            'font-label-normal',
+            'tablet:h-13.5 tablet:px-12 tablet:font-body2-normal'
+          )}
+        >
+          <Link href={PUBLIC.CORE.LIST.TEACHERS}>등록된 선생님 보러가기</Link>
+        </Button>
+        <Button
+          size="xsmall"
+          asChild
+          className={cn(
+            'font-label-heading',
+            'tablet:h-13.5 tablet:px-12 tablet:font-body2-heading'
+          )}
+        >
+          <Link href={PUBLIC.CORE.SIGNUP}>디에듀 시작하기</Link>
+        </Button>
       </div>
     </section>
   );

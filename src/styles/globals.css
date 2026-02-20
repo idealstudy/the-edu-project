@@ -201,6 +201,20 @@ body {
 }
 
 /* 타이포그래피 */
+@utility font-display-1 {
+  font-weight: 700;
+  font-size: 56px;
+  line-height: 135%;
+  letter-spacing: -3.19%;
+}
+
+@utility font-display-2 {
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 135%;
+  letter-spacing: -2.82%;
+}
+
 @utility font-title-heading {
   font-weight: 700;
   font-size: 32px;

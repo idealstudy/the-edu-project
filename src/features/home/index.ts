@@ -1,9 +1,6 @@
 export { Session1 } from '@/features/home/ui/session-1-hero';
-export { Session2 } from '@/features/home/ui/session-2-notice';
-export { Session3 } from '@/features/home/ui/session-3-categories';
-export { Session4 } from '@/features/home/ui/session-4-how-it-works';
-export { Session5 } from '@/features/home/ui/session-5-popular-rooms';
-export { Session6 } from '@/features/home/ui/session-6-instructors';
-export { Session7 } from '@/features/home/ui/session-7-stats';
-export { Session8 } from '@/features/home/ui/session-8-cta';
-export { Session9 } from '@/features/home/ui/session-9-faq';
+export { Session2 } from '@/features/home/ui/session-2-time-management';
+export { Session3 } from '@/features/home/ui/session-3-class-management';
+export { Session4 } from '@/features/home/ui/session-4-student-management';
+export { Session5 } from '@/features/home/ui/session-5-value-proposition';
+export { Session6 } from '@/features/home/ui/session-6-faq';

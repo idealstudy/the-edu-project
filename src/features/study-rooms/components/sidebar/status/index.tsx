@@ -1,5 +1,3 @@
-// type IconCmp = React.ComponentType<React.SVGProps<SVGSVGElement>>;
-
 export const StudyStats = ({
   numberOfTeachingNote,
   numberOfStudents,
@@ -11,41 +9,54 @@ export const StudyStats = ({
 }) => {
   return (
     <ul className="flex items-center justify-between px-3 py-4">
+      {/* TODO : 스터디룸 개수 api 연결펼요 */}
+      <li
+        key={'studyroom'}
+        className="flex flex-col items-center gap-1"
+      >
+        <p className="font-headline2-heading text-gray-12 text-center">
+          {numberOfTeachingNote != null ? `${numberOfTeachingNote}개` : '0개'}
+        </p>
+        <p className="text-gray-scale-gray-60 font-label-normal text-center">
+          스터디룸
+        </p>
+      </li>
+      <div className="bg-gray-3 w-px self-stretch" />
       <li
         key={'studyNote'}
         className="flex flex-col items-center gap-1"
       >
-        {/* TODO: SVG 에러가 빌드때만 뜨는 중 */}
-        {/* <Icon.Notebook className="text-gray-scale-gray-60 mb-1" /> */}
+        <p className="font-headline2-heading text-gray-12 text-center">
+          {numberOfTeachingNote != null ? `${numberOfTeachingNote}장` : '0장'}
+        </p>
         <p className="text-gray-scale-gray-60 font-label-normal text-center">
           수업노트
         </p>
-        <p className="font-headline2-heading text-key-color-primary text-center">
-          {numberOfTeachingNote != null ? `${numberOfTeachingNote}장` : '0장'}
-        </p>
       </li>
+      <div className="bg-gray-3 w-px self-stretch" />
+
       <li
         key={'student'}
         className="flex flex-col items-center gap-1"
       >
-        {/* <Icon.Person className="text-gray-scale-gray-60 mb-1" /> */}
+        <p className="font-headline2-heading text-gray-12 text-center">
+          {numberOfStudents != null ? `${numberOfStudents}명` : '0명'}
+        </p>
         <p className="text-gray-scale-gray-60 font-label-normal text-center">
           학생
         </p>
-        <p className="font-headline2-heading text-key-color-primary text-center">
-          {numberOfStudents != null ? `${numberOfStudents}명` : '0명'}
-        </p>
       </li>
+      <div className="bg-gray-3 w-px self-stretch" />
+
       <li
         key={'question'}
         className="flex flex-col items-center gap-1"
       >
-        {/* <Icon.Question className="text-gray-scale-gray-60 mb-1" /> */}
+        <p className="font-headline2-heading text-gray-12 text-center">
+          {numberOfQuestion != null ? `${numberOfQuestion}개` : '0개'}
+        </p>
         <p className="text-gray-scale-gray-60 font-label-normal text-center">
           질문
-        </p>
-        <p className="font-headline2-heading text-key-color-primary text-center">
-          {numberOfQuestion != null ? `${numberOfQuestion}개` : '0개'}
         </p>
       </li>
     </ul>

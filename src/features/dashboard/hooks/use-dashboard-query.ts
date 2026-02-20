@@ -1,3 +1,4 @@
+import { teacherKeys, teacherRepository } from '@/entities/teacher';
 import type { Dashboard } from '@/features/dashboard';
 import { options } from '@/features/dashboard/api';
 import type { BaseQueryOptions } from '@/shared/lib/query/types';
@@ -17,4 +18,15 @@ export const useDashboardQuery = (base: BaseQueryOptions = {}) => {
    * 타입이 정상적으로 해결되었다고 가정하고 표준 형태로 작성합니다.
    * ────────────────────────────────────────────────────*/
   return useQuery<Dashboard>(dashboardData);
+};
+
+export const useTeacherDashboardReportQuery = (options?: {
+  enabled?: boolean;
+}) => {
+  return useQuery({
+    queryKey: teacherKeys.report(),
+    queryFn: () => teacherRepository.getTeacherReport(),
+    staleTime: 1000 * 60 * 5,
+    enabled: options?.enabled ?? true,
+  });
 };
