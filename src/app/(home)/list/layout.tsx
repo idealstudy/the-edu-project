@@ -1,10 +1,16 @@
 'use client';
 
+import { useTransition } from 'react';
+
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { DashboardSidebar } from '@/features/dashboard/components/dashboard-sidebar';
 import BackLink from '@/features/dashboard/studynote/components/back-link';
+import {
+  StudyRoomsListSkeleton,
+  TeachersListSkeleton,
+} from '@/features/list/components/card-skeleton';
 import { SortKey } from '@/features/qna/types';
 import { useSession } from '@/providers';
 import { Select } from '@/shared/components/ui';
@@ -19,6 +25,7 @@ export default function ListLayout({
   const searchParams = useSearchParams();
   const router = useRouter();
   const { status } = useSession();
+  const [isPending, startTransition] = useTransition();
 
   const isAuthenticated = status === 'authenticated';
   const sortBy = searchParams.get('sort') ?? 'LATEST';
@@ -54,7 +61,10 @@ export default function ListLayout({
   const updateFilter = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set(key, value);
-    router.push(`${pathname}?${params.toString()}`);
+
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`);
+    });
   };
 
   return (
@@ -167,7 +177,17 @@ export default function ListLayout({
                 </Select> */}
               </div>
 
-              <div>{children}</div>
+              <div className="relative">
+                <div className={isPending ? 'opacity-0' : 'opacity-100'}>
+                  {children}
+                </div>
+                {isPending && (
+                  <div className="absolute inset-0 z-1 bg-white/70 backdrop-blur-[1px]">
+                    {isTeachers ? <TeachersListSkeleton /> : null}
+                    {isStudyRooms ? <StudyRoomsListSkeleton /> : null}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
