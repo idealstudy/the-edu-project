@@ -1,33 +1,28 @@
-'use client';
-
-import { useSearchParams } from 'next/navigation';
-
-import { usePublicStudyRoomsQuery } from '@/features/list/api/teacher.public.query';
+import { getPublicStudyRooms } from '@/features/list';
 import { StudyRoomCard } from '@/features/list/components/study-room-card';
-import { MiniSpinner } from '@/shared/components/loading';
 
 type SortOption = 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
-type SortSubjectOption = 'ALL' | 'KOREAN' | 'ENGLISH' | 'MATH' | 'OTHER';
+/* TODO : 추후 업데이트 이후 적용 예정 */
+// type SortSubjectOption = 'ALL' | 'KOREAN' | 'ENGLISH' | 'MATH' | 'OTHER';
 
-export default function StudyRoomListPage() {
-  const searchParams = useSearchParams();
+const parseSort = (value?: string): SortOption => {
+  if (value === 'OLDEST' || value === 'ALPHABETICAL') return value;
+  return 'LATEST';
+};
 
-  const sort = (searchParams.get('sort') ?? 'LATEST') as SortOption;
-  const subject = (searchParams.get('subject') ?? 'ALL') as SortSubjectOption;
+export default async function StudyRoomListPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const sp = await searchParams;
+  const sort = parseSort(typeof sp.sort === 'string' ? sp.sort : undefined);
 
-  const { data, isLoading } = usePublicStudyRoomsQuery({
+  const data = await getPublicStudyRooms({
     page: 0,
     size: 20,
     sort: sort,
-    subject: subject,
   });
-
-  if (isLoading)
-    return (
-      <div className="py-12 text-center">
-        <MiniSpinner />
-      </div>
-    );
 
   if (!data?.content || data.content.length === 0) {
     return (
@@ -39,7 +34,7 @@ export default function StudyRoomListPage() {
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {data.content.map((room) => (
+      {data?.content.map((room) => (
         <StudyRoomCard
           key={room.id}
           studyRoom={room}

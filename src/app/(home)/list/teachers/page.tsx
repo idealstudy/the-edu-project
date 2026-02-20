@@ -1,34 +1,30 @@
-'use client';
-
-import { useSearchParams } from 'next/navigation';
-
-import { usePublicTeachersQuery } from '@/features/list/api/teacher.public.query';
+import { getPublicTeachers } from '@/features/list';
 import { TeacherCard } from '@/features/list/components/teacher-card';
-import { MiniSpinner } from '@/shared/components/loading';
 
 type SortOption = 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
-type SortSubjectOption = 'ALL' | 'KOREAN' | 'ENGLISH' | 'MATH' | 'OTHER';
 
-export default function TeachersListPage() {
-  const searchParams = useSearchParams();
+const parseSort = (value?: string): SortOption => {
+  if (value === 'OLDEST' || value === 'ALPHABETICAL') return value;
+  return 'LATEST';
+};
 
-  const sort = (searchParams.get('sort') ?? 'LATEST') as SortOption;
-  const subject = (searchParams.get('subject') ?? 'ALL') as SortSubjectOption;
+export default async function TeachersListPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const sp = await searchParams;
+  const sort = parseSort(typeof sp.sort === 'string' ? sp.sort : undefined);
+  /* TODO : 추후 업데이트 이후 적용 예정 */
 
-  const { data, isLoading } = usePublicTeachersQuery({
+  // const subject = typeof sp.subject === 'string' ? sp.subject : 'ALL';
+
+  const data = await getPublicTeachers({
     page: 0,
     size: 20,
     sort: sort,
-    subject: subject,
+    // subject: subject as 'ALL' | 'KOREAN' | 'ENGLISH' | 'MATH' | 'OTHER',
   });
-
-  if (isLoading) {
-    return (
-      <div className="py-12 text-center">
-        <MiniSpinner />
-      </div>
-    );
-  }
 
   if (!data?.content || data.content.length === 0) {
     return (
