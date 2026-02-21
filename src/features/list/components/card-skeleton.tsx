@@ -1,4 +1,4 @@
-﻿import { SkeletonBlock, SkeletonGrid } from '@/shared/components/loading';
+﻿import { Skeleton } from '@/shared/components/loading';
 import { cn } from '@/shared/lib';
 
 const TeacherCardSkeleton = ({ className }: { className?: string }) => {
@@ -9,14 +9,14 @@ const TeacherCardSkeleton = ({ className }: { className?: string }) => {
         className
       )}
     >
-      <SkeletonBlock className="h-[100px] w-[100px] shrink-0 rounded-full" />
+      <Skeleton.Block className="h-[100px] w-[100px] shrink-0 rounded-full" />
 
       <div className="flex flex-1 flex-col gap-3">
-        <SkeletonBlock className="h-5 w-2/5" />
-        <SkeletonBlock className="h-4 w-3/5" />
-        <SkeletonBlock className="h-4 w-4/5" />
+        <Skeleton.Block className="h-5 w-2/5" />
+        <Skeleton.Block className="h-4 w-3/5" />
+        <Skeleton.Block className="h-4 w-4/5" />
         <div className="mt-2 flex justify-end">
-          <SkeletonBlock className="h-4 w-20" />
+          <Skeleton.Block className="h-4 w-20" />
         </div>
       </div>
     </div>
@@ -32,15 +32,15 @@ const StudyRoomCardSkeleton = ({ className }: { className?: string }) => {
       )}
     >
       <div className="bg-orange-1 flex flex-col gap-[10px] p-6">
-        <SkeletonBlock className="h-6 w-3/5" />
-        <SkeletonBlock className="h-5 w-full" />
-        <SkeletonBlock className="h-5 w-4/5" />
+        <Skeleton.Block className="h-6 w-3/5" />
+        <Skeleton.Block className="h-5 w-full" />
+        <Skeleton.Block className="h-5 w-4/5" />
       </div>
 
       <div className="border-gray-scale-gray-10 border-t-1 bg-white p-6">
         <div className="flex items-center justify-between gap-4">
-          <SkeletonBlock className="h-5 w-1/3" />
-          <SkeletonBlock className="h-5 w-16" />
+          <Skeleton.Block className="h-5 w-1/3" />
+          <Skeleton.Block className="h-5 w-16" />
         </div>
       </div>
     </div>
@@ -49,9 +49,9 @@ const StudyRoomCardSkeleton = ({ className }: { className?: string }) => {
 
 export const TeachersListSkeleton = ({ count = 16 }: { count?: number }) => {
   return (
-    <SkeletonGrid
+    <Skeleton.Grid
       count={count}
-      gridClassName="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4"
+      className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4"
       renderItem={() => <TeacherCardSkeleton />}
     />
   );
@@ -59,9 +59,9 @@ export const TeachersListSkeleton = ({ count = 16 }: { count?: number }) => {
 
 export const StudyRoomsListSkeleton = ({ count = 16 }: { count?: number }) => {
   return (
-    <SkeletonGrid
+    <Skeleton.Grid
       count={count}
-      gridClassName="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4"
+      className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4"
       renderItem={() => <StudyRoomCardSkeleton />}
     />
   );
