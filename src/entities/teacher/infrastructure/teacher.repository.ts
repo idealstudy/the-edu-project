@@ -17,7 +17,7 @@ const getProfilePublicKorean = (isPublic: boolean): '공개' | '비공개' =>
   isPublic ? '공개' : '비공개';
 
 /**
- * DTO를 Domain 객체로 변환
+ * basicInfo DTO를 Domain 객체로 변환
  */
 const transformBasicInfoToFrontend = (
   basicInfoDto: TeacherBasicInfoDTO
@@ -55,7 +55,7 @@ const updateBasicInfo = async (
 };
 
 /* ─────────────────────────────────────────────────────
- * 선생님 통계 조회
+ * [Read] 선생님 통계 조회
  * ────────────────────────────────────────────────────*/
 const getTeacherReport = async () => {
   const response = await api.private.get(`/teacher/me/report`);
@@ -63,7 +63,7 @@ const getTeacherReport = async () => {
 };
 
 /* ─────────────────────────────────────────────────────
- * 선생님 수업 노트 전체 목록 조회
+ * [Read] 선생님 수업 노트 전체 목록 조회
  * ────────────────────────────────────────────────────*/
 const getTeacherNoteList = async () => {
   const response = await api.private.get(`/teacher/me/teaching-notes`);
@@ -71,7 +71,7 @@ const getTeacherNoteList = async () => {
 };
 
 /* ─────────────────────────────────────────────────────
- * 선생님 스터디룸 전체 목록 조회
+ * [Read] 선생님 스터디룸 전체 목록 조회
  * ────────────────────────────────────────────────────*/
 const getTeacherStudyRoomList = async () => {
   const response = await api.private.get(`/teacher/me/study-rooms`);

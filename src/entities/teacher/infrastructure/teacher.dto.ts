@@ -1,6 +1,16 @@
 import { z } from 'zod';
 
 /* ─────────────────────────────────────────────────────
+ * 선생님 기본 정보 DTO
+ * ────────────────────────────────────────────────────*/
+const BasicInfoDtoSchema = z.object({
+  name: z.string(),
+  email: z.string(),
+  isProfilePublic: z.boolean(),
+  simpleIntroduction: z.string(),
+});
+
+/* ─────────────────────────────────────────────────────
  * 선생님 통계 조회 DTO
  * ──────────────────────────────────────────────────── */
 const TeacherReportDtoSchema = z.object({
@@ -41,16 +51,6 @@ const TeacherStudyRoomListItemDtoSchema = z.object({
 const TeacherStudyRoomListDtoSchema = z.array(
   TeacherStudyRoomListItemDtoSchema
 );
-
-/* ─────────────────────────────────────────────────────
- * 선생님 기본 정보 DTO
- * ────────────────────────────────────────────────────*/
-const BasicInfoDtoSchema = z.object({
-  name: z.string(),
-  email: z.string(),
-  isProfilePublic: z.boolean(),
-  simpleIntroduction: z.string(),
-});
 
 /* ─────────────────────────────────────────────────────
  * 선생님 기본 정보 Payload

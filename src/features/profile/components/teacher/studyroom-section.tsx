@@ -1,18 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-type Studyroom = {
-  id: number;
-  name: string;
-  teachingNoteCount: number;
-  studentCount: number;
-  qnaCount: number;
-};
+import { FrontendTeacherStudyRoomList } from '@/entities/teacher';
 
 export default function StudyroomSection({
   studyrooms,
 }: {
-  studyrooms: Studyroom[];
+  studyrooms: FrontendTeacherStudyRoomList;
 }) {
   return (
     <>

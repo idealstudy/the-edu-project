@@ -1,3 +1,5 @@
+import { FrontendTeacherReport } from '@/entities/teacher';
+
 const ACTIVITY_SUMMARY_META = [
   {
     key: 'studyRoomCount',
@@ -25,23 +27,15 @@ const ACTIVITY_SUMMARY_META = [
     unit: '개',
   },
 ] as const satisfies {
-  key: keyof ActivitySummary;
+  key: keyof FrontendTeacherReport;
   label: string;
   unit: string;
 }[];
 
-type ActivitySummary = {
-  studyRoomCount: number;
-  teachingNoteCount: number;
-  studentCount: number;
-  reviewCount: number;
-  qnaCount: number;
-};
-
 export default function ActivitySummarySection({
   summary,
 }: {
-  summary: ActivitySummary;
+  summary: FrontendTeacherReport;
 }) {
   const summaryList = ACTIVITY_SUMMARY_META.map((meta) => ({
     ...meta,

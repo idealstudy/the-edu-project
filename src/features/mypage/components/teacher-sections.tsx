@@ -39,6 +39,7 @@ export default function TeacherSections() {
 
       <SectionContainer
         title="대표 수업노트"
+        isOwner
         action={<SelectStudynotesDialog />}
       >
         <ComingSoonSection />
@@ -50,7 +51,15 @@ export default function TeacherSections() {
         isLoading={isStudyRoomsLoading}
         isError={isStudyRoomsError}
       >
-        {studyRooms && <StudyroomSection studyrooms={studyRooms} />}
+        {studyRooms && studyRooms?.length ? (
+          <StudyroomSection studyrooms={studyRooms} />
+        ) : (
+          <div className="my-4">
+            <p className="text-text-sub2 text-center">
+              운영중인 스터디룸이 없습니다.
+            </p>
+          </div>
+        )}
       </SectionContainer>
     </>
   );
