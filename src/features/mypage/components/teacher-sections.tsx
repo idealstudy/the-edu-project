@@ -1,28 +1,32 @@
 import { useTeacherReport } from '@/features/mypage/hooks/teacher/use-report';
+import { useTeacherStudyRooms } from '@/features/mypage/hooks/teacher/use-study-rooms';
 import ComingSoonSection from '@/features/profile/components/coming-soon-section';
 import SectionContainer from '@/features/profile/components/section-container';
 import ActivitySummarySection from '@/features/profile/components/teacher/activity-summary-section';
 import SelectStudynotesDialog from '@/features/profile/components/teacher/select-studynotes-dialog';
-import { MiniSpinner } from '@/shared/components/loading';
+import StudyroomSection from '@/features/profile/components/teacher/studyroom-section';
 
 export default function TeacherSections() {
   const {
     data: report,
     isLoading: isReportLoading,
-    error: isReportError,
+    isError: isReportError,
   } = useTeacherReport();
 
-  // TODO: loading에 skeleton 적용
-  const renderActivitySummary = () => {
-    if (isReportLoading) return <MiniSpinner />;
-    if (isReportError || !report) return <ComingSoonSection />;
-    return <ActivitySummarySection summary={report} />;
-  };
+  const {
+    data: studyRooms,
+    isLoading: isStudyRoomsLoading,
+    isError: isStudyRoomsError,
+  } = useTeacherStudyRooms();
 
   return (
     <>
-      <SectionContainer title="활동 요약">
-        {renderActivitySummary()}
+      <SectionContainer
+        title="활동 요약"
+        isLoading={isReportLoading}
+        isError={isReportError}
+      >
+        {report && <ActivitySummarySection summary={report} />}
       </SectionContainer>
 
       <SectionContainer title="후기">
@@ -41,9 +45,12 @@ export default function TeacherSections() {
         {/* <StudynotesSection profile={profile} /> */}
       </SectionContainer>
 
-      <SectionContainer title="운영중인 스터디룸">
-        <ComingSoonSection />
-        {/* <StudyroomSection profile={profile} /> */}
+      <SectionContainer
+        title="운영중인 스터디룸"
+        isLoading={isStudyRoomsLoading}
+        isError={isStudyRoomsError}
+      >
+        {studyRooms && <StudyroomSection studyrooms={studyRooms} />}
       </SectionContainer>
     </>
   );

@@ -49,7 +49,7 @@ export default function ActivitySummarySection({
   }));
 
   return (
-    <div className="flex justify-between py-4">
+    <div className="flex justify-between">
       {summaryList.map((summary) => (
         <div
           key={summary.key}

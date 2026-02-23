@@ -1,3 +1,5 @@
+import ComingSoonSection from '@/features/profile/components/coming-soon-section';
+import { MiniSpinner } from '@/shared/components/loading';
 import { cn } from '@/shared/lib';
 
 type Props = {
@@ -6,6 +8,8 @@ type Props = {
   className?: string;
   action?: React.ReactNode;
   isOwner?: boolean;
+  isLoading?: boolean;
+  isError?: boolean;
 };
 
 export default function SectionContainer({
@@ -14,7 +18,14 @@ export default function SectionContainer({
   className,
   action,
   isOwner = false,
+  isLoading = false,
+  isError = false,
 }: Props) {
+  const renderContent = () => {
+    if (isLoading) return <MiniSpinner />;
+    if (isError) return <ComingSoonSection />;
+    return children;
+  };
   return (
     <div
       className={cn(
@@ -23,10 +34,10 @@ export default function SectionContainer({
       )}
     >
       <div className="flex justify-between">
-        <h3 className="font-headline1-heading">{title}</h3>
+        <h3 className="font-headline1-heading mb-2">{title}</h3>
         {isOwner && action}
       </div>
-      {children}
+      {renderContent()}
     </div>
   );
 }
