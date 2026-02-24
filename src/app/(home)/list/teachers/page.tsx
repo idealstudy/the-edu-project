@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 
 import { SITE_CONFIG } from '@/config/site';
 import { getPublicTeachers } from '@/features/list';
+import { ListGrid } from '@/features/list/components/list-grid';
 import { TeacherCard } from '@/features/list/components/teacher-card';
 
 export const metadata: Metadata = {
@@ -60,13 +61,13 @@ export default async function TeachersListPage({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-      {data?.content.map((teacher) => (
+    <ListGrid>
+      {data.content.map((teacher) => (
         <TeacherCard
           key={teacher.id}
           teacher={teacher}
         />
       ))}
-    </div>
+    </ListGrid>
   );
 }

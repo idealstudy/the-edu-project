@@ -47,11 +47,14 @@ const StudyRoomCardSkeleton = ({ className }: { className?: string }) => {
   );
 };
 
+const listClassName =
+  'grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(280px,1fr))]';
+
 export const TeachersListSkeleton = ({ count = 16 }: { count?: number }) => {
   return (
     <Skeleton.Grid
       count={count}
-      className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4"
+      className={`${listClassName}`}
       renderItem={() => <TeacherCardSkeleton />}
     />
   );
@@ -61,7 +64,7 @@ export const StudyRoomsListSkeleton = ({ count = 16 }: { count?: number }) => {
   return (
     <Skeleton.Grid
       count={count}
-      className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4"
+      className={`${listClassName}`}
       renderItem={() => <StudyRoomCardSkeleton />}
     />
   );
