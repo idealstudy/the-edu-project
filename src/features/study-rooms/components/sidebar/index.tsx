@@ -20,7 +20,9 @@ import {
   initialDialogState,
 } from '@/shared/components/dialog/model/dialog-reducer';
 import { SidebarButton } from '@/shared/components/sidebar';
+import { Toggle } from '@/shared/components/ui';
 import { useRole } from '@/shared/hooks/use-role';
+import { Info } from 'lucide-react';
 
 import { StudyRoomDetail } from '../../model';
 import { StudyroomSidebarHeader } from './header';
@@ -197,11 +199,29 @@ export const StudyroomSidebar = ({
         <StudyIntro description={studyRoomDetail?.description} />
         {/* 학생 초대 버튼 - 선생님만 노출 */}
         {canManage && (
-          <SidebarButton
-            onClick={openInvitation}
-            btnName="학생 초대하기"
-            imgUrl="/studynotes/invite_student.svg"
-          />
+          <div className="flex flex-col gap-4">
+            <SidebarButton
+              onClick={openInvitation}
+              btnName="학생 초대하기"
+              imgUrl="/studynotes/invite_student.svg"
+            />
+            <div className="flex gap-2">
+              <Toggle />
+              <div className="flex flex-col gap-0.5">
+                <div className="text-gray-10 flex gap-1">
+                  <p className="font-label-heading tablet:font-body2-heading">
+                    초대 링크 활성화
+                  </p>
+                  <button>
+                    <Info className="h-4 w-4" />
+                  </button>
+                </div>
+                <p className="text-gray-7 font-caption-normal tablet:font-label-normal">
+                  링크를 비활성화하면, 학생을 초대할 수 없어요.
+                </p>
+              </div>
+            </div>
+          </div>
         )}
         {/* 수업노트 탭에서만 보이는 컴포넌트 */}
         {segment === 'note' && (
