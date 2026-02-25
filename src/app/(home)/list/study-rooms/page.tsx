@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 
 import { SITE_CONFIG } from '@/config/site';
 import { getPublicStudyRooms } from '@/features/list';
+import { ListGrid } from '@/features/list/components/list-grid';
 import { StudyRoomCard } from '@/features/list/components/study-room-card';
 
 export const metadata: Metadata = {
@@ -59,13 +60,13 @@ export default async function StudyRoomListPage({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {data?.content.map((room) => (
+    <ListGrid>
+      {data.content.map((studyRoom) => (
         <StudyRoomCard
-          key={room.id}
-          studyRoom={room}
+          key={studyRoom.id}
+          studyRoom={studyRoom}
         />
       ))}
-    </div>
+    </ListGrid>
   );
 }
