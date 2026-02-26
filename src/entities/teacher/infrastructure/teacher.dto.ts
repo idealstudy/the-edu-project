@@ -53,12 +53,46 @@ const TeacherStudyRoomListDtoSchema = z.array(
 );
 
 /* ─────────────────────────────────────────────────────
+ * 선생님 후기 전체 목록 조회 응답 DTO
+ * ────────────────────────────────────────────────────*/
+const TeacherReviewListItemDtoSchema = z.object({
+  id: z.number(),
+  srcMemberId: z.number(),
+  srcMemberName: z.string(),
+  dstMemberId: z.number(),
+  dstMemberName: z.string(),
+  studyRoomId: z.number(),
+  startDate: z.string(),
+  endDate: z.string(),
+  contentPreview: z.string(),
+  imageInfo: z.object({ imageUrls: z.string().array(), expiresAt: z.string() }),
+  regDate: z.string(),
+});
+
+const TeacherReviewListDtoSchema = z.object({
+  pageNumber: z.number(),
+  size: z.number(),
+  totalElements: z.number(),
+  totalPages: z.number(),
+  content: z.array(TeacherReviewListItemDtoSchema),
+});
+
+/* ─────────────────────────────────────────────────────
  * 선생님 기본 정보 Payload
  * ────────────────────────────────────────────────────*/
 const UpdateBasicInfoPayloadSchema = z.object({
   name: z.string(),
   isProfilePublic: z.boolean(),
   simpleIntroduction: z.string(),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 선생님 후기 목록 조회 Query
+ * ────────────────────────────────────────────────────*/
+const TeacherReviewQuerySchema = z.object({
+  page: z.number(),
+  size: z.number(),
+  type: z.enum(['STUDYROOM_REVIEW', 'HANDWRITTEN_LETTER']),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -69,8 +103,13 @@ export const dto = {
   teacherReport: TeacherReportDtoSchema,
   teacherNoteList: TeacherNoteListDtoSchema,
   teacherStudyRoomList: TeacherStudyRoomListDtoSchema,
+  teacherReviewList: TeacherReviewListDtoSchema,
 };
 
 export const payload = {
   updateBasicInfo: UpdateBasicInfoPayloadSchema,
+};
+
+export const query = {
+  teacherReview: TeacherReviewQuerySchema,
 };

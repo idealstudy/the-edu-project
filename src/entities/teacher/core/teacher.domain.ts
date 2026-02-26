@@ -55,6 +55,31 @@ const TeacherStudyRoomListDomainSchema = z.array(
 );
 
 /* ─────────────────────────────────────────────────────
+ * 선생님 후기 전체 Domain 스키마
+ * ────────────────────────────────────────────────────*/
+const TeacherReviewListItemDomainSchema = z.object({
+  id: z.number(),
+  srcMemberId: z.number(),
+  srcMemberName: z.string(),
+  dstMemberId: z.number(),
+  dstMemberName: z.string(),
+  studyRoomId: z.number(),
+  startDate: z.string(),
+  endDate: z.string(),
+  contentPreview: z.string(),
+  imageInfo: z.object({ imageUrls: z.string().array(), expiresAt: z.string() }),
+  regDate: z.string(),
+});
+
+const TeacherReviewListDomainSchema = z.object({
+  pageNumber: z.number(),
+  size: z.number(),
+  totalElements: z.number(),
+  totalPages: z.number(),
+  content: z.array(TeacherReviewListItemDomainSchema),
+});
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const domain = {
@@ -64,4 +89,6 @@ export const domain = {
   teacherNoteList: TeacherNoteListDomainSchema,
   teacherStudyRoomListItem: TeacherStudyRoomListItemDomainSchema,
   teacherStudyRoomList: TeacherStudyRoomListDomainSchema,
+  teacherReviewListItem: TeacherReviewListItemDomainSchema,
+  teacherReviewList: TeacherReviewListDomainSchema,
 };

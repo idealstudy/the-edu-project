@@ -1,6 +1,7 @@
 import { domain } from '@/entities/teacher/core';
 import {
   FrontendTeacherBasicInfo,
+  GetTeacherReviewListQuery,
   TeacherBasicInfoDTO,
   UpdateTeacherBasicInfoPayload,
 } from '@/entities/teacher/types';
@@ -8,7 +9,7 @@ import { api } from '@/shared/api';
 import { unwrapEnvelope } from '@/shared/lib/api-utils';
 import { CommonResponse } from '@/types';
 
-import { dto, payload } from './teacher.dto';
+import { dto, payload, query } from './teacher.dto';
 
 /**
  * isProfilePublic -> 한글 변환 헬퍼
@@ -79,6 +80,17 @@ const getTeacherStudyRoomList = async () => {
 };
 
 /* ─────────────────────────────────────────────────────
+ * [Read] 선생님 후기 전체 목록 조회
+ * ────────────────────────────────────────────────────*/
+const getTeacherReviewList = async (params: GetTeacherReviewListQuery) => {
+  const validated = query.teacherReview.parse(params);
+  const response = await api.private.get(`/teacher/me/reviews`, {
+    params: validated,
+  });
+  return unwrapEnvelope(response, dto.teacherReviewList);
+};
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const repository = {
@@ -89,4 +101,5 @@ export const repository = {
   getTeacherNoteList,
   getTeacherStudyRoomList,
   getTeacherReport,
+  getTeacherReviewList,
 };

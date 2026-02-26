@@ -1,5 +1,9 @@
 import { domain } from '@/entities/teacher/core/teacher.domain';
-import { dto, payload } from '@/entities/teacher/infrastructure/teacher.dto';
+import {
+  dto,
+  payload,
+  query,
+} from '@/entities/teacher/infrastructure/teacher.dto';
 import { z } from 'zod';
 
 export type TeacherBasicInfoDTO = z.infer<typeof dto.basicInfo>;
@@ -18,7 +22,15 @@ export type FrontendTeacherStudyRoomListItem = z.infer<
 export type FrontendTeacherStudyRoomList = z.infer<
   typeof domain.teacherStudyRoomList
 >;
+export type FrontendTeacherReviewListItem = z.infer<
+  typeof domain.teacherReviewListItem
+>;
+export type FrontendTeacherReviewList = z.infer<
+  typeof domain.teacherReviewList
+>;
 
 export type UpdateTeacherBasicInfoPayload = z.infer<
   typeof payload.updateBasicInfo
 >;
+
+export type GetTeacherReviewListQuery = z.infer<typeof query.teacherReview>;
