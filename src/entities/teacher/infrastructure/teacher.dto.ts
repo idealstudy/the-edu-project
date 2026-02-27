@@ -26,7 +26,7 @@ const TeacherReportDtoSchema = z.object({
  * ────────────────────────────────────────────────────*/
 const TeacherNoteListItemDtoSchema = z.object({
   id: z.number(),
-  title: z.string(),
+  name: z.string(),
   studyRoomId: z.number(),
   studyRoomName: z.string(),
   qnaCount: z.number(),
@@ -87,6 +87,14 @@ const UpdateBasicInfoPayloadSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 선생님 대표 수업노트 Payload
+ * ────────────────────────────────────────────────────*/
+const UpdateTeachingNoteRepresentativePayloadSchema = z.object({
+  teachingNoteId: z.number(),
+  representative: z.boolean(),
+});
+
+/* ─────────────────────────────────────────────────────
  * 선생님 후기 목록 조회 Query
  * ────────────────────────────────────────────────────*/
 const TeacherReviewQuerySchema = z.object({
@@ -108,6 +116,8 @@ export const dto = {
 
 export const payload = {
   updateBasicInfo: UpdateBasicInfoPayloadSchema,
+  updateTeachingNoteRepresentative:
+    UpdateTeachingNoteRepresentativePayloadSchema,
 };
 
 export const query = {

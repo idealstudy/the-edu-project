@@ -28,7 +28,7 @@ const TeacherReportDomainSchema = z.object({
  * ────────────────────────────────────────────────────*/
 const TeacherNoteListItemDomainSchema = z.object({
   id: z.number(),
-  title: z.string(),
+  name: z.string(),
   studyRoomId: z.number(),
   studyRoomName: z.string(),
   qnaCount: z.number(),

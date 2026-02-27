@@ -4,6 +4,7 @@ import {
   GetTeacherReviewListQuery,
   TeacherBasicInfoDTO,
   UpdateTeacherBasicInfoPayload,
+  UpdateTeacherTeachingNoteRepresentativePayload,
 } from '@/entities/teacher/types';
 import { api } from '@/shared/api';
 import { unwrapEnvelope } from '@/shared/lib/api-utils';
@@ -72,6 +73,18 @@ const getTeacherNoteList = async () => {
 };
 
 /* ─────────────────────────────────────────────────────
+ * [Update] 선생님 수업 노트 대표 설정/해제
+ * ────────────────────────────────────────────────────*/
+const setTeacherNoteRepresentative = async (
+  teachingNoteRepresentative: UpdateTeacherTeachingNoteRepresentativePayload
+) => {
+  await api.private.patch(
+    `/teacher/me/teaching-notes/${teachingNoteRepresentative.teachingNoteId}/representative`,
+    { representative: teachingNoteRepresentative.representative }
+  );
+};
+
+/* ─────────────────────────────────────────────────────
  * [Read] 선생님 스터디룸 전체 목록 조회
  * ────────────────────────────────────────────────────*/
 const getTeacherStudyRoomList = async () => {
@@ -98,7 +111,10 @@ export const repository = {
     getBasicInfo,
     updateBasicInfo,
   },
-  getTeacherNoteList,
+  teachingNote: {
+    getTeacherNoteList,
+    setTeacherNoteRepresentative,
+  },
   getTeacherStudyRoomList,
   getTeacherReport,
   getTeacherReviewList,

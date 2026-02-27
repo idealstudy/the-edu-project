@@ -1,58 +1,31 @@
 'use client';
 
-import { useEffect, useReducer, useState } from 'react';
+import { useReducer } from 'react';
 
 import Image from 'next/image';
 
-import StudynotesItem from '@/features/profile/components/teacher/studynotes-item';
-import { StudyNote } from '@/features/study-notes/model';
+import {
+  useTeacherTeachingNotes,
+  useUpdateTeacherNoteRepresentative,
+} from '@/features/mypage/hooks/teacher/use-teaching-notes';
+import TeachingnotesItem from '@/features/profile/components/teacher/teachingnotes-item';
 import { dialogReducer, initialDialogState } from '@/shared/components/dialog';
 import { Button, Dialog, Input } from '@/shared/components/ui';
 
-const STUDY_NOTES: StudyNote[] = [
-  {
-    id: 1,
-    groupId: 1,
-    groupName: 'group name',
-    teacherName: '김에듀 강사',
-    title: '수업노트 1',
-    visibility: 'PUBLIC',
-    taughtAt: '2025-12-27',
-    updatedAt: '2025-12-29',
-  },
-  {
-    id: 2,
-    groupId: 2,
-    groupName: 'group name2',
-    teacherName: '김에듀 강사',
-    title: '수업노트 2',
-    visibility: 'SPECIFIC_STUDENTS_ONLY',
-    taughtAt: '2026-02-02',
-    updatedAt: '2026-02-05',
-  },
-];
-
-export default function SelectStudynotesDialog() {
+export default function SelectTeachingnotesDialog() {
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
 
-  useEffect(() => {
-    if (dialog.status === 'open') {
-      setSelectedIds(new Set());
-    }
-  }, [dialog.status]);
+  // TODO 전체 조회 api로 변경 예정
+  const { data: teachingnotes } = useTeacherTeachingNotes();
 
-  const toggleNote = (id: number) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        if (next.size >= 5) return prev;
-        next.add(id);
-      }
-      return next;
-    });
+  const { mutate: updateRepresentative } = useUpdateTeacherNoteRepresentative();
+
+  const representativeCount =
+    teachingnotes?.filter((n) => n.representative).length ?? 0;
+
+  const toggleNote = (id: number, current: boolean) => {
+    if (!current && representativeCount >= 5) return;
+    updateRepresentative({ teachingNoteId: id, representative: !current });
   };
 
   return (
@@ -97,15 +70,18 @@ export default function SelectStudynotesDialog() {
           <Dialog.Body>
             <Input />
             <div className="space-y-3 overflow-y-auto px-3 py-4">
-              {STUDY_NOTES.map((studynote) => (
-                <StudynotesItem
-                  variant="selectable"
-                  key={studynote.id}
-                  studynote={studynote}
-                  checked={selectedIds.has(studynote.id)}
-                  onClick={() => toggleNote(studynote.id)}
-                />
-              ))}
+              {teachingnotes &&
+                teachingnotes.map((teachingnote) => (
+                  <TeachingnotesItem
+                    variant="selectable"
+                    key={teachingnote.id}
+                    teachingnote={teachingnote}
+                    checked={teachingnote.representative}
+                    onClick={() =>
+                      toggleNote(teachingnote.id, teachingnote.representative)
+                    }
+                  />
+                ))}
             </div>
           </Dialog.Body>
           <Dialog.Footer className="self-end">
@@ -122,8 +98,6 @@ export default function SelectStudynotesDialog() {
               type="button"
               variant="primary"
               size="small"
-              // TODO disabled 처리
-              disabled={false}
             >
               저장
             </Button>

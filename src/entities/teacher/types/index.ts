@@ -33,4 +33,8 @@ export type UpdateTeacherBasicInfoPayload = z.infer<
   typeof payload.updateBasicInfo
 >;
 
+export type UpdateTeacherTeachingNoteRepresentativePayload = z.infer<
+  typeof payload.updateTeachingNoteRepresentative
+>;
+
 export type GetTeacherReviewListQuery = z.infer<typeof query.teacherReview>;

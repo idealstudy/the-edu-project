@@ -1,26 +1,31 @@
+import SelectTeachingnotesDialog from '@/features/mypage/components/select-teachingnotes-dialog';
 import { useTeacherReport } from '@/features/mypage/hooks/teacher/use-report';
 import { useTeacherReviews } from '@/features/mypage/hooks/teacher/use-reviews';
 import { useTeacherStudyRooms } from '@/features/mypage/hooks/teacher/use-study-rooms';
+import { useTeacherTeachingNotes } from '@/features/mypage/hooks/teacher/use-teaching-notes';
 import ComingSoonSection from '@/features/profile/components/coming-soon-section';
 import SectionContainer from '@/features/profile/components/section-container';
 import ActivitySummarySection from '@/features/profile/components/teacher/activity-summary-section';
 import ReviewSection from '@/features/profile/components/teacher/review-section';
-import SelectStudynotesDialog from '@/features/profile/components/teacher/select-studynotes-dialog';
 import StudyroomSection from '@/features/profile/components/teacher/studyroom-section';
+import StudynotesSection from '@/features/profile/components/teacher/teachingnotes-section';
 
 export default function TeacherSections() {
+  // 활동 통계
   const {
     data: report,
     isLoading: isReportLoading,
     isError: isReportError,
   } = useTeacherReport();
 
+  // 스터디룸
   const {
     data: studyRooms,
     isLoading: isStudyRoomsLoading,
     isError: isStudyRoomsError,
   } = useTeacherStudyRooms();
 
+  // 리뷰
   const {
     data: reviews,
     isLoading: isReviewsLoading,
@@ -31,6 +36,13 @@ export default function TeacherSections() {
     page: 0,
     size: 5,
   });
+
+  // 수업 노트
+  const {
+    data: teachingnotes,
+    isLoading: isTeachingnotesLoading,
+    isError: isTeachingnotesError,
+  } = useTeacherTeachingNotes();
 
   return (
     <>
@@ -63,10 +75,12 @@ export default function TeacherSections() {
       <SectionContainer
         title="대표 수업노트"
         isOwner
-        action={<SelectStudynotesDialog />}
+        action={<SelectTeachingnotesDialog />}
+        isLoading={isTeachingnotesLoading}
+        isError={isTeachingnotesError}
       >
-        <ComingSoonSection />
-        {/* <StudynotesSection profile={profile} /> */}
+        {/* 대표 수업노트가 없는 경우, 최신 수업노트 5개를 보여주므로 길이를 확인하지 않음 */}
+        {teachingnotes && <StudynotesSection teachingnotes={teachingnotes} />}
       </SectionContainer>
 
       <SectionContainer
