@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useReducer, useState } from 'react';
+import { toast } from 'react-toastify';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
@@ -22,10 +23,11 @@ import {
 import { SidebarButton } from '@/shared/components/sidebar';
 import { Toggle } from '@/shared/components/ui';
 import { useRole } from '@/shared/hooks/use-role';
-import { Info } from 'lucide-react';
+import { Info, X } from 'lucide-react';
 
 import { StudyRoomDetail } from '../../model';
 import { StudyroomSidebarHeader } from './header';
+import { InfoTooltipToast } from './info-tooltip';
 import { useDeleteStudyRoom, useUpdateStudyRoom } from './services/query';
 import { StudyIntro, StudyStats } from './status';
 
@@ -50,6 +52,8 @@ export const StudyroomSidebar = ({
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
   const [deleteNoticeMsg, setDeleteNoticeMsg] =
     useState('수업노트 그룹이 삭제되었습니다.');
+  const [isLinkEnable, setIsLinkEnable] = useState(false);
+  const [isInfoToastOpen, setIsInfoToastOpen] = useState(false);
   const { role } = useRole();
   const { mutate: deleteStudyRoom } = useDeleteStudyRoom();
   const { mutate: updateRoomName } = useUpdateStudyRoom();
@@ -105,11 +109,38 @@ export const StudyroomSidebar = ({
     router.push('/dashboard');
   };
 
-  // 초대 다이얼로그 열기
-  const openInvitation = () => {
-    const params = new URLSearchParams(searchParams);
-    params.set('invite', 'open');
-    router.replace(`${pathname}?${params.toString()}`);
+  // 초대 링크 복사 후 Bottom Toast 표시, token 수정 필요
+  const handleCopyInviteLink = async () => {
+    const inviteLink = `${typeof window !== 'undefined' ? window.location.origin : ''}/invite?token=token_example`;
+    await navigator.clipboard.writeText(inviteLink);
+    toast(
+      ({ closeToast }) => (
+        <div className="bg-gray-11 tablet:w-max tablet:gap-2 tablet:px-6 tablet:py-4 flex w-82 items-center justify-between gap-1 rounded-lg px-3 py-3">
+          <p className="font-label-normal tablet:font-body1-normal flex-1 leading-relaxed text-white">
+            학생 초대 링크가 복사됐어요. 링크를 공유해보세요
+          </p>
+          <button
+            type="button"
+            onClick={closeToast}
+            className="shrink-0 text-white hover:opacity-80"
+            aria-label="닫기"
+          >
+            <X
+              className="tablet:size-6 h-4 w-4"
+              strokeWidth={2}
+            />
+          </button>
+        </div>
+      ),
+      {
+        containerId: 'bottom-center',
+        position: 'bottom-center',
+        autoClose: 10000,
+        closeButton: false,
+        hideProgressBar: true,
+        className: '!bg-transparent !shadow-none !p-0 !min-h-0',
+      }
+    );
   };
 
   // 초대 다이얼로그 닫기
@@ -201,20 +232,34 @@ export const StudyroomSidebar = ({
         {canManage && (
           <div className="flex flex-col gap-4">
             <SidebarButton
-              onClick={openInvitation}
+              onClick={handleCopyInviteLink}
               btnName="학생 초대하기"
               imgUrl="/studynotes/invite_student.svg"
             />
             <div className="flex gap-2">
-              <Toggle />
-              <div className="flex flex-col gap-0.5">
-                <div className="text-gray-10 flex gap-1">
+              <Toggle
+                checked={isLinkEnable}
+                onCheckedChange={setIsLinkEnable}
+              />
+              <div className="flex flex-1 flex-col gap-0.5">
+                <div className="text-gray-10 flex items-center gap-1">
                   <p className="font-label-heading tablet:font-body2-heading">
                     초대 링크 활성화
                   </p>
-                  <button>
-                    <Info className="h-4 w-4" />
-                  </button>
+                  <div className="relative flex items-center justify-center">
+                    <button
+                      type="button"
+                      onMouseEnter={() => setIsInfoToastOpen(true)}
+                      aria-label="초대 링크 활성화 안내"
+                    >
+                      <Info className="h-4 w-4" />
+                    </button>
+                    <InfoTooltipToast
+                      toggleEnabled={isLinkEnable}
+                      isOpen={isInfoToastOpen}
+                      onClose={() => setIsInfoToastOpen(false)}
+                    />
+                  </div>
                 </div>
                 <p className="text-gray-7 font-caption-normal tablet:font-label-normal">
                   링크를 비활성화하면, 학생을 초대할 수 없어요.
