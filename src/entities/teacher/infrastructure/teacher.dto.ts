@@ -76,9 +76,23 @@ const TeacherReviewListDtoSchema = z.object({
   totalPages: z.number(),
   content: z.array(TeacherReviewListItemDtoSchema),
 });
+/* ─────────────────────────────────────────────────────
+ * 선생님 경력 전체 목록 조회 응답 DTO
+ * ────────────────────────────────────────────────────*/
+const TeacherCareerListItemDtoSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  description: z.string(),
+  startDate: z.string(),
+  endDate: z.string(),
+  current: z.boolean(),
+});
+
+const TeacherCareerListDtoSchema = z.array(TeacherCareerListItemDtoSchema);
 
 /* ─────────────────────────────────────────────────────
  * 선생님 기본 정보 Payload
+ * UPDATE
  * ────────────────────────────────────────────────────*/
 const UpdateBasicInfoPayloadSchema = z.object({
   name: z.string(),
@@ -88,10 +102,23 @@ const UpdateBasicInfoPayloadSchema = z.object({
 
 /* ─────────────────────────────────────────────────────
  * 선생님 대표 수업노트 Payload
+ * UPDATE
  * ────────────────────────────────────────────────────*/
 const UpdateTeachingNoteRepresentativePayloadSchema = z.object({
   teachingNoteId: z.number(),
   representative: z.boolean(),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 선생님 경력 Payload
+ * POST / UPDATE
+ * ────────────────────────────────────────────────────*/
+const CareerPayloadSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  startDate: z.string(),
+  endDate: z.string(),
+  isCurrent: z.boolean(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -112,12 +139,14 @@ export const dto = {
   teacherNoteList: TeacherNoteListDtoSchema,
   teacherStudyRoomList: TeacherStudyRoomListDtoSchema,
   teacherReviewList: TeacherReviewListDtoSchema,
+  teacherCareerList: TeacherCareerListDtoSchema,
 };
 
 export const payload = {
   updateBasicInfo: UpdateBasicInfoPayloadSchema,
   updateTeachingNoteRepresentative:
     UpdateTeachingNoteRepresentativePayloadSchema,
+  career: CareerPayloadSchema,
 };
 
 export const query = {

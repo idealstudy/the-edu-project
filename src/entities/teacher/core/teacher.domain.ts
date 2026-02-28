@@ -80,6 +80,22 @@ const TeacherReviewListDomainSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 선생님 경력 전체 Domain 스키마
+ * ────────────────────────────────────────────────────*/
+const TeacherCareerListItemDomainSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  description: z.string(),
+  startDate: z.string(),
+  endDate: z.string(),
+  current: z.boolean(),
+});
+
+const TeacherCareerListDomainSchema = z.array(
+  TeacherCareerListItemDomainSchema
+);
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const domain = {
@@ -91,4 +107,6 @@ export const domain = {
   teacherStudyRoomList: TeacherStudyRoomListDomainSchema,
   teacherReviewListItem: TeacherReviewListItemDomainSchema,
   teacherReviewList: TeacherReviewListDomainSchema,
+  teacherCareerListItem: TeacherCareerListItemDomainSchema,
+  teacherCareerList: TeacherCareerListDomainSchema,
 };

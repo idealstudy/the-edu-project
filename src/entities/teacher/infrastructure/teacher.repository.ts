@@ -1,8 +1,11 @@
 import { domain } from '@/entities/teacher/core';
 import {
+  CareerPayload,
   FrontendTeacherBasicInfo,
+  FrontendTeacherCareerList,
   GetTeacherReviewListQuery,
   TeacherBasicInfoDTO,
+  TeacherCareerListDTO,
   UpdateTeacherBasicInfoPayload,
   UpdateTeacherTeachingNoteRepresentativePayload,
 } from '@/entities/teacher/types';
@@ -104,6 +107,43 @@ const getTeacherReviewList = async (params: GetTeacherReviewListQuery) => {
 };
 
 /* ─────────────────────────────────────────────────────
+ * [Create] 선생님 경력 생성
+ * ────────────────────────────────────────────────────*/
+const postTeacherCareer = async (careerData: CareerPayload): Promise<void> => {
+  const validated = payload.career.parse(careerData);
+  await api.private.post(`/teacher/me/careers`, validated);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Read] 선생님 경력 전체 목록 조회
+ * ────────────────────────────────────────────────────*/
+const getTeacherCareerList = async (): Promise<FrontendTeacherCareerList> => {
+  const response = await api.private.get<CommonResponse<TeacherCareerListDTO>>(
+    '/teacher/me/careers'
+  );
+
+  return unwrapEnvelope(response, dto.teacherCareerList);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Update] 선생님 경력 변경
+ * ────────────────────────────────────────────────────*/
+const updateTeacherCareer = async (
+  careerId: number,
+  careerData: CareerPayload
+): Promise<void> => {
+  const validated = payload.career.parse(careerData);
+  await api.private.put(`/teacher/me/careers/${careerId}`, validated);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Delete] 선생님 경력 삭제
+ * ────────────────────────────────────────────────────*/
+const deleteTeacherCareer = async (careerId: number): Promise<void> => {
+  await api.private.delete(`/teacher/me/careers/${careerId}`);
+};
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const repository = {
@@ -118,4 +158,10 @@ export const repository = {
   getTeacherStudyRoomList,
   getTeacherReport,
   getTeacherReviewList,
+  career: {
+    postTeacherCareer,
+    getTeacherCareerList,
+    updateTeacherCareer,
+    deleteTeacherCareer,
+  },
 };

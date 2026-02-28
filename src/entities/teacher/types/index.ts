@@ -6,10 +6,19 @@ import {
 } from '@/entities/teacher/infrastructure/teacher.dto';
 import { z } from 'zod';
 
+/* ─────────────────────────────────────────────────────
+ * DTO
+ * ────────────────────────────────────────────────────*/
 export type TeacherBasicInfoDTO = z.infer<typeof dto.basicInfo>;
 export type TeacherReportDTO = z.infer<typeof dto.teacherReport>;
 export type TeacherNoteListDTO = z.infer<typeof dto.teacherNoteList>;
+export type TeacherStudyRoomListDTO = z.infer<typeof dto.teacherStudyRoomList>;
+export type TeacherReviewListDTO = z.infer<typeof dto.teacherReviewList>;
+export type TeacherCareerListDTO = z.infer<typeof dto.teacherCareerList>;
 
+/* ─────────────────────────────────────────────────────
+ * Domain
+ * ────────────────────────────────────────────────────*/
 export type FrontendTeacherBasicInfo = z.infer<typeof domain.basicInfo>;
 export type FrontendTeacherReport = z.infer<typeof domain.teacherReport>;
 export type FrontendTeacherNoteListItem = z.infer<
@@ -28,13 +37,25 @@ export type FrontendTeacherReviewListItem = z.infer<
 export type FrontendTeacherReviewList = z.infer<
   typeof domain.teacherReviewList
 >;
+export type FrontendTeacherCareerListItem = z.infer<
+  typeof domain.teacherCareerListItem
+>;
+export type FrontendTeacherCareerList = z.infer<
+  typeof domain.teacherCareerList
+>;
 
+/* ─────────────────────────────────────────────────────
+ * Payload
+ * ────────────────────────────────────────────────────*/
 export type UpdateTeacherBasicInfoPayload = z.infer<
   typeof payload.updateBasicInfo
 >;
-
 export type UpdateTeacherTeachingNoteRepresentativePayload = z.infer<
   typeof payload.updateTeachingNoteRepresentative
 >;
+export type CareerPayload = z.infer<typeof payload.career>;
 
+/* ─────────────────────────────────────────────────────
+ * Query
+ * ────────────────────────────────────────────────────*/
 export type GetTeacherReviewListQuery = z.infer<typeof query.teacherReview>;

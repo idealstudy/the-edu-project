@@ -8,4 +8,5 @@ export const teacherKeys = {
   basicInfo: () => [...teacherKeys.all, 'basicInfo'] as const,
   review: (params: GetTeacherReviewListQuery) =>
     [...teacherKeys.all, 'review', params] as const,
+  careers: () => [...teacherKeys.all, 'careers'] as const,
 };
