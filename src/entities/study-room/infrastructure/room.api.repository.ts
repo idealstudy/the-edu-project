@@ -5,11 +5,13 @@ import type {
   TeacherRoomListItemDTO,
 } from '@/entities/study-room/types';
 import { api } from '@/shared/api';
+import { unwrapEnvelope } from '@/shared/lib/api-utils';
 import { CommonResponse } from '@/types';
 
 import { factory } from '../core/room.factory';
 import type { Room, StudentRoom } from '../types';
 import { adapters } from './room.adapters';
+import { dto } from './room.dto.schema';
 
 export const studyRoomRepository = {
   /* ─────────────────────────────────────────────────────
@@ -21,6 +23,13 @@ export const studyRoomRepository = {
     >(`/study-rooms/${id}`);
     const parsed = adapters.teacher.detail.parse(response.data);
     return factory.teacher.detail(parsed.data);
+  },
+
+  getInvitationInfo: async (token: string) => {
+    const response = await api.public.get(
+      `/study-rooms/invitation?token=${token}`
+    );
+    return unwrapEnvelope(response, dto.invitationInfo);
   },
 
   /* ─────────────────────────────────────────────────────
@@ -35,6 +44,23 @@ export const studyRoomRepository = {
       const parsed = adapters.teacher.list.parse(response.data);
       return factory.teacher.list(parsed.data);
     },
+
+    getInvitationToken: async (studyRoomId: number) => {
+      const response = await api.private.get(
+        `/teacher/study-rooms/${studyRoomId}/invitation`
+      );
+      return unwrapEnvelope(response, dto.teacher.inviteToken);
+    },
+
+    toggleInvitation: async (studyRoomId: number, enabled: boolean) => {
+      const response = await api.private.put(
+        `/teacher/study-rooms/${studyRoomId}/invitation`,
+        {
+          enabled,
+        }
+      );
+      return unwrapEnvelope(response, dto.teacher.inviteToken);
+    },
   },
 
   /* ─────────────────────────────────────────────────────
@@ -48,6 +74,15 @@ export const studyRoomRepository = {
         );
       const parsed = adapters.student.list.parse(response.data);
       return factory.student.list(parsed.data);
+    },
+    acceptInvitation: async (token: string) => {
+      await api.private.post(
+        `/student/study-rooms/invitation/accept`,
+        { token },
+        {
+          withCredentials: true,
+        }
+      );
     },
   },
 };

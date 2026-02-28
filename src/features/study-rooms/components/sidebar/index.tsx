@@ -1,12 +1,11 @@
 'use client';
 
-import { useEffect, useReducer, useState } from 'react';
+import { useReducer, useState } from 'react';
 import { toast } from 'react-toastify';
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import { StudyroomGroups } from '@/features/study-rooms/components/sidebar/groups';
-import { InvitationDialog } from '@/features/study-rooms/components/student-invitation/InvitationDialog';
 import {
   useStudentStudyRoomDetailQuery,
   useTeacherStudyRoomDetailQuery,
@@ -25,6 +24,8 @@ import { Toggle } from '@/shared/components/ui';
 import { useRole } from '@/shared/hooks/use-role';
 import { Info, X } from 'lucide-react';
 
+import { useInvitationQuery } from '../../hooks/use-invitation-query';
+import { useToggleInvitation } from '../../hooks/use-toggle-invitation';
 import { StudyRoomDetail } from '../../model';
 import { StudyroomSidebarHeader } from './header';
 import { InfoTooltipToast } from './info-tooltip';
@@ -45,18 +46,21 @@ export const StudyroomSidebar = ({
   const router = useRouter();
 
   // 초대 다이얼로그 open 확인
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const isOpenInvite = searchParams.get('invite') === 'open';
+  // const pathname = usePathname();
+  // const searchParams = useSearchParams();
+  // const isOpenInvite = searchParams.get('invite') === 'open';
 
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
   const [deleteNoticeMsg, setDeleteNoticeMsg] =
     useState('수업노트 그룹이 삭제되었습니다.');
-  const [isLinkEnable, setIsLinkEnable] = useState(false);
   const [isInfoToastOpen, setIsInfoToastOpen] = useState(false);
   const { role } = useRole();
   const { mutate: deleteStudyRoom } = useDeleteStudyRoom();
   const { mutate: updateRoomName } = useUpdateStudyRoom();
+  const { data: invitation, isLoading: isInvitationLoading } =
+    useInvitationQuery(studyRoomId);
+  const { mutate: toggleInvitation, isPending: isInvitationPending } =
+    useToggleInvitation(studyRoomId);
 
   // 스터디룸 상세 정보 조회 (선생님)
   const { data: teacherStudyRoomDetail } = useTeacherStudyRoomDetailQuery(
@@ -111,7 +115,9 @@ export const StudyroomSidebar = ({
 
   // 초대 링크 복사 후 Bottom Toast 표시, token 수정 필요
   const handleCopyInviteLink = async () => {
-    const inviteLink = `${typeof window !== 'undefined' ? window.location.origin : ''}/invite?token=token_example`;
+    if (invitation === undefined) return;
+
+    const inviteLink = `${typeof window !== 'undefined' ? window.location.origin : ''}/invite?token=${invitation.token}`;
     await navigator.clipboard.writeText(inviteLink);
     toast(
       ({ closeToast }) => (
@@ -142,25 +148,6 @@ export const StudyroomSidebar = ({
       }
     );
   };
-
-  // 초대 다이얼로그 닫기
-  const closeInvitation = () => {
-    const params = new URLSearchParams(searchParams);
-    params.delete('invite');
-    router.replace(`${pathname}${params.size ? `?${params.toString()}` : ''}`);
-  };
-
-  useEffect(() => {
-    if (isOpenInvite) {
-      dispatch({
-        type: 'OPEN',
-        kind: 'invite',
-        scope: 'studyroom',
-      });
-    } else {
-      dispatch({ type: 'CLOSE' });
-    }
-  }, [isOpenInvite]);
 
   if (!segment) return null;
   return (
@@ -203,18 +190,6 @@ export const StudyroomSidebar = ({
           />
         )}
 
-      {dialog.status === 'open' &&
-        dialog.kind === 'invite' &&
-        dialog.scope === 'studyroom' && (
-          <InvitationDialog
-            isOpen={true}
-            title="스터디룸에 학생 초대"
-            placeholder="초대할 학생을 검색 후 선택해 주세요."
-            studyRoomId={studyRoomId}
-            onOpenChange={closeInvitation}
-          />
-        )}
-
       <ColumnLayout.Left className="border-line-line1 flex h-fit flex-col gap-5 rounded-xl border bg-white px-8 py-8">
         <StudyroomSidebarHeader
           dispatch={dispatch}
@@ -235,11 +210,13 @@ export const StudyroomSidebar = ({
               onClick={handleCopyInviteLink}
               btnName="학생 초대하기"
               imgUrl="/studynotes/invite_student.svg"
+              disabled={!invitation?.enabled}
             />
             <div className="flex gap-2">
               <Toggle
-                checked={isLinkEnable}
-                onCheckedChange={setIsLinkEnable}
+                checked={invitation?.enabled}
+                onCheckedChange={toggleInvitation}
+                disabled={isInvitationLoading || isInvitationPending}
               />
               <div className="flex flex-1 flex-col gap-0.5">
                 <div className="text-gray-10 flex items-center gap-1">
@@ -255,7 +232,7 @@ export const StudyroomSidebar = ({
                       <Info className="h-4 w-4" />
                     </button>
                     <InfoTooltipToast
-                      toggleEnabled={isLinkEnable}
+                      toggleEnabled={invitation?.enabled ?? false}
                       isOpen={isInfoToastOpen}
                       onClose={() => setIsInfoToastOpen(false)}
                     />
