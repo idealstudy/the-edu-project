@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 
 import BackLink from '@/features/dashboard/studynote/components/back-link';
 import { StudyroomPreviewContents } from '@/features/study-room-preview/components/contents';
@@ -16,8 +16,8 @@ export default async function StudyRoomDetailPage({ params }: PageProps) {
   const studyRoomId = Number(id);
   const teacherIdNum = Number(teacherId);
 
-  if (!Number.isInteger(studyRoomId) || studyRoomId <= 0) redirect('/');
-  if (!Number.isInteger(teacherIdNum) || teacherIdNum <= 0) redirect('/');
+  if (!Number.isInteger(studyRoomId) || studyRoomId <= 0) notFound();
+  if (!Number.isInteger(teacherIdNum) || teacherIdNum <= 0) notFound();
 
   return (
     <>
