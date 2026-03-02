@@ -26,16 +26,9 @@ export const studyRoomRepository = {
   },
 
   getInvitationInfo: async (token: string) => {
-    const response = (await api.public.get(
+    const response = await api.public.get<{ data: unknown }>(
       `/public/study-rooms/invitation?token=${token}`
-    )) as { status: number; message?: string; code?: string; data: unknown };
-
-    if (response.status < 200 || response.status >= 300) {
-      throw Object.assign(new Error(response.message ?? '요청 실패'), {
-        code: response.code,
-      });
-    }
-
+    );
     return dto.invitationInfo.parse(response.data);
   },
 
@@ -83,16 +76,9 @@ export const studyRoomRepository = {
       return factory.student.list(parsed.data);
     },
     acceptInvitation: async (token: string) => {
-      const response = (await api.private.post(
+      const response = await api.private.post<{ data: unknown }>(
         `/student/study-room-invites/${token}/respond`
-      )) as { status: number; message?: string; code?: string; data: unknown };
-
-      if (response.status < 200 || response.status >= 300) {
-        throw Object.assign(new Error(response.message ?? '요청 실패'), {
-          code: response.code,
-        });
-      }
-
+      );
       return dto.student.inviteRespond.parse(response.data);
     },
   },
