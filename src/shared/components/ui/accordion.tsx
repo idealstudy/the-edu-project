@@ -1,6 +1,3 @@
-// TODO: 작업중
-// https://github.com/radix-ui/primitives/blob/main/packages/react/accordion/src/accordion.tsx
-// https://www.radix-ui.com/primitives/docs/components/accordion
 'use client';
 
 import { ForwardRefExoticComponent, RefAttributes, forwardRef } from 'react';
@@ -14,18 +11,6 @@ import {
 } from '@radix-ui/react-accordion';
 
 import { Icon } from './icon';
-
-// TODO: 작업중
-// https://github.com/radix-ui/primitives/blob/main/packages/react/accordion/src/accordion.tsx
-// https://www.radix-ui.com/primitives/docs/components/accordion
-
-// TODO: 작업중
-// https://github.com/radix-ui/primitives/blob/main/packages/react/accordion/src/accordion.tsx
-// https://www.radix-ui.com/primitives/docs/components/accordion
-
-// TODO: 작업중
-// https://github.com/radix-ui/primitives/blob/main/packages/react/accordion/src/accordion.tsx
-// https://www.radix-ui.com/primitives/docs/components/accordion
 
 /* ─────────────────────────────────────────────────────
  * Accordion Type

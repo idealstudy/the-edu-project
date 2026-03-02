@@ -8,6 +8,7 @@ import EditProfileCard from '@/features/mypage/components/edit-profile-card';
 import { ProfileCardDropdown } from '@/features/mypage/components/profile-card-dropdown';
 import { useStudentBasicInfo } from '@/features/mypage/hooks/student/use-basic-info';
 import { useTeacherBasicInfo } from '@/features/mypage/hooks/teacher/use-basic-info';
+import { useTeacherReport } from '@/features/mypage/hooks/teacher/use-report';
 import ProfileCard from '@/features/profile/components/profile-card/profile-card';
 
 export default function EditableProfileCard({ role }: { role: Role }) {
@@ -20,6 +21,10 @@ export default function EditableProfileCard({ role }: { role: Role }) {
   });
   const studentBasicInfoQuery = useStudentBasicInfo({
     enabled: role === 'ROLE_STUDENT',
+  });
+
+  const teacherReportQuery = useTeacherReport({
+    enabled: role === 'ROLE_TEACHER',
   });
 
   const basicInfoQuery =
@@ -44,6 +49,7 @@ export default function EditableProfileCard({ role }: { role: Role }) {
   return (
     <ProfileCard
       basicInfo={basicInfoQuery.data}
+      teacherReport={teacherReportQuery.data}
       action={
         <ProfileCardDropdown
           profileId={memberId}
