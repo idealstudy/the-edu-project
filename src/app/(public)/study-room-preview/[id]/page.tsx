@@ -1,20 +1,25 @@
-import { StudyroomPreviewContents } from '@/features/study-room-preview/components/contents';
-import { StudyroomPreviewSidebar } from '@/features/study-room-preview/components/sidebar';
-import { ColumnLayout } from '@/layout';
-import { ScrollToTopButton } from '@/shared/components/ui';
+import { notFound, redirect } from 'next/navigation';
 
-export default function StudyRoomDetailPage() {
-  return (
-    <>
-      <ColumnLayout.Left className="border-line-line1 flex h-fit flex-col gap-5 rounded-xl border bg-white px-8 py-8">
-        <StudyroomPreviewSidebar />
-      </ColumnLayout.Left>
-      <ColumnLayout.Right className="desktop:max-w-[740px] desktop:px-8 flex flex-col gap-3 rounded-[12px] py-2">
-        <div className="border-line-line1 flex flex-col gap-9 rounded-[12px] border bg-white py-2">
-          <StudyroomPreviewContents />
-        </div>
-      </ColumnLayout.Right>
-      <ScrollToTopButton />
-    </>
+type PageProps = {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function StudyRoomDetailPage({
+  params,
+  searchParams,
+}: PageProps) {
+  const { id } = await params;
+  const sp = await searchParams;
+
+  const studyRoomId = Number(id);
+  if (!Number.isInteger(studyRoomId) || studyRoomId <= 0) notFound();
+
+  const teacherIdParam = sp.teacherId;
+  const teacherId = Number(
+    Array.isArray(teacherIdParam) ? teacherIdParam[0] : teacherIdParam
   );
+  if (!Number.isInteger(teacherId) || teacherId <= 0) notFound();
+
+  redirect(`/study-room-preview/${studyRoomId}/${teacherId}`);
 }
