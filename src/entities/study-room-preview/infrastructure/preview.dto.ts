@@ -5,29 +5,18 @@ import { z } from 'zod';
 /* ─────────────────────────────────────────────────────
  * 공통 하위 DTO - 학교 정보
  * ──────────────────────────────────────────────────── */
-const PreviewSchoolInfoSchema = base.schoolInfo;
+const PreviewSchoolInfoSchema = z.object({
+  schoolLevel: z.enum(['ELEMENTARY', 'MIDDLE', 'HIGH', 'OTHER']).nullable(),
+  grade: z.number().int().nullable(),
+});
 
 /* ─────────────────────────────────────────────────────
  * 공통 하위 DTO - 선생님 정보
  * ──────────────────────────────────────────────────── */
 const PreviewTeacherSchema = z.object({
   id: z.number().int(),
-  email: z.string(),
-  password: z.string().nullable().optional(),
   name: z.string(),
-  nickname: z.string().nullable().optional(),
-  phoneNumber: z.string().nullable().optional(),
-  birthDate: z.string().nullable().optional(),
-  acceptRequiredTerm: z.boolean(),
-  acceptOptionalTerm: z.boolean(),
-  role: z.string(),
-  isProfilePublic: z.boolean(),
-  regDate: z.string(),
-  modDate: z.string(),
-  modNicknameDate: z.string().nullable().optional(),
-  deletedAt: z.string().nullable().optional(),
   profile: z.string().nullable().optional(),
-  deleted: z.boolean(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -79,12 +68,19 @@ const StudyRoomPreviewMainDataSchema = StudyRoomPreviewCoreSchema.extend({
 /* ─────────────────────────────────────────────────────
  * 다른 스터디룸 아이템 DTO
  * ──────────────────────────────────────────────────── */
-const PreviewOtherStudyRoomItemSchema = StudyRoomPreviewCoreSchema.extend({
+const PreviewOtherStudyRoomItemSchema = z.object({
+  id: z.number().int(),
+  name: z.string(),
+  description: z.string().optional(),
+  modality: base.modality.optional(),
+  classForm: base.classForm.optional(),
+  subjectType: base.subject.optional(),
+  schoolInfo: PreviewSchoolInfoSchema.optional(),
   teacher: PreviewTeacherSchema,
-  capacity: z.number().int(),
-  visibility: base.visibility,
-  regDate: z.string(),
-  modDate: z.string(),
+  capacity: z.number().int().optional(),
+  visibility: base.visibility.optional(),
+  regDate: z.string().optional(),
+  modDate: z.string().optional(),
 });
 
 /* ─────────────────────────────────────────────────────

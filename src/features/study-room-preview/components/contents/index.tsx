@@ -67,7 +67,9 @@ export const StudyroomPreviewContents = ({
 
   const reviews = data.reviewList ?? [];
   const hasReviews = reviews.length > 0;
-  const targetText = `${data.schoolInfo.schoolLevelKorean} ${data.schoolInfo.grade}학년`;
+  const targetText = data.schoolInfo.grade
+    ? `${data.schoolInfo.schoolLevelKorean} ${data.schoolInfo.grade}학년`
+    : data.schoolInfo.schoolLevelKorean;
   const classStyle = `${data.modalityKorean} · ${data.classFormKorean} 수업`;
 
   return (

@@ -1,3 +1,5 @@
+'use client';
+
 import { Skeleton } from '@/shared/components/loading';
 
 export const PreviewSideSkeleton = () => {
