@@ -21,6 +21,8 @@ const meta = {
       control: 'text',
       description: '초대 토큰',
     },
+    onOpenLoginModal: { action: '로그인 모달 열기' },
+    onOpenExitModal: { action: '거절 모달 열기' },
   },
 } satisfies Meta<typeof InviteLetter>;
 
@@ -37,6 +39,7 @@ export const Default: Story = {
     isLoading: false,
     token: 'sample-token',
     onOpenLoginModal: () => {},
+    onOpenExitModal: () => {},
   },
 };
 
@@ -50,6 +53,7 @@ export const LongNames: Story = {
     isLoading: false,
     token: 'sample-token',
     onOpenLoginModal: () => {},
+    onOpenExitModal: () => {},
   },
 };
 
@@ -63,6 +67,7 @@ export const ShortNames: Story = {
     isLoading: false,
     token: 'sample-token',
     onOpenLoginModal: () => {},
+    onOpenExitModal: () => {},
   },
 };
 
@@ -72,5 +77,6 @@ export const Loading: Story = {
     isLoading: true,
     token: 'sample-token',
     onOpenLoginModal: () => {},
+    onOpenExitModal: () => {},
   },
 };

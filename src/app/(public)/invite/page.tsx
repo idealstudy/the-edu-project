@@ -4,16 +4,28 @@ import { useEffect, useState } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
+import { useAuth } from '@/features/auth/hooks/use-auth';
+import { InviteExitModal } from '@/features/invite/components/invite-exit-modal';
 import { InviteLetter } from '@/features/invite/components/invite-letter';
 import { InviteLoginModal } from '@/features/invite/components/invite-login-modal';
 import { INVITE_VISITED_KEY } from '@/features/invite/constants';
 import { useInvitation } from '@/features/invite/hooks';
-import { PUBLIC } from '@/shared/constants';
+import { PRIVATE, PUBLIC } from '@/shared/constants';
 
 export default function InvitePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { member } = useAuth();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isExitModalOpen, setIsExitModalOpen] = useState(false);
+
+  const handleReject = () => {
+    if (member) {
+      router.push(PRIVATE.DASHBOARD.INDEX);
+    } else {
+      router.push(PUBLIC.CORE.INDEX);
+    }
+  };
 
   const inviteToken = searchParams.get('token');
   const { data, isLoading, error } = useInvitation(inviteToken);
@@ -46,11 +58,17 @@ export default function InvitePage() {
         onClose={() => setIsLoginModalOpen(false)}
         inviteToken={inviteToken}
       />
+      <InviteExitModal
+        isOpen={isExitModalOpen}
+        onClose={() => setIsExitModalOpen(false)}
+        onConfirm={handleReject}
+      />
       <InviteLetter
         data={data}
         isLoading={isLoading}
         token={inviteToken}
         onOpenLoginModal={() => setIsLoginModalOpen(true)}
+        onOpenExitModal={() => setIsExitModalOpen(true)}
       />
     </main>
   );

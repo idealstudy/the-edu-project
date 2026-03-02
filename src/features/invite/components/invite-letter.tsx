@@ -4,17 +4,19 @@ import { useRouter } from 'next/navigation';
 import { InvitationInfoDTO } from '@/entities/study-room';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { Button } from '@/shared/components/ui';
-import { PRIVATE, PUBLIC } from '@/shared/constants';
+import { PUBLIC } from '@/shared/constants';
 
 import { useAcceptInvitation } from '../hooks';
 
 export const InviteLetter = ({
   onOpenLoginModal,
+  onOpenExitModal,
   data,
   isLoading,
   token,
 }: {
   onOpenLoginModal: () => void;
+  onOpenExitModal: () => void;
   data: InvitationInfoDTO | null;
   isLoading: boolean;
   token: string;
@@ -22,15 +24,6 @@ export const InviteLetter = ({
   const { member } = useAuth();
   const router = useRouter();
   const { acceptInvitation } = useAcceptInvitation();
-
-  const handleReject = () => {
-    // 거절하기 로직 추가 예정
-    if (member) {
-      router.push(PRIVATE.DASHBOARD.INDEX);
-    } else {
-      router.push(PUBLIC.CORE.INDEX);
-    }
-  };
 
   const handleAccept = () => {
     if (member) {
@@ -89,7 +82,7 @@ export const InviteLetter = ({
               variant="outlined"
               className="font-label-normal h-[35px] rounded-sm px-9"
               size="xsmall"
-              onClick={handleReject}
+              onClick={onOpenExitModal}
             >
               거절하기
             </Button>
@@ -109,7 +102,7 @@ export const InviteLetter = ({
         <Button
           variant="outlined"
           className="font-body2-normal flex-1"
-          onClick={handleReject}
+          onClick={onOpenExitModal}
         >
           거절하기
         </Button>
