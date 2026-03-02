@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { INVITE_VISITED_KEY } from '@/features/invite/constants';
 import { useAcceptInvitation } from '@/features/invite/hooks';
 import { Form } from '@/shared/components/ui/form';
 import { PUBLIC } from '@/shared/constants';
@@ -93,7 +92,6 @@ export const RegisterFormContextProvider = ({
           trackSignupSuccess(data.role ?? null);
           if (inviteToken) {
             if (data.role === 'ROLE_STUDENT') {
-              sessionStorage.setItem(INVITE_VISITED_KEY, Date.now().toString());
               acceptInvitation(inviteToken);
             } else {
               router.push(PUBLIC.CORE.INVITE.ERROR('ROLE_NOT_MATCH'));

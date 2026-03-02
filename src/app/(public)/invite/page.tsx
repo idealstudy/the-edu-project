@@ -8,10 +8,7 @@ import { useAuth } from '@/features/auth/hooks/use-auth';
 import { InviteExitModal } from '@/features/invite/components/invite-exit-modal';
 import { InviteLetter } from '@/features/invite/components/invite-letter';
 import { InviteLoginModal } from '@/features/invite/components/invite-login-modal';
-import {
-  INVITE_ERROR_CODE,
-  INVITE_VISITED_KEY,
-} from '@/features/invite/constants';
+import { INVITE_ERROR_CODE } from '@/features/invite/constants';
 import { useInvitation } from '@/features/invite/hooks';
 import { PRIVATE, PUBLIC } from '@/shared/constants';
 
@@ -36,9 +33,7 @@ export default function InvitePage() {
   useEffect(() => {
     if (!inviteToken) {
       router.replace('/');
-      return;
     }
-    sessionStorage.setItem(INVITE_VISITED_KEY, Date.now().toString());
   }, [inviteToken, router]);
 
   useEffect(() => {

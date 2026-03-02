@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -8,10 +8,8 @@ import { PUBLIC } from '@/shared/constants';
 
 export const useAcceptInvitation = () => {
   const router = useRouter();
-  const [isPending, setIsPending] = useState(false);
   const acceptInvitation = useCallback(
     async (token: string) => {
-      setIsPending(true);
       studyRoomRepository.student
         .acceptInvitation(token)
         .then((data) => {
@@ -38,11 +36,10 @@ export const useAcceptInvitation = () => {
               router.push(PUBLIC.CORE.INVITE.ERROR('INVALID_LINK'));
               break;
           }
-        })
-        .finally(() => setIsPending(false));
+        });
     },
     [router]
   );
 
-  return { acceptInvitation, isPending };
+  return { acceptInvitation };
 };

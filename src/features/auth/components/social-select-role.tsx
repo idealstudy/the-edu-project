@@ -7,7 +7,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ProfileForm } from '@/features/auth/components/profile-form';
 import { SocialRegisterForm } from '@/features/auth/schemas/social-register';
 import { useUpdateProfile } from '@/features/auth/services/query';
-import { INVITE_VISITED_KEY } from '@/features/invite/constants';
 import { useAcceptInvitation } from '@/features/invite/hooks';
 import { useSession } from '@/providers';
 import { Form } from '@/shared/components/ui';
@@ -37,7 +36,6 @@ export const SocialSelectRole = () => {
         await session.refresh();
         if (inviteToken) {
           if (data.role === 'ROLE_STUDENT') {
-            sessionStorage.setItem(INVITE_VISITED_KEY, Date.now().toString());
             acceptInvitation(inviteToken);
           } else {
             router.push(PUBLIC.CORE.INVITE.ERROR('ROLE_NOT_MATCH'));
