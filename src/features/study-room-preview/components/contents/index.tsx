@@ -90,7 +90,7 @@ export const StudyroomPreviewContents = ({
         <p className="font-body1-heading tablet:font-headline1-heading text-text-main">
           스터디룸 운영 방식
         </p>
-        <div className="tablet:flex-row tablet:items-stretch tablet:gap-5 flex flex-col items-center gap-4">
+        <div className="tablet:flex-row tablet:items-stretch tablet:gap-5 flex flex-col gap-4">
           <InfoItem
             icon="/public-studyrooms/ic_books.png"
             alt="subject"
