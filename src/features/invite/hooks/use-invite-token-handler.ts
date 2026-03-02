@@ -17,4 +17,6 @@ export const useInviteTokenHandler = () => {
     sessionStorage.setItem(INVITE_VISITED_KEY, Date.now().toString());
     acceptInvitation(token);
   }, [token, acceptInvitation]);
+
+  return { isProcessing: !!token };
 };

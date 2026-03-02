@@ -14,7 +14,7 @@ import { useMemberStore } from '@/store';
 import DashboardTeacher from './teacher';
 
 export const DashboardContainer = () => {
-  useInviteTokenHandler();
+  const { isProcessing: isInviteProcessing } = useInviteTokenHandler();
 
   const session = useMemberStore((s) => s.member);
   const role = session?.role;
@@ -44,8 +44,8 @@ export const DashboardContainer = () => {
   const { hasRooms, hasNotes, hasAssignments, hasQuestions } =
     useOnboardingStatus({ rooms });
 
-  // 로딩 중일 때
-  if (isLoading) {
+  // 초대 토큰 처리 중이거나 로딩 중일 때
+  if (isInviteProcessing || isLoading) {
     return (
       <div className="bg-system-background">
         <div className="mx-auto flex w-full max-w-[1120px] items-center justify-center px-6 pt-12 pb-24">

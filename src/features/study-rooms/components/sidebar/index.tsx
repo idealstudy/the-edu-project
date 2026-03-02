@@ -58,7 +58,7 @@ export const StudyroomSidebar = ({
   const { mutate: deleteStudyRoom } = useDeleteStudyRoom();
   const { mutate: updateRoomName } = useUpdateStudyRoom();
   const { data: invitation, isLoading: isInvitationLoading } =
-    useInvitationQuery(studyRoomId);
+    useInvitationQuery(studyRoomId, { enabled: role === 'ROLE_TEACHER' });
   const { mutate: toggleInvitation, isPending: isInvitationPending } =
     useToggleInvitation(studyRoomId);
 
