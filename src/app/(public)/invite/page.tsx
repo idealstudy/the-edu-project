@@ -38,9 +38,7 @@ export default function InvitePage() {
 
   useEffect(() => {
     if (!error) return;
-    const message =
-      (error as { response?: { data?: { message?: string } } }).response?.data
-        ?.message ?? '';
+    const message = error.response?.data?.message ?? '';
     if (message === INVITE_ERROR_CODE.INVITATION_EXPIRED) {
       router.push(PUBLIC.CORE.INVITE.ERROR('EXPIRED_LINK'));
     } else {
