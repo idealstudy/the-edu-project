@@ -61,7 +61,6 @@ const PreviewSideItemDomainSchema = dto.statsItem;
 
 const PreviewSideDomainSchema = dto.side.transform((value) => ({
   ...value,
-  otherStudyRooms: value.otherStudyRooms,
   teacherName: value.otherStudyRooms[0]?.teacher.name,
 }));
 
