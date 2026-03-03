@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { useAcceptInvitation } from '@/features/invite/hooks';
 import { Form } from '@/shared/components/ui/form';
 import { PUBLIC } from '@/shared/constants';
 import { useCheckboxGroup } from '@/shared/hooks/use-checkbox-group';
@@ -65,7 +64,6 @@ export const RegisterFormContextProvider = ({
   const router = useRouter();
   const searchParams = useSearchParams();
   const inviteToken = searchParams.get('token');
-  const { acceptInvitation } = useAcceptInvitation();
 
   const { mutate: signUp, isPending } = useSignUp();
 
@@ -91,13 +89,11 @@ export const RegisterFormContextProvider = ({
           // 회원가입 성공 이벤트
           trackSignupSuccess(data.role ?? null);
           if (inviteToken) {
-            if (data.role === 'ROLE_STUDENT') {
-              acceptInvitation(inviteToken);
-            } else {
-              router.push(PUBLIC.CORE.INVITE.ERROR('ROLE_NOT_MATCH'));
-            }
+            router.replace(
+              `${PUBLIC.CORE.LOGIN}?token=${encodeURIComponent(inviteToken)}`
+            );
           } else {
-            router.replace(PUBLIC.CORE.INDEX);
+            router.replace(PUBLIC.CORE.LOGIN);
           }
         },
         onError: () => {
