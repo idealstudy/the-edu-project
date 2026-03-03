@@ -75,6 +75,18 @@ export const StudyroomPreviewContents = ({
   return (
     <section className="flex w-full flex-col gap-6">
       <article className="bg-system-background-alt flex flex-col gap-4 rounded-xl p-6">
+        <button
+          type="button"
+          className="text-gray-12 border-gray-5 font-label-normal flex h-8.5 w-[107px] cursor-pointer items-center justify-center gap-1 self-end rounded-md border px-2.5 py-1.5 whitespace-nowrap"
+        >
+          <Image
+            src={'/study-room-preview/ic-pencil.png'}
+            alt="modify"
+            width={24}
+            height={24}
+          />
+          수정하기
+        </button>
         <header className="flex flex-col gap-1">
           <p className="font-body1-heading tablet:font-headline1-heading desktop:font-title-heading text-text-main">
             스터디룸 소개
@@ -94,7 +106,7 @@ export const StudyroomPreviewContents = ({
         </p>
         <div className="tablet:flex-row tablet:items-stretch tablet:gap-5 flex flex-col gap-4">
           <InfoItem
-            icon="/public-studyrooms/ic_books.png"
+            icon="/study-room-preview/ic-books.png"
             alt="subject"
             label="과목"
             value={data.subjectTypeKorean}
@@ -103,7 +115,7 @@ export const StudyroomPreviewContents = ({
           <div className="tablet:block bg-gray-3 hidden w-px self-stretch" />
 
           <InfoItem
-            icon="/public-studyrooms/ic_person.png"
+            icon="/study-room-preview/ic-person.png"
             alt="target"
             label="수업 대상"
             value={targetText}
@@ -112,12 +124,21 @@ export const StudyroomPreviewContents = ({
           <div className="tablet:block hidden w-px self-stretch bg-gray-200" />
 
           <InfoItem
-            icon="/public-studyrooms/ic_book.png"
+            icon="/study-room-preview/ic-book.png"
             alt="class-type"
             label="수업 방식"
             value={classStyle}
           />
         </div>
+      </article>
+
+      <article className="bg-system-background-alt flex flex-col gap-4 rounded-xl p-6">
+        <p className="font-body1-heading tablet:font-headline1-heading text-text-main">
+          스터디룸 특징
+        </p>
+        <p className="font-caption-normal tablet:font-body2-normal text-text-sub1">
+          선생님이 강조한 스터디룸의 특징이에요.
+        </p>
       </article>
 
       <article className="bg-system-background-alt flex flex-col gap-4 rounded-xl p-6">
