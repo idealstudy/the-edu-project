@@ -9,7 +9,7 @@ interface InfoItemProps {
 
 export const InfoItem = ({ icon, alt, label, value }: InfoItemProps) => {
   return (
-    <div>
+    <div className="flex flex-col justify-center">
       <div className="my-1 flex items-center gap-1.5">
         <Image
           src={icon}
