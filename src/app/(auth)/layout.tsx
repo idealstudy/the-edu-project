@@ -1,15 +1,21 @@
 import { redirect } from 'next/navigation';
 
 import AuthBanner from '@/shared/components/auth/banner';
-import { checkCookie } from '@/shared/lib';
+import { fetchMemberRole } from '@/shared/lib/server';
 
 export default async function AuthLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const hasSession = await checkCookie();
-  if (hasSession) redirect('/dashboard');
+  const session = await fetchMemberRole();
+
+  if (session.status === 'stale') redirect('/api/v1/auth/clear-session');
+
+  if (session.status === 'authenticated') {
+    if (session.role === 'ROLE_MEMBER') redirect('/select-role');
+    else redirect('/dashboard');
+  }
 
   return (
     <>
