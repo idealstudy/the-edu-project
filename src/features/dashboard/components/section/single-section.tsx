@@ -1,10 +1,15 @@
+import Link from 'next/link';
+
 import { cn } from '@/shared/lib';
+import { ChevronRight } from 'lucide-react';
 
 type Props = {
   title: string;
   description?: string;
   children?: React.ReactNode;
   className?: string;
+  isMore?: boolean;
+  isMoreHref?: string;
 };
 
 const DashboardSection = ({
@@ -12,28 +17,41 @@ const DashboardSection = ({
   description,
   children,
   className,
+  isMore = false,
+  isMoreHref = '',
 }: Props) => {
   return (
     <div
       className={cn('flex w-full flex-col gap-6', 'tablet:gap-8', className)}
       aria-labelledby={`dashboard-section-${title}`}
     >
-      <div className="flex flex-col gap-1">
-        <h1
-          className={cn(
-            'font-body1-heading tablet:font-headline1-heading text-gray-12'
-          )}
-        >
-          {title}
-        </h1>
-        {description && (
-          <p
+      <div className="flex justify-between">
+        <div className="flex flex-col gap-1">
+          <h1
             className={cn(
-              'font-label-normal tablet:font-body2-normal text-gray-11 tablet:text-gray-10'
+              'font-body1-heading tablet:font-headline1-heading text-gray-12'
             )}
           >
-            {description}
-          </p>
+            {title}
+          </h1>
+          {description && (
+            <p
+              className={cn(
+                'font-label-normal tablet:font-body2-normal text-gray-11 tablet:text-gray-10'
+              )}
+            >
+              {description}
+            </p>
+          )}
+        </div>
+        {isMore && (
+          <Link
+            href={isMoreHref}
+            className="text-gray-8 flex gap-1"
+          >
+            <span className="font-body2-heading">더보기</span>
+            <ChevronRight className="h-5 w-5" />
+          </Link>
         )}
       </div>
       {children}
