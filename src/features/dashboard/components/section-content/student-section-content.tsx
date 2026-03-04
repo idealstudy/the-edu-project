@@ -4,11 +4,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { TeacherDashboardMemberListItemDTO } from '@/entities/teacher';
-import { Pagination } from '@/shared/components/ui/pagination';
-import { PRIVATE } from '@/shared/constants';
+import { DropdownMenu, Pagination } from '@/shared/components/ui';
+import { PRIVATE, PUBLIC } from '@/shared/constants';
 import { cn } from '@/shared/lib';
-
-// import { EllipsisVertical } from 'lucide-react';
+import { EllipsisVertical } from 'lucide-react';
 
 export interface StudentsSectionContentProps {
   students: TeacherDashboardMemberListItemDTO[];
@@ -139,13 +138,18 @@ const StudentsSectionContent = ({
               </div>
 
               {/* 더보기 */}
-              {/* <button
-                type="button"
-                className="text-gray-5 hover:bg-gray-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-                aria-label={`${student.name} 더보기`}
-              >
-                <EllipsisVertical className="h-5 w-5" />
-              </button> */}
+              <DropdownMenu>
+                <DropdownMenu.Trigger className="text-gray-5 hover:bg-gray-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
+                  <EllipsisVertical className="h-5 w-5" />
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content>
+                  <DropdownMenu.Item asChild>
+                    <Link href={PUBLIC.PROFILE.DETAIL(student.id)}>
+                      프로필 보기
+                    </Link>
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu>
             </div>
           );
         })}
