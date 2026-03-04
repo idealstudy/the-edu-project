@@ -19,9 +19,9 @@ export const QnASectionListItem = ({ question }: QnASectionListItemProps) => {
   return (
     <Link
       key={question.id}
-      href={PRIVATE.QUESTIONS.DETAIL(0, question.id)}
+      href={PRIVATE.QUESTIONS.DETAIL(question.studyRoomId, question.id)}
       className={cn(
-        'bg-gray-white hover:bg-gray-1 flex w-full flex-col gap-2 p-3'
+        'bg-gray-white hover:bg-gray-1 flex w-full flex-col gap-2 rounded-lg p-3'
       )}
     >
       {/* 스터디룸 이름 : 수정 필요 */}

@@ -11,9 +11,9 @@ import {
   useTeacherDashboardStudyRoomListQuery,
 } from '@/features/dashboard/hooks/use-dashboard-query';
 import { PRIVATE } from '@/shared/constants';
-import { cn } from '@/shared/lib';
 
 import HomeworkSectionContent from '../section-content/homework-section-content';
+import StudentsSectionContent from '../section-content/student-section-content';
 import TabbedSection from './tabbed-section';
 
 // ─── 수업노트 탭 ───────────────────────────────────────────────────────────────
@@ -64,50 +64,22 @@ const TeacherNoteTabContent = ({ studyRoomId }: { studyRoomId?: number }) => {
 // studyRoomId가 null(전체)이면 0을 전달해 전체 멤버를 조회합니다.
 
 const TeacherMemberTabContent = ({ studyRoomId }: { studyRoomId?: number }) => {
+  const [page, setPage] = useState(0);
+
   const { data } = useTeacherDashboardMemberListQuery({
     studyRoomId,
-    page: 0,
+    page,
     size: 10,
     sortKey: 'LATEST',
   });
-  const members = data?.content ?? [];
-
-  if (members.length === 0) {
-    return (
-      <div className="flex h-22 w-full items-center justify-center">
-        <p className="font-body2-normal text-gray-8">
-          아직 참여 중인 학생이 없어요.
-        </p>
-      </div>
-    );
-  }
 
   return (
-    <div className="flex w-full flex-col gap-3">
-      {members.map((member) => (
-        <div
-          key={member.id}
-          className="bg-gray-white border-gray-3 flex items-center gap-4 rounded-lg border px-5 py-3"
-        >
-          <div className="min-w-0 flex-1">
-            <p className="font-body2-heading text-gray-black">{member.name}</p>
-            <p className="font-caption-normal text-gray-7 truncate">
-              {member.email}
-            </p>
-          </div>
-          <span
-            className={cn(
-              'font-label-heading shrink-0 rounded-full px-3 py-1 text-xs',
-              member.state === 'APPROVED'
-                ? 'bg-orange-2 text-orange-7'
-                : 'bg-gray-2 text-gray-7'
-            )}
-          >
-            {member.state === 'APPROVED' ? '승인됨' : member.state}
-          </span>
-        </div>
-      ))}
-    </div>
+    <StudentsSectionContent
+      students={data?.content ?? []}
+      page={page}
+      totalPages={data?.totalPages ?? 0}
+      onPageChange={setPage}
+    />
   );
 };
 
