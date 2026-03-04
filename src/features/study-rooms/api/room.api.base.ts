@@ -29,6 +29,11 @@ export interface TeacherStudyRoomRequests {
     search(args: SearchInvitationPayload): Promise<Invitee[]>;
   };
   getStudyNoteGroup(args: GroupApiArgs): Promise<GroupListResponse>;
+  removeMember(args: { studyRoomId: number; studentId: number }): Promise<void>;
+  terminateMember(args: {
+    studyRoomId: number;
+    studentId: number;
+  }): Promise<void>;
 }
 
 export interface StudentStudyRoomRequests {

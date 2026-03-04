@@ -75,11 +75,37 @@ export const createTeacherStudyRoomHooks = (
     });
   };
 
+  const useRemoveMember = () => {
+    const qc = useQueryClient();
+    return useMutation({
+      mutationFn: api.removeMember,
+      onSuccess: (_, variables) => {
+        qc.invalidateQueries({
+          queryKey: StudyNoteQueryKey.membersPrefix(variables.studyRoomId),
+        });
+      },
+    });
+  };
+
+  const useTerminateMember = () => {
+    const qc = useQueryClient();
+    return useMutation({
+      mutationFn: api.terminateMember,
+      onSuccess: (_, variables) => {
+        qc.invalidateQueries({
+          queryKey: StudyNoteQueryKey.membersPrefix(variables.studyRoomId),
+        });
+      },
+    });
+  };
+
   return {
     useTeacherStudyRoomsQuery,
     useTeacherStudyRoomDetailQuery,
     useSearchInvitation,
     useCreateStudyRoom,
     useSendInvitation,
+    useRemoveMember,
+    useTerminateMember,
   };
 };
