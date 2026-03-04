@@ -104,6 +104,15 @@ export const createTeacherStudyRoomApi = (
     );
   };
 
+  const resumeMember = async (args: {
+    studyRoomId: number;
+    studentId: number;
+  }): Promise<void> => {
+    await base.client.post(
+      `${base.teacherBasePath}/${args.studyRoomId}/resume/${args.studentId}`
+    );
+  };
+
   return {
     getStudyRooms,
     getStudyRoomDetail,
@@ -112,5 +121,6 @@ export const createTeacherStudyRoomApi = (
     getStudyNoteGroup,
     removeMember,
     terminateMember,
+    resumeMember,
   };
 };

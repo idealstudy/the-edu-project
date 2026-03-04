@@ -34,6 +34,7 @@ export interface TeacherStudyRoomRequests {
     studyRoomId: number;
     studentId: number;
   }): Promise<void>;
+  resumeMember(args: { studyRoomId: number; studentId: number }): Promise<void>;
 }
 
 export interface StudentStudyRoomRequests {

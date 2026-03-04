@@ -75,6 +75,7 @@ export const createTeacherStudyRoomHooks = (
     });
   };
 
+  // 특정 학생 내보내기 (삭제)
   const useRemoveMember = () => {
     const qc = useQueryClient();
     return useMutation({
@@ -87,10 +88,24 @@ export const createTeacherStudyRoomHooks = (
     });
   };
 
+  // 특정 학생 수업 종료하기
   const useTerminateMember = () => {
     const qc = useQueryClient();
     return useMutation({
       mutationFn: api.terminateMember,
+      onSuccess: (_, variables) => {
+        qc.invalidateQueries({
+          queryKey: StudyNoteQueryKey.membersPrefix(variables.studyRoomId),
+        });
+      },
+    });
+  };
+
+  // 특정 학생 수업 재개하기
+  const useResumeMember = () => {
+    const qc = useQueryClient();
+    return useMutation({
+      mutationFn: api.resumeMember,
       onSuccess: (_, variables) => {
         qc.invalidateQueries({
           queryKey: StudyNoteQueryKey.membersPrefix(variables.studyRoomId),
@@ -107,5 +122,6 @@ export const createTeacherStudyRoomHooks = (
     useSendInvitation,
     useRemoveMember,
     useTerminateMember,
+    useResumeMember,
   };
 };

@@ -55,6 +55,7 @@ export const MemberListItem = ({
         <MembersDropdown
           studyRoomId={studyRoomId}
           memberId={member.id}
+          isTerminated={member.isTerminated}
         />
       </div>
     </li>

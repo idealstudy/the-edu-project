@@ -6,6 +6,7 @@ import Image from 'next/image';
 
 import {
   useRemoveMember,
+  useResumeMember,
   useTerminateMember,
 } from '@/features/study-rooms/hooks';
 import {
@@ -17,15 +18,21 @@ import { DropdownMenu } from '@/shared/components/ui';
 type Props = {
   studyRoomId: number;
   memberId: string;
+  isTerminated: boolean;
 };
 
-export default function MembersDropdown({ studyRoomId, memberId }: Props) {
+export default function MembersDropdown({
+  studyRoomId,
+  memberId,
+  isTerminated,
+}: Props) {
   const { mutate: removeMember } = useRemoveMember();
   const { mutate: terminateMember } = useTerminateMember();
+  const { mutate: resumeMember } = useResumeMember();
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const dispatch = (action: DialogAction) => {
-    if ((action.type = 'CLOSE')) setConfirmOpen(false);
+    if (action.type === 'CLOSE') setConfirmOpen(false);
   };
 
   return (
@@ -41,15 +48,20 @@ export default function MembersDropdown({ studyRoomId, memberId }: Props) {
           />
         </DropdownMenu.Trigger>
         <DropdownMenu.Content align="end">
-          <DropdownMenu.Item onSelect={() => setConfirmOpen(true)}>
-            학생 내보내기
-          </DropdownMenu.Item>
           <DropdownMenu.Item
             onSelect={() =>
-              terminateMember({ studyRoomId, studentId: Number(memberId) })
+              isTerminated
+                ? resumeMember({ studyRoomId, studentId: Number(memberId) })
+                : terminateMember({ studyRoomId, studentId: Number(memberId) })
             }
           >
-            수업 종료하기
+            {isTerminated ? '수업 재개하기' : '수업 종료하기'}
+          </DropdownMenu.Item>
+          <DropdownMenu.Item
+            variant="danger"
+            onSelect={() => setConfirmOpen(true)}
+          >
+            학생 내보내기
           </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu>
