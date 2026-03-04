@@ -5,7 +5,7 @@ export const QnA = () => {
   return (
     <div className="flex min-h-[calc(100vh-76px)] w-full flex-col">
       <QnAHeader isTeacher={true} />
-      <QnAList />
+      <QnAList isTeacher={true} />
     </div>
   );
 };

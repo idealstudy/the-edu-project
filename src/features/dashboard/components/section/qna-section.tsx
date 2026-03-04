@@ -39,6 +39,8 @@ const QnASection = ({ className }: Props) => {
         isTeacher ? '아직 답변하지 않은 질문만 추렸어요.' : undefined
       }
       className={className}
+      isMore={true}
+      isMoreHref="/dashboard/qna"
     >
       <QnASectionContent questions={questions} />
     </DashboardSection>
