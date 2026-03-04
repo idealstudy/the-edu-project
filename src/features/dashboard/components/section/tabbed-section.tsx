@@ -156,7 +156,7 @@ const TabbedSection = ({
           />
         )}
         <h1 className="font-body1-heading tablet:font-headline1-heading text-gray-12">
-          {studyRooms.length < 1 && headingName}의 정보들을 한눈에 확인해봐요
+          {studyRooms.length < 2 && headingName}의 정보들을 한눈에 확인해봐요
         </h1>
       </div>
 

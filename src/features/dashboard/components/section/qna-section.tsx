@@ -3,9 +3,7 @@
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import {
   useStudentDashboardQnaListQuery,
-  useStudentDashboardStudyRoomListQuery,
   useTeacherDashboardQnaListQuery,
-  useTeacherDashboardStudyRoomListQuery,
 } from '@/features/dashboard/hooks/use-dashboard-query';
 
 import QnASectionContent from '../section-content/qna-section-content';
@@ -20,27 +18,19 @@ const QnASection = ({ className }: Props) => {
   const isTeacher = member?.role === 'ROLE_TEACHER';
   const { data: teacherQnaData } = useTeacherDashboardQnaListQuery({
     page: 0,
-    size: 4,
+    size: 3,
     sortKey: 'LATEST',
     enabled: isTeacher,
   });
   const { data: studentQnaData } = useStudentDashboardQnaListQuery({
     page: 0,
-    size: 4,
+    size: 3,
     sortKey: 'LATEST',
-    enabled: !isTeacher,
-  });
-  const { data: teacherRooms } = useTeacherDashboardStudyRoomListQuery({
-    enabled: isTeacher,
-  });
-  const { data: studentRooms } = useStudentDashboardStudyRoomListQuery({
     enabled: !isTeacher,
   });
 
   const questions =
     (isTeacher ? teacherQnaData : studentQnaData)?.content ?? [];
-  const rooms = isTeacher ? teacherRooms : studentRooms;
-  const firstStudyRoomId = rooms?.[0]?.id ?? 0;
 
   return (
     <DashboardSection
@@ -50,10 +40,7 @@ const QnASection = ({ className }: Props) => {
       }
       className={className}
     >
-      <QnASectionContent
-        questions={questions}
-        studyRoomId={firstStudyRoomId}
-      />
+      <QnASectionContent questions={questions} />
     </DashboardSection>
   );
 };

@@ -2,117 +2,89 @@
 
 import Link from 'next/link';
 
+import { StudentDashboardHomeworkListItemDTO } from '@/entities/student';
+import { TeacherDashboardHomeworkListItemDTO } from '@/entities/teacher';
+import { Pagination } from '@/shared/components/ui/pagination';
 import { PRIVATE } from '@/shared/constants/route';
 import { cn } from '@/shared/lib';
 
-import MoreButton from './more-button';
+type DeadlineLabel = 'UPCOMING' | 'TODAY' | 'OVERDUE';
 
 export interface HomeworkSectionContentProps {
-  homeworks: {
-    id: number;
-    title: string;
-    modDate: string;
-    deadline: string;
-    studyRoomId: number;
-    studyRoomName?: string;
-    description?: string;
-  }[];
+  homeworks:
+    | TeacherDashboardHomeworkListItemDTO[]
+    | StudentDashboardHomeworkListItemDTO[];
+  page: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  emptyMessage?: string;
 }
 
-const getDeadlineLabel = (deadline: string) => {
-  const now = new Date();
-  const deadlineDate = new Date(deadline);
-
-  if (deadlineDate < now) {
-    return '마감';
-  }
-
-  const dday = Math.floor(
-    (deadlineDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-  );
-  if (dday > 0) return `마감까지 D-${dday}`;
-
-  const dhours = Math.floor(
-    (deadlineDate.getTime() - now.getTime()) / (1000 * 60 * 60)
-  );
-  if (dhours > 0) return `마감까지 ${dhours}시간 전`;
-
-  const dminutes = Math.floor(
-    (deadlineDate.getTime() - now.getTime()) / (1000 * 60)
-  );
-  return `마감까지 ${dminutes}분 전`;
+const formatDeadlineLabel = (label: DeadlineLabel, dday: number) => {
+  if (label === 'UPCOMING') return `D-${dday}`;
+  if (label === 'TODAY') return 'D-day';
+  return '마감';
 };
 
-const HomeworkSectionContent = ({ homeworks }: HomeworkSectionContentProps) => {
-  const displayHomeworks = homeworks.slice(0, 4);
-
-  if (displayHomeworks.length === 0) {
+const HomeworkSectionContent = ({
+  homeworks,
+  page,
+  totalPages,
+  onPageChange,
+  emptyMessage = '과제가 없어요.',
+}: HomeworkSectionContentProps) => {
+  if (homeworks.length === 0) {
     return (
-      <div className="flex h-22 w-full flex-col items-center justify-center gap-3">
-        <p className="font-body2-normal text-gray-8">미제출인 과제가 없어요.</p>
+      <div className="flex h-22 w-full items-center justify-center">
+        <p className="font-body2-normal text-gray-8">{emptyMessage}</p>
       </div>
     );
   }
 
   return (
-    <div className="flex w-full flex-col items-center justify-center gap-3">
-      <div
-        className={cn(
-          'flex w-full flex-col gap-3',
-          'tablet:grid tablet:grid-cols-2 tablet:gap-5'
-        )}
-      >
-        {displayHomeworks.map((homework, index) => {
-          const deadlineLabel = getDeadlineLabel(homework.deadline);
+    <div className="flex w-full flex-col gap-6">
+      <div className={cn('flex w-full flex-col gap-3')}>
+        {homeworks.map((homework) => {
           return (
             <Link
               key={homework.id}
               href={PRIVATE.HOMEWORK.DETAIL(homework.studyRoomId, homework.id)}
-              className={cn(
-                'bg-gray-white border-gray-3 flex h-[218px] flex-col gap-3 rounded-xl border px-7 pt-6 pb-7 shadow-sm transition-shadow hover:shadow-md',
-                'tablet:h-[254px] tablet:pt-7',
-                index >= 2 && 'tablet:flex hidden'
-              )}
+              className="bg-gray-white flex flex-col gap-0.5 rounded-xl p-3 shadow-none transition-shadow hover:shadow-sm"
             >
-              {/* 태그 */}
-              <div className="flex justify-end">
+              <span className="font-body2-normal text-gray-12">
+                {homework.title}
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="font-caption-normal text-gray-8 bg-gray-1 rounded-md p-1">
+                  제출율 {homework.submittedRatePercent}%
+                </span>
+                <span className="font-caption-normal text-gray-8">
+                  {homework.regDate.split('T')[0]?.replaceAll('-', '.')} 생성
+                </span>
                 <span
                   className={cn(
-                    'font-label-heading rounded-[4px] px-2 py-1',
-                    deadlineLabel === '마감'
+                    'font-caption-heading shrink-0 rounded-[4px] px-2 py-1',
+                    homework.deadlineLabel === 'OVERDUE'
                       ? 'bg-gray-2 text-gray-7'
                       : 'bg-orange-2 text-orange-7'
                   )}
                 >
-                  {deadlineLabel}
+                  {formatDeadlineLabel(homework.deadlineLabel, homework.dday)}
                 </span>
               </div>
-
-              <div className="flex flex-col gap-1">
-                {/* 스터디룸 이름 */}
-                {homework.studyRoomName && (
-                  <span className="font-label-heading text-orange-7">
-                    {homework.studyRoomName}
-                  </span>
-                )}
-
-                {/* 제목 */}
-                <span className="font-body1-heading text-gray-12 line-clamp-2 leading-tight">
-                  {homework.title}
-                </span>
-              </div>
-
-              {/* 설명 */}
-              {homework.description && (
-                <span className="font-body2-normal text-gray-12 line-clamp-2 leading-tight">
-                  {homework.description}
-                </span>
-              )}
             </Link>
           );
         })}
       </div>
-      <MoreButton href={'#'} />
+      {totalPages > 1 && (
+        <div className="flex justify-center">
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+          />
+        </div>
+      )}
     </div>
   );
 };
