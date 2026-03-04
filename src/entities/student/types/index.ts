@@ -15,3 +15,25 @@ export type DashboardHomeworkSortKey =
   | 'DEADLINE_RECENT';
 
 export type StudentReportDTO = z.infer<typeof dto.studentReport>;
+
+// 대시보드 DTO
+export type StudentDashboardReportDTO = z.infer<typeof dto.dashboard.report>;
+export type StudentDashboardNoteListDTO = z.infer<
+  typeof dto.dashboard.noteList
+>;
+export type StudentDashboardStudyRoomListDTO = z.infer<
+  typeof dto.dashboard.studyRoomList
+>;
+export type StudentDashboardQnaListDTO = z.infer<typeof dto.dashboard.QnaList>;
+export type StudentDashboardHomeworkListDTO = z.infer<
+  typeof dto.dashboard.homeworkList
+>;
+
+export type StudentDashboardNoteListItemDTO =
+  StudentDashboardNoteListDTO['content'][number];
+export type StudentDashboardStudyRoomListItemDTO =
+  StudentDashboardStudyRoomListDTO[number];
+export type StudentDashboardQnaListItemDTO =
+  StudentDashboardQnaListDTO['content'][number];
+export type StudentDashboardHomeworkListItemDTO =
+  StudentDashboardHomeworkListDTO['content'][number];

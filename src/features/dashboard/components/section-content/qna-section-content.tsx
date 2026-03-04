@@ -1,21 +1,25 @@
 'use client';
 
-import type { QnAListItem } from '@/features/qna/types';
+import { StudentDashboardQnaListItemDTO } from '@/entities/student';
+import { TeacherDashboardQnaListItemDTO } from '@/entities/teacher';
+import { useAuth } from '@/features/auth/hooks/use-auth';
 
 import { QnASectionListItem } from './qna-section-list-item';
 
 export interface QnASectionContentProps {
-  isTeacher: boolean;
-  questions: QnAListItem[];
+  questions:
+    | TeacherDashboardQnaListItemDTO[]
+    | StudentDashboardQnaListItemDTO[];
   studyRoomId?: number;
   studyRoomName?: string;
 }
 
 const QnASectionContent = ({
-  isTeacher,
   questions,
   studyRoomId = 0,
 }: QnASectionContentProps) => {
+  const { member } = useAuth();
+  const isTeacher = member?.role === 'ROLE_TEACHER';
   if (studyRoomId === 0) {
     return (
       <div className="flex h-22 w-full flex-col items-center justify-center gap-3">

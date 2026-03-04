@@ -100,7 +100,7 @@ const getTeacherDashboardMemberList = async ({
   size,
   sortKey,
 }: {
-  studyRoomId: number;
+  studyRoomId?: number;
   page: number;
   size: number;
   sortKey: DashboardMemberSortKey;

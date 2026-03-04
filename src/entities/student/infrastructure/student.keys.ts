@@ -4,11 +4,12 @@ export const studentKeys = {
   dashboard: {
     all: () => [...studentKeys.all, 'dashboard'] as const,
     report: () => [...studentKeys.dashboard.all(), 'report'] as const,
-    noteList: () => [...studentKeys.dashboard.all(), 'noteList'] as const,
+    noteList: (studyRoomId?: number) =>
+      [...studentKeys.dashboard.all(), 'noteList', studyRoomId] as const,
     studyRoomList: () =>
       [...studentKeys.dashboard.all(), 'studyRoomList'] as const,
     QnaList: () => [...studentKeys.dashboard.all(), 'QnaList'] as const,
-    homeworkList: () =>
-      [...studentKeys.dashboard.all(), 'homeworkList'] as const,
+    homeworkList: (studyRoomId?: number) =>
+      [...studentKeys.dashboard.all(), 'homeworkList', studyRoomId] as const,
   },
 };
