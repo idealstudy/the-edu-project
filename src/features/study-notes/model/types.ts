@@ -45,6 +45,7 @@ export interface MemberInfo {
   name: string;
   email: string;
   joinDate: string;
+  outDate: string | null;
 }
 
 export interface StudyMember {
@@ -71,6 +72,7 @@ export interface StudyNoteMember {
   guardianCount?: number;
   joinedText: string;
   avatarSrc?: string;
+  isTerminated: boolean;
 }
 
 export type ListArgs = {

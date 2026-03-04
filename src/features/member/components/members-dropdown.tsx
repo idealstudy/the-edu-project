@@ -1,11 +1,17 @@
 'use client';
 
+import { useState } from 'react';
+
 import Image from 'next/image';
 
 import {
   useRemoveMember,
   useTerminateMember,
 } from '@/features/study-rooms/hooks';
+import {
+  DialogAction,
+  StudyroomConfirmDialog,
+} from '@/shared/components/dialog';
 import { DropdownMenu } from '@/shared/components/ui';
 
 type Props = {
@@ -16,6 +22,11 @@ type Props = {
 export default function MembersDropdown({ studyRoomId, memberId }: Props) {
   const { mutate: removeMember } = useRemoveMember();
   const { mutate: terminateMember } = useTerminateMember();
+
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const dispatch = (action: DialogAction) => {
+    if ((action.type = 'CLOSE')) setConfirmOpen(false);
+  };
 
   return (
     <>
@@ -30,11 +41,7 @@ export default function MembersDropdown({ studyRoomId, memberId }: Props) {
           />
         </DropdownMenu.Trigger>
         <DropdownMenu.Content align="end">
-          <DropdownMenu.Item
-            onSelect={() =>
-              removeMember({ studyRoomId, studentId: Number(memberId) })
-            }
-          >
+          <DropdownMenu.Item onSelect={() => setConfirmOpen(true)}>
             학생 내보내기
           </DropdownMenu.Item>
           <DropdownMenu.Item
@@ -46,6 +53,21 @@ export default function MembersDropdown({ studyRoomId, memberId }: Props) {
           </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu>
+
+      {/* 다이얼로그 */}
+      <StudyroomConfirmDialog
+        type="delete"
+        open={confirmOpen}
+        dispatch={dispatch}
+        title="스터디룸에서 내보내시겠습니까?"
+        description="필요할 경우, 다시 초대할 수 있습니다."
+        onDelete={() =>
+          removeMember(
+            { studyRoomId, studentId: Number(memberId) },
+            { onSuccess: () => setConfirmOpen(false) }
+          )
+        }
+      />
     </>
   );
 }

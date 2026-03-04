@@ -43,6 +43,15 @@ export const MemberListItem = ({
 
       <div className="flex shrink-0 items-center gap-3">
         <span className="text-xs text-zinc-500">{member.joinedText}</span>
+        <span
+          className={`w-16 rounded-lg px-2 py-1 text-center text-xs ${
+            member.isTerminated
+              ? 'bg-gray-1 text-gray-7'
+              : 'bg-background-orange text-key-color-primary'
+          }`}
+        >
+          {member.isTerminated ? '수업 종료' : '참여 중'}
+        </span>
         <MembersDropdown
           studyRoomId={studyRoomId}
           memberId={member.id}
