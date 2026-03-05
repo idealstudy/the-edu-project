@@ -2,15 +2,18 @@ import React from 'react';
 
 import Image from 'next/image';
 
+import { FrontendTeacherReport } from '@/entities/teacher';
 import { UserBasicInfo } from '@/features/mypage/types';
 import StudentProfileExtra from '@/features/profile/components/profile-card/student-profile-extra';
 import TeacherProfileExtra from '@/features/profile/components/profile-card/teacher-profile-extra';
 
 export default function ProfileCard({
   basicInfo,
+  teacherReport,
   action,
 }: {
   basicInfo: UserBasicInfo;
+  teacherReport?: FrontendTeacherReport;
   action?: React.ReactNode;
 }) {
   let profileExtra;
@@ -19,9 +22,9 @@ export default function ProfileCard({
     case 'ROLE_TEACHER':
       profileExtra = (
         <TeacherProfileExtra
-          teacherNoteCount={0}
-          studentCount={0}
-          reviewCount={0}
+          teacherNoteCount={teacherReport?.teachingNoteCount ?? 0}
+          studentCount={teacherReport?.studentCount ?? 0}
+          reviewCount={teacherReport?.reviewCount ?? 0}
           description={basicInfo.simpleIntroduction || ''}
         />
       );
