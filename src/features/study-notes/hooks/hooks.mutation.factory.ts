@@ -10,9 +10,9 @@ export const createTeacherStudyNoteMutations = () => {
 
     return useMutation({
       ...teacherMutationOptions.update(),
-      onSuccess: () => {
+      onSuccess: (_, variables) => {
         queryClient.invalidateQueries({
-          queryKey: StudyNoteQueryKey.all,
+          queryKey: StudyNoteQueryKey.listPrefix(variables.studyRoomId),
         });
       },
     });
@@ -24,10 +24,18 @@ export const createTeacherStudyNoteMutations = () => {
 
     return useMutation({
       ...teacherMutationOptions.moveToGroup(),
-      onSuccess: () => {
+      onSuccess: (_data, variables) => {
         queryClient.invalidateQueries({
-          queryKey: StudyNoteQueryKey.all,
+          queryKey: StudyNoteQueryKey.listPrefix(variables.studyRoomId),
         });
+        if (variables.groupId != null) {
+          queryClient.invalidateQueries({
+            queryKey: StudyNoteQueryKey.byGroupPrefix(
+              variables.studyRoomId,
+              variables.groupId
+            ),
+          });
+        }
       },
     });
   };
@@ -38,9 +46,9 @@ export const createTeacherStudyNoteMutations = () => {
 
     return useMutation({
       ...teacherMutationOptions.removeFromGroup(),
-      onSuccess: () => {
+      onSuccess: (_data, variables) => {
         queryClient.invalidateQueries({
-          queryKey: StudyNoteQueryKey.all,
+          queryKey: StudyNoteQueryKey.listPrefix(variables.studyRoomId),
         });
       },
     });

@@ -55,6 +55,8 @@ export default function StudyNotePage() {
     sortKey: sort,
   };
 
+  const isGroupSelected = selectedGroupId !== 'all';
+
   // ------------------------------------------------------------------
   // 일반 목록 조회
   // TODO: 추후 엔티티분리후 커스텀훅으로 분리
@@ -63,21 +65,20 @@ export default function StudyNotePage() {
     studyRoomId,
     pageable,
     keyword: search,
-    enabled: role === 'ROLE_TEACHER',
+    enabled: !isGroupSelected && role === 'ROLE_TEACHER',
   });
 
   const studentListQuery = useGetStudentNotesList({
     studyRoomId,
     pageable,
     keyword: search,
-    enabled: role === 'ROLE_STUDENT',
+    enabled: !isGroupSelected && role === 'ROLE_STUDENT',
   });
 
   // ------------------------------------------------------------------
   // 그룹별 목록 조회
   // TODO: 추후 엔티티분리
   // ------------------------------------------------------------------
-  const isGroupSelected = selectedGroupId !== 'all';
   const teachingNoteGroupId = isGroupSelected ? Number(selectedGroupId) : 0;
 
   const teacherByGroupQuery = useGetTeacherNotesByGroup({
