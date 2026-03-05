@@ -93,10 +93,7 @@ export const StudyroomPreviewSidebar = ({
 
   return (
     <>
-      <StudyroomPreviewSidebarHeader
-        studyRoomName={data.name}
-        teacherName={data.teacherName}
-      />
+      <StudyroomPreviewSidebarHeader studyRoomName={data.name} />
       <StudyStats
         numberOfTeachingNote={data.numberOfTeachingNotes}
         numberOfStudents={data.numberOfStudents}
