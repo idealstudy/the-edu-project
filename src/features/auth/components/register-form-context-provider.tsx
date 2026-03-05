@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { useAcceptInvitation } from '@/features/invite/hooks';
 import { Form } from '@/shared/components/ui/form';
 import { PUBLIC } from '@/shared/constants';
 import { useCheckboxGroup } from '@/shared/hooks/use-checkbox-group';
@@ -49,6 +48,10 @@ export const RegisterFormContextProvider = ({
 }) => {
   const termsCheckboxGroup = useCheckboxGroup(TERMS.map((term) => term.value));
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const inviteToken = searchParams.get('token');
+
   const form = useForm<RegisterForm>({
     resolver: zodResolver(RegisterForm),
     mode: 'onChange', // 실시간 검증 활성화
@@ -57,15 +60,10 @@ export const RegisterFormContextProvider = ({
       verificationCode: '',
       password: '',
       confirmPassword: '',
-      role: 'ROLE_TEACHER',
+      role: inviteToken ? 'ROLE_STUDENT' : 'ROLE_TEACHER',
       name: '',
     },
   });
-
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const inviteToken = searchParams.get('token');
-  const { acceptInvitation } = useAcceptInvitation();
 
   const { mutate: signUp, isPending } = useSignUp();
 
@@ -91,13 +89,11 @@ export const RegisterFormContextProvider = ({
           // 회원가입 성공 이벤트
           trackSignupSuccess(data.role ?? null);
           if (inviteToken) {
-            if (data.role === 'ROLE_STUDENT') {
-              acceptInvitation(inviteToken);
-            } else {
-              router.push(PUBLIC.CORE.INVITE.ERROR('ROLE_NOT_MATCH'));
-            }
+            router.replace(
+              `${PUBLIC.CORE.LOGIN}?token=${encodeURIComponent(inviteToken)}`
+            );
           } else {
-            router.replace(PUBLIC.CORE.INDEX);
+            router.replace(PUBLIC.CORE.LOGIN);
           }
         },
         onError: () => {

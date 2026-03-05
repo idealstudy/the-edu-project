@@ -5,7 +5,9 @@ import {
 } from '@/entities/teacher';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-// [GET] 선생님 기본 정보 조회
+/**
+ * [GET] 선생님 기본 정보 조회
+ */
 export const useTeacherBasicInfo = (options?: { enabled?: boolean }) =>
   useQuery({
     queryKey: teacherKeys.basicInfo(),
@@ -15,7 +17,9 @@ export const useTeacherBasicInfo = (options?: { enabled?: boolean }) =>
     enabled: options?.enabled ?? true,
   });
 
-// [PATCH] 선생님 기본 정보 변경
+/**
+ * [PATCH] 선생님 기본 정보 변경
+ */
 export const useUpdateTeacherBasicInfo = () => {
   const queryClient = useQueryClient();
 
