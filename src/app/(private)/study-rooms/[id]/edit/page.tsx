@@ -3,11 +3,12 @@ import StudyRoomFlow from '@/features/study-rooms/components/create/study-room-f
 import { ColumnLayout } from '@/layout';
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
-export default function EditStudyRoomPage({ params }: Props) {
-  const studyRoomId = Number(params.id);
+export default async function EditStudyRoomPage({ params }: Props) {
+  const { id } = await params;
+  const studyRoomId = Number(id);
   return (
     <div className="w-full flex-col">
       <BackLink />
