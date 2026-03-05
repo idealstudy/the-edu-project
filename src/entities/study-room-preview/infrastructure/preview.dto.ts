@@ -52,6 +52,7 @@ const StudyRoomPreviewCoreSchema = z.object({
   id: z.number().int(),
   name: z.string(),
   description: z.string(),
+  characteristic: z.string().nullable().optional(),
   modality: base.modality,
   classForm: base.classForm,
   subjectType: base.subject,

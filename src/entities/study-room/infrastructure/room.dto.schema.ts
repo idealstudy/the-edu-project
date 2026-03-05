@@ -39,6 +39,7 @@ const TeacherRoomDetailSchema = TeacherRoomListItemSchema.extend({
 const TeacherRoomCURequestSchema = z.object({
   name: z.string(),
   description: z.string(),
+  characteristic: z.string(),
   modality: base.modality,
   classForm: base.classForm,
   subjectType: base.subject,
