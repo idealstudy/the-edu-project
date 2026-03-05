@@ -56,8 +56,7 @@ export const createTeacherStudyNoteMutations = () => {
       ...teacherMutationOptions.removeStudyNote(),
       onSuccess: (_data, variables) => {
         queryClient.invalidateQueries({
-          queryKey: [StudyNoteQueryKey.list],
-          exact: false,
+          queryKey: StudyNoteQueryKey.listPrefix(variables.studyRoomId),
         });
         queryClient.invalidateQueries({
           queryKey: studyRoomsQueryKey.detail(variables.studyRoomId),
