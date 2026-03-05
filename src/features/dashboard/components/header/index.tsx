@@ -44,18 +44,18 @@ const DashboardHeader = () => {
       label: '스터디룸',
     },
     {
-      value: studentReport?.qnaCount ?? 0,
+      value: studentReport?.questionCount ?? 0,
       unit: '개',
       label: '나의 질문',
     },
     // 해당 응답이 없어 임시 0 처리
     {
-      value: 0,
+      value: studentReport?.answerCount ?? 0,
       unit: '개',
       label: '수집한 답변',
     },
     {
-      value: 0,
+      value: studentReport?.submittedHomeworkCount ?? 0,
       unit: '개',
       label: '제출한 과제',
     },

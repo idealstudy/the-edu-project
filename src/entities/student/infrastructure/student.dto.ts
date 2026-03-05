@@ -16,9 +16,9 @@ const StudentReportDtoSchema = z.object({
  * ────────────────────────────────────────────────────*/
 const StudentDashboardReportDtoSchema = z.object({
   studyRoomCount: z.number(),
-  teachingNoteCount: z.number(),
-  studentCount: z.number(),
-  qnaCount: z.number(),
+  questionCount: z.number(),
+  answerCount: z.number(),
+  submittedHomeworkCount: z.number(),
 });
 
 /* ─────────────────────────────────────────────────────
