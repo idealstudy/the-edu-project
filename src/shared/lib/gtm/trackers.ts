@@ -9,6 +9,11 @@ import type { Role } from '@/entities/member';
 import { getGaUserType, pushEvent } from '../gtm';
 import { GA4_EVENTS, withUserType } from './events';
 import type {
+  Dedu101ProfileEnterParams,
+  Dedu101ScrollDepthParams,
+  Dedu101StudyroomFeatureClickParams,
+  Dedu101StudyroomInfoViewParams,
+  Dedu101TeacherClickParams,
   HomeworkCreateParams,
   HomeworkReplyParams,
   HomeworkSubmitParams,
@@ -492,4 +497,44 @@ export const trackStudynoteListSearchClick = (
   role?: Role | null
 ) => {
   pushEvent(GA4_EVENTS.STUDYNOTE_LIST_SEARCH_CLICK, withUserType(params, role));
+};
+
+// ==================== 디에듀101 이벤트 ====================
+
+export const trackDedu101ListScrollDepth = (
+  params: Omit<Dedu101ScrollDepthParams, 'user_type'>,
+  role?: Role | null
+) => {
+  pushEvent(GA4_EVENTS.DEDU101_LIST_SCROLL_DEPTH, withUserType(params, role));
+};
+
+export const trackDedu101TeacherClick = (
+  params: Omit<Dedu101TeacherClickParams, 'user_type'>,
+  role?: Role | null
+) => {
+  pushEvent(GA4_EVENTS.DEDU101_TEACHER_CLICK, withUserType(params, role));
+};
+
+export const trackDedu101StudyroomFeatureClick = (
+  params: Omit<Dedu101StudyroomFeatureClickParams, 'user_type'>,
+  role?: Role | null
+) => {
+  pushEvent(
+    GA4_EVENTS.DEDU101_STUDYROOM_FEATURE_CLICK,
+    withUserType(params, role)
+  );
+};
+
+export const trackDedu101ProfileEnter = (
+  params: Omit<Dedu101ProfileEnterParams, 'user_type'>,
+  role?: Role | null
+) => {
+  pushEvent(GA4_EVENTS.DEDU101_PROFILE_ENTER, withUserType(params, role));
+};
+
+export const trackDedu101StudyroomInfoView = (
+  params: Omit<Dedu101StudyroomInfoViewParams, 'user_type'>,
+  role?: Role | null
+) => {
+  pushEvent(GA4_EVENTS.DEDU101_STUDYROOM_INFO_VIEW, withUserType(params, role));
 };
