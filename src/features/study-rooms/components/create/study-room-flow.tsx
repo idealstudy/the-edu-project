@@ -138,35 +138,57 @@ export default function StudyRoomFlow({
 
   const handleIndicatorMove = (to: number) => dispatch({ type: 'GO', to });
 
-  const buildNextRoute = (id: number, condition: 'invite' | 'dashboard') =>
-    condition === 'invite'
-      ? `/study-rooms/${id}/note?invite=open`
-      : `/study-rooms/${id}/note`;
+  // const buildNextRoute = (id: number, condition: 'invite' | 'dashboard') =>
+  //   condition === 'invite'
+  //     ? `/study-rooms/${id}/note?invite=open`
+  //     : `/study-rooms/${id}/note`;
 
-  const handleSubmitCondition = React.useCallback(
-    (condition: 'invite' | 'dashboard') => {
-      if (isPending) return;
-      methods.handleSubmit((data: StudyRoomFormValues) => {
-        mutate(data, {
-          onSuccess: (result) => {
-            // 스터디룸 생성 성공 이벤트
-            trackStudyroomCreateSuccess(
-              {
-                user_id: session?.id ?? 0,
-                title_length: data.name?.length ?? 0,
-                description_length: data.description?.length ?? 0,
-              },
-              session?.role ?? null
-            );
-            // 스펙상 id는 항상 옴 (fallback은 의도적으로 생략)
-            sendOnboarding(); // 온보딩 반영
-            router.replace(buildNextRoute(result.id, condition));
-          },
-        });
-      })();
-    },
-    [isPending, methods, mutate, router, session, sendOnboarding]
-  );
+  // const handleSubmitCondition = React.useCallback(
+  //   (condition: 'invite' | 'dashboard') => {
+  //     if (isPending) return;
+  //     methods.handleSubmit((data: StudyRoomFormValues) => {
+  //       mutate(data, {
+  //         onSuccess: (result) => {
+  //           // 스터디룸 생성 성공 이벤트
+  //           trackStudyroomCreateSuccess(
+  //             {
+  //               user_id: session?.id ?? 0,
+  //               title_length: data.name?.length ?? 0,
+  //               description_length: data.description?.length ?? 0,
+  //             },
+  //             session?.role ?? null
+  //           );
+  //           // 스펙상 id는 항상 옴 (fallback은 의도적으로 생략)
+  //           sendOnboarding(); // 온보딩 반영
+  //           router.replace(buildNextRoute(result.id, condition));
+  //         },
+  //       });
+  //     })();
+  //   },
+  //   [isPending, methods, mutate, router, session, sendOnboarding]
+  // );
+
+  const handleSubmit = React.useCallback(() => {
+    if (isPending) return;
+    methods.handleSubmit((data: StudyRoomFormValues) => {
+      mutate(data, {
+        onSuccess: (result) => {
+          // 스터디룸 생성 성공 이벤트
+          trackStudyroomCreateSuccess(
+            {
+              user_id: session?.id ?? 0,
+              title_length: data.name?.length ?? 0,
+              description_length: data.description?.length ?? 0,
+            },
+            session?.role ?? null
+          );
+          // 스펙상 id는 항상 옴 (fallback은 의도적으로 생략)
+          sendOnboarding(); // 온보딩 반영
+          router.replace(`/study-rooms/${result.id}/note`);
+        },
+      });
+    })();
+  }, [isPending, methods, mutate, router, session, sendOnboarding]);
 
   // TODO: 수정 버튼 연결
   const onConfirmClick = () => {
@@ -205,13 +227,6 @@ export default function StudyRoomFlow({
             <StepTwo
               mode={mode}
               disabled={isPending}
-              onRequestSubmit={() =>
-                dialogDispatch({
-                  type: 'OPEN',
-                  scope: 'studyroom',
-                  kind: 'onConfirm',
-                })
-              }
               onRequestEdit={() =>
                 dialogDispatch({
                   type: 'OPEN',
@@ -226,13 +241,20 @@ export default function StudyRoomFlow({
                   kind: 'cancel',
                 })
               }
+              // onRequestSubmit={() =>
+              //   dialogDispatch({
+              //     type: 'OPEN',
+              //     scope: 'studyroom',
+              //     kind: 'onConfirm',
+              //   })
+              // }
+              onRequestSubmit={handleSubmit}
             />
           )}
         </Form>
       </FormProvider>
 
-      {mode === 'create' &&
-        dialog.status === 'open' &&
+      {/* {dialog.status === 'open' &&
         dialog.scope === 'studyroom' &&
         dialog.kind === 'onConfirm' && (
           <ConfirmDialog
@@ -248,7 +270,7 @@ export default function StudyRoomFlow({
             onCancel={() => handleSubmitCondition('dashboard')}
           />
         )}
-
+*/}
       {mode === 'edit' &&
         dialog.status === 'open' &&
         dialog.scope === 'studyroom' &&

@@ -18,7 +18,8 @@ export type DialogKind =
   | 'cancel'
   | 'create'
   | 'invite'
-  | 'select-representative';
+  | 'select-representative'
+  | 'edit-career';
 
 export type DialogState =
   | { status: 'idle' }

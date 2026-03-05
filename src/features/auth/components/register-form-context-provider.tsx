@@ -2,7 +2,7 @@
 
 import { useForm } from 'react-hook-form';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Form } from '@/shared/components/ui/form';
 import { PUBLIC } from '@/shared/constants';
@@ -48,6 +48,10 @@ export const RegisterFormContextProvider = ({
 }) => {
   const termsCheckboxGroup = useCheckboxGroup(TERMS.map((term) => term.value));
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const inviteToken = searchParams.get('token');
+
   const form = useForm<RegisterForm>({
     resolver: zodResolver(RegisterForm),
     mode: 'onChange', // 실시간 검증 활성화
@@ -56,12 +60,10 @@ export const RegisterFormContextProvider = ({
       verificationCode: '',
       password: '',
       confirmPassword: '',
-      role: 'ROLE_TEACHER',
+      role: inviteToken ? 'ROLE_STUDENT' : 'ROLE_TEACHER',
       name: '',
     },
   });
-
-  const router = useRouter();
 
   const { mutate: signUp, isPending } = useSignUp();
 
@@ -86,7 +88,13 @@ export const RegisterFormContextProvider = ({
         onSuccess: () => {
           // 회원가입 성공 이벤트
           trackSignupSuccess(data.role ?? null);
-          router.replace(PUBLIC.CORE.INDEX);
+          if (inviteToken) {
+            router.replace(
+              `${PUBLIC.CORE.LOGIN}?token=${encodeURIComponent(inviteToken)}`
+            );
+          } else {
+            router.replace(PUBLIC.CORE.LOGIN);
+          }
         },
         onError: () => {
           alert('회원가입에 실패했습니다. 잠시 후 다시 시도해주세요.');
