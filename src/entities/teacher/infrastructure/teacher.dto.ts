@@ -77,7 +77,6 @@ const TeacherStudyRoomListDtoSchema = z.array(
 );
 
 /* ─────────────────────────────────────────────────────
-<<<<<<< HEAD
  * 선생님 대시보드 활동 통계 조회 DTO
  * ────────────────────────────────────────────────────*/
 const TeacherDashboardReportDtoSchema = z.object({
