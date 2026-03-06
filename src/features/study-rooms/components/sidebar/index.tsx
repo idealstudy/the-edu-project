@@ -29,7 +29,7 @@ import { useToggleInvitation } from '../../hooks/use-toggle-invitation';
 import { StudyRoomDetail } from '../../model';
 import { StudyroomSidebarHeader } from './header';
 import { InfoTooltipToast } from './info-tooltip';
-import { useDeleteStudyRoom, useUpdateStudyRoom } from './services/query';
+import { useDeleteStudyRoom, useUpdateStudyRoomTitle } from './services/query';
 import { StudyIntro, StudyStats } from './status';
 
 export const StudyroomSidebar = ({
@@ -56,7 +56,7 @@ export const StudyroomSidebar = ({
   const [isInfoToastOpen, setIsInfoToastOpen] = useState(false);
   const { role } = useRole();
   const { mutate: deleteStudyRoom } = useDeleteStudyRoom();
-  const { mutate: updateRoomName } = useUpdateStudyRoom();
+  const { mutate: updateRoomName } = useUpdateStudyRoomTitle();
   const { data: invitation, isLoading: isInvitationLoading } =
     useInvitationQuery(studyRoomId, { enabled: role === 'ROLE_TEACHER' });
   const { mutate: toggleInvitation, isPending: isInvitationPending } =
@@ -193,10 +193,12 @@ export const StudyroomSidebar = ({
       <ColumnLayout.Left className="border-line-line1 flex h-fit flex-col gap-5 rounded-xl border bg-white px-8 py-8">
         <StudyroomSidebarHeader
           dispatch={dispatch}
+          studyRoomId={studyRoomId}
           studyRoomName={studyRoomDetail?.name}
           teacherName={studyRoomDetail?.teacherName}
           canManage={canManage}
         />
+
         <StudyStats
           numberOfTeachingNote={studyRoomDetail?.numberOfTeachingNote}
           numberOfStudents={studyRoomDetail?.studentNames?.length}
