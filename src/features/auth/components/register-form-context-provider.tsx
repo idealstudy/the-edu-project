@@ -9,7 +9,10 @@ import { Form } from '@/shared/components/ui/form';
 import { PUBLIC } from '@/shared/constants';
 import { useCheckboxGroup } from '@/shared/hooks/use-checkbox-group';
 import { createContextFactory } from '@/shared/lib/context';
-import { trackSignupSuccess } from '@/shared/lib/gtm/trackers';
+import {
+  trackAuthSignupFail,
+  trackAuthSignupSuccess,
+} from '@/shared/lib/gtm/trackers';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { RegisterForm } from '../schemas/register';
@@ -89,7 +92,7 @@ export const RegisterFormContextProvider = ({
       {
         onSuccess: () => {
           // 회원가입 성공 이벤트
-          trackSignupSuccess(data.role ?? null);
+          trackAuthSignupSuccess(data.role ?? null);
           if (inviteToken) {
             if (data.role === 'ROLE_STUDENT') {
               acceptInvitation(inviteToken);
@@ -101,6 +104,7 @@ export const RegisterFormContextProvider = ({
           }
         },
         onError: () => {
+          trackAuthSignupFail();
           alert('회원가입에 실패했습니다. 잠시 후 다시 시도해주세요.');
         },
       }
