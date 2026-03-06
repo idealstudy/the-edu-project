@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { PRIVATE } from '@/shared/constants';
+import { trackDashboardStudyroomClick } from '@/shared/lib/gtm/trackers';
 
 import {
   useStudentDashboardStudyRoomListQuery,
@@ -35,9 +36,10 @@ const StudyroomSection = ({ className }: Props) => {
   const isPending = isTeacher ? isTeacherPending : isStudentPending;
   const handleStudyRoomClick = useCallback(
     (studyRoomId: number) => {
+      trackDashboardStudyroomClick(studyRoomId, member?.role);
       router.push(PRIVATE.ROOM.DETAIL(studyRoomId));
     },
-    [router]
+    [router, member?.role]
   );
 
   return (

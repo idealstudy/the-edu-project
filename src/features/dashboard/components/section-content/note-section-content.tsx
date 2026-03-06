@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 
 import { StudentDashboardNoteListItemDTO } from '@/entities/student';
@@ -5,6 +7,8 @@ import { TeacherDashboardNoteListItemDTO } from '@/entities/teacher';
 import { AddNoteIcon } from '@/shared/components/icons';
 import { Pagination } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants';
+import { trackDashboardNoteClick } from '@/shared/lib/gtm/trackers';
+import { useMemberStore } from '@/store';
 
 type NoteItem =
   | TeacherDashboardNoteListItemDTO
@@ -25,6 +29,7 @@ const NoteSectionContent = ({
   onPageChange,
   lastStudyRoomId,
 }: NoteSectionContentProps) => {
+  const member = useMemberStore((s) => s.member);
   const isTeacher = lastStudyRoomId !== undefined;
   const hasStudyRoom = (lastStudyRoomId ?? 0) > 0;
 
@@ -58,6 +63,9 @@ const NoteSectionContent = ({
             key={note.id}
             href={PRIVATE.NOTE.DETAIL(note.studyRoomId, note.id)}
             className="bg-orange-1 border-orange-3 flex w-full cursor-pointer flex-col items-start gap-1 rounded-lg border px-7 py-7 text-left"
+            onClick={() =>
+              trackDashboardNoteClick(note.studyRoomId, note.id, member?.role)
+            }
           >
             <span className="font-label-heading text-orange-7">
               {note.studyRoomName}

@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 
 import { cn } from '@/shared/lib';
@@ -10,6 +12,7 @@ type Props = {
   className?: string;
   isMore?: boolean;
   isMoreHref?: string;
+  onMoreClick?: () => void;
 };
 
 const DashboardSection = ({
@@ -19,6 +22,7 @@ const DashboardSection = ({
   className,
   isMore = false,
   isMoreHref = '',
+  onMoreClick,
 }: Props) => {
   return (
     <div
@@ -48,6 +52,7 @@ const DashboardSection = ({
           <Link
             href={isMoreHref}
             className="text-gray-8 flex gap-1"
+            onClick={onMoreClick}
           >
             <span className="font-body2-heading">더보기</span>
             <ChevronRight className="h-5 w-5" />

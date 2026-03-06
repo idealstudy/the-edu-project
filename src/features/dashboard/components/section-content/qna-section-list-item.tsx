@@ -5,6 +5,7 @@ import { TeacherDashboardQnaListItemDTO } from '@/entities/teacher';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { PRIVATE } from '@/shared/constants';
 import { cn, getRelativeTimeString } from '@/shared/lib';
+import { trackDashboardQnaClick } from '@/shared/lib/gtm/trackers';
 import { Check } from 'lucide-react';
 
 interface QnASectionListItemProps {
@@ -23,6 +24,9 @@ export const QnASectionListItem = ({ question }: QnASectionListItemProps) => {
       className={cn(
         'bg-gray-white hover:bg-gray-1 flex w-full flex-col gap-2 rounded-lg p-3'
       )}
+      onClick={() =>
+        trackDashboardQnaClick(question.studyRoomId, question.id, member?.role)
+      }
     >
       {/* 스터디룸 이름 : 수정 필요 */}
       <span className="font-caption-heading text-orange-7">

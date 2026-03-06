@@ -3,7 +3,19 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { cn } from '@/shared/lib';
+import type { DashboardTab } from '@/shared/lib/gtm/events';
+import {
+  trackDashboardStudyroomFilter,
+  trackDashboardTabClick,
+} from '@/shared/lib/gtm/trackers';
+import { useMemberStore } from '@/store';
 import { ChevronDown } from 'lucide-react';
+
+const TAB_CODE_MAP: Record<string, DashboardTab> = {
+  수업노트: 'studynote',
+  멤버: 'member',
+  과제: 'homework',
+};
 
 export type StudyRoom = { id: number; name: string };
 
@@ -132,6 +144,18 @@ const TabbedSection = ({
   className,
 }: Props) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const member = useMemberStore((s) => s.member);
+
+  const handleSelectStudyRoom = (id: number | null) => {
+    onSelectStudyRoom(id);
+    trackDashboardStudyroomFilter(id, member?.role);
+  };
+
+  const handleTabClick = (index: number, tab: string) => {
+    setSelectedIndex(index);
+    const tabCode = TAB_CODE_MAP[tab] ?? 'studynote';
+    trackDashboardTabClick(tabCode, member?.role);
+  };
 
   const selectedStudyRoom = studyRooms.find((r) => r.id === selectedId) ?? null;
   const headingName =
@@ -152,7 +176,7 @@ const TabbedSection = ({
           <StudyRoomDropdown
             studyRooms={studyRooms}
             selectedId={selectedId}
-            onSelect={onSelectStudyRoom}
+            onSelect={handleSelectStudyRoom}
           />
         )}
         <h1 className="font-body1-heading tablet:font-headline1-heading text-gray-12">
@@ -172,7 +196,7 @@ const TabbedSection = ({
             aria-selected={selectedIndex === index}
             aria-controls={`tabpanel-${index}`}
             id={`tab-${index}`}
-            onClick={() => setSelectedIndex(index)}
+            onClick={() => handleTabClick(index, tab)}
             className={cn(
               'rounded-full border px-6 py-2.5 transition-colors',
               selectedIndex === index

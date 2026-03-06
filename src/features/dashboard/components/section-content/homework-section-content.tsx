@@ -7,6 +7,8 @@ import { TeacherDashboardHomeworkListItemDTO } from '@/entities/teacher';
 import { Pagination } from '@/shared/components/ui/pagination';
 import { PRIVATE } from '@/shared/constants/route';
 import { cn } from '@/shared/lib';
+import { trackDashboardHomeworkClick } from '@/shared/lib/gtm/trackers';
+import { useMemberStore } from '@/store';
 
 type DeadlineLabel = 'UPCOMING' | 'TODAY' | 'OVERDUE';
 
@@ -33,6 +35,7 @@ const HomeworkSectionContent = ({
   onPageChange,
   emptyMessage = '과제가 없어요.',
 }: HomeworkSectionContentProps) => {
+  const member = useMemberStore((s) => s.member);
   if (homeworks.length === 0) {
     return (
       <div className="flex h-22 w-full items-center justify-center">
@@ -50,6 +53,13 @@ const HomeworkSectionContent = ({
               key={homework.id}
               href={PRIVATE.HOMEWORK.DETAIL(homework.studyRoomId, homework.id)}
               className="bg-gray-white flex flex-col gap-0.5 rounded-xl p-3 shadow-none transition-shadow hover:shadow-sm"
+              onClick={() =>
+                trackDashboardHomeworkClick(
+                  homework.studyRoomId,
+                  homework.id,
+                  member?.role
+                )
+              }
             >
               <span className="font-body2-normal text-gray-12">
                 {homework.title}

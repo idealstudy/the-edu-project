@@ -5,6 +5,7 @@ import {
   useStudentDashboardQnaListQuery,
   useTeacherDashboardQnaListQuery,
 } from '@/features/dashboard/hooks/use-dashboard-query';
+import { trackDashboardQnaMoreClick } from '@/shared/lib/gtm/trackers';
 
 import QnASectionContent from '../section-content/qna-section-content';
 import DashboardSection from './single-section';
@@ -44,6 +45,7 @@ const QnASection = ({ className }: Props) => {
       className={className}
       isMore={true}
       isMoreHref="/dashboard/qna"
+      onMoreClick={() => trackDashboardQnaMoreClick(member?.role)}
     >
       {isPending ? (
         <div className="flex w-full flex-col gap-1">
