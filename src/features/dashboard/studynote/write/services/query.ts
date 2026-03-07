@@ -1,3 +1,4 @@
+import { StudyNoteQueryKey } from '@/entities/study-note';
 import { teacherKeys } from '@/entities/teacher';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -19,12 +20,17 @@ export const useStudyNoteGroupsQuery = (roomId: number) => {
 };
 
 export const useWriteStudyNoteMutation = () => {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (data: StudyNote) => writeStudyNote(data),
     onSuccess: () => {
-      void qc.invalidateQueries({
-        queryKey: [...teacherKeys.dashboard.all(), 'noteList'],
+      queryClient.invalidateQueries({
+        queryKey: [
+          ...StudyNoteQueryKey.all,
+          ...teacherKeys.dashboard.all(),
+          'noteList',
+        ],
       });
     },
   });

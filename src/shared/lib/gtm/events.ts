@@ -158,12 +158,25 @@ export interface StudynoteFilterParams extends RoomEventParams {
 }
 
 /**
+ * 회원가입 단계 진입 이벤트 파라미터
+ */
+export interface AuthSignupStepEnterParams extends CommonEventParams {
+  step: 'email' | 'credential' | 'profile';
+}
+
+/**
  * 이벤트 이름 상수
  */
 export const GA4_EVENTS = {
   // Auth
-  SIGNUP_SUCCESS: 'signup_success',
-  LOGIN_SUCCESS: 'login_success',
+  AUTH_LOGIN_CLICK: 'auth_login_click',
+  AUTH_LOGIN_SUCCESS: 'auth_login_success',
+  AUTH_LOGIN_FAIL: 'auth_login_fail',
+  AUTH_KAKAO_LOGIN_CLICK: 'auth_kakao_login_click',
+  AUTH_SIGNUP_CLICK: 'auth_signup_click',
+  AUTH_SIGNUP_SUCCESS: 'auth_signup_success',
+  AUTH_SIGNUP_FAIL: 'auth_signup_fail',
+  AUTH_SIGNUP_STEP_ENTER: 'auth_signup_step_enter',
 
   // GNB
   GNB_LOGO_CLICK: 'gnb_logo_click',
@@ -262,6 +275,10 @@ export const GA4_EVENTS = {
   HOMEWORK_CREATE_CLICK: 'homework_create_click',
   HOMEWORK_SUBMIT_CLICK: 'homework_submit_click',
   HOMEWORK_REPLY_CREATE_CLICK: 'homework_reply_create_click',
+
+  // Home
+  HOME_DEDU101_CLICK: 'home_dedu101_click',
+  HOME_START_CLICK: 'home_start_click',
 } as const;
 
 /**

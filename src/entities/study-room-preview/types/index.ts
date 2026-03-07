@@ -5,7 +5,6 @@ import { dto } from '../infrastructure/preview.dto';
 
 // Base DTO types
 export type PreviewSchoolInfoDTO = z.infer<typeof dto.schoolInfo>;
-export type PreviewTeacherDTO = z.infer<typeof dto.teacher>;
 export type PreviewReviewResolvedContentDTO = z.infer<
   typeof dto.reviewResolvedContent
 >;
