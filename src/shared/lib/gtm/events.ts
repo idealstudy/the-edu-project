@@ -200,14 +200,26 @@ export interface Dedu101StudyroomInfoViewParams extends CommonEventParams {
   section: 'intro' | 'curriculum' | 'review' | 'price';
   view_ms: number;
 }
+/*
+ * 회원가입 단계 진입 이벤트 파라미터
+ */
+export interface AuthSignupStepEnterParams extends CommonEventParams {
+  step: 'email' | 'credential' | 'profile';
+}
 
 /**
  * 이벤트 이름 상수
  */
 export const GA4_EVENTS = {
   // Auth
-  SIGNUP_SUCCESS: 'signup_success',
-  LOGIN_SUCCESS: 'login_success',
+  AUTH_LOGIN_CLICK: 'auth_login_click',
+  AUTH_LOGIN_SUCCESS: 'auth_login_success',
+  AUTH_LOGIN_FAIL: 'auth_login_fail',
+  AUTH_KAKAO_LOGIN_CLICK: 'auth_kakao_login_click',
+  AUTH_SIGNUP_CLICK: 'auth_signup_click',
+  AUTH_SIGNUP_SUCCESS: 'auth_signup_success',
+  AUTH_SIGNUP_FAIL: 'auth_signup_fail',
+  AUTH_SIGNUP_STEP_ENTER: 'auth_signup_step_enter',
 
   // GNB
   GNB_LOGO_CLICK: 'gnb_logo_click',
@@ -300,12 +312,16 @@ export const GA4_EVENTS = {
   HOMEWORK_SUBMIT_CLICK: 'homework_submit_click',
   HOMEWORK_REPLY_CREATE_CLICK: 'homework_reply_create_click',
 
-  // Dedu101
+  // dedu 101
   DEDU101_LIST_SCROLL_DEPTH: 'dedu101_list_scroll_depth',
   DEDU101_TEACHER_CLICK: 'dedu101_teacher_click',
   DEDU101_STUDYROOM_FEATURE_CLICK: 'dedu101_studyroom_feature_click',
   DEDU101_PROFILE_ENTER: 'dedu101_profile_enter',
   DEDU101_STUDYROOM_INFO_VIEW: 'dedu101_studyroom_info_view',
+
+  // Home
+  HOME_DEDU101_CLICK: 'home_dedu101_click',
+  HOME_START_CLICK: 'home_start_click',
 } as const;
 
 /**

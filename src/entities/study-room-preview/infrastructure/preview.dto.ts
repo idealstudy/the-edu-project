@@ -11,15 +11,6 @@ const PreviewSchoolInfoSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
- * 공통 하위 DTO - 선생님 정보
- * ──────────────────────────────────────────────────── */
-const PreviewTeacherSchema = z.object({
-  id: z.number().int(),
-  name: z.string(),
-  profile: z.string().nullable().optional(),
-});
-
-/* ─────────────────────────────────────────────────────
  * 공통 하위 DTO - 리뷰 해석 결과
  * ──────────────────────────────────────────────────── */
 const PreviewReviewResolvedContentSchema = z.object({
@@ -77,7 +68,6 @@ const PreviewOtherStudyRoomItemSchema = z.object({
   classForm: base.classForm.optional(),
   subjectType: base.subject.optional(),
   schoolInfo: PreviewSchoolInfoSchema.optional(),
-  teacher: PreviewTeacherSchema,
   capacity: z.number().int().optional(),
   visibility: base.visibility.optional(),
   regDate: z.string().optional(),
@@ -112,7 +102,6 @@ const StudyRoomPreviewStatsEnvelopeSchema = sharedSchema.response(
  * ──────────────────────────────────────────────────── */
 export const dto = {
   schoolInfo: PreviewSchoolInfoSchema,
-  teacher: PreviewTeacherSchema,
   reviewResolvedContent: PreviewReviewResolvedContentSchema,
   reviewItem: PreviewReviewItemSchema,
 

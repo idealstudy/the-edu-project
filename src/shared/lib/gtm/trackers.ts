@@ -9,6 +9,7 @@ import type { Role } from '@/entities/member';
 import { getGaUserType, pushEvent } from '../gtm';
 import { GA4_EVENTS, withUserType } from './events';
 import type {
+  AuthSignupStepEnterParams,
   Dedu101ProfileEnterParams,
   Dedu101ScrollDepthParams,
   Dedu101StudyroomFeatureClickParams,
@@ -31,13 +32,41 @@ import type {
 } from './events';
 
 // ==================== 인증 이벤트 ====================
-
-export const trackSignupSuccess = (role?: Role | null) => {
-  pushEvent(GA4_EVENTS.SIGNUP_SUCCESS, withUserType({}, role));
+export const trackAuthLoginClick = () => {
+  pushEvent(GA4_EVENTS.AUTH_LOGIN_CLICK, withUserType({}));
 };
 
-export const trackLoginSuccess = (role?: Role | null) => {
-  pushEvent(GA4_EVENTS.LOGIN_SUCCESS, withUserType({}, role));
+export const trackAuthLoginSuccess = (role?: Role | null) => {
+  pushEvent(GA4_EVENTS.AUTH_LOGIN_SUCCESS, withUserType({}, role));
+};
+
+export const trackAuthLoginFail = () => {
+  pushEvent(GA4_EVENTS.AUTH_LOGIN_FAIL, withUserType({}));
+};
+
+export const trackAuthKakaoLoginClick = () => {
+  pushEvent(GA4_EVENTS.AUTH_KAKAO_LOGIN_CLICK, withUserType({}));
+};
+
+export const trackAuthSignupClick = () => {
+  pushEvent(GA4_EVENTS.AUTH_SIGNUP_CLICK, withUserType({}));
+};
+
+export const trackAuthSignupSuccess = (
+  role?: Role | null,
+  method: 'email' | 'kakao' = 'email'
+) => {
+  pushEvent(GA4_EVENTS.AUTH_SIGNUP_SUCCESS, withUserType({ method }, role));
+};
+
+export const trackAuthSignupFail = (method: 'email' | 'kakao' = 'email') => {
+  pushEvent(GA4_EVENTS.AUTH_SIGNUP_FAIL, withUserType({ method }));
+};
+
+export const trackAuthSignupStepEnter = (
+  step: AuthSignupStepEnterParams['step']
+) => {
+  pushEvent(GA4_EVENTS.AUTH_SIGNUP_STEP_ENTER, withUserType({ step }));
 };
 
 // ==================== GNB 이벤트 ====================
@@ -537,4 +566,12 @@ export const trackDedu101StudyroomInfoView = (
   role?: Role | null
 ) => {
   pushEvent(GA4_EVENTS.DEDU101_STUDYROOM_INFO_VIEW, withUserType(params, role));
+};
+// ==================== 홈 이벤트 ====================
+export const trackHomeDedu101Click = (source: 'hero' | 'floating_cta') => {
+  pushEvent(GA4_EVENTS.HOME_DEDU101_CLICK, withUserType({ source }));
+};
+
+export const trackHomeStartClick = () => {
+  pushEvent(GA4_EVENTS.HOME_START_CLICK, withUserType({}));
 };

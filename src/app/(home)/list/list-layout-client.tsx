@@ -135,6 +135,7 @@ export default function ListLayoutClient({
               <div className="relative flex gap-6 lg:gap-10">
                 <Link
                   href={`/list/teachers?sort=${sortBy}&subject=${subjectBy}`}
+                  replace
                 >
                   <div
                     className={cn(
@@ -152,6 +153,7 @@ export default function ListLayoutClient({
                 </Link>
                 <Link
                   href={`/list/study-rooms?sort=${sortBy}&subject=${subjectBy}`}
+                  replace
                 >
                   <div
                     className={cn(
