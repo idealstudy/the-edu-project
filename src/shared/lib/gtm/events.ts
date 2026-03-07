@@ -158,6 +158,49 @@ export interface StudynoteFilterParams extends RoomEventParams {
 }
 
 /**
+ * 디에듀101 목록 스크롤 깊이 이벤트 파라미터
+ */
+export interface Dedu101ScrollDepthParams extends CommonEventParams {
+  page: 'dedu101_list';
+  depth_percent: 25 | 50 | 75 | 100;
+}
+
+/**
+ * 디에듀101 강사 카드 클릭 이벤트 파라미터
+ */
+export interface Dedu101TeacherClickParams extends CommonEventParams {
+  teacher_id: number;
+  card_index: number;
+  sort?: string;
+  subject?: string;
+}
+
+/**
+ * 디에듀101 스터디룸 특징 클릭 이벤트 파라미터
+ */
+export interface Dedu101StudyroomFeatureClickParams extends CommonEventParams {
+  room_id: number;
+  feature_type: 'subject' | 'level' | 'style' | 'keyword';
+  feature_value: string;
+}
+
+/**
+ * 디에듀101 프로필 진입 이벤트 파라미터
+ */
+export interface Dedu101ProfileEnterParams extends CommonEventParams {
+  target_type: 'teacher' | 'studyroom';
+  target_id: number;
+}
+
+/**
+ * 디에듀101 스터디룸 정보 섹션 뷰 이벤트 파라미터
+ */
+export interface Dedu101StudyroomInfoViewParams extends CommonEventParams {
+  room_id: number;
+  section: 'intro' | 'curriculum' | 'review' | 'price';
+  view_ms: number;
+}
+/*
  * 회원가입 단계 진입 이벤트 파라미터
  */
 export interface AuthSignupStepEnterParams extends CommonEventParams {
@@ -275,6 +318,13 @@ export const GA4_EVENTS = {
   HOMEWORK_CREATE_CLICK: 'homework_create_click',
   HOMEWORK_SUBMIT_CLICK: 'homework_submit_click',
   HOMEWORK_REPLY_CREATE_CLICK: 'homework_reply_create_click',
+
+  // dedu 101
+  DEDU101_LIST_SCROLL_DEPTH: 'dedu101_list_scroll_depth',
+  DEDU101_TEACHER_CLICK: 'dedu101_teacher_click',
+  DEDU101_STUDYROOM_FEATURE_CLICK: 'dedu101_studyroom_feature_click',
+  DEDU101_PROFILE_ENTER: 'dedu101_profile_enter',
+  DEDU101_STUDYROOM_INFO_VIEW: 'dedu101_studyroom_info_view',
 
   // Home
   HOME_DEDU101_CLICK: 'home_dedu101_click',
