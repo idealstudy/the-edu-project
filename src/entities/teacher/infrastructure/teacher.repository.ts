@@ -228,6 +228,26 @@ const getProfileReviews = async (teacherId: number) => {
 };
 
 /* ─────────────────────────────────────────────────────
+ * [Read] 공개 프로필 - 선생님 대표 수업노트 조회
+ * ────────────────────────────────────────────────────*/
+const getProfileTeachingNotes = async (teacherId: number) => {
+  const response = await api.public.get(
+    `/public/teachers/${teacherId}/teaching-notes`
+  );
+  return unwrapEnvelope(response, dto.teacherRepresentativeNoteList);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Read] 공개 프로필 - 선생님 운영중인 스터디룸 조회
+ * ────────────────────────────────────────────────────*/
+const getProfileStudyRooms = async (teacherId: number) => {
+  const response = await api.public.get(
+    `/public/teachers/${teacherId}/study-rooms`
+  );
+  return unwrapEnvelope(response, dto.teacherStudyRoomList);
+};
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const repository = {
@@ -255,5 +275,7 @@ export const repository = {
     getProfileDescription,
     getProfileReport,
     getProfileReviews,
+    getProfileTeachingNotes,
+    getProfileStudyRooms,
   },
 };
