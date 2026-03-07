@@ -210,7 +210,7 @@ const getProfileDescription = async (teacherId: number) => {
 };
 
 /* ─────────────────────────────────────────────────────
- * [Read] 공개 프로필 - 선생님 기본 정보 조회
+ * [Read] 공개 프로필 - 선생님 통계 조회
  * ────────────────────────────────────────────────────*/
 const getProfileReport = async (teacherId: number) => {
   const response = await api.public.get(`/public/teachers/${teacherId}/report`);

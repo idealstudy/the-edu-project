@@ -1,6 +1,3 @@
-import { useProfileReport } from '@/features/mypage/hooks/teacher/use-profile-report';
-import { useProfileReviews } from '@/features/mypage/hooks/teacher/use-profile-reviews';
-import { useProfileTeachingNotes } from '@/features/mypage/hooks/teacher/use-profile-teaching-notes';
 import SectionContainer from '@/features/profile/components/section-container';
 import ActivitySummarySection from '@/features/profile/components/teacher/activity-summary-section';
 import CareerSection from '@/features/profile/components/teacher/career-section';
@@ -10,7 +7,10 @@ import StudyroomSection from '@/features/profile/components/teacher/studyroom-se
 import StudynotesSection from '@/features/profile/components/teacher/teachingnotes-section';
 import { useProfileCareers } from '@/features/profile/hooks/use-profile-careers';
 import { useProfileDescription } from '@/features/profile/hooks/use-profile-description';
+import { useProfileReport } from '@/features/profile/hooks/use-profile-report';
+import { useProfileReviews } from '@/features/profile/hooks/use-profile-reviews';
 import { useProfileStudyRooms } from '@/features/profile/hooks/use-profile-study-rooms';
+import { useProfileTeachingNotes } from '@/features/profile/hooks/use-profile-teaching-notes';
 
 export default function TeacherSections({ teacherId }: { teacherId: number }) {
   const { data: description } = useProfileDescription(teacherId);
@@ -23,9 +23,7 @@ export default function TeacherSections({ teacherId }: { teacherId: number }) {
   return (
     <>
       <SectionContainer title="선생님의 특징">
-        {description?.description && (
-          <DescriptionSection description={description} />
-        )}
+        {description && <DescriptionSection description={description} />}
       </SectionContainer>
 
       <SectionContainer title="활동 요약">
