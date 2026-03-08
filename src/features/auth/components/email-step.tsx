@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
@@ -18,6 +19,11 @@ type EmailStepProps = {
 
 export const EmailStep = ({ onNext }: EmailStepProps) => {
   const { form } = useRegisterFormContext();
+  const searchParams = useSearchParams();
+  const inviteToken = searchParams.get('token');
+  const loginHref = inviteToken
+    ? `${PUBLIC.CORE.LOGIN}?token=${encodeURIComponent(inviteToken)}`
+    : PUBLIC.CORE.LOGIN;
   const { mutate: checkEmailDuplicate, isPending } = useCheckEmailDuplicate();
   const onNextButtonClick = async () => {
     if (isPending) return;
@@ -80,7 +86,7 @@ export const EmailStep = ({ onNext }: EmailStepProps) => {
       <div className="flex justify-center gap-2">
         <span>이미 가입 하셨나요?</span>
         <Link
-          href={PUBLIC.CORE.LOGIN}
+          href={loginHref}
           className="text-key-color-primary w-fit underline"
         >
           로그인

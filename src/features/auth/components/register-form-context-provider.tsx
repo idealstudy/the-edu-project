@@ -4,12 +4,14 @@ import { useForm } from 'react-hook-form';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { useAcceptInvitation } from '@/features/invite/hooks';
 import { Form } from '@/shared/components/ui/form';
 import { PUBLIC } from '@/shared/constants';
 import { useCheckboxGroup } from '@/shared/hooks/use-checkbox-group';
 import { createContextFactory } from '@/shared/lib/context';
-import { trackSignupSuccess } from '@/shared/lib/gtm/trackers';
+import {
+  trackAuthSignupFail,
+  trackAuthSignupSuccess,
+} from '@/shared/lib/gtm/trackers';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { RegisterForm } from '../schemas/register';
@@ -49,6 +51,10 @@ export const RegisterFormContextProvider = ({
 }) => {
   const termsCheckboxGroup = useCheckboxGroup(TERMS.map((term) => term.value));
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const inviteToken = searchParams.get('token');
+
   const form = useForm<RegisterForm>({
     resolver: zodResolver(RegisterForm),
     mode: 'onChange', // 실시간 검증 활성화
@@ -57,15 +63,10 @@ export const RegisterFormContextProvider = ({
       verificationCode: '',
       password: '',
       confirmPassword: '',
-      role: 'ROLE_TEACHER',
+      role: inviteToken ? 'ROLE_STUDENT' : 'ROLE_TEACHER',
       name: '',
     },
   });
-
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const inviteToken = searchParams.get('token');
-  const { acceptInvitation } = useAcceptInvitation();
 
   const { mutate: signUp, isPending } = useSignUp();
 
@@ -89,18 +90,17 @@ export const RegisterFormContextProvider = ({
       {
         onSuccess: () => {
           // 회원가입 성공 이벤트
-          trackSignupSuccess(data.role ?? null);
+          trackAuthSignupSuccess(data.role ?? null, 'email');
           if (inviteToken) {
-            if (data.role === 'ROLE_STUDENT') {
-              acceptInvitation(inviteToken);
-            } else {
-              router.push(PUBLIC.CORE.INVITE.ERROR('ROLE_NOT_MATCH'));
-            }
+            router.replace(
+              `${PUBLIC.CORE.LOGIN}?token=${encodeURIComponent(inviteToken)}`
+            );
           } else {
-            router.replace(PUBLIC.CORE.INDEX);
+            router.replace(PUBLIC.CORE.LOGIN);
           }
         },
         onError: () => {
+          trackAuthSignupFail('email');
           alert('회원가입에 실패했습니다. 잠시 후 다시 시도해주세요.');
         },
       }

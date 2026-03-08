@@ -15,9 +15,11 @@ export type DialogKind =
   | 'group-move'
   | 'delete'
   | 'onConfirm'
+  | 'cancel'
   | 'create'
   | 'invite'
-  | 'select-representative';
+  | 'select-representative'
+  | 'edit-career';
 
 export type DialogState =
   | { status: 'idle' }
