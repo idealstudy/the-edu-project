@@ -1,15 +1,19 @@
 'use client';
 
+import { Role } from '@/entities/member';
 import ProfileCard from '@/features/profile/components/profile-card/profile-card';
 import TeacherSections from '@/features/profile/components/teacher-sections';
 import { useProfileBasicInfo } from '@/features/profile/hooks/use-profile-basic-info';
 import { useProfileReport } from '@/features/profile/hooks/use-profile-report';
 import { ColumnLayout } from '@/layout';
 
-export default function ProfileMain({ memberId }: { memberId: number }) {
-  // 임시 처리
-  const role = 'ROLE_TEACHER';
-
+export default function ProfileMain({
+  memberId,
+  role,
+}: {
+  memberId: number;
+  role: Role;
+}) {
   const teacherBasicInfoQuery = useProfileBasicInfo(memberId, {
     enabled: role === 'ROLE_TEACHER',
   });

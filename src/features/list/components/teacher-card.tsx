@@ -19,7 +19,7 @@ export const TeacherCard = ({ teacher }: TeacherCardProps) => {
 
   return (
     <Link
-      href={`/profile/${teacher.id}`}
+      href={`/profile/teacher/${teacher.id}`}
       className={cn(
         'group border-gray-3 relative flex w-full items-center gap-4 overflow-hidden rounded-2xl border bg-white p-4 transition-all duration-300 md:p-6',
         'hover:scale-105 hover:shadow-xl'
