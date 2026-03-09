@@ -46,18 +46,22 @@ export default function ProfileMain({
     <>
       <ColumnLayout.Left>
         <div className="border-line-line1 flex flex-col gap-9 rounded-xl border bg-white p-8">
-          {basicInfoQuery.isLoading && (
-            <div className="text-center">로딩중...</div>
-          )}
+          {basicInfoQuery.isLoading ||
+            (role === 'ROLE_TEACHER' && teacherReportQuery.isLoading && (
+              <div className="text-center">로딩중...</div>
+            ))}
           {basicInfoQuery.isError && (
             <div className="text-center">프로필 정보를 불러올 수 없습니다.</div>
           )}
-          {basicInfoQuery.data && (
-            <ProfileCard
-              basicInfo={basicInfoQuery.data}
-              teacherReport={teacherReportQuery.data}
-            />
-          )}
+          {basicInfoQuery.data &&
+            role === 'ROLE_TEACHER' &&
+            teacherReportQuery.data && (
+              <ProfileCard
+                basicInfo={basicInfoQuery.data}
+                teacherReport={teacherReportQuery.data}
+                memberId={memberId}
+              />
+            )}
         </div>
       </ColumnLayout.Left>
       <ColumnLayout.Right className="desktop:max-w-[740px] desktop:px-8">
