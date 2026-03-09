@@ -53,8 +53,12 @@ export const createTeacherStudyRoomHooks = (
       onSuccess: () => {
         void qc.invalidateQueries({ queryKey: StudyRoomsQueryKey.teacherList });
 
+        void qc.invalidateQueries({
+          queryKey: teacherKeys.dashboard.studyRoomList(),
+        });
+        
         // 마이페이지 캐시 무효화
-        qc.invalidateQueries({ queryKey: teacherKeys.all });
+        void qc.invalidateQueries({ queryKey: teacherKeys.all });
       },
     });
   };
@@ -79,11 +83,53 @@ export const createTeacherStudyRoomHooks = (
     });
   };
 
+  // 특정 학생 내보내기 (삭제)
+  const useRemoveMember = () => {
+    const qc = useQueryClient();
+    return useMutation({
+      mutationFn: api.removeMember,
+      onSuccess: (_, variables) => {
+        qc.invalidateQueries({
+          queryKey: StudyNoteQueryKey.membersPrefix(variables.studyRoomId),
+        });
+      },
+    });
+  };
+
+  // 특정 학생 수업 종료하기
+  const useTerminateMember = () => {
+    const qc = useQueryClient();
+    return useMutation({
+      mutationFn: api.terminateMember,
+      onSuccess: (_, variables) => {
+        qc.invalidateQueries({
+          queryKey: StudyNoteQueryKey.membersPrefix(variables.studyRoomId),
+        });
+      },
+    });
+  };
+
+  // 특정 학생 수업 재개하기
+  const useResumeMember = () => {
+    const qc = useQueryClient();
+    return useMutation({
+      mutationFn: api.resumeMember,
+      onSuccess: (_, variables) => {
+        qc.invalidateQueries({
+          queryKey: StudyNoteQueryKey.membersPrefix(variables.studyRoomId),
+        });
+      },
+    });
+  };
+
   return {
     useTeacherStudyRoomsQuery,
     useTeacherStudyRoomDetailQuery,
     useSearchInvitation,
     useCreateStudyRoom,
     useSendInvitation,
+    useRemoveMember,
+    useTerminateMember,
+    useResumeMember,
   };
 };

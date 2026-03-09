@@ -11,10 +11,9 @@ export const createTeacherStudyNoteMutations = () => {
 
     return useMutation({
       ...teacherMutationOptions.update(),
-      onSuccess: () => {
+      onSuccess: (_, variables) => {
         queryClient.invalidateQueries({
-          queryKey: [StudyNoteQueryKey.list],
-          exact: false,
+          queryKey: StudyNoteQueryKey.listPrefix(variables.studyRoomId),
         });
 
         // 마이페이지 캐시 무효화
@@ -32,11 +31,18 @@ export const createTeacherStudyNoteMutations = () => {
 
     return useMutation({
       ...teacherMutationOptions.moveToGroup(),
-      onSuccess: () => {
+      onSuccess: (_data, variables) => {
         queryClient.invalidateQueries({
-          queryKey: [StudyNoteQueryKey.list],
-          exact: false,
+          queryKey: StudyNoteQueryKey.listPrefix(variables.studyRoomId),
         });
+        if (variables.groupId != null) {
+          queryClient.invalidateQueries({
+            queryKey: StudyNoteQueryKey.byGroupPrefix(
+              variables.studyRoomId,
+              variables.groupId
+            ),
+          });
+        }
       },
     });
   };
@@ -47,10 +53,9 @@ export const createTeacherStudyNoteMutations = () => {
 
     return useMutation({
       ...teacherMutationOptions.removeFromGroup(),
-      onSuccess: () => {
+      onSuccess: (_data, variables) => {
         queryClient.invalidateQueries({
-          queryKey: [StudyNoteQueryKey.list],
-          exact: false,
+          queryKey: StudyNoteQueryKey.listPrefix(variables.studyRoomId),
         });
       },
     });
@@ -63,9 +68,16 @@ export const createTeacherStudyNoteMutations = () => {
       ...teacherMutationOptions.removeStudyNote(),
       onSuccess: (_data, variables) => {
         queryClient.invalidateQueries({
-          queryKey: [StudyNoteQueryKey.list],
-          exact: false,
+          queryKey: StudyNoteQueryKey.listPrefix(variables.studyRoomId),
         });
+        if (variables.groupId != null) {
+          queryClient.invalidateQueries({
+            queryKey: StudyNoteQueryKey.byGroupPrefix(
+              variables.studyRoomId,
+              variables.groupId
+            ),
+          });
+        }
         queryClient.invalidateQueries({
           queryKey: studyRoomsQueryKey.detail(variables.studyRoomId),
         });

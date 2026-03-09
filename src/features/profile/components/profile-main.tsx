@@ -6,6 +6,7 @@ import ProfileCard from '@/features/profile/components/profile-card/profile-card
 import TeacherSections from '@/features/profile/components/teacher-sections';
 import { useProfileReport } from '@/features/profile/hooks/use-profile-report';
 import { ColumnLayout } from '@/layout';
+import { trackDedu101ProfileEnter } from '@/shared/lib/gtm/trackers';
 
 export default function ProfileMain({
   basicInfo,
@@ -19,6 +20,17 @@ export default function ProfileMain({
   const teacherReportQuery = useProfileReport(memberId, {
     enabled: role === 'ROLE_TEACHER',
   });
+    
+ useEffect(() => {
+    const targetId = Number(userId);
+    if (!Number.isFinite(targetId) || targetId <= 0) return;
+
+    trackDedu101ProfileEnter(
+      { target_type: 'teacher', target_id: targetId },
+      role
+    );
+  }, [userId, role]);
+
 
   let sections;
 
