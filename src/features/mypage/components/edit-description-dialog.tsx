@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useReducer } from 'react';
+import { useEffect, useReducer, useRef } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -30,6 +30,11 @@ export default function EditHighlightDialog({
   const { value, onChange } = useTextEditor();
   const updateTeacherDescriptionMutation = useUpdateTeacherDescription();
 
+  // 값 변경 비교
+  const initialValue = useRef<typeof value>(null);
+  const isDirty =
+    JSON.stringify(value) !== JSON.stringify(initialValue.current);
+
   useEffect(() => {
     if (!description) return;
 
@@ -38,7 +43,11 @@ export default function EditHighlightDialog({
       description.resolvedDescription.content || ''
     );
 
-    onChange(mergeResolvedContentWithMediaIds(source, resolved));
+    const merged = mergeResolvedContentWithMediaIds(source, resolved);
+    onChange(merged);
+
+    initialValue.current = merged;
+
     // onChange는 useTextEditor 내부의 setValue 래퍼로 안정적이나 useCallback으로 감싸지지 않아 eslint-disable 처리
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [description]);
@@ -83,7 +92,16 @@ export default function EditHighlightDialog({
 
       <Dialog
         isOpen={dialog.status === 'open'}
-        onOpenChange={() => dispatch({ type: 'CLOSE' })}
+        onOpenChange={(open) => {
+          if (
+            !open &&
+            isDirty &&
+            !window.confirm('작성 중인 내용이 사라집니다. 닫으시겠어요?')
+          )
+            return;
+          if (!open && initialValue.current) onChange(initialValue.current);
+          return dispatch({ type: 'CLOSE' });
+        }}
       >
         <Dialog.Content className="flex h-150 max-w-200 flex-col gap-6">
           <Dialog.Header>
@@ -113,7 +131,7 @@ export default function EditHighlightDialog({
               variant="secondary"
               size="small"
               onClick={handleSave}
-              disabled={updateTeacherDescriptionMutation.isPending}
+              disabled={updateTeacherDescriptionMutation.isPending || !isDirty}
             >
               저장
             </Button>
