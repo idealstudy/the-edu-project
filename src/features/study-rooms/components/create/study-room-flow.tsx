@@ -53,24 +53,6 @@ type StudyRoomFlowProps = {
   studyRoomId?: number;
 };
 
-// 리치 에디터 값(객체/JSON 문자열)에서 텍스트만 추출해 변경 여부 비교에 사용한다.
-const toPlainText = (node: unknown): string => {
-  if (typeof node === 'string') {
-    try {
-      return toPlainText(JSON.parse(node));
-    } catch {
-      return node.trim();
-    }
-  }
-
-  const buf: string[] = [];
-  JSON.stringify(node, (k, v) => {
-    if (k === 'text' && typeof v === 'string') buf.push(v);
-    return v;
-  });
-  return buf.join('').trim();
-};
-
 const normalizeModalityToForm = (
   modality: string | undefined
 ): StudyRoomFormValues['modality'] | undefined => {
@@ -85,9 +67,7 @@ const normalizeClassFormToForm = (
   return classForm === 'ONE_ON_ONE' ? 'ONE_ON_ONE' : 'ONE_TO_MANY';
 };
 
-const serializeCharacteristic = (
-  value: StudyRoomFormValues['characteristic']
-) => {
+const serializeCharacteristic = (value: unknown) => {
   const parsed = parseEditorContent(
     typeof value === 'string' ? value : JSON.stringify(value ?? '')
   );
@@ -114,7 +94,7 @@ const buildCharacteristicForEditor = (
  * - profile : 스터디룸이 어떤 수업을 위한 것인지 설명하는 교육 프로필
  **/
 export const fieldsPerStep: Record<Step, FieldPath<StudyRoomFormValues>[]> = {
-  basic: ['name', 'visibility', 'description'],
+  basic: ['name', 'visibility', 'description', 'characteristic'],
   profile: [
     'modality',
     'classForm',
@@ -204,6 +184,13 @@ export default function StudyRoomFlow({
   const session = useMemberStore((s) => s.member);
   const watchedValues = useWatch({ control: methods.control });
   const isMutating = creating || updating;
+  const initialCharacteristic: StudyRoomFormValues['characteristic'] =
+    mode !== 'edit' || !data
+      ? parseEditorContent('')
+      : buildCharacteristicForEditor(
+          data.characteristic,
+          data.resolvedContent?.content ?? ''
+        );
 
   // 제출 버튼 활성화/비활성화 관련
   const canSubmitEdit =
@@ -211,8 +198,8 @@ export default function StudyRoomFlow({
       ? false
       : (watchedValues.name ?? '') !== (data.name ?? '') ||
         (watchedValues.description ?? '') !== (data.description ?? '') ||
-        toPlainText(watchedValues.characteristic) !==
-          toPlainText(data.characteristic) ||
+        serializeCharacteristic(watchedValues.characteristic) !==
+          serializeCharacteristic(initialCharacteristic) ||
         watchedValues.visibility !== data.visibility ||
         normalizeModalityToForm(watchedValues.modality) !==
           normalizeModalityToForm(data.modality) ||

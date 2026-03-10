@@ -11,6 +11,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 import { Select } from '@/shared/components/ui/select';
+import { toPlainText } from '@/shared/lib';
 
 export default function StepOne({ onNext, disabled }: CreateStepForm) {
   const {
@@ -20,6 +21,8 @@ export default function StepOne({ onNext, disabled }: CreateStepForm) {
     formState: { errors },
   } = useFormContext<StudyRoomFormValues>();
   const description = watch('description') ?? '';
+  const characteristic = watch('characteristic') ?? '';
+  const characteristicLength = toPlainText(characteristic).length;
 
   return (
     <>
@@ -63,39 +66,67 @@ export default function StepOne({ onNext, disabled }: CreateStepForm) {
         <Form.Control>
           <Textarea
             placeholder="(예: 내신 성적 향상을 목표로 과목별 학습과 문제풀이를 함께 진행하는 고등학생 전용 스터디룸입니다. 체계적인 관리로 꾸준한 학습 습관을 만듭니다.)"
-            className="border-line-line2 h-full w-full resize-none"
+            className="border-line-line2 h-full w-full resize-none rounded-sm"
             maxLength={200}
             {...register('description')}
             required
           />
         </Form.Control>
 
-        <div className="flex justify-between">
-          <Form.ErrorMessage>{errors.description?.message}</Form.ErrorMessage>
-          <p className="text-gray-scale-gray-60 mt-2 text-sm">
+        {errors.description?.message ? (
+          <div className="flex justify-between">
+            <Form.ErrorMessage>{errors.description?.message}</Form.ErrorMessage>
+            <p className="text-gray-scale-gray-60 mt-2 text-sm">
+              {description.length}/200
+            </p>
+          </div>
+        ) : (
+          <p className="text-gray-scale-gray-60 mt-2 text-right text-sm">
             {description.length}/200
           </p>
-        </div>
+        )}
       </Form.Item>
 
-      <Form.Item className="mt-8">
+      <Form.Item
+        className="mt-8"
+        error={!!errors.characteristic}
+      >
         <Form.Label className="font-headline1-heading text-gray-11">
           스터디룸의 특징을 소개해주세요
         </Form.Label>
         <div className="w-full">
-          <Controller
-            name="characteristic"
-            control={control}
-            render={({ field }) => (
-              <TextEditor
-                value={field.value ?? parseEditorContent('')}
-                onChange={field.onChange}
-                placeholder={`이미지나 링크를 활용해 학습 방식, 분위기, 성과를 함께 보여주면 더 효과적이에요!\n (예: 커리큘럼 이미지, 실제 후기, 성적 향상 사례 링크 등)`}
-              />
-            )}
-          />
+          <Form.Control>
+            <Controller
+              name="characteristic"
+              control={control}
+              render={({ field }) => (
+                <TextEditor
+                  value={field.value ?? parseEditorContent('')}
+                  onChange={field.onChange}
+                  placeholder={`이미지나 링크를 활용해 학습 방식, 분위기, 성과를 함께 보여주면 더 효과적이에요!\n (예: 커리큘럼 이미지, 실제 후기, 성적 향상 사례 링크 등)`}
+                />
+              )}
+            />
+          </Form.Control>
+          {errors.characteristic?.message ? (
+            <div className="flex justify-between">
+              <Form.ErrorMessage>
+                {typeof errors.characteristic?.message === 'string'
+                  ? errors.characteristic.message
+                  : undefined}
+              </Form.ErrorMessage>
+              <p className="text-gray-scale-gray-60 mt-2 text-sm">
+                {characteristicLength}/200
+              </p>
+            </div>
+          ) : (
+            <p className="text-gray-scale-gray-60 mt-2 text-right text-sm">
+              {characteristicLength}/200
+            </p>
+          )}
         </div>
       </Form.Item>
+
       <Form.Item className="mt-8">
         <Form.Label className="font-headline1-heading text-gray-11">
           스터디룸의 공개 범위
