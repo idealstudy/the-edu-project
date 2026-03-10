@@ -124,9 +124,8 @@ export const StudyroomPreviewContents = ({
       { threshold: 0.5 }
     );
 
-    sectionElements.forEach(({ key, element }) => {
+    sectionElements.forEach(({ element }) => {
       if (!element) return;
-      element.setAttribute('data-track-section', key);
       observer.observe(element);
     });
 
@@ -184,6 +183,7 @@ export const StudyroomPreviewContents = ({
   return (
     <section className="flex w-full flex-col gap-6">
       <article
+        data-track-section="intro"
         ref={introSectionRef}
         className="bg-system-background-alt flex flex-col gap-4 rounded-xl p-6"
       >
@@ -256,6 +256,7 @@ export const StudyroomPreviewContents = ({
       )}
 
       <article
+        data-track-section="curriculum"
         ref={curriculumSectionRef}
         className="bg-system-background-alt flex flex-col gap-1 rounded-xl p-6"
       >
@@ -291,6 +292,7 @@ export const StudyroomPreviewContents = ({
       </article>
 
       <article
+        data-track-section="review"
         ref={reviewSectionRef}
         className="bg-system-background-alt flex flex-col gap-4 rounded-xl p-6"
       >
