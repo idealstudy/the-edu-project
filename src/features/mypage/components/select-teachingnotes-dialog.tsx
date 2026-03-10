@@ -29,9 +29,9 @@ export default function SelectTeachingnotesDialog() {
 
   // TODO 페이지네이션 또는 무한 스크롤 추가 (현재 고정)
   const { data: allNotesData } = useTeacherTeachingNotes({
-    page: 1,
+    page: 0,
     size: 30,
-    sortKey: 'LATEST_EDITED',
+    sortKey: 'TAUGHT_AT_ASC',
   });
 
   const allNotes = allNotesData?.content;
@@ -129,7 +129,7 @@ export default function SelectTeachingnotesDialog() {
             <div>
               {/* 상단: 대표 수업노트 */}
               {representativeNotes && isRepresentative && (
-                <div className="sticky top-0 z-10 mb-2 bg-white">
+                <div className="sticky top-0 mb-2 bg-white">
                   <Accordion
                     type="single"
                     collapsible
@@ -172,8 +172,8 @@ export default function SelectTeachingnotesDialog() {
                       variant="selectable"
                       key={note.id}
                       teachingnote={note}
-                      checked={false}
-                      onClick={() => toggleNote(note.id, false)}
+                      checked={note.representative}
+                      onClick={() => toggleNote(note.id, note.representative)}
                       isLoading={loadingNoteId === note.id}
                     />
                   ))}
