@@ -1,5 +1,7 @@
 'use client';
 
+import { useMemo } from 'react';
+
 import AddCareerDialog from '@/features/mypage/components/add-career-dialog';
 import EditHighlightDialog from '@/features/mypage/components/edit-description-dialog';
 import SelectTeachingnotesDialog from '@/features/mypage/components/select-teachingnotes-dialog';
@@ -16,6 +18,10 @@ import DescriptionSection from '@/features/profile/components/teacher/descriptio
 import ReviewSection from '@/features/profile/components/teacher/review-section';
 import StudyroomSection from '@/features/profile/components/teacher/studyroom-section';
 import StudynotesSection from '@/features/profile/components/teacher/teachingnotes-section';
+import {
+  hasMeaningfulEditorContent,
+  parseEditorContent,
+} from '@/shared/components/editor';
 import { useMemberStore } from '@/store';
 
 export default function TeacherSections() {
@@ -73,6 +79,14 @@ export default function TeacherSections() {
     refetch: refetchCareers,
   } = useTeacherCareers();
 
+  const hasMeaningfulDescription = useMemo(
+    () =>
+      hasMeaningfulEditorContent(
+        parseEditorContent(description?.resolvedDescription.content ?? '')
+      ),
+    [description?.resolvedDescription.content]
+  );
+
   // teacherId
   const teacherId = useMemberStore((state) => state.member?.id);
 
@@ -86,7 +100,7 @@ export default function TeacherSections() {
         isError={isDescriptionError}
         onRetry={refetchDescription}
       >
-        {description?.resolvedDescription.content ? (
+        {description && hasMeaningfulDescription ? (
           <DescriptionSection description={description} />
         ) : (
           <p className="text-text-sub2 my-4 text-center">

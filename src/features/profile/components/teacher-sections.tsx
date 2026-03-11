@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import SectionContainer from '@/features/profile/components/section-container';
 import ActivitySummarySection from '@/features/profile/components/teacher/activity-summary-section';
 import CareerSection from '@/features/profile/components/teacher/career-section';
@@ -11,6 +13,10 @@ import { useProfileReport } from '@/features/profile/hooks/use-profile-report';
 import { useProfileReviews } from '@/features/profile/hooks/use-profile-reviews';
 import { useProfileStudyRooms } from '@/features/profile/hooks/use-profile-study-rooms';
 import { useProfileTeachingNotes } from '@/features/profile/hooks/use-profile-teaching-notes';
+import {
+  hasMeaningfulEditorContent,
+  parseEditorContent,
+} from '@/shared/components/editor';
 
 export default function TeacherSections({ teacherId }: { teacherId: number }) {
   // 특징
@@ -20,6 +26,14 @@ export default function TeacherSections({ teacherId }: { teacherId: number }) {
     isError: isDescriptionError,
     refetch: refetchDescription,
   } = useProfileDescription(teacherId);
+
+  const hasMeaningfulDescription = useMemo(
+    () =>
+      hasMeaningfulEditorContent(
+        parseEditorContent(description?.resolvedDescription.content ?? '')
+      ),
+    [description?.resolvedDescription.content]
+  );
 
   // 활동 통계
   const {
@@ -69,7 +83,7 @@ export default function TeacherSections({ teacherId }: { teacherId: number }) {
         isError={isDescriptionError}
         onRetry={refetchDescription}
       >
-        {description?.resolvedDescription.content ? (
+        {description && hasMeaningfulDescription ? (
           <DescriptionSection description={description} />
         ) : (
           <p className="text-text-sub2 my-4 text-center">
