@@ -5,7 +5,11 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-import { TextViewer, parseEditorContent } from '@/shared/components/editor';
+import {
+  TextViewer,
+  hasMeaningfulEditorContent,
+  parseEditorContent,
+} from '@/shared/components/editor';
 import { MiniSpinner } from '@/shared/components/loading';
 import { cn, getRelativeTimeString } from '@/shared/lib';
 import { trackDedu101StudyroomInfoView } from '@/shared/lib/gtm/trackers';
@@ -57,7 +61,10 @@ export const StudyroomPreviewContents = ({
     [characteristicContent]
   );
 
-  const hasCharacteristic = Boolean(characteristicContent.trim());
+  const hasCharacteristic = useMemo(
+    () => hasMeaningfulEditorContent(parsedContent),
+    [parsedContent]
+  );
 
   useEffect(() => {
     if (!isPending) {

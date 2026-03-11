@@ -312,6 +312,34 @@ export const parseEditorContent = (content: string): EditorContent => {
   }
 };
 
+const CONTENTFUL_NODE_TYPES = new Set([
+  'image',
+  'fileAttachment',
+  'linkPreview',
+  'embed',
+  'horizontalRule',
+]);
+
+export const hasMeaningfulEditorContent = (
+  content: EditorContent | undefined | null
+): boolean => {
+  if (!content) return false;
+
+  if (typeof content.text === 'string' && content.text.trim()) {
+    return true;
+  }
+
+  if (content.type && CONTENTFUL_NODE_TYPES.has(content.type)) {
+    return true;
+  }
+
+  if (!Array.isArray(content.content)) {
+    return false;
+  }
+
+  return content.content.some((child) => hasMeaningfulEditorContent(child));
+};
+
 /**
  * 에디터 content를 저장용으로 변환합니다.
  * - 이미지 노드의 src를 media://{mediaId} 형식으로 변환
