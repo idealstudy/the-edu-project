@@ -52,9 +52,13 @@ export const createTeacherStudyRoomHooks = (
       mutationFn: (payload: StudyRoomFormValues) => api.create(payload),
       onSuccess: () => {
         void qc.invalidateQueries({ queryKey: StudyRoomsQueryKey.teacherList });
+
         void qc.invalidateQueries({
           queryKey: teacherKeys.dashboard.studyRoomList(),
         });
+        
+        // 마이페이지 캐시 무효화
+        void qc.invalidateQueries({ queryKey: teacherKeys.all });
       },
     });
   };
