@@ -3,6 +3,7 @@ import { StudyRoomsGroupQueryKey } from '@/entities/study-note-group/infrastruct
 import { teacherKeys } from '@/entities/teacher';
 import type { StudyNote } from '@/features/study-notes/model';
 import { StudyRoomDetail, StudyRoomsQueryKey } from '@/features/study-rooms';
+import type { StudyRoomSubmitValues } from '@/features/study-rooms/model';
 import type { PaginationData } from '@/types/http';
 import { useMutation } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';
@@ -221,8 +222,10 @@ export const useUpdateStudyRoom = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (args: { studyRoomId: number; others: StudyRoomDetail }) =>
-      updateStudyRoom(args),
+    mutationFn: (args: {
+      studyRoomId: number;
+      others: StudyRoomSubmitValues;
+    }) => updateStudyRoom(args),
 
     onMutate: async ({ studyRoomId }) => {
       // 이전 데이터 백업
