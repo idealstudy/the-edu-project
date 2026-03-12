@@ -15,6 +15,13 @@ export interface StudyNoteDetail {
     content: string;
   };
   taughtAt: string;
-  visibility: 'PUBLIC' | 'PRIVATE';
+  visibility:
+    | 'PUBLIC'
+    | 'PRIVATE'
+    | 'TEACHER_ONLY'
+    | 'SPECIFIC_STUDENTS_ONLY'
+    | 'SPECIFIC_STUDENTS_AND_PARENTS'
+    | 'STUDY_ROOM_STUDENTS_ONLY'
+    | 'STUDY_ROOM_STUDENTS_AND_PARENTS';
   studentInfos: StudentInfo[];
 }
