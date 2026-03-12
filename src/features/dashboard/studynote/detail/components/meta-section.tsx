@@ -16,7 +16,7 @@ import {
 } from '@/shared/components/dialog';
 import { useRole } from '@/shared/hooks';
 
-const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
+export const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
   const router = useRouter();
 
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
@@ -108,6 +108,18 @@ const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
           )}
         </div>
         <h1 className="text-text-main font-headline1-heading">{data.title}</h1>
+
+        {/* 본 인원 수 체크 */}
+        <div className="flex items-center justify-end gap-1 text-center">
+          <Image
+            src="/studynotes/eye.png"
+            alt="eye"
+            width={24}
+            height={24}
+          />
+          <p className="font-label-normal text-gray-7">5명이 봤어요</p>
+        </div>
+
         <hr className="border-line-line1 border" />
         <div className="space-y-4">
           {/* 공개범위 */}
@@ -175,5 +187,3 @@ const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
     </>
   );
 };
-
-export default StudyNoteDetailMetaSection;
