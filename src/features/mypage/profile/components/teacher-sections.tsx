@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 
 import { useTeacherReport } from '@/features/mypage/common/hooks/teacher/use-report';
 import AddCareerDialog from '@/features/mypage/profile/components/add-career-dialog';
+import { CareerDropdown } from '@/features/mypage/profile/components/career-dropdown';
 import EditHighlightDialog from '@/features/mypage/profile/components/edit-description-dialog';
 import SelectTeachingnotesDialog from '@/features/mypage/profile/components/select-teachingnotes-dialog';
 import { useTeacherCareers } from '@/features/mypage/profile/hooks/teacher/use-careers';
@@ -144,7 +145,7 @@ export default function TeacherSections() {
         {careers && careers.length > 0 ? (
           <CareerSection
             careers={careers}
-            isOwner
+            renderAction={(career) => <CareerDropdown career={career} />}
           />
         ) : (
           <p className="text-text-sub2 my-4 text-center">
