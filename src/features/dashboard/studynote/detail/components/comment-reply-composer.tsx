@@ -2,34 +2,36 @@
 
 import Image from 'next/image';
 
-import { ColumnLayout } from '@/layout';
-import {
-  TextEditor,
-  hasMeaningfulEditorContent,
-  useTextEditor,
-} from '@/shared/components/editor';
+import { TextEditor } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui';
 import { useRole } from '@/shared/hooks';
+import { JSONContent } from '@tiptap/react';
 
-import { CommentStudentAnswer } from './comment-student-answer';
-import { CommentTeacherAnswer } from './comment-teacher-answer';
+interface CommentReplyComposerProps {
+  value: JSONContent;
+  isSubmitDisabled: boolean;
+  onChange: (value: JSONContent) => void;
+  onCancel: () => void;
+}
 
-export const StudyNoteDetailCommentSection = () => {
-  const textEditor = useTextEditor();
-  const isSubmitDisabled = !hasMeaningfulEditorContent(textEditor.value);
-
+export const CommentReplyComposer = ({
+  value,
+  isSubmitDisabled,
+  onChange,
+  onCancel,
+}: CommentReplyComposerProps) => {
   const { role } = useRole();
 
   return (
-    <ColumnLayout.Bottom className="space-y-4">
-      <section>
-        <div className="flex items-center gap-1 text-center">
-          <p className="font-body1-heading text-gray-12">댓글</p>
-          <p className="font-body1-heading text-orange-7">4</p>
-        </div>
-      </section>
-
-      <section>
+    <section>
+      <div className="flex items-start gap-3">
+        <Image
+          src="/studynotes/teacher_answer.png"
+          alt="답변"
+          width={32}
+          height={32}
+          className="mt-4 shrink-0"
+        />
         <div className="border-gray-3 w-full rounded-sm border bg-white p-6">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-2.5">
@@ -56,30 +58,35 @@ export const StudyNoteDetailCommentSection = () => {
                 <p className="font-body2-normal text-gray-12">선생님</p>
               )}
             </div>
-            <Button
-              className="font-label-normal disabled:font-label-normal h-[35px] shrink-0 px-6 py-2"
-              disabled={isSubmitDisabled}
-            >
-              댓글 남기기
-            </Button>
+            <div className="flex shrink-0 items-center gap-2">
+              <Button
+                variant="outlined"
+                onClick={onCancel}
+                className="font-label-normal disabled:font-label-normal h-[35px] shrink-0 px-6 py-2"
+              >
+                취소
+              </Button>
+              <Button
+                disabled={isSubmitDisabled}
+                className="font-label-normal disabled:font-label-normal h-[35px] shrink-0 px-6 py-2"
+              >
+                답장 남기기
+              </Button>
+            </div>
           </div>
 
           <div className="mt-3">
             <TextEditor
-              value={textEditor.value}
-              onChange={textEditor.onChange}
-              placeholder="댓글 내용을 입력해 주세요."
+              value={value}
+              onChange={onChange}
+              placeholder="답장 내용을 입력해 주세요."
               targetType="TEACHING_NOTE"
               minHeight="120px"
               maxHeight="240px"
             />
           </div>
         </div>
-      </section>
-
-      <CommentStudentAnswer />
-
-      <CommentTeacherAnswer />
-    </ColumnLayout.Bottom>
+      </div>
+    </section>
   );
 };
