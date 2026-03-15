@@ -10,8 +10,8 @@ import {
 import { Button } from '@/shared/components/ui';
 import { JSONContent } from '@tiptap/react';
 
+import { useReadPeoplePopover } from '../hooks/use-read-people-popover';
 import { CommantReadPeoplle } from './comment-read-people';
-import { useReadPeoplePopover } from './use-read-people-popover';
 
 interface CommentAnswerCardContentProps {
   authorName: string;

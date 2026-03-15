@@ -1,3 +1,5 @@
+'use client';
+
 import { CommentAnswerCard } from './comment-answer-card';
 
 export const CommentTeacherAnswer = () => {

@@ -2,6 +2,8 @@
 
 import Image from 'next/image';
 
+import { CommentStudentAnswer } from '@/features/study-note-comment/components/comment-student-answer';
+import { CommentTeacherAnswer } from '@/features/study-note-comment/components/comment-teacher-answer';
 import { ColumnLayout } from '@/layout';
 import {
   TextEditor,
@@ -10,9 +12,6 @@ import {
 } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui';
 import { useRole } from '@/shared/hooks';
-
-import { CommentStudentAnswer } from './comment-student-answer';
-import { CommentTeacherAnswer } from './comment-teacher-answer';
 
 export const StudyNoteDetailCommentSection = () => {
   const textEditor = useTextEditor();

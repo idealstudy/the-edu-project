@@ -1,3 +1,5 @@
+'use client';
+
 // 읽음 여부 확인
 export const CommantReadPeoplle = () => {
   return (
