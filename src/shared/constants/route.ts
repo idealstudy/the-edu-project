@@ -18,7 +18,7 @@ const CORE = {
 } as const;
 
 /* ─────────────────────────────────────────────────────
- * PUBLIC
+ * DASHBOARD
  * ────────────────────────────────────────────────────*/
 const DASHBOARD = {
   INDEX: '/dashboard',
@@ -74,11 +74,22 @@ const PROFILE = {
 } as const;
 
 /* ─────────────────────────────────────────────────────
+ * COMMUNITY
+ * ────────────────────────────────────────────────────*/
+const COMMUNITY = {
+  COLUMN: {
+    LIST: '/community/column',
+    DETAIL: (postId: number) => `/community/${postId}`,
+  },
+} as const;
+
+/* ─────────────────────────────────────────────────────
  * Export - PUBLIC
  * ────────────────────────────────────────────────────*/
 export const PUBLIC = {
   CORE,
   PROFILE,
+  COMMUNITY,
 } as const;
 
 /* ─────────────────────────────────────────────────────
