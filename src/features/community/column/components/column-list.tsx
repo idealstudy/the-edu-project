@@ -5,6 +5,7 @@ import { useTransition } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
+import ColumnCard from '@/features/community/column/components/column-card';
 import { Pagination } from '@/shared/components/ui';
 
 type SortOption = 'LATEST' | 'POPULAR';
@@ -43,8 +44,20 @@ export default function ColumnList() {
 
   return (
     <>
-      <div className="grid [grid-template-columns:repeat(auto-fit,minmax(280px,1fr))] gap-6">
+      <div className="tablet:grid-cols-2 grid gap-6">
         {sort}
+        <ColumnCard />
+        <ColumnCard />
+        <ColumnCard />
+        <ColumnCard />
+        <ColumnCard />
+        <ColumnCard />
+        <ColumnCard />
+        <ColumnCard />
+        <ColumnCard />
+        <ColumnCard />
+        <ColumnCard />
+        <ColumnCard />
       </div>
       <Pagination
         className="mt-10 justify-center"

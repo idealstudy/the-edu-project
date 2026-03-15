@@ -86,9 +86,7 @@ export const Header = () => {
       <div className="mx-auto flex w-full items-center justify-between">
         <div className="flex items-center gap-2">
           <Link
-            href={
-              session === null ? PUBLIC.CORE.INDEX : PRIVATE.DASHBOARD.INDEX
-            }
+            href={PUBLIC.CORE.INDEX}
             onClick={() => {
               // GNB 로고 클릭 이벤트 전송
               trackGnbLogoClick(session?.role ?? null);
@@ -127,6 +125,18 @@ export const Header = () => {
             className="hover:text-orange-scale-orange-50 max-desktop:hidden ml-4 text-sm font-medium text-white transition-colors"
           >
             디에듀 101 목록
+          </Link>
+          <span
+            aria-hidden
+            className="max-desktop:hidden text-white"
+          >
+            |
+          </span>
+          <Link
+            href={PUBLIC.COMMUNITY.COLUMN.LIST}
+            className="hover:text-orange-scale-orange-50 max-desktop:hidden text-sm font-medium text-white transition-colors"
+          >
+            게시판
           </Link>
         </div>
         {session && (
