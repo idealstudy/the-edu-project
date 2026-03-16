@@ -57,6 +57,6 @@ export const authService = {
     return api.private.put('/member/members/profile', body);
   },
   checkPhoneNumberDuplicate: async (params: CheckPhoneNumberDuplicateQuery) => {
-    return api.public.get('/public/members', { params });
+    return api.public.get('/public/phone-number/check-duplicate', { params });
   },
 };

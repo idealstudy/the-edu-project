@@ -32,5 +32,5 @@ export type UpdateProfileBody = {
 };
 
 export type CheckPhoneNumberDuplicateQuery = {
-  phone_number: string;
+  phoneNumber: string;
 };

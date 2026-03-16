@@ -149,10 +149,11 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
     if (isCheckingPhoneNumberDuplicate) return;
 
     checkPhoneNumberDuplicate(
-      { phone_number: form.getValues('phoneNumber').replace(/-/g, '') },
+      { phoneNumber: form.getValues('phoneNumber').replace(/-/g, '') },
       {
         onSuccess: () => {
           setIsPhoneNumberChecked(true);
+          form.clearErrors('phoneNumber');
         },
         onError: (error) => {
           if (
