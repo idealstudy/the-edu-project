@@ -1,6 +1,7 @@
 import { domain } from '@/entities/student/core';
 import {
   FrontendStudentBasicInfo,
+  HomeworkListQuery,
   StudentBasicInfoDTO,
   UpdateStudentBasicInfoPayload,
 } from '@/entities/student/types';
@@ -13,7 +14,7 @@ import {
   DashboardQnASortKey,
   DashboardTeachingNotesSortKey,
 } from '../types';
-import { dto, payload } from './student.dto';
+import { dto, payload, query } from './student.dto';
 
 /* ─────────────────────────────────────────────────────
  * [Read] 마이페이지 - 학생 기본 정보 조회
@@ -55,11 +56,22 @@ const updateBasicInfo = async (
 };
 
 /* ─────────────────────────────────────────────────────
- * [GET] 마이페이지 - 학생 통계 조회
+ * [Read] 마이페이지 - 학생 통계 조회
  * ────────────────────────────────────────────────────*/
 const getMypageStudentReport = async () => {
   const response = await api.private.get(`/student/me/report`);
   return unwrapEnvelope(response, dto.profile.report);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Read] 마이페이지 - 학생 숙제 조회
+ * ────────────────────────────────────────────────────*/
+const getMypageStudentHomeworkList = async (params: HomeworkListQuery) => {
+  const validated = query.profile.homeworkList.parse(params);
+  const response = await api.private.get(`/student/me/homeworks`, {
+    params: validated,
+  });
+  return unwrapEnvelope(response, dto.profile.homeworkList);
 };
 
 /* ─────────────────────────────────────────────────────
@@ -153,6 +165,7 @@ export const repository = {
       updateBasicInfo,
     },
     getReport: getMypageStudentReport,
+    getHomeworkList: getMypageStudentHomeworkList,
   },
   dashboard: {
     getReport: getStudentDashboardReport,

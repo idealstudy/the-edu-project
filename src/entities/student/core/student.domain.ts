@@ -24,6 +24,30 @@ const BasicInfoDomainSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 프로필 - 학생 과제 Domain 스키마
+ * ────────────────────────────────────────────────────*/
+const StudentProfileHomeworkListItemDomainSchema = z.object({
+  studyRoomId: z.number(),
+  studyRoomName: z.string(),
+  id: z.number(),
+  title: z.string(),
+  modDate: z.string(),
+  deadline: z.string(),
+  deadlineLabel: z.enum(['UPCOMING', 'TODAY', 'OVERDUE']),
+  status: z.enum(['NOT_SUBMIT', 'SUBMIT', 'LATE_SUBMIT']),
+  submittedAt: z.string().nullable(),
+  dday: z.number(),
+});
+
+const StudentProfileHomeworkListDomainSchema = z.object({
+  pageNumber: z.number(),
+  size: z.number(),
+  totalElements: z.number(),
+  totalPages: z.number(),
+  content: z.array(StudentProfileHomeworkListItemDomainSchema),
+});
+
+/* ─────────────────────────────────────────────────────
  * 프로필 - 학생 통계 Domain 스키마
  * ────────────────────────────────────────────────────*/
 const StudentProfileReportDomainSchema = z.object({
@@ -41,6 +65,8 @@ export const domain = {
   profile: {
     basicInfo: BasicInfoDomainSchema,
     report: StudentProfileReportDomainSchema,
+    homeworkListItem: StudentProfileHomeworkListItemDomainSchema,
+    homeworkList: StudentProfileHomeworkListDomainSchema,
   },
   dashboard: {
     report: StudentDashboardReportShape,

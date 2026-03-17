@@ -1,5 +1,9 @@
 import { domain } from '@/entities/student/core/student.domain';
-import { dto, payload } from '@/entities/student/infrastructure/student.dto';
+import {
+  dto,
+  payload,
+  query,
+} from '@/entities/student/infrastructure/student.dto';
 import { z } from 'zod';
 
 export type DashboardTeachingNotesSortKey =
@@ -21,6 +25,7 @@ export type DashboardHomeworkSortKey =
 // 프로필 DTO
 export type StudentBasicInfoDTO = z.infer<typeof dto.profile.basicInfo>;
 export type StudentReportDTO = z.infer<typeof dto.profile.report>;
+export type StudentHomeworkListDTO = z.infer<typeof dto.profile.homeworkList>;
 
 // 대시보드 DTO
 export type StudentDashboardReportDTO = z.infer<typeof dto.dashboard.report>;
@@ -49,6 +54,12 @@ export type StudentDashboardHomeworkListItemDTO =
  * ────────────────────────────────────────────────────*/
 export type FrontendStudentBasicInfo = z.infer<typeof domain.profile.basicInfo>;
 export type FrontendStudentReport = z.infer<typeof domain.profile.report>;
+export type FrontendStudentHomeworkListItem = z.infer<
+  typeof domain.profile.homeworkListItem
+>;
+export type FrontendStudentHomeworkList = z.infer<
+  typeof domain.profile.homeworkList
+>;
 
 /* ─────────────────────────────────────────────────────
  * Payload
@@ -56,3 +67,8 @@ export type FrontendStudentReport = z.infer<typeof domain.profile.report>;
 export type UpdateStudentBasicInfoPayload = z.infer<
   typeof payload.updateBasicInfo
 >;
+
+/* ─────────────────────────────────────────────────────
+ * Query
+ * ────────────────────────────────────────────────────*/
+export type HomeworkListQuery = z.infer<typeof query.profile.homeworkList>;

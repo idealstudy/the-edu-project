@@ -22,6 +22,30 @@ const StudentProfileReportDtoSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 프로필 - 학생 과제 조회 DTO
+ * ──────────────────────────────────────────────────── */
+const StudentProfileHomeworkListItemDtoSchema = z.object({
+  studyRoomId: z.number(),
+  studyRoomName: z.string(),
+  id: z.number(),
+  title: z.string(),
+  modDate: z.string(),
+  deadline: z.string(),
+  deadlineLabel: z.enum(['UPCOMING', 'TODAY', 'OVERDUE']),
+  status: z.enum(['NOT_SUBMIT', 'SUBMIT', 'LATE_SUBMIT']),
+  submittedAt: z.string().nullable(),
+  dday: z.number(),
+});
+
+const StudentProfileHomeworkListDtoSchema = z.object({
+  pageNumber: z.number(),
+  size: z.number(),
+  totalElements: z.number(),
+  totalPages: z.number(),
+  content: z.array(StudentProfileHomeworkListItemDtoSchema),
+});
+
+/* ─────────────────────────────────────────────────────
  * 학생 대시보드 활동 통계 조회
  * ────────────────────────────────────────────────────*/
 const StudentDashboardReportDtoSchema = z.object({
@@ -114,12 +138,29 @@ const UpdateBasicInfoPayloadSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 프로필 - 학생 과제 조회 Query
+ * ────────────────────────────────────────────────────*/
+const StudentHomeworkListQuerySchema = z.object({
+  page: z.number(),
+  size: z.number(),
+  sortKey: z.enum([
+    'LATEST',
+    'LATEST_EDITED',
+    'OLDEST_EDITED',
+    'DEADLINE_IMMINENT',
+    'DEADLINE_RECENT',
+  ]),
+  keyword: z.string().optional(),
+});
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const dto = {
   profile: {
     basicInfo: BasicInfoDtoSchema,
     report: StudentProfileReportDtoSchema,
+    homeworkList: StudentProfileHomeworkListDtoSchema,
   },
   dashboard: {
     report: StudentDashboardReportDtoSchema,
@@ -132,4 +173,10 @@ export const dto = {
 
 export const payload = {
   updateBasicInfo: UpdateBasicInfoPayloadSchema,
+};
+
+export const query = {
+  profile: {
+    homeworkList: StudentHomeworkListQuerySchema,
+  },
 };

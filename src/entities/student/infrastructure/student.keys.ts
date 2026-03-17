@@ -1,3 +1,5 @@
+import { HomeworkListQuery } from '@/entities/student/types';
+
 export const studentKeys = {
   all: ['student'] as const,
 
@@ -6,6 +8,8 @@ export const studentKeys = {
     all: () => [...studentKeys.all, 'mypage'] as const,
     basicInfo: () => [...studentKeys.mypage.all(), 'basicInfo'] as const,
     report: () => [...studentKeys.mypage.all(), 'report'] as const,
+    homework: (params?: HomeworkListQuery) =>
+      [...studentKeys.mypage.all(), 'homework', params] as const,
   },
 
   // 대시보드
