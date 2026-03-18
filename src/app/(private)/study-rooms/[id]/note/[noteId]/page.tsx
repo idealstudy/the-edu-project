@@ -22,7 +22,7 @@ export default async function StudyNoteDetailPage({ params }: Props) {
           <StudyNoteDetailContentsSection id={resolvedParams.noteId} />
         </ColumnLayout>
         <ColumnLayout>
-          <StudyNoteDetailCommentSection />
+          <StudyNoteDetailCommentSection id={resolvedParams.noteId} />
         </ColumnLayout>
       </div>
     </>

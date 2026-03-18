@@ -5,12 +5,10 @@ import { useState } from 'react';
 import Image from 'next/image';
 
 import { ConfirmDialog, type DialogAction } from '@/shared/components/dialog';
-import {
-  hasMeaningfulEditorContent,
-  parseEditorContent,
-} from '@/shared/components/editor';
+import { parseEditorContent } from '@/shared/components/editor';
 import { JSONContent } from '@tiptap/react';
 
+import { useDeleteComment } from '../hooks/use-comment';
 import { CommentAnswerCardContent } from './comment-answer-card-content';
 import { CommentAnswerCardHeader } from './comment-answer-card-header';
 import { CommentReplyComposer } from './comment-reply-composer';
@@ -23,6 +21,10 @@ interface CommentAnswerCardProps {
   showReplyArrow?: boolean;
   showReaction?: boolean;
   className?: string;
+  teachingNoteId: number;
+  commentId: number;
+  expiredAt: string;
+  readCount: number;
 }
 
 export const CommentCard = ({
@@ -33,6 +35,10 @@ export const CommentCard = ({
   showReplyArrow = false,
   showReaction = true,
   className,
+  teachingNoteId,
+  commentId,
+  expiredAt,
+  readCount,
 }: CommentAnswerCardProps) => {
   const [selectedEmojis, setSelectedEmojis] = useState<Record<string, number>>(
     {}
@@ -47,7 +53,8 @@ export const CommentCard = ({
   const [replyContent, setReplyContent] = useState<JSONContent>(() =>
     parseEditorContent('')
   );
-  const isReplySubmitDisabled = !hasMeaningfulEditorContent(replyContent);
+
+  const { mutate, isPending } = useDeleteComment();
 
   const handleEmoji = (emoji: string) => {
     setSelectedEmojis((prev) => {
@@ -61,7 +68,6 @@ export const CommentCard = ({
     setIsEmojiPickerOpen(false);
   };
 
-  // 답장 남기기
   const onReply = () => {
     setIsReplying(true);
   };
@@ -71,7 +77,6 @@ export const CommentCard = ({
     setIsReplying(false);
   };
 
-  // 수정하기
   const onEdit = () => {
     setEditContent(initialEditContent);
     setIsEditing(true);
@@ -82,10 +87,19 @@ export const CommentCard = ({
     setIsEditing(false);
   };
 
-  // 삭제하기
   const onDelete = () => {
-    alert('삭제');
-    setIsDialogOpen(false);
+    mutate(
+      {
+        teachingNoteId,
+        commentId,
+      },
+      {
+        onSuccess: () => {
+          setIsDialogOpen(false);
+        },
+      }
+      // TODO: 에러처리
+    );
   };
 
   const handleDialogDispatch = (action: DialogAction) => {
@@ -131,6 +145,10 @@ export const CommentCard = ({
         content={content}
         isEditing={isEditing}
         editContent={editContent}
+        teachingNoteId={teachingNoteId}
+        commentId={commentId}
+        expiredAt={expiredAt}
+        readCount={readCount}
         onEditContentChange={setEditContent}
         onCancel={handleCancel}
       />
@@ -144,7 +162,7 @@ export const CommentCard = ({
       <div className="flex items-start gap-3">
         <Image
           src="/studynotes/teacher_answer.png"
-          alt="답변"
+          alt="reply-arrow"
           width={32}
           height={32}
           className="mt-4 shrink-0"
@@ -160,7 +178,8 @@ export const CommentCard = ({
       {isReplying ? (
         <CommentReplyComposer
           value={replyContent}
-          isSubmitDisabled={isReplySubmitDisabled}
+          teachingNoteId={teachingNoteId}
+          parentCommentId={commentId}
           onChange={setReplyContent}
           onCancel={handleReplyCancel}
         />
@@ -170,6 +189,7 @@ export const CommentCard = ({
         open={isDialogOpen}
         dispatch={handleDialogDispatch}
         onConfirm={onDelete}
+        pending={isPending}
         emphasis="none"
         title="삭제하시겠습니까?"
         description="삭제된 댓글은 복구할 수 없습니다."

@@ -10,6 +10,11 @@ import { useStudyNoteDetailQuery } from '@/features/dashboard/studynote/detail/s
 import { useRemoveStudyNote } from '@/features/study-notes/hooks';
 import { ColumnLayout } from '@/layout/column-layout';
 import {
+  CheckRead,
+  ReadPeopleList,
+  useReadPeoplePopover,
+} from '@/shared/components/check-read';
+import {
   StudyroomConfirmDialog,
   dialogReducer,
   initialDialogState,
@@ -27,7 +32,17 @@ export const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
 
   const { data } = useStudyNoteDetailQuery(Number(id));
 
+  // 읽은 사람 조회
+  const readPeopleItems = data?.studentInfos.map((student) => ({
+    id: student.studentId,
+    name: student.studentName,
+    readAt: student.readAt,
+  }));
+
   const { mutate: removeNoteMutate } = useRemoveStudyNote();
+
+  const { isOpen, side, triggerRef, popupRef, open, close } =
+    useReadPeoplePopover();
 
   if (!data) return null;
 
@@ -110,15 +125,36 @@ export const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
         <h1 className="text-text-main font-headline1-heading">{data.title}</h1>
 
         {/* 본 인원 수 체크 */}
-        <div className="flex items-center justify-end gap-1 text-center">
-          <Image
-            src="/studynotes/eye.png"
-            alt="eye"
-            width={24}
-            height={24}
-          />
-          <p className="font-label-normal text-gray-7">5명이 봤어요</p>
-        </div>
+        {data.studentInfos.length > 0 && (
+          <div
+            ref={triggerRef}
+            onMouseEnter={open}
+            onMouseLeave={close}
+            className="relative"
+          >
+            <div className="flex items-center justify-end gap-1 text-center">
+              <Image
+                src="/studynotes/eye.png"
+                alt="eye"
+                width={24}
+                height={24}
+              />
+              <p className="font-label-normal text-gray-7">
+                {data.studentInfos.length}명이 봤어요
+              </p>
+              {isOpen ? (
+                <CheckRead
+                  side={side}
+                  popupRef={popupRef}
+                  open={open}
+                  close={close}
+                >
+                  <ReadPeopleList data={readPeopleItems} />
+                </CheckRead>
+              ) : null}
+            </div>
+          </div>
+        )}
 
         <hr className="border-line-line1 border" />
         <div className="space-y-4">

@@ -3,15 +3,21 @@
 import Image from 'next/image';
 
 import {
+  CheckRead,
+  ReadPeopleList,
+  useReadPeoplePopover,
+} from '@/shared/components/check-read';
+import {
   TextEditor,
   hasMeaningfulEditorContent,
   parseEditorContent,
+  prepareContentForSave,
 } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui';
+import { getRelativeTimeString } from '@/shared/lib';
 import { JSONContent } from '@tiptap/react';
 
-import { useReadPeoplePopover } from '../hooks/use-read-people-popover';
-import { CommantReadPeoplle } from './comment-read-people';
+import { useReadCommentList, useUpdateComment } from '../hooks/use-comment';
 
 interface CommentAnswerCardContentProps {
   authorName: string;
@@ -20,11 +26,14 @@ interface CommentAnswerCardContentProps {
   content: string;
   isEditing: boolean;
   editContent: JSONContent | null | undefined;
+  teachingNoteId: number;
+  commentId: number;
+  expiredAt: string;
+  readCount: number;
   onEditContentChange: (value: JSONContent) => void;
   onCancel: () => void;
 }
 
-// 카드의 컨텐츠
 export const CommentAnswerCardContent = ({
   authorName,
   roleLabel,
@@ -32,14 +41,51 @@ export const CommentAnswerCardContent = ({
   content,
   isEditing,
   editContent,
+  teachingNoteId,
+  commentId,
+  expiredAt,
+  readCount,
   onEditContentChange,
   onCancel,
 }: CommentAnswerCardContentProps) => {
   const initialEditContent = parseEditorContent(content);
-  const isReplySubmitDisabled = !hasMeaningfulEditorContent(initialEditContent);
+  const currentEditContent = editContent ?? initialEditContent;
 
   const { isOpen, side, triggerRef, popupRef, open, close } =
     useReadPeoplePopover();
+
+  // 팝 오버를 열기전 호출 x
+  const { data } = useReadCommentList(teachingNoteId, commentId, isOpen);
+
+  const displayReadCount = data?.length ?? readCount;
+
+  const { mutate, isPending } = useUpdateComment();
+
+  const isSubmitDisabled =
+    !hasMeaningfulEditorContent(currentEditContent) || isPending;
+
+  const onClick = () => {
+    if (!editContent) return;
+
+    const { contentString, mediaIds } = prepareContentForSave(editContent);
+
+    mutate(
+      {
+        teachingNoteId,
+        commentId,
+        data: {
+          content: contentString,
+          mediaIds,
+        },
+      },
+      {
+        onSuccess: () => {
+          onCancel();
+        },
+      }
+      // TODO: 에러처리
+    );
+  };
 
   if (isEditing) {
     return (
@@ -49,7 +95,7 @@ export const CommentAnswerCardContent = ({
             <div className="border-gray-12 h-9 w-9 shrink-0 overflow-hidden rounded-full border">
               <Image
                 src={profileImageSrc}
-                alt="프로필 이미지"
+                alt="profile"
                 width={36}
                 height={36}
                 className="h-full w-full object-cover"
@@ -74,17 +120,19 @@ export const CommentAnswerCardContent = ({
               취소
             </Button>
             <Button
-              disabled={isReplySubmitDisabled}
+              disabled={isSubmitDisabled}
               className="font-label-normal disabled:font-label-normal h-[35px] shrink-0 px-6 py-2"
+              onClick={onClick}
             >
-              수정 완료
+              {isPending ? '수정 중...' : '수정 완료'}
             </Button>
           </div>
         </div>
+
         <TextEditor
           value={editContent ?? initialEditContent}
           onChange={onEditContentChange}
-          placeholder="내용을 수정하세요..."
+          placeholder="내용을 수정해주세요.."
           targetType="TEACHING_NOTE"
           minHeight="120px"
           maxHeight="240px"
@@ -100,7 +148,9 @@ export const CommentAnswerCardContent = ({
       </div>
 
       <div className="mt-2 flex items-center justify-end gap-2">
-        <p className="font-label-normal text-gray-5">00일 전 작성</p>
+        <p className="font-label-normal text-gray-5">
+          {`${getRelativeTimeString(expiredAt)}`} 작성
+        </p>
         <div
           ref={triggerRef}
           className="relative"
@@ -108,19 +158,17 @@ export const CommentAnswerCardContent = ({
           onMouseLeave={close}
         >
           <div className="bg-gray-2 font-label-normal text-gray-9 rounded-sm px-1 py-1.5">
-            읽음 2
+            읽음 {`${displayReadCount}`}
           </div>
           {isOpen ? (
-            <div
-              ref={popupRef}
-              className={`absolute top-1/2 z-10 -translate-y-1/2 ${
-                side === 'right' ? 'left-full ml-2' : 'right-full mr-2'
-              }`}
-              onMouseEnter={open}
-              onMouseLeave={close}
+            <CheckRead
+              side={side}
+              popupRef={popupRef}
+              open={open}
+              close={close}
             >
-              <CommantReadPeoplle />
-            </div>
+              <ReadPeopleList data={data} />
+            </CheckRead>
           ) : null}
         </div>
       </div>

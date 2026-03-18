@@ -88,3 +88,6 @@ export function classifyPreviewError(code?: string): ApiErrorType {
       return 'UNKNOWN';
   }
 }
+
+// TODO: 추후 추가예정
+// export function classifyStudyNoteCommentError(code?: string): ApiErrorType{}

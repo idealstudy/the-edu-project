@@ -22,12 +22,17 @@ export const useCommentList = (teachingNoteId: number) =>
   });
 
 // 스터디 노트 읽음상태 체크 리스트 info
-export const useReadCommentList = (teachingNoteId: number, commentId: number) =>
+export const useReadCommentList = (
+  teachingNoteId: number,
+  commentId: number,
+  enabled = true
+) =>
   useQuery<CommentReadListDTO>({
     queryKey: commentKeys.readList(teachingNoteId, commentId),
     queryFn: () =>
       repository.comment.getReadCommentList(teachingNoteId, commentId),
     enabled:
+      enabled &&
       Number.isInteger(teachingNoteId) &&
       teachingNoteId > 0 &&
       Number.isInteger(commentId) &&
