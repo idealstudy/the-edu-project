@@ -14,8 +14,8 @@ import { dto } from './comment.dto';
  * [Read] 댓글/대댓글 목록 조회
  * ──────────────────────────────────────────────────── */
 const getCommentList = async (teachingNoteId: number) => {
-  const response = await api.public.get<CommonResponse<CommentListDTO>>(
-    `/public/teaching-notes/${teachingNoteId}/comments`
+  const response = await api.private.get<CommonResponse<CommentListDTO>>(
+    `/common/teaching-notes/${teachingNoteId}/comments`
   );
 
   return unwrapEnvelope(response, dto.list);
@@ -28,8 +28,8 @@ const getReadCommentList = async (
   teachingNoteId: number,
   commentId: number
 ) => {
-  const response = await api.public.get<CommonResponse<CommentReadListDTO>>(
-    `/public/teaching-notes/${teachingNoteId}/comments/${commentId}/readers`
+  const response = await api.private.get<CommonResponse<CommentReadListDTO>>(
+    `/common/teaching-notes/${teachingNoteId}/comments/${commentId}/readers`
   );
 
   return unwrapEnvelope(response, dto.readList);
@@ -42,7 +42,7 @@ const createComment = async (
   teachingNoteId: number,
   data: CommentCreateRequestDTO
 ) => {
-  await api.public.post(`/public/teaching-notes/${teachingNoteId}/comments`, {
+  await api.private.post(`/common/teaching-notes/${teachingNoteId}/comments`, {
     data,
   });
 };
@@ -55,8 +55,8 @@ const updateComment = async (
   commentId: number,
   data: CommentUpdateRequestDTO
 ) => {
-  await api.public.put(
-    `/public/teaching-notes/${teachingNoteId}/comments/${commentId}`,
+  await api.private.put(
+    `/common/teaching-notes/${teachingNoteId}/comments/${commentId}`,
     { data }
   );
 };
@@ -65,8 +65,8 @@ const updateComment = async (
  * [Delete] 댓글/대댓글 삭제
  * ──────────────────────────────────────────────────── */
 const deleteComment = async (teachingNoteId: number, commentId: number) => {
-  await api.public.delete(
-    `/public/teaching-notes/${teachingNoteId}/comments/${commentId}`
+  await api.private.delete(
+    `/common/teaching-notes/${teachingNoteId}/comments/${commentId}`
   );
 };
 
