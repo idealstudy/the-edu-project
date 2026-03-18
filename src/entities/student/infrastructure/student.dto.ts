@@ -46,6 +46,35 @@ const StudentProfileHomeworkListDtoSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 프로필 - 학생 질문 조회 DTO
+ * ──────────────────────────────────────────────────── */
+const StudentProfileQnaListItemDtoSchema = z.object({
+  studyRoomId: z.number(),
+  studyRoomName: z.string(),
+  id: z.number(),
+  title: z.string(),
+  status: z.enum(['PENDING', 'COMPLETED']),
+  visibility: z.enum(['STUDENT_ONLY', 'STUDENT_AND_PARENT']),
+  relatedTeachingNote: z
+    .object({
+      id: z.number(),
+      title: z.string(),
+    })
+    .nullable(),
+  viewCount: z.number(),
+  regDate: z.string(),
+  read: z.boolean(),
+});
+
+const StudentProfileQnaListDtoSchema = z.object({
+  number: z.number(),
+  size: z.number(),
+  totalElements: z.number(),
+  totalPages: z.number(),
+  content: z.array(StudentProfileQnaListItemDtoSchema),
+});
+
+/* ─────────────────────────────────────────────────────
  * 학생 대시보드 활동 통계 조회
  * ────────────────────────────────────────────────────*/
 const StudentDashboardReportDtoSchema = z.object({
@@ -154,6 +183,17 @@ const StudentHomeworkListQuerySchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 프로필 - 학생 질문 조회 Query
+ * ────────────────────────────────────────────────────*/
+const StudentQnaListQuerySchema = z.object({
+  page: z.number(),
+  size: z.number(),
+  status: z.enum(['PENDING', 'COMPLETED']).optional(),
+  sort: z.enum(['LATEST', 'OLDEST', 'ALPHABETICAL']).optional(),
+  searchKeyword: z.string().optional(),
+});
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const dto = {
@@ -161,6 +201,7 @@ export const dto = {
     basicInfo: BasicInfoDtoSchema,
     report: StudentProfileReportDtoSchema,
     homeworkList: StudentProfileHomeworkListDtoSchema,
+    qnaList: StudentProfileQnaListDtoSchema,
   },
   dashboard: {
     report: StudentDashboardReportDtoSchema,
@@ -178,5 +219,6 @@ export const payload = {
 export const query = {
   profile: {
     homeworkList: StudentHomeworkListQuerySchema,
+    qnaList: StudentQnaListQuerySchema,
   },
 };

@@ -48,6 +48,35 @@ const StudentProfileHomeworkListDomainSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 프로필 - 학생 질문 조회 Domain 스키마
+ * ──────────────────────────────────────────────────── */
+const StudentProfileQnaListItemDomainSchema = z.object({
+  studyRoomId: z.number(),
+  studyRoomName: z.string(),
+  id: z.number(),
+  title: z.string(),
+  status: z.enum(['PENDING', 'COMPLETED']),
+  visibility: z.enum(['STUDENT_ONLY', 'STUDENT_AND_PARENT']),
+  relatedTeachingNote: z
+    .object({
+      id: z.number(),
+      title: z.string(),
+    })
+    .nullable(),
+  viewCount: z.number(),
+  regDate: z.string(),
+  read: z.boolean(),
+});
+
+const StudentProfileQnaListDomainSchema = z.object({
+  number: z.number(),
+  size: z.number(),
+  totalElements: z.number(),
+  totalPages: z.number(),
+  content: z.array(StudentProfileQnaListItemDomainSchema),
+});
+
+/* ─────────────────────────────────────────────────────
  * 프로필 - 학생 통계 Domain 스키마
  * ────────────────────────────────────────────────────*/
 const StudentProfileReportDomainSchema = z.object({
@@ -67,6 +96,8 @@ export const domain = {
     report: StudentProfileReportDomainSchema,
     homeworkListItem: StudentProfileHomeworkListItemDomainSchema,
     homeworkList: StudentProfileHomeworkListDomainSchema,
+    qnaListItem: StudentProfileQnaListItemDomainSchema,
+    qnaList: StudentProfileQnaListDomainSchema,
   },
   dashboard: {
     report: StudentDashboardReportShape,

@@ -2,6 +2,7 @@ import { domain } from '@/entities/student/core';
 import {
   FrontendStudentBasicInfo,
   HomeworkListQuery,
+  QnaListQuery,
   StudentBasicInfoDTO,
   UpdateStudentBasicInfoPayload,
 } from '@/entities/student/types';
@@ -72,6 +73,17 @@ const getMypageStudentHomeworkList = async (params: HomeworkListQuery) => {
     params: validated,
   });
   return unwrapEnvelope(response, dto.profile.homeworkList);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Read] 마이페이지 - 학생 질문 조회
+ * ────────────────────────────────────────────────────*/
+const getMypageStudentQnaList = async (params: QnaListQuery) => {
+  const validated = query.profile.qnaList.parse(params);
+  const response = await api.private.get(`/student/me/qna`, {
+    params: validated,
+  });
+  return unwrapEnvelope(response, dto.profile.qnaList);
 };
 
 /* ─────────────────────────────────────────────────────
@@ -166,6 +178,7 @@ export const repository = {
     },
     getReport: getMypageStudentReport,
     getHomeworkList: getMypageStudentHomeworkList,
+    getQnaList: getMypageStudentQnaList,
   },
   dashboard: {
     getReport: getStudentDashboardReport,

@@ -1,11 +1,13 @@
 'use client';
 
 import { useStudentHomeworks } from '@/features/mypage/profile/hooks/student/use-homeworks';
+import { useStudentQna } from '@/features/mypage/profile/hooks/student/use-qna';
 import { useStudentReport } from '@/features/mypage/profile/hooks/student/use-report';
 import ComingSoonSection from '@/features/profile/components/coming-soon-section';
 import SectionContainer from '@/features/profile/components/section-container';
 import ActivityReportSection from '@/features/profile/components/student/activity-report-section';
 import HomeworkSection from '@/features/profile/components/student/homework-section';
+import QnaSection from '@/features/profile/components/student/qna-section';
 
 export default function StudentSections() {
   // 누적 활동
@@ -31,6 +33,24 @@ export default function StudentSections() {
     isExpanded: isHomeworkExpanded,
     setIsExpanded: setIsHomeworkExpanded,
   } = useStudentHomeworks();
+
+  // 질문
+  const {
+    data: qnaData,
+    isLoading: isQnaLoading,
+    isError: isQnaError,
+    refetch: refetchQna,
+    page: qnaPage,
+    setPage: setQnaPage,
+    searchKeyword: qnaSearchKeyword,
+    setSearchKeyword: setQnaSearchKeyword,
+    sort: qnaSort,
+    setSort: setQnaSort,
+    status: qnaStatus,
+    setStatus: setQnaStatus,
+    isExpanded: isQnaExpanded,
+    setIsExpanded: setIsQnaExpanded,
+  } = useStudentQna();
 
   return (
     <>
@@ -62,8 +82,25 @@ export default function StudentSections() {
         />
       </SectionContainer>
 
-      <SectionContainer title="내 질문">
-        <ComingSoonSection />
+      <SectionContainer
+        title="내 질문"
+        isLoading={isQnaLoading}
+        isError={isQnaError}
+        onRetry={refetchQna}
+      >
+        <QnaSection
+          data={qnaData}
+          page={qnaPage}
+          setPage={setQnaPage}
+          searchKeyword={qnaSearchKeyword}
+          setSearchKeyword={setQnaSearchKeyword}
+          sort={qnaSort}
+          setSort={setQnaSort}
+          status={qnaStatus}
+          setStatus={setQnaStatus}
+          isExpanded={isQnaExpanded}
+          setIsExpanded={setIsQnaExpanded}
+        />
       </SectionContainer>
 
       <SectionContainer title="최근 등록된 수업노트">
