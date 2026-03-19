@@ -4,6 +4,7 @@ import {
   HomeworkListQuery,
   QnaListQuery,
   StudentBasicInfoDTO,
+  TeachingNoteListQuery,
   UpdateStudentBasicInfoPayload,
 } from '@/entities/student/types';
 import { api } from '@/shared/api';
@@ -84,6 +85,19 @@ const getMypageStudentQnaList = async (params: QnaListQuery) => {
     params: validated,
   });
   return unwrapEnvelope(response, dto.profile.qnaList);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Read] 마이페이지 - 학생 수업노트 조회
+ * ────────────────────────────────────────────────────*/
+const getMypageStudentTeachingNoteList = async (
+  params: TeachingNoteListQuery
+) => {
+  const validated = query.profile.teachingNoteList.parse(params);
+  const response = await api.private.get(`/student/me/teaching-notes`, {
+    params: validated,
+  });
+  return unwrapEnvelope(response, dto.profile.teachingNoteList);
 };
 
 /* ─────────────────────────────────────────────────────
@@ -179,6 +193,7 @@ export const repository = {
     getReport: getMypageStudentReport,
     getHomeworkList: getMypageStudentHomeworkList,
     getQnaList: getMypageStudentQnaList,
+    getTeachingNoteList: getMypageStudentTeachingNoteList,
   },
   dashboard: {
     getReport: getStudentDashboardReport,

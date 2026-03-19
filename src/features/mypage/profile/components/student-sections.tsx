@@ -3,11 +3,13 @@
 import { useStudentHomeworks } from '@/features/mypage/profile/hooks/student/use-homeworks';
 import { useStudentQna } from '@/features/mypage/profile/hooks/student/use-qna';
 import { useStudentReport } from '@/features/mypage/profile/hooks/student/use-report';
+import { useStudentTeachingNotes } from '@/features/mypage/profile/hooks/student/use-teaching-notes';
 import ComingSoonSection from '@/features/profile/components/coming-soon-section';
 import SectionContainer from '@/features/profile/components/section-container';
 import ActivityReportSection from '@/features/profile/components/student/activity-report-section';
 import HomeworkSection from '@/features/profile/components/student/homework-section';
 import QnaSection from '@/features/profile/components/student/qna-section';
+import TeachingNoteSection from '@/features/profile/components/student/teaching-note-section';
 
 export default function StudentSections() {
   // 누적 활동
@@ -51,6 +53,22 @@ export default function StudentSections() {
     isExpanded: isQnaExpanded,
     setIsExpanded: setIsQnaExpanded,
   } = useStudentQna();
+
+  // 수업노트
+  const {
+    data: teachingNoteData,
+    isLoading: isTeachingNoteLoading,
+    isError: isTeachingNoteError,
+    refetch: refetchTeachingNote,
+    page: teachingNotePage,
+    setPage: setTeachingNotePage,
+    keyword: teachingNoteKeyword,
+    setKeyword: setTeachingNoteKeyword,
+    sortKey: teachingNoteSortKey,
+    setSortKey: setTeachingNoteSortKey,
+    isExpanded: isTeachingNoteExpanded,
+    setIsExpanded: setIsTeachingNoteExpanded,
+  } = useStudentTeachingNotes();
 
   return (
     <>
@@ -103,8 +121,23 @@ export default function StudentSections() {
         />
       </SectionContainer>
 
-      <SectionContainer title="최근 등록된 수업노트">
-        <ComingSoonSection />
+      <SectionContainer
+        title="최근 등록된 수업노트"
+        isLoading={isTeachingNoteLoading}
+        isError={isTeachingNoteError}
+        onRetry={refetchTeachingNote}
+      >
+        <TeachingNoteSection
+          data={teachingNoteData}
+          page={teachingNotePage}
+          setPage={setTeachingNotePage}
+          keyword={teachingNoteKeyword}
+          setKeyword={setTeachingNoteKeyword}
+          sortKey={teachingNoteSortKey}
+          setSortKey={setTeachingNoteSortKey}
+          isExpanded={isTeachingNoteExpanded}
+          setIsExpanded={setIsTeachingNoteExpanded}
+        />
       </SectionContainer>
 
       <SectionContainer title="참여한 스터디룸">

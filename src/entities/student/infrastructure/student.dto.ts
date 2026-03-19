@@ -75,6 +75,37 @@ const StudentProfileQnaListDtoSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 프로필 - 학생 수업노트 조회 DTO
+ * ──────────────────────────────────────────────────── */
+const StudentProfileTeachingNoteListItemDtoSchema = z.object({
+  id: z.number(),
+  studyRoomId: z.number(),
+  studyRoomName: z.string(),
+  groupId: z.number().nullable(),
+  groupName: z.string().nullable(),
+  teacherName: z.string(),
+  title: z.string(),
+  visibility: z.enum([
+    'TEACHER_ONLY',
+    'SPECIFIC_STUDENTS_ONLY',
+    'SPECIFIC_STUDENTS_AND_PARENTS',
+    'STUDY_ROOM_STUDENTS_ONLY',
+    'STUDY_ROOM_STUDENTS_AND_PARENTS',
+    'PUBLIC',
+  ]),
+  taughtAt: z.string(),
+  updatedAt: z.string(),
+});
+
+const StudentProfileTeachingNoteListDtoSchema = z.object({
+  pageNumber: z.number(),
+  size: z.number(),
+  totalElements: z.number(),
+  totalPages: z.number(),
+  content: z.array(StudentProfileTeachingNoteListItemDtoSchema),
+});
+
+/* ─────────────────────────────────────────────────────
  * 학생 대시보드 활동 통계 조회
  * ────────────────────────────────────────────────────*/
 const StudentDashboardReportDtoSchema = z.object({
@@ -194,6 +225,21 @@ const StudentQnaListQuerySchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 프로필 - 학생 수업노트 조회 Query
+ * ──────────────────────────────────────────────────── */
+const StudentTeachingNoteListQuerySchema = z.object({
+  page: z.number(),
+  size: z.number(),
+  sortKey: z.enum([
+    'LATEST_EDITED',
+    'OLDEST_EDITED',
+    'TITLE_ASC',
+    'TAUGHT_AT_ASC',
+  ]),
+  keyword: z.string().optional(),
+});
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const dto = {
@@ -202,6 +248,7 @@ export const dto = {
     report: StudentProfileReportDtoSchema,
     homeworkList: StudentProfileHomeworkListDtoSchema,
     qnaList: StudentProfileQnaListDtoSchema,
+    teachingNoteList: StudentProfileTeachingNoteListDtoSchema,
   },
   dashboard: {
     report: StudentDashboardReportDtoSchema,
@@ -220,5 +267,6 @@ export const query = {
   profile: {
     homeworkList: StudentHomeworkListQuerySchema,
     qnaList: StudentQnaListQuerySchema,
+    teachingNoteList: StudentTeachingNoteListQuerySchema,
   },
 };

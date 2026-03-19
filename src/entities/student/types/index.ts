@@ -29,6 +29,12 @@ export type ProfileHomeworkListSortKey =
 export type ProfileQnaListSortKey = 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
 export type ProfileQnaListStatus = 'PENDING' | 'COMPLETED';
 
+export type ProfileTeachingNoteListSortKey =
+  | 'LATEST_EDITED'
+  | 'OLDEST_EDITED'
+  | 'TITLE_ASC'
+  | 'TAUGHT_AT_ASC';
+
 /* ─────────────────────────────────────────────────────
  * DTO
  * ────────────────────────────────────────────────────*/
@@ -37,6 +43,9 @@ export type StudentBasicInfoDTO = z.infer<typeof dto.profile.basicInfo>;
 export type StudentReportDTO = z.infer<typeof dto.profile.report>;
 export type StudentHomeworkListDTO = z.infer<typeof dto.profile.homeworkList>;
 export type StudentQnaListDTO = z.infer<typeof dto.profile.qnaList>;
+export type StudentTeachingNoteListDTO = z.infer<
+  typeof dto.profile.teachingNoteList
+>;
 
 // 대시보드 DTO
 export type StudentDashboardReportDTO = z.infer<typeof dto.dashboard.report>;
@@ -76,6 +85,12 @@ export type FrontendStudentQnaListItem = z.infer<
   typeof domain.profile.qnaListItem
 >;
 export type FrontendStudentQnaList = z.infer<typeof domain.profile.qnaList>;
+export type FrontendStudentTeachingNoteListItem = z.infer<
+  typeof domain.profile.teachingNoteListItem
+>;
+export type FrontendStudentTeachingNoteList = z.infer<
+  typeof domain.profile.teachingNoteList
+>;
 
 /* ─────────────────────────────────────────────────────
  * Payload
@@ -89,3 +104,6 @@ export type UpdateStudentBasicInfoPayload = z.infer<
  * ────────────────────────────────────────────────────*/
 export type HomeworkListQuery = z.infer<typeof query.profile.homeworkList>;
 export type QnaListQuery = z.infer<typeof query.profile.qnaList>;
+export type TeachingNoteListQuery = z.infer<
+  typeof query.profile.teachingNoteList
+>;

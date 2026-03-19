@@ -1,4 +1,8 @@
-import { HomeworkListQuery, QnaListQuery } from '@/entities/student/types';
+import {
+  HomeworkListQuery,
+  QnaListQuery,
+  TeachingNoteListQuery,
+} from '@/entities/student/types';
 
 export const studentKeys = {
   all: ['student'] as const,
@@ -12,6 +16,8 @@ export const studentKeys = {
       [...studentKeys.mypage.all(), 'homework', params] as const,
     qna: (params?: QnaListQuery) =>
       [...studentKeys.mypage.all(), 'qna', params] as const,
+    teachingNote: (params?: TeachingNoteListQuery) =>
+      [...studentKeys.mypage.all(), 'teachingNote', params] as const,
   },
 
   // 대시보드
