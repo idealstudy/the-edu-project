@@ -108,6 +108,25 @@ const StudentProfileTeachingNoteListDomainSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 프로필 - 학생 참여 스터디룸 조회 Domain 스키마
+ * ──────────────────────────────────────────────────── */
+const StudentProfileStudyRoomListItemDomainSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  description: z.string(),
+  teacherId: z.number(),
+  visibility: z.enum(['PRIVATE', 'PUBLIC']),
+  teachingNoteCount: z.number(),
+  studentCount: z.number(),
+  qnaCount: z.number(),
+  state: z.enum(['PENDING', 'APPROVED', 'REJECTED', 'TERMINATED']),
+});
+
+const StudentProfileStudyRoomListDomainSchema = z.array(
+  StudentProfileStudyRoomListItemDomainSchema
+);
+
+/* ─────────────────────────────────────────────────────
  * 프로필 - 학생 통계 Domain 스키마
  * ────────────────────────────────────────────────────*/
 const StudentProfileReportDomainSchema = z.object({
@@ -131,6 +150,8 @@ export const domain = {
     qnaList: StudentProfileQnaListDomainSchema,
     teachingNoteListItem: StudentProfileTeachingNoteListItemDomainSchema,
     teachingNoteList: StudentProfileTeachingNoteListDomainSchema,
+    studyRoomListItem: StudentProfileStudyRoomListItemDomainSchema,
+    studyRoomList: StudentProfileStudyRoomListDomainSchema,
   },
   dashboard: {
     report: StudentDashboardReportShape,

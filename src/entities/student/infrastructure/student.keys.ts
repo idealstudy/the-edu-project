@@ -18,6 +18,7 @@ export const studentKeys = {
       [...studentKeys.mypage.all(), 'qna', params] as const,
     teachingNote: (params?: TeachingNoteListQuery) =>
       [...studentKeys.mypage.all(), 'teachingNote', params] as const,
+    studyRoom: () => [...studentKeys.mypage.all(), 'studyRoom'] as const,
   },
 
   // 대시보드

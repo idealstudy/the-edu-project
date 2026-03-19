@@ -101,6 +101,14 @@ const getMypageStudentTeachingNoteList = async (
 };
 
 /* ─────────────────────────────────────────────────────
+ * [Read] 마이페이지 - 학생 참여 스터디룸 조회
+ * ────────────────────────────────────────────────────*/
+const getMypageStudentStudyRoomList = async () => {
+  const response = await api.private.get(`/student/me/study-rooms`);
+  return unwrapEnvelope(response, dto.profile.studyRoomList);
+};
+
+/* ─────────────────────────────────────────────────────
  * 학생 대시보드 활동 통계 조회
  * ────────────────────────────────────────────────────*/
 const getStudentDashboardReport = async () => {
@@ -194,6 +202,7 @@ export const repository = {
     getHomeworkList: getMypageStudentHomeworkList,
     getQnaList: getMypageStudentQnaList,
     getTeachingNoteList: getMypageStudentTeachingNoteList,
+    getStudyRoomList: getMypageStudentStudyRoomList,
   },
   dashboard: {
     getReport: getStudentDashboardReport,

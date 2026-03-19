@@ -106,6 +106,23 @@ const StudentProfileTeachingNoteListDtoSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 프로필 - 학생 참여 스터디룸 조회 DTO
+ * ──────────────────────────────────────────────────── */
+const StudentProfileStudyRoomListDtoSchema = z.array(
+  z.object({
+    id: z.number(),
+    name: z.string(),
+    description: z.string(),
+    teacherId: z.number(),
+    visibility: z.enum(['PRIVATE', 'PUBLIC']),
+    teachingNoteCount: z.number(),
+    studentCount: z.number(),
+    qnaCount: z.number(),
+    state: z.enum(['PENDING', 'APPROVED', 'REJECTED', 'TERMINATED']),
+  })
+);
+
+/* ─────────────────────────────────────────────────────
  * 학생 대시보드 활동 통계 조회
  * ────────────────────────────────────────────────────*/
 const StudentDashboardReportDtoSchema = z.object({
@@ -249,6 +266,7 @@ export const dto = {
     homeworkList: StudentProfileHomeworkListDtoSchema,
     qnaList: StudentProfileQnaListDtoSchema,
     teachingNoteList: StudentProfileTeachingNoteListDtoSchema,
+    studyRoomList: StudentProfileStudyRoomListDtoSchema,
   },
   dashboard: {
     report: StudentDashboardReportDtoSchema,

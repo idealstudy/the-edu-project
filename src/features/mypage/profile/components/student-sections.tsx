@@ -3,12 +3,13 @@
 import { useStudentHomeworks } from '@/features/mypage/profile/hooks/student/use-homeworks';
 import { useStudentQna } from '@/features/mypage/profile/hooks/student/use-qna';
 import { useStudentReport } from '@/features/mypage/profile/hooks/student/use-report';
+import { useStudentStudyRooms } from '@/features/mypage/profile/hooks/student/use-study-rooms';
 import { useStudentTeachingNotes } from '@/features/mypage/profile/hooks/student/use-teaching-notes';
-import ComingSoonSection from '@/features/profile/components/coming-soon-section';
 import SectionContainer from '@/features/profile/components/section-container';
 import ActivityReportSection from '@/features/profile/components/student/activity-report-section';
 import HomeworkSection from '@/features/profile/components/student/homework-section';
 import QnaSection from '@/features/profile/components/student/qna-section';
+import StudyroomSection from '@/features/profile/components/student/studyroom-section';
 import TeachingNoteSection from '@/features/profile/components/student/teaching-note-section';
 
 export default function StudentSections() {
@@ -69,6 +70,14 @@ export default function StudentSections() {
     isExpanded: isTeachingNoteExpanded,
     setIsExpanded: setIsTeachingNoteExpanded,
   } = useStudentTeachingNotes();
+
+  // 스터디룸
+  const {
+    data: studyRoomData,
+    isLoading: isStudyRoomLoading,
+    isError: isStudyRoomError,
+    refetch: refetchStudyRoom,
+  } = useStudentStudyRooms();
 
   return (
     <>
@@ -140,8 +149,13 @@ export default function StudentSections() {
         />
       </SectionContainer>
 
-      <SectionContainer title="참여한 스터디룸">
-        <ComingSoonSection />
+      <SectionContainer
+        title="참여한 스터디룸"
+        isLoading={isStudyRoomLoading}
+        isError={isStudyRoomError}
+        onRetry={refetchStudyRoom}
+      >
+        {studyRoomData && <StudyroomSection data={studyRoomData} />}
       </SectionContainer>
     </>
   );

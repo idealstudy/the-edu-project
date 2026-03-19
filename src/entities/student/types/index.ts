@@ -46,6 +46,7 @@ export type StudentQnaListDTO = z.infer<typeof dto.profile.qnaList>;
 export type StudentTeachingNoteListDTO = z.infer<
   typeof dto.profile.teachingNoteList
 >;
+export type StudentStudyRoomListDTO = z.infer<typeof dto.profile.studyRoomList>;
 
 // 대시보드 DTO
 export type StudentDashboardReportDTO = z.infer<typeof dto.dashboard.report>;
@@ -90,6 +91,12 @@ export type FrontendStudentTeachingNoteListItem = z.infer<
 >;
 export type FrontendStudentTeachingNoteList = z.infer<
   typeof domain.profile.teachingNoteList
+>;
+export type FrontendStudentStudyRoomListItem = z.infer<
+  typeof domain.profile.studyRoomListItem
+>;
+export type FrontendStudentStudyRoomList = z.infer<
+  typeof domain.profile.studyRoomList
 >;
 
 /* ─────────────────────────────────────────────────────
