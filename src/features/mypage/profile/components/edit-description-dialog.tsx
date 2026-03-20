@@ -136,7 +136,7 @@ export default function EditHighlightDialog({
               targetType="TEACHER_DESCRIPTION"
               value={value}
               onChange={onChange}
-              placeholder="선생님의 특징을 자유롭게 작성해주세요."
+              placeholder="소개, 수업 방식, 연락처를 자유롭게 작성해보세요."
               maxHeight="100%"
             />
           </Dialog.Body>
