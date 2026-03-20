@@ -20,7 +20,7 @@ const getCommentList = async (teachingNoteId: number): Promise<CommentList> => {
     `/common/teaching-notes/${teachingNoteId}/comments`
   );
 
-  return unwrapEnvelope(response, domain.list);
+  return unwrapEnvelope(response.data, domain.list);
 };
 
 /* ─────────────────────────────────────────────────────
@@ -34,7 +34,7 @@ const getReadCommentList = async (
     `/common/teaching-notes/${teachingNoteId}/comments/${commentId}/readers`
   );
 
-  return unwrapEnvelope(response, domain.readList);
+  return unwrapEnvelope(response.data, domain.readList);
 };
 
 /* ─────────────────────────────────────────────────────
@@ -44,9 +44,10 @@ const createComment = async (
   teachingNoteId: number,
   data: CommentCreateRequestDTO
 ) => {
-  await api.private.post(`/common/teaching-notes/${teachingNoteId}/comments`, {
-    data,
-  });
+  await api.private.post(
+    `/common/teaching-notes/${teachingNoteId}/comments`,
+    data
+  );
 };
 
 /* ─────────────────────────────────────────────────────
@@ -59,7 +60,7 @@ const updateComment = async (
 ) => {
   await api.private.put(
     `/common/teaching-notes/${teachingNoteId}/comments/${commentId}`,
-    { data }
+    data
   );
 };
 

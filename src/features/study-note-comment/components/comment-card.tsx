@@ -19,6 +19,7 @@ interface CommentAnswerCardProps {
   authorName: string;
   roleLabel?: string;
   content: string;
+  modDate?: string | null;
   profileImageSrc: string;
   isStudent?: boolean;
   showReplyArrow?: boolean;
@@ -26,7 +27,6 @@ interface CommentAnswerCardProps {
   className?: string;
   teachingNoteId: number;
   commentId: number;
-  expiredAt: string;
   readCount: number;
   isDeleted?: boolean;
 }
@@ -36,6 +36,7 @@ export const CommentCard = ({
   authorName,
   roleLabel,
   content,
+  modDate,
   profileImageSrc,
   isStudent = false,
   showReplyArrow = false,
@@ -43,7 +44,6 @@ export const CommentCard = ({
   className,
   teachingNoteId,
   commentId,
-  expiredAt,
   readCount,
   isDeleted,
 }: CommentAnswerCardProps) => {
@@ -153,11 +153,11 @@ export const CommentCard = ({
         roleLabel={roleLabel}
         profileImageSrc={profileImageSrc}
         content={content}
+        modDate={modDate}
         isEditing={isEditing}
         editContent={editContent}
         teachingNoteId={teachingNoteId}
         commentId={commentId}
-        expiredAt={expiredAt}
         readCount={readCount}
         isDeleted={isDeleted}
         onEditContentChange={setEditContent}

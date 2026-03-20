@@ -7,7 +7,7 @@ import { z } from 'zod';
  * ──────────────────────────────────────────────────── */
 const CommentResolvedContentDtoSchema = z.object({
   content: z.string(),
-  expiresAt: z.string().datetime(),
+  expiresAt: z.string().nullable(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -26,9 +26,10 @@ const CommentChildItemDtoSchema = z.object({
   id: z.number().int().nonnegative(),
   content: z.string(),
   resolvedContent: CommentResolvedContentDtoSchema,
-  deletedAt: z.string().datetime().nullable(),
+  deletedAt: z.string().nullable().optional(),
   authorInfo: CommentAuthorInfoDtoSchema,
   readCount: z.number().int(),
+  modDate: z.string().nullable().optional(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -38,17 +39,18 @@ const CommentItemDtoSchema = z.object({
   id: z.number().int().nonnegative(),
   content: z.string(),
   resolvedContent: CommentResolvedContentDtoSchema,
-  deletedAt: z.string().datetime().nullable(),
+  deletedAt: z.string().nullable().optional(),
   authorInfo: CommentAuthorInfoDtoSchema,
   readCount: z.number().int(),
   children: z.array(CommentChildItemDtoSchema),
+  modDate: z.string().nullable().optional(),
 });
 
 /* ─────────────────────────────────────────────────────
  * 댓글 읽음 정보 조회 DTO
  * ──────────────────────────────────────────────────── */
 const CommentItemReadDtoSchema = CommentAuthorInfoDtoSchema.extend({
-  readAt: z.string().datetime(),
+  readAt: z.string().nullable(),
 });
 
 /* ─────────────────────────────────────────────────────

@@ -2,7 +2,7 @@
 interface StudentInfo {
   studentId: number;
   studentName: string;
-  readAt: string;
+  readAt: string | null;
 }
 
 export interface StudyNoteDetail {

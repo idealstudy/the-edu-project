@@ -7,7 +7,7 @@ import type {
 import { commentKeys, repository } from '@/entities/study-note-comment';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-const ONE_MINUTE = 60 * 1000;
+const FIVE_MINUTE = 5 * 60 * 1000;
 
 // 스터디 노트 답글 info
 
@@ -16,7 +16,7 @@ export const useCommentList = (teachingNoteId: number) =>
     queryKey: commentKeys.list(teachingNoteId),
     queryFn: () => repository.comment.getCommentList(teachingNoteId),
     enabled: Number.isInteger(teachingNoteId) && teachingNoteId > 0,
-    refetchInterval: ONE_MINUTE,
+    refetchInterval: FIVE_MINUTE,
     refetchOnWindowFocus: true,
   });
 
@@ -36,8 +36,8 @@ export const useReadCommentList = (
       teachingNoteId > 0 &&
       Number.isInteger(commentId) &&
       commentId > 0,
-    refetchInterval: ONE_MINUTE,
-    refetchOnWindowFocus: true,
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
   });
 
 // 답글 달기

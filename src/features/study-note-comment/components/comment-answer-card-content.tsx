@@ -24,12 +24,12 @@ interface CommentAnswerCardContentProps {
   roleLabel?: string;
   profileImageSrc: string;
   content: string;
+  modDate?: string | null;
   isEditing: boolean;
   isDeleted?: boolean;
   editContent: JSONContent | null | undefined;
   teachingNoteId: number;
   commentId: number;
-  expiredAt: string;
   readCount: number;
   onEditContentChange: (value: JSONContent) => void;
   onCancel: () => void;
@@ -40,12 +40,12 @@ export const CommentAnswerCardContent = ({
   roleLabel,
   profileImageSrc,
   content,
+  modDate,
   isEditing,
   isDeleted = false,
   editContent,
   teachingNoteId,
   commentId,
-  expiredAt,
   readCount,
   onEditContentChange,
   onCancel,
@@ -57,14 +57,18 @@ export const CommentAnswerCardContent = ({
     useReadPeoplePopover();
 
   // 팝 오버를 열기전 호출 x
-  const { data } = useReadCommentList(teachingNoteId, commentId, isOpen);
+  const {
+    data,
+    isPending: readListPending,
+    isError: isCommentError,
+  } = useReadCommentList(teachingNoteId, commentId, isOpen);
 
   const displayReadCount = data?.length ?? readCount;
 
-  const { mutate, isPending } = useUpdateComment();
+  const { mutate, isPending: updating } = useUpdateComment();
 
   const isSubmitDisabled =
-    !hasMeaningfulEditorContent(currentEditContent) || isPending;
+    !hasMeaningfulEditorContent(currentEditContent) || updating;
 
   const onClick = () => {
     if (!editContent) return;
@@ -105,7 +109,7 @@ export const CommentAnswerCardContent = ({
             </div>
             <div className="flex items-center gap-1">
               <p className="font-body2-normal text-gray-12">{authorName}</p>
-              {roleLabel ? (
+              {roleLabel === '학생' ? (
                 <>
                   <p className="text-gray-7">·</p>
                   <p className="font-body2-normal text-gray-7">{roleLabel}</p>
@@ -126,7 +130,7 @@ export const CommentAnswerCardContent = ({
               className="font-label-normal disabled:font-label-normal h-[35px] shrink-0 px-6 py-2"
               onClick={onClick}
             >
-              {isPending ? '수정 중...' : '수정 완료'}
+              {updating ? '수정 중...' : '수정 완료'}
             </Button>
           </div>
         </div>
@@ -159,28 +163,35 @@ export const CommentAnswerCardContent = ({
 
       <div className="mt-2 flex items-center justify-end gap-2">
         <p className="font-label-normal text-gray-5">
-          {`${getRelativeTimeString(expiredAt)}`} 작성
+          {modDate ? `${getRelativeTimeString(modDate)} 작성` : ''}
         </p>
-        <div
-          ref={triggerRef}
-          className="relative"
-          onMouseEnter={open}
-          onMouseLeave={close}
-        >
-          <div className="bg-gray-2 font-label-normal text-gray-9 rounded-sm px-1 py-1.5">
-            읽음 {`${displayReadCount}`}
+        {displayReadCount > 0 && (
+          <div
+            ref={triggerRef}
+            className="relative"
+            onMouseEnter={open}
+            onMouseLeave={close}
+          >
+            <div className="bg-gray-2 font-label-normal text-gray-9 rounded-sm px-1 py-1.5">
+              읽음 {`${displayReadCount}`}
+            </div>
+            {isOpen ? (
+              <CheckRead
+                side={side}
+                popupRef={popupRef}
+                open={open}
+                close={close}
+              >
+                <ReadPeopleList
+                  data={data}
+                  displayReadCount={displayReadCount}
+                  isLoading={readListPending}
+                  isError={isCommentError}
+                />
+              </CheckRead>
+            ) : null}
           </div>
-          {isOpen ? (
-            <CheckRead
-              side={side}
-              popupRef={popupRef}
-              open={open}
-              close={close}
-            >
-              <ReadPeopleList data={data} />
-            </CheckRead>
-          ) : null}
-        </div>
+        )}
       </div>
     </>
   );

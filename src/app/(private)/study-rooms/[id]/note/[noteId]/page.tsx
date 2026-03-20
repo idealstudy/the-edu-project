@@ -1,7 +1,7 @@
 import BackLink from '@/features/dashboard/studynote/components/back-link';
 import { StudyNoteDetailContentsSection } from '@/features/dashboard/studynote/detail/components/contents-section';
 import { StudyNoteDetailMetaSection } from '@/features/dashboard/studynote/detail/components/meta-section';
-import { StudyNoteDetailCommentSection } from '@/features/study-note-comment/components/comment-section';
+import { StudyNoteDetailCommentSection } from '@/features/study-note-comment/components';
 import { ColumnLayout } from '@/layout/column-layout';
 import { PageViewTracker } from '@/shared/components/gtm';
 

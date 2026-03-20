@@ -21,6 +21,8 @@ import {
 } from '@/shared/components/dialog';
 import { useRole } from '@/shared/hooks';
 
+import { NoteMainSkeleton, NoteSideSkeleton } from './note-skeleton';
+
 export const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
   const router = useRouter();
 
@@ -30,22 +32,49 @@ export const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
   const { role } = useRole();
   const canManage = role === 'ROLE_TEACHER';
 
-  const { data } = useStudyNoteDetailQuery(Number(id));
+  const { data, isPending, isError } = useStudyNoteDetailQuery(Number(id));
 
   // 읽은 사람 조회
-  const readPeopleItems = data?.studentInfos.map((student) => ({
-    id: student.studentId,
-    name: student.studentName,
-    readAt: student.readAt,
-  }));
+  const readPeopleItems = data?.studentInfos
+    .filter((student) => student.readAt != null)
+    .map((student) => ({
+      id: student.studentId,
+      name: student.studentName,
+      readAt: student.readAt,
+    }));
+
+  const readCount =
+    data?.studentInfos.filter((student) => student.readAt != null).length ?? 0;
 
   const { mutate: removeNoteMutate } = useRemoveStudyNote();
 
   const { isOpen, side, triggerRef, popupRef, open, close } =
     useReadPeoplePopover();
 
-  if (!data) return null;
+  if (isPending)
+    return (
+      <>
+        <ColumnLayout.Left>
+          <NoteSideSkeleton />
+        </ColumnLayout.Left>
+        <ColumnLayout.Right>
+          <NoteMainSkeleton />
+        </ColumnLayout.Right>
+      </>
+    );
 
+  if (isError) {
+    return (
+      <p className="flex flex-col items-center">
+        수업노트를 불러오는 중 오류가 발생했습니다.
+      </p>
+    );
+  }
+  if (!data) {
+    return (
+      <p className="flex flex-col items-center">등록된 수업노트가 없어요.</p>
+    );
+  }
   const visibilityText =
     data.visibility === 'PUBLIC' ? '수업대상 공개' : '수업대상 비공개';
 
@@ -125,7 +154,7 @@ export const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
         <h1 className="text-text-main font-headline1-heading">{data.title}</h1>
 
         {/* 본 인원 수 체크 */}
-        {data.studentInfos.length > 0 && (
+        {readCount > 0 && (
           <div
             ref={triggerRef}
             onMouseEnter={open}
@@ -140,7 +169,7 @@ export const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
                 height={24}
               />
               <p className="font-label-normal text-gray-7">
-                {data.studentInfos.length}명이 봤어요
+                {readCount}명이 봤어요
               </p>
               {isOpen ? (
                 <CheckRead
@@ -149,7 +178,12 @@ export const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
                   open={open}
                   close={close}
                 >
-                  <ReadPeopleList data={readPeopleItems} />
+                  <ReadPeopleList
+                    displayReadCount={readCount}
+                    data={readPeopleItems}
+                    isLoading={isPending}
+                    isError={isError}
+                  />
                 </CheckRead>
               ) : null}
             </div>

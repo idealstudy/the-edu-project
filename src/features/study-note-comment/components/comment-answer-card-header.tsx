@@ -2,12 +2,12 @@
 
 import Image from 'next/image';
 
-import { EmojiPicker } from '@/shared/components/emoji-picker';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/shared/components/ui/popover';
+// import { EmojiPicker } from '@/shared/components/emoji-picker';
+// import {
+//   Popover,
+//   PopoverContent,
+//   PopoverTrigger,
+// } from '@/shared/components/ui/popover';
 
 import { CommentDropdown } from './comment-section-dropdown';
 
@@ -38,12 +38,12 @@ export const CommentAnswerCardHeader = ({
   profileImageSrc,
   showReaction,
   selectedEmojis,
-  isEmojiPickerOpen,
-  selectedReaction,
+  // isEmojiPickerOpen,
+  // selectedReaction,
   isEditing,
   isDeleted,
-  onEmojiPickerOpenChange,
-  onEmojiSelect,
+  // onEmojiPickerOpenChange,
+  // onEmojiSelect,
   onReactionClick,
   onEdit,
   onReply,
@@ -63,7 +63,7 @@ export const CommentAnswerCardHeader = ({
         </div>
         <div className="flex items-center gap-1">
           <p className="font-body2-normal text-gray-12">{authorName}</p>
-          {roleLabel ? (
+          {roleLabel === '학생' ? (
             <>
               <p className="text-gray-7">·</p>
               <p className="font-body2-normal text-gray-7">{roleLabel}</p>
@@ -86,7 +86,8 @@ export const CommentAnswerCardHeader = ({
               ))
             : null}
 
-          <Popover
+          {/*TODO: 이모티콘(반응 남기기 잠시 보류) */}
+          {/* <Popover
             open={isEmojiPickerOpen}
             onOpenChange={onEmojiPickerOpenChange}
           >
@@ -115,7 +116,7 @@ export const CommentAnswerCardHeader = ({
                 selectedEmoji={selectedReaction}
               />
             </PopoverContent>
-          </Popover>
+          </Popover> */}
 
           <CommentDropdown
             isOwner={isOwner}
