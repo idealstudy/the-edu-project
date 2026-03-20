@@ -14,6 +14,12 @@ const RoomStudentNamesSchema = z.object({
   studentNames: z.array(z.string()),
 });
 
+const InvitationInfoSchema = z.object({
+  studyRoomName: z.string(),
+  teacherName: z.string(),
+  message: z.string(),
+});
+
 /* ─────────────────────────────────────────────────────
  * 선생님 - 목록 응답 아이템 (GET /api/teacher/study-rooms)
  * ────────────────────────────────────────────────────*/
@@ -39,6 +45,7 @@ const TeacherRoomDetailSchema = TeacherRoomListItemSchema.extend({
 const TeacherRoomCURequestSchema = z.object({
   name: z.string(),
   description: z.string(),
+  characteristic: z.string(),
   modality: base.modality,
   classForm: base.classForm,
   subjectType: base.subject,
@@ -92,6 +99,14 @@ const InviteSuccessItemSchema = z.object({
   role: member.domain.role,
 });
 
+/* ─────────────────────────────────────────────────────
+ * 선생님 - 초대 토큰 조회 및 토글 (GET, PUT /api/teacher/study-rooms/{id}/invitation)
+ * ────────────────────────────────────────────────────*/
+const InviteTokenDataSchema = z.object({
+  enabled: z.boolean(),
+  token: z.string().nullable(),
+});
+
 const InviteFailItemSchema = z.object({
   email: z.string(),
   name: z.string(),
@@ -114,7 +129,9 @@ const StudentRoomListItemSchema = z.object({
  * 학생 - 초대 응답
  * ────────────────────────────────────────────────────*/
 const StudyRoomInviteRespondDataSchema = z.object({
-  state: z.enum(['PENDING', 'ACCEPTED', 'DECLINED']).catch('PENDING'),
+  state: z
+    .enum(['PENDING', 'APPROVED', 'REJECTED', 'TERMINATED'])
+    .catch('PENDING'),
   studyRoomResponse: z.object({
     id: z.number().int(),
     name: z.string(),
@@ -149,6 +166,7 @@ const teacher = {
   memberPage: RoomMemberPageSchema,
   inviteSuccess: InviteSuccessItemSchema,
   inviteFail: InviteFailItemSchema,
+  inviteToken: InviteTokenDataSchema,
 };
 
 const student = {
@@ -166,4 +184,5 @@ export const dto = {
   search,
   states: RoomStatsSchema,
   studentNames: RoomStudentNamesSchema,
+  invitationInfo: InvitationInfoSchema,
 };

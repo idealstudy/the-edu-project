@@ -2,29 +2,38 @@ import React from 'react';
 
 import Image from 'next/image';
 
-import { UserBasicInfo } from '@/features/mypage/types';
+import { UserBasicInfo } from '@/entities/member/types';
+import { FrontendTeacherReport } from '@/entities/teacher';
 import StudentProfileExtra from '@/features/profile/components/profile-card/student-profile-extra';
 import TeacherProfileExtra from '@/features/profile/components/profile-card/teacher-profile-extra';
 
 export default function ProfileCard({
   basicInfo,
+  teacherReport,
   action,
+  memberId,
 }: {
   basicInfo: UserBasicInfo;
+  teacherReport?: FrontendTeacherReport;
   action?: React.ReactNode;
+  memberId?: number;
 }) {
   let profileExtra;
 
   switch (basicInfo.role) {
     case 'ROLE_TEACHER':
-      profileExtra = (
-        <TeacherProfileExtra
-          teacherNoteCount={0}
-          studentCount={0}
-          reviewCount={0}
-          description={basicInfo.simpleIntroduction || ''}
-        />
-      );
+      if (!memberId) return null;
+      if (teacherReport) {
+        profileExtra = (
+          <TeacherProfileExtra
+            teacherNoteCount={teacherReport.teachingNoteCount}
+            studentCount={teacherReport.studentCount}
+            reviewCount={teacherReport.reviewCount}
+            description={basicInfo.simpleIntroduction || ''}
+            teacherId={memberId}
+          />
+        );
+      }
       break;
     case 'ROLE_STUDENT':
       profileExtra = (

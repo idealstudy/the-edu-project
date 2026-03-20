@@ -54,6 +54,33 @@ export function classifyHomeworkError(code?: string): ApiErrorType {
 // mypage 관련 에러
 export function classifyMypageError(code?: string): ApiErrorType {
   switch (code) {
+    // FIELD (폼에서 복구 가능)
+    case 'IS_CURRENT_CANNOT_BE_SET_WITH_END_DATE':
+    case 'CAREER_LIMIT_EXCEEDED':
+    case 'REPRESENTATIVE_LIMIT_EXCEEDED':
+      return 'FIELD';
+
+    // CONTEXT (리소스 소멸 / 페이지 무효)
+    case 'CAREER_NOT_EXIST':
+    case 'TEACHING_NOTE_NOT_EXIST':
+      return 'CONTEXT';
+
+    // AUTH (권한 문제)
+    case 'MEMBER_NOT_EXIST':
+    case 'CAREER_AND_TEACHER_NOT_MATCH':
+      return 'AUTH';
+
+    default:
+      return 'UNKNOWN';
+  }
+}
+
+// Preview 페이지 관련 에러
+export function classifyPreviewError(code?: string): ApiErrorType {
+  switch (code) {
+    case 'STUDY_ROOM_NOT_EXIST':
+      return 'CONTEXT';
+
     case 'MEMBER_NOT_EXIST':
       return 'AUTH';
 

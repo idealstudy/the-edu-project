@@ -1,11 +1,12 @@
 import { StudyNoteQueryKey } from '@/entities/study-note';
+import { teacherKeys } from '@/entities/teacher';
 import {
   InvitationQueryKey,
   StudyRoomsQueryKey,
   TeacherStudyRoomRequests,
   createTeacherStudyRoomQueryOptions,
 } from '@/features/study-rooms/api';
-import type { StudyRoomFormValues } from '@/features/study-rooms/model';
+import type { StudyRoomSubmitValues } from '@/features/study-rooms/model';
 import { BaseQueryOptions } from '@/shared/lib/query';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -48,9 +49,16 @@ export const createTeacherStudyRoomHooks = (
   const useCreateStudyRoom = () => {
     const qc = useQueryClient();
     return useMutation({
-      mutationFn: (payload: StudyRoomFormValues) => api.create(payload),
+      mutationFn: (payload: StudyRoomSubmitValues) => api.create(payload),
       onSuccess: () => {
         void qc.invalidateQueries({ queryKey: StudyRoomsQueryKey.teacherList });
+
+        void qc.invalidateQueries({
+          queryKey: teacherKeys.dashboard.studyRoomList(),
+        });
+
+        // 마이페이지 캐시 무효화
+        void qc.invalidateQueries({ queryKey: teacherKeys.all });
       },
     });
   };
@@ -75,11 +83,53 @@ export const createTeacherStudyRoomHooks = (
     });
   };
 
+  // 특정 학생 내보내기 (삭제)
+  const useRemoveMember = () => {
+    const qc = useQueryClient();
+    return useMutation({
+      mutationFn: api.removeMember,
+      onSuccess: (_, variables) => {
+        qc.invalidateQueries({
+          queryKey: StudyNoteQueryKey.membersPrefix(variables.studyRoomId),
+        });
+      },
+    });
+  };
+
+  // 특정 학생 수업 종료하기
+  const useTerminateMember = () => {
+    const qc = useQueryClient();
+    return useMutation({
+      mutationFn: api.terminateMember,
+      onSuccess: (_, variables) => {
+        qc.invalidateQueries({
+          queryKey: StudyNoteQueryKey.membersPrefix(variables.studyRoomId),
+        });
+      },
+    });
+  };
+
+  // 특정 학생 수업 재개하기
+  const useResumeMember = () => {
+    const qc = useQueryClient();
+    return useMutation({
+      mutationFn: api.resumeMember,
+      onSuccess: (_, variables) => {
+        qc.invalidateQueries({
+          queryKey: StudyNoteQueryKey.membersPrefix(variables.studyRoomId),
+        });
+      },
+    });
+  };
+
   return {
     useTeacherStudyRoomsQuery,
     useTeacherStudyRoomDetailQuery,
     useSearchInvitation,
     useCreateStudyRoom,
     useSendInvitation,
+    useRemoveMember,
+    useTerminateMember,
+    useResumeMember,
   };
 };

@@ -1,4 +1,4 @@
-import { StudyRoomFormValues } from '@/features/study-rooms';
+import type { StudyRoomSubmitValues } from '@/features/study-rooms';
 import {
   TeacherStudyRoomRequests,
   createStudyRoomBaseApi,
@@ -40,7 +40,7 @@ export const createTeacherStudyRoomApi = (
   };
 
   // 스터디룸 생성
-  const create = async (payload: StudyRoomFormValues): Promise<StudyRoom> => {
+  const create = async (payload: StudyRoomSubmitValues): Promise<StudyRoom> => {
     const response = await base.client.post<ApiResponse<StudyRoom>>(
       base.teacherBasePath,
       payload
@@ -85,11 +85,42 @@ export const createTeacherStudyRoomApi = (
     return response.data;
   };
 
+  // 학생 내보내기
+  const removeMember = async (args: {
+    studyRoomId: number;
+    studentId: number;
+  }): Promise<void> => {
+    await base.client.delete(
+      `${base.teacherBasePath}/${args.studyRoomId}/members/${args.studentId}`
+    );
+  };
+
+  const terminateMember = async (args: {
+    studyRoomId: number;
+    studentId: number;
+  }): Promise<void> => {
+    await base.client.post(
+      `${base.teacherBasePath}/${args.studyRoomId}/terminate/${args.studentId}`
+    );
+  };
+
+  const resumeMember = async (args: {
+    studyRoomId: number;
+    studentId: number;
+  }): Promise<void> => {
+    await base.client.post(
+      `${base.teacherBasePath}/${args.studyRoomId}/resume/${args.studentId}`
+    );
+  };
+
   return {
     getStudyRooms,
     getStudyRoomDetail,
     create,
     invitations: { send: sendInvitation, search: searchInvitation },
     getStudyNoteGroup,
+    removeMember,
+    terminateMember,
+    resumeMember,
   };
 };

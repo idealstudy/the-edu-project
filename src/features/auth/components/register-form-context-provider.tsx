@@ -2,13 +2,16 @@
 
 import { useForm } from 'react-hook-form';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Form } from '@/shared/components/ui/form';
 import { PUBLIC } from '@/shared/constants';
 import { useCheckboxGroup } from '@/shared/hooks/use-checkbox-group';
 import { createContextFactory } from '@/shared/lib/context';
-import { trackSignupSuccess } from '@/shared/lib/gtm/trackers';
+import {
+  trackAuthSignupFail,
+  trackAuthSignupSuccess,
+} from '@/shared/lib/gtm/trackers';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { RegisterForm } from '../schemas/register';
@@ -23,6 +26,7 @@ const TERMS = [
     value: 'privacy',
     required: true,
   },
+  { value: 'ageCheck', required: true },
   {
     value: 'marketing',
     required: false,
@@ -48,6 +52,10 @@ export const RegisterFormContextProvider = ({
 }) => {
   const termsCheckboxGroup = useCheckboxGroup(TERMS.map((term) => term.value));
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const inviteToken = searchParams.get('token');
+
   const form = useForm<RegisterForm>({
     resolver: zodResolver(RegisterForm),
     mode: 'onChange', // 실시간 검증 활성화
@@ -56,12 +64,11 @@ export const RegisterFormContextProvider = ({
       verificationCode: '',
       password: '',
       confirmPassword: '',
-      role: 'ROLE_TEACHER',
+      role: inviteToken ? 'ROLE_STUDENT' : 'ROLE_TEACHER',
       name: '',
+      phoneNumber: '',
     },
   });
-
-  const router = useRouter();
 
   const { mutate: signUp, isPending } = useSignUp();
 
@@ -76,19 +83,28 @@ export const RegisterFormContextProvider = ({
       {
         email: form.getValues('email'),
         password: form.getValues('password'),
-        acceptRequiredTerm: isAllRequiredTermsChecked,
-        acceptOptionalTerm:
-          termsCheckboxGroup.checkedItems.includes('marketing'),
+        phoneNumber: data.phoneNumber.replace(/-/g, ''),
+        agreeServiceTerms: termsCheckboxGroup.checkedItems.includes('terms'),
+        agreePrivacyTerms: termsCheckboxGroup.checkedItems.includes('privacy'),
+        agreeAgeCheck: termsCheckboxGroup.checkedItems.includes('ageCheck'),
+        agreeMarketing: termsCheckboxGroup.checkedItems.includes('marketing'),
         name: data.name,
         role: data.role,
       },
       {
         onSuccess: () => {
           // 회원가입 성공 이벤트
-          trackSignupSuccess(data.role ?? null);
-          router.replace(PUBLIC.CORE.INDEX);
+          trackAuthSignupSuccess(data.role ?? null, 'email');
+          if (inviteToken) {
+            router.replace(
+              `${PUBLIC.CORE.LOGIN}?token=${encodeURIComponent(inviteToken)}`
+            );
+          } else {
+            router.replace(PUBLIC.CORE.LOGIN);
+          }
         },
         onError: () => {
+          trackAuthSignupFail('email');
           alert('회원가입에 실패했습니다. 잠시 후 다시 시도해주세요.');
         },
       }

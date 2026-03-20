@@ -1,20 +1,15 @@
+import { toPlainText } from '@/shared/lib';
+import { JSONContent } from '@tiptap/react';
 import { z } from 'zod';
-
-const toPlainText = (node: unknown): string => {
-  const buf: string[] = [];
-  JSON.stringify(node, (k, v) => {
-    if (k === 'text' && typeof v === 'string') buf.push(v);
-    return v;
-  });
-  return buf.join('').trim();
-};
 
 export const CreateStudyRoomSchema = z.object({
   name: z.string().min(1, '스터디룸 이름을 입력해주세요.'),
-  description: z.preprocess((val) => {
-    if (typeof val === 'string') return val;
-    return toPlainText(val);
-  }, z.string().optional()),
+  description: z.string().min(1, '스터디룸 간단 소개를 입력해주세요.').max(200),
+  characteristic: z
+    .custom<JSONContent>((val) => typeof val === 'object' && val !== null)
+    .refine((val) => toPlainText(val).length <= 200, {
+      message: '스터디룸 특징은 200자 이하로 입력해주세요.',
+    }),
   visibility: z.enum(['PUBLIC', 'PRIVATE'], {
     required_error: '공개 범위를 선택해주세요.',
   }),
@@ -46,3 +41,10 @@ export const CreateStudyRoomSchema = z.object({
 });
 
 export type StudyRoomFormValues = z.infer<typeof CreateStudyRoomSchema>;
+
+export type StudyRoomSubmitValues = Omit<
+  StudyRoomFormValues,
+  'characteristic'
+> & {
+  characteristic: string;
+};

@@ -1,7 +1,9 @@
 import { StudyNoteQueryKey } from '@/entities/study-note';
 import { StudyRoomsGroupQueryKey } from '@/entities/study-note-group/infrastructure';
+import { teacherKeys } from '@/entities/teacher';
 import type { StudyNote } from '@/features/study-notes/model';
 import { StudyRoomDetail, StudyRoomsQueryKey } from '@/features/study-rooms';
+import type { StudyRoomSubmitValues } from '@/features/study-rooms/model';
 import type { PaginationData } from '@/types/http';
 import { useMutation } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';
@@ -12,6 +14,7 @@ import {
   deleteStudyRoom,
   updateStudyNoteGroup,
   updateStudyRoom,
+  updateStudyRoomTitle,
 } from './api';
 
 export const useCreateStudyNoteGroup = () => {
@@ -156,7 +159,8 @@ export const useDeleteStudyNoteGroup = () => {
   });
 };
 
-export const useUpdateStudyRoom = () => {
+// 스터디룸 제목 수정
+export const useUpdateStudyRoomTitle = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -164,7 +168,7 @@ export const useUpdateStudyRoom = () => {
       studyRoomId: number;
       name: string;
       others: StudyRoomDetail;
-    }) => updateStudyRoom(args),
+    }) => updateStudyRoomTitle(args),
 
     onMutate: async ({ studyRoomId, name }) => {
       // 이전 데이터 백업
@@ -176,6 +180,63 @@ export const useUpdateStudyRoom = () => {
       queryClient.setQueryData<StudyRoomDetail | undefined>(
         StudyRoomsQueryKey.detail(studyRoomId),
         (old) => (old ? { ...old, name } : undefined)
+      );
+
+      return { previous };
+    },
+
+    onError: (_, variables, context) => {
+      // 실패 시 롤백
+      queryClient.setQueryData(
+        StudyRoomsQueryKey.detail(variables.studyRoomId),
+        context?.previous
+      );
+    },
+
+    onSettled: (_, __, variables) => {
+      // 서버 데이터와 동기화
+      queryClient.invalidateQueries({
+        queryKey: StudyRoomsQueryKey.detail(variables.studyRoomId),
+      });
+
+      // 사이드바 갱신
+      queryClient.invalidateQueries({
+        queryKey: StudyRoomsQueryKey.teacherList,
+      });
+      queryClient.invalidateQueries({
+        queryKey: StudyRoomsQueryKey.studentList,
+      });
+
+      // 마이페이지 캐시 무효화
+      queryClient.invalidateQueries({ queryKey: teacherKeys.studyRoomList() });
+      queryClient.invalidateQueries({ queryKey: teacherKeys.noteListAll() });
+      queryClient.invalidateQueries({
+        queryKey: teacherKeys.representativeNoteList(),
+      });
+    },
+  });
+};
+
+// 스터디룸 수정
+export const useUpdateStudyRoom = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (args: {
+      studyRoomId: number;
+      others: StudyRoomSubmitValues;
+    }) => updateStudyRoom(args),
+
+    onMutate: async ({ studyRoomId }) => {
+      // 이전 데이터 백업
+      const previous = queryClient.getQueryData(
+        StudyRoomsQueryKey.detail(studyRoomId)
+      );
+
+      // Optimistic Update: UI 즉시 반영
+      queryClient.setQueryData<StudyRoomDetail | undefined>(
+        StudyRoomsQueryKey.detail(studyRoomId),
+        (old) => (old ? { ...old } : undefined)
       );
 
       return { previous };
@@ -223,6 +284,9 @@ export const useDeleteStudyRoom = () => {
       queryClient.invalidateQueries({
         queryKey: StudyRoomsQueryKey.studentList,
       });
+
+      // 마이페이지 캐시 무효화
+      queryClient.invalidateQueries({ queryKey: teacherKeys.all });
     },
   });
 };

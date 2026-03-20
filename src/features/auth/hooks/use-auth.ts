@@ -1,14 +1,10 @@
 import { useRouter } from 'next/navigation';
 
-import {
-  getCurrentMemberOptions,
-  memberKeys,
-  repository,
-} from '@/entities/member';
+import { getCurrentMemberOptions, repository } from '@/entities/member';
 import { LoginBody } from '@/features/auth/types';
 import { useSession } from '@/providers';
 import { api } from '@/shared/api';
-import { trackLoginSuccess } from '@/shared/lib/gtm/trackers';
+import { trackAuthLoginSuccess } from '@/shared/lib/gtm/trackers';
 import { useMemberStore } from '@/store';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -28,7 +24,7 @@ export const useLogin = () => {
         getCurrentMemberOptions(true)
       );
       // 로그인 성공 이벤트
-      trackLoginSuccess(member?.role ?? null);
+      trackAuthLoginSuccess(member?.role ?? null);
     },
   });
 };
@@ -44,8 +40,7 @@ export const useLogout = () => {
     // 요청 성공/실패와 무관하게 상태 정리
     onSuccess: async () => {
       clearMember();
-      await queryClient.invalidateQueries({ queryKey: memberKeys.info() });
-      queryClient.removeQueries({ queryKey: memberKeys.info() });
+      queryClient.clear();
       router.replace('/');
     },
   });

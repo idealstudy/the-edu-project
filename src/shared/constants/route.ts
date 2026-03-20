@@ -10,6 +10,11 @@ const CORE = {
     STUDY_ROOMS: '/list/study-rooms',
   },
   BIZ: '#',
+  INVITE: {
+    ERROR: (reason: string) => `/invite/error?reason=${reason}`,
+    SUCCESS: (studyRoomId: number) =>
+      `/invite/success?studyRoomId=${studyRoomId}`,
+  },
 } as const;
 
 /* ─────────────────────────────────────────────────────
@@ -60,10 +65,18 @@ const HOMEWORK = {
 } as const;
 
 /* ─────────────────────────────────────────────────────
+ * PROFILE
+ * ────────────────────────────────────────────────────*/
+const PROFILE = {
+  DETAIL: (userId: number) => `/profile/${userId}`,
+} as const;
+
+/* ─────────────────────────────────────────────────────
  * Export - PUBLIC
  * ────────────────────────────────────────────────────*/
 export const PUBLIC = {
   CORE,
+  PROFILE,
 } as const;
 
 /* ─────────────────────────────────────────────────────

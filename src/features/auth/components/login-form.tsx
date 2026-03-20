@@ -3,6 +3,7 @@
 import { useForm } from 'react-hook-form';
 
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 import SocialLoginButton from '@/features/auth/components/social-login-button';
 import { useAuth } from '@/features/auth/hooks/use-auth';
@@ -11,6 +12,10 @@ import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 import { PUBLIC } from '@/shared/constants';
 import { extractErrorMessage } from '@/shared/lib/bff/utils.message';
+import {
+  trackAuthLoginClick,
+  trackAuthLoginFail,
+} from '@/shared/lib/gtm/trackers';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
 
@@ -22,6 +27,9 @@ const LoginFormtwStyles = {
 };
 
 export default function LoginForm() {
+  const searchParams = useSearchParams();
+  const inviteToken = searchParams.get('token');
+
   const {
     register,
     handleSubmit,
@@ -35,8 +43,11 @@ export default function LoginForm() {
   const { login, isLoggingIn } = useAuth();
 
   const onSubmit = async (data: LoginFormValues) => {
+    trackAuthLoginClick();
+
     login(data, {
       onError: (error) => {
+        trackAuthLoginFail();
         let message = '로그인에 실패하였습니다. 잠시 후 다시 시도하주세요.';
 
         if (error instanceof AxiosError) {
@@ -103,7 +114,11 @@ export default function LoginForm() {
         <div className="flex justify-center gap-2">
           <span>아직 회원이 아니신가요?</span>
           <Link
-            href={PUBLIC.CORE.SIGNUP}
+            href={
+              inviteToken
+                ? `${PUBLIC.CORE.SIGNUP}?token=${encodeURIComponent(inviteToken)}`
+                : PUBLIC.CORE.SIGNUP
+            }
             className={LoginFormtwStyles.link}
           >
             회원가입

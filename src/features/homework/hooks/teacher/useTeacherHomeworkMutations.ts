@@ -1,5 +1,6 @@
 import { TeacherHomeworkQueryKey, repository } from '@/entities/homework';
 import type { TeacherHomeworkRequest } from '@/entities/homework/types';
+import { teacherKeys } from '@/entities/teacher';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 // 선생님이 과제 생성
@@ -18,6 +19,9 @@ export const useTeacherCreateHomework = () => {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: TeacherHomeworkQueryKey.listBase(variables.studyRoomId),
+      });
+      void queryClient.invalidateQueries({
+        queryKey: [...teacherKeys.dashboard.all(), 'homeworkList'],
       });
     },
   });
