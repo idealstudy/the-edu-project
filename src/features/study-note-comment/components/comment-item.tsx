@@ -4,7 +4,6 @@ import type {
   CommentChildItem as CommentChildItemModel,
   CommentItem as CommentItemModel,
 } from '@/entities/study-note-comment';
-import { extractText } from '@/shared/lib';
 
 import { CommentCard } from './comment-card';
 
@@ -28,7 +27,7 @@ export const CommentItem = ({
       authorId={comment.authorInfo.id}
       authorName={comment.authorInfo.name}
       roleLabel={comment.authorInfo.roleLabel}
-      content={extractText(comment.resolvedContent.content)}
+      content={comment.resolvedContent.content}
       modDate={comment.modDate}
       readCount={comment.readCount}
       isStudent={comment.authorInfo.isStudent}

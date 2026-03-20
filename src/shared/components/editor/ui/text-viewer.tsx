@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { createNotionExtensions } from '@/shared/components/editor/model/extensions';
 import { TextViewerProps } from '@/shared/components/editor/types';
 import { cn } from '@/shared/lib';
@@ -23,6 +25,12 @@ export const TextViewer = ({ className, value }: TextViewerProps) => {
     },
     immediatelyRender: false,
   });
+
+  useEffect(() => {
+    if (!editor) return;
+
+    editor.commands.setContent(value);
+  }, [editor, value]);
 
   return <EditorContent editor={editor} />;
 };

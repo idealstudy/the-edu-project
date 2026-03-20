@@ -9,6 +9,7 @@ import {
 } from '@/shared/components/check-read';
 import {
   TextEditor,
+  TextViewer,
   hasMeaningfulEditorContent,
   parseEditorContent,
   prepareContentForSave,
@@ -150,15 +151,14 @@ export const CommentAnswerCardContent = ({
   return (
     <>
       <div className="mt-3">
-        <p
-          className={
-            isDeleted
-              ? 'text-gray-5 font-body2-normal'
-              : 'font-body2-normal text-gray-12 leading-6'
-          }
-        >
-          {isDeleted ? '삭제된 댓글입니다.' : content}
-        </p>
+        {isDeleted ? (
+          <p className="text-gray-5 font-body2-normal">삭제된 댓글입니다.</p>
+        ) : (
+          <TextViewer
+            value={parseEditorContent(content)}
+            className="font-body2-normal text-gray-12 leading-6"
+          />
+        )}
       </div>
 
       <div className="mt-2 flex items-center justify-end gap-2">

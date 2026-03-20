@@ -158,6 +158,7 @@ export const CommentCard = ({
           roleLabel={roleLabel}
           profileImageSrc={profileImageSrc}
           showReaction={showReaction}
+          canReply={!showReplyArrow}
           isDeleted={isDeleted}
           selectedEmojis={selectedEmojis}
           isEmojiPickerOpen={isEmojiPickerOpen}

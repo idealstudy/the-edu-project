@@ -19,6 +19,7 @@ interface CommentAnswerCardHeaderProps {
   roleLabel?: string;
   profileImageSrc: string;
   showReaction: boolean;
+  canReply?: boolean;
   selectedEmojis: Record<string, number>;
   isEmojiPickerOpen: boolean;
   selectedReaction: string | null;
@@ -39,6 +40,7 @@ export const CommentAnswerCardHeader = ({
   roleLabel,
   profileImageSrc,
   showReaction,
+  canReply = true,
   selectedEmojis,
   // isEmojiPickerOpen,
   // selectedReaction,
@@ -120,9 +122,9 @@ export const CommentAnswerCardHeader = ({
               />
             </PopoverContent>
           </Popover> */}
-
           <CommentDropdown
             isOwner={isOwner}
+            canReply={canReply}
             onEdit={onEdit}
             onReply={onReply}
             setIsDialogOpen={setIsDialogOpen}
