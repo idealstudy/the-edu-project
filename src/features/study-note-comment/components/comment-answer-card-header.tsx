@@ -2,6 +2,8 @@
 
 import Image from 'next/image';
 
+// import { SmilePlus } from 'lucide-react';
+
 // import { EmojiPicker } from '@/shared/components/emoji-picker';
 // import {
 //   Popover,
@@ -103,6 +105,7 @@ export const CommentAnswerCardHeader = ({
                   height={24}
                   width={24}
                 />
+                <SmilePlus size={24} />
               </button>
             </PopoverTrigger>
             <PopoverContent
