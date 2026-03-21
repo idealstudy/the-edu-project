@@ -15,6 +15,7 @@ export const NoteVisibilitySchema = z.enum([
 export const StudentInfoSchema = z.object({
   studentId: z.number().int(),
   studentName: z.string(),
+  readAt: z.string().datetime(),
 });
 
 /* ─────────────────────────────────────────────────────

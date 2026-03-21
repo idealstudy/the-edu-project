@@ -5,7 +5,7 @@ import { StudyNoteDetail } from '../type';
 
 export const getStudyNoteDetail = async (id: number) => {
   const response = await api.private.get<CommonResponse<StudyNoteDetail>>(
-    `/public/teaching-notes/${id}`
+    `/common/teaching-notes/${id}`
   );
 
   return response.data;

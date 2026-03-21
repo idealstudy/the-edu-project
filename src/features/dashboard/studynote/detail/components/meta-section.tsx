@@ -10,13 +10,20 @@ import { useStudyNoteDetailQuery } from '@/features/dashboard/studynote/detail/s
 import { useRemoveStudyNote } from '@/features/study-notes/hooks';
 import { ColumnLayout } from '@/layout/column-layout';
 import {
+  CheckRead,
+  ReadPeopleList,
+  useReadPeoplePopover,
+} from '@/shared/components/check-read';
+import {
   StudyroomConfirmDialog,
   dialogReducer,
   initialDialogState,
 } from '@/shared/components/dialog';
 import { useRole } from '@/shared/hooks';
 
-const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
+import { NoteMainSkeleton, NoteSideSkeleton } from './note-skeleton';
+
+export const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
   const router = useRouter();
 
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
@@ -25,12 +32,49 @@ const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
   const { role } = useRole();
   const canManage = role === 'ROLE_TEACHER';
 
-  const { data } = useStudyNoteDetailQuery(Number(id));
+  const { data, isPending, isError } = useStudyNoteDetailQuery(Number(id));
+
+  // 읽은 사람 조회
+  const readPeopleItems = data?.studentInfos
+    .filter((student) => student.readAt != null)
+    .map((student) => ({
+      id: student.studentId,
+      name: student.studentName,
+      readAt: student.readAt,
+    }));
+
+  const readCount =
+    data?.studentInfos.filter((student) => student.readAt != null).length ?? 0;
 
   const { mutate: removeNoteMutate } = useRemoveStudyNote();
 
-  if (!data) return null;
+  const { isOpen, side, triggerRef, popupRef, open, close } =
+    useReadPeoplePopover();
 
+  if (isPending)
+    return (
+      <>
+        <ColumnLayout.Left>
+          <NoteSideSkeleton />
+        </ColumnLayout.Left>
+        <ColumnLayout.Right>
+          <NoteMainSkeleton />
+        </ColumnLayout.Right>
+      </>
+    );
+
+  if (isError) {
+    return (
+      <p className="flex flex-col items-center">
+        수업노트를 불러오는 중 오류가 발생했습니다.
+      </p>
+    );
+  }
+  if (!data) {
+    return (
+      <p className="flex flex-col items-center">등록된 수업노트가 없어요.</p>
+    );
+  }
   const visibilityText =
     data.visibility === 'PUBLIC' ? '수업대상 공개' : '수업대상 비공개';
 
@@ -108,6 +152,44 @@ const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
           )}
         </div>
         <h1 className="text-text-main font-headline1-heading">{data.title}</h1>
+
+        {/* 본 인원 수 체크 */}
+        {readCount > 0 && (
+          <div
+            ref={triggerRef}
+            onMouseEnter={open}
+            onMouseLeave={close}
+            className="relative"
+          >
+            <div className="flex items-center justify-end gap-1 text-center">
+              <Image
+                src="/studynotes/eye.png"
+                alt="eye"
+                width={24}
+                height={24}
+              />
+              <p className="font-label-normal text-gray-7">
+                {readCount}명이 봤어요
+              </p>
+              {isOpen && (
+                <CheckRead
+                  side={side}
+                  popupRef={popupRef}
+                  open={open}
+                  close={close}
+                >
+                  <ReadPeopleList
+                    displayReadCount={readCount}
+                    data={readPeopleItems}
+                    isLoading={isPending}
+                    isError={isError}
+                  />
+                </CheckRead>
+              )}
+            </div>
+          </div>
+        )}
+
         <hr className="border-line-line1 border" />
         <div className="space-y-4">
           {/* 공개범위 */}
@@ -175,5 +257,3 @@ const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
     </>
   );
 };
-
-export default StudyNoteDetailMetaSection;

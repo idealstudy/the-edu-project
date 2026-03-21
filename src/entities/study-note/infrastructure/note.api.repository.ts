@@ -86,7 +86,7 @@ const getNoteList = async ({
  * ────────────────────────────────────────────────────*/
 const getNoteDetail = async (teachingNoteId: number): Promise<NoteDomain> => {
   const response = await api.private.get<CommonResponse<NoteDetail>>(
-    `/public/teaching-notes/${teachingNoteId}`
+    `/common/teaching-notes/${teachingNoteId}`
   );
   const validatedResponse = adapters.details.parse(response.data);
   return factory.fromDetail(validatedResponse.data);

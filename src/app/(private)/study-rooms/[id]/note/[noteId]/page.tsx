@@ -1,6 +1,7 @@
 import BackLink from '@/features/dashboard/studynote/components/back-link';
-import StudyNoteDetailContentsSection from '@/features/dashboard/studynote/detail/components/contents-section';
-import StudyNoteDetailMetaSection from '@/features/dashboard/studynote/detail/components/meta-section';
+import { StudyNoteDetailContentsSection } from '@/features/dashboard/studynote/detail/components/contents-section';
+import { StudyNoteDetailMetaSection } from '@/features/dashboard/studynote/detail/components/meta-section';
+import { StudyNoteDetailCommentSection } from '@/features/study-note-comment/components';
 import { ColumnLayout } from '@/layout/column-layout';
 import { PageViewTracker } from '@/shared/components/gtm';
 
@@ -16,10 +17,15 @@ export default async function StudyNoteDetailPage({ params }: Props) {
       <PageViewTracker pageName="studynote_detail" />
       <div className="w-full flex-col">
         <BackLink />
-
         <ColumnLayout className="desktop:p-6 items-start gap-6">
           <StudyNoteDetailMetaSection id={resolvedParams.noteId} />
           <StudyNoteDetailContentsSection id={resolvedParams.noteId} />
+        </ColumnLayout>
+        <ColumnLayout>
+          <StudyNoteDetailCommentSection
+            studyRoomId={resolvedParams.id}
+            studyNoteId={resolvedParams.noteId}
+          />
         </ColumnLayout>
       </div>
     </>

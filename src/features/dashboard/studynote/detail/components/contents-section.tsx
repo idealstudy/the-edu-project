@@ -8,7 +8,7 @@ import { TextViewer } from '@/shared/components/editor';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
-const StudyNoteDetailContentsSection = ({ id }: { id: string }) => {
+export const StudyNoteDetailContentsSection = ({ id }: { id: string }) => {
   const { data } = useStudyNoteDetailQuery(Number(id));
 
   if (!data) return null;
@@ -41,5 +41,3 @@ const StudyNoteDetailContentsSection = ({ id }: { id: string }) => {
     </ColumnLayout.Right>
   );
 };
-
-export default StudyNoteDetailContentsSection;
