@@ -1,0 +1,119 @@
+'use client';
+
+import { CommentCardHeader } from './comment-card-header';
+// import { SmilePlus } from 'lucide-react';
+
+// import { EmojiPicker } from '@/shared/components/emoji-picker';
+// import {
+//   Popover,
+//   PopoverContent,
+//   PopoverTrigger,
+// } from '@/shared/components/ui/popover';
+
+import { CommentDropdown } from './comment-section-dropdown';
+
+interface CommentAnswerCardHeaderProps {
+  isOwner: boolean;
+  authorName: string;
+  roleLabel: string;
+  profileImageSrc: string;
+  showReaction: boolean;
+  canReply?: boolean;
+  selectedEmojis: Record<string, number>;
+  isEmojiPickerOpen: boolean;
+  selectedReaction: string | null;
+  isEditing: boolean;
+  isDeleted?: boolean;
+  onEmojiPickerOpenChange: (open: boolean) => void;
+  onEmojiSelect: (emoji: string) => void;
+  onReactionClick: (emoji: string) => void;
+  onEdit: () => void;
+  onReply: () => void;
+  setIsDialogOpen: (open: boolean) => void;
+}
+
+// 프로필, 이름, 역할 (카드의 상위 섹션들)
+export const CommentAnswerCardHeader = ({
+  isOwner,
+  authorName,
+  roleLabel,
+  profileImageSrc,
+  // showReaction,
+  canReply = true,
+  // selectedEmojis,
+  // isEmojiPickerOpen,
+  // selectedReaction,
+  isEditing,
+  isDeleted,
+  // onEmojiPickerOpenChange,
+  // onEmojiSelect,
+  // onReactionClick,
+  onEdit,
+  onReply,
+  setIsDialogOpen,
+}: CommentAnswerCardHeaderProps) => {
+  return (
+    <div className="flex justify-between gap-4">
+      <CommentCardHeader
+        profileImageSrc={profileImageSrc}
+        roleLabel={roleLabel}
+        authorName={authorName}
+      />
+      {!isEditing && !isDeleted && (
+        <div className="flex items-center gap-1.5">
+          {/* {showReaction &&
+            Object.entries(selectedEmojis).map(([emoji, count]) => (
+              <button
+                key={emoji}
+                type="button"
+                className="border-gray-5 text-gray-12 font-label-normal inline-flex h-7.5 min-w-12.5 items-center justify-center rounded-xl border bg-white px-2 py-1.5 text-center leading-none"
+                onClick={() => onReactionClick(emoji)}
+              >
+                {`${emoji} ${count}`}
+              </button>
+            ))} */}
+
+          {/*TODO: 이모티콘(반응 남기기 잠시 보류) */}
+          {/* <Popover
+            open={isEmojiPickerOpen}
+            onOpenChange={onEmojiPickerOpenChange}
+          >
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                className="hover:bg-gray-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded-sm"
+                aria-label="Open emoji picker"
+              >
+                <Image
+                  src="/studynotes/emoji_pick.png"
+                  alt="more-emoji"
+                  height={24}
+                  width={24}
+                />
+                <SmilePlus size={24} />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="end"
+              side="bottom"
+              className="w-fit min-w-0 rounded-3xl p-0"
+            >
+              <EmojiPicker
+                onClose={() => onEmojiPickerOpenChange(false)}
+                onSelect={onEmojiSelect}
+                selectedEmoji={selectedReaction}
+              />
+            </PopoverContent>
+          </Popover> */}
+          <CommentDropdown
+            isOwner={isOwner}
+            canReply={canReply}
+            onEdit={onEdit}
+            onReply={onReply}
+            setIsDialogOpen={setIsDialogOpen}
+          />
+        </div>
+      )}
+    </div>
+  );
+};

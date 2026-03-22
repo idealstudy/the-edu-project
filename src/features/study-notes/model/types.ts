@@ -1,6 +1,7 @@
 export interface StudentInfo {
   studentId: number;
   studentName: string;
+  readAt: string;
 }
 
 export interface StudyNote {

@@ -60,7 +60,25 @@ const ColumnLayoutRight = ({
   );
 };
 
+type ColumnLayoutBottomProps = React.ComponentPropsWithRef<'section'>;
+
+const ColumnLayoutBottom = ({
+  className,
+  children,
+  ...props
+}: ColumnLayoutBottomProps) => {
+  return (
+    <section
+      className={cn('w-full', className)}
+      {...props}
+    >
+      {children}
+    </section>
+  );
+};
+
 ColumnLayout.Left = ColumnLayoutLeft;
 ColumnLayout.Right = ColumnLayoutRight;
+ColumnLayout.Bottom = ColumnLayoutBottom;
 
 export { ColumnLayout };

@@ -53,7 +53,7 @@ export const createNotesBaseApi = <TList>(role: Role): NotesBaseApi<TList> => {
 
     async getDetail(teachingNoteId) {
       const res = await api.private.get<CommonResponse<StudyNoteDetails>>(
-        `/public/teaching-notes/${teachingNoteId}`
+        `/common/teaching-notes/${teachingNoteId}`
       );
       return res.data;
     },
