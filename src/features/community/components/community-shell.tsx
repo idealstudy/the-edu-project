@@ -5,7 +5,7 @@ import { useTransition } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { TeachersListSkeleton } from '@/features/list/components/card-skeleton';
+import { ColumnListSkeleton } from '@/features/community/column/components/column-card-skeleton';
 import { Select } from '@/shared/components/ui';
 import { cn } from '@/shared/lib';
 
@@ -109,7 +109,7 @@ export default function CommunityShell({
             </div>
             {isPending && (
               <div className="absolute inset-0 bg-white/70 backdrop-blur-[1px]">
-                {isColumn ? <TeachersListSkeleton /> : null}
+                {isColumn ? <ColumnListSkeleton /> : null}
               </div>
             )}
           </div>
