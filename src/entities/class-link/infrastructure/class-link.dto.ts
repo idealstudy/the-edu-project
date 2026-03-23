@@ -6,9 +6,7 @@ const ClassLinkItemDto = z.object({
   url: z.string(),
 });
 
-const ClassLinkListDto = z.object({
-  links: z.array(ClassLinkItemDto),
-});
+const ClassLinkListDto = z.array(ClassLinkItemDto);
 
 export const dto = {
   listItem: ClassLinkItemDto,

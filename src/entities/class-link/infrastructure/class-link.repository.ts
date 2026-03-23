@@ -1,4 +1,3 @@
-import { domain } from '@/entities/class-link/core';
 import { api } from '@/shared/api';
 import { unwrapEnvelope } from '@/shared/lib/api-utils';
 
@@ -6,9 +5,11 @@ import { dto } from './class-link.dto';
 
 export const classLinkRepository = {
   getList: async (studyRoomId: number) => {
-    const response = await api.private.get(`/study-rooms/${studyRoomId}/links`);
+    const response = await api.private.get(
+      `/common/study-rooms/${studyRoomId}/links`
+    );
     const data = unwrapEnvelope(response, dto.list);
-    return domain.list.parse(data.links);
+    return data;
   },
 
   createClassLink: async (
