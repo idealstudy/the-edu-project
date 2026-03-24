@@ -22,9 +22,25 @@ const ColumnPageDtoSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 칼럼 생성 Payload (선생님/관리자, PENDING_APPROVAL 상태로 저장)
+ * POST
+ * ────────────────────────────────────────────────────*/
+const CreateColumnArticlePayloadSchema = z.object({
+  title: z.string().min(1),
+  content: z.string(),
+  thumbnailMediaId: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  mediaIds: z.array(z.string()).optional(),
+});
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const dto = {
   listItem: ColumnListItemDtoSchema,
   page: ColumnPageDtoSchema,
+};
+
+export const payload = {
+  create: CreateColumnArticlePayloadSchema,
 };

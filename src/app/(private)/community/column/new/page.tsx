@@ -1,3 +1,5 @@
+import ColumnWriteArea from '@/features/community/column/components/column-write-area';
+
 export default function ColumnNewPage() {
-  return <div>칼럼 작성</div>;
+  return <ColumnWriteArea />;
 }

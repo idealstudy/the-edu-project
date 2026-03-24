@@ -1,8 +1,11 @@
-import { ColumnSortOption } from '@/entities/column/types';
+import {
+  ColumnSortOption,
+  CreateColumnArticlePayload,
+} from '@/entities/column/types';
 import { api } from '@/shared/api';
 import { unwrapEnvelope } from '@/shared/lib/api-utils';
 
-import { dto } from './column.dto';
+import { dto, payload } from './column.dto';
 
 /* ─────────────────────────────────────────────────────
  * [Read] 칼럼 목록 조회 (공개, APPROVED만)
@@ -17,8 +20,24 @@ const getList = async (params: {
 };
 
 /* ─────────────────────────────────────────────────────
+ * [CREATE] 칼럼 생성 (선생님 / 관리자)
+ * ────────────────────────────────────────────────────*/
+const create = async (
+  params: CreateColumnArticlePayload,
+  role: 'ROLE_TEACHER' | 'ROLE_ADMIN'
+) => {
+  const validated = payload.create.parse(params);
+  const path =
+    role === 'ROLE_ADMIN'
+      ? '/admin/column-articles'
+      : '/teacher/column-articles';
+  await api.private.post(path, validated);
+};
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const repository = {
   getList,
+  create,
 };
