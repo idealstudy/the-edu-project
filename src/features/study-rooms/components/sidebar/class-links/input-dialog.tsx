@@ -44,7 +44,7 @@ export const StudyroomClassLinksInputDialog = ({
 
   const hasDefaults = defaultName !== undefined && defaultUrl !== undefined;
   const isDisabled = hasDefaults
-    ? linkName === defaultName && linkUrl === defaultUrl
+    ? (linkName === defaultName && linkUrl === defaultUrl) || isUrlError
     : !linkName.trim() || !linkUrl.trim() || isUrlError;
 
   const handleConfirm = () => {
