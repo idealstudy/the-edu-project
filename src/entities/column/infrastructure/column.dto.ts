@@ -74,6 +74,17 @@ const CreateColumnArticlePayloadSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 칼럼 수정 Payload (선생님/관리자, 수정 후 다시 PENDING_APPROVAL)
+ * ────────────────────────────────────────────────────*/
+const UpdateColumnArticlePayloadSchema = z.object({
+  title: z.string().min(1),
+  content: z.string(),
+  thumbnailMediaId: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  mediaIds: z.array(z.string()).optional(),
+});
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const dto = {
@@ -86,4 +97,5 @@ export const dto = {
 
 export const payload = {
   create: CreateColumnArticlePayloadSchema,
+  update: UpdateColumnArticlePayloadSchema,
 };

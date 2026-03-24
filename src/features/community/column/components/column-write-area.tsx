@@ -1,15 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-import { CreateColumnArticlePayload } from '@/entities/column';
-import { useCreateColumn } from '@/features/community/column/hooks/use-column-form';
+import { useColumnDetail } from '@/features/community/column/hooks/use-column-detail';
+import {
+  useCreateColumn,
+  useUpdateColumn,
+} from '@/features/community/column/hooks/use-column-form';
 import {
   ColumnForm,
   ColumnFormSchema,
 } from '@/features/community/column/schema/schema';
-import { TextEditor, prepareContentForSave } from '@/shared/components/editor';
+import {
+  TextEditor,
+  parseEditorContent,
+  prepareContentForSave,
+} from '@/shared/components/editor';
+import { MiniSpinner } from '@/shared/components/loading';
 import {
   Button,
   Dialog,
@@ -33,10 +41,26 @@ const getFirstImageMediaId = (node: JSONContent): string | undefined => {
   return undefined;
 };
 
-export default function ColumnWriteArea() {
+export default function ColumnWriteArea({
+  id,
+  isEditMode = false,
+}: {
+  id?: number;
+  isEditMode?: boolean;
+}) {
   const [showImageDialog, setShowImageDialog] = useState(false);
 
+  // 수정 모드일 경우, 기존 내용 불러오기
+  const { data: existingData, isLoading: isDetailLoading } = useColumnDetail(
+    id ?? 0,
+    undefined,
+    { enabled: isEditMode && !!id }
+  );
+
   const createColumnMutation = useCreateColumn();
+  const updateColumnMutation = useUpdateColumn(id ?? 0);
+
+  const mutation = isEditMode ? updateColumnMutation : createColumnMutation;
 
   const {
     register,
@@ -45,6 +69,7 @@ export default function ColumnWriteArea() {
     setValue,
     handleSubmit,
     trigger,
+    reset,
     formState: { errors, isDirty, isValid },
   } = useForm<ColumnForm>({
     resolver: zodResolver(ColumnFormSchema),
@@ -56,6 +81,18 @@ export default function ColumnWriteArea() {
     mode: 'onChange',
   });
 
+  // 수정 모드일 경우, 기본값 세팅
+  useEffect(() => {
+    if (existingData && isEditMode) {
+      reset({
+        title: existingData.title,
+        content: parseEditorContent(existingData.resolvedContent.content),
+        tags: existingData.tags,
+      });
+    }
+  }, [existingData, isEditMode, reset]);
+
+  // 태그 상태 관리
   const [tagInput, setTagInput] = useState('');
   const tags = watch('tags') ?? [];
 
@@ -95,7 +132,7 @@ export default function ColumnWriteArea() {
 
     const { contentString, mediaIds } = prepareContentForSave(data.content);
 
-    const payload: CreateColumnArticlePayload = {
+    const payload = {
       title: data.title,
       content: contentString,
       thumbnailMediaId,
@@ -104,12 +141,16 @@ export default function ColumnWriteArea() {
     };
 
     // TODO 에러처리
-    createColumnMutation.mutate(payload);
+    mutation.mutate(payload);
   };
+
+  if (isEditMode && isDetailLoading) return <MiniSpinner />;
 
   return (
     <>
-      <h1 className="font-title-heading mb-10">칼럼 게시글 작성</h1>
+      <h1 className="font-title-heading mb-10">
+        {isEditMode ? '칼럼 게시글 수정' : '칼럼 게시글 작성'}
+      </h1>
 
       <Form
         onSubmit={handleSubmit(onSubmit)}
@@ -124,7 +165,7 @@ export default function ColumnWriteArea() {
             <Input
               {...register('title')}
               placeholder="게시글의 제목을 입력해주세요."
-              disabled={createColumnMutation.isPending}
+              disabled={mutation.isPending}
             />
           </Form.Control>
           <Form.ErrorMessage className="text-sm">
@@ -149,7 +190,7 @@ export default function ColumnWriteArea() {
               trigger('tags');
             }}
             placeholder="관련 해시태그 입력 후 Enter를 눌러주세요. (#고3 #진로상담 #학생부)"
-            disabled={createColumnMutation.isPending || tags.length >= 3}
+            disabled={mutation.isPending || tags.length >= 3}
           />
           <div className="mt-2 flex flex-wrap gap-2">
             {tags.map((tag) => (
@@ -227,10 +268,11 @@ export default function ColumnWriteArea() {
         {/* 제출 버튼 */}
         <Button
           type="submit"
-          disabled={createColumnMutation.isPending || !isDirty || !isValid}
+          disabled={mutation.isPending || !isDirty || !isValid}
           className="w-full"
         >
-          {createColumnMutation.isPending ? '저장 중' : '작성 완료'}
+          {mutation.isPending && '저장 중'}
+          {!mutation.isPending && (isEditMode ? '수정 완료' : '작성 완료')}
         </Button>
       </Form>
 

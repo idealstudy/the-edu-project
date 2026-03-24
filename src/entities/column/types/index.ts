@@ -24,3 +24,4 @@ export type ColumnDetail = z.infer<typeof dto.detail>;
  * Payload
  * ────────────────────────────────────────────────────*/
 export type CreateColumnArticlePayload = z.infer<typeof payload.create>;
+export type UpdateColumnArticlePayload = z.infer<typeof payload.update>;

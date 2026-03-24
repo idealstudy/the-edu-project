@@ -2,6 +2,7 @@ import { useRouter } from 'next/navigation';
 
 import {
   CreateColumnArticlePayload,
+  UpdateColumnArticlePayload,
   columnKeys,
   repository,
 } from '@/entities/column';
@@ -27,6 +28,25 @@ export const useCreateColumn = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: columnKeys.all });
       router.replace(PUBLIC.COMMUNITY.COLUMN.LIST);
+    },
+  });
+};
+
+export const useUpdateColumn = (id: number) => {
+  const role = useMemberStore((state) => state.member?.role);
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (params: UpdateColumnArticlePayload) => {
+      if (role !== 'ROLE_TEACHER' && role !== 'ROLE_ADMIN') {
+        throw new Error('권한이 없습니다.');
+      }
+      return repository.update(id, params, role);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: columnKeys.all });
+      router.replace(PUBLIC.COMMUNITY.COLUMN.DETAIL(id));
     },
   });
 };

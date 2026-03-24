@@ -2,6 +2,7 @@ import {
   ColumnSortOption,
   ColumnStatus,
   CreateColumnArticlePayload,
+  UpdateColumnArticlePayload,
 } from '@/entities/column/types';
 import { api } from '@/shared/api';
 import { unwrapEnvelope } from '@/shared/lib/api-utils';
@@ -44,6 +45,22 @@ const create = async (
 };
 
 /* ─────────────────────────────────────────────────────
+ * [UPDATE] 칼럼 수정 (선생님 / 관리자)
+ * ────────────────────────────────────────────────────*/
+const update = async (
+  id: number,
+  params: UpdateColumnArticlePayload,
+  role: 'ROLE_TEACHER' | 'ROLE_ADMIN'
+) => {
+  const validated = payload.update.parse(params);
+  const path =
+    role === 'ROLE_ADMIN'
+      ? `/admin/column-articles/${id}`
+      : `/teacher/column-articles/${id}`;
+  await api.private.put(path, validated);
+};
+
+/* ─────────────────────────────────────────────────────
  * [READ] 선생님 마이페이지 - 내 칼럼 목록 조회
  * ────────────────────────────────────────────────────*/
 const getMyList = async (params: {
@@ -64,5 +81,6 @@ export const repository = {
   getList,
   getDetail,
   create,
+  update,
   getMyList,
 };
