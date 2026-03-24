@@ -7,10 +7,17 @@ import { z } from 'zod';
 export type ColumnSortOption = 'LATEST' | 'POPULAR';
 
 /* ─────────────────────────────────────────────────────
+ * Status Type
+ * ────────────────────────────────────────────────────*/
+export type ColumnStatus = 'PENDING_APPROVAL' | 'APPROVED';
+
+/* ─────────────────────────────────────────────────────
  * Frontend Type
  * ────────────────────────────────────────────────────*/
 export type ColumnListItem = z.infer<typeof dto.listItem>;
 export type ColumnPage = z.infer<typeof dto.page>;
+export type MyColumnListItem = z.infer<typeof dto.myListItem>;
+export type MyColumnPage = z.infer<typeof dto.myPage>;
 
 /* ─────────────────────────────────────────────────────
  * Payload

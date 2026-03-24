@@ -1,5 +1,6 @@
 import {
   ColumnSortOption,
+  ColumnStatus,
   CreateColumnArticlePayload,
 } from '@/entities/column/types';
 import { api } from '@/shared/api';
@@ -35,9 +36,24 @@ const create = async (
 };
 
 /* ─────────────────────────────────────────────────────
+ * [READ] 선생님 마이페이지 - 내 칼럼 목록 조회
+ * ────────────────────────────────────────────────────*/
+const getMyList = async (params: {
+  page: number;
+  size: number;
+  status?: ColumnStatus;
+}) => {
+  const response = await api.private.get('/teacher/me/column-articles', {
+    params,
+  });
+  return unwrapEnvelope(response, dto.myPage);
+};
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const repository = {
   getList,
   create,
+  getMyList,
 };
