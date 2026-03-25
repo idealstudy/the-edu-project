@@ -8,7 +8,7 @@ import { useInfiniteScroll } from '@/shared/hooks/use-infinite-scroll';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { StudyroomGroupDialogs } from './dialogs';
-import { GroupListItem } from './llist-item';
+import { GroupListItem } from './list-item';
 
 export const STUDYROOM_SIDEBAR_GROUPS_PAGEABLE = {
   page: 0,
