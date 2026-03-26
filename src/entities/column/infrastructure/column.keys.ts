@@ -10,4 +10,5 @@ export const columnKeys = {
   myDetail: (id: number) => [...columnKeys.all, 'my-detail', id] as const,
   adminList: (params: { page: number; size: number; status?: ColumnStatus }) =>
     [...columnKeys.all, 'admin-list', params] as const,
+  adminDetail: (id: number) => [...columnKeys.all, 'admin-detail', id] as const,
 };

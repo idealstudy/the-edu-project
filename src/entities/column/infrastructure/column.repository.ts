@@ -47,11 +47,17 @@ const createColumn = async (
 };
 
 /* ─────────────────────────────────────────────────────
- * [DELETE] 칼럼 삭제 (선생님)
- * TODO 관리자 반영
+ * [DELETE] 칼럼 삭제 (선생님 / 관리자)
  * ────────────────────────────────────────────────────*/
-const deleteColumn = async (id: number) => {
-  await api.private.delete(`/teacher/column-articles/${id}`);
+const deleteColumn = async (
+  id: number,
+  role: 'ROLE_TEACHER' | 'ROLE_ADMIN'
+) => {
+  const path =
+    role === 'ROLE_ADMIN'
+      ? `/admin/column-articles/${id}`
+      : `/teacher/column-articles/${id}`;
+  await api.private.delete(path);
 };
 
 /* ─────────────────────────────────────────────────────
@@ -105,6 +111,14 @@ const getAdminColumnList = async (params: {
 };
 
 /* ─────────────────────────────────────────────────────
+ * [READ] 관리자페이지 - 칼럼 상세 조회 (관리자, 전체 상태 조회 가능)
+ * ────────────────────────────────────────────────────*/
+const getAdminColumnDetail = async (id: number) => {
+  const response = await api.private.get(`/admin/column-articles/${id}`);
+  return unwrapEnvelope(response, dto.detail);
+};
+
+/* ─────────────────────────────────────────────────────
  * [PATCH] 관리자페이지 - 칼럼 승인 (관리자)
  * ────────────────────────────────────────────────────*/
 const approveColumn = async (id: number) => {
@@ -123,5 +137,6 @@ export const repository = {
   getMyColumnList,
   getMyColumnDetail,
   getAdminColumnList,
+  getAdminColumnDetail,
   approveColumn,
 };

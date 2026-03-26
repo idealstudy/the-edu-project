@@ -56,13 +56,18 @@ export const useUpdateColumn = (id: number) => {
 
 /**
  * [DELETE] 칼럼 삭제
- * TODO 관리자 삭제 추가
  */
 export const useDeleteColumn = () => {
+  const role = useMemberStore((state) => state.member?.role);
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: number) => repository.deleteColumn(id),
+    mutationFn: (id: number) => {
+      if (role !== 'ROLE_TEACHER' && role !== 'ROLE_ADMIN') {
+        throw new Error('권한이 없습니다.');
+      }
+      return repository.deleteColumn(id, role);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: columnKeys.all });
     },
