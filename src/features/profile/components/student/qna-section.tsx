@@ -51,6 +51,12 @@ export default function QnaSection({
   const items = data?.content ?? [];
   const visibleItems = isExpanded ? items : items.slice(0, 5);
 
+  if (data && data.totalElements === 0 && !searchKeyword && !status) {
+    return (
+      <p className="text-text-sub2 my-4 text-center">등록된 질문이 없습니다.</p>
+    );
+  }
+
   return (
     <ExpandableListSection
       isExpanded={isExpanded}
@@ -70,21 +76,23 @@ export default function QnaSection({
       totalPages={data?.totalPages ?? 0}
       onPageChange={setPage}
     >
-      <>
-        {isExpanded && (
-          <Checkbox.Label className="self-end">
-            <Checkbox
-              checked={status === 'PENDING'}
-              onCheckedChange={(checked) => {
-                setStatus(checked ? 'PENDING' : undefined);
-                setPage(1);
-              }}
-            />
-            <span className="font-label-normal">피드백 대기만 보기</span>
-          </Checkbox.Label>
-        )}
+      {isExpanded && (
+        <Checkbox.Label className="self-end">
+          <Checkbox
+            checked={status === 'PENDING'}
+            onCheckedChange={(checked) => {
+              setStatus(checked ? 'PENDING' : undefined);
+              setPage(1);
+            }}
+          />
+          <span className="font-label-normal">피드백 대기만 보기</span>
+        </Checkbox.Label>
+      )}
 
-        {visibleItems.map((item) => (
+      {items.length === 0 ? (
+        <p className="text-text-sub2 my-4 text-center">검색 결과가 없습니다.</p>
+      ) : (
+        visibleItems.map((item) => (
           <ListItem
             key={item.id}
             id={item.id}
@@ -114,8 +122,8 @@ export default function QnaSection({
               </span>
             }
           />
-        ))}
-      </>
+        ))
+      )}
     </ExpandableListSection>
   );
 }

@@ -155,7 +155,14 @@ export default function StudentSections() {
         isError={isStudyRoomError}
         onRetry={refetchStudyRoom}
       >
-        {studyRoomData && <StudyroomSection data={studyRoomData} />}
+        {studyRoomData &&
+          (studyRoomData.length > 0 ? (
+            <StudyroomSection data={studyRoomData} />
+          ) : (
+            <p className="text-text-sub2 my-4 text-center">
+              참여한 스터디룸이 없습니다.
+            </p>
+          ))}
       </SectionContainer>
     </>
   );

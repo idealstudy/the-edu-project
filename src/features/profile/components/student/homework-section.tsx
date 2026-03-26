@@ -53,6 +53,12 @@ export default function HomeworkSection({
   const items = data?.content ?? [];
   const visibleItems = isExpanded ? items : items.slice(0, 5);
 
+  if (data && data.totalElements === 0 && !keyword) {
+    return (
+      <p className="text-text-sub2 my-4 text-center">등록된 과제가 없습니다.</p>
+    );
+  }
+
   return (
     <ExpandableListSection
       isExpanded={isExpanded}
@@ -72,36 +78,40 @@ export default function HomeworkSection({
       totalPages={data?.totalPages ?? 0}
       onPageChange={setPage}
     >
-      {visibleItems.map((item) => (
-        <ListItem
-          key={item.id}
-          id={item.id}
-          title={item.title}
-          subtitle={
-            (item.submittedAt
-              ? `제출일: ${formatMMDDWeekday(item.submittedAt)} | `
-              : '') + `마감일: ${formatMMDDWeekday(item.deadline)}`
-          }
-          href={PRIVATE.HOMEWORK.DETAIL(item.studyRoomId, item.id)}
-          tag={
-            <span className="bg-gray-2 font-caption-normal text-gray-8 mb-1 rounded-sm px-1 py-0.5">
-              {item.studyRoomName}
-            </span>
-          }
-          rightTitle={
-            <span
-              className={cn(
-                'font-label-normal px-3 py-1.5 whitespace-nowrap',
-                item.status === 'NOT_SUBMIT'
-                  ? 'bg-gray-1'
-                  : 'bg-orange-1 text-key-color-primary'
-              )}
-            >
-              {HOMEWORK_STATUS_LABEL[item.status]}
-            </span>
-          }
-        />
-      ))}
+      {items.length === 0 ? (
+        <p className="text-text-sub2 my-4 text-center">검색 결과가 없습니다.</p>
+      ) : (
+        visibleItems.map((item) => (
+          <ListItem
+            key={item.id}
+            id={item.id}
+            title={item.title}
+            subtitle={
+              (item.submittedAt
+                ? `제출일: ${formatMMDDWeekday(item.submittedAt)} | `
+                : '') + `마감일: ${formatMMDDWeekday(item.deadline)}`
+            }
+            href={PRIVATE.HOMEWORK.DETAIL(item.studyRoomId, item.id)}
+            tag={
+              <span className="bg-gray-2 font-caption-normal text-gray-8 mb-1 rounded-sm px-1 py-0.5">
+                {item.studyRoomName}
+              </span>
+            }
+            rightTitle={
+              <span
+                className={cn(
+                  'font-label-normal px-3 py-1.5 whitespace-nowrap',
+                  item.status === 'NOT_SUBMIT'
+                    ? 'bg-gray-1'
+                    : 'bg-orange-1 text-key-color-primary'
+                )}
+              >
+                {HOMEWORK_STATUS_LABEL[item.status]}
+              </span>
+            }
+          />
+        ))
+      )}
     </ExpandableListSection>
   );
 }

@@ -44,6 +44,14 @@ export default function TeachingNoteSection({
   const items = data?.content ?? [];
   const visibleItems = isExpanded ? items : items.slice(0, 5);
 
+  if (data && data.totalElements === 0 && !keyword) {
+    return (
+      <p className="text-text-sub2 my-4 text-center">
+        등록된 수업노트가 없습니다.
+      </p>
+    );
+  }
+
   return (
     <ExpandableListSection
       isExpanded={isExpanded}
@@ -63,8 +71,10 @@ export default function TeachingNoteSection({
       totalPages={data?.totalPages ?? 0}
       onPageChange={setPage}
     >
-      <>
-        {visibleItems.map((item) => (
+      {items.length === 0 ? (
+        <p className="text-text-sub2 my-4 text-center">검색 결과가 없습니다.</p>
+      ) : (
+        visibleItems.map((item) => (
           <ListItem
             key={item.id}
             id={item.id}
@@ -78,8 +88,8 @@ export default function TeachingNoteSection({
               </span>
             }
           />
-        ))}
-      </>
+        ))
+      )}
     </ExpandableListSection>
   );
 }
