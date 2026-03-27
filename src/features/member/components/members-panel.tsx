@@ -70,7 +70,7 @@ export default function MembersPanel({ studyRoomId }: Props) {
               member={member}
               studyRoomId={studyRoomId}
               isTeacher={isTeacher}
-              currentUserEmail={currentMember?.email}
+              currentUserId={currentMember?.id}
             />
           ))
         )}

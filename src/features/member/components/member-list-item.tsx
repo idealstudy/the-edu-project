@@ -10,7 +10,7 @@ type Props = {
   isHighlighted?: boolean;
   studyRoomId: number;
   isTeacher: boolean;
-  currentUserEmail?: string;
+  currentUserId?: number;
 };
 
 const maskEmail = (email: string) => {
@@ -23,12 +23,11 @@ export const MemberListItem = ({
   isHighlighted,
   studyRoomId,
   isTeacher,
-  currentUserEmail,
+  currentUserId,
 }: Props) => {
+  const isCurrentUser = member.id === String(currentUserId);
   const displayEmail =
-    !isTeacher && member.email !== currentUserEmail
-      ? maskEmail(member.email)
-      : member.email;
+    !isTeacher && !isCurrentUser ? maskEmail(member.email) : member.email;
 
   const isParent = member.role === 'ROLE_PARENT';
 
@@ -86,27 +85,29 @@ export const MemberListItem = ({
 
       {/* Right: 기록 button + edit icon + dropdown */}
       <div className="flex shrink-0 items-center gap-2">
-        <button
-          type="button"
-          className="border-gray-5 font-label-normal hover:bg-gray-1 inline-flex items-center rounded-full border px-[11px] py-[3px]"
-        >
-          기록
-        </button>
-        <div className="flex gap-1">
+        {(isTeacher || isCurrentUser) && (
           <button
             type="button"
-            className="text-gray-5 hover:bg-gray-1 flex items-center justify-center rounded-md"
+            className="border-gray-5 font-label-normal hover:bg-gray-1 inline-flex items-center rounded-full border px-[11px] py-[3px]"
           >
-            <EditIcon size={24} />
+            기록
           </button>
-          {isTeacher && (
+        )}
+        {isTeacher && (
+          <div className="flex gap-1">
+            <button
+              type="button"
+              className="text-gray-5 hover:bg-gray-1 flex items-center justify-center rounded-md"
+            >
+              <EditIcon size={24} />
+            </button>
             <MembersDropdown
               studyRoomId={studyRoomId}
               memberId={member.id}
               isTerminated={member.isTerminated}
             />
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </li>
   );
