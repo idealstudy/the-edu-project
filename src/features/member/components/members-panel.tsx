@@ -71,6 +71,7 @@ export default function MembersPanel({ studyRoomId }: Props) {
               studyRoomId={studyRoomId}
               isTeacher={isTeacher}
               currentUserId={currentMember?.id}
+              consultationCount={member.consultationCount}
             />
           ))
         )}

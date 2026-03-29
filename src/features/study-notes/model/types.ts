@@ -47,6 +47,8 @@ export interface MemberInfo {
   email: string;
   joinDate: string;
   outDate: string | null;
+  consultationCount?: number;
+  state?: 'PENDING' | 'APPROVED' | 'REJECTED' | 'TERMINATED';
 }
 
 export interface StudyMember {
@@ -76,6 +78,7 @@ export interface StudyNoteMember {
   joinText: string;
   outText: string | null;
   avatarSrc?: string;
+  consultationCount: number;
   isTerminated: boolean;
 }
 

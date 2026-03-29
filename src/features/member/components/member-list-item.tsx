@@ -16,6 +16,7 @@ type Props = {
   studyRoomId: number;
   isTeacher: boolean;
   currentUserId?: number;
+  consultationCount: number;
 };
 
 const maskEmail = (email: string) => {
@@ -29,6 +30,7 @@ export const MemberListItem = ({
   studyRoomId,
   isTeacher,
   currentUserId,
+  consultationCount,
 }: Props) => {
   const isCurrentUser = member.id === String(currentUserId);
   const displayEmail =
@@ -93,13 +95,13 @@ export const MemberListItem = ({
 
       {/* Right: 기록 button + edit icon + dropdown */}
       <div className="flex shrink-0 items-center gap-2">
-        {(isTeacher || isCurrentUser) && (
+        {(isTeacher || isCurrentUser) && consultationCount > 0 && (
           <button
             type="button"
             className="border-gray-5 font-label-normal hover:bg-gray-1 inline-flex items-center rounded-full border px-[11px] py-[3px]"
             onClick={() => setDialogView('list')}
           >
-            기록
+            기록 {consultationCount}
           </button>
         )}
         {isTeacher && (

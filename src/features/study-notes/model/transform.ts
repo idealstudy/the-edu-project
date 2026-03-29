@@ -22,7 +22,8 @@ export const transformMembersData = (
       joinText: formatDateDot(info.joinDate),
       outText: info.outDate ? formatDateDot(info.outDate) : null,
       guardianCount,
-      isTerminated: info.outDate !== null,
+      consultationCount: member.studentInfo.consultationCount ?? 0,
+      isTerminated: member.studentInfo.state === 'TERMINATED',
     });
 
     const entries: StudyNoteMember[] = [
