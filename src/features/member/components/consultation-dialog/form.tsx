@@ -9,6 +9,7 @@ import { Button } from '@/shared/components/ui/button';
 import { ConsultationDialogLayout, ConsultationTabNav } from '.';
 
 type Props = {
+  studentId: string;
   studentName: string;
   isOpen: boolean;
   onClose: () => void;
@@ -36,7 +37,7 @@ export const ConsultationForm = ({
     <ConsultationDialogLayout
       isOpen={isOpen}
       onClose={onClose}
-      title={`${studentName} 학생 상담서`}
+      title={`${studentName} 학생 기록 일지`}
       navigation={
         <ConsultationTabNav
           activeTab="write"
@@ -47,6 +48,7 @@ export const ConsultationForm = ({
         <Button
           variant="primary"
           size="small"
+          className="font-body2-heading px-12"
           onClick={handleSave}
         >
           저장
@@ -54,7 +56,7 @@ export const ConsultationForm = ({
       }
     >
       <p className="font-body2-heading text-gray-12 mb-3">
-        기록할 상담서를 작성해주세요
+        기록 일지를 작성해주세요
       </p>
       <div className="flex-1">
         <TextEditor

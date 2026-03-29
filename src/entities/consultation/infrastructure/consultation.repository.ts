@@ -4,9 +4,15 @@ import { unwrapEnvelope } from '@/shared/lib/api-utils';
 import { dto } from './consultation.dto';
 
 export const repository = {
-  getList: async (studyRoomId: number, studentId: number) => {
+  getList: async (
+    studyRoomId: number,
+    studentId: number,
+    page = 0,
+    size = 10
+  ) => {
     const response = await api.private.get(
-      `common/study-rooms/${studyRoomId}/consultation-sheets/${studentId}`
+      `common/study-rooms/${studyRoomId}/consultation-sheets/${studentId}`,
+      { params: { page, size } }
     );
     return unwrapEnvelope(response, dto.list);
   },
@@ -27,6 +33,7 @@ export const repository = {
     studentId: number,
     body: {
       content: string;
+      mediaIds?: number[];
     }
   ) => {
     await api.private.post(
@@ -39,7 +46,7 @@ export const repository = {
     studyRoomId: number,
     studentId: number,
     sheetId: number,
-    body: { content: string }
+    body: { content: string; mediaIds?: number[] }
   ) => {
     await api.private.put(
       `teacher/study-rooms/${studyRoomId}/consultation-sheets/${studentId}/${sheetId}`,

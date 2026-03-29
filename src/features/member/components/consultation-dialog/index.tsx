@@ -1,11 +1,20 @@
 'use client';
 
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
+import {
+  useConsultationDetail,
+  useConsultationList,
+  useCreateConsultation,
+  useDeleteConsultation,
+  useUpdateConsultation,
+} from '@/features/member/hooks/use-consultation';
+import { parseEditorContent } from '@/shared/components/editor';
 import { TextEditorValue } from '@/shared/components/editor/types';
+import { showBottomToast } from '@/shared/components/ui';
 import { Dialog } from '@/shared/components/ui/dialog';
-import { cn, formatDateDot } from '@/shared/lib';
-import { Info, X } from 'lucide-react';
+import { cn, formatDateDot, toPlainText } from '@/shared/lib';
+import { ChevronLeft, Info, X } from 'lucide-react';
 
 import { ConsultationDetail } from './detail';
 import { ConsultationForm } from './form';
@@ -36,13 +45,13 @@ export const ConsultationDialogLayout = ({
     <Dialog isOpen={isOpen}>
       <Dialog.Content className="tablet:h-[80vh] tablet:max-w-[600px] desktop:h-[602px] desktop:w-[720px] desktop:max-w-[720px] h-[85vh] max-w-[calc(100%-2rem)] gap-0 overflow-y-hidden p-6">
         <Dialog.Header className="mb-5">
-          <div className="flex items-start justify-between">
-            <Dialog.Title>{title}</Dialog.Title>
+          <div className="flex items-center justify-between gap-3">
+            <Dialog.Title className="min-w-0 flex-1">{title}</Dialog.Title>
             <Dialog.Close asChild>
               <button
                 type="button"
                 onClick={onClose}
-                className="text-gray-7 hover:text-gray-12 mt-0.5"
+                className="text-gray-7 hover:text-gray-12 shrink-0"
                 aria-label="닫기"
               >
                 <X size={20} />
@@ -93,7 +102,7 @@ export const ConsultationTabNav = ({ activeTab, onTabChange }: TabNavProps) => {
                 : 'border-gray-4 text-gray-7 hover:border-gray-6'
             )}
           >
-            {tab === 'write' ? '상담서 작성' : '상담서 기록'}
+            {tab === 'write' ? '기록 일지 작성' : '기록 일지 기록'}
           </button>
         );
       })}
@@ -102,129 +111,14 @@ export const ConsultationTabNav = ({ activeTab, onTabChange }: TabNavProps) => {
 };
 
 // ─────────────────────────────────────────────────────
-// Dummy data
-// ─────────────────────────────────────────────────────
-
-type ConsultationItem = {
-  id: string;
-  date: string;
-  preview: string;
-  content: TextEditorValue;
-};
-
-const DUMMY_ITEMS: ConsultationItem[] = [
-  {
-    id: '1',
-    date: '2026.02.28',
-    preview:
-      '상담서 내용이 들어갑니다 상담서 내용이 들어갑니다상담서 내용이 들어갑니다상담서 내용이 들어갑니다상담서 내용이 들어갑니다상담서 내용이 들어갑니다상담서 내용이 들어갑니다상담서 내용이 들어갑니다상담서 내용이 들어갑니다',
-    content: {
-      type: 'doc',
-      content: [
-        {
-          type: 'paragraph',
-          content: [
-            {
-              type: 'text',
-              text: '상담서 내용이 들어갑니다 상담서 내용이 들어갑니다상담서 내용이 들어갑니다상담서 내용이 들어갑니다상담서 내용이 들어갑니다상담서 내용이 들어갑니다상담서 내용이 들어갑니다'.repeat(
-                100
-              ),
-            },
-          ],
-        },
-      ],
-    },
-  },
-  {
-    id: '2',
-    date: '2026.02.22',
-    preview:
-      '상담서 내용이 들어갑니다 상담서 내용이 들어갑니다상담서 내용이 들어갑니다상담서 내용이 들어갑니다상담서 내용이 들어갑니다상담서 내용이 들어갑니다상담서 내용이 들어갑니다상담서 내용이 들어갑니다상담서 내용이 들어갑니다',
-    content: {
-      type: 'doc',
-      content: [
-        {
-          type: 'paragraph',
-          content: [{ type: 'text', text: '두 번째 상담서 내용입니다.' }],
-        },
-      ],
-    },
-  },
-  {
-    id: '3',
-    date: '2026.02.15',
-    preview: '세 번째 상담서 내용이 들어갑니다.',
-    content: {
-      type: 'doc',
-      content: [
-        {
-          type: 'paragraph',
-          content: [
-            { type: 'text', text: '세 번째 상담서 내용이 들어갑니다.' },
-          ],
-        },
-      ],
-    },
-  },
-  {
-    id: '4',
-    date: '2026.02.08',
-    preview:
-      '네 번째 상담서 내용이 들어갑니다 상담서 내용이 들어갑니다상담서 내용이 들어갑니다상담서 내용이 들어갑니다.',
-    content: {
-      type: 'doc',
-      content: [
-        {
-          type: 'paragraph',
-          content: [
-            {
-              type: 'text',
-              text: '네 번째 상담서 내용이 들어갑니다 상담서 내용이 들어갑니다상담서 내용이 들어갑니다.',
-            },
-          ],
-        },
-      ],
-    },
-  },
-  {
-    id: '5',
-    date: '2026.02.01',
-    preview:
-      '다섯 번째 상담서 내용이 들어갑니다 상담서 내용이 들어갑니다상담서 내용이 들어갑니다상담서 내용이 들어갑니다.',
-    content: {
-      type: 'doc',
-      content: [
-        {
-          type: 'paragraph',
-          content: [{ type: 'text', text: '다섯 번째 상담서 내용입니다.' }],
-        },
-      ],
-    },
-  },
-  {
-    id: '6',
-    date: '2026.01.25',
-    preview:
-      '여섯 번째 상담서 내용이 들어갑니다 상담서 내용이 들어갑니다상담서 내용이 들어갑니다상담서 내용이 들어갑니다.',
-    content: {
-      type: 'doc',
-      content: [
-        {
-          type: 'paragraph',
-          content: [{ type: 'text', text: '여섯 번째 상담서 내용입니다.' }],
-        },
-      ],
-    },
-  },
-];
-
-// ─────────────────────────────────────────────────────
 // Controller
 // ─────────────────────────────────────────────────────
 
 type View = 'list' | 'form' | 'detail';
 
 type ConsultationDialogsProps = {
+  studyRoomId: number;
+  studentId: string;
   studentName: string;
   initialView: 'list' | 'form';
   isOpen: boolean;
@@ -232,50 +126,90 @@ type ConsultationDialogsProps = {
 };
 
 export const ConsultationDialogs = ({
+  studyRoomId,
+  studentId,
   studentName,
   initialView,
   isOpen,
   onClose,
 }: ConsultationDialogsProps) => {
+  const numericStudentId = Number(studentId);
   const [view, setView] = useState<View>(initialView);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [items, setItems] = useState<ConsultationItem[]>(DUMMY_ITEMS);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [page, setPage] = useState(0);
+  const [accItems, setAccItems] = useState<
+    { id: string; date: string; preview: string }[]
+  >([]);
 
-  const selectedItem = items.find((item) => item.id === selectedId) ?? null;
+  const { data: pageData } = useConsultationList(
+    studyRoomId,
+    numericStudentId,
+    page,
+    isOpen
+  );
+
+  useEffect(() => {
+    if (!pageData) return;
+    const newItems = pageData.list.map((item) => ({
+      id: String(item.id),
+      date: formatDateDot(item.regDate),
+      preview: toPlainText(item.content),
+    }));
+    setAccItems((prev) => (page === 0 ? newItems : [...prev, ...newItems]));
+  }, [pageData, page]);
+
+  const hasMore = pageData ? page + 1 < pageData.totalPages : false;
+
+  const { data: detailData, isError } = useConsultationDetail(
+    studyRoomId,
+    numericStudentId,
+    selectedId,
+    view === 'detail' && selectedId !== null
+  );
+
+  const createMutation = useCreateConsultation(studyRoomId, numericStudentId);
+  const updateMutation = useUpdateConsultation(studyRoomId, numericStudentId);
+  const deleteMutation = useDeleteConsultation(studyRoomId, numericStudentId);
 
   const handleTabChange = (tab: 'write' | 'list') =>
     setView(tab === 'write' ? 'form' : 'list');
 
   const handleSave = (content: TextEditorValue) => {
-    const date = formatDateDot(new Date());
-    const newItem: ConsultationItem = {
-      id: String(Date.now()),
-      date,
-      preview: '',
-      content,
-    };
-    setItems((prev) => [newItem, ...prev]);
-    setView('list');
+    createMutation.mutate(
+      { content: JSON.stringify(content) },
+      { onSuccess: () => setView('list') }
+    );
   };
 
   const handleUpdate = (content: TextEditorValue) => {
     if (!selectedId) return;
-    setItems((prev) =>
-      prev.map((item) => (item.id === selectedId ? { ...item, content } : item))
+    updateMutation.mutate(
+      { sheetId: selectedId, content: JSON.stringify(content) },
+      { onSuccess: () => setView('list') }
     );
-    setView('list');
   };
 
   const handleDelete = () => {
     if (!selectedId) return;
-    setItems((prev) => prev.filter((item) => item.id !== selectedId));
-    setSelectedId(null);
-    setView('list');
+    const date = formatDateDot(detailData?.regDate ?? new Date());
+    deleteMutation.mutate(
+      { sheetId: selectedId },
+      {
+        onSuccess: () => {
+          setSelectedId(null);
+          setView('list');
+          showBottomToast(
+            `${date} ${studentName} 학생 기록 일지가 삭제되었어요.`
+          );
+        },
+      }
+    );
   };
 
   if (view === 'form') {
     return (
       <ConsultationForm
+        studentId={studentId}
         studentName={studentName}
         isOpen={isOpen}
         onClose={onClose}
@@ -285,14 +219,93 @@ export const ConsultationDialogs = ({
     );
   }
 
-  if (view === 'detail' && selectedItem) {
+  if (view === 'detail' && selectedId !== null) {
+    const fallback = accItems.find((item) => item.id === String(selectedId));
+    const date = detailData
+      ? formatDateDot(detailData.regDate)
+      : (fallback?.date ?? '');
+
+    const content = detailData
+      ? (detailData.resolvedContent?.content ?? detailData.content)
+      : null;
+    if (isError) {
+      return (
+        <ConsultationDialogLayout
+          isOpen={isOpen}
+          onClose={onClose}
+          title={
+            <div className="flex min-w-0 items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setView('list')}
+                className="text-gray-12 -ml-1 shrink-0"
+                aria-label="목록으로"
+              >
+                <ChevronLeft
+                  size={24}
+                  aria-hidden
+                />
+              </button>
+              <span className="truncate">
+                {date ? `${date} 기록 일지` : '기록 일지'}
+              </span>
+            </div>
+          }
+        >
+          <div className="flex flex-1 flex-col items-center justify-center gap-2">
+            <span className="font-body2-normal text-gray-7">
+              기록을 불러오지 못했어요.
+            </span>
+            <button
+              type="button"
+              onClick={() => setView('list')}
+              className="font-label-normal text-key-color-primary"
+            >
+              목록으로 돌아가기
+            </button>
+          </div>
+        </ConsultationDialogLayout>
+      );
+    }
+
+    if (!date || !content)
+      return (
+        <ConsultationDialogLayout
+          isOpen={isOpen}
+          onClose={onClose}
+          title={
+            <div className="flex min-w-0 items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setView('list')}
+                className="text-gray-12 -ml-1 shrink-0 p-1"
+                aria-label="목록으로"
+              >
+                <ChevronLeft
+                  size={24}
+                  aria-hidden
+                />
+              </button>
+              <span className="truncate">
+                {date ? `${date} 기록 일지` : '기록 일지'}
+              </span>
+            </div>
+          }
+        >
+          <div className="flex flex-1 items-center justify-center">
+            <span className="font-body2-normal text-gray-7">
+              불러오는 중...
+            </span>
+          </div>
+        </ConsultationDialogLayout>
+      );
     return (
       <ConsultationDetail
         isOpen={isOpen}
         onClose={onClose}
         onBack={() => setView('list')}
-        date={selectedItem.date}
-        initialContent={selectedItem.content}
+        date={date}
+        initialContent={parseEditorContent(content)}
         onSave={handleUpdate}
         onDelete={handleDelete}
       />
@@ -306,10 +319,12 @@ export const ConsultationDialogs = ({
       onClose={onClose}
       onTabChange={handleTabChange}
       onSelectItem={(id) => {
-        setSelectedId(id);
+        setSelectedId(Number(id));
         setView('detail');
       }}
-      items={items}
+      items={accItems}
+      hasMore={hasMore}
+      onLoadMore={() => setPage((p) => p + 1)}
     />
   );
 };

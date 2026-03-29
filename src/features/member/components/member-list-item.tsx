@@ -125,6 +125,8 @@ export const MemberListItem = ({
       {(dialogView === 'list' || dialogView === 'form') && (
         <ConsultationDialogs
           key={dialogView}
+          studyRoomId={studyRoomId}
+          studentId={member.id}
           studentName={member.name}
           initialView={dialogView}
           isOpen

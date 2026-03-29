@@ -7,6 +7,22 @@ interface BottomToastContentProps {
   closeToast?: () => void;
 }
 
+const CloseButton = ({ closeToast }: { closeToast?: () => void }) => {
+  return (
+    <button
+      type="button"
+      onClick={closeToast}
+      className="shrink-0 text-white hover:opacity-80"
+      aria-label="닫기"
+    >
+      <X
+        className="tablet:size-6 h-4 w-4"
+        strokeWidth={2}
+      />
+    </button>
+  );
+};
+
 const BottomToastContent = ({
   message,
   closeToast,
@@ -16,17 +32,7 @@ const BottomToastContent = ({
       <p className="font-label-normal tablet:font-body1-normal flex-1 leading-relaxed text-white">
         {message}
       </p>
-      <button
-        type="button"
-        onClick={closeToast}
-        className="shrink-0 text-white hover:opacity-80"
-        aria-label="닫기"
-      >
-        <X
-          className="tablet:size-6 h-4 w-4"
-          strokeWidth={2}
-        />
-      </button>
+      <CloseButton closeToast={closeToast} />
     </div>
   );
 };
@@ -42,9 +48,9 @@ export const showBottomToast = (message: string) => {
     {
       containerId: 'bottom-center',
       position: 'bottom-center',
-      closeButton: false,
       hideProgressBar: true,
       className: '!bg-transparent !shadow-none !p-0 !min-h-0 tablet:!w-auto',
+      closeButton: CloseButton,
     }
   );
 };
