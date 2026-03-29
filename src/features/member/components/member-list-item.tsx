@@ -130,6 +130,7 @@ export const MemberListItem = ({
           studentName={member.name}
           initialView={dialogView}
           isOpen
+          isTeacher={isTeacher}
           onClose={() => setDialogView('none')}
         />
       )}

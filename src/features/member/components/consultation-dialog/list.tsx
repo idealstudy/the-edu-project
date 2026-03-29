@@ -13,6 +13,7 @@ type ConsultationItem = {
 type Props = {
   studentName: string;
   isOpen: boolean;
+  isTeacher: boolean;
   onClose: () => void;
   onTabChange: (tab: 'write' | 'list') => void;
   onSelectItem: (id: string) => void;
@@ -24,6 +25,7 @@ type Props = {
 export const ConsultationList = ({
   studentName,
   isOpen,
+  isTeacher,
   onClose,
   onTabChange,
   onSelectItem,
@@ -37,10 +39,12 @@ export const ConsultationList = ({
       onClose={onClose}
       title={`${studentName} 학생 기록 일지`}
       navigation={
-        <ConsultationTabNav
-          activeTab="list"
-          onTabChange={onTabChange}
-        />
+        isTeacher ? (
+          <ConsultationTabNav
+            activeTab="list"
+            onTabChange={onTabChange}
+          />
+        ) : undefined
       }
     >
       <p className="font-body2-heading text-gray-12 mb-4">

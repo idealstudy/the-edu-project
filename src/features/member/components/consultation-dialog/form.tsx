@@ -12,6 +12,7 @@ type Props = {
   studentId: string;
   studentName: string;
   isOpen: boolean;
+  isTeacher: boolean;
   onClose: () => void;
   onTabChange: (tab: 'write' | 'list') => void;
   onSave: (content: TextEditorValue) => void;
@@ -20,6 +21,7 @@ type Props = {
 export const ConsultationForm = ({
   studentName,
   isOpen,
+  isTeacher,
   onClose,
   onTabChange,
   onSave,
@@ -39,20 +41,24 @@ export const ConsultationForm = ({
       onClose={onClose}
       title={`${studentName} 학생 기록 일지`}
       navigation={
-        <ConsultationTabNav
-          activeTab="write"
-          onTabChange={onTabChange}
-        />
+        isTeacher ? (
+          <ConsultationTabNav
+            activeTab="write"
+            onTabChange={onTabChange}
+          />
+        ) : undefined
       }
       footer={
-        <Button
-          variant="primary"
-          size="small"
-          className="font-body2-heading px-12"
-          onClick={handleSave}
-        >
-          저장
-        </Button>
+        isTeacher ? (
+          <Button
+            variant="primary"
+            size="small"
+            className="font-body2-heading px-12"
+            onClick={handleSave}
+          >
+            저장
+          </Button>
+        ) : undefined
       }
     >
       <p className="font-body2-heading text-gray-12 mb-3">

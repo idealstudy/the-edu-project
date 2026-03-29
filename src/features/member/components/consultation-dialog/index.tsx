@@ -122,6 +122,7 @@ type ConsultationDialogsProps = {
   studentName: string;
   initialView: 'list' | 'form';
   isOpen: boolean;
+  isTeacher: boolean;
   onClose: () => void;
 };
 
@@ -131,6 +132,7 @@ export const ConsultationDialogs = ({
   studentName,
   initialView,
   isOpen,
+  isTeacher,
   onClose,
 }: ConsultationDialogsProps) => {
   const numericStudentId = Number(studentId);
@@ -212,6 +214,7 @@ export const ConsultationDialogs = ({
         studentId={studentId}
         studentName={studentName}
         isOpen={isOpen}
+        isTeacher={isTeacher}
         onClose={onClose}
         onTabChange={handleTabChange}
         onSave={handleSave}
@@ -302,6 +305,7 @@ export const ConsultationDialogs = ({
     return (
       <ConsultationDetail
         isOpen={isOpen}
+        isTeacher={isTeacher}
         onClose={onClose}
         onBack={() => setView('list')}
         date={date}
@@ -316,6 +320,7 @@ export const ConsultationDialogs = ({
     <ConsultationList
       studentName={studentName}
       isOpen={isOpen}
+      isTeacher={isTeacher}
       onClose={onClose}
       onTabChange={handleTabChange}
       onSelectItem={(id) => {

@@ -12,6 +12,7 @@ import { DeleteConfirm } from './delete-confirm';
 
 type Props = {
   isOpen: boolean;
+  isTeacher: boolean;
   onClose: () => void;
   onBack: () => void;
   date: string;
@@ -22,6 +23,7 @@ type Props = {
 
 export const ConsultationDetail = ({
   isOpen,
+  isTeacher,
   onClose,
   onBack,
   date,
@@ -64,35 +66,37 @@ export const ConsultationDetail = ({
           </div>
         }
         footer={
-          isEditing ? (
-            <Button
-              variant="primary"
-              size="small"
-              className="font-body2-heading px-12"
-              onClick={handleSave}
-            >
-              수정 완료
-            </Button>
-          ) : (
-            <>
-              <Button
-                variant="outlined"
-                size="small"
-                className="font-body2-heading px-12"
-                onClick={() => setIsDeleteOpen(true)}
-              >
-                삭제
-              </Button>
+          isTeacher ? (
+            isEditing ? (
               <Button
                 variant="primary"
                 size="small"
                 className="font-body2-heading px-12"
-                onClick={() => setIsEditing(true)}
+                onClick={handleSave}
               >
-                수정
+                수정 완료
               </Button>
-            </>
-          )
+            ) : (
+              <>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  className="font-body2-heading px-12"
+                  onClick={() => setIsDeleteOpen(true)}
+                >
+                  삭제
+                </Button>
+                <Button
+                  variant="primary"
+                  size="small"
+                  className="font-body2-heading px-12"
+                  onClick={() => setIsEditing(true)}
+                >
+                  수정
+                </Button>
+              </>
+            )
+          ) : undefined
         }
       >
         <div className="flex flex-1 flex-col">
