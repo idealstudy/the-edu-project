@@ -37,7 +37,10 @@ export default function ColumnList() {
   const router = useRouter();
   const [, startTransition] = useTransition();
 
-  const { data, isLoading } = useColumnList({ page: currentPage - 1, sort });
+  const { data, isLoading, isError } = useColumnList({
+    page: currentPage - 1,
+    sort,
+  });
 
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -49,6 +52,7 @@ export default function ColumnList() {
   };
 
   if (isLoading) return <ColumnListSkeleton />;
+  if (isError) return <div>데이터를 불러올 수 없습니다.</div>;
 
   return (
     <>
