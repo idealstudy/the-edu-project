@@ -43,7 +43,10 @@ export const MemberListItem = ({
 
   return (
     <li
-      className={`flex items-center justify-between gap-4 px-4 py-3 ${isHighlighted ? 'bg-zinc-100/70' : ''}`}
+      className={cn(
+        'tablet:flex-row tablet:items-center tablet:justify-between tablet:gap-4 flex flex-col gap-3 px-4 py-3',
+        isHighlighted && 'bg-zinc-100/70'
+      )}
     >
       {/* Left: avatar + info */}
       <div className="flex min-w-0 items-center gap-3">
@@ -95,22 +98,29 @@ export const MemberListItem = ({
 
       {/* Right: 기록 badge + 기록 button + dropdown */}
       {(isTeacher || isCurrentUser) && (
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="tablet:gap-2 tablet:self-auto flex shrink-0 items-center gap-1.5 self-end">
           {consultationCount > 0 && (
             <div
-              className="border-gray-5 font-label-normal hover:bg-gray-1 inline-flex items-center rounded-full border px-[11px] py-[3px]"
+              className="border-gray-5 font-caption-normal hover:bg-gray-1 tablet:font-label-normal tablet:px-[11px] tablet:py-[3px] inline-flex items-center rounded-full border px-2.5 py-0.5"
               onClick={() => setDialogView('list')}
             >
               기록 {consultationCount}
             </div>
           )}
-          <div className="flex gap-1">
+          <div className="tablet:gap-1 flex gap-0.5">
             <button
               type="button"
               className="text-gray-5 hover:bg-gray-1 flex items-center justify-center rounded-md"
               onClick={() => setDialogView('list')}
             >
-              <EditIcon size={24} />
+              <EditIcon
+                size={20}
+                className="tablet:hidden"
+              />
+              <EditIcon
+                size={24}
+                className="tablet:block hidden"
+              />
             </button>
             <MembersDropdown
               studyRoomId={studyRoomId}
