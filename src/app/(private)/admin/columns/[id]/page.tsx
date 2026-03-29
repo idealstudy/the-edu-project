@@ -24,7 +24,7 @@ export default async function AdminColumnDetailPage({
       <div className="border-line-line1 mt-4 h-fit w-full rounded-xl border bg-white px-8 py-10">
         <AdminColumnDetailView
           id={columnId}
-          status={status}
+          isPending={status === 'PENDING_APPROVAL'}
         />
       </div>
     </div>

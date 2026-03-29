@@ -86,7 +86,9 @@ const AdminColumnPageDtoSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
- * 칼럼 생성 Payload (선생님/관리자, PENDING_APPROVAL 상태로 저장)
+ * 칼럼 생성 Payload (선생님/관리자)
+ * 선생님 - PENDING_APPROVAL 상태로 저장
+ * 관리자 - APPROVED 상태로 즉시 게시
  * POST
  * ────────────────────────────────────────────────────*/
 const CreateColumnArticlePayloadSchema = z.object({

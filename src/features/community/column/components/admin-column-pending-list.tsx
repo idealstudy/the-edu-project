@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Link from 'next/link';
 
@@ -22,6 +22,13 @@ export default function AdminColumnPendingList() {
   const deleteColumnMutation = useDeleteColumn();
 
   const columns = data?.content ?? [];
+
+  // 삭제 후 빈 페이지 감지
+  useEffect(() => {
+    if (data && data.content.length === 0 && page > 1) {
+      setPage((prev) => prev - 1);
+    }
+  }, [data, page]);
 
   if (!data || data.totalElements === 0) return null;
 
@@ -48,7 +55,7 @@ export default function AdminColumnPendingList() {
                   </Link>
                 </p>
                 <div className="text-gray-10 font-caption-normal mt-2 flex items-center gap-3">
-                  <span>{column.authorNickname} 선생님</span>
+                  <span>{column.authorNickname ?? '알 수 없음'}</span>
                   <span>{column.regDate.split('T')[0]}</span>
                 </div>
               </div>
@@ -88,13 +95,18 @@ export default function AdminColumnPendingList() {
           onPageChange={setPage}
         />
       </section>
-      {/* 모달 */}
+      {/* 삭제 확인 Dialog */}
       <DeleteColumnDialog
         isOpen={deleteTargetId !== null}
         onClose={() => setDeleteTargetId(null)}
-        onConfirm={() =>
-          deleteTargetId && deleteColumnMutation.mutate(deleteTargetId)
-        }
+        onConfirm={() => {
+          if (deleteTargetId)
+            deleteColumnMutation.mutate(deleteTargetId, {
+              onSuccess: () => {
+                setDeleteTargetId(null);
+              },
+            });
+        }}
       />
     </>
   );

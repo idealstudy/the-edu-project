@@ -37,10 +37,7 @@ export default function DeleteColumnDialog({
           <Button
             size="small"
             variant="secondary"
-            onClick={() => {
-              onConfirm();
-              onClose();
-            }}
+            onClick={onConfirm}
           >
             삭제
           </Button>

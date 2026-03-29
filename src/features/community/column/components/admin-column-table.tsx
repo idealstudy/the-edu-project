@@ -1,19 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Link from 'next/link';
 
 import { ColumnStatus } from '@/entities/column';
 import DeleteColumnDialog from '@/features/community/column/components/delete-column-dialog';
-import {
-  useAdminApprovedColumnList,
-  useApproveColumn,
-} from '@/features/community/column/hooks/use-admin-column';
+import { useAdminApprovedColumnList } from '@/features/community/column/hooks/use-admin-column';
 import { useDeleteColumn } from '@/features/community/column/hooks/use-column-form';
+import { MiniSpinner } from '@/shared/components/loading';
 import { Button, Pagination } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants';
 
+// TODO 현재는 게시 상태만 적용됨. 추후 반려/대기 상태 추가 예정
 const STATUS_LABEL: Record<ColumnStatus, { label: string; className: string }> =
   {
     APPROVED: {
@@ -30,11 +29,19 @@ export default function AdminColumnTable() {
   const [page, setPage] = useState(1);
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
 
-  const { data } = useAdminApprovedColumnList({ page: page - 1 });
-  const approveColumnMutation = useApproveColumn();
+  const { data, isLoading } = useAdminApprovedColumnList({ page: page - 1 });
   const deleteColumnMutation = useDeleteColumn();
 
   const columns = data?.content ?? [];
+
+  // 삭제 후 빈 페이지 감지
+  useEffect(() => {
+    if (data && data.content.length === 0 && page > 1) {
+      setPage((prev) => prev - 1);
+    }
+  }, [data, page]);
+
+  if (isLoading) return <MiniSpinner />;
 
   return (
     <>
@@ -88,17 +95,6 @@ export default function AdminColumnTable() {
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2">
-                        {column.status === 'PENDING_APPROVAL' && (
-                          <Button
-                            size="xsmall"
-                            onClick={() =>
-                              approveColumnMutation.mutate(column.id)
-                            }
-                          >
-                            승인
-                          </Button>
-                        )}
-
                         <Button
                           variant="secondary"
                           size="xsmall"
@@ -122,13 +118,18 @@ export default function AdminColumnTable() {
           onPageChange={setPage}
         />
       </section>
-      {/* 모달 */}
+      {/* 삭제 확인 Dialog */}
       <DeleteColumnDialog
         isOpen={deleteTargetId !== null}
         onClose={() => setDeleteTargetId(null)}
-        onConfirm={() =>
-          deleteTargetId && deleteColumnMutation.mutate(deleteTargetId)
-        }
+        onConfirm={() => {
+          if (deleteTargetId)
+            deleteColumnMutation.mutate(deleteTargetId, {
+              onSuccess: () => {
+                setDeleteTargetId(null);
+              },
+            });
+        }}
       />
     </>
   );

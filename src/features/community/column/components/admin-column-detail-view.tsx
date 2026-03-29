@@ -17,18 +17,16 @@ import { getRelativeTimeString } from '@/shared/lib';
 
 export default function AdminColumnDetailView({
   id,
-  status,
+  isPending,
 }: {
   id: number;
-  status?: string;
+  isPending: boolean;
 }) {
   const router = useRouter();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const { data, isLoading, isError } = useAdminColumnDetail(id);
   const approveColumnMutation = useApproveColumn();
   const deleteColumnMutation = useDeleteColumn();
-
-  const isPending = status === 'PENDING_APPROVAL';
 
   if (isLoading) return <div>로딩 중...</div>;
   if (isError || !data) return <div>데이터를 불러올 수 없습니다.</div>;
@@ -84,13 +82,16 @@ export default function AdminColumnDetailView({
         </div>
         <TextViewer value={content} />
       </article>
-      {/* 모달 */}
+      {/* 삭제 확인 Dialog */}
       <DeleteColumnDialog
         isOpen={isDeleteOpen}
         onClose={() => setIsDeleteOpen(false)}
         onConfirm={() =>
           deleteColumnMutation.mutate(id, {
-            onSuccess: () => router.push(PRIVATE.ADMIN.COLUMN.LIST),
+            onSuccess: () => {
+              setIsDeleteOpen(false);
+              router.push(PRIVATE.ADMIN.COLUMN.LIST);
+            },
           })
         }
       />
