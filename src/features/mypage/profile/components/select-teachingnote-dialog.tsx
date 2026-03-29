@@ -16,7 +16,7 @@ import { dialogReducer, initialDialogState } from '@/shared/components/dialog';
 import { Accordion, Dialog } from '@/shared/components/ui';
 import { classifyMypageError, handleApiError } from '@/shared/lib/errors';
 
-export default function SelectTeachingnoteDialog() {
+export default function SelectTeachingNoteDialog() {
   const router = useRouter();
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
 

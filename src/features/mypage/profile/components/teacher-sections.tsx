@@ -6,7 +6,7 @@ import { useTeacherReport } from '@/features/mypage/common/hooks/teacher/use-rep
 import AddCareerDialog from '@/features/mypage/profile/components/add-career-dialog';
 import { CareerDropdown } from '@/features/mypage/profile/components/career-dropdown';
 import EditHighlightDialog from '@/features/mypage/profile/components/edit-description-dialog';
-import SelectTeachingnoteDialog from '@/features/mypage/profile/components/select-teachingnote-dialog';
+import SelectTeachingNoteDialog from '@/features/mypage/profile/components/select-teachingnote-dialog';
 import { useTeacherCareers } from '@/features/mypage/profile/hooks/teacher/use-careers';
 import { useTeacherDescription } from '@/features/mypage/profile/hooks/teacher/use-description';
 import { useTeacherReviews } from '@/features/mypage/profile/hooks/teacher/use-reviews';
@@ -159,7 +159,7 @@ export default function TeacherSections() {
       <SectionContainer
         title="대표 수업노트"
         isOwner
-        action={<SelectTeachingnoteDialog />}
+        action={<SelectTeachingNoteDialog />}
         isLoading={isTeachingnotesLoading}
         isError={isTeachingnotesError}
         onRetry={refetchTeachingnotes}

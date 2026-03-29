@@ -25,7 +25,7 @@ const HOMEWORK_STATUS_LABEL: Record<
 > = {
   NOT_SUBMIT: '미제출',
   SUBMIT: '제출 완료',
-  LATE_SUBMIT: '지각 제출',
+  LATE_SUBMIT: '지연 제출',
 };
 
 const HOMEWORK_SORT_OPTIONS: Array<{

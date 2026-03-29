@@ -23,7 +23,7 @@ export type DashboardHomeworkSortKey =
 /* ─────────────────────────────────────────────────────
  * DTO
  * ────────────────────────────────────────────────────*/
-export type TeacherdescriptionDTO = z.infer<typeof dto.teacherDescription>;
+export type TeacherDescriptionDTO = z.infer<typeof dto.teacherDescription>;
 export type TeacherReportDTO = z.infer<typeof dto.teacherReport>;
 export type TeacherNoteListDTO = z.infer<typeof dto.teacherNoteList>;
 export type TeacherStudyRoomListDTO = z.infer<typeof dto.teacherStudyRoomList>;
