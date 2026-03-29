@@ -2,8 +2,6 @@
 
 import { ChevronRight } from 'lucide-react';
 
-import { ConsultationDialogLayout, ConsultationTabNav } from '.';
-
 type ConsultationItem = {
   id: string;
   date: string;
@@ -11,42 +9,20 @@ type ConsultationItem = {
 };
 
 type Props = {
-  studentName: string;
-  isOpen: boolean;
-  isTeacher: boolean;
-  onClose: () => void;
-  onTabChange: (tab: 'write' | 'list') => void;
-  onSelectItem: (id: string) => void;
   items: ConsultationItem[];
   hasMore: boolean;
   onLoadMore: () => void;
+  onSelectItem: (id: string) => void;
 };
 
-export const ConsultationList = ({
-  studentName,
-  isOpen,
-  isTeacher,
-  onClose,
-  onTabChange,
-  onSelectItem,
+export const ConsultationListContent = ({
   items,
   hasMore,
   onLoadMore,
+  onSelectItem,
 }: Props) => {
   return (
-    <ConsultationDialogLayout
-      isOpen={isOpen}
-      onClose={onClose}
-      title={`${studentName} 학생 기록 일지`}
-      navigation={
-        isTeacher ? (
-          <ConsultationTabNav
-            activeTab="list"
-            onTabChange={onTabChange}
-          />
-        ) : undefined
-      }
-    >
+    <>
       <p className="font-body2-heading text-gray-12 mb-4">
         {items.length}개의 기록 일지
       </p>
@@ -63,7 +39,6 @@ export const ConsultationList = ({
             key={item.id}
             className="group mb-4 flex items-stretch gap-3"
           >
-            {/* Timeline dot + line */}
             <div className="flex flex-col items-center">
               <div className="bg-gray-3 group-hover:bg-orange-3 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full transition-colors">
                 <div className="bg-gray-6 group-hover:bg-orange-6 h-3 w-3 rounded-full" />
@@ -74,7 +49,6 @@ export const ConsultationList = ({
               )}
             </div>
 
-            {/* Card */}
             <button
               type="button"
               onClick={() => onSelectItem(item.id)}
@@ -106,6 +80,6 @@ export const ConsultationList = ({
           더 보기
         </button>
       )}
-    </ConsultationDialogLayout>
+    </>
   );
 };

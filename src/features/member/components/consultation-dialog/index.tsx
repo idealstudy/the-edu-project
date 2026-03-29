@@ -9,15 +9,22 @@ import {
   useDeleteConsultation,
   useUpdateConsultation,
 } from '@/features/member/hooks/use-consultation';
-import { parseEditorContent } from '@/shared/components/editor';
+import {
+  initialTextEditorValue,
+  parseEditorContent,
+  prepareContentForSave,
+} from '@/shared/components/editor';
+import { TextEditorValue } from '@/shared/components/editor/types';
 import { showBottomToast } from '@/shared/components/ui';
+import { Button } from '@/shared/components/ui/button';
 import { Dialog } from '@/shared/components/ui/dialog';
 import { cn, formatDateDot, toPlainText } from '@/shared/lib';
 import { ChevronLeft, Info, X } from 'lucide-react';
 
-import { ConsultationDetail } from './detail';
-import { ConsultationForm } from './form';
-import { ConsultationList } from './list';
+import { DeleteConfirm } from './delete-confirm';
+import { ConsultationDetailContent } from './detail';
+import { ConsultationFormContent } from './form';
+import { ConsultationListContent } from './list';
 
 // ─────────────────────────────────────────────────────
 // Layout (공통 다이얼로그 프레임)
@@ -142,6 +149,18 @@ export const ConsultationDialogs = ({
     { id: string; date: string; preview: string }[]
   >([]);
 
+  // Form state
+  const [formContent, setFormContent] = useState<TextEditorValue>(
+    initialTextEditorValue
+  );
+
+  // Detail state
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [detailContent, setDetailContent] = useState<TextEditorValue>(
+    initialTextEditorValue
+  );
+
   const { data: pageData } = useConsultationList(
     studyRoomId,
     numericStudentId,
@@ -168,6 +187,21 @@ export const ConsultationDialogs = ({
     view === 'detail' && selectedId !== null
   );
 
+  useEffect(() => {
+    setIsEditing(false);
+    setDetailContent(initialTextEditorValue);
+  }, [selectedId]);
+
+  useEffect(() => {
+    if (!detailData) return;
+    const resolved = detailData.resolvedContent;
+    const raw =
+      resolved?.expiresAt && new Date(resolved.expiresAt) > new Date()
+        ? resolved.content
+        : detailData.content;
+    setDetailContent(parseEditorContent(raw));
+  }, [detailData]);
+
   const createMutation = useCreateConsultation(studyRoomId, numericStudentId);
   const updateMutation = useUpdateConsultation(studyRoomId, numericStudentId);
   const deleteMutation = useDeleteConsultation(studyRoomId, numericStudentId);
@@ -175,19 +209,39 @@ export const ConsultationDialogs = ({
   const handleTabChange = (tab: 'write' | 'list') =>
     setView(tab === 'write' ? 'form' : 'list');
 
-  const handleSave = (contentString: string, mediaIds: string[]) => {
+  const handleFormSave = () => {
+    const { contentString, mediaIds } = prepareContentForSave(formContent);
     createMutation.mutate(
       { content: contentString, mediaIds },
-      { onSuccess: () => setView('list') }
+      {
+        onSuccess: () => {
+          setFormContent(initialTextEditorValue);
+          setView('list');
+        },
+      }
     );
   };
 
-  const handleUpdate = (contentString: string, mediaIds: string[]) => {
+  const handleDetailSave = () => {
     if (!selectedId) return;
+    const { contentString, mediaIds } = prepareContentForSave(detailContent);
     updateMutation.mutate(
       { sheetId: selectedId, content: contentString, mediaIds },
-      { onSuccess: () => setView('list') }
+      {
+        onSuccess: () => {
+          setIsEditing(false);
+          setView('list');
+        },
+      }
     );
+  };
+
+  const handleDetailCancel = () => {
+    if (detailData) {
+      const raw = detailData.resolvedContent?.content ?? detailData.content;
+      setDetailContent(parseEditorContent(raw));
+    }
+    setIsEditing(false);
   };
 
   const handleDelete = () => {
@@ -197,6 +251,7 @@ export const ConsultationDialogs = ({
       { sheetId: selectedId },
       {
         onSuccess: () => {
+          setIsDeleteOpen(false);
           setSelectedId(null);
           setView('list');
           showBottomToast(
@@ -209,15 +264,36 @@ export const ConsultationDialogs = ({
 
   if (view === 'form') {
     return (
-      <ConsultationForm
-        studentId={studentId}
-        studentName={studentName}
+      <ConsultationDialogLayout
         isOpen={isOpen}
-        isTeacher={isTeacher}
         onClose={onClose}
-        onTabChange={handleTabChange}
-        onSave={handleSave}
-      />
+        title={`${studentName} 학생 기록 일지`}
+        navigation={
+          isTeacher ? (
+            <ConsultationTabNav
+              activeTab="write"
+              onTabChange={handleTabChange}
+            />
+          ) : undefined
+        }
+        footer={
+          isTeacher ? (
+            <Button
+              variant="primary"
+              size="small"
+              className="font-body2-heading px-12"
+              onClick={handleFormSave}
+            >
+              저장
+            </Button>
+          ) : undefined
+        }
+      >
+        <ConsultationFormContent
+          content={formContent}
+          onChange={setFormContent}
+        />
+      </ConsultationDialogLayout>
     );
   }
 
@@ -227,32 +303,31 @@ export const ConsultationDialogs = ({
       ? formatDateDot(detailData.regDate)
       : (fallback?.date ?? '');
 
-    const content = detailData
-      ? (detailData.resolvedContent?.content ?? detailData.content)
-      : null;
+    const detailTitle = (
+      <div className="flex min-w-0 items-center gap-2">
+        <button
+          type="button"
+          onClick={isEditing ? handleDetailCancel : () => setView('list')}
+          className="text-gray-7 hover:text-gray-12 -ml-1 shrink-0 p-1"
+          aria-label={isEditing ? '편집 취소' : '목록으로'}
+        >
+          <ChevronLeft
+            size={20}
+            aria-hidden
+          />
+        </button>
+        <span className="truncate">
+          {date ? `${date} 기록 일지` : '기록 일지'}
+        </span>
+      </div>
+    );
+
     if (isError) {
       return (
         <ConsultationDialogLayout
           isOpen={isOpen}
           onClose={onClose}
-          title={
-            <div className="flex min-w-0 items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setView('list')}
-                className="text-gray-12 -ml-1 shrink-0"
-                aria-label="목록으로"
-              >
-                <ChevronLeft
-                  size={24}
-                  aria-hidden
-                />
-              </button>
-              <span className="truncate">
-                {date ? `${date} 기록 일지` : '기록 일지'}
-              </span>
-            </div>
-          }
+          title={detailTitle}
         >
           <div className="flex flex-1 flex-col items-center justify-center gap-2">
             <span className="font-body2-normal text-gray-7">
@@ -270,29 +345,12 @@ export const ConsultationDialogs = ({
       );
     }
 
-    if (!date || !content)
+    if (!date || !detailData) {
       return (
         <ConsultationDialogLayout
           isOpen={isOpen}
           onClose={onClose}
-          title={
-            <div className="flex min-w-0 items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setView('list')}
-                className="text-gray-12 -ml-1 shrink-0 p-1"
-                aria-label="목록으로"
-              >
-                <ChevronLeft
-                  size={24}
-                  aria-hidden
-                />
-              </button>
-              <span className="truncate">
-                {date ? `${date} 기록 일지` : '기록 일지'}
-              </span>
-            </div>
-          }
+          title={detailTitle}
         >
           <div className="flex flex-1 items-center justify-center">
             <span className="font-body2-normal text-gray-7">
@@ -301,34 +359,88 @@ export const ConsultationDialogs = ({
           </div>
         </ConsultationDialogLayout>
       );
+    }
+
+    const detailFooter = isTeacher ? (
+      isEditing ? (
+        <Button
+          variant="primary"
+          size="small"
+          className="font-body2-heading px-12"
+          onClick={handleDetailSave}
+        >
+          수정 완료
+        </Button>
+      ) : (
+        <>
+          <Button
+            variant="outlined"
+            size="small"
+            className="font-body2-heading px-12"
+            onClick={() => setIsDeleteOpen(true)}
+          >
+            삭제
+          </Button>
+          <Button
+            variant="primary"
+            size="small"
+            className="font-body2-heading px-12"
+            onClick={() => setIsEditing(true)}
+          >
+            수정
+          </Button>
+        </>
+      )
+    ) : undefined;
+
     return (
-      <ConsultationDetail
-        isOpen={isOpen}
-        isTeacher={isTeacher}
-        onClose={onClose}
-        onBack={() => setView('list')}
-        date={date}
-        initialContent={parseEditorContent(content)}
-        onSave={handleUpdate}
-        onDelete={handleDelete}
-      />
+      <>
+        <ConsultationDialogLayout
+          isOpen={isOpen}
+          onClose={onClose}
+          title={detailTitle}
+          footer={detailFooter}
+        >
+          <ConsultationDetailContent
+            isEditing={isEditing}
+            content={detailContent}
+            onChange={setDetailContent}
+          />
+        </ConsultationDialogLayout>
+
+        <DeleteConfirm
+          date={date}
+          isOpen={isDeleteOpen}
+          onOpenChange={setIsDeleteOpen}
+          onDelete={handleDelete}
+        />
+      </>
     );
   }
 
   return (
-    <ConsultationList
-      studentName={studentName}
+    <ConsultationDialogLayout
       isOpen={isOpen}
-      isTeacher={isTeacher}
       onClose={onClose}
-      onTabChange={handleTabChange}
-      onSelectItem={(id) => {
-        setSelectedId(Number(id));
-        setView('detail');
-      }}
-      items={accItems}
-      hasMore={hasMore}
-      onLoadMore={() => setPage((p) => p + 1)}
-    />
+      title={`${studentName} 학생 기록 일지`}
+      navigation={
+        isTeacher ? (
+          <ConsultationTabNav
+            activeTab="list"
+            onTabChange={handleTabChange}
+          />
+        ) : undefined
+      }
+    >
+      <ConsultationListContent
+        items={accItems}
+        hasMore={hasMore}
+        onLoadMore={() => setPage((p) => p + 1)}
+        onSelectItem={(id) => {
+          setSelectedId(Number(id));
+          setView('detail');
+        }}
+      />
+    </ConsultationDialogLayout>
   );
 };
