@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { useCreateConsultation } from '@/features/consultation/hooks/use-consultation-form';
@@ -28,6 +29,8 @@ export default function ConsultationWriteArea({
   studyRoomId?: number;
   isEditMode?: boolean;
 }) {
+  const [roomSelectValue, setRoomSelectValue] = useState('');
+
   const createConsultationMutation = useCreateConsultation();
 
   // TODO update 추가
@@ -67,12 +70,12 @@ export default function ConsultationWriteArea({
   };
 
   return (
-    <>
+    <div className="border-line-line1 mt-4 h-fit w-full rounded-xl border bg-white px-8 py-10">
       <h1 className="font-title-heading mb-10">어떤 내용을 문의하시겠어요?</h1>
 
       <Form
         onSubmit={handleSubmit(onSubmit)}
-        className="space-y-8"
+        className="flex flex-col gap-8"
       >
         {/* 제목 */}
         <Form.Item error={!!errors.title}>
@@ -103,10 +106,11 @@ export default function ConsultationWriteArea({
                 control={control}
                 render={({ field }) => (
                   <Select
-                    value={field.value?.toString() ?? ''}
-                    onValueChange={(v) =>
-                      field.onChange(v ? Number(v) : undefined)
-                    }
+                    value={roomSelectValue}
+                    onValueChange={(v) => {
+                      setRoomSelectValue(v);
+                      field.onChange(v === 'none' ? undefined : Number(v));
+                    }}
                     disabled={mutation.isPending}
                   >
                     <Select.Trigger
@@ -114,6 +118,9 @@ export default function ConsultationWriteArea({
                       className="border-line-line2"
                     />
                     <Select.Content className="border-line-line2 max-h-40 overflow-y-auto">
+                      <Select.Option value="none">
+                        스터디룸 없이 문의
+                      </Select.Option>
                       {studyRooms.map((room) => (
                         <Select.Option
                           key={room.id}
@@ -152,6 +159,7 @@ export default function ConsultationWriteArea({
               {...register('content')}
               placeholder="문의 내용을 입력해주세요."
               disabled={mutation.isPending}
+              className="h-40 resize-none"
             />
           </Form.Control>
           <Form.ErrorMessage className="text-sm">
@@ -163,11 +171,11 @@ export default function ConsultationWriteArea({
         <Button
           type="submit"
           disabled={mutation.isPending || !isDirty || !isValid}
-          className="w-full"
+          className="self-end"
         >
           {mutation.isPending ? '저장 중' : '문의 남기기'}
         </Button>
       </Form>
-    </>
+    </div>
   );
 }

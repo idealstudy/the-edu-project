@@ -14,8 +14,30 @@ const createConsultation = async (params: CreateConsultationPayload) => {
 };
 
 /* ─────────────────────────────────────────────────────
+ * [READ] 문의 내용 상세 조회 (작성자 / 선생님)
+ * ────────────────────────────────────────────────────*/
+const getConsultation = async (id: number) => {
+  const response = await api.private.get(`/common/inquiries/${id}`);
+  return unwrapEnvelope(response, dto.detail);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [CREATE] 문의 답변 작성 (선생님)
+ * ────────────────────────────────────────────────────*/
+const createConsultationAnswer = async (id: number, content: string) => {
+  const validated = payload.createAnswer.parse({ content });
+  const response = await api.private.post(
+    `/teacher/inquiries/${id}/answer`,
+    validated
+  );
+  return unwrapEnvelope(response, dto.detail);
+};
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const repository = {
   createConsultation,
+  getConsultation,
+  createConsultationAnswer,
 };

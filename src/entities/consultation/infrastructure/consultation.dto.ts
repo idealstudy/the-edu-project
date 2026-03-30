@@ -18,8 +18,8 @@ const ConsultationDetailDtoSchema = z.object({
   inquirerId: z.number(),
   inquirerName: z.string(),
   targetTeacherId: z.number(),
-  studyRoomId: z.number().nullable(),
-  studyRoomName: z.string().nullable(),
+  studyRoomId: z.number().nullish(),
+  studyRoomName: z.string().nullish(),
   title: z.string(),
   content: z.string(),
   status: z.enum(['PENDING', 'ANSWERED']),
@@ -35,8 +35,16 @@ const ConsultationDetailDtoSchema = z.object({
 const CreateConsultationPayloadSchema = z.object({
   targetTeacherId: z.number(),
   studyRoomId: z.number().optional(),
-  title: z.string().min(1),
-  content: z.string().min(1),
+  title: z.string(),
+  content: z.string(),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 답변 등록 Payload
+ * POST
+ * ────────────────────────────────────────────────────*/
+const ConsultationAnswerPayloadSchema = z.object({
+  content: z.string(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -48,4 +56,5 @@ export const dto = {
 
 export const payload = {
   create: CreateConsultationPayloadSchema,
+  createAnswer: ConsultationAnswerPayloadSchema,
 };

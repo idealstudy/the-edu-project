@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+// 문의 등록
 export const ConsultationFormSchema = z.object({
   teacherId: z.number({ required_error: '선생님을 선택해주세요.' }),
   studyRoomId: z.number().optional(),
@@ -8,3 +9,12 @@ export const ConsultationFormSchema = z.object({
 });
 
 export type ConsultationForm = z.infer<typeof ConsultationFormSchema>;
+
+// 답변 등록
+export const ConsultationAnswerFormSchema = z.object({
+  content: z.string().min(1, '답변을 입력해주세요.'),
+});
+
+export type ConsultationAnswerForm = z.infer<
+  typeof ConsultationAnswerFormSchema
+>;
