@@ -3,14 +3,18 @@
 import ConsultationAnswerArea from '@/features/consultation/components/consultation-answer-area';
 import { useConsultation } from '@/features/consultation/hooks/use-consultation';
 import { MiniSpinner } from '@/shared/components/loading';
-import { getRelativeTimeString } from '@/shared/lib';
 
 export default function ConsultationDetailArea({ id }: { id: number }) {
-  const { data: consultation, isLoading } = useConsultation(id);
+  const { data: consultation, isLoading, isError } = useConsultation(id);
 
-  if (isLoading) return <MiniSpinner />;
-  if (!consultation) return <p>문의 내용이 없습니다.</p>;
-
+  if (isLoading)
+    return (
+      <div className="flex h-40 items-center justify-center">
+        <MiniSpinner />
+      </div>
+    );
+  if (isError) return <p>문의를 불러올 수 없습니다.</p>;
+  if (!consultation) return null;
   return (
     <>
       <div className="border-line-line1 mt-4 h-fit w-full rounded-xl border bg-white px-8 py-10">
@@ -24,6 +28,13 @@ export default function ConsultationDetailArea({ id }: { id: number }) {
             </span>
           </div>
 
+          {/* 스터디룸 */}
+          {consultation.studyRoomName && (
+            <p className="font-body2-normal text-text-sub2">
+              {consultation.studyRoomName}
+            </p>
+          )}
+
           {/* 제목 */}
           <h2 className="font-title-heading">{consultation.title}</h2>
 
@@ -34,7 +45,7 @@ export default function ConsultationDetailArea({ id }: { id: number }) {
 
           {/* 작성 날짜 */}
           <span className="font-caption-normal text-text-sub2 self-end">
-            {getRelativeTimeString(consultation.regDate) + ' 작성'}
+            {consultation.regDate.split('T')[0] + ' 작성'}
           </span>
         </div>
       </div>
