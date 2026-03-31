@@ -100,8 +100,8 @@ const PRIVATE_COMMUNITY = {
  * ────────────────────────────────────────────────────*/
 const ADMIN = {
   COLUMN: {
-    LIST: '/admin/columns',
-    DETAIL: (id: number) => `/admin/columns/${id}`,
+    LIST: '/admin/column',
+    DETAIL: (id: number) => `/admin/column/${id}`,
   },
 } as const;
 

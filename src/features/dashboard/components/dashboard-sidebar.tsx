@@ -94,7 +94,7 @@ export const DashboardSidebar = () => {
             <li>
               <Sidebar.Item
                 href={PRIVATE.ADMIN.COLUMN.LIST}
-                matchPath="/admin/columns"
+                matchPath="/admin/column"
                 className="h-12 items-center justify-start gap-[2px]"
               >
                 <ListIcon />
