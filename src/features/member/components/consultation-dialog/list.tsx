@@ -49,11 +49,7 @@ export const ConsultationListContent = ({
               )}
             </div>
 
-            <button
-              type="button"
-              onClick={() => onSelectItem(item.id)}
-              className="border-line-line1 group-hover:border-orange-3 group-hover:bg-orange-1 flex w-full items-start justify-between gap-3 rounded-xl border p-4 text-left transition-colors"
-            >
+            <div className="border-line-line1 flex w-full items-start justify-between gap-3 rounded-xl border p-4 text-left transition-colors group-hover:shadow-lg">
               <div className="min-w-0 flex-1">
                 <p className="font-caption-normal text-gray-7 group-hover:text-orange-6 mb-1 transition-colors">
                   {item.date}
@@ -62,11 +58,18 @@ export const ConsultationListContent = ({
                   {item.preview}
                 </p>
               </div>
-              <ChevronRight
-                className="text-gray-5 group-hover:text-orange-5 shrink-0 transition-colors"
-                size={20}
-              />
-            </button>
+              <button
+                type="button"
+                onClick={() => onSelectItem(item.id)}
+                className="shrink-0 cursor-pointer"
+                aria-label="기록 일지 보기"
+              >
+                <ChevronRight
+                  className="text-gray-5 transition-colors"
+                  size={20}
+                />
+              </button>
+            </div>
           </li>
         ))}
       </ul>
