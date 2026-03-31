@@ -15,12 +15,12 @@ export default function ColumnCard({ column }: { column: ColumnListItem }) {
     >
       {/* 상단 영역 */}
       <div className="bg-orange-1 relative h-[150px] rounded-t-xl">
-        {/* TODO: thumbnailUrl 외부 도메인 next.config에 추가 필요 */}
         {column.thumbnailUrl && (
           <Image
             src={column.thumbnailUrl}
             alt={column.title}
             fill
+            unoptimized
             sizes="(max-width: 768px) 100vw, 50vw"
             className="rounded-t-xl object-cover"
           />
