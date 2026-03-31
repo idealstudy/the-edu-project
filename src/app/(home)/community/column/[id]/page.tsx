@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 import { SITE_CONFIG } from '@/config/site';
 import { repository } from '@/entities/column';
 import ColumnDetailView from '@/features/community/column/components/column-detail-view';
+import { generateColumnDetailMetadata } from '@/features/community/column/metadata';
 import BackLink from '@/features/dashboard/studynote/components/back-link';
 
 type Props = {
@@ -25,15 +26,8 @@ export async function generateMetadata({
   if (preview === 'true') return { title: SITE_CONFIG.name };
 
   try {
-    const data = await getDetail(Number(id));
-    return {
-      title: `${SITE_CONFIG.name} | ${data.title}`,
-      description: data.authorNickname,
-      openGraph: {
-        title: data.title,
-        images: data.thumbnailUrl ? [{ url: data.thumbnailUrl }] : [],
-      },
-    };
+    const columnDetail = await getDetail(Number(id));
+    return generateColumnDetailMetadata(columnDetail);
   } catch {
     return { title: SITE_CONFIG.name };
   }
