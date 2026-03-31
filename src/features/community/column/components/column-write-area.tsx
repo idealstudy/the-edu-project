@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
 import { useRouter } from 'next/navigation';
 
@@ -73,17 +74,21 @@ export default function ColumnWriteArea({
   const isAdmin = role === 'ROLE_ADMIN';
 
   // 수정 모드일 경우, 기존 내용 불러오기
-  const { data: teacherData, isLoading: teacherLoading } = useMyColumnDetail(
-    id ?? 0,
-    { enabled: isEditMode && !!id && !isAdmin }
-  );
-  const { data: adminData, isLoading: adminLoading } = useAdminColumnDetail(
-    id ?? 0,
-    { enabled: isEditMode && !!id && isAdmin }
-  );
+  const {
+    data: teacherData,
+    isLoading: teacherLoading,
+    isError: teacherError,
+  } = useMyColumnDetail(id ?? 0, { enabled: isEditMode && !!id && !isAdmin });
+
+  const {
+    data: adminData,
+    isLoading: adminLoading,
+    isError: adminError,
+  } = useAdminColumnDetail(id ?? 0, { enabled: isEditMode && !!id && isAdmin });
 
   const existingData = isAdmin ? adminData : teacherData;
   const isDetailLoading = isAdmin ? adminLoading : teacherLoading;
+  const isDetailError = isAdmin ? adminError : teacherError;
 
   const createColumnMutation = useCreateColumn();
   const updateColumnMutation = useUpdateColumn(id ?? 0);
@@ -119,6 +124,15 @@ export default function ColumnWriteArea({
       });
     }
   }, [existingData, isEditMode, reset]);
+
+  // 수정 모드일 경우, 잘못된 접근 차단
+  useEffect(() => {
+    if (!isEditMode) return;
+    if (!isDetailLoading && (isDetailError || !existingData)) {
+      toast.error('잘못된 접근입니다.');
+      router.replace(PUBLIC.COMMUNITY.COLUMN.LIST);
+    }
+  }, [existingData, isDetailError, isDetailLoading, isEditMode, router]);
 
   // 태그 상태 관리
   const [tagInput, setTagInput] = useState('');
