@@ -11,7 +11,7 @@ import { useMemberStore } from '@/store';
 
 // 접근 가능 탭
 const VALID_TABS: Partial<Record<string, string[]>> = {
-  ROLE_TEACHER: ['profile', 'columns'],
+  ROLE_TEACHER: ['profile', 'columns', 'received-consultations'],
   ROLE_STUDENT: ['profile', 'consultations'],
   ROLE_PARENT: ['consultations'],
 };

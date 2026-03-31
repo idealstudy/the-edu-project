@@ -48,6 +48,18 @@ const getMyConsultations = async (params: { page: number; size: number }) => {
 };
 
 /* ─────────────────────────────────────────────────────
+ * [READ] 받은 문의 목록 조회 (선생님)
+ * ────────────────────────────────────────────────────*/
+const getReceivedConsultations = async (params: {
+  page: number;
+  size: number;
+  status?: 'PENDING' | 'ANSWERED';
+}) => {
+  const response = await api.private.get('/teacher/inquiries', { params });
+  return unwrapEnvelope(response, dto.list);
+};
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const repository = {
@@ -55,4 +67,5 @@ export const repository = {
   getConsultation,
   createConsultationAnswer,
   getMyConsultations,
+  getReceivedConsultations,
 };

@@ -4,10 +4,11 @@ import { useTransition } from 'react';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
+import { ConsultationStatus } from '@/entities/consultation';
 import MyConsultationItem from '@/features/mypage/consultation/components/my-consultation-item';
-import { useMyConsultations } from '@/features/mypage/consultation/hooks/use-my-consultations';
+import { useReceivedConsultations } from '@/features/mypage/consultation/hooks/use-received-consultations';
 import SectionContainer from '@/features/profile/components/section-container';
-import { Pagination } from '@/shared/components/ui';
+import { Checkbox, Pagination } from '@/shared/components/ui';
 
 const parsePage = (value?: string) => {
   const parsed = Number(value);
@@ -15,7 +16,10 @@ const parsePage = (value?: string) => {
   return parsed;
 };
 
-export default function MyConsultationList() {
+const isConsultationStatus = (v: string | null): v is ConsultationStatus =>
+  v === 'PENDING' || v === 'ANSWERED';
+
+export default function ReceivedConsultationList() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -23,10 +27,15 @@ export default function MyConsultationList() {
 
   const currentPage = parsePage(searchParams.get('page') ?? undefined);
 
-  const { data, isLoading, isError, refetch } = useMyConsultations(
-    currentPage - 1
-  );
+  const raw = searchParams.get('status');
+  const currentStatus = isConsultationStatus(raw) ? raw : undefined;
 
+  const { data, isLoading, isError, refetch } = useReceivedConsultations({
+    page: currentPage - 1,
+    status: currentStatus,
+  });
+
+  // 페이지 변경
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', String(page));
@@ -35,13 +44,39 @@ export default function MyConsultationList() {
     });
   };
 
+  // 상태 변경
+  const handleStatusChange = (status: ConsultationStatus | undefined) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (status) {
+      params.set('status', status);
+    } else {
+      params.delete('status');
+    }
+    params.set('page', '1');
+
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`, { scroll: true });
+    });
+  };
+
   return (
     <SectionContainer
-      title="내 문의 목록"
+      title="받은 문의 목록"
       isLoading={isLoading}
       isError={isError}
       onRetry={refetch}
     >
+      {/* 답변 대기만 보기 */}
+      <Checkbox.Label className="self-end">
+        <Checkbox
+          checked={currentStatus === 'PENDING'}
+          onCheckedChange={(checked) => {
+            handleStatusChange(checked ? 'PENDING' : undefined);
+          }}
+        />
+        <span className="font-label-normal">답변 대기만 보기</span>
+      </Checkbox.Label>
+
       {data && data.content.length > 0 ? (
         <>
           {data.content.map((item) => (
@@ -50,7 +85,6 @@ export default function MyConsultationList() {
               item={item}
             />
           ))}
-
           <Pagination
             className="mt-6 justify-center"
             page={currentPage}
@@ -60,7 +94,7 @@ export default function MyConsultationList() {
         </>
       ) : (
         <p className="text-gray-5 py-10 text-center text-sm">
-          작성한 문의가 없습니다.
+          받은 문의가 없습니다.
         </p>
       )}
     </SectionContainer>

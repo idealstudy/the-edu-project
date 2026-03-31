@@ -16,7 +16,14 @@ export default function MyConsultationItem({
       id={item.id}
       title={item.title}
       href={PUBLIC.CONSULTATION.DETAIL(item.id)}
-      subtitle={`${item.studyRoomName ? item.studyRoomName + ' ' : ''}${getRelativeTimeString(item.regDate)}`}
+      tag={
+        item.studyRoomName && (
+          <span className="bg-gray-2 font-caption-normal text-gray-8 rounded-sm px-1 py-0.5">
+            {item.studyRoomName}
+          </span>
+        )
+      }
+      subtitle={getRelativeTimeString(item.regDate)}
       rightTitle={
         <StatusBadge
           label={STATUS_LABEL[item.status]}
