@@ -1,6 +1,6 @@
 import {
-  CreateConsultationAnswerPayload,
-  CreateConsultationPayload,
+  ConsultationAnswerPayload,
+  ConsultationPayload,
 } from '@/entities/consultation/types';
 import { api } from '@/shared/api';
 import { unwrapEnvelope } from '@/shared/lib/api-utils';
@@ -10,7 +10,7 @@ import { dto, payload } from './consultation.dto';
 /* ─────────────────────────────────────────────────────
  * [CREATE] 수업 문의 등록
  * ────────────────────────────────────────────────────*/
-const createConsultation = async (params: CreateConsultationPayload) => {
+const createConsultation = async (params: ConsultationPayload) => {
   const validated = payload.create.parse(params);
   const response = await api.private.post('/common/inquiries', validated);
   return unwrapEnvelope(response, dto.detail);
@@ -29,10 +29,25 @@ const getConsultation = async (id: number) => {
  * ────────────────────────────────────────────────────*/
 const createConsultationAnswer = async (
   id: number,
-  params: CreateConsultationAnswerPayload
+  params: ConsultationAnswerPayload
 ) => {
   const validated = payload.createAnswer.parse(params);
   const response = await api.private.post(
+    `/teacher/inquiries/${id}/answer`,
+    validated
+  );
+  return unwrapEnvelope(response, dto.detail);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [UPDATE] 문의 답변 수정 (선생님)
+ * ────────────────────────────────────────────────────*/
+const updateConsultationAnswer = async (
+  id: number,
+  params: ConsultationAnswerPayload
+) => {
+  const validated = payload.updateAnswer.parse(params);
+  const response = await api.private.put(
     `/teacher/inquiries/${id}/answer`,
     validated
   );
@@ -66,6 +81,7 @@ export const repository = {
   createConsultation,
   getConsultation,
   createConsultationAnswer,
+  updateConsultationAnswer,
   getMyConsultations,
   getReceivedConsultations,
 };

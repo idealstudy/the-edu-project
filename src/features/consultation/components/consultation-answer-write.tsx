@@ -3,7 +3,10 @@
 import { Controller, useForm } from 'react-hook-form';
 
 import { ConsultationDetail } from '@/entities/consultation';
-import { useCreateConsultationAnswer } from '@/features/consultation/hooks/use-answer-form';
+import {
+  useCreateConsultationAnswer,
+  useUpdateConsultationAnswer,
+} from '@/features/consultation/hooks/use-answer-form';
 import { useTeacherProfile } from '@/features/consultation/hooks/use-teacher-profile';
 import {
   ConsultationAnswerForm,
@@ -12,6 +15,7 @@ import {
 import {
   TextEditor,
   initialTextEditorValue,
+  parseEditorContent,
   prepareContentForSave,
 } from '@/shared/components/editor';
 import { Button, Form } from '@/shared/components/ui';
@@ -20,12 +24,33 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 export default function ConsultationAnswerWrite({
   consultation,
+  isEditMode = false,
+  onCancel,
 }: {
   consultation: ConsultationDetail;
+  isEditMode?: boolean;
+  onCancel?: () => void;
 }) {
   const { data: teacherProfile } = useTeacherProfile(
     consultation.targetTeacherId
   );
+
+  const createConsultationAnswerMutation = useCreateConsultationAnswer(
+    consultation.id
+  );
+  const updateConsultationAnswerMutation = useUpdateConsultationAnswer(
+    consultation.id,
+    onCancel
+  );
+  const mutation = isEditMode
+    ? updateConsultationAnswerMutation
+    : createConsultationAnswerMutation;
+
+  // 수정 모드일 경우, 초기값 세팅
+  const initialContent =
+    isEditMode && consultation.answer
+      ? parseEditorContent(consultation.answer.resolvedContent.content)
+      : initialTextEditorValue;
 
   const {
     handleSubmit,
@@ -33,15 +58,13 @@ export default function ConsultationAnswerWrite({
     formState: { errors, isDirty, isValid },
   } = useForm<ConsultationAnswerForm>({
     resolver: zodResolver(ConsultationAnswerFormSchema),
-    defaultValues: { content: initialTextEditorValue },
+    defaultValues: { content: initialContent },
     mode: 'onChange',
   });
 
-  const { mutate, isPending } = useCreateConsultationAnswer(consultation.id);
-
   const onSubmit = (data: ConsultationAnswerForm) => {
     const { contentString, mediaIds } = prepareContentForSave(data.content);
-    mutate({ content: contentString, mediaIds });
+    mutation.mutate({ content: contentString, mediaIds });
   };
 
   return (
@@ -91,13 +114,27 @@ export default function ConsultationAnswerWrite({
               );
             }}
           />
-          <Button
-            type="submit"
-            disabled={isPending || !isDirty || !isValid}
-            className="w-full"
-          >
-            {isPending ? '저장 중' : '답변 등록'}
-          </Button>
+          <div className="flex items-center justify-end gap-2">
+            {isEditMode && onCancel && (
+              <Button
+                type="button"
+                variant="outlined"
+                onClick={onCancel}
+                disabled={mutation.isPending}
+                size="small"
+              >
+                취소
+              </Button>
+            )}
+            <Button
+              type="submit"
+              disabled={mutation.isPending || !isDirty || !isValid}
+              size="small"
+            >
+              {mutation.isPending && '저장 중'}
+              {!mutation.isPending && (isEditMode ? '답변 수정' : '답변 등록')}
+            </Button>
+          </div>
         </Form>
       </div>
     </div>

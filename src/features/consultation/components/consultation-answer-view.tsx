@@ -12,9 +12,11 @@ import { DropdownMenu } from '@/shared/components/ui';
 export default function ConsultationAnswerView({
   consultation,
   isTargetTeacher,
+  onEdit,
 }: {
   consultation: ConsultationDetail;
   isTargetTeacher: boolean;
+  onEdit: () => void;
 }) {
   const [isDropdownMenuOpen, setIsDropdownMenuOpen] = useState(false);
   const { data: teacherProfile } = useTeacherProfile(
@@ -54,7 +56,13 @@ export default function ConsultationAnswerView({
                 />
               </DropdownMenu.Trigger>
               <DropdownMenu.Content className="flex min-w-[110px] flex-col items-stretch">
-                <DropdownMenu.Item className="justify-center">
+                <DropdownMenu.Item
+                  className="justify-center"
+                  onClick={() => {
+                    setIsDropdownMenuOpen(false);
+                    onEdit();
+                  }}
+                >
                   수정
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
@@ -72,9 +80,11 @@ export default function ConsultationAnswerView({
         <TextViewer value={content} />
 
         {/* 작성일 */}
-        <span className="font-caption-normal text-text-sub2 self-end">
-          {consultation.answer.regDate.split('T')[0] + ' 작성'}
-        </span>
+        {consultation.answer.regDate && (
+          <span className="font-caption-normal text-text-sub2 self-end">
+            {consultation.answer.regDate.split('T')[0]} 작성
+          </span>
+        )}
       </div>
     </div>
   );

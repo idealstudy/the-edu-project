@@ -19,7 +19,5 @@ export type ConsultationList = z.infer<typeof dto.list>;
 /* ─────────────────────────────────────────────────────
  * Payload
  * ────────────────────────────────────────────────────*/
-export type CreateConsultationPayload = z.infer<typeof payload.create>;
-export type CreateConsultationAnswerPayload = z.infer<
-  typeof payload.createAnswer
->;
+export type ConsultationPayload = z.infer<typeof payload.create>;
+export type ConsultationAnswerPayload = z.infer<typeof payload.createAnswer>;

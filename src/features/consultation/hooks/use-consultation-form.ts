@@ -1,6 +1,6 @@
 import { useRouter } from 'next/navigation';
 
-import { CreateConsultationPayload, repository } from '@/entities/consultation';
+import { ConsultationPayload, repository } from '@/entities/consultation';
 import { previewKeys } from '@/entities/study-room-preview';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -12,7 +12,7 @@ export function useCreateConsultation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (params: CreateConsultationPayload) =>
+    mutationFn: (params: ConsultationPayload) =>
       repository.createConsultation(params),
     onSuccess: (data) => {
       queryClient.invalidateQueries({

@@ -27,7 +27,7 @@ const ConsultationDetailDtoSchema = z.object({
         content: z.string(),
         expiresAt: z.string().nullable(),
       }),
-      regDate: z.string(),
+      regDate: z.string().nullable(),
       modDate: z.string(),
     })
     .optional(),
@@ -56,7 +56,7 @@ const ConsultationListDtoSchema = z.object({
  * 문의 등록 Payload
  * POST
  * ────────────────────────────────────────────────────*/
-const CreateConsultationPayloadSchema = z.object({
+const ConsultationPayloadSchema = z.object({
   targetTeacherId: z.number(),
   studyRoomId: z.number().optional(),
   title: z.string(),
@@ -83,6 +83,7 @@ export const dto = {
 };
 
 export const payload = {
-  create: CreateConsultationPayloadSchema,
+  create: ConsultationPayloadSchema,
   createAnswer: ConsultationAnswerPayloadSchema,
+  updateAnswer: ConsultationAnswerPayloadSchema,
 };
