@@ -38,3 +38,17 @@ export function useUpdateConsultationAnswer(
     },
   });
 }
+
+/**
+ * [DELETE] 문의 답변 삭제
+ */
+export function useDeleteConsultationAnswer(id: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => repository.deleteConsultationAnswer(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: consultationKeys.detail(id) });
+    },
+  });
+}
