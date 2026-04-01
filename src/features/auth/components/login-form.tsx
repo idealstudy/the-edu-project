@@ -78,6 +78,7 @@ export default function LoginForm() {
       </div>
 
       <Form
+        method="post"
         onSubmit={handleSubmit(onSubmit)}
         className={LoginFormtwStyles.wrapper}
       >

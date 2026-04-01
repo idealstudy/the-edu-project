@@ -13,8 +13,6 @@ import { PUBLIC } from '@/shared/constants';
 // consultation-tab.tsx의 PAGE_SIZE와 동일하게 유지
 const PAGE_SIZE = 20;
 
-const STORAGE_KEY = 'consultation-draft-title';
-
 const parsePage = (value?: string | null) => {
   const parsed = Number(value);
   if (!Number.isInteger(parsed) || parsed < 1) return 1;
@@ -28,6 +26,8 @@ export const StudyroomPreviewConsultationTab = ({
   studyRoomId: number;
   teacherId: number;
 }) => {
+  const STORAGE_KEY = `consultation-draft-${teacherId}-title`;
+
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
