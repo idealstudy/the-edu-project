@@ -125,6 +125,7 @@ export const WriteFormArea = ({ studyRoomId, homeworkId }: Props) => {
               type="submit"
               disabled={isButtonDisabled}
               className="w-[200px] rounded-sm"
+              data-testid="homework-submit-button"
             >
               작성하기
             </Button>
