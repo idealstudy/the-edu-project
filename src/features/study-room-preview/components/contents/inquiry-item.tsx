@@ -4,7 +4,7 @@ import { StatusBadge } from '@/shared/components/ui';
 export default function InquiryItem({ item }: { item: PreviewInquiryItem }) {
   return (
     <li className="hover:bg-background-gray rounded-md p-3">
-      <p>비공개 문의글</p>
+      <p>비공개 문의 글</p>
       <div className="font-caption-normal text-gray-8 flex items-center gap-4">
         <span>{item.regDate.split('T')[0]} 작성</span>
         <span>*** {item.inquirerRole}</span>

@@ -3,8 +3,10 @@
 import { useState } from 'react';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import { Button, Dialog } from '@/shared/components/ui';
+import { PUBLIC } from '@/shared/constants';
 
 interface TeacherProfileExtraProps {
   teacherNoteCount: number;
@@ -21,6 +23,8 @@ export default function TeacherProfileExtra({
   description,
   teacherId,
 }: TeacherProfileExtraProps) {
+  const router = useRouter();
+
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
 
   const handleShareProfile = () => {
@@ -77,7 +81,21 @@ export default function TeacherProfileExtra({
         </div>
       </div>
 
-      <Button onClick={handleShareProfile}>프로필 공유하기</Button>
+      <div className="flex flex-col gap-2">
+        <Button
+          onClick={() => {
+            router.push(PUBLIC.INQUIRY.CREATE(teacherId));
+          }}
+        >
+          수업 상담하기
+        </Button>
+        <Button
+          onClick={handleShareProfile}
+          variant="secondary"
+        >
+          프로필 공유하기
+        </Button>
+      </div>
 
       <div>
         <h4 className="font-body1-heading mb-2">간단 소개</h4>

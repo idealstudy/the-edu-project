@@ -43,9 +43,12 @@ export default function MypageSidebar() {
 
   return (
     <ColumnLayout.Left>
-      <div className="border-line-line1 flex flex-col gap-9 rounded-xl border bg-white p-8">
-        <EditableProfileCard role={role} />
-      </div>
+      {/* TODO 보호자 기본 정보 조회 필요 */}
+      {role !== 'ROLE_PARENT' && (
+        <div className="border-line-line1 flex flex-col gap-9 rounded-xl border bg-white p-8">
+          <EditableProfileCard role={role} />
+        </div>
+      )}
 
       <div className="border-line-line1 mt-2 space-y-2 rounded-xl border bg-white p-8">
         <h4 className="font-body1-heading">목록</h4>

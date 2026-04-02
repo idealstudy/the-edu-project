@@ -1,6 +1,6 @@
 import { useRouter } from 'next/navigation';
 
-import { InquiryPayload, repository } from '@/entities/inquiry';
+import { InquiryPayload, inquiryKeys, repository } from '@/entities/inquiry';
 import { previewKeys } from '@/entities/study-room-preview';
 import { PUBLIC } from '@/shared/constants';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -18,6 +18,7 @@ export function useCreateInquiry() {
       queryClient.invalidateQueries({
         queryKey: previewKeys.all,
       });
+      queryClient.invalidateQueries({ queryKey: inquiryKeys.all });
       router.replace(PUBLIC.INQUIRY.DETAIL(data.id));
     },
   });

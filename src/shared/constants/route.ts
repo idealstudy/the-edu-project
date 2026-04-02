@@ -70,7 +70,16 @@ const HOMEWORK = {
  * PROFILE
  * ────────────────────────────────────────────────────*/
 const PROFILE = {
-  DETAIL: (userId: number) => `/profile/${userId}`,
+  TEACHER: (teacherId: number) => `/profile/teacher/${teacherId}`,
+  STUDENT: (studentId: number) => `/profile/student/${studentId}`,
+} as const;
+
+/* ─────────────────────────────────────────────────────
+ * STUDY_ROOM_PREVIEW
+ * ────────────────────────────────────────────────────*/
+const STUDY_ROOM_PREVIEW = {
+  DETAIL: (studyRoomId: number, teacherId: number) =>
+    `/study-room-preview/${studyRoomId}/${teacherId}`,
 } as const;
 
 /* ─────────────────────────────────────────────────────
@@ -122,6 +131,7 @@ const ADMIN = {
 export const PUBLIC = {
   CORE,
   PROFILE,
+  STUDY_ROOM_PREVIEW,
   COMMUNITY: PUBLIC_COMMUNITY,
   INQUIRY,
 } as const;

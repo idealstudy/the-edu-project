@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import InquiryAnswerArea from '@/features/inquiry/components/inquiry-answer-area';
@@ -50,10 +51,16 @@ export default function InquiryDetailArea({ id }: { id: number }) {
           </div>
 
           {/* 스터디룸 */}
-          {inquiry.studyRoomName && (
-            <p className="font-body2-normal text-text-sub2">
+          {inquiry.studyRoomName && inquiry.studyRoomId && (
+            <Link
+              href={PUBLIC.STUDY_ROOM_PREVIEW.DETAIL(
+                inquiry.studyRoomId,
+                inquiry.targetTeacherId
+              )}
+              className="font-body2-normal text-text-sub2 hover:underline"
+            >
               {inquiry.studyRoomName}
-            </p>
+            </Link>
           )}
 
           {/* 제목 */}

@@ -135,7 +135,7 @@ const StudentsSectionContent = ({
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content>
                   <DropdownMenu.Item asChild>
-                    <Link href={PUBLIC.PROFILE.DETAIL(student.id)}>
+                    <Link href={PUBLIC.PROFILE.STUDENT(student.id)}>
                       프로필 보기
                     </Link>
                   </DropdownMenu.Item>
