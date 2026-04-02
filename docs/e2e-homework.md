@@ -94,21 +94,6 @@
 - Verify user-visible results after the action
 - Verify created homework title or submitted content with a stable UI element
 
-## Recommended `data-testid` Examples
-
-Teacher homework create:
-- `homework-title-input`
-- `homework-deadline-input`
-- `homework-content-editor`
-- `homework-save-button`
-- `homework-student-select`
-- `homework-note-select`
-
-Student homework submit:
-- `homework-submission-editor`
-- `homework-submit-button`
-- `homework-submission-content`
-
 ## Out of Scope
 
 - teacher homework edit/delete

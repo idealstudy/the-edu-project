@@ -4,6 +4,24 @@ import { loginAsStudent, loginAsTeacher } from './helpers/auth';
 
 const homeworkContent = 'E2E 과제 내용';
 
+async function goToTeacherHomeworkCreatePage(page: Page) {
+  // 개발 서버에서 로딩이 오래 걸리는 이슈로 인해 타임아웃 시간 증가
+  test.setTimeout(60000);
+
+  await loginAsTeacher(page);
+  await page.goto(
+    `/study-rooms/${process.env.E2E_TEST_STUDY_ROOM_ID}/homework`
+  );
+  await page.getByTestId('homework-create-button').click();
+  await page.waitForURL(
+    `/study-rooms/${process.env.E2E_TEST_STUDY_ROOM_ID}/homework/new`
+  );
+
+  await expect(page).toHaveURL(
+    `/study-rooms/${process.env.E2E_TEST_STUDY_ROOM_ID}/homework/new`
+  );
+}
+
 async function createHomeworkAsTeacher(page: Page) {
   const homeworkTitle = `E2E 과제 제목-${Date.now()}`;
 
@@ -47,24 +65,6 @@ async function createHomeworkAsTeacher(page: Page) {
   expect(homeworkId).not.toBeNull();
 
   return { homeworkId: homeworkId!, homeworkTitle };
-}
-
-async function goToTeacherHomeworkCreatePage(page: Page) {
-  // 개발 서버에서 로딩이 오래 걸리는 이슈로 인해 타임아웃 시간 증가
-  test.setTimeout(60000);
-
-  await loginAsTeacher(page);
-  await page.goto(
-    `/study-rooms/${process.env.E2E_TEST_STUDY_ROOM_ID}/homework`
-  );
-  await page.getByTestId('homework-create-button').click();
-  await page.waitForURL(
-    `/study-rooms/${process.env.E2E_TEST_STUDY_ROOM_ID}/homework/new`
-  );
-
-  await expect(page).toHaveURL(
-    `/study-rooms/${process.env.E2E_TEST_STUDY_ROOM_ID}/homework/new`
-  );
 }
 
 // teacher account
@@ -126,9 +126,7 @@ test.describe('과제 - 선생님', () => {
 test.describe('과제 - 학생', () => {
   test.setTimeout(60000);
 
-  test('과제 진입과 제출이 성공적으로 이루어지는지 확인합니다.', async ({
-    page,
-  }) => {
+  test('과제 진입이 성공적으로 이루어지는지 확인합니다.', async ({ page }) => {
     await loginAsStudent(page);
 
     await page.goto(
@@ -162,10 +160,38 @@ test.describe('과제 - 학생', () => {
     await expect(
       page.getByRole('heading', { name: firstHomeworkTitle! })
     ).toBeVisible();
+  });
+
+  test('과제 미제출인 경우를 찾아 과제를 제출할 수 있다.', async ({ page }) => {
+    await loginAsStudent(page);
+
+    await page.goto(
+      `/study-rooms/${process.env.E2E_TEST_STUDY_ROOM_ID}/homework`
+    );
+    await expect(page).toHaveURL(
+      `/study-rooms/${process.env.E2E_TEST_STUDY_ROOM_ID}/homework`
+    );
+
+    const unsubmittedHomework = page
+      .getByTestId('homework-list-item')
+      .filter({ hasText: '미제출' })
+      .first();
+
+    await expect(unsubmittedHomework).toBeVisible({ timeout: 10000 });
+
+    const homeworkHref = await unsubmittedHomework.getAttribute('href');
+    expect(homeworkHref).not.toBeNull();
+
+    await page.goto(homeworkHref!);
+    await expect(page).toHaveURL(
+      new RegExp(
+        `/study-rooms/${process.env.E2E_TEST_STUDY_ROOM_ID}/homework/\\d+`
+      )
+    );
 
     const contentEditor = page.locator('.ProseMirror').last();
     await contentEditor.click();
-    await page.keyboard.type(homeworkContent);
+    await page.keyboard.type('E2E 학생 제출 내용');
 
     const submitButton = page.getByTestId('homework-submit-button');
     await expect(submitButton).toBeEnabled();
