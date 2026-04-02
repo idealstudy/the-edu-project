@@ -7,6 +7,9 @@ import { PRIVATE } from '@/shared/constants';
 import type { Page } from '@playwright/test';
 import { expect, test } from '@playwright/test';
 
+import { okBody, setupCatchAll } from './helpers/api-mock';
+import { mockMemberInfo, setAuthCookie } from './helpers/auth-mock';
+
 // ─── Mock 데이터 ──────────────────────────────────────────────────────────────
 
 const TEACHER_MEMBER = {
@@ -50,43 +53,6 @@ const TEACHER_STUDY_ROOM = { id: 1, name: '테스트 스터디룸' };
 
 // ─── Mock 헬퍼 함수 ──────────────────────────────────────────────────────────
 
-/** 모든 /api/v1/** 요청에 대한 기본 fallback mock (특정 mock 등록 후 사용) */
-async function setupCatchAll(page: Page) {
-  await page.route('**/api/v1/**', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ status: 200, message: 'ok', data: {} }),
-    });
-  });
-
-  await page.route('**/api/v1/teacher/study-rooms', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ status: 200, message: 'ok', data: [] }),
-    });
-  });
-}
-
-async function mockMemberInfo(page: Page) {
-  await page.route('**/api/v1/member/info', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      headers: {
-        Authorization: 'Bearer test-token',
-        'access-control-expose-headers': 'authorization',
-      },
-      body: JSON.stringify({
-        status: 200,
-        message: 'ok',
-        data: TEACHER_MEMBER,
-      }),
-    });
-  });
-}
-
 async function mockTeacherOnboardingGet(
   page: Page,
   nextStep: TeacherOnboardingStepType | null
@@ -114,16 +80,8 @@ async function mockTeacherOnboardingGet(
 }
 
 async function setTeacher(page: Page) {
-  await page.context().addCookies([
-    {
-      name: 'Authorization',
-      value: 'test-token',
-      domain: 'localhost',
-      path: '/',
-    },
-  ]);
-
-  await mockMemberInfo(page);
+  await setAuthCookie(page);
+  await mockMemberInfo(page, TEACHER_MEMBER);
 }
 
 // ─── 강사 온보딩 ──────────────────────────────────────────────────────────────
@@ -131,6 +89,13 @@ async function setTeacher(page: Page) {
 test.describe('강사 온보딩', () => {
   test.beforeEach(async ({ page }) => {
     await setupCatchAll(page);
+    await page.route('**/api/v1/teacher/study-rooms', async (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: okBody([]),
+      })
+    );
     await setTeacher(page);
   });
   test.describe('온보딩 UI 상태', () => {
