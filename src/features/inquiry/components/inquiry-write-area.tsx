@@ -48,7 +48,7 @@ export default function InquiryWriteArea({
   studyRoomId?: number;
   isEditMode?: boolean;
 }) {
-  const DRAFT_KEY = `inquiry-draft-${teacherId}`;
+  const DRAFT_KEY = `inquiry-draft-${studyRoomId ?? 'none'}-${teacherId}`;
 
   const router = useRouter();
   const member = useMemberStore((state) => state.member);

@@ -28,7 +28,7 @@ export const StudyroomPreviewInquiryTab = ({
   studyRoomId: number;
   teacherId: number;
 }) => {
-  const STORAGE_KEY = `inquiry-draft-${teacherId}-title`;
+  const STORAGE_KEY = `inquiry-draft-${studyRoomId}-${teacherId}-title`;
 
   const member = useMemberStore((state) => state.member);
   const isTeacher = member?.role === 'ROLE_TEACHER';

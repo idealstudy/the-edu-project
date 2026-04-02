@@ -9,12 +9,21 @@ type PageProps = {
 export default async function InquiryNewPage({ searchParams }: PageProps) {
   const { teacherId, studyRoomId } = await searchParams;
 
-  if (!teacherId) notFound();
+  const teacherIdNum = Number(teacherId);
+  const studyRoomIdNum = studyRoomId ? Number(studyRoomId) : undefined;
+
+  if (!teacherId || !Number.isInteger(teacherIdNum) || teacherIdNum <= 0)
+    notFound();
+  if (
+    studyRoomIdNum !== undefined &&
+    (!Number.isInteger(studyRoomIdNum) || studyRoomIdNum <= 0)
+  )
+    notFound();
 
   return (
     <InquiryWriteArea
-      teacherId={Number(teacherId)}
-      studyRoomId={studyRoomId ? Number(studyRoomId) : undefined}
+      teacherId={teacherIdNum}
+      studyRoomId={studyRoomId ? studyRoomIdNum : undefined}
     />
   );
 }
