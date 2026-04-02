@@ -93,7 +93,9 @@ export default function AdminColumnPendingList() {
                   </Link>
                 </p>
                 <div className="text-gray-10 font-caption-normal mt-2 flex items-center gap-3">
-                  <span>{column.authorNickname ?? '알 수 없음'}</span>
+                  <span>
+                    {column.authorName ?? column.authorNickname ?? '알 수 없음'}
+                  </span>
                   <span>{column.regDate.split('T')[0]}</span>
                 </div>
               </div>

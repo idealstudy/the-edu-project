@@ -6,6 +6,7 @@ import { z } from 'zod';
 const ColumnListItemDtoSchema = z.object({
   id: z.number(),
   title: z.string(),
+  authorName: z.string().nullable(),
   authorNickname: z.string().nullable(),
   tags: z.array(z.string()),
   thumbnailUrl: z.string().nullable(),
@@ -27,7 +28,7 @@ const ColumnPageDtoSchema = z.object({
 const ColumnDetailDtoSchema = z.object({
   id: z.number(),
   title: z.string(),
-  // TODO 백엔드에 확인
+  authorName: z.string().nullable(),
   authorNickname: z.string().nullable(),
   tags: z.array(z.string()),
   thumbnailUrl: z.string().nullable(),
@@ -68,6 +69,7 @@ const MyColumnPageDtoSchema = z.object({
 const AdminColumnListItemDtoSchema = z.object({
   id: z.number(),
   title: z.string(),
+  authorName: z.string().nullable(),
   authorNickname: z.string().nullable(),
   tags: z.array(z.string()),
   status: z.enum(['PENDING_APPROVAL', 'APPROVED']),
