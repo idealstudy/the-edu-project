@@ -86,11 +86,6 @@ export function middleware(req: NextRequest) {
     });
   }
 
-  // 개발용
-  if (process.env.NODE_ENV !== 'production') {
-    return NextResponse.next();
-  }
-
   if (isInfraRequest(req)) {
     return NextResponse.next();
   }

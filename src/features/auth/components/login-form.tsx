@@ -48,7 +48,7 @@ export default function LoginForm() {
     login(data, {
       onError: (error) => {
         trackAuthLoginFail();
-        let message = '로그인에 실패하였습니다. 잠시 후 다시 시도하주세요.';
+        let message = '로그인에 실패하였습니다. 잠시 후 다시 시도해주세요.';
 
         if (error instanceof AxiosError) {
           const serverMessage = extractErrorMessage(error.response?.data);
@@ -78,6 +78,7 @@ export default function LoginForm() {
       </div>
 
       <Form
+        method="post"
         onSubmit={handleSubmit(onSubmit)}
         className={LoginFormtwStyles.wrapper}
       >

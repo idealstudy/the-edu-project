@@ -48,16 +48,11 @@ export default function MyColumnList() {
         <div className="flex items-center gap-2">
           <Link
             href={PUBLIC.COMMUNITY.COLUMN.LIST}
-            className="font-label-normal hover:underline"
+            className="font-label-normal border-gray-7 border-r pr-2 hover:underline"
           >
             칼럼 게시판
           </Link>
-          <span
-            aria-hidden
-            className="text-gray-7"
-          >
-            |
-          </span>
+
           <Link
             href={PRIVATE.COMMUNITY.COLUMN.CREATE}
             className="font-label-normal text-key-color-primary hover:underline"
