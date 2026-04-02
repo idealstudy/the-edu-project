@@ -7,6 +7,9 @@ import { StudyroomPreviewInquiryTab } from '@/features/study-room-preview/compon
 import { StudyroomPreviewIntroTab } from '@/features/study-room-preview/components/contents/intro-tab';
 import { cn } from '@/shared/lib';
 
+const VALID_TABS = ['intro', 'inquiry'] as const;
+type TabValue = (typeof VALID_TABS)[number];
+
 const TABS = [
   { value: 'intro', label: '소개 요약' },
   { value: 'inquiry', label: '문의 내역' },
@@ -20,7 +23,12 @@ export const StudyroomPreviewContents = ({
   teacherId: number;
 }) => {
   const searchParams = useSearchParams();
-  const tab = searchParams.get('tab') ?? 'intro';
+
+  // 잘못된 탭 경로 접근 시 intro로 폴백
+  const rawTab = searchParams.get('tab');
+  const tab: TabValue = VALID_TABS.includes(rawTab as TabValue)
+    ? (rawTab as TabValue)
+    : 'intro';
 
   return (
     <div>

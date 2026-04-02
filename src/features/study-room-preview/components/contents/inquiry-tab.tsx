@@ -9,6 +9,8 @@ import { usePreviewInquiries } from '@/features/study-room-preview/hooks/use-pre
 import { MiniSpinner } from '@/shared/components/loading';
 import { Button, Input, Pagination } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
+import { cn } from '@/shared/lib';
+import { useMemberStore } from '@/store';
 
 // inquiry-tab.tsx의 PAGE_SIZE와 동일하게 유지
 const PAGE_SIZE = 20;
@@ -27,6 +29,9 @@ export const StudyroomPreviewInquiryTab = ({
   teacherId: number;
 }) => {
   const STORAGE_KEY = `inquiry-draft-${teacherId}-title`;
+
+  const member = useMemberStore((state) => state.member);
+  const isTeacher = member?.role === 'ROLE_TEACHER';
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -67,28 +72,37 @@ export const StudyroomPreviewInquiryTab = ({
 
   return (
     <div className="space-y-5">
-      <div className="border-line-line1 rounded-tr-xl rounded-b-xl border bg-white p-6">
-        <h1 className="font-headline1-heading">어떤 내용을 문의하시겠어요?</h1>
-        <form
-          onSubmit={handleSubmit}
-          className="mt-9 flex items-center gap-2"
-        >
-          <Input
-            ref={inputRef}
-            placeholder="문의 제목을 입력해주세요"
-            maxLength={30}
-            className="flex-1"
-          />
-          <Button
-            type="submit"
-            disabled={isNavigating}
+      {!isTeacher && (
+        <div className="border-line-line1 rounded-tr-xl rounded-b-xl border bg-white p-6">
+          <h1 className="font-headline1-heading">
+            어떤 내용을 문의하시겠어요?
+          </h1>
+          <form
+            onSubmit={handleSubmit}
+            className="mt-9 flex items-center gap-2"
           >
-            {isNavigating ? '이동 중...' : '작성하기'}
-          </Button>
-        </form>
-      </div>
+            <Input
+              ref={inputRef}
+              placeholder="문의 제목을 입력해주세요"
+              maxLength={30}
+              className="flex-1"
+            />
+            <Button
+              type="submit"
+              disabled={isNavigating}
+            >
+              {isNavigating ? '이동 중...' : '작성하기'}
+            </Button>
+          </form>
+        </div>
+      )}
 
-      <div className="border-line-line1 rounded-xl border bg-white p-6">
+      <div
+        className={cn(
+          'border-line-line1 rounded-xl border bg-white p-6',
+          isTeacher ? 'rounded-tl-none' : ''
+        )}
+      >
         {isLoading && (
           <div className="flex justify-center py-10">
             <MiniSpinner />
