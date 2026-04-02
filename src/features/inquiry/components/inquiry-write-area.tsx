@@ -120,6 +120,16 @@ export default function InquiryWriteArea({
     sessionStorage.removeItem(`${DRAFT_KEY}-content`);
   }, [setValue, DRAFT_KEY]);
 
+  // 페이지 이탈 시 안내
+  useEffect(() => {
+    if (!isDirty) return;
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty]);
+
   const onSubmit = (data: InquiryForm) => {
     // 비로그인 시, 로그인으로 이동
     if (!member) {
