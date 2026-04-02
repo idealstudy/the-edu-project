@@ -122,8 +122,8 @@ export function classifyColumnError(code?: string): ApiErrorType {
   }
 }
 
-// consultation 관련 에러
-export function classifyConsultationError(code?: string): ApiErrorType {
+// inquiry 관련 에러
+export function classifyInquiryError(code?: string): ApiErrorType {
   switch (code) {
     // CONTEXT (리소스 소멸 / 페이지 무효)
     case 'INQUIRY_NOT_FOUND':

@@ -2,11 +2,7 @@ import { api } from '@/shared/api';
 import { unwrapEnvelope } from '@/shared/lib/api-utils';
 
 import { domain } from '../core';
-import type {
-  PreviewConsultationList,
-  PreviewMain,
-  PreviewSide,
-} from '../types';
+import type { PreviewInquiryList, PreviewMain, PreviewSide } from '../types';
 
 const getPreviewSide = async (
   teacherId: number,
@@ -35,21 +31,21 @@ const getPreviewMain = async (studyRoomId: number): Promise<PreviewMain> => {
   return unwrapEnvelope(response, domain.main);
 };
 
-const getPreviewConsultations = async (
+const getPreviewInquiries = async (
   studyRoomId: number,
   params: { page: number; size: number }
-): Promise<PreviewConsultationList> => {
+): Promise<PreviewInquiryList> => {
   const response = await api.public.get(
     `/public/study-rooms/${studyRoomId}/inquiries`,
     { params }
   );
-  return unwrapEnvelope(response, domain.consultationList);
+  return unwrapEnvelope(response, domain.inquiryList);
 };
 
 export const repository = {
   preview: {
     getPreviewSide,
     getPreviewMain,
-    getPreviewConsultations,
+    getPreviewInquiries,
   },
 };

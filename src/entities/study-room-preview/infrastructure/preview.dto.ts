@@ -107,7 +107,7 @@ const StudyRoomPreviewStatsEnvelopeSchema = sharedSchema.response(
 /* ─────────────────────────────────────────────────────
  * 문의 목록 DTO
  * ────────────────────────────────────────────────────*/
-const PreviewConsultationItemSchema = z.object({
+const PreviewInquiryItemSchema = z.object({
   id: z.number().int(),
   inquirerRole: z.string(),
   status: z.enum(['PENDING', 'ANSWERED']),
@@ -115,9 +115,9 @@ const PreviewConsultationItemSchema = z.object({
   masked: z.boolean(),
 });
 
-const PreviewConsultationListSchema = z.object({
+const PreviewInquiryListSchema = z.object({
   totalCount: z.number().int(),
-  inquiries: z.array(PreviewConsultationItemSchema),
+  inquiries: z.array(PreviewInquiryItemSchema),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -137,6 +137,6 @@ export const dto = {
   detailEnvelope: StudyRoomPreviewDetailEnvelopeSchema,
   statsEnvelope: StudyRoomPreviewStatsEnvelopeSchema,
 
-  consultationItem: PreviewConsultationItemSchema,
-  consultationList: PreviewConsultationListSchema,
+  inquiryItem: PreviewInquiryItemSchema,
+  inquiryList: PreviewInquiryListSchema,
 };

@@ -11,16 +11,16 @@ import { useMemberStore } from '@/store';
 
 // 접근 가능 탭
 const VALID_TABS: Partial<Record<string, string[]>> = {
-  ROLE_TEACHER: ['profile', 'columns', 'received-consultations'],
-  ROLE_STUDENT: ['profile', 'consultations'],
-  ROLE_PARENT: ['consultations'],
+  ROLE_TEACHER: ['profile', 'columns', 'received-inquiries'],
+  ROLE_STUDENT: ['profile', 'inquiries'],
+  ROLE_PARENT: ['inquiries'],
 };
 
 // 기본 탭
 const DEFAULT_TAB: Partial<Record<string, string>> = {
   ROLE_TEACHER: 'profile',
   ROLE_STUDENT: 'profile',
-  ROLE_PARENT: 'consultations',
+  ROLE_PARENT: 'inquiries',
 };
 
 export default function MypageSidebar() {

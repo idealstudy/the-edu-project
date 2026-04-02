@@ -96,12 +96,12 @@ const PRIVATE_COMMUNITY = {
 } as const;
 
 /* ─────────────────────────────────────────────────────
- * CONSULTATION
+ * INQUIRY
  * ────────────────────────────────────────────────────*/
-const CONSULTATION = {
-  DETAIL: (id: number) => `/consultation/${id}`,
+const INQUIRY = {
+  DETAIL: (id: number) => `/inquiry/${id}`,
   CREATE: (teacherId: number, studyRoomId?: number) =>
-    `/consultation/new?teacherId=${teacherId}${
+    `/inquiry/new?teacherId=${teacherId}${
       studyRoomId ? `&studyRoomId=${studyRoomId}` : ''
     }`,
 } as const;
@@ -123,7 +123,7 @@ export const PUBLIC = {
   CORE,
   PROFILE,
   COMMUNITY: PUBLIC_COMMUNITY,
-  CONSULTATION,
+  INQUIRY,
 } as const;
 
 /* ─────────────────────────────────────────────────────

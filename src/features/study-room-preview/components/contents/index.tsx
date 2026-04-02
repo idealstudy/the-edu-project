@@ -3,13 +3,13 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-import { StudyroomPreviewConsultationTab } from '@/features/study-room-preview/components/contents/consultation-tab';
+import { StudyroomPreviewInquiryTab } from '@/features/study-room-preview/components/contents/inquiry-tab';
 import { StudyroomPreviewIntroTab } from '@/features/study-room-preview/components/contents/intro-tab';
 import { cn } from '@/shared/lib';
 
 const TABS = [
   { value: 'intro', label: '소개 요약' },
-  { value: 'consultation', label: '문의 내역' },
+  { value: 'inquiry', label: '문의 내역' },
 ];
 
 export const StudyroomPreviewContents = ({
@@ -56,8 +56,8 @@ export const StudyroomPreviewContents = ({
           teacherId={teacherId}
         />
       )}
-      {tab === 'consultation' && (
-        <StudyroomPreviewConsultationTab
+      {tab === 'inquiry' && (
+        <StudyroomPreviewInquiryTab
           teacherId={teacherId}
           studyRoomId={studyRoomId}
         />

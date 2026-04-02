@@ -40,7 +40,7 @@ export const StudyroomPreviewSidebar = ({
     member?.role === 'ROLE_TEACHER' && member.id === teacherId;
 
   const onInquiryClick = () => {
-    router.push(PUBLIC.CONSULTATION.CREATE(teacherId, studyRoomId));
+    router.push(PUBLIC.INQUIRY.CREATE(teacherId, studyRoomId));
   };
 
   const moveToStudyRoom = () => {

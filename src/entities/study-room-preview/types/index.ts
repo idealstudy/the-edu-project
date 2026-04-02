@@ -12,8 +12,8 @@ export type PreviewCharacteristicResolvedContentDTO = z.infer<
   typeof dto.characteristicResolvedContent
 >;
 export type PreviewReviewItemDTO = z.infer<typeof dto.reviewItem>;
-export type PreviewConsultationItemDTO = z.infer<typeof dto.consultationItem>;
-export type PreviewConsultationListDTO = z.infer<typeof dto.consultationList>;
+export type PreviewInquiryItemDTO = z.infer<typeof dto.inquiryItem>;
+export type PreviewInquiryListDTO = z.infer<typeof dto.inquiryList>;
 
 // Main DTO types
 export type PreviewCoreDTO = z.infer<typeof dto.core>;
@@ -30,5 +30,5 @@ export type PreviewCore = z.infer<typeof domain.core>;
 export type PreviewMain = z.infer<typeof domain.main>;
 export type PreviewSideItem = z.infer<typeof domain.sideItem>;
 export type PreviewSide = z.infer<typeof domain.side>;
-export type PreviewConsultationItem = z.infer<typeof domain.consultationItem>;
-export type PreviewConsultationList = z.infer<typeof domain.consultationList>;
+export type PreviewInquiryItem = z.infer<typeof domain.inquiryItem>;
+export type PreviewInquiryList = z.infer<typeof domain.inquiryList>;

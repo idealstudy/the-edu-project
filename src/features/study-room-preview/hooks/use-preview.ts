@@ -36,14 +36,14 @@ export const usePreviewMainInfo = (studyRoomId: number) =>
   });
 
 // 문의 내역
-export const usePreviewConsultations = (studyRoomId: number, page: number) =>
+export const usePreviewInquiries = (studyRoomId: number, page: number) =>
   useQuery({
-    queryKey: previewKeys.consultationList(studyRoomId, {
+    queryKey: previewKeys.inquiryList(studyRoomId, {
       page,
       size: PAGE_SIZE,
     }),
     queryFn: () =>
-      repository.preview.getPreviewConsultations(studyRoomId, {
+      repository.preview.getPreviewInquiries(studyRoomId, {
         page,
         size: PAGE_SIZE,
       }),
