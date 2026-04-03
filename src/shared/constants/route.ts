@@ -32,6 +32,7 @@ const DASHBOARD = {
 const ROOM = {
   DETAIL: (id: number) => `/study-rooms/${id}/note`,
   CREATE: '/study-rooms/new',
+  EDIT: (id: number) => `/study-rooms/${id}/edit`,
 } as const;
 
 /* ─────────────────────────────────────────────────────
@@ -70,7 +71,16 @@ const HOMEWORK = {
  * PROFILE
  * ────────────────────────────────────────────────────*/
 const PROFILE = {
-  DETAIL: (userId: number) => `/profile/${userId}`,
+  TEACHER: (teacherId: number) => `/profile/teacher/${teacherId}`,
+  STUDENT: (studentId: number) => `/profile/student/${studentId}`,
+} as const;
+
+/* ─────────────────────────────────────────────────────
+ * STUDY_ROOM_PREVIEW
+ * ────────────────────────────────────────────────────*/
+const STUDY_ROOM_PREVIEW = {
+  DETAIL: (studyRoomId: number, teacherId: number) =>
+    `/study-room-preview/${studyRoomId}/${teacherId}`,
 } as const;
 
 /* ─────────────────────────────────────────────────────
@@ -96,6 +106,17 @@ const PRIVATE_COMMUNITY = {
 } as const;
 
 /* ─────────────────────────────────────────────────────
+ * INQUIRY
+ * ────────────────────────────────────────────────────*/
+const INQUIRY = {
+  DETAIL: (id: number) => `/inquiry/${id}`,
+  CREATE: (teacherId: number, studyRoomId?: number) =>
+    `/inquiry/new?teacherId=${teacherId}${
+      studyRoomId ? `&studyRoomId=${studyRoomId}` : ''
+    }`,
+} as const;
+
+/* ─────────────────────────────────────────────────────
  * ADMIN
  * ────────────────────────────────────────────────────*/
 const ADMIN = {
@@ -111,7 +132,9 @@ const ADMIN = {
 export const PUBLIC = {
   CORE,
   PROFILE,
+  STUDY_ROOM_PREVIEW,
   COMMUNITY: PUBLIC_COMMUNITY,
+  INQUIRY,
 } as const;
 
 /* ─────────────────────────────────────────────────────
