@@ -103,7 +103,9 @@ export default function AdminColumnTable() {
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2">
-                        {column.authorNickname ?? '알 수 없음'}
+                        {column.authorName ??
+                          column.authorNickname ??
+                          '알 수 없음'}
                       </div>
                     </td>
                     <td className="px-5 py-4">

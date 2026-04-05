@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation';
 import { StudyStats } from '@/features/study-rooms/components/sidebar/status';
 import { MiniSpinner } from '@/shared/components/loading';
 import { SidebarButton } from '@/shared/components/sidebar';
+import { Button } from '@/shared/components/ui';
+import { PUBLIC } from '@/shared/constants';
 import { useMemberStore } from '@/store';
 
 import { usePreviewSideInfo } from '../../hooks/use-preview';
@@ -39,7 +41,10 @@ export const StudyroomPreviewSidebar = ({
     member?.role === 'ROLE_TEACHER' && member.id === teacherId;
 
   const onInquiryClick = () => {
-    alert('준비중 입니다.');
+    if (loading) return;
+
+    setLoading(true);
+    router.push(PUBLIC.INQUIRY.CREATE(teacherId, studyRoomId));
   };
 
   const moveToStudyRoom = () => {
@@ -47,6 +52,13 @@ export const StudyroomPreviewSidebar = ({
 
     setLoading(true);
     router.push(`/study-rooms/${studyRoomId}/note`);
+  };
+
+  const moveToProfile = () => {
+    if (loading) return;
+
+    setLoading(true);
+    router.push(PUBLIC.PROFILE.TEACHER(teacherId));
   };
 
   const handleBtnClick = () => {
@@ -111,11 +123,20 @@ export const StudyroomPreviewSidebar = ({
         numberOfStudents={data.numberOfStudents}
         numberOfQuestion={data.numberOfQuestions}
       />
-      <SidebarButton
-        onClick={handleBtnClick}
-        btnName={isMyStudyRoom ? `스터디룸으로 이동하기` : `수업 문의하기`}
+      {(isMyStudyRoom || member?.role !== 'ROLE_TEACHER') && (
+        <SidebarButton
+          onClick={handleBtnClick}
+          btnName={isMyStudyRoom ? `스터디룸으로 이동하기` : `수업 상담하기`}
+          disabled={loading}
+        />
+      )}
+      <Button
+        onClick={moveToProfile}
+        variant="secondary"
         disabled={loading}
-      />
+      >
+        {isMyStudyRoom ? `프로필로 이동하기` : `선생님 프로필 바로가기`}
+      </Button>
       {data.otherStudyRooms.length ? (
         <TeacherOtherStudyrooms
           studyRoomName={data.name}
