@@ -16,6 +16,7 @@ import {
 import {
   TextEditor,
   initialTextEditorValue,
+  mergeResolvedContentWithMediaIds,
   parseEditorContent,
   prepareContentForSave,
 } from '@/shared/components/editor';
@@ -57,7 +58,10 @@ export default function InquiryAnswerWrite({
   // 수정 모드일 경우, 초기값 세팅
   const initialContent =
     isEditMode && inquiry.answer
-      ? parseEditorContent(inquiry.answer.resolvedContent.content)
+      ? mergeResolvedContentWithMediaIds(
+          parseEditorContent(inquiry.answer.content),
+          parseEditorContent(inquiry.answer.resolvedContent.content)
+        )
       : initialTextEditorValue;
 
   const {
