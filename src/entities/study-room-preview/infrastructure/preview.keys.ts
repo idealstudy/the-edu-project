@@ -6,4 +6,7 @@ export const previewKeys = {
 
   main: (studyRoomId: number) =>
     [...previewKeys.all, 'main', studyRoomId] as const,
+
+  inquiryList: (studyRoomId: number, params: { page: number; size: number }) =>
+    [...previewKeys.all, 'inquiryList', studyRoomId, params] as const,
 };

@@ -47,7 +47,7 @@ export default function ColumnDetailView({
       )}
       <h1 className="font-title-heading mb-4">{data.title}</h1>
       <div className="text-text-sub2 font-label-normal mb-6 flex gap-4">
-        <span>{data.authorNickname ?? '알 수 없음'}</span>
+        <span>{data.authorName ?? data.authorNickname ?? '알 수 없음'}</span>
         <span>{getRelativeTimeString(data.regDate)}</span>
         <span>조회 {data.viewCount}</span>
       </div>

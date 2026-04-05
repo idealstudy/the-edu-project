@@ -40,7 +40,9 @@ export default function ColumnCard({ column }: { column: ColumnListItem }) {
       {/* 하단 영역 */}
       <div className="border-gray-3 rounded-b-xl border-t-1 bg-white px-6 py-4">
         <p className="font-body1-heading mb-2 truncate">{column.title}</p>
-        <span>{column.authorNickname}</span>
+        <span>
+          {column.authorName ?? column.authorNickname ?? '알 수 없음'}
+        </span>
         <div className="flex items-center justify-between gap-2">
           <div className="text-gray-7 font-caption-heading flex flex-1 gap-1 truncate">
             {column.tags.map((tag) => (
