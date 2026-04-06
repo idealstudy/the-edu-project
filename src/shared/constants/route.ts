@@ -18,7 +18,7 @@ const CORE = {
 } as const;
 
 /* ─────────────────────────────────────────────────────
- * PUBLIC
+ * DASHBOARD
  * ────────────────────────────────────────────────────*/
 const DASHBOARD = {
   INDEX: '/dashboard',
@@ -32,6 +32,7 @@ const DASHBOARD = {
 const ROOM = {
   DETAIL: (id: number) => `/study-rooms/${id}/note`,
   CREATE: '/study-rooms/new',
+  EDIT: (id: number) => `/study-rooms/${id}/edit`,
 } as const;
 
 /* ─────────────────────────────────────────────────────
@@ -70,7 +71,59 @@ const HOMEWORK = {
  * PROFILE
  * ────────────────────────────────────────────────────*/
 const PROFILE = {
-  DETAIL: (userId: number) => `/profile/${userId}`,
+  TEACHER: (teacherId: number) => `/profile/teacher/${teacherId}`,
+  STUDENT: (studentId: number) => `/profile/student/${studentId}`,
+} as const;
+
+/* ─────────────────────────────────────────────────────
+ * STUDY_ROOM_PREVIEW
+ * ────────────────────────────────────────────────────*/
+const STUDY_ROOM_PREVIEW = {
+  DETAIL: (studyRoomId: number, teacherId: number) =>
+    `/study-room-preview/${studyRoomId}/${teacherId}`,
+} as const;
+
+/* ─────────────────────────────────────────────────────
+ * MYPAGE
+ * ────────────────────────────────────────────────────*/
+const MYPAGE = '/mypage';
+
+/* ─────────────────────────────────────────────────────
+ * COMMUNITY
+ * ────────────────────────────────────────────────────*/
+const PUBLIC_COMMUNITY = {
+  COLUMN: {
+    LIST: '/community/column',
+    DETAIL: (id: number) => `/community/column/${id}`,
+  },
+} as const;
+
+const PRIVATE_COMMUNITY = {
+  COLUMN: {
+    CREATE: '/community/column/new',
+    EDIT: (id: number) => `/community/column/${id}/edit`,
+  },
+} as const;
+
+/* ─────────────────────────────────────────────────────
+ * INQUIRY
+ * ────────────────────────────────────────────────────*/
+const INQUIRY = {
+  DETAIL: (id: number) => `/inquiry/${id}`,
+  CREATE: (teacherId: number, studyRoomId?: number) =>
+    `/inquiry/new?teacherId=${teacherId}${
+      studyRoomId ? `&studyRoomId=${studyRoomId}` : ''
+    }`,
+} as const;
+
+/* ─────────────────────────────────────────────────────
+ * ADMIN
+ * ────────────────────────────────────────────────────*/
+const ADMIN = {
+  COLUMN: {
+    LIST: '/admin/column',
+    DETAIL: (id: number) => `/admin/column/${id}`,
+  },
 } as const;
 
 /* ─────────────────────────────────────────────────────
@@ -79,6 +132,9 @@ const PROFILE = {
 export const PUBLIC = {
   CORE,
   PROFILE,
+  STUDY_ROOM_PREVIEW,
+  COMMUNITY: PUBLIC_COMMUNITY,
+  INQUIRY,
 } as const;
 
 /* ─────────────────────────────────────────────────────
@@ -90,4 +146,7 @@ export const PRIVATE = {
   NOTE,
   HOMEWORK,
   QUESTIONS,
+  COMMUNITY: PRIVATE_COMMUNITY,
+  MYPAGE,
+  ADMIN,
 } as const;

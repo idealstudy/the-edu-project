@@ -6,7 +6,7 @@ import { DashboardContainer } from '@/features/dashboard/components/dashboard-co
 
 const SITE_NAME = '디에듀';
 const SITE_URL = 'https://d-edu.site/';
-const OG_IMAGE = '/logo.svg';
+const OG_IMAGE = '/og_image.png';
 
 export const metadata: Metadata = {
   title: `${SITE_NAME} | 수업·숙제·피드백까지 학습의 흐름을 깔끔하게`,

@@ -99,7 +99,7 @@ const QuestionAnswer = ({
 
   const handleSave = () => {
     if (!editContent) return;
-    const { contentString } = prepareContentForSave(editContent);
+    const { contentString, mediaIds } = prepareContentForSave(editContent);
 
     updateMessage(
       {
@@ -107,6 +107,7 @@ const QuestionAnswer = ({
         contextId,
         messageId: id,
         content: contentString,
+        mediaIds,
       },
       {
         onSuccess: () => {
@@ -262,7 +263,6 @@ const QuestionAnswer = ({
               value={editContent || parsedEditorContent}
               onChange={(value) => setEditContent(value)}
               placeholder="내용을 수정하세요..."
-              targetType="QNA"
             />
             <div className="flex justify-end gap-2">
               <Button

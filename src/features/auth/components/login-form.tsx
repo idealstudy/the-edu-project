@@ -29,6 +29,7 @@ const LoginFormtwStyles = {
 export default function LoginForm() {
   const searchParams = useSearchParams();
   const inviteToken = searchParams.get('token');
+  const from = searchParams.get('from');
 
   const {
     register,
@@ -48,7 +49,7 @@ export default function LoginForm() {
     login(data, {
       onError: (error) => {
         trackAuthLoginFail();
-        let message = '로그인에 실패하였습니다. 잠시 후 다시 시도하주세요.';
+        let message = '로그인에 실패하였습니다. 잠시 후 다시 시도해주세요.';
 
         if (error instanceof AxiosError) {
           const serverMessage = extractErrorMessage(error.response?.data);
@@ -66,6 +67,14 @@ export default function LoginForm() {
   const isLoading = isLoggingIn || isSubmitting;
   const isInValid = Object.keys(errors).length > 0;
 
+  const getSignupHref = () => {
+    const params = new URLSearchParams();
+    if (inviteToken) params.set('token', inviteToken);
+    if (from) params.set('from', from);
+    const query = params.toString();
+    return query ? `${PUBLIC.CORE.SIGNUP}?${query}` : PUBLIC.CORE.SIGNUP;
+  };
+
   return (
     <>
       <p className="mt-10 w-fit text-[20px] font-medium">소셜 로그인</p>
@@ -78,6 +87,7 @@ export default function LoginForm() {
       </div>
 
       <Form
+        method="post"
         onSubmit={handleSubmit(onSubmit)}
         className={LoginFormtwStyles.wrapper}
       >
@@ -86,6 +96,7 @@ export default function LoginForm() {
           <Form.Control>
             <Input
               type="email"
+              data-testid="login-email-input"
               {...register('email')}
             />
           </Form.Control>
@@ -97,6 +108,7 @@ export default function LoginForm() {
           <Form.Control>
             <Input
               type="password"
+              data-testid="login-password-input"
               {...register('password')}
             />
           </Form.Control>
@@ -107,6 +119,7 @@ export default function LoginForm() {
           type="submit"
           disabled={isLoading || isInValid}
           className="w-full"
+          data-testid="login-submit-button"
         >
           {isLoading ? '로그인 중...' : '계속'}
         </Button>
@@ -114,11 +127,7 @@ export default function LoginForm() {
         <div className="flex justify-center gap-2">
           <span>아직 회원이 아니신가요?</span>
           <Link
-            href={
-              inviteToken
-                ? `${PUBLIC.CORE.SIGNUP}?token=${encodeURIComponent(inviteToken)}`
-                : PUBLIC.CORE.SIGNUP
-            }
+            href={getSignupHref()}
             className={LoginFormtwStyles.link}
           >
             회원가입

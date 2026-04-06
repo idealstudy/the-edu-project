@@ -18,10 +18,15 @@ export const useCurrentMember = (initialHasSession: boolean) => {
     if (query.data) {
       setMember(query.data);
       if (window.location.pathname === '/login') {
-        const token = new URLSearchParams(window.location.search).get('token');
-        router.replace(
-          token ? `/dashboard?token=${encodeURIComponent(token)}` : '/dashboard'
-        );
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token');
+        const from = params.get('from');
+
+        if (token) {
+          router.replace(`/dashboard?token=${encodeURIComponent(token)}`);
+        } else {
+          router.replace(from ?? '/dashboard');
+        }
       }
     }
     // 로그아웃 상태 처리(데이터 없음 || 에러 발생)

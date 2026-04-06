@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { TeacherDashboardMemberListItemDTO } from '@/entities/teacher';
 import { Pagination } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants';
-import { cn } from '@/shared/lib';
+import { cn, getDaysSince } from '@/shared/lib';
 
 export interface StudentsSectionContentProps {
   students: TeacherDashboardMemberListItemDTO[];
@@ -32,13 +32,6 @@ const STATE_LABEL: Record<
   APPROVED: '참여 중',
   REJECTED: '거절됨',
   TERMINATED: '탈퇴',
-};
-
-const getDaysSince = (dateStr: string): number => {
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return 0;
-  const now = new Date();
-  return Math.floor((now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 };
 
 const StudentsSectionContent = ({
@@ -135,7 +128,7 @@ const StudentsSectionContent = ({
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content>
                   <DropdownMenu.Item asChild>
-                    <Link href={PUBLIC.PROFILE.DETAIL(student.id)}>
+                    <Link href={PUBLIC.PROFILE.STUDENT(student.id)}>
                       프로필 보기
                     </Link>
                   </DropdownMenu.Item>

@@ -105,6 +105,22 @@ const StudyRoomPreviewStatsEnvelopeSchema = sharedSchema.response(
 );
 
 /* ─────────────────────────────────────────────────────
+ * 문의 목록 DTO
+ * ────────────────────────────────────────────────────*/
+const PreviewInquiryItemSchema = z.object({
+  id: z.number().int(),
+  inquirerRole: z.string(),
+  status: z.enum(['PENDING', 'ANSWERED']),
+  regDate: z.string(),
+  masked: z.boolean(),
+});
+
+const PreviewInquiryListSchema = z.object({
+  totalCount: z.number().int(),
+  inquiries: z.array(PreviewInquiryItemSchema),
+});
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ──────────────────────────────────────────────────── */
 export const dto = {
@@ -120,4 +136,7 @@ export const dto = {
 
   detailEnvelope: StudyRoomPreviewDetailEnvelopeSchema,
   statsEnvelope: StudyRoomPreviewStatsEnvelopeSchema,
+
+  inquiryItem: PreviewInquiryItemSchema,
+  inquiryList: PreviewInquiryListSchema,
 };
