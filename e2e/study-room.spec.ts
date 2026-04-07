@@ -15,6 +15,9 @@ test.describe.serial('스터디룸 CRUD', () => {
     await loginAsTeacher(page);
   });
 
+  /* ─────────────────────────────────────────────────────
+   * 스터디룸 생성
+   * ────────────────────────────────────────────────────*/
   test('기본 정보와 교육 프로필을 입력하여 스터디룸을 생성할 수 있다', async ({
     page,
   }) => {
@@ -44,6 +47,9 @@ test.describe.serial('스터디룸 CRUD', () => {
     studyRoomId = Number(match![1]);
   });
 
+  /* ─────────────────────────────────────────────────────
+   * 스터디룸 수정
+   * ────────────────────────────────────────────────────*/
   test('스터디룸 이름을 수정할 수 있다', async ({ page }) => {
     await page.goto(PRIVATE.ROOM.EDIT(studyRoomId));
 
@@ -70,6 +76,9 @@ test.describe.serial('스터디룸 CRUD', () => {
     await expect(page).toHaveURL(/\/study-room-preview\/\d+\/\d+/);
   });
 
+  /* ─────────────────────────────────────────────────────
+   * 스터디룸 삭제
+   * ────────────────────────────────────────────────────*/
   test('스터디룸을 삭제하면 대시보드로 이동한다', async ({ page }) => {
     await page.goto(PRIVATE.ROOM.DETAIL(studyRoomId));
 
