@@ -33,7 +33,7 @@ const mockConsultationItems = [
   },
 ];
 
-export const StudyConsulationList = ({ data }: { data: ParentStudent[] }) => {
+export const ConsultationList = ({ data }: { data: ParentStudent[] }) => {
   const studyRoomOptions = data.flatMap((student) =>
     student.studyRooms.map((studyRoom) => ({
       id: studyRoom.studyRoomId,

@@ -20,7 +20,7 @@ export const MoreContentsHeader = ({
         : '답변 받은 질문만 확인해보세요';
     case 'STUDY_NEWS':
       headerTitle = '내 아이의 학습 소식';
-    case 'STUDY_CONSULATION':
+    case 'STUDY_CONSULTATION':
       headerTitle = '내 아이의 학습 일지';
   }
 

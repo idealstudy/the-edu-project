@@ -91,7 +91,7 @@ export const ConsultationSection = () => {
         }
         description="선생님이 직접 작성한 학습일지예요"
         count={mockConsultationItems.length}
-        isMoreHref="/dashboard/study-consulation"
+        isMoreHref="/dashboard/study-consultation"
         isMore
         isAll
       >

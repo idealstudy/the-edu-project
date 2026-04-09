@@ -1,4 +1,4 @@
-import { StudyConsulation } from '@/features/dashboard/components/study-consulation';
+import { StudyConsultation } from '@/features/dashboard/components/study-consultation';
 
 const mockStudentData = [
   {
@@ -27,6 +27,6 @@ const mockStudentData = [
   },
 ];
 
-export default function StudyConsulationPage() {
-  return <StudyConsulation data={mockStudentData} />;
+export default function StudyConsultationPage() {
+  return <StudyConsultation data={mockStudentData} />;
 }
