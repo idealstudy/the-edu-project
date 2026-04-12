@@ -15,7 +15,7 @@ import {
 import { Sidebar } from '@/shared/components/sidebar';
 import { PRIVATE, PUBLIC } from '@/shared/constants/route';
 import { useRole } from '@/shared/hooks/use-role';
-import { trackGnbLogoutClick } from '@/shared/lib/gtm/trackers';
+import { trackGnbLogoutClick } from '@/shared/lib/analytics';
 import { LogOut, ShieldUserIcon, User2Icon } from 'lucide-react';
 
 export const DashboardSidebar = () => {
