@@ -23,8 +23,12 @@ const CORE = {
 const DASHBOARD = {
   INDEX: '/dashboard',
   INQUIRY: '/dashboard/inquiry',
-  SETTINGS: '/dashboard/settings',
 } as const;
+
+/* ─────────────────────────────────────────────────────
+ * SETTINGS
+ * ────────────────────────────────────────────────────*/
+const SETTINGS = '/settings';
 
 /* ─────────────────────────────────────────────────────
  * STUDY ROOM
@@ -149,4 +153,5 @@ export const PRIVATE = {
   COMMUNITY: PRIVATE_COMMUNITY,
   MYPAGE,
   ADMIN,
+  SETTINGS,
 } as const;

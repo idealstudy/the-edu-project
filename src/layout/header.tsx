@@ -120,19 +120,25 @@ export const Header = () => {
             />
             소중한 의견 보내기
           </Link>
-          <Link
-            href="/list/teachers?sort=LATEST&subject=ALL"
-            className="hover:text-orange-scale-orange-50 max-desktop:hidden ml-4 border-r border-white pr-2 text-sm font-medium text-white transition-colors"
-          >
-            디에듀 101 목록
-          </Link>
-          <Link
-            href={PUBLIC.COMMUNITY.COLUMN.LIST}
-            className="hover:text-orange-scale-orange-50 max-desktop:hidden text-sm font-medium text-white transition-colors"
-          >
-            게시판
-          </Link>
+
+          {!session && (
+            <>
+              <Link
+                href={PUBLIC.CORE.LIST.TEACHERS}
+                className="hover:text-orange-scale-orange-50 max-desktop:hidden ml-4 border-r border-white pr-2 text-sm font-medium text-white transition-colors"
+              >
+                탐색하기
+              </Link>
+              <Link
+                href={PUBLIC.COMMUNITY.COLUMN.LIST}
+                className="hover:text-orange-scale-orange-50 max-desktop:hidden text-sm font-medium text-white transition-colors"
+              >
+                게시판
+              </Link>
+            </>
+          )}
         </div>
+
         {session && (
           <div className="desktop:gap-4 flex items-center gap-1">
             <NotificationPopover />
