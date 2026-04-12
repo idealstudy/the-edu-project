@@ -2,9 +2,9 @@ import { useStudentStudyRoomsQuery } from '@/features/study-rooms';
 
 import { useOnboardingStatus } from '../../hooks/use-onboarding-status';
 import DashboardHeader from '../header';
+import CalendarSection from '../section/calendar-section';
 import QnASection from '../section/qna-section';
 import StudentTabSection from '../section/student-tab-section';
-import StudyroomSection from '../section/studyroom-section';
 import StudentOnboarding from './student-onboarding';
 
 export const DashboardStudent = () => {
@@ -25,7 +25,7 @@ export const DashboardStudent = () => {
         {!studentStepsCompleted && <StudentOnboarding />}
         <div className="tablet:gap-25 flex w-full flex-col gap-8">
           <QnASection />
-          <StudyroomSection />
+          <CalendarSection />
           <StudentTabSection />
         </div>
       </main>
