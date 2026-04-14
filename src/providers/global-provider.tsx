@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 
 import {
+  AmplitudeProvider,
   InterceptorProvider,
   QueryProvider,
   SessionProvider,
@@ -18,6 +19,7 @@ export const GlobalProvider = async ({ children }: Props) => {
     <InterceptorProvider>
       <QueryProvider>
         <SessionProvider initialHasSession={hasSession}>
+          <AmplitudeProvider />
           <ToastProvider />
           {children}
         </SessionProvider>
