@@ -7,10 +7,11 @@ export const parentKeys = {
       [...parentKeys.dashboard.all(), 'connectedStudentList'] as const,
     studyNewsList: (studentId: number) =>
       [...parentKeys.dashboard.all(), 'studyNewsList', studentId] as const,
-    studyConsultationList: (studyRoomId: number) =>
+    studyConsultationList: (studentId: number, studyRoomId: number) =>
       [
         ...parentKeys.dashboard.all(),
         'studyConsultationList',
+        studentId,
         studyRoomId,
       ] as const,
     studyRoomPreviewList: () =>

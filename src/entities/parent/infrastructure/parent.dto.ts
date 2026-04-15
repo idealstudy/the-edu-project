@@ -8,11 +8,15 @@ const ParentDashboardConnectedStudyRoomDtoSchema = z.object({
   studyRoomName: z.string(),
 });
 
-const ParentDashboardConnectedStudentListDtoSchema = z.object({
+const ParentDashboardConnectedStudentItemDtoSchema = z.object({
   studentId: z.number().int(),
   studentName: z.string(),
   studyRooms: z.array(ParentDashboardConnectedStudyRoomDtoSchema),
 });
+
+const ParentDashboardConnectedStudentListDtoSchema = z.array(
+  ParentDashboardConnectedStudentItemDtoSchema
+);
 
 /* ─────────────────────────────────────────────────────
  * 부모님 대시보드 활동 통계 조회
@@ -38,11 +42,12 @@ const ParentDashboardListBaseDtoSchema = z.object({
  * 부모님 대시보드 학습 소식 목록 조회
  * ────────────────────────────────────────────────────*/
 const ParentDashboardStudyNewsBaseItemDtoSchema = z.object({
-  id: z.number(),
+  id: z.number().int(),
   title: z.string(),
   regDate: z.string(),
   teacherName: z.string(),
   studyRoomName: z.string(),
+  studyRoomId: z.number().int(),
 });
 
 const ParentDashboardStudyNewsHomeworkItemDtoSchema =
@@ -92,7 +97,7 @@ const ParentDashboardConsultationListDtoSchema =
 /* ─────────────────────────────────────────────────────
  * 부모님 대시보드 스터디룸 둘러보기
  * ────────────────────────────────────────────────────*/
-const ParentDashboardStudyRoomPreviewListItemDtoSchema = z.object({
+const ParentDashboardStudyRoomPreviewItemDtoSchema = z.object({
   id: z.number().int(),
   name: z.string(),
   description: z.string(),
@@ -101,10 +106,9 @@ const ParentDashboardStudyRoomPreviewListItemDtoSchema = z.object({
   subjectType: z.enum(['KOREAN', 'ENGLISH', 'MATH', 'OTHER']),
 });
 
-const ParentDashboardStudyRoomPreviewListDtoSchema =
-  ParentDashboardListBaseDtoSchema.extend({
-    content: z.array(ParentDashboardStudyRoomPreviewListItemDtoSchema),
-  });
+const ParentDashboardStudyRoomPreviewListDtoSchema = z.array(
+  ParentDashboardStudyRoomPreviewItemDtoSchema
+);
 
 /* ─────────────────────────────────────────────────────
  * 부모님 대시보드 문의 목록 조회

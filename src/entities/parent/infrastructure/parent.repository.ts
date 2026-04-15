@@ -32,9 +32,12 @@ const getParentDashboardStudyNewsList = async (studentId: number) => {
 /* ─────────────────────────────────────────────────────
  * [Read] 부모님 대시보드 - 학습 일지 목록 조회
  * ────────────────────────────────────────────────────*/
-const getParentDashboardStudyConsultationList = async (studyRoomId: number) => {
+const getParentDashboardStudyConsultationList = async (
+  studentId: number,
+  studyRoomId: number
+) => {
   const response = await api.private.get(
-    `/parent/dashboard/study-rooms/${studyRoomId}/consultation-sheets`
+    `/parent/dashboard/students/${studentId}/study-rooms/${studyRoomId}/consultation-sheets`
   );
   return unwrapEnvelope(response, dto.dashboard.consultationList);
 };
