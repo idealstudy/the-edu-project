@@ -22,9 +22,15 @@ const getParentDashboardReport = async () => {
 /* ─────────────────────────────────────────────────────
  * [Read] 부모님 대시보드 - 학습 소식 목록 조회
  * ────────────────────────────────────────────────────*/
-const getParentDashboardStudyNewsList = async (studentId: number) => {
+const getParentDashboardStudyNewsList = async (
+  studentId: number,
+  params?: { page?: number; size?: number }
+) => {
   const response = await api.private.get(
-    `/parent/dashboard/students/${studentId}/study-news`
+    `/parent/dashboard/students/${studentId}/study-news`,
+    {
+      params,
+    }
   );
   return unwrapEnvelope(response, dto.dashboard.studyNewsList);
 };
@@ -34,10 +40,12 @@ const getParentDashboardStudyNewsList = async (studentId: number) => {
  * ────────────────────────────────────────────────────*/
 const getParentDashboardStudyConsultationList = async (
   studentId: number,
-  studyRoomId: number
+  studyRoomId: number,
+  params?: { page?: number; size?: number }
 ) => {
   const response = await api.private.get(
-    `/parent/dashboard/students/${studentId}/study-rooms/${studyRoomId}/consultation-sheets`
+    `/parent/dashboard/students/${studentId}/study-rooms/${studyRoomId}/consultation-sheets`,
+    { params }
   );
   return unwrapEnvelope(response, dto.dashboard.consultationList);
 };

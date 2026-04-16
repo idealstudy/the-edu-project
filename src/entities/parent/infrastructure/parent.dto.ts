@@ -14,9 +14,11 @@ const ParentDashboardConnectedStudentItemDtoSchema = z.object({
   studyRooms: z.array(ParentDashboardConnectedStudyRoomDtoSchema),
 });
 
-const ParentDashboardConnectedStudentListDtoSchema = z.array(
-  ParentDashboardConnectedStudentItemDtoSchema
-);
+const ParentDashboardConnectedStudentListDtoSchema = z
+  .object({
+    students: z.array(ParentDashboardConnectedStudentItemDtoSchema),
+  })
+  .transform((value) => value.students);
 
 /* ─────────────────────────────────────────────────────
  * 부모님 대시보드 활동 통계 조회
