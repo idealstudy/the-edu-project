@@ -4,7 +4,7 @@ import { useEffect, useReducer, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { FrontendNotification } from '@/entities/notification';
+import { NotificationItem } from '@/entities/notification';
 import NotificationIcon from '@/features/notifications/components/notification-icon';
 import {
   useDeleteNotifications,
@@ -53,7 +53,7 @@ export function NotificationPopover() {
   }, [isOpen, refetch, refetchUnread]);
 
   // 개별 읽음 처리
-  const handleNotificationClick = (notification: FrontendNotification) => {
+  const handleNotificationClick = (notification: NotificationItem) => {
     if (!notification.isRead) markAsRead.mutate([notification.id]);
     if (notification.targetUrl) {
       router.push(notification.targetUrl);

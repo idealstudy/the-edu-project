@@ -4,63 +4,50 @@ import { useState } from 'react';
 
 import Link from 'next/link';
 
+import { NotificationCategory } from '@/entities/notification';
+import {
+  useNotificationSettings,
+  useUpdateNotificationSetting,
+} from '@/features/settings/hooks/use-notification';
 import { Toggle } from '@/shared/components/ui/toggle';
 import { link } from '@/shared/constants';
 
-type ServiceSubKey = 'note' | 'qna' | 'homework' | 'inquiry';
+type ServiceSubCategory = Extract<
+  NotificationCategory,
+  'TEACHING_NOTE' | 'QNA' | 'HOMEWORK' | 'INQUIRY'
+>;
 
 const SERVICE_SUB_ITEMS: Record<
-  ServiceSubKey,
+  ServiceSubCategory,
   { label: string; description: string }
 > = {
-  note: {
+  TEACHING_NOTE: {
     label: '수업노트',
     description: '수업노트 등록 및 관련 활동 알림',
   },
-  qna: { label: '질문/답변', description: '질문 등록 및 답변 알림' },
-  homework: { label: '과제', description: '과제 등록 및 제출 알림' },
-  inquiry: {
+  QNA: { label: '질문/답변', description: '질문 등록 및 답변 알림' },
+  HOMEWORK: { label: '과제', description: '과제 등록 및 제출 알림' },
+  INQUIRY: {
     label: '수업상담',
     description: '수업 상담 등록 및 답변 알림',
   },
 };
 
-const SERVICE_SUB_KEYS: ServiceSubKey[] = [
-  'note',
-  'qna',
-  'homework',
-  'inquiry',
-];
-
-type NotificationState = {
-  service: boolean;
-  serviceSub: Record<ServiceSubKey, boolean>;
-  event: boolean;
-};
-
-const initialState: NotificationState = {
-  service: true,
-  serviceSub: { note: true, qna: true, homework: true, inquiry: true },
-  event: true,
-};
+const SERVICE_SUB_KEYS = Object.keys(SERVICE_SUB_ITEMS) as ServiceSubCategory[];
 
 export default function NotificationSettings() {
-  const [state, setState] = useState<NotificationState>(initialState);
+  const [event, setEvent] = useState(true);
+  const { data: notificationSettings } = useNotificationSettings();
+  const updateNotificationSettingMutation = useUpdateNotificationSetting();
 
-  const handleService = (checked: boolean) => {
-    setState((prev) => ({ ...prev, service: checked }));
-  };
+  const settingsMap = new Map(
+    notificationSettings?.map((setting) => [setting.category, setting.enabled])
+  );
 
-  const handleServiceSub = (key: ServiceSubKey, checked: boolean) => {
-    setState((prev) => ({
-      ...prev,
-      serviceSub: { ...prev.serviceSub, [key]: checked },
-    }));
-  };
+  const getEnabled = (category: NotificationCategory) =>
+    settingsMap.get(category) ?? true;
 
-  const handleEvent = (checked: boolean) => {
-    setState((prev) => ({ ...prev, event: checked }));
-  };
+  const serviceEnabled = getEnabled('ALL');
 
   return (
     <div className="flex flex-col gap-6">
@@ -70,8 +57,13 @@ export default function NotificationSettings() {
       <div className="border-line-line1 rounded-xl border bg-white p-6">
         <div className="flex items-center gap-2">
           <Toggle
-            checked={state.service}
-            onCheckedChange={handleService}
+            checked={serviceEnabled}
+            onCheckedChange={(checked) =>
+              updateNotificationSettingMutation.mutate({
+                category: 'ALL',
+                enabled: checked,
+              })
+            }
           />
           <span className="font-body1-heading">서비스 안내 알림</span>
         </div>
@@ -81,19 +73,24 @@ export default function NotificationSettings() {
         </p>
 
         <div className="border-gray-4 mt-4 flex flex-col gap-4 border-t pt-4 pl-4">
-          {SERVICE_SUB_KEYS.map((key) => (
+          {SERVICE_SUB_KEYS.map((category) => (
             <div
-              key={key}
+              key={category}
               className="flex items-center gap-2"
             >
               <Toggle
-                checked={state.service && state.serviceSub[key]}
-                onCheckedChange={(checked) => handleServiceSub(key, checked)}
-                disabled={!state.service}
+                checked={serviceEnabled && getEnabled(category)}
+                onCheckedChange={(checked) =>
+                  updateNotificationSettingMutation.mutate({
+                    category,
+                    enabled: checked,
+                  })
+                }
+                disabled={!serviceEnabled}
               />
-              <span className="">{SERVICE_SUB_ITEMS[key].label}</span>
+              <span>{SERVICE_SUB_ITEMS[category].label}</span>
               <span className="font-caption-normal text-text-sub2">
-                ⓘ {SERVICE_SUB_ITEMS[key].description}
+                ⓘ {SERVICE_SUB_ITEMS[category].description}
               </span>
             </div>
           ))}
@@ -104,8 +101,8 @@ export default function NotificationSettings() {
       <div className="border-line-line1 rounded-xl border bg-white p-6">
         <div className="mb-2 flex items-center gap-2">
           <Toggle
-            checked={state.event}
-            onCheckedChange={handleEvent}
+            checked={event}
+            onCheckedChange={setEvent}
           />
           <span className="font-body1-heading">이벤트 혜택 알림</span>
           {/* TODO API 연결 시 동적 값으로 교체 필요 */}
