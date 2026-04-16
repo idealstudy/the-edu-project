@@ -23,9 +23,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/shared/components/ui/popover';
+import { PRIVATE } from '@/shared/constants';
 import { trackGnbAlarmClick } from '@/shared/lib/analytics';
 import { cn } from '@/shared/lib/utils';
 import { useMemberStore } from '@/store';
+import { Settings, Trash2Icon } from 'lucide-react';
 
 export function NotificationPopover() {
   const router = useRouter();
@@ -153,17 +155,17 @@ export function NotificationPopover() {
                       {item.message}
                     </p>
                   </div>
-                  <div className="ml-3 flex flex-col items-end">
+                  <div className="ml-3 flex flex-col items-end justify-between gap-1">
                     <span className="text-xs text-gray-400">
                       {item.relativeTime}
                     </span>
                     <button
                       type="button"
-                      className="cursor-pointer p-1 text-gray-300 hover:text-gray-500"
+                      className="text-text-sub2 hover:text-text-main cursor-pointer p-1"
                       aria-label="알림 삭제"
                       onClick={(event) => handleDelete(item.id, event)}
                     >
-                      🗑️
+                      <Trash2Icon size={20} />
                     </button>
                   </div>
                 </li>
@@ -204,10 +206,18 @@ export function NotificationPopover() {
             </div>
             <button
               type="button"
-              className="flex cursor-pointer items-center gap-2 hover:underline"
+              className="flex cursor-pointer items-center gap-1 hover:underline"
               aria-label="알림 설정"
+              onClick={() => {
+                router.push(PRIVATE.SETTINGS);
+                setIsOpen(false);
+              }}
             >
-              ⚙️ 알림 설정
+              <Settings
+                size={16}
+                aria-hidden
+              />
+              알림 설정
             </button>
           </footer>
         </PopoverContent>

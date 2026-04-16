@@ -107,7 +107,7 @@ export const Header = () => {
             height={20}
           />
           <Link
-            href="https://forms.gle/ktLvekAsKTkqTcpQ6"
+            href="https://pf.kakao.com/_LMcpn"
             className={cn(FEEDBACK_BUTTON_BASE, 'ml-2', 'max-desktop:hidden')}
             target="_blank"
             rel="noopener noreferrer"
@@ -160,10 +160,22 @@ export const Header = () => {
                 />
               </DropdownMenu.Trigger>
               <DropdownMenu.Content>
-                <DropdownMenu.Item onClick={() => goToMypage()}>
+                <DropdownMenu.Item
+                  className="justify-self-center"
+                  onClick={() => goToMypage()}
+                >
                   마이페이지
                 </DropdownMenu.Item>
-                <DropdownMenu.Item onClick={() => handleLogout()}>
+                <DropdownMenu.Item
+                  className="justify-self-center"
+                  onClick={() => router.push(PRIVATE.SETTINGS)}
+                >
+                  환경설정
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  className="text-system-warning justify-self-center"
+                  onClick={() => handleLogout()}
+                >
                   로그아웃
                 </DropdownMenu.Item>
               </DropdownMenu.Content>
@@ -310,6 +322,14 @@ export const Header = () => {
                       마이페이지
                     </PopoverItem>
                     <PopoverItem
+                      onClick={() => {
+                        router.push(PRIVATE.SETTINGS);
+                        setIsOpen(false);
+                      }}
+                    >
+                      환경설정
+                    </PopoverItem>
+                    <PopoverItem
                       variant="danger"
                       onClick={() => {
                         handleLogout();
@@ -322,7 +342,7 @@ export const Header = () => {
 
                   <div className="mt-2 flex flex-col gap-1">
                     <Link
-                      href="https://forms.gle/ktLvekAsKTkqTcpQ6"
+                      href="https://pf.kakao.com/_LMcpn"
                       className="text-gray-scale-gray-30 flex items-center justify-end gap-1.5 text-sm font-semibold"
                       target="_blank"
                       rel="noopener noreferrer"
