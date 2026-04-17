@@ -3,38 +3,38 @@
 import { useParams } from 'next/navigation';
 
 import BackLink from '@/features/dashboard/studynote/components/back-link';
+import { useStudentNoteDetail } from '@/features/student-study-note/hooks';
 import { ColumnLayout } from '@/layout/column-layout';
 import { TextViewer } from '@/shared/components/editor';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { BookOpen, Tag } from 'lucide-react';
 
-// TODO: API 연동 시 제거
-const MOCK_STUDENT_STUDY_NOTE = {
-  id: 1,
-  title: '수학 오답노트하기',
-  subject: '수학',
-  studiedAt: '2025-07-13T00:00:00',
-  content: JSON.stringify({
-    type: 'doc',
-    content: [{ type: 'paragraph' }],
-  }),
-};
-
 const StudentStudyNoteDetailPage = () => {
-  useParams();
+  const params = useParams();
+  const noteId = Number(params.id);
 
-  const data = MOCK_STUDENT_STUDY_NOTE;
+  const { data, isPending } = useStudentNoteDetail(noteId);
 
-  const formattedDate = data.studiedAt
-    ? format(new Date(data.studiedAt), 'yyyy. MM. dd (E)', { locale: ko })
+  const formattedDate = data?.regDate
+    ? format(new Date(data.regDate), 'yyyy. MM. dd (E)', { locale: ko })
     : null;
 
+  const resolvedContent = data?.resolvedContent?.content ?? data?.content;
   let content: unknown = null;
   try {
-    if (data.content) content = JSON.parse(data.content);
+    if (resolvedContent) content = JSON.parse(resolvedContent);
   } catch {
     content = null;
+  }
+
+  if (isPending) {
+    return (
+      <ColumnLayout className="tablet:flex-col desktop:flex-col flex flex-col gap-0">
+        <BackLink className="mb-6" />
+        <div className="border-line-line1 h-64 w-full animate-pulse rounded-xl border bg-white" />
+      </ColumnLayout>
+    );
   }
 
   return (
@@ -43,7 +43,7 @@ const StudentStudyNoteDetailPage = () => {
       <ColumnLayout className="desktop:px-0 items-start gap-6 p-0">
         <ColumnLayout.Left className="border-line-line1 !static top-0 h-fit space-y-5 rounded-xl border bg-white p-10">
           <h1 className="font-headline1-heading text-text-main">
-            {data.title}
+            {data?.title}
           </h1>
 
           <hr className="border-line-line1 border" />
@@ -54,7 +54,9 @@ const StudentStudyNoteDetailPage = () => {
                 <Tag size={14} />
                 <span>과목</span>
               </div>
-              <p className="font-body2-normal text-text-main">{data.subject}</p>
+              <p className="font-body2-normal text-text-main">
+                {data?.subject}
+              </p>
             </div>
 
             {formattedDate && (

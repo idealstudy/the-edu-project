@@ -7,8 +7,9 @@ import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 import { Select } from '@/shared/components/ui/select';
+import { useSubjectList } from '@/shared/hooks';
 
-import { SUBJECTS, StudentStudyNoteForm } from '../schemas/study-note';
+import { StudentStudyNoteForm } from '../schemas/study-note';
 
 const RequiredMark = () => <span className="text-key-color-primary"> *</span>;
 
@@ -18,6 +19,7 @@ export const StudentStudyNoteFields = () => {
     control,
     formState: { errors },
   } = useFormContext<StudentStudyNoteForm>();
+  const { data: subjects = [] } = useSubjectList();
 
   return (
     <>
@@ -79,12 +81,12 @@ export const StudentStudyNoteFields = () => {
                 >
                   <Select.Trigger placeholder="과목을 선택해 주세요." />
                   <Select.Content>
-                    {SUBJECTS.map((subject) => (
+                    {subjects.map(({ code, name }) => (
                       <Select.Option
-                        key={subject}
-                        value={subject}
+                        key={code}
+                        value={code}
                       >
-                        {subject}
+                        {name}
                       </Select.Option>
                     ))}
                   </Select.Content>

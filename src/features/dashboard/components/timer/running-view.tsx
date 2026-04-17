@@ -14,6 +14,7 @@ export type RunningViewProps = {
   onNoteContentChange: (v: TextEditorValue) => void;
   onToggleNote: () => void;
   onPauseResume: () => void;
+  onTempSave: () => void;
   onReset: () => void;
   onFinish: () => void;
   onBack: () => void;
@@ -28,6 +29,7 @@ export const RunningView = ({
   onNoteContentChange,
   onToggleNote,
   onPauseResume,
+  onTempSave,
   onReset,
   onFinish,
   onBack,
@@ -94,6 +96,7 @@ export const RunningView = ({
           <Button
             variant="outlined"
             size="xsmall"
+            onClick={onTempSave}
           >
             임시저장
           </Button>

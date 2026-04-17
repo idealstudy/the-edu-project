@@ -2,7 +2,18 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { initialTextEditorValue } from '@/shared/components/editor';
+import {
+  useStudyNoteTimerFinish,
+  useStudyNoteTimerPause,
+  useStudyNoteTimerProgress,
+  useStudyNoteTimerResume,
+  useStudyNoteTimerStart,
+  useStudyNoteTimerTempSave,
+} from '@/features/dashboard/hooks';
+import {
+  initialTextEditorValue,
+  prepareContentForSave,
+} from '@/shared/components/editor';
 import type { TextEditorValue } from '@/shared/components/editor';
 import { Dialog } from '@/shared/components/ui/dialog';
 import { cn } from '@/shared/lib';
@@ -28,7 +39,25 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
   const [noteContent, setNoteContent] = useState<TextEditorValue>(
     initialTextEditorValue
   );
+  const [studyNoteId, setStudyNoteId] = useState<number | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const { data: progressData } = useStudyNoteTimerProgress({ enabled: isOpen });
+  const { mutate: startTimer } = useStudyNoteTimerStart();
+  const { mutate: pauseTimer } = useStudyNoteTimerPause();
+  const { mutate: resumeTimer } = useStudyNoteTimerResume();
+  const { mutate: finishTimer } = useStudyNoteTimerFinish();
+  const { mutate: tempSaveTimer } = useStudyNoteTimerTempSave();
+
+  useEffect(() => {
+    if (!isOpen || !progressData?.ongoing) return;
+    setStudyNoteId(progressData.id);
+    setTopic(progressData.title);
+    setSelectedSubject(progressData.subject);
+    setElapsed(progressData.studyTime);
+    setIsRunning(progressData.status === 'RUNNING');
+    setStep('running');
+  }, [isOpen, progressData]);
 
   useEffect(() => {
     if (isRunning) {
@@ -49,7 +78,67 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
     setIsRunning(false);
     setNoteOpen(true);
     setNoteContent(initialTextEditorValue);
+    setStudyNoteId(null);
     onClose();
+  };
+
+  const handlePauseResume = () => {
+    if (!studyNoteId) return;
+    if (isRunning) {
+      pauseTimer(
+        {
+          studyNoteId,
+          body: {
+            title: topic,
+            subject: selectedSubject ?? '',
+            content: '',
+            mediaIds: [],
+            finishTimestamp: new Date().toISOString(),
+          },
+        },
+        { onSuccess: () => setIsRunning(false) }
+      );
+    } else {
+      resumeTimer(studyNoteId, { onSuccess: () => setIsRunning(true) });
+    }
+  };
+
+  const handleTempSave = () => {
+    if (!studyNoteId) return;
+    const { contentString, mediaIds } = prepareContentForSave(noteContent);
+    tempSaveTimer({
+      studyNoteId,
+      body: {
+        title: topic,
+        subject: selectedSubject ?? '',
+        content: contentString,
+        mediaIds,
+        finishTimestamp: new Date().toISOString(),
+      },
+    });
+  };
+
+  const handleFinish = () => {
+    if (!studyNoteId) return;
+    const { contentString, mediaIds } = prepareContentForSave(noteContent);
+    finishTimer(
+      {
+        studyNoteId,
+        body: {
+          title: topic,
+          subject: selectedSubject ?? '',
+          content: contentString,
+          mediaIds,
+          finishTimestamp: new Date().toISOString(),
+        },
+      },
+      {
+        onSuccess: () => {
+          setIsRunning(false);
+          setStep('complete');
+        },
+      }
+    );
   };
 
   const today = new Date();
@@ -65,6 +154,13 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
       <Dialog.Content
         className={cn(step === 'running' ? 'max-w-[680px]' : 'max-w-[500px]')}
       >
+        <Dialog.Title className="sr-only">
+          {step === 'setup'
+            ? '타이머'
+            : step === 'running'
+              ? '타이머 진행 중'
+              : '공부 완료'}
+        </Dialog.Title>
         {step === 'setup' && (
           <SetupView
             topic={topic}
@@ -73,9 +169,23 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
             onSubjectChange={setSelectedSubject}
             canStart={topic.trim().length > 0 || selectedSubject !== null}
             onStart={() => {
-              setElapsed(0);
-              setIsRunning(true);
-              setStep('running');
+              startTimer(
+                {
+                  title: topic,
+                  subject: selectedSubject ?? '',
+                  content: '',
+                  mediaIds: [],
+                  finishTimestamp: new Date().toISOString(),
+                },
+                {
+                  onSuccess: ({ id }) => {
+                    setStudyNoteId(id);
+                    setElapsed(0);
+                    setIsRunning(true);
+                    setStep('running');
+                  },
+                }
+              );
             }}
             onClose={handleClose}
           />
@@ -89,15 +199,13 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
             noteContent={noteContent}
             onNoteContentChange={setNoteContent}
             onToggleNote={() => setNoteOpen((o) => !o)}
-            onPauseResume={() => setIsRunning((r) => !r)}
+            onPauseResume={handlePauseResume}
+            onTempSave={handleTempSave}
             onReset={() => {
               setElapsed(0);
               setIsRunning(true);
             }}
-            onFinish={() => {
-              setIsRunning(false);
-              setStep('complete');
-            }}
+            onFinish={handleFinish}
             onBack={() => {
               setIsRunning(false);
               setStep('setup');

@@ -9,17 +9,20 @@ import {
   StudentStudyNoteFields,
   StudentStudyNoteSubmitButton,
 } from '@/features/student-study-note/components/student-study-note-form';
+import { useStudentNoteCreate } from '@/features/student-study-note/hooks';
 import {
   StudentStudyNoteForm,
   studentStudyNoteSchema,
 } from '@/features/student-study-note/schemas/study-note';
 import { ColumnLayout } from '@/layout/column-layout';
+import { prepareContentForSave } from '@/shared/components/editor';
 import { Form } from '@/shared/components/ui/form';
 import { PRIVATE } from '@/shared/constants';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 export default function StudentStudyNoteNewPage() {
   const router = useRouter();
+  const { mutate, isPending } = useStudentNoteCreate();
 
   const methods = useForm<StudentStudyNoteForm>({
     resolver: zodResolver(studentStudyNoteSchema),
@@ -32,9 +35,22 @@ export default function StudentStudyNoteNewPage() {
     mode: 'onChange',
   });
 
-  const onSubmit = () => {
-    // TODO: API 연동
-    router.replace(PRIVATE.DASHBOARD.INDEX);
+  const onSubmit = (data: StudentStudyNoteForm) => {
+    const { contentString, mediaIds } = prepareContentForSave(data.content);
+    mutate(
+      {
+        title: data.title,
+        subject: data.subject,
+        content: contentString,
+        mediaIds,
+        finishTimestamp: new Date().toISOString(),
+      },
+      {
+        onSuccess: () => {
+          router.replace(PRIVATE.DASHBOARD.INDEX);
+        },
+      }
+    );
   };
 
   return (
@@ -55,7 +71,7 @@ export default function StudentStudyNoteNewPage() {
           <Form onSubmit={methods.handleSubmit(onSubmit)}>
             <div className="space-y-8">
               <StudentStudyNoteFields />
-              <StudentStudyNoteSubmitButton />
+              <StudentStudyNoteSubmitButton isPending={isPending} />
             </div>
           </Form>
         </FormProvider>

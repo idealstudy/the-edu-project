@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 
+import { useStudyNoteMonthly } from '@/features/student-study-note/hooks';
 import { Button } from '@/shared/components/ui/button';
 import { Dialog } from '@/shared/components/ui/dialog';
 import {
@@ -12,6 +13,7 @@ import {
   PopoverTrigger,
 } from '@/shared/components/ui/popover';
 import { cn } from '@/shared/lib';
+import { useMemberStore } from '@/store';
 import { ChevronDown, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 import { TimerModal } from '../timer';
@@ -73,10 +75,18 @@ const MonthCalendar = ({
   year,
   month,
   studyData = {},
+  onNavigate,
+  minYear,
+  todayYear,
+  todayMonth,
 }: {
   year: number;
   month: number;
   studyData?: StudyData;
+  onNavigate: (year: number, month: number) => void;
+  minYear: number;
+  todayYear: number;
+  todayMonth: number;
 }) => {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -86,19 +96,37 @@ const MonthCalendar = ({
   const firstDayRaw = new Date(year, month - 1, 1).getDay();
   const startOffset = firstDayRaw === 0 ? 6 : firstDayRaw - 1;
 
-  const cells: Array<{ day: number; current: boolean }> = [];
+  const cells: Array<{ day: number; type: 'prev' | 'current' | 'next' }> = [];
   for (let i = startOffset - 1; i >= 0; i--) {
-    cells.push({ day: daysInPrevMonth - i, current: false });
+    cells.push({ day: daysInPrevMonth - i, type: 'prev' });
   }
   for (let d = 1; d <= daysInMonth; d++) {
-    cells.push({ day: d, current: true });
+    cells.push({ day: d, type: 'current' });
   }
   const tail = cells.length % 7;
   if (tail !== 0) {
     for (let d = 1; d <= 7 - tail; d++) {
-      cells.push({ day: d, current: false });
+      cells.push({ day: d, type: 'next' });
     }
   }
+
+  const handleOtherMonthClick = (type: 'prev' | 'next') => {
+    if (type === 'prev') {
+      const prevYear = month === 1 ? year - 1 : year;
+      const prevMonth = month === 1 ? 12 : month - 1;
+      if (prevYear < minYear) return;
+      onNavigate(prevYear, prevMonth);
+    } else {
+      const nextYear = month === 12 ? year + 1 : year;
+      const nextMonth = month === 12 ? 1 : month + 1;
+      if (
+        nextYear > todayYear ||
+        (nextYear === todayYear && nextMonth > todayMonth)
+      )
+        return;
+      onNavigate(nextYear, nextMonth);
+    }
+  };
 
   const weeks: (typeof cells)[] = [];
   for (let i = 0; i < cells.length; i += 7) {
@@ -127,22 +155,29 @@ const MonthCalendar = ({
             className="grid grid-cols-7"
           >
             {week.map((cell, di) => {
-              const record = cell.current ? studyData[cell.day] : undefined;
+              const isCurrent = cell.type === 'current';
+              const record = isCurrent ? studyData[cell.day] : undefined;
               const badge = record ? getBadge(record.seconds) : null;
-              const hasRecord = cell.current && !!record;
+              const hasRecord = isCurrent && !!record;
               return (
                 <div
                   key={di}
-                  onClick={() => hasRecord && setSelectedDay(cell.day)}
+                  onClick={() => {
+                    if (hasRecord) setSelectedDay(cell.day);
+                    else if (cell.type === 'prev' || cell.type === 'next')
+                      handleOtherMonthClick(cell.type);
+                  }}
                   className={cn(
                     'border-gray-2 hover:border-orange-6 hover:bg-orange-1 flex min-h-[100px] flex-col justify-between gap-1.5 border-[0.5px] p-3 transition-colors',
-                    hasRecord ? 'cursor-pointer' : 'cursor-default'
+                    hasRecord || !isCurrent
+                      ? 'cursor-pointer'
+                      : 'cursor-default'
                   )}
                 >
                   <span
                     className={cn(
                       'font-body2-heading',
-                      cell.current ? 'text-text-main' : 'text-text-disabled'
+                      isCurrent ? 'text-text-main' : 'text-gray-2'
                     )}
                   >
                     {cell.day}
@@ -175,9 +210,9 @@ const MonthCalendar = ({
           <Dialog.Close className="absolute top-6 right-6 cursor-pointer">
             <X size={20} />
           </Dialog.Close>
-          <p className="font-headline1-heading text-center">
+          <Dialog.Title className="font-headline1-heading text-center">
             {formatHHMMSS(selectedRecord?.seconds ?? 0)} 공부 완료
-          </p>
+          </Dialog.Title>
           <div className="bg-gray-1 flex flex-col rounded-md px-4 py-3">
             <span className="font-body2-normal text-text-main pb-3">
               {selectedRecord?.noteTitle ?? '-'}
@@ -216,9 +251,9 @@ const MonthCalendar = ({
               <span className="text-orange-9 font-headline1-heading">!</span>
             </div>
             <div className="flex flex-col items-center gap-2">
-              <p className="font-headline2-heading text-text-main">
+              <Dialog.Title className="font-headline2-heading text-text-main">
                 학습 기록을 삭제하시겠습니까?
-              </p>
+              </Dialog.Title>
               <p className="font-body2-normal text-text-sub">
                 학습 기록을 삭제하면 기록한 시간도 삭제됩니다.
               </p>
@@ -262,8 +297,23 @@ const CalendarSection = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [view, setView] = useState<'month' | 'year'>('month');
   const [yearRangeStart, setYearRangeStart] = useState(minYear);
-  const [hour] = useState(1);
   const [timerOpen, setTimerOpen] = useState(false);
+
+  const member = useMemberStore((s) => s.member);
+  const studentId = member?.id ?? 0;
+  const { data: monthlyData } = useStudyNoteMonthly(
+    studentId,
+    selectedYear,
+    selectedMonth
+  );
+
+  const studyData: StudyData = Object.fromEntries(
+    (monthlyData?.list ?? []).map((item) => [
+      item.day,
+      { seconds: item.studyTime },
+    ])
+  );
+  const totalStudyTime = monthlyData?.totalStudyTime ?? 0;
 
   const years = Array.from({ length: 9 }, (_, i) => yearRangeStart + i);
 
@@ -410,12 +460,12 @@ const CalendarSection = () => {
               height={36}
               className="mix-blend-multiply"
             />
-            {hour ? (
-              <p>{selectedMonth}월의 공부, 지금 시작해보세요!</p>
-            ) : (
+            {totalStudyTime > 0 ? (
               <p>
-                {selectedMonth}월은 총 {hour}시간 공부했어요!
+                {selectedMonth}월은 총 {totalStudyTime}시간 공부했어요!
               </p>
+            ) : (
+              <p>{selectedMonth}월의 공부, 지금 시작해보세요!</p>
             )}
           </div>
           <Button
@@ -432,20 +482,14 @@ const CalendarSection = () => {
         <MonthCalendar
           year={selectedYear}
           month={selectedMonth}
-          studyData={{
-            3: { seconds: 1815, noteTitle: '영어 단어 암기', subject: '영어' },
-            8: {
-              seconds: 27150,
-              noteTitle: '수학노트 오답하기',
-              subject: '수학',
-            },
-            10: {
-              seconds: 18440,
-              noteTitle: '과학 실험 정리',
-              subject: '과학',
-            },
-            12: { seconds: 7200, noteTitle: '국어 문학 분석', subject: '국어' },
+          studyData={studyData}
+          onNavigate={(y, m) => {
+            setSelectedYear(y);
+            setSelectedMonth(m);
           }}
+          minYear={minYear}
+          todayYear={todayYear}
+          todayMonth={todayMonth}
         />
       </div>
     </div>

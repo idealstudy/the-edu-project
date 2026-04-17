@@ -1,16 +1,6 @@
 import { JSONContent } from '@tiptap/react';
 import { z } from 'zod';
 
-export const SUBJECTS = [
-  '국어',
-  '수학',
-  '영어',
-  '과학',
-  '사회',
-  '예체능',
-  '논술',
-] as const;
-
 export const studentStudyNoteSchema = z.object({
   title: z
     .string()
