@@ -255,7 +255,7 @@ const SidebarItemText = ({
 const Sidebar = ({ children }: { children: ReactNode }) => (
   <Sidebar.Provider>
     <Sidebar.Root>
-      <nav className="flex h-full flex-1 flex-col gap-1">{children}</nav>
+      <nav className="flex h-full flex-1 flex-col">{children}</nav>
     </Sidebar.Root>
   </Sidebar.Provider>
 );

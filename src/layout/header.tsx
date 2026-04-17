@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { NotificationPopover } from '@/features/notifications/components/notification-popover';
@@ -35,7 +35,6 @@ import {
 } from '@/shared/components/ui/popover';
 import {
   BUTTON_BASE,
-  FEEDBACK_BUTTON_BASE,
   PRIVATE,
   PUBLIC,
   ROLE_META_MAP,
@@ -52,6 +51,7 @@ import { useMemberStore } from '@/store';
 export const Header = () => {
   const session = useMemberStore((s) => s.member);
   const router = useRouter();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
   // 역할에 따라 조건부로 API 호출
@@ -106,36 +106,32 @@ export const Header = () => {
             width={44}
             height={20}
           />
-          <Link
-            href="https://pf.kakao.com/_LMcpn"
-            className={cn(FEEDBACK_BUTTON_BASE, 'ml-2', 'max-desktop:hidden')}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              src="/ic_question_mark.svg"
-              alt="피드백"
-              width={16}
-              height={16}
-            />
-            소중한 의견 보내기
-          </Link>
 
           {!session && (
-            <>
+            <div className="ml-5 flex gap-2">
               <Link
                 href={PUBLIC.CORE.LIST.TEACHERS}
-                className="hover:text-orange-scale-orange-50 max-desktop:hidden ml-4 border-r border-white pr-2 text-sm font-medium text-white transition-colors"
+                className={cn(
+                  'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
+                  pathname.startsWith('/list')
+                    ? 'bg-gray-11'
+                    : 'hover:bg-gray-11'
+                )}
               >
                 탐색하기
               </Link>
               <Link
                 href={PUBLIC.COMMUNITY.COLUMN.LIST}
-                className="hover:text-orange-scale-orange-50 max-desktop:hidden text-sm font-medium text-white transition-colors"
+                className={cn(
+                  'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
+                  pathname.startsWith('/community')
+                    ? 'bg-gray-11'
+                    : 'hover:bg-gray-11'
+                )}
               >
                 게시판
               </Link>
-            </>
+            </div>
           )}
         </div>
 
@@ -154,8 +150,8 @@ export const Header = () => {
                 <Image
                   src={'/img_header_profile.svg'}
                   alt="프로필 사진"
-                  width={48}
-                  height={48}
+                  width={36}
+                  height={36}
                   className="desktop:flex hidden cursor-pointer rounded-full"
                 />
               </DropdownMenu.Trigger>
@@ -363,12 +359,12 @@ export const Header = () => {
         )}
 
         {!session && (
-          <div className="flex gap-5">
+          <div className="flex gap-2">
             <Link
               href={PUBLIC.CORE.LOGIN}
               className={cn(
                 BUTTON_BASE,
-                'max-desktop:border-line-line1 max-desktop:py-2'
+                'border-gray-3 max-desktop:py-2 hover:bg-gray-10'
               )}
             >
               로그인
@@ -377,7 +373,7 @@ export const Header = () => {
               href={PUBLIC.CORE.SIGNUP}
               className={cn(
                 BUTTON_BASE,
-                'bg-key-color-primary hover:bg-key-color-secondary',
+                'bg-key-color-primary border-gray-11 hover:bg-orange-6',
                 'max-desktop:hidden'
               )}
             >
