@@ -48,10 +48,10 @@ type DayToNotes = Record<number, DailyNote[]>;
 
 const getBadgeStyle = (
   seconds: number,
-  subject: string | null
+  title?: string | null
 ): { className: string; label: string } => {
-  if (subject === 'ART_PE')
-    return { className: 'bg-gray-2 text-gray-7', label: '학습일지' };
+  if (seconds === 0)
+    return { className: 'bg-gray-2 text-gray-7', label: title ?? '학습일지' };
   if (seconds >= 25200)
     return {
       className: 'bg-orange-7 text-white',
@@ -192,10 +192,7 @@ const MonthCalendar = ({
                   {notes.length > 0 && (
                     <div className="flex flex-col items-start gap-1">
                       {notes.map((note) => {
-                        const badge = getBadgeStyle(
-                          note.studyTime,
-                          note.subject
-                        );
+                        const badge = getBadgeStyle(note.studyTime, note.title);
                         return (
                           <button
                             key={note.id}

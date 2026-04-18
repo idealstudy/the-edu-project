@@ -13,6 +13,7 @@ import { useStudentNoteList } from '@/features/student-study-note/hooks';
 import { AddNoteIcon } from '@/shared/components/icons';
 import { Pagination } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants';
+import { differenceInCalendarDays } from 'date-fns';
 
 import HomeworkSectionContent from '../section-content/homework-section-content';
 import NoteSectionContent from '../section-content/note-section-content';
@@ -133,7 +134,7 @@ const StudentHomeworkTabContent = ({
 
 const StudentStudyNoteTabContent = () => {
   const [page, setPage] = useState(1);
-  const { data, isPending } = useStudentNoteList(page - 1);
+  const { data, isPending } = useStudentNoteList(page - 1, 5);
   const notes = data?.content ?? [];
 
   if (isPending) {
@@ -167,14 +168,29 @@ const StudentStudyNoteTabContent = () => {
           <Link
             key={note.id}
             href={PRIVATE.STUDENT_NOTE.DETAIL(note.id)}
-            className="bg-orange-1 border-orange-3 flex w-full cursor-pointer flex-col items-start gap-1 rounded-lg border px-7 py-7 text-left"
+            className="bg-orange-1 border-orange-3 flex w-full cursor-pointer flex-col justify-between rounded-lg border px-7 py-7 text-left"
           >
-            <span className="font-body1-heading text-gray-12 mb-2 line-clamp-2 leading-tight">
-              {note.title}
-            </span>
-            <span className="font-body2-normal text-gray-12 line-clamp-2 leading-tight">
-              {extractTextFromContent(note.content)}
-            </span>
+            <div className="flex flex-col gap-1">
+              <span className="font-body1-heading text-gray-12 mb-2 line-clamp-2 leading-tight">
+                {note.title}
+              </span>
+              <span className="font-body2-normal text-gray-12 line-clamp-2 leading-tight">
+                {extractTextFromContent(note.content)}
+              </span>
+            </div>
+            {note.regDate && (
+              <span className="font-label-normal text-gray-7 mt-2 self-end">
+                {(() => {
+                  const days = differenceInCalendarDays(
+                    new Date(),
+                    new Date(note.regDate)
+                  );
+                  if (days === 0) return '오늘';
+                  if (days === 7) return '일주일 전';
+                  return `${days}일 전`;
+                })()}
+              </span>
+            )}
           </Link>
         ))}
       </div>
