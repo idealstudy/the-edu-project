@@ -60,7 +60,10 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
     if (!isOpen) return;
     refetch().then((result) => {
       const data = result.data;
-      if (!data?.ongoing) return;
+      if (!data?.ongoing) {
+        setStep('setup');
+        return;
+      }
       const running = data.status === 'RUNNING';
       let elapsedSec = data.studyTime ?? 0;
       if (running && data.restartTime) {
@@ -71,7 +74,7 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
       }
       setStudyNoteId(data.id);
       setTopic(data.title ?? '');
-      setSelectedSubject(data.subject);
+      setSelectedSubject(data.subject ?? null);
       setElapsed(elapsedSec);
       setIsRunning(running);
       if (data.content) {

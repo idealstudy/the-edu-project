@@ -17,7 +17,7 @@ import { studentNoteDto, studentNotePayload } from './student-note.dto';
 /* ─────────────────────────────────────────────────────
  * Timer
  * ────────────────────────────────────────────────────*/
-const getTimerProgress = async (): Promise<StudentNoteTimerProgress> => {
+const getTimerProgress = async (): Promise<StudentNoteTimerProgress | null> => {
   const response = await api.private.get('/student/study-note/timer/progress');
   return unwrapEnvelope(response, studentNoteDto.timer.progress);
 };

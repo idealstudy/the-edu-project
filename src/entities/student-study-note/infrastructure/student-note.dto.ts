@@ -4,28 +4,30 @@ import { z } from 'zod';
  * Timer - 진행 중인 학습 일지 조회
  * GET /api/student/study-note/timer/progress
  * ────────────────────────────────────────────────────*/
-export const StudentNoteTimerProgressSchema = z.object({
-  id: z.number().int(),
-  studentId: z.number().int().nullable(),
-  title: z.string().nullable(),
-  subject: z.string().nullable(),
-  content: z.string().nullable(),
-  status: z.string().nullable(),
-  studyTime: z.number().int().nullable(),
-  regDate: z.string().nullable(),
-  modDate: z.string().nullable(),
-  restartTime: z.string().nullable(),
-  resolvedContent: z
-    .object({
-      content: z.string().nullable().optional(),
-      expiresAt: z.string().nullable().optional(),
-    })
-    .passthrough()
-    .nullable()
-    .optional(),
-  ongoing: z.boolean(),
-  contentPreview: z.string().nullable().optional(),
-});
+export const StudentNoteTimerProgressSchema = z
+  .object({
+    id: z.number(),
+    studentId: z.number().nullable().optional(),
+    title: z.string().nullable().optional(),
+    subject: z.string().nullable().optional(),
+    content: z.string().nullable().optional(),
+    status: z.string().nullable().optional(),
+    studyTime: z.number().nullable().optional(),
+    regDate: z.string().nullable().optional(),
+    modDate: z.string().nullable().optional(),
+    restartTime: z.string().nullable().optional(),
+    resolvedContent: z
+      .object({
+        content: z.string().nullable().optional(),
+        expiresAt: z.string().nullable().optional(),
+      })
+      .passthrough()
+      .nullable()
+      .optional(),
+    ongoing: z.boolean(),
+    contentPreview: z.string().nullable().optional(),
+  })
+  .nullable();
 
 /* ─────────────────────────────────────────────────────
  * Timer - 공통 Payload
