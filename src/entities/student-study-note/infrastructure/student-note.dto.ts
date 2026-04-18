@@ -12,15 +12,18 @@ export const StudentNoteTimerProgressSchema = z.object({
   content: z.string(),
   status: z.string(),
   studyTime: z.number().int(),
-  regDate: z.string(),
-  modDate: z.string(),
-  restartTime: z.string(),
-  resolvedContent: z.object({
-    content: z.string(),
-    expiresAt: z.string(),
-  }),
+  regDate: z.string().nullable(),
+  modDate: z.string().nullable(),
+  restartTime: z.string().nullable(),
+  resolvedContent: z
+    .object({
+      content: z.string(),
+      expiresAt: z.string(),
+    })
+    .nullable()
+    .optional(),
   ongoing: z.boolean(),
-  contentPreview: z.string(),
+  contentPreview: z.string().nullable().optional(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -55,6 +58,14 @@ export const StudentNoteTimerTempSavePayloadSchema =
   StudentNoteWritePayloadSchema;
 
 /* ─────────────────────────────────────────────────────
+ * Timer - 학습 시간 초기화
+ * POST /api/student/study-note/timer/reset/{studyNoteId}
+ * ────────────────────────────────────────────────────*/
+export const StudentNoteTimerResetResponseSchema = z.object({
+  data: z.string(),
+});
+
+/* ─────────────────────────────────────────────────────
  * Calendar - 월 학습 시간 조회
  * GET /api/common/study-note/month/{studentId}
  * ────────────────────────────────────────────────────*/
@@ -87,8 +98,8 @@ export const StudentNoteDailyResponseSchema = z.object({
   list: z.array(
     z.object({
       id: z.number().int(),
-      title: z.string(),
-      subject: z.string(),
+      title: z.string().nullable().catch(''),
+      subject: z.string().nullable().catch(''),
       studyTime: z.number().int(),
     })
   ),
@@ -106,9 +117,16 @@ export const StudentNoteCreatePayloadSchema = StudentNoteWritePayloadSchema;
  * ────────────────────────────────────────────────────*/
 export const StudentNoteListItemSchema = z.object({
   id: z.number().int(),
-  regDate: z.string(),
-  title: z.string(),
-  content: z.string(),
+  studentId: z.number().int().nullish().catch(null),
+  title: z.string().nullish().catch(''),
+  subject: z.string().nullish().catch(''),
+  content: z.string().nullish().catch(''),
+  status: z.string().nullish().catch(null),
+  studyTime: z.number().int().nullish().catch(null),
+  regDate: z.string().nullish().catch(null),
+  modDate: z.string().nullish().catch(null),
+  restartTime: z.string().nullish().catch(null),
+  ongoing: z.boolean().nullish().catch(null),
 });
 
 export const StudentNoteListResponseSchema = z.object({
@@ -116,14 +134,31 @@ export const StudentNoteListResponseSchema = z.object({
   size: z.number().int(),
   totalElements: z.number().int(),
   totalPages: z.number().int(),
-  list: z.array(StudentNoteListItemSchema),
+  content: z.array(StudentNoteListItemSchema),
 });
 
 /* ─────────────────────────────────────────────────────
  * CRUD - 학습 일지 상세 조회
  * GET /api/common/study-note/{studyNoteId}
  * ────────────────────────────────────────────────────*/
-export const StudentNoteDetailSchema = StudentNoteTimerProgressSchema;
+export const StudentNoteDetailSchema = z.object({
+  id: z.number().int(),
+  studentId: z.number().int().nullish().catch(null),
+  title: z.string().nullish().catch(''),
+  subject: z.string().nullish().catch(''),
+  content: z.string().nullish().catch(''),
+  status: z.string().nullish().catch(null),
+  studyTime: z.number().int().nullish().catch(null),
+  regDate: z.string().nullish().catch(null),
+  modDate: z.string().nullish().catch(null),
+  restartTime: z.string().nullish().catch(null),
+  resolvedContent: z
+    .object({ content: z.string(), expiresAt: z.string() })
+    .nullish()
+    .catch(null),
+  ongoing: z.boolean().nullish().catch(null),
+  contentPreview: z.string().nullish().catch(null),
+});
 
 /* ─────────────────────────────────────────────────────
  * CRUD - 학습 일지 수정
@@ -138,6 +173,7 @@ export const studentNoteDto = {
   timer: {
     progress: StudentNoteTimerProgressSchema,
     startResponse: StudentNoteTimerStartResponseSchema,
+    resetResponse: StudentNoteTimerResetResponseSchema,
   },
   calendar: {
     monthlyResponse: StudentNoteMonthlyResponseSchema,

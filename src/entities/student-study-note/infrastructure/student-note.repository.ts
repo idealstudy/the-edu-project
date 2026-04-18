@@ -59,6 +59,10 @@ const resumeTimer = async (studyNoteId: number): Promise<void> => {
   await api.private.post(`/student/study-note/timer/resume/${studyNoteId}`);
 };
 
+const resetTimer = async (studyNoteId: number): Promise<void> => {
+  await api.private.post(`/student/study-note/timer/reset/${studyNoteId}`);
+};
+
 const tempSaveTimer = async (
   studyNoteId: number,
   body: StudentNoteWritePayload
@@ -144,6 +148,7 @@ export const studentNoteRepository = {
     finish: finishTimer,
     pause: pauseTimer,
     resume: resumeTimer,
+    reset: resetTimer,
     tempSave: tempSaveTimer,
   },
   calendar: {

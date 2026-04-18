@@ -26,7 +26,7 @@ export type StudentNoteListResponse = z.infer<
 export type StudentNoteDetail = z.infer<typeof studentNoteDto.crud.detail>;
 export type StudentNoteListItem = z.infer<
   typeof studentNoteDto.crud.listResponse
->['list'][number];
+>['content'][number];
 
 /* ─────────────────────────────────────────────────────
  * Payload (Request)
