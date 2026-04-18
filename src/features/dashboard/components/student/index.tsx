@@ -9,7 +9,6 @@ import DashboardHeader from '../header';
 import CalendarSection from '../section/calendar-section';
 import QnASection from '../section/qna-section';
 import StudentTabSection from '../section/student-tab-section';
-import StudyroomSection from '../section/studyroom-section';
 import { ConfirmParentRequestDialog } from './confirm-dialog';
 import StudentOnboarding from './student-onboarding';
 
