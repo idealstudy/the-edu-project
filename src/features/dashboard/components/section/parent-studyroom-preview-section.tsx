@@ -42,7 +42,7 @@ export const StudyRoomPreviewSection = ({
     <section>
       <DashboardSection
         title="스터디룸 둘러보기"
-        description="디에듀가 엄선한 학습 공간을 확인해보세요"
+        description="디에듀가 엄선한 학습 공간을 확인해보세요."
         isMoreHref="/list/study-rooms"
         isMore={studyRoomPreviewDataLength === 0 ? false : true}
       >

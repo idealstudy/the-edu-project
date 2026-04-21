@@ -72,7 +72,10 @@ export const StudyNewsItem = ({
 
   switch (data.type) {
     case 'HOMEWORK':
-      hrefLink = `/study-rooms/${data.studyRoomId}/homework/${data.id}`;
+      hrefLink =
+        selectedStudentId !== undefined && selectedStudentId !== null
+          ? `/study-rooms/${data.studyRoomId}/homework/${data.id}?studentId=${selectedStudentId}`
+          : `/study-rooms/${data.studyRoomId}/homework/${data.id}`;
       break;
     case 'QNA':
       hrefLink =

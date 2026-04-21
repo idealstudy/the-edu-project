@@ -100,7 +100,7 @@ export const ConsultationSection = ({
           studentName={selectedStudentName}
           title="스터디룸 기록일지"
           headerAction={headerAction}
-          description="선생님이 직접 작성한 기록일지예요"
+          description="선생님이 직접 작성한 기록일지예요."
           count={studyConsultationDataLength}
           isMoreHref={
             selectedStudentId !== null && selectedStudyRoomId !== null
