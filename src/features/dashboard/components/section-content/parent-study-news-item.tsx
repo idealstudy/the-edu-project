@@ -75,7 +75,10 @@ export const StudyNewsItem = ({
       hrefLink = `/study-rooms/${data.studyRoomId}/homework/${data.id}`;
       break;
     case 'QNA':
-      hrefLink = `/study-rooms/${data.studyRoomId}/qna/${data.id}`;
+      hrefLink =
+        selectedStudentId !== undefined && selectedStudentId !== null
+          ? `/study-rooms/${data.studyRoomId}/qna/${data.id}?studentId=${selectedStudentId}`
+          : `/study-rooms/${data.studyRoomId}/qna/${data.id}`;
       break;
     case 'TEACHING_NOTE':
       hrefLink =
