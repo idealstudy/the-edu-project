@@ -36,6 +36,7 @@ export default async function StudyNoteDetailPage({
           <StudyNoteDetailCommentSection
             studyRoomId={resolvedParams.id}
             studyNoteId={resolvedParams.noteId}
+            studentId={resolvedSearchParams.studentId}
           />
         </ColumnLayout>
       </div>

@@ -81,9 +81,7 @@ const CommentListResponseDataSchema = z.array(CommentItemDtoSchema);
  * 부모님 댓글/대댓글 목록 data DTO
  * GET /api/parent/student/{studentId}/teaching-notes/{teachingNoteId}/comments
  * ──────────────────────────────────────────────────── */
-const ParentCommentListResponseDataSchema = z.object({
-  comments: z.array(CommentItemDtoSchema),
-});
+const ParentCommentListResponseDataSchema = z.array(CommentItemDtoSchema);
 
 /* ─────────────────────────────────────────────────────
  * 댓글 읽음 정보 data DTO
