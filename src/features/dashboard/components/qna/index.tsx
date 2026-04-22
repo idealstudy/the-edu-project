@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
 
-import { QnAHeader } from './qna-header';
+import { MoreContentsHeader } from '../more-contents-header';
 import { QnAList } from './qna-list';
 
 export const QnA = () => {
@@ -10,8 +10,11 @@ export const QnA = () => {
   const isTeacher = member?.role === 'ROLE_TEACHER';
 
   return (
-    <div className="flex min-h-[calc(100vh-76px)] w-full flex-col">
-      <QnAHeader isTeacher={isTeacher} />
+    <div className="flex min-h-[calc(100vh-var(--spacing-header-height))] w-full flex-col">
+      <MoreContentsHeader
+        isTeacher={isTeacher}
+        kind="QNA"
+      />
       <QnAList isTeacher={isTeacher} />
     </div>
   );
