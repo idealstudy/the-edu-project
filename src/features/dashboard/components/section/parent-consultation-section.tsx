@@ -52,10 +52,10 @@ export const ConsultationSection = ({
   const headerAction =
     studyRoomOptions.length === 0 ? null : (
       <StudyRoomDropdown
-        parent
         studyRooms={studyRoomOptions}
         selectedId={selectedStudyRoomId}
         onSelect={setSelectedStudyRoomId}
+        parent
       />
     );
 
@@ -108,7 +108,7 @@ export const ConsultationSection = ({
               : '/dashboard/study-consultation'
           }
           isMore={studyConsultationDataLength === 0 ? false : true}
-          isAll
+          isMoreDescription="전체보기"
         >
           {content}
         </DashboardSection>

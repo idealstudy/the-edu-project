@@ -92,7 +92,7 @@ export const StudyNewsSection = ({
         headerAction={headerAction}
         count={studyNewsContentLength}
         isMore={studyNewsContentLength === 0 ? false : true}
-        isAll
+        isMoreDescription="전체보기"
       >
         {content}
       </DashboardSection>

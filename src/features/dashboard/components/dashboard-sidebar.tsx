@@ -45,7 +45,10 @@ export const DashboardSidebar = () => {
   return (
     <Sidebar>
       {/* 대시보드 */}
-      <Sidebar.Item href={PRIVATE.DASHBOARD.INDEX}>
+      <Sidebar.Item
+        href={PRIVATE.DASHBOARD.INDEX}
+        matchPath={PRIVATE.DASHBOARD.INDEX}
+      >
         <HomeIcon />
         <Sidebar.Text>대시보드</Sidebar.Text>
       </Sidebar.Item>
