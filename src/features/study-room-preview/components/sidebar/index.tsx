@@ -123,20 +123,24 @@ export const StudyroomPreviewSidebar = ({
         numberOfStudents={data.numberOfStudents}
         numberOfQuestion={data.numberOfQuestions}
       />
-      {(isMyStudyRoom || member?.role !== 'ROLE_TEACHER') && (
-        <SidebarButton
-          onClick={handleBtnClick}
-          btnName={isMyStudyRoom ? `스터디룸으로 이동하기` : `수업 상담하기`}
+
+      <div className="flex flex-col gap-2">
+        {(isMyStudyRoom || member?.role !== 'ROLE_TEACHER') && (
+          <SidebarButton
+            onClick={handleBtnClick}
+            btnName={isMyStudyRoom ? `스터디룸으로 이동하기` : `수업 상담하기`}
+            disabled={loading}
+          />
+        )}
+        <Button
+          onClick={moveToProfile}
+          variant="secondary"
           disabled={loading}
-        />
-      )}
-      <Button
-        onClick={moveToProfile}
-        variant="secondary"
-        disabled={loading}
-      >
-        {isMyStudyRoom ? `프로필로 이동하기` : `선생님 프로필 바로가기`}
-      </Button>
+        >
+          {isMyStudyRoom ? `프로필로 이동하기` : `선생님 프로필 바로가기`}
+        </Button>
+      </div>
+
       {data.otherStudyRooms.length ? (
         <TeacherOtherStudyrooms
           studyRoomName={data.name}
