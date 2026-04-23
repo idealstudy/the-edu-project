@@ -164,3 +164,36 @@ export function classifyConnectionError(code?: string): ApiErrorType {
       return 'UNKNOWN';
   }
 }
+
+// 스터디노트 관련 에러
+export function classifyStudyNoteError(code?: string): ApiErrorType {
+  switch (code) {
+    // FIELD
+    case 'DUPLICATED_TEACHING_NOTE_TITLE':
+    case 'TEACHING_NOTE_GROUP_NOT_EXIST':
+      return 'FIELD';
+
+    // CONTEXT
+    case 'STUDY_ROOM_NOT_EXIST':
+    case 'TEACHING_NOTE_NOT_EXIST':
+      return 'CONTEXT';
+
+    // AUTH
+    case 'MEMBER_NOT_EXIST':
+      return 'AUTH';
+
+    default:
+      return 'UNKNOWN';
+  }
+}
+
+// 탈퇴 관련 에러
+export function classifyWithdrawError(code?: string): ApiErrorType {
+  switch (code) {
+    case 'MEMBER_NOT_EXIST':
+      return 'AUTH';
+
+    default:
+      return 'UNKNOWN';
+  }
+}
