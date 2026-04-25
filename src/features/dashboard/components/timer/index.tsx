@@ -19,6 +19,7 @@ import {
   prepareContentForSave,
 } from '@/shared/components/editor';
 import type { TextEditorValue } from '@/shared/components/editor';
+import { showBottomToast } from '@/shared/components/ui';
 import { Dialog } from '@/shared/components/ui/dialog';
 import { PRIVATE } from '@/shared/constants';
 import { useSubjectList } from '@/shared/hooks';
@@ -163,16 +164,23 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
   const handleTempSave = () => {
     if (!studyNoteId) return;
     const { contentString, mediaIds } = prepareContentForSave(noteContent);
-    tempSaveTimer({
-      studyNoteId,
-      body: {
-        title: topic,
-        subject: selectedSubject ?? '',
-        content: contentString,
-        mediaIds,
-        finishTimestamp: nowKST(),
+    tempSaveTimer(
+      {
+        studyNoteId,
+        body: {
+          title: topic,
+          subject: selectedSubject ?? '',
+          content: contentString,
+          mediaIds,
+          finishTimestamp: nowKST(),
+        },
       },
-    });
+      {
+        onSuccess: () => {
+          showBottomToast('학습노트가 저장되었어요');
+        },
+      }
+    );
   };
 
   const handleFinish = () => {
