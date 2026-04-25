@@ -163,7 +163,7 @@ const MonthCalendar = ({
           {WEEK_DAYS.map((d) => (
             <div
               key={d}
-              className="bg-gray-1 border-gray-2 font-label-heading text-gray-7 border-[0.5px] px-3 py-[10.5px]"
+              className="bg-gray-1 border-gray-2 font-label-heading text-gray-7 tablet:px-3 tablet:py-[10.5px] tablet:text-sm border-[0.5px] px-1.5 py-1.5 text-center text-[11px]"
             >
               {d}
             </div>
@@ -190,7 +190,7 @@ const MonthCalendar = ({
                       handleOtherMonthClick(cell.type);
                   }}
                   className={cn(
-                    'border-gray-2 flex min-h-[100px] flex-col items-start justify-start gap-1.5 border-[0.5px] p-3 transition-colors',
+                    'border-gray-2 tablet:min-h-[100px] tablet:gap-1.5 tablet:p-3 flex min-h-[56px] flex-col items-start justify-start gap-1 border-[0.5px] p-1 transition-colors',
                     !isCurrent
                       ? 'hover:border-orange-6 hover:bg-orange-1 cursor-pointer'
                       : 'cursor-default'
@@ -198,7 +198,7 @@ const MonthCalendar = ({
                 >
                   <span
                     className={cn(
-                      'font-body2-heading',
+                      'font-body2-heading tablet:text-base text-[11px]',
                       isCurrent ? 'text-text-main' : 'text-gray-2'
                     )}
                   >
@@ -220,7 +220,7 @@ const MonthCalendar = ({
                               });
                             }}
                             className={cn(
-                              'font-label-normal w-fit cursor-pointer rounded-[6px] px-1.5 py-[3px] hover:opacity-80',
+                              'tablet:rounded-[6px] tablet:px-1.5 tablet:py-[3px] tablet:font-label-normal font-caption-normal w-fit cursor-pointer rounded px-1 py-1.5 text-left hover:opacity-80',
                               badge.className
                             )}
                           >
@@ -427,16 +427,16 @@ const MonthCalendar = ({
                 : ''}
             </span>
           </div>
-          <div className="flex gap-3">
+          <div className="tablet:flex-row flex flex-col gap-2">
             <Button
               variant="secondary"
-              className="flex-1"
+              className="tablet:h-[56px] tablet:py-0 h-auto flex-1 py-3"
               onClick={() => setTimerDeleteOpen(true)}
             >
               학습 내용 삭제하기
             </Button>
             <Button
-              className="flex-1"
+              className="tablet:h-[56px] tablet:py-0 h-auto flex-1 py-3"
               onClick={() => {
                 if (selectedNoteId)
                   router.push(PRIVATE.STUDENT_NOTE.DETAIL(selectedNoteId));
@@ -546,7 +546,7 @@ const CalendarSection = () => {
       >
         <PopoverTrigger asChild>
           <div className="flex items-center gap-2">
-            <p className="font-headline1-heading text-gray-12">
+            <p className="font-headline2-heading text-gray-12 tablet:font-headline1-heading">
               {selectedYear}년 {selectedMonth}월
             </p>
             <button type="button">
@@ -658,7 +658,7 @@ const CalendarSection = () => {
       </Popover>
 
       <div className="flex flex-col gap-3">
-        <div className="bg-orange-1 text-gray-12 flex justify-between rounded-md px-3 py-[9px]">
+        <div className="bg-orange-1 text-gray-12 tablet:flex-row tablet:items-center tablet:justify-between tablet:gap-0 flex flex-col gap-2 rounded-md px-3 py-[9px]">
           <div className="flex items-center gap-1">
             <Image
               src="/dashboard/img_clock.png"
@@ -677,7 +677,7 @@ const CalendarSection = () => {
             )}
           </div>
           <Button
-            className="font-label-heading h-auto rounded-sm px-6 py-2"
+            className="font-label-heading tablet:w-auto h-auto w-full rounded-sm px-6 py-2"
             onClick={() => setTimerOpen(true)}
           >
             타이머 켜기
