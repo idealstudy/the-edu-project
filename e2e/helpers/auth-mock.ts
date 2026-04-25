@@ -3,16 +3,14 @@ import type { Page } from '@playwright/test';
 import { okBody } from './api-mock';
 
 export async function setAuthCookie(page: Page) {
-  await page
-    .context()
-    .addCookies([
-      {
-        name: 'Authorization',
-        value: 'test-token',
-        domain: 'localhost',
-        path: '/',
-      },
-    ]);
+  await page.context().addCookies([
+    {
+      name: 'Authorization',
+      value: 'test-token',
+      domain: 'localhost',
+      path: '/',
+    },
+  ]);
 }
 
 export async function mockMemberInfo(page: Page, member: object) {
