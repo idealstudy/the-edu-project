@@ -51,7 +51,9 @@ export const StudyroomPreviewIntroTab = ({
     member?.role === 'ROLE_TEACHER' && member.id === teacherId;
 
   const moveToStudyRoomEditPage = () => {
-    router.push(PRIVATE.ROOM.EDIT(studyRoomId));
+    router.push(
+      `${PRIVATE.ROOM.EDIT(studyRoomId)}?from=preview&teacherId=${teacherId}`
+    );
   };
 
   const characteristicContent =

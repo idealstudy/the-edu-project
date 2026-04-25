@@ -42,6 +42,7 @@ import {
   parseEditorContent,
 } from '@/shared/components/editor';
 import { Form } from '@/shared/components/ui/form';
+import { PRIVATE } from '@/shared/constants';
 import { trackStudyroomCreateSuccess } from '@/shared/lib/analytics';
 import { classifyPreviewError, handleApiError } from '@/shared/lib/errors';
 import { useMemberStore } from '@/store';
@@ -56,6 +57,7 @@ type StudyRoomFlowProps = {
   mode: 'create' | 'edit';
   initialValues?: Partial<StudyRoomFormValues>;
   studyRoomId?: number;
+  returnUrl?: string;
 };
 
 const buildCharacteristicForEditor = (
@@ -91,6 +93,7 @@ export default function StudyRoomFlow({
   mode,
   initialValues,
   studyRoomId,
+  returnUrl,
 }: StudyRoomFlowProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -191,11 +194,13 @@ export default function StudyRoomFlow({
 
   const handlePrev = () => dispatch({ type: 'PREV' });
 
+  const fallbackUrl = studyRoomId ? PRIVATE.ROOM.DETAIL(studyRoomId) : '/';
+
   const handleCancel = () => {
     if (methods.formState.isDirty) {
       dialogDispatch({ type: 'OPEN', scope: 'studyroom', kind: 'cancel' });
     } else {
-      router.back();
+      router.replace(returnUrl ?? fallbackUrl);
     }
   };
 
@@ -267,7 +272,7 @@ export default function StudyRoomFlow({
               queryKey: StudyRoomsQueryKey.detail(studyRoomId),
             });
             methods.reset(formValues);
-            router.back();
+            router.replace(returnUrl ?? fallbackUrl);
           },
           onError: (error) => {
             handleApiError(error, classifyPreviewError, {
@@ -278,7 +283,10 @@ export default function StudyRoomFlow({
               },
 
               onContext: () => {
-                setTimeout(() => router.back(), 1500);
+                setTimeout(
+                  () => router.replace(returnUrl ?? fallbackUrl),
+                  1500
+                );
               },
 
               onUnknown: () => {},
@@ -294,6 +302,8 @@ export default function StudyRoomFlow({
     methods,
     updateStudyRoom,
     queryClient,
+    returnUrl,
+    fallbackUrl,
     router,
   ]);
 
@@ -386,7 +396,7 @@ export default function StudyRoomFlow({
             description="취소하면 이전 페이지로 이동하며 변경사항은 저장되지 않습니다."
             confirmText="나가기"
             cancelText="계속 수정"
-            onConfirm={() => router.back()}
+            onConfirm={() => router.replace(returnUrl ?? fallbackUrl)}
           />
         )}
     </section>

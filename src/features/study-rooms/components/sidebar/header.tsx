@@ -63,7 +63,11 @@ export const StudyroomSidebarHeader = ({
               </DropdownMenu.Item>
 
               <DropdownMenu.Item
-                onClick={() => router.push(PRIVATE.ROOM.EDIT(studyRoomId))}
+                onClick={() =>
+                  router.push(
+                    `${PRIVATE.ROOM.EDIT(studyRoomId)}?from=studyroom`
+                  )
+                }
               >
                 편집하기
               </DropdownMenu.Item>

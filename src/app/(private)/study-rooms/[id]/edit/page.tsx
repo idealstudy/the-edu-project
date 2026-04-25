@@ -2,14 +2,24 @@ import { notFound } from 'next/navigation';
 
 import StudyRoomFlow from '@/features/study-rooms/components/create/study-room-flow';
 import { ColumnLayout } from '@/layout';
+import { PRIVATE, PUBLIC } from '@/shared/constants';
 
 type Props = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ from?: 'studyroom' | 'preview'; teacherId?: string }>;
 };
 
-export default async function EditStudyRoomPage({ params }: Props) {
+export default async function EditStudyRoomPage({
+  params,
+  searchParams,
+}: Props) {
   const { id } = await params;
+  const { from, teacherId } = await searchParams;
   const studyRoomId = Number(id);
+  const returnUrl =
+    from === 'preview' && teacherId
+      ? PUBLIC.STUDY_ROOM_PREVIEW.DETAIL(studyRoomId, Number(teacherId))
+      : PRIVATE.ROOM.DETAIL(studyRoomId);
 
   if (!Number.isInteger(studyRoomId) || studyRoomId <= 0) {
     notFound();
@@ -21,6 +31,7 @@ export default async function EditStudyRoomPage({ params }: Props) {
           <StudyRoomFlow
             mode="edit"
             studyRoomId={studyRoomId}
+            returnUrl={returnUrl}
           />
         </div>
       </ColumnLayout>
