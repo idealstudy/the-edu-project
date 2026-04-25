@@ -14,6 +14,7 @@ import {
   useStudyNoteTimerTempSave,
 } from '@/features/dashboard/hooks';
 import {
+  hasMeaningfulEditorContent,
   initialTextEditorValue,
   parseEditorContent,
   prepareContentForSave,
@@ -49,6 +50,9 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
   const [noteContent, setNoteContent] = useState<TextEditorValue>(
     initialTextEditorValue
   );
+  const [savedNoteContent, setSavedNoteContent] = useState<TextEditorValue>(
+    initialTextEditorValue
+  );
   const [studyNoteId, setStudyNoteId] = useState<number | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -80,6 +84,7 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
         ? parseEditorContent(data.resolvedContent.content)
         : parseEditorContent(data.content ?? '');
       setNoteContent(content);
+      setSavedNoteContent(content);
       setStep('running');
     },
     []
@@ -136,6 +141,7 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
     setIsRunning(false);
     setNoteOpen(true);
     setNoteContent(initialTextEditorValue);
+    setSavedNoteContent(initialTextEditorValue);
     setStudyNoteId(null);
     onClose();
   };
@@ -177,6 +183,7 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
       },
       {
         onSuccess: () => {
+          setSavedNoteContent(noteContent);
           showBottomToast('학습노트가 저장되었어요');
         },
       }
@@ -206,6 +213,19 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
     );
   };
 
+  const hasUploadingContent = (content: TextEditorValue): boolean => {
+    if (content.attrs?.isUploading === true) return true;
+    if (Array.isArray(content.content)) {
+      return content.content.some(hasUploadingContent);
+    }
+    return false;
+  };
+
+  const isTempSaveDisabled =
+    !hasMeaningfulEditorContent(noteContent) ||
+    JSON.stringify(noteContent) === JSON.stringify(savedNoteContent) ||
+    hasUploadingContent(noteContent);
+
   const today = new Date();
   const dateStr = `${today.getFullYear()}. ${String(today.getMonth() + 1).padStart(2, '0')}. ${String(today.getDate()).padStart(2, '0')}`;
 
@@ -217,7 +237,10 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
       }}
     >
       <Dialog.Content
-        className={cn(step === 'running' ? 'max-w-[680px]' : 'max-w-[500px]')}
+        className={cn(
+          'tablet:p-9 p-4',
+          step === 'running' ? 'max-w-[680px]' : 'max-w-[500px]'
+        )}
       >
         <Dialog.Title className="sr-only">
           {step === 'setup'
@@ -271,6 +294,7 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
             onToggleNote={() => setNoteOpen((o) => !o)}
             onPauseResume={handlePauseResume}
             onTempSave={handleTempSave}
+            isTempSaveDisabled={isTempSaveDisabled}
             onReset={() => {
               if (!studyNoteId) return;
               resetTimer(studyNoteId, {

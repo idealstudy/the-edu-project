@@ -15,6 +15,7 @@ export type RunningViewProps = {
   onToggleNote: () => void;
   onPauseResume: () => void;
   onTempSave: () => void;
+  isTempSaveDisabled: boolean;
   onReset: () => void;
   onFinish: () => void;
   onClose: () => void;
@@ -30,11 +31,12 @@ export const RunningView = ({
   onToggleNote,
   onPauseResume,
   onTempSave,
+  isTempSaveDisabled,
   onReset,
   onFinish,
   onClose,
 }: RunningViewProps) => (
-  <div className="flex min-h-0 flex-1 flex-col gap-6">
+  <div className="tablet:gap-6 flex flex-col gap-4">
     <div className="flex justify-end">
       <button
         type="button"
@@ -46,7 +48,7 @@ export const RunningView = ({
     </div>
 
     <div className="flex flex-col items-center gap-2">
-      <p className="text-[56px] leading-none font-bold tracking-tight">
+      <p className="tablet:text-[56px] text-[40px] leading-none font-bold tracking-tight">
         {formatHHMMSS(elapsed)}
       </p>
       <p className="text-text-sub font-body2-normal">
@@ -54,18 +56,18 @@ export const RunningView = ({
       </p>
     </div>
 
-    <div className="flex items-center justify-center gap-4">
+    <div className="tablet:gap-4 flex items-center justify-center gap-3">
       <button
         type="button"
         onClick={onReset}
-        className="border-line-line2 text-text-main font-body2-heading hover:bg-gray-1 rounded-full border px-6 py-2.5"
+        className="border-line-line2 text-text-main font-body2-heading hover:bg-gray-1 tablet:px-6 tablet:py-2.5 tablet:text-base rounded-full border px-4 py-2 text-[13px]"
       >
         다시 시작
       </button>
       <button
         type="button"
         onClick={onPauseResume}
-        className="bg-key-color-primary hover:bg-orange-scale-orange-60 flex size-12 items-center justify-center rounded-full transition-colors"
+        className="bg-key-color-primary hover:bg-orange-scale-orange-60 tablet:size-12 flex size-10 items-center justify-center rounded-full transition-colors"
       >
         {isRunning ? (
           <Pause
@@ -84,20 +86,24 @@ export const RunningView = ({
       <button
         type="button"
         onClick={onFinish}
-        className="border-key-color-primary text-key-color-primary font-body2-heading hover:bg-orange-1 rounded-full border px-6 py-2.5"
+        className="border-key-color-primary text-key-color-primary font-body2-heading hover:bg-orange-1 tablet:px-6 tablet:py-2.5 tablet:text-base rounded-full border px-4 py-2 text-[13px]"
       >
         종료하기
       </button>
     </div>
 
-    <div className="border-line-line1 flex min-h-0 flex-1 flex-col rounded-lg border">
+    <div className="border-line-line1 flex flex-col rounded-lg border">
       <div className="flex shrink-0 items-center justify-between px-4 py-3">
-        <span className="font-headline2-heading">학습노트</span>
+        <span className="font-body2-heading tablet:font-headline2-heading">
+          학습노트
+        </span>
         <div className="flex items-center gap-2">
           <Button
             variant="outlined"
             size="xsmall"
             onClick={onTempSave}
+            disabled={isTempSaveDisabled}
+            className="tablet:h-[40px] tablet:px-[16px] tablet:text-base h-[32px] px-[12px] text-[13px]"
           >
             임시저장
           </Button>
@@ -111,12 +117,12 @@ export const RunningView = ({
         </div>
       </div>
       {noteOpen && (
-        <div className="px-4 pb-4">
+        <div className="tablet:[--editor-max-height:280px] px-4 pb-4 [--editor-max-height:160px]">
           <TextEditor
             value={noteContent}
             onChange={onNoteContentChange}
             placeholder="생각나는 내용을 자유롭게 기록해보세요"
-            maxHeight="280px"
+            maxHeight="var(--editor-max-height)"
           />
         </div>
       )}
