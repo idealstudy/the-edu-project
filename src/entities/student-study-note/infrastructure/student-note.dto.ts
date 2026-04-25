@@ -73,14 +73,20 @@ export const StudentNoteMonthlyQuerySchema = z.object({
   month: z.number().int().min(1).max(12),
 });
 
-export const StudentNoteMonthlyResponseSchema = z.object({
-  totalStudyTime: z.number().int(),
-  list: z.array(
+export const StudentNoteMonthlyResponseDailySchema = z.object({
+  day: z.number().int(),
+  dailyStudyTime: z.number().int(),
+  entries: z.array(
     z.object({
-      day: z.number().int(),
+      id: z.number().int(),
       studyTime: z.number().int(),
     })
   ),
+});
+
+export const StudentNoteMonthlyResponseSchema = z.object({
+  totalStudyTime: z.number().int(),
+  dailySummaryList: z.array(StudentNoteMonthlyResponseDailySchema),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -161,6 +167,7 @@ export const studentNoteDto = {
   },
   calendar: {
     monthlyResponse: StudentNoteMonthlyResponseSchema,
+    monthlyDailyItemResponse: StudentNoteMonthlyResponseDailySchema,
     dailyResponse: StudentNoteDailyResponseSchema,
   },
   crud: {

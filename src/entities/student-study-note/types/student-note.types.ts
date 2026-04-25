@@ -17,6 +17,9 @@ export type StudentNoteTimerStartResponse = z.infer<
 export type StudentNoteMonthlyDTO = z.infer<
   typeof studentNoteDto.calendar.monthlyResponse
 >;
+export type StudentNoteMonthlyDailyItemDTO = z.infer<
+  typeof studentNoteDto.calendar.monthlyDailyItemResponse
+>;
 export type StudentNoteDailyDTO = z.infer<
   typeof studentNoteDto.calendar.dailyResponse
 >;

@@ -5,12 +5,10 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-import {
-  StudentNoteQueryKey,
-  studentNoteRepository,
-} from '@/entities/student-study-note';
+import { StudentNoteMonthlyDailyItemDTO } from '@/entities/student-study-note';
 import {
   useStudentNoteDelete,
+  useStudentNoteDetail,
   useStudyNoteMonthly,
 } from '@/features/student-study-note/hooks';
 import { Button } from '@/shared/components/ui/button';
@@ -23,7 +21,6 @@ import {
 import { PRIVATE } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import { useMemberStore } from '@/store';
-import { useQueries } from '@tanstack/react-query';
 import { ChevronDown, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 import { TimerModal } from '../timer';
@@ -34,24 +31,11 @@ import {
   formatStudyTime,
 } from '../timer/constants';
 
-/* ------------------------------------------------------------------ */
-/* Types & helpers                                                      */
-/* ------------------------------------------------------------------ */
-
-type DailyNote = {
-  id: number;
-  title: string | null;
-  subject: string | null;
-  studyTime: number;
-};
-type DayToNotes = Record<number, DailyNote[]>;
-
 const getBadgeStyle = (
-  seconds: number,
-  title?: string | null
+  seconds: number
 ): { className: string; label: string } => {
   if (seconds === 0)
-    return { className: 'bg-gray-2 text-gray-7', label: title ?? '학습일지' };
+    return { className: 'bg-gray-2 text-gray-7', label: '학습일지' };
   if (seconds >= 25200)
     return {
       className: 'bg-orange-7 text-white',
@@ -82,7 +66,7 @@ const WEEK_DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 const MonthCalendar = ({
   year,
   month,
-  dayToNotes = {},
+  dailySummaryList = [],
   onNavigate,
   minYear,
   todayYear,
@@ -90,19 +74,20 @@ const MonthCalendar = ({
 }: {
   year: number;
   month: number;
-  dayToNotes?: DayToNotes;
+  dailySummaryList: StudentNoteMonthlyDailyItemDTO[];
   onNavigate: (year: number, month: number) => void;
   minYear: number;
   todayYear: number;
   todayMonth: number;
 }) => {
   const router = useRouter();
-  const [selectedNote, setSelectedNote] = useState<DailyNote | null>(null);
+  const [selectedNoteId, setSelectedNoteId] = useState<number | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const { mutate: deleteNote } = useStudentNoteDelete();
+  const { data: selectedNote } = useStudentNoteDetail(selectedNoteId ?? 0);
 
   const daysInMonth = new Date(year, month, 0).getDate();
-  const daysInPrevMonth = new Date(year, month - 1, 0).getDate();
+  const daysInPrevMonth = new Date(year, month - 1, 0).getDate(); // 전 달
   const firstDayRaw = new Date(year, month - 1, 1).getDay();
   const startOffset = firstDayRaw === 0 ? 6 : firstDayRaw - 1;
 
@@ -163,7 +148,9 @@ const MonthCalendar = ({
           >
             {week.map((cell, di) => {
               const isCurrent = cell.type === 'current';
-              const notes = isCurrent ? (dayToNotes[cell.day] ?? []) : [];
+              const notes = isCurrent
+                ? dailySummaryList[cell.day - 1]
+                : undefined;
               return (
                 <div
                   key={di}
@@ -189,17 +176,17 @@ const MonthCalendar = ({
                   >
                     {cell.day}
                   </span>
-                  {notes.length > 0 && (
+                  {(notes?.entries.length ?? 0) > 0 && (
                     <div className="flex flex-col items-start gap-1">
-                      {notes.map((note) => {
-                        const badge = getBadgeStyle(note.studyTime, note.title);
+                      {notes!.entries.map((note) => {
+                        const badge = getBadgeStyle(note.studyTime);
                         return (
                           <button
                             key={note.id}
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation();
-                              setSelectedNote(note);
+                              setSelectedNoteId(note.id);
                             }}
                             className={cn(
                               'font-label-normal w-fit cursor-pointer rounded-[6px] px-1.5 py-[3px] hover:opacity-80',
@@ -221,9 +208,9 @@ const MonthCalendar = ({
 
       {/* Note detail dialog */}
       <Dialog
-        isOpen={selectedNote !== null && !deleteConfirmOpen}
+        isOpen={selectedNoteId !== null && !deleteConfirmOpen}
         onOpenChange={(open) => {
-          if (!open) setSelectedNote(null);
+          if (!open) setSelectedNoteId(null);
         }}
       >
         <Dialog.Content className="tablet:max-w-[400px] gap-6">
@@ -256,8 +243,8 @@ const MonthCalendar = ({
             <Button
               className="flex-1"
               onClick={() => {
-                if (selectedNote)
-                  router.push(PRIVATE.STUDENT_NOTE.DETAIL(selectedNote.id));
+                if (selectedNoteId)
+                  router.push(PRIVATE.STUDENT_NOTE.DETAIL(selectedNoteId));
               }}
             >
               학습노트 보기
@@ -301,11 +288,11 @@ const MonthCalendar = ({
             <Button
               className="flex-1"
               onClick={() => {
-                if (!selectedNote) return;
-                deleteNote(selectedNote.id, {
+                if (!selectedNoteId) return;
+                deleteNote(selectedNoteId, {
                   onSuccess: () => {
                     setDeleteConfirmOpen(false);
-                    setSelectedNote(null);
+                    setSelectedNoteId(null);
                   },
                 });
               }}
@@ -338,38 +325,10 @@ const CalendarSection = () => {
   const member = useMemberStore((s) => s.member);
   const studentId = member?.id ?? 0;
 
-  const { data: monthlyData } = useStudyNoteMonthly(
-    studentId,
-    selectedYear,
-    selectedMonth
-  );
+  const { data } = useStudyNoteMonthly(studentId, selectedYear, selectedMonth);
 
-  const totalStudyTime = monthlyData?.totalStudyTime ?? 0;
-
-  // days that have at least some study time
-  const daysWithStudy = (monthlyData?.list ?? [])
-    .filter((item) => item.studyTime > 0)
-    .map((item) => item.day);
-
-  // fetch daily notes for each day with study time in parallel
-  const dailyResults = useQueries({
-    queries: daysWithStudy.map((day) => {
-      const date = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      return {
-        queryKey: StudentNoteQueryKey.daily(studentId, date),
-        queryFn: () =>
-          studentNoteRepository.calendar.getDaily({ studentId, date }),
-        enabled: !!studentId,
-        retry: false,
-      };
-    }),
-  });
-
-  const dayToNotes: DayToNotes = {};
-  daysWithStudy.forEach((day, i) => {
-    const data = dailyResults[i]?.data;
-    if (data) dayToNotes[day] = data.list;
-  });
+  const totalStudyTime = data ? data.totalStudyTime : 0;
+  const dailySummaryList = data ? data.dailySummaryList : [];
 
   const years = Array.from({ length: 9 }, (_, i) => yearRangeStart + i);
 
@@ -539,7 +498,7 @@ const CalendarSection = () => {
         <MonthCalendar
           year={selectedYear}
           month={selectedMonth}
-          dayToNotes={dayToNotes}
+          dailySummaryList={dailySummaryList}
           onNavigate={(y, m) => {
             setSelectedYear(y);
             setSelectedMonth(m);
