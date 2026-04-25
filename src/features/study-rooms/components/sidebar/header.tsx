@@ -3,10 +3,12 @@
 import { Dispatch } from 'react';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import { DialogAction } from '@/shared/components/dialog';
 import { BaseHeader } from '@/shared/components/sidebar';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
+import { PRIVATE } from '@/shared/constants';
 
 export const StudyroomSidebarHeader = ({
   dispatch,
@@ -21,6 +23,8 @@ export const StudyroomSidebarHeader = ({
   teacherName?: string;
   canManage?: boolean;
 }) => {
+  const router = useRouter();
+
   return (
     <BaseHeader
       studyRoomId={studyRoomId}
@@ -55,8 +59,15 @@ export const StudyroomSidebarHeader = ({
                   })
                 }
               >
+                제목수정
+              </DropdownMenu.Item>
+
+              <DropdownMenu.Item
+                onClick={() => router.push(PRIVATE.ROOM.EDIT(studyRoomId))}
+              >
                 편집하기
               </DropdownMenu.Item>
+
               <DropdownMenu.Item
                 variant="danger"
                 onClick={() =>

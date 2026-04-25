@@ -189,6 +189,16 @@ export default function StudyRoomFlow({
     dispatch({ type: 'NEXT' });
   };
 
+  const handlePrev = () => dispatch({ type: 'PREV' });
+
+  const handleCancel = () => {
+    if (methods.formState.isDirty) {
+      dialogDispatch({ type: 'OPEN', scope: 'studyroom', kind: 'cancel' });
+    } else {
+      router.back();
+    }
+  };
+
   const handleIndicatorMove = (to: number) => dispatch({ type: 'GO', to });
 
   const handleSubmit = React.useCallback(() => {
@@ -257,9 +267,7 @@ export default function StudyRoomFlow({
               queryKey: StudyRoomsQueryKey.detail(studyRoomId),
             });
             methods.reset(formValues);
-            router.replace(
-              `/study-room-preview/${studyRoomId}/${data.teacherId}`
-            );
+            router.back();
           },
           onError: (error) => {
             handleApiError(error, classifyPreviewError, {
@@ -270,11 +278,7 @@ export default function StudyRoomFlow({
               },
 
               onContext: () => {
-                setTimeout(() => {
-                  router.replace(
-                    `/study-room-preview/${studyRoomId}/${data.teacherId}`
-                  );
-                }, 1500);
+                setTimeout(() => router.back(), 1500);
               },
 
               onUnknown: () => {},
@@ -317,15 +321,11 @@ export default function StudyRoomFlow({
         >
           {step === 'basic' && (
             <StepOne
-              onNext={handleNext}
-              disabled={!isStepValid}
-            />
-          )}
-          {step === 'profile' && (
-            <StepTwo
               mode={mode}
-              disabled={isMutating}
+              onNext={handleNext}
+              disabled={!isStepValid || isMutating}
               canSubmitEdit={canSubmitEdit}
+              onCancel={handleCancel}
               onRequestEdit={() =>
                 dialogDispatch({
                   type: 'OPEN',
@@ -333,13 +333,22 @@ export default function StudyRoomFlow({
                   kind: 'onConfirm',
                 })
               }
-              onCancel={() =>
+            />
+          )}
+          {step === 'profile' && (
+            <StepTwo
+              mode={mode}
+              disabled={isMutating}
+              canSubmitEdit={canSubmitEdit}
+              onCancel={handleCancel}
+              onRequestEdit={() =>
                 dialogDispatch({
                   type: 'OPEN',
                   scope: 'studyroom',
-                  kind: 'cancel',
+                  kind: 'onConfirm',
                 })
               }
+              onPrev={handlePrev}
               onRequestSubmit={handleSubmit}
             />
           )}
@@ -354,8 +363,9 @@ export default function StudyRoomFlow({
             open
             dispatch={dialogDispatch}
             variant="confirm-cancel"
+            emphasis="title-strong"
             title="수정하시겠습니까?"
-            description="수정이 완료되면 프리뷰 페이지로 돌아갑니다."
+            description="수정이 완료되면 이전 페이지로 돌아갑니다."
             confirmText="확인"
             cancelText="취소"
             onConfirm={onConfirmClick}
@@ -371,6 +381,7 @@ export default function StudyRoomFlow({
             open
             dispatch={dialogDispatch}
             variant="confirm-cancel"
+            emphasis="title-strong"
             title="수정 내용을 취소할까요?"
             description="취소하면 이전 페이지로 이동하며 변경사항은 저장되지 않습니다."
             confirmText="나가기"
