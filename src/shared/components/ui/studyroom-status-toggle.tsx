@@ -1,6 +1,6 @@
 import { cn } from '@/shared/lib';
 
-type StudyroomStatus = 'RECRUITING' | 'OPERATING';
+type StudyroomStatus = 'OPEN' | 'OPERATING';
 
 type StudyroomStatusToggleProps = {
   value: StudyroomStatus | null;
@@ -8,7 +8,7 @@ type StudyroomStatusToggleProps = {
 };
 
 const STATUS_LABELS: Record<StudyroomStatus, string> = {
-  RECRUITING: '모집 중',
+  OPEN: '모집 중',
   OPERATING: '운영 중',
 };
 

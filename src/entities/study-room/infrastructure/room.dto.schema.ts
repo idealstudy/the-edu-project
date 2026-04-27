@@ -121,6 +121,13 @@ const ThumbnailResponseSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 선생님 - 모집 상태 변경
+ * ────────────────────────────────────────────────────*/
+const EnrollmentStatusResponseSchema = z.object({
+  id: z.number().int(),
+});
+
+/* ─────────────────────────────────────────────────────
  * 학생 - 스터디룸 목록
  * ────────────────────────────────────────────────────*/
 const StudentRoomListItemSchema = z.object({
@@ -175,6 +182,7 @@ const teacher = {
   inviteFail: InviteFailItemSchema,
   inviteToken: InviteTokenDataSchema,
   thumbnailResponse: ThumbnailResponseSchema,
+  enrollmentStatusResponse: EnrollmentStatusResponseSchema,
 };
 
 const student = {

@@ -9,6 +9,7 @@ import {
   useStudentStudyRoomDetailQuery,
   useTeacherStudyRoomDetailQuery,
 } from '@/features/study-rooms/hooks';
+import { useUpdateEnrollmentStatus } from '@/features/study-rooms/hooks/use-update-enrollment-status';
 import { ColumnLayout } from '@/layout/column-layout';
 import {
   InputDialog,
@@ -57,15 +58,19 @@ export const StudyroomSidebar = ({
     useState('수업노트 그룹이 삭제되었습니다.');
   const [isInfoToastOpen, setIsInfoToastOpen] = useState(false);
   const [studyroomStatus, setStudyroomStatus] = useState<
-    'RECRUITING' | 'OPERATING' | null
+    'OPEN' | 'OPERATING' | null
   >(null);
+
   const { role } = useRole();
+
   const { mutate: deleteStudyRoom } = useDeleteStudyRoom();
   const { mutate: updateRoomName } = useUpdateStudyRoomTitle();
   const { data: invitation, isLoading: isInvitationLoading } =
     useInvitationQuery(studyRoomId, { enabled: role === 'ROLE_TEACHER' });
   const { mutate: toggleInvitation, isPending: isInvitationPending } =
     useToggleInvitation(studyRoomId);
+  const { mutate: updateEnrollmentStatus } =
+    useUpdateEnrollmentStatus(studyRoomId);
 
   // 스터디룸 상세 정보 조회 (선생님)
   const { data: teacherStudyRoomDetail } = useTeacherStudyRoomDetailQuery(
@@ -188,7 +193,10 @@ export const StudyroomSidebar = ({
         {canManage && (
           <StudyroomStatusToggle
             value={studyroomStatus}
-            onChange={setStudyroomStatus}
+            onChange={(status) => {
+              setStudyroomStatus(status);
+              updateEnrollmentStatus(status);
+            }}
           />
         )}
 

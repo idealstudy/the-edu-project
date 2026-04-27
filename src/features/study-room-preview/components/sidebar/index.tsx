@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
+import { useUpdateEnrollmentStatus } from '@/features/study-room-preview/hooks/use-update-enrollment-status';
 import { useUpdateThumbnail } from '@/features/study-room-preview/hooks/use-update-thumbnail';
 import { StudyStats } from '@/features/study-rooms/components/sidebar/status';
 import { MiniSpinner } from '@/shared/components/loading';
@@ -38,17 +39,25 @@ export const StudyroomPreviewSidebar = ({
   const [showPendingSkeleton, setShowPendingSkeleton] = useState(false);
   const [loading, setLoading] = useState(false);
   const [studyroomStatus, setStudyroomStatus] = useState<
-    'RECRUITING' | 'OPERATING' | null
+    'OPEN' | 'OPERATING' | null
   >(null);
+
   const member = useMemberStore((s) => s.member);
+
+  const { mutate: updateThumbnail } = useUpdateThumbnail(
+    teacherId,
+    studyRoomId
+  );
+  const { mutate: updateEnrollmentStatus } = useUpdateEnrollmentStatus(
+    teacherId,
+    studyRoomId
+  );
 
   const isMyStudyRoom =
     member?.role === 'ROLE_TEACHER' && member.id === teacherId;
 
   // 파일 input ref (썸네일)
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const updateThumbnailMutation = useUpdateThumbnail(teacherId, studyRoomId);
 
   const handleThumbnailClick = () => {
     fileInputRef.current?.click();
@@ -57,7 +66,7 @@ export const StudyroomPreviewSidebar = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    updateThumbnailMutation.mutate(file);
+    updateThumbnail(file);
     e.target.value = '';
   };
 
@@ -161,7 +170,10 @@ export const StudyroomPreviewSidebar = ({
       {isMyStudyRoom && (
         <StudyroomStatusToggle
           value={studyroomStatus}
-          onChange={setStudyroomStatus}
+          onChange={(status) => {
+            setStudyroomStatus(status);
+            updateEnrollmentStatus(status);
+          }}
         />
       )}
 
