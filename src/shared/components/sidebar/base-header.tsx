@@ -92,7 +92,7 @@ export const BaseHeader = ({
           src={thumbnailUrl || '/studyroom/profile.svg'}
           alt="study-room-profile"
           fill
-          className={thumbnailUrl ? 'object-cover' : 'object-contain'}
+          className="object-contain"
         />
 
         {onThumbnailClick && (

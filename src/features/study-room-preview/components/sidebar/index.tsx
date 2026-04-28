@@ -14,7 +14,10 @@ import { StudyroomStatusToggle } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
 import { useMemberStore } from '@/store';
 
-import { usePreviewSideInfo } from '../../hooks/use-preview';
+import {
+  usePreviewMainInfo,
+  usePreviewSideInfo,
+} from '../../hooks/use-preview';
 import { PreviewSideSkeleton } from '../preview-skeleton';
 import { StudyroomPreviewSidebarHeader } from './header';
 import { TeacherOtherStudyrooms } from './teacher-other-studyrooms';
@@ -30,19 +33,18 @@ export const StudyroomPreviewSidebar = ({
   teacherId,
   studyRoomId,
 }: StudyroomPreviewContentsProps) => {
-  const { data, isPending, isError } = usePreviewSideInfo(
-    teacherId,
-    studyRoomId
-  );
   const router = useRouter();
 
   const [showPendingSkeleton, setShowPendingSkeleton] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [studyroomStatus, setStudyroomStatus] = useState<
-    'OPEN' | 'OPERATING' | null
-  >(null);
 
   const member = useMemberStore((s) => s.member);
+
+  const { data, isPending, isError } = usePreviewSideInfo(
+    teacherId,
+    studyRoomId
+  );
+  const { data: mainData } = usePreviewMainInfo(studyRoomId);
 
   const { mutate: updateThumbnail } = useUpdateThumbnail(
     teacherId,
@@ -169,9 +171,8 @@ export const StudyroomPreviewSidebar = ({
       {/* 운영 상태 토글 - 본인 스터디룸만 노출 */}
       {isMyStudyRoom && (
         <StudyroomStatusToggle
-          value={studyroomStatus}
+          value={mainData?.enrollmentStatus ?? null}
           onChange={(status) => {
-            setStudyroomStatus(status);
             updateEnrollmentStatus(status);
           }}
         />

@@ -123,9 +123,7 @@ const ThumbnailResponseSchema = z.object({
 /* ─────────────────────────────────────────────────────
  * 선생님 - 모집 상태 변경
  * ────────────────────────────────────────────────────*/
-const EnrollmentStatusResponseSchema = z.object({
-  id: z.number().int(),
-});
+const EnrollmentStatusResponseSchema = z.object({});
 
 /* ─────────────────────────────────────────────────────
  * 학생 - 스터디룸 목록

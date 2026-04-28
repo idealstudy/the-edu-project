@@ -3,6 +3,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import {
+  CLASS_FORM_TO_KOREAN,
+  ENROLLMENT_STATUS_TO_KOREAN,
+  MODALITY_TO_KOREAN,
+  SCHOOL_LEVEL_TO_KOREAN,
+  SUBJECT_TO_KOREAN,
+} from '@/entities/study-room-preview/core/preview.domain';
 import { cn } from '@/shared/lib';
 import { trackDedu101StudyroomFeatureClick } from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
@@ -27,6 +34,25 @@ export const StudyRoomCard = ({ studyRoom }: StudyRoomCardProps) => {
     );
   };
 
+  const subjectText = studyRoom.subjectType
+    ? SUBJECT_TO_KOREAN[studyRoom.subjectType]
+    : '기타';
+
+  const targetText = studyRoom.schoolInfo?.grade
+    ? `${SCHOOL_LEVEL_TO_KOREAN[studyRoom.schoolInfo.schoolLevel ?? 'OTHER']} ${studyRoom.schoolInfo.grade}학년`
+    : studyRoom.schoolInfo?.schoolLevel
+      ? SCHOOL_LEVEL_TO_KOREAN[studyRoom.schoolInfo.schoolLevel]
+      : '대상 미정';
+
+  const classStyleText =
+    studyRoom.modality && studyRoom.classForm
+      ? `${MODALITY_TO_KOREAN[studyRoom.modality]} · ${CLASS_FORM_TO_KOREAN[studyRoom.classForm]} 수업`
+      : '수업 방식 미정';
+
+  const enrollmentStatusText = studyRoom.enrollmentStatus
+    ? ENROLLMENT_STATUS_TO_KOREAN[studyRoom.enrollmentStatus]
+    : '모집 중';
+
   return (
     <Link
       href={`/study-room-preview/${studyRoom.id}/${studyRoom.teacherId}`}
@@ -47,9 +73,9 @@ export const StudyRoomCard = ({ studyRoom }: StudyRoomCardProps) => {
             alt="스터디룸 프리뷰 기본 이미지"
             className="object-cover"
           />
-          {/* TODO 모집 상태 반영 */}
+          {/* 모집 상태 */}
           <span className="bg-gray-black/40 font-label-heading text-gray-white absolute top-4 left-4 rounded-lg px-2.5 py-1">
-            모집 중
+            {enrollmentStatusText}
           </span>
         </div>
         {/* 하단 영역 */}
@@ -67,7 +93,7 @@ export const StudyRoomCard = ({ studyRoom }: StudyRoomCardProps) => {
               {studyRoom.teacherName} 선생님
             </span>
             <span className="bg-orange-2 text-orange-7 font-caption-heading rounded-sm px-2 py-1">
-              {studyRoom.subjectType}
+              {subjectText}
             </span>
           </div>
         </div>
@@ -81,7 +107,6 @@ export const StudyRoomCard = ({ studyRoom }: StudyRoomCardProps) => {
         </div>
         <hr className="border-gray-3 border" />
 
-        {/* TODO target class-type 반영 */}
         <div className="flex flex-col items-start gap-2">
           <div className="flex items-center gap-2">
             <Image
@@ -91,9 +116,7 @@ export const StudyRoomCard = ({ studyRoom }: StudyRoomCardProps) => {
               height={18}
               className="object-contain"
             />
-            <p className="font-label-heading text-gray-12">
-              고등학교 1학년~3학년
-            </p>
+            <p className="font-label-heading text-gray-12">{targetText}</p>
           </div>
 
           <div className="flex items-center gap-2">
@@ -104,9 +127,7 @@ export const StudyRoomCard = ({ studyRoom }: StudyRoomCardProps) => {
               height={18}
               className="object-contain"
             />
-            <p className="font-label-heading text-gray-12">
-              {studyRoom.subjectType ?? '기타'}
-            </p>
+            <p className="font-label-heading text-gray-12">{subjectText}</p>
           </div>
 
           <div className="flex items-center gap-2">
@@ -117,9 +138,7 @@ export const StudyRoomCard = ({ studyRoom }: StudyRoomCardProps) => {
               height={18}
               className="object-contain"
             />
-            <p className="font-label-heading text-gray-12">
-              온라인 · 일대다 수업
-            </p>
+            <p className="font-label-heading text-gray-12">{classStyleText}</p>
           </div>
         </div>
       </div>

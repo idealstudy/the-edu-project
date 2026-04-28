@@ -55,6 +55,7 @@ const StudyRoomPreviewCoreSchema = z.object({
   classForm: base.classForm,
   subjectType: base.subject,
   schoolInfo: PreviewSchoolInfoSchema,
+  enrollmentStatus: z.enum(['OPEN', 'OPERATING']),
 });
 
 /* ─────────────────────────────────────────────────────

@@ -23,7 +23,7 @@ export const StudyroomPreviewSidebarHeader = ({
       fallbackStudyRoomName="스터디룸"
       titleClassName="tablet:font-headline1-heading desktop:font-title-heading truncate text-[20px] leading-tight font-bold"
       teacherClassName="text-gray-scale-gray-60 tablet:text-base text-sm"
-      imageWrapperClassName="bg-orange-scale-orange-1 tablet:h-[300px] relative h-[200px] w-full overflow-hidden rounded-[12px]"
+      imageWrapperClassName="tablet:h-[200px] relative h-[150px] w-full overflow-hidden rounded-[12px]"
       wrapperClassName="flex flex-col gap-6"
     />
   );

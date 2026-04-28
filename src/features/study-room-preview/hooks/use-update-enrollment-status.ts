@@ -15,6 +15,9 @@ export const useUpdateEnrollmentStatus = (
       queryClient.invalidateQueries({
         queryKey: previewKeys.side(teacherId, studyRoomId),
       });
+      queryClient.invalidateQueries({
+        queryKey: previewKeys.main(studyRoomId),
+      });
     },
   });
 };
