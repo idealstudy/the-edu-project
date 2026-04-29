@@ -5,7 +5,6 @@ import { FormEvent, useRef, useState, useTransition } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import InquiryItem from '@/features/study-room-preview/components/contents/inquiry-item';
-import InquiryNotice from '@/features/study-room-preview/components/contents/inquiry-notice';
 import { usePreviewInquiries } from '@/features/study-room-preview/hooks/use-preview';
 import { MiniSpinner } from '@/shared/components/loading';
 import { Button, Input, Pagination } from '@/shared/components/ui';
@@ -33,7 +32,7 @@ export const StudyroomPreviewInquiryTab = ({
 
   const member = useMemberStore((state) => state.member);
   const isTeacher = member?.role === 'ROLE_TEACHER';
-  const isOwner = member?.id === teacherId;
+  // const isOwner = member?.id === teacherId;
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -107,8 +106,8 @@ export const StudyroomPreviewInquiryTab = ({
           isTeacher ? 'rounded-tl-none' : ''
         )}
       >
-        {/* 문의 공지 */}
-        <InquiryNotice isOwner={isOwner} />
+        {/* TODO 문의 공지 */}
+        {/* <InquiryNotice isOwner={isOwner} /> */}
 
         {isLoading && (
           <div className="flex justify-center py-10">
