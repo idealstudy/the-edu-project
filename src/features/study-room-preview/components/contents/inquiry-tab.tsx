@@ -32,6 +32,7 @@ export const StudyroomPreviewInquiryTab = ({
 
   const member = useMemberStore((state) => state.member);
   const isTeacher = member?.role === 'ROLE_TEACHER';
+  // const isOwner = member?.id === teacherId;
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -72,6 +73,7 @@ export const StudyroomPreviewInquiryTab = ({
 
   return (
     <div className="space-y-5">
+      {/* 문의 작성하기 */}
       {!isTeacher && (
         <div className="border-line-line1 rounded-tr-xl rounded-b-xl border bg-white p-6">
           <h1 className="font-headline1-heading">
@@ -97,12 +99,16 @@ export const StudyroomPreviewInquiryTab = ({
         </div>
       )}
 
+      {/* 문의 목록 */}
       <div
         className={cn(
           'border-line-line1 rounded-xl border bg-white p-6',
           isTeacher ? 'rounded-tl-none' : ''
         )}
       >
+        {/* TODO 문의 공지 */}
+        {/* <InquiryNotice isOwner={isOwner} /> */}
+
         {isLoading && (
           <div className="flex justify-center py-10">
             <MiniSpinner />
