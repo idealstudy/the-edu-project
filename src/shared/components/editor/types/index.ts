@@ -19,6 +19,7 @@ export type TextEditorProps = {
 export type TextViewerProps = {
   className?: string;
   value: TextEditorValue;
+  onFileDownloadBlocked?: () => void;
 };
 
 /** 툴바 Props */

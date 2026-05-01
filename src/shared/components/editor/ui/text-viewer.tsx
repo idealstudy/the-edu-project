@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 
+import { EditorViewerContext } from '@/shared/components/editor/model/editor-viewer-context';
 import { createNotionExtensions } from '@/shared/components/editor/model/extensions';
 import { TextViewerProps } from '@/shared/components/editor/types';
 import { cn } from '@/shared/lib';
@@ -15,7 +16,11 @@ const viewerExtensions = createNotionExtensions({
   enableSlashCommand: false,
 });
 
-export const TextViewer = ({ className, value }: TextViewerProps) => {
+export const TextViewer = ({
+  className,
+  value,
+  onFileDownloadBlocked,
+}: TextViewerProps) => {
   const editor = useEditor({
     extensions: viewerExtensions,
     content: value,
@@ -34,5 +39,11 @@ export const TextViewer = ({ className, value }: TextViewerProps) => {
     editor.commands.setContent(value);
   }, [editor, value]);
 
-  return <EditorContent editor={editor} />;
+  return (
+    <EditorViewerContext.Provider
+      value={{ onLoginRequired: onFileDownloadBlocked }}
+    >
+      <EditorContent editor={editor} />
+    </EditorViewerContext.Provider>
+  );
 };
