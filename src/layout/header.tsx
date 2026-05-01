@@ -111,7 +111,7 @@ export const Header = () => {
           {!session && (
             <div className="ml-5 flex gap-2">
               <Link
-                href={PUBLIC.CORE.LIST.TEACHERS}
+                href={PUBLIC.CORE.LIST.STUDY_ROOMS}
                 className={cn(
                   'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
                   pathname.startsWith(PUBLIC.CORE.LIST.BASE)
@@ -219,14 +219,6 @@ export const Header = () => {
                     <span>대시보드</span>
                   </PopoverLink>
 
-                  {/* 강사 프로필 링크 */}
-                  <PopoverLink
-                    href={PUBLIC.CORE.LIST.TEACHERS}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <span>강사 프로필</span>
-                  </PopoverLink>
-
                   {/* 게시판 */}
                   <PopoverLink
                     href={PUBLIC.COMMUNITY.COLUMN.LIST}
@@ -276,7 +268,7 @@ export const Header = () => {
                     )}
                   </div>
                   <PopoverLink
-                    href={PUBLIC.CORE.LIST.TEACHERS}
+                    href={PUBLIC.CORE.LIST.STUDY_ROOMS}
                     onClick={() => setIsOpen(false)}
                   >
                     <FindingIcon />
