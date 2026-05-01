@@ -43,11 +43,11 @@ export const FileAttachmentNode = ({ node }: NodeViewProps) => {
     isUploading?: boolean;
   };
 
-  const { onLoginRequired } = useEditorViewerContext();
-  const isMasked = !url && !isUploading;
+  const { onLoginRequired, shouldBlockDownload } = useEditorViewerContext();
+  const isMasked = (!url || shouldBlockDownload) && !isUploading;
 
   const handleDownload = () => {
-    if (!url) {
+    if (!url || shouldBlockDownload) {
       onLoginRequired?.();
       return;
     }

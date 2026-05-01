@@ -20,6 +20,7 @@ export const TextViewer = ({
   className,
   value,
   onFileDownloadBlocked,
+  blockFileDownload,
 }: TextViewerProps) => {
   const editor = useEditor({
     extensions: viewerExtensions,
@@ -41,7 +42,10 @@ export const TextViewer = ({
 
   return (
     <EditorViewerContext.Provider
-      value={{ onLoginRequired: onFileDownloadBlocked }}
+      value={{
+        onLoginRequired: onFileDownloadBlocked,
+        shouldBlockDownload: blockFileDownload,
+      }}
     >
       <EditorContent editor={editor} />
     </EditorViewerContext.Provider>

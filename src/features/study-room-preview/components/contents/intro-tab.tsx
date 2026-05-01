@@ -248,6 +248,7 @@ export const StudyroomPreviewIntroTab = ({
                 <TextViewer
                   value={parsedContent}
                   onFileDownloadBlocked={() => setIsLoginModalOpen(true)}
+                  blockFileDownload={!member}
                 />
               ) : (
                 <div className="flex flex-col items-center justify-center gap-2">
