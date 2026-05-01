@@ -79,7 +79,14 @@ export const StudyRoomCard = ({ studyRoom }: StudyRoomCardProps) => {
             className="max-h-[150px] object-contain"
           />
           {/* 모집 상태 */}
-          <span className="bg-gray-black/40 font-label-heading text-gray-white absolute top-4 left-4 rounded-lg px-2.5 py-1">
+          <span
+            className={cn(
+              'font-label-heading text-gray-white absolute top-4 left-4 rounded-lg px-2.5 py-1',
+              studyRoom.enrollmentStatus === 'OPEN'
+                ? 'bg-system-success/80'
+                : 'bg-gray-black/40'
+            )}
+          >
             {enrollmentStatusText}
           </span>
         </div>
