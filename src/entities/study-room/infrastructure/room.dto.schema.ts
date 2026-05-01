@@ -119,6 +119,12 @@ const InviteFailItemSchema = z.object({
  * ────────────────────────────────────────────────────*/
 const ThumbnailResponseSchema = z.object({
   id: z.number().int(),
+  name: z.string(),
+  description: z.string(),
+  teacherName: z.string(),
+  visibility: base.visibility,
+  enrollmentStatus: z.enum(['OPEN', 'OPERATING']),
+  thumbnailUrl: z.string().nullable(),
 });
 
 /* ─────────────────────────────────────────────────────
