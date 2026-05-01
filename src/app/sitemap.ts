@@ -3,6 +3,8 @@ import type { MetadataRoute } from 'next';
 import { SITE_CONFIG } from '@/config/site';
 import { serverEnv } from '@/shared/constants/api';
 
+export const dynamic = 'force-dynamic';
+
 type SitemapIdsResponse = { data: number[] };
 type SitemapColumnsResponse = { data: { id: number; modDate: string }[] };
 
