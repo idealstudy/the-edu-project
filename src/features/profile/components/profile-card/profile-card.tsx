@@ -4,6 +4,7 @@ import Image from 'next/image';
 
 import { UserBasicInfo } from '@/entities/member/types';
 import { FrontendTeacherReport } from '@/entities/teacher';
+import { useProfileImage } from '@/features/profile-image/hooks/use-profile-image';
 import StudentProfileExtra from '@/features/profile/components/profile-card/student-profile-extra';
 import TeacherProfileExtra from '@/features/profile/components/profile-card/teacher-profile-extra';
 
@@ -18,6 +19,8 @@ export default function ProfileCard({
   action?: React.ReactNode;
   memberId?: number;
 }) {
+  const { data: profileImageData } = useProfileImage();
+
   let profileExtra;
 
   switch (basicInfo.role) {
@@ -57,7 +60,11 @@ export default function ProfileCard({
       </div>
 
       <Image
-        src={'/character/img_signup_type01.png'}
+        src={
+          profileImageData?.imageUrl
+            ? profileImageData.imageUrl
+            : '/character/img_signup_type01.png'
+        }
         width={280}
         height={280}
         alt={`${basicInfo.name}님의 프로필 이미지`}
