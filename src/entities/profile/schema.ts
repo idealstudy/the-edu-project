@@ -1,5 +1,11 @@
 import { z } from 'zod';
 
+const NullableProfileImageUrlSchema = z
+  .string()
+  .nullable()
+  .optional()
+  .transform((value) => value ?? null);
+
 // ADMIN, MEMBER 제외
 const ProfileRoleSchema = z.enum([
   'ROLE_TEACHER',
@@ -10,7 +16,7 @@ const ProfileRoleSchema = z.enum([
 const TeacherProfileSchema = z.object({
   name: z.string(),
   email: z.string().email(),
-  profileImageUrl: z.string().nullable(),
+  profileImageUrl: NullableProfileImageUrlSchema,
   desc: z.string(),
   teacherNoteCount: z.number().int(),
   studentCount: z.number().int(),
@@ -20,14 +26,14 @@ const TeacherProfileSchema = z.object({
 const StudentProfileSchema = z.object({
   name: z.string(),
   email: z.string().email(),
-  profileImageUrl: z.string().nullable(),
+  profileImageUrl: NullableProfileImageUrlSchema,
   desc: z.string(),
 });
 
 const ParentProfileSchema = z.object({
   name: z.string(),
   email: z.string().email(),
-  profileImageUrl: z.string().nullable(),
+  profileImageUrl: NullableProfileImageUrlSchema,
 });
 
 export const base = {

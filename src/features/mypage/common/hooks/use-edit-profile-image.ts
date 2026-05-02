@@ -23,6 +23,7 @@ interface UseEditProfileImageResult {
     event: ChangeEvent<HTMLInputElement>
   ) => Promise<void>;
   imageUrl: string;
+  imageFile: File | null;
   isCropperClicked: boolean;
   openModal: boolean;
   profileImageUrl: string;
@@ -48,6 +49,7 @@ export function useEditProfileImage({
 }: UseEditProfileImageParams): UseEditProfileImageResult {
   const [openModal, setOpenModal] = useState(false);
   const [imageUrl, setImageUrlState] = useState<string>('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [selectedImageId, setSelectedImageId] = useState<number | null>(null);
   const [isCropperClicked, setIsCropperClicked] = useState(false);
   const [crop, setCrop] = useState(INITIAL_CROP);
@@ -78,6 +80,7 @@ export function useEditProfileImage({
   const clearSelectedImage = (): void => {
     setSelectedImageId(null);
     setImageUrlState('');
+    setImageFile(null);
     revokeObjectUrl();
   };
 
@@ -118,9 +121,12 @@ export function useEditProfileImage({
     }
 
     const croppedBlob = await getCroppedImage(imageUrl, croppedAreaPixels);
+    const croppedFile = new File([croppedBlob], 'profile-image.jpg', {
+      type: croppedBlob.type || 'image/jpeg',
+    });
     const previewUrl = URL.createObjectURL(croppedBlob);
 
-    // TODO 저장버튼 누를시 프로필 이미지도 전송
+    setImageFile(croppedFile);
     setImageUrl(previewUrl);
     setIsCropperClicked(false);
     setOpenModal(false);
@@ -137,6 +143,7 @@ export function useEditProfileImage({
     handleOpenFilePicker,
     handleProfileImageChange,
     imageUrl,
+    imageFile,
     isCropperClicked,
     openModal,
     profileImageUrl: imageUrl || serverImageUrl || DEFAULT_PROFILE_IMAGE_URL,

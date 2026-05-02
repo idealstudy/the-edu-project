@@ -17,7 +17,7 @@ import {
 import { ProfileChangeModal } from '@/features/profile-image/components/profile_change_modal';
 import {
   useProfileImage,
-  // useUpdateProfileImage,
+  useUpdateProfileImage,
 } from '@/features/profile-image/hooks/use-profile-image';
 import { useImageUpload } from '@/shared/components/editor';
 import { ImageCropper } from '@/shared/components/image-crop';
@@ -48,12 +48,13 @@ export default function EditProfileCard({
   const updateStudentBasicInfoMutation = useUpdateStudentBasicInfo();
 
   const { data: profileImageData } = useProfileImage();
-  // const { mutateAsync: updateImage } = useUpdateProfileImage();
-  // TODO : uploadAsync 추가
-  const { isUploading } = useImageUpload();
+  const { mutateAsync: updateImage } = useUpdateProfileImage();
+  const { uploadAsync, isUploading } = useImageUpload();
   const profileImage = useEditProfileImage({
     serverImageUrl: profileImageData?.imageUrl,
   });
+
+  const isProfileImageDirty = !!profileImage.imageFile;
 
   const {
     register,
@@ -78,55 +79,53 @@ export default function EditProfileCard({
     mode: 'onChange',
   });
 
-  const onSubmit = (data: BasicInfoForm) => {
+  const handleSaveError = (error: unknown) => {
+    handleApiError(error, classifyMypageError, {
+      onAuth: () => {
+        // MEMBER_NOT_EXIST
+        setTimeout(() => {
+          router.replace('/login');
+        }, 1500);
+      },
+      onUnknown: () => {},
+    });
+  };
+
+  const updateBasicInfoIfNeeded = async (data: BasicInfoForm) => {
+    if (!isDirty) return;
+
     if (basicInfo.role === 'ROLE_TEACHER') {
-      updateTeacherBasicInfoMutation.mutate(
-        {
-          name: data.name,
-          isProfilePublic: data.isProfilePublic,
-          simpleIntroduction: data.simpleIntroduction ?? '',
-        },
-        {
-          onSuccess: () => {
-            setIsEditMode(false);
-          },
-          onError: (error) => {
-            handleApiError(error, classifyMypageError, {
-              onAuth: () => {
-                // MEMBER_NOT_EXIST
-                setTimeout(() => {
-                  router.replace('/login');
-                }, 1500);
-              },
-              onUnknown: () => {},
-            });
-          },
-        }
-      );
-    } else if (basicInfo.role === 'ROLE_STUDENT') {
-      updateStudentBasicInfoMutation.mutate(
-        {
-          name: data.name,
-          isProfilePublic: data.isProfilePublic,
-          learningGoal: data.learningGoal ?? '',
-        },
-        {
-          onSuccess: () => {
-            setIsEditMode(false);
-          },
-          onError: (error) => {
-            handleApiError(error, classifyMypageError, {
-              onAuth: () => {
-                // MEMBER_NOT_EXIST
-                setTimeout(() => {
-                  router.replace('/login');
-                }, 1500);
-              },
-              onUnknown: () => {},
-            });
-          },
-        }
-      );
+      await updateTeacherBasicInfoMutation.mutateAsync({
+        name: data.name,
+        isProfilePublic: data.isProfilePublic,
+        simpleIntroduction: data.simpleIntroduction ?? '',
+      });
+      return;
+    }
+
+    if (basicInfo.role === 'ROLE_STUDENT') {
+      await updateStudentBasicInfoMutation.mutateAsync({
+        name: data.name,
+        isProfilePublic: data.isProfilePublic,
+        learningGoal: data.learningGoal ?? '',
+      });
+    }
+  };
+
+  const updateProfileImageIfNeeded = async () => {
+    if (!profileImage.imageFile) return;
+
+    const uploaded = await uploadAsync(profileImage.imageFile);
+    await updateImage({ mediaId: uploaded.mediaId });
+  };
+
+  const onSubmit = async (data: BasicInfoForm) => {
+    try {
+      await updateBasicInfoIfNeeded(data);
+      await updateProfileImageIfNeeded();
+      setIsEditMode(false);
+    } catch (error) {
+      handleSaveError(error);
     }
   };
 
@@ -240,7 +239,12 @@ export default function EditProfileCard({
             type="submit"
             variant="secondary"
             size="small"
-            disabled={isSubmitting || !isDirty || !isValid}
+            disabled={
+              isSubmitting ||
+              isUploading ||
+              (!isDirty && !isProfileImageDirty) ||
+              !isValid
+            }
           >
             저장
           </Button>

@@ -1,5 +1,11 @@
 import { z } from 'zod';
 
+const NullableProfileImageUrlSchema = z
+  .string()
+  .nullable()
+  .optional()
+  .transform((value) => value ?? null);
+
 /* ─────────────────────────────────────────────────────
  * 공통 enum
  * ────────────────────────────────────────────────────*/
@@ -99,7 +105,7 @@ const TeacherHomeworkListItemSchema = HomeworkListItemBaseSchema.extend({
 const HomeworkStudentItemSchema = z.object({
   id: z.number().int(),
   studentName: z.string(),
-  studentProfileImageUrl: z.string().nullable(),
+  studentProfileImageUrl: NullableProfileImageUrlSchema,
   readAt: z.string().nullable(),
   studentId: z.number().int(),
   status: HomeworkSubmitStatusSchema,
@@ -122,7 +128,7 @@ const StudentHomeworkListItemSchema = HomeworkListItemBaseSchema.extend({
 const MyHomeworkStudentSchema = z.object({
   id: z.number().int(),
   studentName: z.string(),
-  studentProfileImageUrl: z.string().nullable(),
+  studentProfileImageUrl: NullableProfileImageUrlSchema,
   readAt: z.string().nullable(),
   status: HomeworkSubmitStatusSchema,
   submission: OptionalHomeworkSubmissionSchema,
@@ -131,7 +137,7 @@ const MyHomeworkStudentSchema = z.object({
 
 const OtherHomeworkStudentSchema = z.object({
   studentName: z.string(),
-  studentProfileImageUrl: z.string().nullable(),
+  studentProfileImageUrl: NullableProfileImageUrlSchema,
   readAt: z.string().nullable(),
   status: HomeworkSubmitStatusSchema,
   modifiedSubmissionAt: z.string().nullable(),
