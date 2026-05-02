@@ -119,7 +119,7 @@ export const Header = () => {
                     : 'hover:bg-gray-11'
                 )}
               >
-                탐색하기
+                멋있게 탐색하기
               </Link>
               <Link
                 href={PUBLIC.COMMUNITY.COLUMN.LIST}
@@ -272,7 +272,7 @@ export const Header = () => {
                     onClick={() => setIsOpen(false)}
                   >
                     <FindingIcon />
-                    <span>탐색하기</span>
+                    <span>멋있게 탐색하기</span>
                   </PopoverLink>
 
                   <PopoverSeparator />
