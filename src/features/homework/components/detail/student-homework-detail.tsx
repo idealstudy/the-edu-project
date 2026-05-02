@@ -116,6 +116,7 @@ export const StudentHomeworkDetail = ({
                   }
                   rawContent={item.data.submission?.content ?? '-'}
                   authorName={item.data.studentName}
+                  profileImageUrl={item.data.studentProfileImageUrl}
                   regDate={item.data.submission?.modifiedSubmissionAt ?? '-'}
                   submitStatus={item.data.status}
                   studyRoomId={studyRoomId}
@@ -153,6 +154,7 @@ export const StudentHomeworkDetail = ({
               <StudentHomeworkContent
                 content="다른 학생이 제출한 과제는 확인할 수 없습니다."
                 authorName={item.data.studentName}
+                profileImageUrl={item.data.studentProfileImageUrl}
                 regDate={item.data.modifiedSubmissionAt ?? '-'}
               />
 

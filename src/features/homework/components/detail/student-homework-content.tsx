@@ -1,9 +1,12 @@
+import Image from 'next/image';
+
 import { TextViewer, parseEditorContent } from '@/shared/components/editor';
 import { getRelativeTimeString } from '@/shared/lib';
 
 type StudentAssignmentContentProps = {
   content: string;
   authorName: string;
+  profileImageUrl?: string | null;
   regDate: string;
 };
 
@@ -12,6 +15,7 @@ type StudentAssignmentContentProps = {
 export const StudentHomeworkContent = ({
   content,
   authorName,
+  profileImageUrl,
   regDate,
 }: StudentAssignmentContentProps) => {
   const parsedContent = parseEditorContent(content);
@@ -19,7 +23,13 @@ export const StudentHomeworkContent = ({
   return (
     <div className="border-line-line1 flex flex-col gap-5 rounded-xl border bg-white p-10">
       <div className="flex items-center gap-3">
-        <div className="bg-gray-scale-gray-10 h-10 w-10 rounded-full" />
+        <Image
+          src={profileImageUrl || '/character/img_profile_student01.png'}
+          width={40}
+          height={40}
+          alt={`${authorName} 프로필`}
+          className="h-10 w-10 rounded-full object-cover"
+        />
         <span className="font-body2-heading">{authorName}</span>
       </div>
 

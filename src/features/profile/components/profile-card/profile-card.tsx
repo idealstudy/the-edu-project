@@ -20,6 +20,10 @@ export default function ProfileCard({
   memberId?: number;
 }) {
   const { data: profileImageData } = useProfileImage();
+  const profileImageUrl =
+    basicInfo.profileImageUrl ||
+    profileImageData?.imageUrl ||
+    '/character/img_signup_type01.png';
 
   let profileExtra;
 
@@ -60,11 +64,7 @@ export default function ProfileCard({
       </div>
 
       <Image
-        src={
-          profileImageData?.imageUrl
-            ? profileImageData.imageUrl
-            : '/character/img_signup_type01.png'
-        }
+        src={profileImageUrl}
         width={280}
         height={280}
         alt={`${basicInfo.name}님의 프로필 이미지`}

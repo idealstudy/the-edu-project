@@ -10,6 +10,7 @@ const ProfileRoleSchema = z.enum([
 const TeacherProfileSchema = z.object({
   name: z.string(),
   email: z.string().email(),
+  profileImageUrl: z.string().nullable(),
   desc: z.string(),
   teacherNoteCount: z.number().int(),
   studentCount: z.number().int(),
@@ -19,12 +20,14 @@ const TeacherProfileSchema = z.object({
 const StudentProfileSchema = z.object({
   name: z.string(),
   email: z.string().email(),
+  profileImageUrl: z.string().nullable(),
   desc: z.string(),
 });
 
 const ParentProfileSchema = z.object({
   name: z.string(),
   email: z.string().email(),
+  profileImageUrl: z.string().nullable(),
 });
 
 export const base = {

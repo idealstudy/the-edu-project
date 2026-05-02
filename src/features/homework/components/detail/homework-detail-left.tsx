@@ -50,6 +50,7 @@ export const HomeworkDetailLeft = ({
     ? homeworkStudents.map((student) => ({
         id: student.studentId,
         name: student.studentName,
+        profileImageUrl: student.studentProfileImageUrl,
         readAt: student.readAt,
       }))
     : studentData
@@ -57,11 +58,14 @@ export const HomeworkDetailLeft = ({
           {
             id: studentData.myHomeworkStudent.id,
             name: studentData.myHomeworkStudent.studentName,
+            profileImageUrl:
+              studentData.myHomeworkStudent.studentProfileImageUrl,
             readAt: studentData.myHomeworkStudent.readAt,
           },
           ...studentData.otherHomeworkStudents.map((student, index) => ({
             id: index,
             name: student.studentName,
+            profileImageUrl: student.studentProfileImageUrl,
             readAt: student.readAt,
           })),
         ]
@@ -230,10 +234,20 @@ export const HomeworkDetailLeft = ({
                   {assignmentTargets.map((student) => (
                     <li
                       key={student.id}
-                      className="flex justify-between"
+                      className="flex items-center justify-between gap-3"
                     >
-                      <span className="justify-self-center text-center">
-                        {student.name}
+                      <span className="flex min-w-0 items-center gap-2">
+                        <Image
+                          src={
+                            student.profileImageUrl ||
+                            '/character/img_profile_student01.png'
+                          }
+                          width={24}
+                          height={24}
+                          alt={`${student.name} 프로필`}
+                          className="h-6 w-6 rounded-full object-cover"
+                        />
+                        <span className="truncate">{student.name}</span>
                       </span>
                       {student.readAt ? (
                         <Check

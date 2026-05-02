@@ -17,6 +17,7 @@ const CommentAuthorInfoDtoSchema = z.object({
   id: z.number().int().nonnegative(),
   role: memberDto.role,
   name: z.string(),
+  profileImageUrl: z.string().nullable(),
 });
 
 /* ─────────────────────────────────────────────────────

@@ -60,7 +60,8 @@ export const getCommentProfileImageSrc = (role?: Role): string => {
 const toCommentAuthorInfo = (authorInfo: z.infer<typeof dto.authorInfo>) => ({
   ...authorInfo,
   roleLabel: getCommentRoleLabel(authorInfo.role),
-  profileImageSrc: ROLE_META[authorInfo.role].profileImageSrc,
+  profileImageSrc:
+    authorInfo.profileImageUrl || ROLE_META[authorInfo.role].profileImageSrc,
   isStudent: ROLE_META[authorInfo.role].isStudent,
 });
 

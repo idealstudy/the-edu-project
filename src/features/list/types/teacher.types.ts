@@ -3,7 +3,7 @@ export interface PublicTeacherProfile {
   id: number;
   name: string;
   nickname?: string;
-  profileImageUrl?: string;
+  profileImageUrl: string | null;
   bio?: string;
   specialties?: string[]; // 과목, 학년 등
   experience?: string;

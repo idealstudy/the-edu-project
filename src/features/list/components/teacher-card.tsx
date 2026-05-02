@@ -49,7 +49,7 @@ export const TeacherCard = ({
         <div className="relative h-full w-full overflow-hidden rounded-full">
           <Image
             src={
-              teacher.profileImageUrl ??
+              teacher.profileImageUrl ||
               `/character/img_profile_teacher0${teacherImg}.png`
             }
             alt={teacher.name}

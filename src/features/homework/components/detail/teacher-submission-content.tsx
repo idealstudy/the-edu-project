@@ -14,6 +14,7 @@ type Props = {
   homeworkStudentId: number;
   content: string;
   authorName: string;
+  profileImageUrl: string | null;
   regDate: string;
   submitStatus: HomeworkSubmitStatus;
   homeworkId: number;
@@ -25,6 +26,7 @@ export const TeacherHomeworkSubmissionContent = ({
   homeworkStudentId,
   content,
   authorName,
+  profileImageUrl,
   regDate,
   submitStatus,
   homeworkId,
@@ -39,7 +41,13 @@ export const TeacherHomeworkSubmissionContent = ({
       <div className="border-line-line1 flex flex-col gap-5 rounded-xl border bg-white p-10">
         <div className="flex justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-gray-100" />
+            <Image
+              src={profileImageUrl || '/character/img_profile_student01.png'}
+              width={40}
+              height={40}
+              alt={`${authorName} 프로필`}
+              className="h-10 w-10 rounded-full object-cover"
+            />
             <span className="font-body2-heading">{authorName}</span>
 
             <span className="rounded-full border px-3 py-1 text-xs">

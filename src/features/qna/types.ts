@@ -48,6 +48,7 @@ export interface QnAMessage {
   content: string;
   authorType: Role;
   authorName: string;
+  authorProfileImageUrl: string | null;
   regDate: string;
 }
 

@@ -70,6 +70,7 @@ export const TeacherHomeworkDetail = ({
                   '-'
                 }
                 authorName={student.studentName ?? '-'}
+                profileImageUrl={student.studentProfileImageUrl}
                 regDate={student.submission.modifiedSubmissionAt ?? '-'}
                 submitStatus={student.status}
                 homeworkId={homeworkId}

@@ -119,6 +119,7 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
             resolvedContent?: { content: string };
             regDate: string;
             authorName: string;
+            authorProfileImageUrl: string | null;
           }) => {
             if (msg.authorType === 'ROLE_TEACHER')
               return (
@@ -127,6 +128,8 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
                   id={Number(msg.id)}
                   content={msg.resolvedContent?.content || msg.content}
                   rawContent={msg.content}
+                  authorName={msg.authorName}
+                  authorProfileImageUrl={msg.authorProfileImageUrl}
                   regDate={msg.regDate}
                   studyRoomId={studyRoomId}
                   contextId={contextId}
@@ -141,6 +144,7 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
                   content={msg.resolvedContent?.content || msg.content}
                   rawContent={msg.content}
                   authorName={msg.authorName}
+                  authorProfileImageUrl={msg.authorProfileImageUrl}
                   regDate={msg.regDate}
                   studyRoomId={studyRoomId}
                   contextId={contextId}

@@ -71,6 +71,7 @@ const RoomMemberItemSchema = z.object({
     id: z.number().int(),
     name: z.string(),
     email: z.string(),
+    profileImageUrl: z.string().nullable(),
     joinDate: z.string(),
   }),
   parentInfo: z.object({
@@ -78,6 +79,7 @@ const RoomMemberItemSchema = z.object({
     id: z.number().int(),
     name: z.string(),
     email: z.string(),
+    profileImageUrl: z.string().nullable(),
     joinDate: z.string(),
   }),
 });
