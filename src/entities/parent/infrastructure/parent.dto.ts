@@ -1,5 +1,30 @@
 import { z } from 'zod';
 
+const NullableProfileImageUrlSchema = z
+  .string()
+  .nullable()
+  .optional()
+  .transform((value) => value ?? null);
+
+/* ─────────────────────────────────────────────────────
+ * 부모님 기본 정보 DTO
+ * ──────────────────────────────────────────────────── */
+const BasicInfoDtoSchema = z.object({
+  name: z.string(),
+  email: z.string(),
+  profileImageUrl: NullableProfileImageUrlSchema,
+  isProfilePublic: z.boolean(),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 부모님 기본 정보 Payload
+ * UPDATE
+ * ──────────────────────────────────────────────────── */
+const UpdateBasicInfoPayloadSchema = z.object({
+  name: z.string(),
+  isProfilePublic: z.boolean(),
+});
+
 /* ─────────────────────────────────────────────────────
  * 부모님 대시보드 학생 별 스터디룸 목록 조회
  * ────────────────────────────────────────────────────*/
@@ -132,6 +157,9 @@ const ParentDashboardInquiryListDtoSchema = z.object({
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const dto = {
+  mypage: {
+    basicInfo: BasicInfoDtoSchema,
+  },
   dashboard: {
     report: ParentDashboardReportDtoSchema,
     connectedStudentList: ParentDashboardConnectedStudentListDtoSchema,
@@ -140,4 +168,8 @@ export const dto = {
     studyRoomPreviewList: ParentDashboardStudyRoomPreviewListDtoSchema,
     inquiryList: ParentDashboardInquiryListDtoSchema,
   },
+};
+
+export const payload = {
+  updateBasicInfo: UpdateBasicInfoPayloadSchema,
 };

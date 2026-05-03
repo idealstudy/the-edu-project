@@ -4,6 +4,7 @@ import {
   connectionKeys,
   repository,
 } from '@/entities/connect';
+import { parentKeys } from '@/entities/parent';
 import {
   QueryClient,
   useMutation,
@@ -41,6 +42,7 @@ export const useSearchConnectionMembers = (
     queryKey: connectionKeys.search(query),
     queryFn: () => repository.connect.searchConnectionMembers(query),
     enabled: options?.enabled ?? query.keyword.trim().length > 0,
+    retry: false,
   });
 
 // 공통 mutation onSuccess
@@ -49,6 +51,14 @@ const invalidateConnectionQueries = (queryClient: QueryClient) => {
   queryClient.invalidateQueries({ queryKey: connectionKeys.sentLists() });
   queryClient.invalidateQueries({ queryKey: connectionKeys.receivedLists() });
   queryClient.invalidateQueries({ queryKey: connectionKeys.searches() });
+
+  queryClient.invalidateQueries({
+    queryKey: parentKeys.dashboard.connectedStudentList(),
+  });
+
+  queryClient.invalidateQueries({
+    queryKey: parentKeys.dashboard.report(),
+  });
 };
 
 // 연결 요청

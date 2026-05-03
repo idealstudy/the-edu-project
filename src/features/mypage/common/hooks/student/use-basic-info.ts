@@ -1,8 +1,10 @@
+import { memberKeys } from '@/entities/member';
 import {
   UpdateStudentBasicInfoPayload,
   repository,
   studentKeys,
 } from '@/entities/student';
+import { useMemberStore } from '@/store';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 /**
@@ -26,9 +28,20 @@ export const useUpdateStudentBasicInfo = () => {
   return useMutation({
     mutationFn: (basicInfo: UpdateStudentBasicInfoPayload) =>
       repository.mypage.basicInfo.updateBasicInfo(basicInfo),
-    onSuccess: () => {
+    onSuccess: (_, basicInfo) => {
+      const { member, setMember } = useMemberStore.getState();
+
+      if (member) {
+        setMember({
+          ...member,
+          name: basicInfo.name,
+        });
+      }
       queryClient.invalidateQueries({
         queryKey: studentKeys.mypage.basicInfo(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: memberKeys.info(),
       });
     },
   });

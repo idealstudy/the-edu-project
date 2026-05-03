@@ -31,6 +31,7 @@ const HomeworkDeadlineLabelSchema = z.enum(['UPCOMING', 'TODAY', 'OVERDUE']);
  * ────────────────────────────────────────────────────*/
 const ResolvedEditorContentSchema = z.object({
   content: z.string(),
+  expiresAt: z.string().nullable().optional(),
 });
 
 const OptionalResolvedEditorContentSchema =
@@ -136,6 +137,10 @@ const MyHomeworkStudentSchema = z.object({
   feedback: OptionalHomeworkFeedbackSchema,
 });
 
+const ParentHomeworkStudentSchema = MyHomeworkStudentSchema.extend({
+  studentId: z.number().int(),
+});
+
 const OtherHomeworkStudentSchema = z.object({
   studentName: z.string(),
   studentProfileImageUrl: NullableProfileImageUrlSchema,
@@ -149,6 +154,14 @@ const StudentHomeworkDetailDataSchema = z.object({
   homework: HomeworkDetailSchema,
   myHomeworkStudent: MyHomeworkStudentSchema,
   otherHomeworkStudents: z.array(OtherHomeworkStudentSchema),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 보호자 - 응답 DTO
+ * ────────────────────────────────────────────────────*/
+const ParentHomeworkDetailDataSchema = z.object({
+  homework: HomeworkDetailSchema,
+  myHomeworkStudent: ParentHomeworkStudentSchema,
 });
 
 /* ─────────────────────────────────────────────────────
@@ -193,6 +206,11 @@ const student = {
   otherHomeworkStudent: OtherHomeworkStudentSchema,
 };
 
+const parent = {
+  detail: ParentHomeworkDetailDataSchema,
+  myHomeworkStudent: ParentHomeworkStudentSchema,
+};
+
 const common = {
   resolvedContent: ResolvedEditorContentSchema,
   submission: HomeworkSubmissionSchema,
@@ -211,6 +229,7 @@ const enums = {
 export const dto = {
   teacher,
   student,
+  parent,
   common,
   enums,
 };

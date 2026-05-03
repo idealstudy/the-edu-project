@@ -6,9 +6,9 @@ import { useMemberStore } from '@/store';
 import { useReceivedConnectionList } from '../../connect/hooks/use-connection';
 import { useOnboardingStatus } from '../../hooks/use-onboarding-status';
 import DashboardHeader from '../header';
+import CalendarSection from '../section/calendar-section';
 import QnASection from '../section/qna-section';
 import StudentTabSection from '../section/student-tab-section';
-import StudyroomSection from '../section/studyroom-section';
 import { ConfirmParentRequestDialog } from './confirm-dialog';
 import StudentOnboarding from './student-onboarding';
 
@@ -34,12 +34,12 @@ export const DashboardStudent = () => {
   const { data: receivedData } = useReceivedConnectionList(query);
   const receivedParentRequest = useMemo(
     () =>
-      receivedData?.contentList.find(
+      receivedData?.connectionList.find(
         (connection) =>
           connection.state === 'PENDING' &&
           connection.recipientEmail === memberEmail
       ) ?? null,
-    [memberEmail, receivedData?.contentList]
+    [memberEmail, receivedData?.connectionList]
   );
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export const DashboardStudent = () => {
         {!studentStepsCompleted && <StudentOnboarding />}
         <div className="tablet:gap-25 flex w-full flex-col gap-8">
           <QnASection />
-          <StudyroomSection />
+          <CalendarSection />
           <StudentTabSection />
         </div>
       </main>
