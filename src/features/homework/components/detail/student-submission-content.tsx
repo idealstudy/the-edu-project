@@ -15,6 +15,7 @@ import {
 } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
+import { DEFAULT_PROFILE_IMAGE, getProfileImageSrc } from '@/shared/constants';
 import { classifyHomeworkError, handleApiError } from '@/shared/lib/errors';
 import { getRelativeTimeString } from '@/shared/lib/utils';
 import { JSONContent } from '@tiptap/react';
@@ -168,7 +169,10 @@ export const StudentSubmissionContent = ({
         <div className="flex justify-between">
           <div className="flex items-center gap-3">
             <Image
-              src={profileImageUrl || '/character/img_profile_student01.png'}
+              src={getProfileImageSrc(
+                profileImageUrl,
+                DEFAULT_PROFILE_IMAGE.STUDENT
+              )}
               width={40}
               height={40}
               alt={`${authorName} 프로필`}

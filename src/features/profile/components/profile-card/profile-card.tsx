@@ -6,6 +6,7 @@ import { UserBasicInfo } from '@/entities/member/types';
 import { FrontendTeacherReport } from '@/entities/teacher';
 import StudentProfileExtra from '@/features/profile/components/profile-card/student-profile-extra';
 import TeacherProfileExtra from '@/features/profile/components/profile-card/teacher-profile-extra';
+import { DEFAULT_PROFILE_IMAGE, getProfileImageSrc } from '@/shared/constants';
 
 import ParentProfileExtra from './parent-profile-extra';
 
@@ -20,8 +21,10 @@ export default function ProfileCard({
   action?: React.ReactNode;
   memberId?: number;
 }) {
-  const profileImageUrl =
-    basicInfo.profileImageUrl || '/character/img_signup_type01.png';
+  const profileImageUrl = getProfileImageSrc(
+    basicInfo.profileImageUrl,
+    DEFAULT_PROFILE_IMAGE.COMMON
+  );
 
   let profileExtra;
 

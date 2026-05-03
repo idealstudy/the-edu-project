@@ -8,6 +8,7 @@ import { useStudentHomeworkDetail } from '@/features/homework/hooks/student/useS
 import { ColumnLayout } from '@/layout/column-layout';
 import { DialogAction, DialogState } from '@/shared/components/dialog';
 import { MiniSpinner } from '@/shared/components/loading';
+import { DEFAULT_PROFILE_IMAGE } from '@/shared/constants';
 
 import { FeedbackAnswer } from '../write/components/homework-feedback-answer';
 import { WriteFormArea } from '../write/components/homework-write-form-area';
@@ -96,7 +97,7 @@ export const StudentHomeworkDetail = ({
             }
             authorName={data.homework.teacherName ?? '-'}
             profileImageUrl={data.homework.teacherProfileImageUrl}
-            defaultProfileImageUrl="/character/img_profile_teacher01.png"
+            defaultProfileImageUrl={DEFAULT_PROFILE_IMAGE.TEACHER}
             authorSuffix="선생님"
             regDate={data.homework.modifiedAt ?? '-'}
           />

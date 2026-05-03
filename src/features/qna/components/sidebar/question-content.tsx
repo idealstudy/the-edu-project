@@ -19,6 +19,7 @@ import {
 } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
+import { DEFAULT_PROFILE_IMAGE, getProfileImageSrc } from '@/shared/constants';
 import { useRole } from '@/shared/hooks/use-role';
 import { classifyQnaError, handleApiError } from '@/shared/lib/errors';
 import { getRelativeTimeString } from '@/shared/lib/utils';
@@ -241,9 +242,10 @@ const QuestionContent = ({
         <div className="flex flex-row justify-between">
           <div className="flex flex-row items-center gap-3">
             <Image
-              src={
-                authorProfileImageUrl || '/character/img_profile_student01.png'
-              }
+              src={getProfileImageSrc(
+                authorProfileImageUrl,
+                DEFAULT_PROFILE_IMAGE.STUDENT
+              )}
               width={40}
               height={40}
               alt={`${authorName} 프로필`}

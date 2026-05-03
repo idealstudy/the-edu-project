@@ -6,6 +6,7 @@ import { HOMEWORK_SUBMIT_STATUS_LABEL } from '@/entities/homework/core';
 import type { HomeworkSubmitStatus } from '@/entities/homework/types';
 import { TextViewer, parseEditorContent } from '@/shared/components/editor';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
+import { DEFAULT_PROFILE_IMAGE, getProfileImageSrc } from '@/shared/constants';
 import { getRelativeTimeString } from '@/shared/lib/utils';
 
 import { FeedbackFormProvider } from '../write/components/feedback-form-provider';
@@ -42,7 +43,10 @@ export const TeacherHomeworkSubmissionContent = ({
         <div className="flex justify-between">
           <div className="flex items-center gap-3">
             <Image
-              src={profileImageUrl || '/character/img_profile_student01.png'}
+              src={getProfileImageSrc(
+                profileImageUrl,
+                DEFAULT_PROFILE_IMAGE.STUDENT
+              )}
               width={40}
               height={40}
               alt={`${authorName} 프로필`}

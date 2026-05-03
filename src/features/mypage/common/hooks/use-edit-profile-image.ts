@@ -1,6 +1,7 @@
 import { ChangeEvent, RefObject, useEffect, useRef, useState } from 'react';
 
 import { getCroppedImage } from '@/shared/components/image-crop';
+import { DEFAULT_PROFILE_IMAGE, getProfileImageSrc } from '@/shared/constants';
 
 type CroppedAreaPixels = {
   x: number;
@@ -40,7 +41,6 @@ interface UseEditProfileImageResult {
   zoom: number;
 }
 
-const DEFAULT_PROFILE_IMAGE_URL = '/character/img_signup_type01.png';
 const INITIAL_CROP = { x: 0, y: 0 };
 const INITIAL_ZOOM = 1;
 
@@ -146,7 +146,10 @@ export function useEditProfileImage({
     imageFile,
     isCropperClicked,
     openModal,
-    profileImageUrl: imageUrl || serverImageUrl || DEFAULT_PROFILE_IMAGE_URL,
+    profileImageUrl: getProfileImageSrc(
+      imageUrl || serverImageUrl,
+      DEFAULT_PROFILE_IMAGE.COMMON
+    ),
     selectedImageId,
     setCrop,
     setCroppedAreaPixels,
