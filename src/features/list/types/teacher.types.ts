@@ -32,7 +32,7 @@ export interface PublicStudyRoom {
   description: string;
   teacherId: number;
   teacherName: string;
-  teacherProfileImageUrl?: string;
+  teacherProfileImageUrl?: string | null;
   thumbnailUrl?: string | null;
   subjectType?: keyof typeof SUBJECT_TO_KOREAN;
   modality?: keyof typeof MODALITY_TO_KOREAN;
