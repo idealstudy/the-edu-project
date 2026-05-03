@@ -70,6 +70,7 @@ const HomeworkListItemBaseSchema = z.object({
 const HomeworkDetailSchema = z.object({
   id: z.number().int(),
   teacherName: z.string(),
+  teacherProfileImageUrl: NullableProfileImageUrlSchema,
   title: z.string(),
   content: z.string(),
   resolvedContent: OptionalResolvedEditorContentSchema,

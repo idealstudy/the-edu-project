@@ -35,8 +35,6 @@ type Props = {
   id: number;
   content: string;
   rawContent?: string;
-  authorName: string;
-  authorProfileImageUrl: string | null;
   regDate: string;
   studyRoomId: number;
   contextId: number;
@@ -47,8 +45,6 @@ const QuestionAnswer = ({
   id,
   content,
   rawContent,
-  authorName,
-  authorProfileImageUrl,
   regDate,
   studyRoomId,
   contextId,
@@ -220,17 +216,12 @@ const QuestionAnswer = ({
         <div className="flex flex-row justify-between">
           <div className="flex flex-row items-center gap-3">
             <Image
-              src={
-                authorProfileImageUrl || '/character/img_profile_teacher01.png'
-              }
-              width={40}
-              height={40}
-              alt={`${authorName} 프로필`}
-              className="h-10 w-10 rounded-full object-cover"
+              src="/qna/reply.svg"
+              width={56}
+              height={24}
+              alt="reply icon"
             />
-            <span className="font-body2-heading">
-              {authorName || '선생님 답글'}
-            </span>
+            <span className="font-body2-heading">선생님 답글</span>
           </div>
           {role === 'ROLE_TEACHER' && (
             <DropdownMenu

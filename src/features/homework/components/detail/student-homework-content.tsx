@@ -7,6 +7,8 @@ type StudentAssignmentContentProps = {
   content: string;
   authorName: string;
   profileImageUrl?: string | null;
+  defaultProfileImageUrl?: string;
+  authorSuffix?: string;
   regDate: string;
 };
 
@@ -16,6 +18,8 @@ export const StudentHomeworkContent = ({
   content,
   authorName,
   profileImageUrl,
+  defaultProfileImageUrl = '/character/img_profile_student01.png',
+  authorSuffix,
   regDate,
 }: StudentAssignmentContentProps) => {
   const parsedContent = parseEditorContent(content);
@@ -24,13 +28,15 @@ export const StudentHomeworkContent = ({
     <div className="border-line-line1 flex flex-col gap-5 rounded-xl border bg-white p-10">
       <div className="flex items-center gap-3">
         <Image
-          src={profileImageUrl || '/character/img_profile_student01.png'}
+          src={profileImageUrl || defaultProfileImageUrl}
           width={40}
           height={40}
           alt={`${authorName} 프로필`}
           className="h-10 w-10 rounded-full object-cover"
         />
-        <span className="font-body2-heading">{authorName}</span>
+        <span className="font-body2-heading">
+          {authorSuffix ? `${authorName} ${authorSuffix}` : authorName}
+        </span>
       </div>
 
       <TextViewer value={parsedContent} />

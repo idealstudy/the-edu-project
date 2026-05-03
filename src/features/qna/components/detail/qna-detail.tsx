@@ -128,8 +128,6 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
                   id={Number(msg.id)}
                   content={msg.resolvedContent?.content || msg.content}
                   rawContent={msg.content}
-                  authorName={msg.authorName}
-                  authorProfileImageUrl={msg.authorProfileImageUrl}
                   regDate={msg.regDate}
                   studyRoomId={studyRoomId}
                   contextId={contextId}

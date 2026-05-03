@@ -95,6 +95,9 @@ export const StudentHomeworkDetail = ({
               '-'
             }
             authorName={data.homework.teacherName ?? '-'}
+            profileImageUrl={data.homework.teacherProfileImageUrl}
+            defaultProfileImageUrl="/character/img_profile_teacher01.png"
+            authorSuffix="선생님"
             regDate={data.homework.modifiedAt ?? '-'}
           />
         )}

@@ -49,6 +49,8 @@ export const TeacherHomeworkDetail = ({
             ''
           }
           authorName={data.homework.teacherName ?? '-'}
+          authorSuffix="선생님"
+          profileImageUrl={data.homework.teacherProfileImageUrl}
           regDate={data.homework.modifiedAt ?? '-'}
         />
 
