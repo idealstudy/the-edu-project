@@ -4,7 +4,6 @@ import Image from 'next/image';
 
 import { UserBasicInfo } from '@/entities/member/types';
 import { FrontendTeacherReport } from '@/entities/teacher';
-import { useProfileImage } from '@/features/profile-image/hooks/use-profile-image';
 import StudentProfileExtra from '@/features/profile/components/profile-card/student-profile-extra';
 import TeacherProfileExtra from '@/features/profile/components/profile-card/teacher-profile-extra';
 
@@ -19,11 +18,8 @@ export default function ProfileCard({
   action?: React.ReactNode;
   memberId?: number;
 }) {
-  const { data: profileImageData } = useProfileImage();
   const profileImageUrl =
-    basicInfo.profileImageUrl ||
-    profileImageData?.imageUrl ||
-    '/character/img_signup_type01.png';
+    basicInfo.profileImageUrl || '/character/img_signup_type01.png';
 
   let profileExtra;
 
