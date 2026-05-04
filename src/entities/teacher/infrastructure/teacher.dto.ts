@@ -5,7 +5,7 @@ import { z } from 'zod';
  * ────────────────────────────────────────────────────*/
 const BasicInfoDtoSchema = z.object({
   name: z.string(),
-  email: z.string(),
+  email: z.string().nullable(),
   isProfilePublic: z.boolean(),
   simpleIntroduction: z.string().nullable(),
 });
