@@ -1,20 +1,21 @@
 ---
 feature: 챌린지식-풀이
-version: v1.0
+version: v1.1
 status: drafted
 updated: 2026-05-21
 related_wiki_concept: "[[wiki/concepts/챌린지식-풀이]]"
 related_backend_frd: "[[mvp-back:docs/frd/챌린지식-풀이/spec]]"
-related_adr: [ADR-0004, ADR-0005]
+related_adr: [ADR-0004, ADR-0005, ADR-0009]
 ---
 
-# 챌린지식 풀이 — Frontend FRD
+# 챌린지식 풀이 — Frontend FRD (v1.1)
 
 ## 변경 이력
 
 | 버전 | 날짜 | 내용 |
 |---|---|---|
 | v1.0 | 2026-05-21 | 최초 작성 (Spec-Driven Dev 변형 8 sections) |
+| **v1.1** | **2026-05-21** | 1차 MVP 핵심 채널 격상 + hint 트리거가 v2 대화형 위임 (`features/qna-ai-conversation`)으로 변경 (ADR-0009) |
 
 ---
 
