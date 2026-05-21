@@ -65,14 +65,17 @@ Backend FRD와 동일 구조. 한 기능 = 한 폴더.
 ```yaml
 ---
 feature: 사고력-답변구조
-version: v1.0
-status: drafted          # drafted | active | superseded | archived
+version: v0.1                    # Notion 페이지와 1:1 매칭 (ADR-0010)
+notion_version: v0.1
+status: drafted                  # drafted | active | superseded | archived
 updated: 2026-05-21
 related_wiki_concept: "[[wiki/concepts/사고력-답변구조]]"
 related_backend_frd: "[[mvp-back:docs/frd/사고력-답변구조/spec]]"
-related_adr: [ADR-0005]
+related_adr: [ADR-0005, ADR-0010]
 ---
 ```
+
+> 버전 통일: Notion 페이지와 1:1 매칭 (ADR-0010). breaking/minor는 CHANGELOG 표기.
 
 ---
 
