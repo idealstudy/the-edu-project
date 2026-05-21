@@ -10,7 +10,7 @@
   - 1차 MVP 핵심 채널로 격상 (비로그인 학생 유입)
   - 풀이 화면 hint 사이드 패널이 위임하는 features 변경: `qna-ai-hint` (v0.1) → `qna-ai-conversation` (v0.2)
   - `widgets/hint-side-panel` → `widgets/conversation-thread` 재사용
-- **Archived spec**: 없음 (Minor, git history)
+- **Archived spec**: [archive/spec-v0.1-2026-05-21.md](archive/spec-v0.1-2026-05-21.md) — Minor 변경이지만 사용자 의도 "v0.1·v0.2 모두 보이게"에 따라 명시적 보관
 - **PR**: #294
 
 ---
