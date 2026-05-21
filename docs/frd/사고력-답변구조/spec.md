@@ -34,13 +34,13 @@ related_adr: [ADR-0004, ADR-0005, ADR-0009, ADR-0010]
 |---|---|
 | **Student** | 챌린지 문제에서 막힘 → "AI 코치 시작" 클릭 → AI 질문 표시 → 학생 답변 입력 → AI 반응 + 다음 질문 → multi-turn 반복 → 학생이 후보 중 답 선택 |
 | **Student** | 대화 종료 시 만족도 모달 (5점 + 자유 의견 옵션) → 제출 또는 skip |
-| **Student** | `/student/me/context` → "어려운 부분" 자유 텍스트 입력 (강점·취약점 필드는 v1 호환 read-only 표시) |
+| **Student** | `/student/me/context` → "어려운 부분" 자유 텍스트 입력 (강점·취약점 필드는 v0.1 호환 read-only 표시) |
 | **Teacher** | `/teacher/studyrooms/{id}/ai-inbox` → 학생 대화 로그 + 학생이 선택한 답 + 만족도 점수 확인 |
 | **Teacher** | 메시지 단위 인라인 피드백 (그대로 유지) |
 
 ## 3. Data Contract
 
-Backend FRD v2.0 §2 API 매칭. v1 API는 deprecated.
+Backend FRD v0.2 §2 API 매칭. v1 API는 deprecated.
 
 | Method | Path | Request | Response 핵심 |
 |---|---|---|---|
@@ -55,11 +55,11 @@ Backend FRD v2.0 §2 API 매칭. v1 API는 deprecated.
 ## 4. FSD Mapping
 
 ### Features (신규/변경)
-- `features/qna-ai-hint` → **deprecated** (v1 호환 path만)
+- `features/qna-ai-hint` → **deprecated** (v0.1 호환 path만)
 - `features/qna-ai-conversation` **신규** — "AI 코치 시작" + multi-turn 대화 thread + 입력 폼
 - `features/qna-answer-selection` **신규** — AI suggestedAnswers 또는 자유 입력으로 학생 직접 답 선택
 - `features/ai-satisfaction-rating` **신규** — 5점 + 자유 의견 모달 (대화 종료 시 자동 노출, skip 가능)
-- `features/student-context-form` — `difficulties` 필드로 변경, `strengths`·`weaknesses` 는 v1 호환 read-only
+- `features/student-context-form` — `difficulties` 필드로 변경, `strengths`·`weaknesses` 는 v0.1 호환 read-only
 
 ### Widgets (신규/변경)
 - `widgets/hint-step-card` → **deprecated**
@@ -84,7 +84,7 @@ Backend FRD v2.0 §2 API 매칭. v1 API는 deprecated.
 | 대화 turn 한도 초과 (10턴) | "충분히 생각했어요" UI + 강제 답 선택 유도 |
 | 학생이 답 선택 안 하고 이탈 | TanStack `keepPreviousData` + 다음 진입 시 대화 이어보기 |
 | 만족도 모달 skip | aiStatus 그대로 (RESOLVED), 만족도 NULL |
-| v1 학생 (강점·취약점 기존 입력) | 폼 read-only로 표시 + "어려운 부분으로 업데이트하세요" 안내 |
+| v0.1 학생 (강점·취약점 기존 입력) | 폼 read-only로 표시 + "어려운 부분으로 업데이트하세요" 안내 |
 | **defer**: 스트리밍 응답 | 2차 MVP |
 | **defer**: 대화 thread 검색 | v2.1 |
 | **defer**: AI 답변 거부/신고 | v3 |
@@ -111,10 +111,10 @@ Funnel: 챌린지 막힘 → AI 코치 시작 → turn 1·2·3 → 답 선택 �
 
 ## 7. Related Specs
 
-- Backend FRD v2.0: [[mvp-back:docs/frd/사고력-답변구조/spec]]
-- Wiki concept v2: [[wiki/concepts/사고력-답변구조-v2]]
-- v1 archive (참고): [[mvp-front:docs/frd/사고력-답변구조/archive/spec-v1.0-2026-05-21]]
-- ADR: [[ADR-0009]] v2 전환, [[ADR-0005]] versioning
+- Backend FRD v0.2: [[mvp-back:docs/frd/사고력-답변구조/spec]]
+- Wiki concept v0.2: [[wiki/concepts/사고력-답변구조-v0.2]]
+- v0.1 archive (참고): [[mvp-front:docs/frd/사고력-답변구조/archive/spec-v0.1-2026-05-21]]
+- ADR: [[ADR-0009]] v0.2 전환, [[ADR-0005]] versioning
 - Figma: TBD (1차 MVP 디자인 시점 — Tiptap 자유 답변 입력 활용 검토)
 - E2E spec path: `mvp-front/tests/e2e/qna-ai-conversation.spec.ts` (작성 예정)
 
@@ -125,4 +125,4 @@ Funnel: 챌린지 막힘 → AI 코치 시작 → turn 1·2·3 → 답 선택 �
 | 대화 turn 10턴 초과 시 강제 답 선택 vs 추가 턴 허용? | 학생 자율성 vs 토큰 비용 |
 | suggestedAnswers 후보 노출 시점 (모든 turn vs 마지막 3턴) | 사고 유도 vs UX 마찰 |
 | 만족도 모달 노출 정책 (자동 노출 vs 명시 클릭) | 응답률 vs 학생 부담 |
-| v1 학생 컨텍스트 (강점·취약점) 마이그레이션 UX | 자동 이관 vs 학생 직접 재입력 유도 |
+| v0.1 학생 컨텍스트 (강점·취약점) 마이그레이션 UX | 자동 이관 vs 학생 직접 재입력 유도 |

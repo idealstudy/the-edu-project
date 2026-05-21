@@ -1,6 +1,6 @@
 ---
 feature: 사고력-답변구조
-version: v1.0
+version: v0.1
 status: drafted
 updated: 2026-05-21
 related_wiki_concept: "[[wiki/concepts/사고력-답변구조]]"
@@ -14,7 +14,7 @@ related_adr: [ADR-0004, ADR-0005]
 
 | 버전 | 날짜 | 내용 |
 |---|---|---|
-| v1.0 | 2026-05-21 | 최초 작성 (Spec-Driven Dev 변형 8 sections) |
+| v0.1 | 2026-05-21 | 최초 작성 (Spec-Driven Dev 변형 8 sections) |
 
 ---
 

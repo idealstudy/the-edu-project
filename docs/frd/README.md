@@ -18,7 +18,7 @@ mvp-front/docs/frd/
 ├── README.md              # ← 이 파일
 ├── <기능 슬러그>/
 │   ├── spec.md            # 8 sections, 60~100줄
-│   └── archive/           # versioning 시 v1.x 보관 (.gitkeep)
+│   └── archive/           # versioning 시 v0.X 보관 (.gitkeep)
 └── (다음 기능 폴더)
 ```
 
@@ -30,8 +30,8 @@ Backend FRD와 동일 구조. 한 기능 = 한 폴더.
 
 | 기능 | Frontend FRD | Backend FRD | wiki concept | 상태 | 버전 |
 |---|---|---|---|---|---|
-| 사고력 답변구조 | [사고력-답변구조/spec.md](사고력-답변구조/spec.md) | [[mvp-back:docs/frd/사고력-답변구조/spec]] | [[wiki/concepts/사고력-답변구조]] | drafted | v1.0 |
-| 챌린지식 풀이 | [챌린지식-풀이/spec.md](챌린지식-풀이/spec.md) | [[mvp-back:docs/frd/챌린지식-풀이/spec]] | [[wiki/concepts/챌린지식-풀이]] | drafted | v1.0 |
+| 사고력 답변구조 | [사고력-답변구조/spec.md](사고력-답변구조/spec.md) | [[mvp-back:docs/frd/사고력-답변구조/spec]] | [[wiki/concepts/사고력-답변구조]] | drafted | v0.1 |
+| 챌린지식 풀이 | [챌린지식-풀이/spec.md](챌린지식-풀이/spec.md) | [[mvp-back:docs/frd/챌린지식-풀이/spec]] | [[wiki/concepts/챌린지식-풀이]] | drafted | v0.1 |
 
 ---
 
@@ -83,9 +83,9 @@ related_adr: [ADR-0005, ADR-0010]
 
 | 시나리오 | 절차 |
 |---|---|
-| **v1.0 → v1.1** (소소한 수정) | spec.md overwrite + frontmatter version 증가 + 변경 이력 표 한 줄 |
-| **v1.x → v2.0** (breaking) | 새 ADR + archive/spec-v1.x-YYYY-MM-DD.md mv + 새 spec.md |
-| **v2.0 신규 서비스** | 별도 기능 폴더, 양쪽 ACTIVE 동시 |
+| **v0.1 → v0.2** (소소한 수정) | spec.md overwrite + frontmatter version 증가 + 변경 이력 표 한 줄 |
+| **v0.X → v0.2** (breaking) | 새 ADR + archive/spec-v0.X-YYYY-MM-DD.md mv + 새 spec.md |
+| **v0.2 신규 서비스** | 별도 기능 폴더, 양쪽 ACTIVE 동시 |
 
 ---
 
