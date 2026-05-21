@@ -1,21 +1,26 @@
 ---
 feature: 챌린지식-풀이
-version: v1.1
+version: v0.2
 status: drafted
 updated: 2026-05-21
+notion_version: v0.2
 related_wiki_concept: "[[wiki/concepts/챌린지식-풀이]]"
 related_backend_frd: "[[mvp-back:docs/frd/챌린지식-풀이/spec]]"
-related_adr: [ADR-0004, ADR-0005, ADR-0009]
+related_adr: [ADR-0004, ADR-0005, ADR-0009, ADR-0010]
 ---
 
-# 챌린지식 풀이 — Frontend FRD (v1.1)
+# 챌린지식 풀이 — Frontend FRD (v0.2)
+
+**Notion 매칭**: [v0.2 페이지](https://www.notion.so/365fbb391d7980398a7fd621849c3eb6)
 
 ## 변경 이력
 
 | 버전 | 날짜 | 내용 |
 |---|---|---|
-| v1.0 | 2026-05-21 | 최초 작성 (Spec-Driven Dev 변형 8 sections) |
-| **v1.1** | **2026-05-21** | 1차 MVP 핵심 채널 격상 + hint 트리거가 v2 대화형 위임 (`features/qna-ai-conversation`)으로 변경 (ADR-0009) |
+| v0.1 | 2026-05-21 | 최초 작성 (Spec-Driven Dev 변형 8 sections) |
+| **v0.2** | **2026-05-21** | **Minor** — 1차 MVP 핵심 채널 격상 + hint 트리거가 v0.2 대화형 위임 (`features/qna-ai-conversation`)으로 변경 (ADR-0009) |
+
+> 버전은 Notion 페이지와 1:1 매칭 (ADR-0010).
 
 ---
 

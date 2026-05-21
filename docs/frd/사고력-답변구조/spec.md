@@ -1,21 +1,26 @@
 ---
 feature: 사고력-답변구조
-version: v2.0
+version: v0.2
 status: drafted
 updated: 2026-05-21
-related_wiki_concept: "[[wiki/concepts/사고력-답변구조-v2]]"
+notion_version: v0.2
+related_wiki_concept: "[[wiki/concepts/사고력-답변구조-v0.2]]"
 related_backend_frd: "[[mvp-back:docs/frd/사고력-답변구조/spec]]"
-related_adr: [ADR-0004, ADR-0005, ADR-0009]
+related_adr: [ADR-0004, ADR-0005, ADR-0009, ADR-0010]
 ---
 
-# 사고력 답변구조 — Frontend FRD (v2.0)
+# 사고력 답변구조 — Frontend FRD (v0.2)
+
+**Notion 매칭**: [v0.2 페이지](https://www.notion.so/365fbb391d7980398a7fd621849c3eb6)
 
 ## 변경 이력
 
 | 버전 | 날짜 | 내용 |
 |---|---|---|
-| v1.0 | 2026-05-21 | 최초 작성 (단계형 힌트 카드 UI). `archive/spec-v1.0-2026-05-21.md` 보관 |
-| **v2.0** | **2026-05-21** | **Breaking** — Notion v0.2 (ADR-0009). 대화형 thread UI + 학생 직접 답 선택 + 만족도 모달 + 컨텍스트 폼 단순화 |
+| v0.1 | 2026-05-21 | 최초 작성 (단계형 힌트 카드 UI). `archive/spec-v0.1-2026-05-21.md` 보관 |
+| **v0.2** | **2026-05-21** | **Breaking** — Notion v0.2 (ADR-0009). 대화형 thread UI + 학생 직접 답 선택 + 만족도 모달 + 컨텍스트 폼 단순화 |
+
+> 버전은 Notion 페이지와 1:1 매칭 (ADR-0010).
 
 ---
 
