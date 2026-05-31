@@ -1,0 +1,23 @@
+import { repository } from '@/entities/member';
+import type { MemberDTO } from '@/entities/member';
+import { memberKeys } from '@/entities/member';
+import { queryOptions, useQuery } from '@tanstack/react-query';
+
+const FIVE_MINUTES = 1000 * 60 * 5;
+
+export const getCurrentMemberOptions = (initialHasSession: boolean) =>
+  queryOptions<MemberDTO | null>({
+    queryKey: memberKeys.info(),
+    queryFn: repository.member.getMember,
+    staleTime: FIVE_MINUTES,
+    retry: false,
+    enabled: initialHasSession,
+  });
+
+export const useCoreCurrentMember = (initialHasSession: boolean) => {
+  return useQuery(getCurrentMemberOptions(initialHasSession));
+};
+
+export const useCoreCurrentMemberActions = () => {
+  return useQuery(getCurrentMemberOptions(true));
+};

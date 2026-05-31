@@ -1,0 +1,143 @@
+import { useMemo } from 'react';
+
+import SectionContainer from '@/features/profile/components/section-container';
+import ActivitySummarySection from '@/features/profile/components/teacher/activity-summary-section';
+import CareerSection from '@/features/profile/components/teacher/career-section';
+import DescriptionSection from '@/features/profile/components/teacher/description-section';
+import StudyroomSection from '@/features/profile/components/teacher/studyroom-section';
+import TeachingNoteSection from '@/features/profile/components/teacher/teaching-note-section';
+import { useTeacherProfileCareers } from '@/features/profile/hooks/teacher/use-profile-careers';
+import { useTeacherProfileDescription } from '@/features/profile/hooks/teacher/use-profile-description';
+import { useTeacherProfileReport } from '@/features/profile/hooks/teacher/use-profile-report';
+import { useTeacherProfileStudyRooms } from '@/features/profile/hooks/teacher/use-profile-study-rooms';
+import { useTeacherProfileTeachingNotes } from '@/features/profile/hooks/teacher/use-profile-teaching-notes';
+import {
+  hasMeaningfulEditorContent,
+  parseEditorContent,
+} from '@/shared/components/editor';
+
+export default function TeacherSections({ teacherId }: { teacherId: number }) {
+  // 특징
+  const {
+    data: description,
+    isLoading: isDescriptionLoading,
+    isError: isDescriptionError,
+    refetch: refetchDescription,
+  } = useTeacherProfileDescription(teacherId);
+
+  const hasMeaningfulDescription = useMemo(
+    () =>
+      hasMeaningfulEditorContent(
+        parseEditorContent(description?.resolvedDescription.content ?? '')
+      ),
+    [description?.resolvedDescription.content]
+  );
+
+  // 활동 통계
+  const {
+    data: report,
+    isLoading: isReportLoading,
+    isError: isReportError,
+    refetch: refetchReport,
+  } = useTeacherProfileReport(teacherId);
+
+  // 경력
+  const {
+    data: careers,
+    isLoading: isCareersLoading,
+    isError: isCareersError,
+    refetch: refetchCareers,
+  } = useTeacherProfileCareers(teacherId);
+
+  // 수업 노트
+  const {
+    data: teachingnotes,
+    isLoading: isTeachingnotesLoading,
+    isError: isTeachingnotesError,
+    refetch: refetchTeachingnotes,
+  } = useTeacherProfileTeachingNotes(teacherId);
+
+  // 스터디룸
+  const {
+    data: studyRooms,
+    isLoading: isStudyRoomsLoading,
+    isError: isStudyRoomsError,
+    refetch: refetchStudyRooms,
+  } = useTeacherProfileStudyRooms(teacherId);
+
+  return (
+    <>
+      <SectionContainer
+        title="선생님의 특징"
+        isLoading={isDescriptionLoading}
+        isError={isDescriptionError}
+        onRetry={refetchDescription}
+      >
+        {description && hasMeaningfulDescription ? (
+          <DescriptionSection description={description} />
+        ) : (
+          <p className="text-text-sub2 my-4 text-center">
+            등록된 선생님 특징이 없습니다.
+          </p>
+        )}
+      </SectionContainer>
+
+      <SectionContainer
+        title="활동 요약"
+        isLoading={isReportLoading}
+        isError={isReportError}
+        onRetry={refetchReport}
+      >
+        {report && <ActivitySummarySection summary={report} />}
+      </SectionContainer>
+
+      <SectionContainer
+        title="경력"
+        isLoading={isCareersLoading}
+        isError={isCareersError}
+        onRetry={refetchCareers}
+      >
+        {careers && careers.length > 0 ? (
+          <CareerSection careers={careers} />
+        ) : (
+          <p className="text-text-sub2 my-4 text-center">
+            등록된 경력이 없습니다.
+          </p>
+        )}
+      </SectionContainer>
+
+      <SectionContainer
+        title="대표 수업노트"
+        isLoading={isTeachingnotesLoading}
+        isError={isTeachingnotesError}
+        onRetry={refetchTeachingnotes}
+      >
+        {teachingnotes && teachingnotes.length ? (
+          <TeachingNoteSection teachingnotes={teachingnotes} />
+        ) : (
+          <p className="text-text-sub2 my-4 text-center">
+            대표 수업노트가 없습니다.
+          </p>
+        )}
+      </SectionContainer>
+
+      <SectionContainer
+        title="운영중인 스터디룸"
+        isLoading={isStudyRoomsLoading}
+        isError={isStudyRoomsError}
+        onRetry={refetchStudyRooms}
+      >
+        {studyRooms && studyRooms.length ? (
+          <StudyroomSection
+            studyrooms={studyRooms}
+            teacherId={teacherId}
+          />
+        ) : (
+          <p className="text-text-sub2 my-4 text-center">
+            운영중인 스터디룸이 없습니다.
+          </p>
+        )}
+      </SectionContainer>
+    </>
+  );
+}

@@ -1,0 +1,48 @@
+import { memberKeys } from '@/entities/member';
+import {
+  UpdateStudentBasicInfoPayload,
+  repository,
+  studentKeys,
+} from '@/entities/student';
+import { useMemberStore } from '@/store';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
+/**
+ * [GET] 학생 기본 정보 조회
+ */
+export const useStudentBasicInfo = (options?: { enabled?: boolean }) =>
+  useQuery({
+    queryKey: studentKeys.mypage.basicInfo(),
+    queryFn: () => repository.mypage.basicInfo.getBasicInfo(),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    enabled: options?.enabled ?? true,
+  });
+
+/**
+ * [PATCH] 학생 기본 정보 변경
+ */
+export const useUpdateStudentBasicInfo = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (basicInfo: UpdateStudentBasicInfoPayload) =>
+      repository.mypage.basicInfo.updateBasicInfo(basicInfo),
+    onSuccess: (_, basicInfo) => {
+      const { member, setMember } = useMemberStore.getState();
+
+      if (member) {
+        setMember({
+          ...member,
+          name: basicInfo.name,
+        });
+      }
+      queryClient.invalidateQueries({
+        queryKey: studentKeys.mypage.basicInfo(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: memberKeys.info(),
+      });
+    },
+  });
+};

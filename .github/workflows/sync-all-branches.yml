@@ -1,0 +1,72 @@
+name: Sync to personal repo
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+    types: [opened, synchronize, reopened]
+  delete:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.head_ref != 'main' && github.head_ref != 'develop')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out current ref (push) or PR head (pull_request)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # GITHUB_TOKEN 사용 (token 옵션 제거)
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+          persist-credentials: false
+
+      - name: Set commit identity (optional)
+        run: |
+          git config user.name "park J"
+          git config user.email "youremail@example.com"
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Add remote to deployment repo (idealstudy/the-edu-project)
+        run: |
+          git remote add deployment-repo git@github.com:idealstudy/the-edu-project.git
+
+      - name: Push to same branch on deployment repo
+        run: |
+          BRANCH="${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}"
+          git push -f deployment-repo HEAD:"$BRANCH"
+
+      - name: Cleanup remote
+        run: git remote remove deployment-repo
+
+  sync-delete:
+    if: github.event_name == 'delete' && github.event.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Delete branch on deployment repo
+        run: |
+          REF="${{ github.event.ref }}"
+          BRANCH="${REF#refs/heads/}"
+          git init
+          git remote add deployment-repo git@github.com:idealstudy/the-edu-project.git
+          git push deployment-repo --delete "$BRANCH" || true

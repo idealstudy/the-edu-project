@@ -1,0 +1,162 @@
+import { dto } from '@/entities/teacher/infrastructure/teacher.dto';
+import { z } from 'zod';
+
+/* ─────────────────────────────────────────────────────
+ * 선생님 대시보드 Domain 스키마
+ * ────────────────────────────────────────────────────*/
+const TeacherDashboardReportShape = dto.dashboard.report;
+const TeacherDashboardNoteListShape = dto.dashboard.noteList;
+const TeacherDashboardStudyRoomListShape = dto.dashboard.studyRoomList;
+const TeacherDashboardQnaListShape = dto.dashboard.qnaList;
+const TeacherDashboardMemberListShape = dto.dashboard.memberList;
+const TeacherDashboardHomeworkListShape = dto.dashboard.homeworkList;
+
+/* ─────────────────────────────────────────────────────
+ * 선생님 기본 정보 Domain 스키마
+ * ────────────────────────────────────────────────────*/
+const BasicInfoDomainSchema = z.object({
+  name: z.string(),
+  email: z.string().nullable(),
+  profileImageUrl: z.string().nullable(),
+  isProfilePublic: z.boolean(),
+  isEmailPublic: z.boolean(),
+  simpleIntroduction: z.string().nullable(),
+  role: z.literal('ROLE_TEACHER'),
+  profilePublicKorean: z.enum(['공개', '비공개']),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 선생님 특징 Domain 스키마
+ * ────────────────────────────────────────────────────*/
+const TeacherDescriptionDomainSchema = z.object({
+  description: z.string().nullable(),
+  resolvedDescription: z.object({
+    content: z.string().nullable(),
+    expiresAt: z.string().nullable(),
+  }),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 선생님 통계 Domain 스키마
+ * ────────────────────────────────────────────────────*/
+const TeacherReportDomainSchema = z.object({
+  studyRoomCount: z.number(),
+  teachingNoteCount: z.number(),
+  studentCount: z.number(),
+  qnaCount: z.number(),
+  reviewCount: z.number(),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 선생님 수업 노트 Domain 스키마
+ * ────────────────────────────────────────────────────*/
+const TeacherNoteListItemDomainSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  studyRoomId: z.number(),
+  studyRoomName: z.string(),
+  qnaCount: z.number(),
+  viewCount: z.number(),
+  modDate: z.string(),
+  representative: z.boolean(),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 선생님 전체 수업 노트 목록 Domain 스키마 (페이지네이션)
+ * ────────────────────────────────────────────────────*/
+const TeacherNoteListDomainSchema = z.object({
+  pageNumber: z.number(),
+  size: z.number(),
+  totalElements: z.number(),
+  totalPages: z.number(),
+  content: z.array(TeacherNoteListItemDomainSchema),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 선생님 대표 수업 노트 목록 Domain 스키마
+ * ────────────────────────────────────────────────────*/
+const TeacherRepresentativeNoteListDomainSchema = z.array(
+  TeacherNoteListItemDomainSchema
+);
+
+/* ─────────────────────────────────────────────────────
+ * 선생님 스터디룸 전체 Domain 스키마
+ * ────────────────────────────────────────────────────*/
+const TeacherStudyRoomListItemDomainSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  teachingNoteCount: z.number(),
+  studentCount: z.number(),
+  qnaCount: z.number(),
+});
+
+const TeacherStudyRoomListDomainSchema = z.array(
+  TeacherStudyRoomListItemDomainSchema
+);
+
+/* ─────────────────────────────────────────────────────
+ * 선생님 후기 전체 Domain 스키마
+ * ────────────────────────────────────────────────────*/
+const TeacherReviewListItemDomainSchema = z.object({
+  id: z.number(),
+  srcMemberId: z.number(),
+  srcMemberName: z.string(),
+  dstMemberId: z.number(),
+  dstMemberName: z.string(),
+  studyRoomId: z.number(),
+  startDate: z.string(),
+  endDate: z.string(),
+  contentPreview: z.string(),
+  imageInfo: z.object({ imageUrls: z.string().array(), expiresAt: z.string() }),
+  regDate: z.string(),
+});
+
+const TeacherReviewListDomainSchema = z.object({
+  pageNumber: z.number(),
+  size: z.number(),
+  totalElements: z.number(),
+  totalPages: z.number(),
+  content: z.array(TeacherReviewListItemDomainSchema),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 선생님 경력 전체 Domain 스키마
+ * ────────────────────────────────────────────────────*/
+const TeacherCareerListItemDomainSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  description: z.string().nullable(),
+  startDate: z.string(),
+  endDate: z.string(),
+  current: z.boolean().nullable(),
+});
+
+const TeacherCareerListDomainSchema = z.array(
+  TeacherCareerListItemDomainSchema
+);
+
+/* ─────────────────────────────────────────────────────
+ * 내보내기
+ * ────────────────────────────────────────────────────*/
+export const domain = {
+  basicInfo: BasicInfoDomainSchema,
+  teacherDescription: TeacherDescriptionDomainSchema,
+  teacherReport: TeacherReportDomainSchema,
+  teacherNoteListItem: TeacherNoteListItemDomainSchema,
+  teacherNoteList: TeacherNoteListDomainSchema,
+  teacherRepresentativeNoteList: TeacherRepresentativeNoteListDomainSchema,
+  teacherStudyRoomListItem: TeacherStudyRoomListItemDomainSchema,
+  teacherStudyRoomList: TeacherStudyRoomListDomainSchema,
+  dashboard: {
+    report: TeacherDashboardReportShape,
+    noteList: TeacherDashboardNoteListShape,
+    studyRoomList: TeacherDashboardStudyRoomListShape,
+    qnaList: TeacherDashboardQnaListShape,
+    memberList: TeacherDashboardMemberListShape,
+    homeworkList: TeacherDashboardHomeworkListShape,
+  },
+  teacherReviewListItem: TeacherReviewListItemDomainSchema,
+  teacherReviewList: TeacherReviewListDomainSchema,
+  teacherCareerListItem: TeacherCareerListItemDomainSchema,
+  teacherCareerList: TeacherCareerListDomainSchema,
+};

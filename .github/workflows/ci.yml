@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  guardrails:
+    name: AI Guardrails
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+      - run: npm ci
+      - run: bash .ai/hooks/ai-check.sh
+        env:
+          CI: true
+
+  lint:
+    name: Lint and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run check-types
+      - run: npm run test:ci
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    env:
+      # 빌드 시 환경 변수 체크를 통과하기 위한 값
+      # 실제로는 Vercel 에서 환경 변수를 주입하므로 값은 중요하지 않음
+      # job 레벨에서 설정하여 모든 step에서 사용 가능
+      NEXT_PUBLIC_BACKEND_API_URL: http://localhost:8080
+      BACKEND_API_URL: http://localhost:8080
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+      - run: npm ci
+      - run: npm run build

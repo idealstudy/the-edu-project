@@ -1,0 +1,116 @@
+import { domain } from '@/entities/student/core/student.domain';
+import {
+  dto,
+  payload,
+  query,
+} from '@/entities/student/infrastructure/student.dto';
+import { z } from 'zod';
+
+export type DashboardTeachingNotesSortKey =
+  | 'LATEST_EDITED'
+  | 'OLDEST_EDITED'
+  | 'TITLE_ASC'
+  | 'TAUGHT_AT_ASC';
+export type DashboardQnASortKey = 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
+export type DashboardHomeworkSortKey =
+  | 'LATEST'
+  | 'LATEST_EDITED'
+  | 'OLDEST_EDITED'
+  | 'DEADLINE_IMMINENT'
+  | 'DEADLINE_RECENT';
+
+export type ProfileHomeworkListSortKey =
+  | 'LATEST'
+  | 'LATEST_EDITED'
+  | 'OLDEST_EDITED'
+  | 'DEADLINE_IMMINENT'
+  | 'DEADLINE_RECENT';
+
+export type ProfileQnaListSortKey = 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
+export type ProfileQnaListStatus = 'PENDING' | 'COMPLETED';
+
+export type ProfileTeachingNoteListSortKey =
+  | 'LATEST_EDITED'
+  | 'OLDEST_EDITED'
+  | 'TITLE_ASC'
+  | 'TAUGHT_AT_ASC';
+
+/* ─────────────────────────────────────────────────────
+ * DTO
+ * ────────────────────────────────────────────────────*/
+// 프로필 DTO
+export type StudentBasicInfoDTO = z.infer<typeof dto.profile.basicInfo>;
+export type StudentReportDTO = z.infer<typeof dto.profile.report>;
+export type StudentHomeworkListDTO = z.infer<typeof dto.profile.homeworkList>;
+export type StudentQnaListDTO = z.infer<typeof dto.profile.qnaList>;
+export type StudentTeachingNoteListDTO = z.infer<
+  typeof dto.profile.teachingNoteList
+>;
+export type StudentStudyRoomListDTO = z.infer<typeof dto.profile.studyRoomList>;
+
+// 대시보드 DTO
+export type StudentDashboardReportDTO = z.infer<typeof dto.dashboard.report>;
+export type StudentDashboardNoteListDTO = z.infer<
+  typeof dto.dashboard.noteList
+>;
+export type StudentDashboardStudyRoomListDTO = z.infer<
+  typeof dto.dashboard.studyRoomList
+>;
+export type StudentDashboardQnaListDTO = z.infer<typeof dto.dashboard.qnaList>;
+export type StudentDashboardHomeworkListDTO = z.infer<
+  typeof dto.dashboard.homeworkList
+>;
+
+export type StudentDashboardNoteListItemDTO =
+  StudentDashboardNoteListDTO['content'][number];
+export type StudentDashboardStudyRoomListItemDTO =
+  StudentDashboardStudyRoomListDTO[number];
+export type StudentDashboardQnaListItemDTO =
+  StudentDashboardQnaListDTO['content'][number];
+export type StudentDashboardHomeworkListItemDTO =
+  StudentDashboardHomeworkListDTO['content'][number];
+
+/* ─────────────────────────────────────────────────────
+ * Domain
+ * ────────────────────────────────────────────────────*/
+// 프로필 Domain
+export type FrontendStudentBasicInfo = z.infer<typeof domain.profile.basicInfo>;
+export type FrontendStudentReport = z.infer<typeof domain.profile.report>;
+export type FrontendStudentHomeworkListItem = z.infer<
+  typeof domain.profile.homeworkListItem
+>;
+export type FrontendStudentHomeworkList = z.infer<
+  typeof domain.profile.homeworkList
+>;
+export type FrontendStudentQnaListItem = z.infer<
+  typeof domain.profile.qnaListItem
+>;
+export type FrontendStudentQnaList = z.infer<typeof domain.profile.qnaList>;
+export type FrontendStudentTeachingNoteListItem = z.infer<
+  typeof domain.profile.teachingNoteListItem
+>;
+export type FrontendStudentTeachingNoteList = z.infer<
+  typeof domain.profile.teachingNoteList
+>;
+export type FrontendStudentStudyRoomListItem = z.infer<
+  typeof domain.profile.studyRoomListItem
+>;
+export type FrontendStudentStudyRoomList = z.infer<
+  typeof domain.profile.studyRoomList
+>;
+
+/* ─────────────────────────────────────────────────────
+ * Payload
+ * ────────────────────────────────────────────────────*/
+export type UpdateStudentBasicInfoPayload = z.infer<
+  typeof payload.updateBasicInfo
+>;
+
+/* ─────────────────────────────────────────────────────
+ * Query
+ * ────────────────────────────────────────────────────*/
+export type HomeworkListQuery = z.infer<typeof query.profile.homeworkList>;
+export type QnaListQuery = z.infer<typeof query.profile.qnaList>;
+export type TeachingNoteListQuery = z.infer<
+  typeof query.profile.teachingNoteList
+>;

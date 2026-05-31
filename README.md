@@ -1,8 +1,29 @@
-# mvp-front (placeholder)
+# The-Edu (Frontend)
+> 디에듀 - 강사, 학생, 학부모가 학습 공간을 만들고, 기록하고, 소통하는 에듀테크
 
-이 디렉토리는 monorepo merge 시점에 placeholder로 비어 있다. 실제 코드는 별도 라운드에서 `git subtree add --prefix=mvp-front --squash <commit>` 로 연결된다.
+사용자는 스터디룸을 개설하고 노트를 작성·공유하며, 역할(강사/학생/학부모)에 따라 맞춤형 대시보드와 플로우를 이용할 수 있습니다.
 
-연결 전까지 프론트엔드 작업은 다음 레포에서:
-- https://github.com/idealstudy/mvp-front (public 공개 미러)
+프론트와 백엔드는 분리 배포하며, 프론트는 Next.js 15 + React 19 기반으로 구축되었습니다.
 
-본 placeholder 디렉토리에는 `.claude/` 하네스 골격과 `CLAUDE.md` 진입점만 두어 monorepo 구조 일관성을 유지한다.
+## 배포 주소
+|             구분            | URL                                                              |
+| :-----------------------: |:-----------------------------------------------------------------|
+|     **Frontend (Dev)**    | [dev.the-edu.site](dev.the-edu.site)                             |
+|    **Frontend (Prod)**    | 준비중 입니다.                                                         |
+
+## 기술 스택
+### Core
+- Next.js 15 (App Router), React 19, TypeScript 
+- TanStack Query v5, Zustand v5 
+- Tailwind CSS v4 
+- RHF + Zod (폼/검증)
+
+### Add-ons
+- Storybook 9, Vitest + Testing Library, MSW 
+- Axios, jose(JWT), js-cookie 
+- Tiptap v3(노트 편집)
+
+
+## 레퍼런스
+- [팀 이상한과외 페이지](https://gaan.notion.site/d69bc8e61b5f4dcb80c8610ca84c0702)
+- [Backend Repo](https://github.com/idealstudy/mvp-back)
