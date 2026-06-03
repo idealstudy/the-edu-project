@@ -17,7 +17,6 @@ import {
   useAbandonAiCoachingSessionMutation,
   useAiCoachingPreferenceEnumsQuery,
   useCreateAiCoachingSessionMutation,
-  useFinishAiCoachingSessionMutation,
   useMyAiCoachingPreferenceQuery,
   useSendAiCoachingMessageMutation,
   useStartChallengeAttemptMutation,
@@ -53,7 +52,7 @@ type AiCoachPanelProps = {
   isLoggedIn: boolean;
   onAttemptCreated: (attemptId: string) => void;
   onAttemptCleared: () => void;
-  onReturnToProblem?: () => void;
+  onSessionChange?: (sessionId: string | null) => void;
 };
 
 const MAX_COMMENT_LENGTH = 200;
@@ -75,8 +74,38 @@ const KATEX_INLINE_OPTIONS = {
 const MATH_CODE_PATTERN =
   /(?:\\(?:frac|sqrt|sum|int|lim|left|right|cdot|times|pm)|[A-Za-z0-9)]\s*\^\s*(?:[A-Za-z0-9]|\{[^}]+\})|[A-Za-z]\s*=\s*[-+*/()A-Za-z0-9\s^]+|[+\-*/]\s*[A-Za-z0-9(\\])/;
 
+const KOREAN_POSTPOSITION_STRONG_PATTERN =
+  /^\*\*([^*\n]+[)\]}])\*\*(?=[가-힣])/;
 const SUPERSCRIPT_BRACED_PATTERN = /^\^\{([^{}\n]+)\}/;
 const SUPERSCRIPT_SIMPLE_PATTERN = /^\^([+-]?(?:\d+|[A-Za-z]+))/;
+
+const applyKoreanPostpositionStrongRule = (markdown: MarkdownIt) => {
+  markdown.inline.ruler.before(
+    'emphasis',
+    'korean_postposition_strong',
+    (state, silent) => {
+      const match = state.src
+        .slice(state.pos)
+        .match(KOREAN_POSTPOSITION_STRONG_PATTERN);
+
+      if (!match) return false;
+      if (silent) return true;
+
+      const fullMatch = match[0];
+      const strongText = match[1];
+
+      if (!fullMatch || !strongText) return false;
+
+      state.push('strong_open', 'strong', 1);
+      const textToken = state.push('text', '', 0);
+      textToken.content = strongText;
+      state.push('strong_close', 'strong', -1);
+      state.pos += fullMatch.length;
+
+      return true;
+    }
+  );
+};
 
 const applySuperscriptRule = (markdown: MarkdownIt) => {
   markdown.inline.ruler.after(
@@ -124,6 +153,7 @@ const markdownRenderer = new MarkdownIt({
   linkify: true,
 });
 
+applyKoreanPostpositionStrongRule(markdownRenderer);
 applySuperscriptRule(markdownRenderer);
 markdownRenderer.use(katex, {
   delimiters: 'all',
@@ -302,7 +332,7 @@ export const AiCoachPanel = ({
   isLoggedIn,
   onAttemptCreated,
   onAttemptCleared,
-  onReturnToProblem,
+  onSessionChange,
 }: AiCoachPanelProps) => {
   const [messages, setMessages] = useState<AiCoachMessage[]>([]);
   const [inputMessage, setInputMessage] = useState('');
@@ -322,7 +352,6 @@ export const AiCoachPanel = ({
   const updatePreferenceMutation = useUpdateMyAiCoachingPreferenceMutation();
   const createSessionMutation = useCreateAiCoachingSessionMutation();
   const sendMessageMutation = useSendAiCoachingMessageMutation(sessionId);
-  const finishSessionMutation = useFinishAiCoachingSessionMutation();
   const abandonSessionMutation = useAbandonAiCoachingSessionMutation();
 
   const hasLoadedSettings =
@@ -332,7 +361,6 @@ export const AiCoachPanel = ({
     updatePreferenceMutation.isPending ||
     createSessionMutation.isPending ||
     sendMessageMutation.isPending ||
-    finishSessionMutation.isPending ||
     abandonSessionMutation.isPending;
 
   useEffect(() => {
@@ -390,6 +418,7 @@ export const AiCoachPanel = ({
       });
 
       setSessionId(session.sessionId);
+      onSessionChange?.(session.sessionId);
       setMessages([createAiMessage(getIntroMessage(nextSettings))]);
       setStatus('WAITING_ANSWER');
       setIsSettingsOpen(false);
@@ -476,26 +505,13 @@ export const AiCoachPanel = ({
     );
   };
 
-  const handleFinishAndReturn = () => {
-    if (!sessionId) {
-      onReturnToProblem?.();
-      return;
-    }
-
-    finishSessionMutation.mutate(sessionId, {
-      onSuccess: () => {
-        setStatus('FINISHED');
-        onReturnToProblem?.();
-      },
-    });
-  };
-
   const handleRestart = () => {
     if (sessionId && status !== 'FINISHED' && status !== 'ABANDONED') {
       abandonSessionMutation.mutate(sessionId);
     }
     setMessages([]);
     setSessionId('');
+    onSessionChange?.(null);
     setStatus('READY');
     onAttemptCleared();
   };
@@ -681,19 +697,6 @@ export const AiCoachPanel = ({
                 </div>
               ))}
             </div>
-
-            {status === 'GUIDE_TO_PROBLEM' && (
-              <div className="border-line-line1 border-t px-4 py-3">
-                <Button
-                  type="button"
-                  onClick={handleFinishAndReturn}
-                  disabled={finishSessionMutation.isPending}
-                  className="w-full"
-                >
-                  문제로 돌아가 답 선택하기
-                </Button>
-              </div>
-            )}
 
             <div className="flex gap-2 px-4 pb-2">
               {AI_COACH_QUICK_REPLIES.map((replyOption) => (

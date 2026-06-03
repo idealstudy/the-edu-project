@@ -18,6 +18,7 @@ import { Bot, ChevronDown, ChevronUp, Pencil, X } from 'lucide-react';
 
 import {
   useCreateChallengeReviewMutation,
+  useFinishAiCoachingSessionMutation,
   useMyOpenChallengeDetailQuery,
   useOpenChallengeDetailQuery,
   useStartChallengeAttemptMutation,
@@ -51,6 +52,7 @@ export const ChallengeSolveClient = ({
   const [isMobileAiOpen, setIsMobileAiOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [aiAttemptId, setAiAttemptId] = useState<string | null>(null);
+  const [aiSessionId, setAiSessionId] = useState<string | null>(null);
   const choiceSectionRef = useRef<HTMLDivElement>(null);
   const draftKey = `${DRAFT_KEY_PREFIX}:${challengeId}`;
 
@@ -71,8 +73,11 @@ export const ChallengeSolveClient = ({
   const startAttemptMutation = useStartChallengeAttemptMutation();
   const submitAnswerMutation = useSubmitChallengeAnswerMutation(challengeId);
   const createReviewMutation = useCreateChallengeReviewMutation();
+  const finishAiCoachingSessionMutation = useFinishAiCoachingSessionMutation();
   const isSubmitting =
-    startAttemptMutation.isPending || submitAnswerMutation.isPending;
+    startAttemptMutation.isPending ||
+    submitAnswerMutation.isPending ||
+    finishAiCoachingSessionMutation.isPending;
   const hasChallengeHistory =
     !!challengeHistory &&
     (challengeHistory.attempts.length > 0 ||
@@ -98,6 +103,16 @@ export const ChallengeSolveClient = ({
       const attemptId =
         aiAttemptId ??
         (await startAttemptMutation.mutateAsync({ challengeId })).attemptId;
+
+      if (aiSessionId) {
+        try {
+          await finishAiCoachingSessionMutation.mutateAsync(aiSessionId);
+        } catch {
+          // 세션 종료 실패가 답안 제출을 막지는 않도록 한다.
+        }
+        setAiSessionId(null);
+      }
+
       const result = await submitAnswerMutation.mutateAsync({
         attemptId,
         params: { selectedAnswer },
@@ -130,13 +145,9 @@ export const ChallengeSolveClient = ({
     setSubmitError('');
   };
 
-  const focusChoiceSection = () => {
-    setIsMobileAiOpen(false);
-    choiceSectionRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'center',
-    });
-    choiceSectionRef.current?.focus();
+  const handleAiAttemptCleared = () => {
+    setAiAttemptId(null);
+    setAiSessionId(null);
   };
 
   if (isChallengeLoading) return <ChallengeSolveSkeleton />;
@@ -151,8 +162,8 @@ export const ChallengeSolveClient = ({
           attemptId={aiAttemptId}
           isLoggedIn={isLoggedIn}
           onAttemptCreated={setAiAttemptId}
-          onAttemptCleared={() => setAiAttemptId(null)}
-          onReturnToProblem={focusChoiceSection}
+          onAttemptCleared={handleAiAttemptCleared}
+          onSessionChange={setAiSessionId}
         />
       </aside>
 
@@ -347,8 +358,8 @@ export const ChallengeSolveClient = ({
               attemptId={aiAttemptId}
               isLoggedIn={isLoggedIn}
               onAttemptCreated={setAiAttemptId}
-              onAttemptCleared={() => setAiAttemptId(null)}
-              onReturnToProblem={focusChoiceSection}
+              onAttemptCleared={handleAiAttemptCleared}
+              onSessionChange={setAiSessionId}
             />
           </Dialog.Body>
         </Dialog.Content>
