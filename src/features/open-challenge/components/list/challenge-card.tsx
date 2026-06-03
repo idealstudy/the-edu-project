@@ -103,7 +103,7 @@ export const ChallengeCard = ({
       <div
         className={cn(
           'relative flex min-h-[200px] items-center justify-center p-6',
-          config.bgClass
+          challenge.questionImageUrl ? 'bg-white' : config.bgClass
         )}
       >
         <div className="absolute top-3 left-3 z-10 flex gap-1.5">
@@ -133,14 +133,15 @@ export const ChallengeCard = ({
             className="max-h-[160px] object-contain"
           />
         ) : (
-          <div className="flex h-[160px] w-full items-center justify-center">
-            <div className="border-line-line2 relative h-full w-full max-w-[260px] rotate-[-1deg] overflow-hidden rounded-sm border bg-white px-5 py-4 shadow-sm">
+          <div className="flex h-[190px] w-full items-center justify-center">
+            <div className="border-line-line2 relative h-full w-full max-w-[300px] rotate-[-1deg] overflow-hidden rounded-sm border bg-white px-6 py-4 shadow-sm">
               <div className="absolute inset-x-0 top-8 border-t border-blue-100" />
               <div className="absolute inset-x-0 top-16 border-t border-blue-100" />
               <div className="absolute inset-x-0 top-24 border-t border-blue-100" />
-              <div className="absolute inset-y-0 left-8 border-l border-red-100" />
+              <div className="absolute inset-x-0 top-32 border-t border-blue-100" />
+              <div className="absolute inset-y-0 left-9 border-l border-red-100" />
               <p
-                className="text-text-main line-clamp-2 pt-6 text-center text-xl leading-[1.65] font-normal"
+                className="text-text-main line-clamp-3 pt-6 text-center text-2xl leading-[1.65] font-normal"
                 style={{ fontFamily: HANDWRITING_FONT }}
               >
                 {challenge.title}
