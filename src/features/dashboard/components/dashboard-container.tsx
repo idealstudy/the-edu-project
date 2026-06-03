@@ -17,6 +17,7 @@ export const DashboardContainer = () => {
 
   const session = useMemberStore((s) => s.member);
   const role = session?.role;
+  const initialMemberName = session?.name ?? '';
 
   React.useEffect(() => {
     // 대시보드 페이지뷰 이벤트
@@ -35,11 +36,11 @@ export const DashboardContainer = () => {
 
   switch (role) {
     case 'ROLE_TEACHER':
-      return <DashboardTeacher />;
+      return <DashboardTeacher initialMemberName={initialMemberName} />;
     case 'ROLE_STUDENT':
-      return <DashboardStudent />;
+      return <DashboardStudent initialMemberName={initialMemberName} />;
     case 'ROLE_PARENT':
-      return <DashboardParent />;
+      return <DashboardParent initialMemberName={initialMemberName} />;
     default:
       return null;
   }
