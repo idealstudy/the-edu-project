@@ -60,6 +60,7 @@ const ChallengeDetailDtoSchema = ChallengeListItemDtoSchema.extend({
     .nullable()
     .optional()
     .transform((value) => value ?? QUESTION_TEXT_FALLBACK),
+  questionMediaId: z.string().nullable().optional().default(null),
   choices: z.array(z.string()).default([]),
   correctAnswer: z.string().optional(),
   type: z.string().nullable().optional(),

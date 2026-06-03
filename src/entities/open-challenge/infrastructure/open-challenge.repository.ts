@@ -161,6 +161,7 @@ const toAdminDetail = (raw: unknown): AdminChallengeDetail => {
     title: parsed.title,
     sourceText: parsed.sourceText,
     questionText: parsed.questionText,
+    questionMediaId: parsed.questionMediaId,
     questionImageUrl: parsed.questionImageUrl,
     choices: parsed.choices,
     correctAnswer: parsed.correctAnswer ?? '',

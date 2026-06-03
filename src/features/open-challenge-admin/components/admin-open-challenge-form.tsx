@@ -1,6 +1,12 @@
 'use client';
 
-import { type ReactNode, useEffect } from 'react';
+import {
+  type ChangeEvent,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 
 import Image from 'next/image';
@@ -12,12 +18,25 @@ import {
   type AdminChallengePayload,
   type AdminChallengeSubject,
 } from '@/entities/open-challenge';
+import { useImageUpload } from '@/shared/components/editor';
+import {
+  getUploadErrorMessage,
+  validateImageFile,
+} from '@/shared/components/editor/utils';
 import { Button, Input, Select, Textarea } from '@/shared/components/ui';
 import { PRIVATE, PUBLIC } from '@/shared/constants';
 import { handleApiError } from '@/shared/lib/errors/error-handler';
 import { classifyOpenChallengeError } from '@/shared/lib/errors/errors';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeft, Minus, Plus, Save } from 'lucide-react';
+import {
+  ArrowLeft,
+  ImagePlus,
+  Loader2,
+  Minus,
+  Plus,
+  Save,
+  Trash2,
+} from 'lucide-react';
 
 import {
   useCreateAdminOpenChallengeMutation,
@@ -84,7 +103,7 @@ const toFormValues = (challenge?: AdminChallengeDetail): AdminChallengeForm => {
     title: challenge.title,
     sourceText: challenge.sourceText,
     questionText: challenge.questionText,
-    questionMediaId: '',
+    questionMediaId: challenge.questionMediaId ?? '',
     choices: challenge.choices.map((choice) => ({
       value: stripChoiceLabel(choice),
     })),
@@ -119,18 +138,25 @@ export const AdminOpenChallengeForm = ({
   challenge,
 }: AdminOpenChallengeFormProps) => {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const isEditMode = !!challenge;
   const createMutation = useCreateAdminOpenChallengeMutation();
   const updateMutation = useUpdateAdminOpenChallengeMutation(
     challenge?.id ?? ''
   );
   const mutation = isEditMode ? updateMutation : createMutation;
+  const [questionImagePreviewUrl, setQuestionImagePreviewUrl] = useState<
+    string | null
+  >(null);
+  const [isQuestionImageRemoved, setIsQuestionImageRemoved] = useState(false);
+  const { uploadAsync, isUploading } = useImageUpload();
 
   const {
     control,
     handleSubmit,
     register,
     reset,
+    clearErrors,
     setError,
     setValue,
     watch,
@@ -145,12 +171,75 @@ export const AdminOpenChallengeForm = ({
   });
   const selectedCorrectIndex = watch('correctChoiceIndex');
   const choices = watch('choices');
+  const questionMediaId = watch('questionMediaId');
   const selectedCorrectAnswer =
     choices?.[selectedCorrectIndex]?.value?.trim() ?? '';
+  const previewUrl =
+    questionImagePreviewUrl ??
+    (isQuestionImageRemoved ? null : challenge?.questionImageUrl);
 
   useEffect(() => {
     reset(toFormValues(challenge));
+    setQuestionImagePreviewUrl(null);
+    setIsQuestionImageRemoved(false);
   }, [challenge, reset]);
+
+  useEffect(() => {
+    return () => {
+      if (questionImagePreviewUrl) {
+        URL.revokeObjectURL(questionImagePreviewUrl);
+      }
+    };
+  }, [questionImagePreviewUrl]);
+
+  const handleQuestionImageChange = async (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+
+    const validation = validateImageFile(file);
+    if (!validation.valid) {
+      setError('questionMediaId', {
+        message: validation.error ?? '이미지 파일을 확인해주세요.',
+      });
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+    setIsQuestionImageRemoved(false);
+    setQuestionImagePreviewUrl(objectUrl);
+
+    try {
+      const uploaded = await uploadAsync(file);
+      setValue('questionMediaId', uploaded.mediaId, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+      clearErrors(['questionMediaId', 'questionText']);
+    } catch (error) {
+      URL.revokeObjectURL(objectUrl);
+      setQuestionImagePreviewUrl(null);
+      setError('questionMediaId', {
+        message: getUploadErrorMessage(
+          error instanceof Error ? error : new Error('UPLOAD_FAILED')
+        ),
+      });
+    }
+  };
+
+  const handleRemoveQuestionImage = () => {
+    setQuestionImagePreviewUrl(null);
+    setValue('questionMediaId', '', {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+    setIsQuestionImageRemoved(true);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   const handleRemoveChoice = (index: number) => {
     remove(index);
@@ -227,7 +316,9 @@ export const AdminOpenChallengeForm = ({
           <Button
             type="submit"
             size="small"
-            disabled={mutation.isPending || (isEditMode && !isDirty)}
+            disabled={
+              isUploading || mutation.isPending || (isEditMode && !isDirty)
+            }
           >
             <Save
               size={16}
@@ -350,19 +441,70 @@ export const AdminOpenChallengeForm = ({
           />
         </Field>
 
-        <Field label="문제 이미지 mediaId">
-          <Input
-            {...register('questionMediaId')}
-            placeholder="Presigned 업로드 후 발급된 mediaId"
-          />
+        <Field
+          label="문제 이미지"
+          error={errors.questionMediaId?.message}
+        >
+          <div className="flex flex-col gap-3">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/gif,image/webp"
+              className="hidden"
+              onChange={handleQuestionImageChange}
+            />
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                type="button"
+                variant="outlined"
+                size="small"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+              >
+                {isUploading ? (
+                  <Loader2
+                    size={16}
+                    className="mr-1 animate-spin"
+                  />
+                ) : (
+                  <ImagePlus
+                    size={16}
+                    className="mr-1"
+                  />
+                )}
+                {isUploading ? '업로드 중' : '이미지 업로드'}
+              </Button>
+              {questionMediaId && (
+                <Button
+                  type="button"
+                  variant="outlined"
+                  size="small"
+                  onClick={handleRemoveQuestionImage}
+                  disabled={isUploading}
+                >
+                  <Trash2
+                    size={16}
+                    className="mr-1"
+                  />
+                  제거
+                </Button>
+              )}
+            </div>
+            <Input
+              {...register('questionMediaId')}
+              placeholder="이미지를 업로드하면 mediaId가 자동 입력됩니다."
+              readOnly
+              aria-invalid={!!errors.questionMediaId}
+            />
+          </div>
         </Field>
 
-        {challenge?.questionImageUrl && (
+        {previewUrl && (
           <div className="border-line-line1 bg-gray-1 rounded-md border p-4">
-            <p className="text-gray-8 mb-2 text-sm">현재 문제 이미지</p>
+            <p className="text-gray-8 mb-2 text-sm">문제 이미지 미리보기</p>
             <Image
-              src={challenge.questionImageUrl}
-              alt="현재 문제 이미지"
+              src={previewUrl}
+              alt="문제 이미지 미리보기"
               width={640}
               height={360}
               unoptimized

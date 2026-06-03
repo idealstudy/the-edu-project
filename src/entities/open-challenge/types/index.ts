@@ -115,6 +115,7 @@ export type AdminChallengeDetail = {
   title: string;
   sourceText: string;
   questionText: string;
+  questionMediaId: string | null;
   questionImageUrl: string | null;
   choices: string[];
   correctAnswer: string;
