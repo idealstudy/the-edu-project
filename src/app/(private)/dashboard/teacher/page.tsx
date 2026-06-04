@@ -1,10 +1,8 @@
 import { DashboardTeacherContainer } from '@/features/dashboard/components/dashboard-teacher-container';
-import { fetchMemberRole } from '@/shared/lib';
+import { assertDashboardRole } from '@/shared/lib/assert-dashboard-role';
 
 export default async function TeacherDashboardPage() {
-  const session = await fetchMemberRole();
+  const { initialMemberName } = await assertDashboardRole('ROLE_TEACHER');
 
-  const initialMemberName =
-    session.status === 'authenticated' ? session.name : '';
   return <DashboardTeacherContainer initialMemberName={initialMemberName} />;
 }

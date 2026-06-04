@@ -13,7 +13,10 @@ export default async function DashboardLayout({
 }>) {
   const session = await fetchMemberRole();
 
-  if (session.status === 'authenticated' && session.role === 'ROLE_MEMBER')
+  const isSessionRoleMember =
+    session.status === 'authenticated' && session.role === 'ROLE_MEMBER';
+
+  if (isSessionRoleMember)
     return (
       <Suspense>
         <RoleRedirect />

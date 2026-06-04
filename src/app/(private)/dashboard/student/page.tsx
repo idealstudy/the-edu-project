@@ -1,11 +1,8 @@
 import { DashboardStudentContainer } from '@/features/dashboard/components/dashboard-student-container';
-import { fetchMemberRole } from '@/shared/lib';
+import { assertDashboardRole } from '@/shared/lib/assert-dashboard-role';
 
 export default async function StudentDashboardPage() {
-  const session = await fetchMemberRole();
-
-  const initialMemberName =
-    session.status === 'authenticated' ? session.name : '';
+  const { initialMemberName } = await assertDashboardRole('ROLE_STUDENT');
 
   return <DashboardStudentContainer initialMemberName={initialMemberName} />;
 }

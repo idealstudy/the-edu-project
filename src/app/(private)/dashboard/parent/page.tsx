@@ -1,11 +1,8 @@
 import { DashboardParentContainer } from '@/features/dashboard/components/dashboard-parent-container';
-import { fetchMemberRole } from '@/shared/lib';
+import { assertDashboardRole } from '@/shared/lib/assert-dashboard-role';
 
 export default async function ParentDashboardPage() {
-  const session = await fetchMemberRole();
-
-  const initialMemberName =
-    session.status === 'authenticated' ? session.name : '';
+  const { initialMemberName } = await assertDashboardRole('ROLE_PARENT');
 
   return <DashboardParentContainer initialMemberName={initialMemberName} />;
 }
