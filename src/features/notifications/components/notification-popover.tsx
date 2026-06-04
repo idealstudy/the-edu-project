@@ -17,6 +17,7 @@ import {
   dialogReducer,
   initialDialogState,
 } from '@/shared/components/dialog';
+import { Skeleton } from '@/shared/components/loading';
 import {
   Popover,
   PopoverClose,
@@ -28,6 +29,10 @@ import { trackGnbAlarmClick } from '@/shared/lib/analytics';
 import { cn } from '@/shared/lib/utils';
 import { useMemberStore } from '@/store';
 import { Settings, Trash2Icon } from 'lucide-react';
+
+const NOTIFICATION_CONTENT_CLASS_NAME = 'h-80 w-full bg-white';
+const NOTIFICATION_POPOVER_CLASS_NAME =
+  'mr-4 w-80 tablet:w-100 overflow-hidden p-0';
 
 export function NotificationPopover() {
   const router = useRouter();
@@ -110,7 +115,7 @@ export function NotificationPopover() {
           </button>
         </PopoverTrigger>
 
-        <PopoverContent className="tablet:max-w-100 mr-4 max-w-80 overflow-hidden p-0">
+        <PopoverContent className={NOTIFICATION_POPOVER_CLASS_NAME}>
           <header className="flex items-center justify-between border-b px-6 py-4">
             <h2 className="text-lg font-semibold">알림</h2>
             <PopoverClose asChild>
@@ -124,19 +129,37 @@ export function NotificationPopover() {
           </header>
 
           {isLoading && (
-            <div className="flex h-50 items-center justify-center bg-white px-6 py-12 text-sm text-gray-500">
-              <p>알림을 불러오는 중..</p>
-            </div>
+            <ul
+              className={cn(NOTIFICATION_CONTENT_CLASS_NAME, 'overflow-hidden')}
+            >
+              {Array.from({ length: 4 }).map((_, index) => (
+                <li
+                  key={index}
+                  className="flex items-start justify-between border-b px-6 py-4"
+                >
+                  <div className="min-w-0 flex-1">
+                    <Skeleton.Block className="h-3 w-16" />
+                    <Skeleton.Block className="mt-3 h-4 w-full" />
+                  </div>
+                </li>
+              ))}
+            </ul>
           )}
-
           {error && (
-            <div className="flex h-50 items-center justify-center bg-white px-6 py-12 text-sm text-gray-500">
+            <div
+              className={cn(
+                NOTIFICATION_CONTENT_CLASS_NAME,
+                'flex items-center justify-center px-6 py-12 text-sm text-gray-500'
+              )}
+            >
               <p>알림을 불러오는데 실패했습니다.</p>
             </div>
           )}
 
           {!isLoading && !error && hasNotifications && (
-            <ul className="max-h-80 overflow-y-auto bg-white">
+            <ul
+              className={cn(NOTIFICATION_CONTENT_CLASS_NAME, 'overflow-y-auto')}
+            >
               {notifications.map((item) => (
                 <li
                   key={item.id}
@@ -175,7 +198,12 @@ export function NotificationPopover() {
           )}
 
           {!isLoading && !error && !hasNotifications && (
-            <div className="flex h-50 items-center justify-center bg-white px-6 py-12 text-sm text-gray-500">
+            <div
+              className={cn(
+                NOTIFICATION_CONTENT_CLASS_NAME,
+                'flex items-center justify-center px-6 py-12 text-sm text-gray-500'
+              )}
+            >
               <p>최근 90일 동안 받은 알림이 없어요.</p>
             </div>
           )}
