@@ -33,19 +33,28 @@ Handle 4xx errors inside the mutation's `onError` callback using `handleApiError
 
 ```
 AxiosError
-  → getApiError()         // extracts { code, message }
-  → classifyXxxError(code) // maps code → ApiErrorType
-  → handleApiError()      // executes the matching handler
+  → getApiError()          // extracts { code, message } | null  (src/shared/lib/get-api-error.ts)
+  → classifyXxxError(code) // maps code → ApiErrorType  (src/shared/lib/errors/errors.ts)
+  → handleApiError()       // shows a common toast, then runs the matching callback
 ```
+
+`handleApiError` (`src/shared/lib/errors/error-handler.ts`) always shows a toast for the error message first, then dispatches to the type callback. If the error is not an Axios API error it reports to Sentry and calls `onUnknown`.
 
 ### ApiErrorType
 
-| Type      | Meaning                               | Default Action                   |
+`ApiErrorType` is a string-union type, not an enum:
+
+```ts
+// src/shared/lib/errors/errors.ts
+export type ApiErrorType = 'FIELD' | 'CONTEXT' | 'AUTH' | 'UNKNOWN';
+```
+
+| Type      | Meaning                               | Typical Action                   |
 | --------- | ------------------------------------- | -------------------------------- |
 | `FIELD`   | User input is invalid                 | Show error in form, stay on page |
 | `CONTEXT` | Resource not found or page is invalid | Redirect to list page            |
 | `AUTH`    | No permission or re-auth required     | Redirect to `/login`             |
-| `UNKNOWN` | Any other unexpected error            | Handle as needed                 |
+| `UNKNOWN` | Any other unexpected error            | Sentry capture + handle as needed |
 
 ---
 
@@ -53,23 +62,25 @@ AxiosError
 
 ### Step 1 — Add a classify function
 
-Add `classifyXxxError` to `src/shared/lib/errors/errors.ts`:
+Add `classifyXxxError` to `src/shared/lib/errors/errors.ts` (return the string literals directly; `code` is optional because `getApiError` may yield no code):
 
 ```ts
 // src/shared/lib/errors/errors.ts
-export function classifyXxxError(code: string): ApiErrorType {
+export function classifyXxxError(code?: string): ApiErrorType {
   switch (code) {
     case 'XXX_NOT_FOUND':
-      return ApiErrorType.CONTEXT;
+      return 'CONTEXT';
     case 'XXX_FORBIDDEN':
-      return ApiErrorType.AUTH;
+      return 'AUTH';
     case 'XXX_INVALID_INPUT':
-      return ApiErrorType.FIELD;
+      return 'FIELD';
     default:
-      return ApiErrorType.UNKNOWN;
+      return 'UNKNOWN';
   }
 }
 ```
+
+Existing classifiers in this file include `classifyQnaError`, `classifyHomeworkError`, `classifyMypageError`, `classifyPreviewError`, `classifyStudyNoteCommentError`, `classifyColumnError`, `classifyOpenChallengeError`, `classifyInquiryError`, `classifyConnectionError`, `classifyStudyNoteError`, and `classifyWithdrawError`.
 
 ### Step 2 — Call `handleApiError` in `onError`
 

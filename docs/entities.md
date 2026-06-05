@@ -1,18 +1,26 @@
 # entities.md — Entities Structure
 
-Each domain follows this structure:
+Each domain lives under `entities/{domain}/`. The shape varies by entity — only `infrastructure/`, `types/`, and `index.ts` are universal. A fuller entity (e.g. `member`) looks like:
 
 ```
 entities/{domain}/
-  infrastructure/
-    {domain}.dto.ts         — Raw API response types
-    {domain}.repository.ts  — All API calls and transformation logic
-    {domain}.keys.ts        — TanStack Query keys
+  schema.ts                       — base zod schema(s) shared across layers (optional)
   core/
-    {domain}.domain.ts      — Domain schema (only when transformation is needed)
+    {domain}.domain.schema.ts     — pure domain schema (transformation target)
+    {domain}.factory.ts           — builds/parses domain objects from DTO input
+  infrastructure/
+    {domain}.dto.schema.ts        — raw API response zod schemas (DTO)
+    {domain}.adapters.ts          — API-envelope/DTO → domain adapters
+    {domain}.repository.ts        — API calls (also seen as {domain}.api.repository.ts)
+    {domain}.keys.ts              — TanStack Query keys
+  mapper/                         — pure display/util mappers (optional, e.g. member, profile)
+  policy/                         — authorization/ability rules (optional, e.g. member)
+  hooks/                          — entity-level query hooks (optional, e.g. member)
   types/
-    index.ts                — Final UI-ready types exported to consumers
+    index.ts                      — final UI-ready types exported to consumers
 ```
+
+Not every entity has every folder. Simpler entities (e.g. `study-room`) omit `mapper/`, `policy/`, `hooks/`. Older entities (e.g. `notification`) still use the flatter naming `{domain}.dto.ts` / `core/{domain}.domain.ts` without separate `adapters`/`factory` files. Follow the conventions of the entity you are editing.
 
 ---
 
@@ -41,7 +49,7 @@ Guidelines:
 
 ## DTO and Domain
 
-DTOs represent raw API responses.
+DTOs (in `infrastructure/`) represent raw API responses.
 Choose one of the two approaches below based on whether transformation is needed.
 
 ### Approach 1 — No transformation
@@ -56,11 +64,13 @@ export type UnreadCount = z.infer<typeof dto.unreadCount>;
 
 ### Approach 2 — With transformation
 
-Step 1. Define a pure schema in `core/{domain}.domain.ts`.
-Shape only — do NOT import DTO inside domain.ts.
+Transformation is typically three stages: an **adapter** validates the API envelope/DTO (`infrastructure/{domain}.adapters.ts`), a **factory** parses it into the domain schema (`core/{domain}.factory.ts` against `core/{domain}.domain.schema.ts`), and optional **mappers** (`mapper/`) derive display values.
+
+Step 1. Define a pure schema in `core/{domain}.domain.schema.ts`.
+Shape only — do NOT import DTO inside the domain schema.
 
 ```ts
-// core/{domain}.domain.ts
+// core/{domain}.domain.schema.ts
 const NotificationSchema = z.object({
   id: z.number(),
   message: z.string(),
@@ -70,11 +80,11 @@ const NotificationSchema = z.object({
 });
 ```
 
-Step 2. Write transformation logic in `{domain}.repository.ts`, not in domain.ts.
+Step 2. Keep transformation in `infrastructure/{domain}.adapters.ts` / `core/{domain}.factory.ts`, not in the domain schema file.
 
 ```ts
-// infrastructure/{domain}.repository.ts
-const toDomain = (raw: z.infer<typeof dto.notification>): Notification => ...;
+// core/{domain}.factory.ts
+const createFrontendMember = (raw: CreateMemberInput) => domain.schema.parse(raw);
 ```
 
 ---
@@ -83,10 +93,12 @@ const toDomain = (raw: z.infer<typeof dto.notification>): Notification => ...;
 
 Dependency must always flow in this direction. Do not reverse.
 
-Step 1. infrastructure (dto, repository)
-Step 2. core (domain)
+Step 1. infrastructure (dto, adapters, repository)
+Step 2. core (domain schema, factory)
 Step 3. types/index.ts
 Step 4. UI components (features)
+
+> This direction is a convention. It is NOT enforced by ESLint.
 
 ---
 
