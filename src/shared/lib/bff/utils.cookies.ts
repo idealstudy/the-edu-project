@@ -45,7 +45,9 @@ const isLocalRuntime = () => {
 
 const sanitizeCookieForLocalhost = (cookie: string) => {
   // 로컬 production 실행에서는 dev 백엔드 Domain 쿠키를 localhost에 저장할 수 없다.
-  if (!isLocalRuntime() && process.env.NODE_ENV === 'production') {
+  // Vercel Preview도 vercel.app 도메인이므로 백엔드 Domain과 불일치 → 제거 필요
+  const isPreview = process.env.VERCEL_ENV === 'preview';
+  if (!isLocalRuntime() && !isPreview && process.env.NODE_ENV === 'production') {
     return cookie;
   }
 
