@@ -164,6 +164,13 @@ const TREE = {
 } as const;
 
 /* ─────────────────────────────────────────────────────
+ * POINTS (포인트 지갑)
+ * ────────────────────────────────────────────────────*/
+const POINTS = {
+  INDEX: '/points',
+} as const;
+
+/* ─────────────────────────────────────────────────────
  * ADMIN
  * ────────────────────────────────────────────────────*/
 const ADMIN = {
@@ -196,6 +203,7 @@ export const PUBLIC = {
 export const PRIVATE = {
   DASHBOARD,
   TREE,
+  POINTS,
   ROOM,
   NOTE,
   STUDENT_NOTE,

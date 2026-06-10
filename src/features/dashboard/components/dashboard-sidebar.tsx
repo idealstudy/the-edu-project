@@ -10,7 +10,14 @@ import { Sidebar } from '@/shared/components/sidebar';
 import { PRIVATE, PUBLIC } from '@/shared/constants/route';
 import { useRole } from '@/shared/hooks/use-role';
 import { trackGnbLogoutClick } from '@/shared/lib/analytics';
-import { Flame, LogOut, ShieldUserIcon, Sprout, User2Icon } from 'lucide-react';
+import {
+  Flame,
+  LogOut,
+  ShieldUserIcon,
+  Sprout,
+  User2Icon,
+  Wallet,
+} from 'lucide-react';
 
 export const DashboardSidebar = () => {
   const { role } = useRole();
@@ -56,7 +63,17 @@ export const DashboardSidebar = () => {
         <Sidebar.Text>약점 트리</Sidebar.Text>
       </Sidebar.Item>
 
-      {/* TODO(2.0): 포인트(/points) 네비는 해당 화면 구현 시 추가 */}
+      {/* 포인트 지갑 (2.0 학생 중심 코어 — 소모 화폐) */}
+      <Sidebar.Item
+        href={PRIVATE.POINTS.INDEX}
+        matchPath={PRIVATE.POINTS.INDEX}
+      >
+        <Wallet
+          size={20}
+          className="shrink-0"
+        />
+        <Sidebar.Text>포인트</Sidebar.Text>
+      </Sidebar.Item>
 
       {role === 'ROLE_ADMIN' && (
         <>
