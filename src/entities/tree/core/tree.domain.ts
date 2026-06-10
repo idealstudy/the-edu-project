@@ -70,7 +70,9 @@ const TreeMasterySchema = z.object({
 const WEAK_THRESHOLD = 50;
 const PROGRESS_THRESHOLD = 80;
 
-const toIntensity = (masteryScore: number): z.infer<typeof TreeIntensitySchema> => {
+const toIntensity = (
+  masteryScore: number
+): z.infer<typeof TreeIntensitySchema> => {
   if (masteryScore <= 0) return 'untested';
   if (masteryScore < WEAK_THRESHOLD) return 'weak';
   if (masteryScore < PROGRESS_THRESHOLD) return 'progress';
@@ -97,7 +99,8 @@ const isStuck = (attemptCount: number, correctCount: number): boolean => {
 const isDiagnosedOnly = (
   masteryScore: number,
   diagnosedScore: number | null
-): boolean => masteryScore <= 0 && diagnosedScore !== null && diagnosedScore > 0;
+): boolean =>
+  masteryScore <= 0 && diagnosedScore !== null && diagnosedScore > 0;
 
 /* ─────────────────────────────────────────────────────
  * 내보내기

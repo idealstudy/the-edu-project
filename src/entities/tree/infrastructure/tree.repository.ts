@@ -80,9 +80,7 @@ const summarize = (nodes: TreeNodeView[]): TreeMastery => {
   const averageScore =
     total === 0
       ? 0
-      : Math.round(
-          nodes.reduce((acc, n) => acc + n.masteryScore, 0) / total
-        );
+      : Math.round(nodes.reduce((acc, n) => acc + n.masteryScore, 0) / total);
 
   return { total, mastered, inProgress, weak, untested, averageScore };
 };
@@ -135,9 +133,7 @@ const getMyTree = async (): Promise<TreeView> => {
  * [READ] 특정 단원(노드)의 챌린지 목록 조회
  *  GET /api/common/tree/{nodeId}/challenges
  * ────────────────────────────────────────────────────*/
-const getNodeChallenges = async (
-  nodeId: string
-): Promise<NodeChallenge[]> => {
+const getNodeChallenges = async (nodeId: string): Promise<NodeChallenge[]> => {
   const response = await api.private.get(`/common/tree/${nodeId}/challenges`);
   const list = unwrapEnvelope(response, dto.nodeChallenges);
   return list.map(toNodeChallenge);
