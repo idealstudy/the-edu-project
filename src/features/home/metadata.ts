@@ -5,13 +5,13 @@ import { SITE_CONFIG } from '@/config/site';
 export const homeMetadata: Metadata = {
   title: `${SITE_CONFIG.name} | ${SITE_CONFIG.description}`,
   description:
-    '수업 기록, 학생 숙제와 질문 관리가 하나로 연결되는 경험. 스터디룸, 과제 관리, 실시간 피드백까지 디에듀에서 시작하세요.',
+    '많이가 아니라 제대로 풀어야 오른다. 제대로 푼 만큼 내 약점 지도가 오렌지로 채워집니다. 막히면 AI 코치와 한 걸음씩.',
   keywords: [
-    '과외 관리',
-    '학생 관리',
-    '수업 기록',
-    '과제 관리',
-    '온라인 스터디룸',
+    '문제 풀이',
+    '약점 트리',
+    'AI 코치',
+    '수학 문제',
+    '오픈챌린지',
     '디에듀',
   ],
   alternates: { canonical: SITE_CONFIG.url },
@@ -20,7 +20,7 @@ export const homeMetadata: Metadata = {
   openGraph: {
     locale: 'ko_KR',
     title: `${SITE_CONFIG.name} | ${SITE_CONFIG.description}`,
-    description: '수업 기록, 학생 숙제와 질문 관리가 하나로 연결되는 경험',
+    description: '많이가 아니라 제대로 풀어야 오른다. 제대로 푼 만큼 채워지는 약점 지도',
     url: SITE_CONFIG.url,
     siteName: SITE_CONFIG.name,
     type: 'website',
@@ -29,14 +29,14 @@ export const homeMetadata: Metadata = {
         url: SITE_CONFIG.ogImage,
         width: 1200,
         height: 630,
-        alt: `${SITE_CONFIG.name} - 수업 관리 플랫폼`,
+        alt: `${SITE_CONFIG.name} - 제대로 푼 만큼 채워지는 약점 지도`,
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
     title: `${SITE_CONFIG.name} | ${SITE_CONFIG.description}`,
-    description: '수업 기록, 학생 숙제와 질문 관리가 하나로 연결되는 경험',
+    description: '많이가 아니라 제대로 풀어야 오른다. 제대로 푼 만큼 채워지는 약점 지도',
     images: [SITE_CONFIG.ogImage],
   },
   robots: {
