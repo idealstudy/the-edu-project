@@ -28,6 +28,7 @@ import { AiCoachPanel } from './ai-coach-panel';
 import { ChallengeHistoryDialog } from './challenge-history-dialog';
 import { ChallengeSolveSkeleton } from './challenge-solve-skeleton';
 import { ChoiceList } from './choice-list';
+import { SolutionPanel } from './solution-panel';
 
 type ChallengeSolveClientProps = {
   challengeId: string;
@@ -302,6 +303,14 @@ export const ChallengeSolveClient = ({
                 {submitError}
               </p>
             )}
+          </div>
+
+          {/* 정답 해설 (코치보다 조용히 — 차감·트리 제외 경고 후 열람) */}
+          <div className="mt-5">
+            <SolutionPanel
+              attemptId={aiAttemptId}
+              isLoggedIn={isLoggedIn}
+            />
           </div>
         </div>
 

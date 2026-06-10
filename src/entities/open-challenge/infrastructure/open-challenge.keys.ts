@@ -55,4 +55,6 @@ export const openChallengeKeys = {
     [...openChallengeKeys.all, 'ai-coaching-preference', 'me'] as const,
   aiCoachingMessages: (sessionId: string) =>
     [...openChallengeKeys.all, 'ai-coaching-messages', sessionId] as const,
+  solution: (attemptId: string) =>
+    [...openChallengeKeys.all, 'solution', attemptId] as const,
 };

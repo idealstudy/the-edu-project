@@ -44,6 +44,15 @@ const ChallengeAnswerResultSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 정답 해설 Domain
+ *  열람 시 포인트 −30 차감 + 약점 지도 제외(usedSolutionView).
+ * ────────────────────────────────────────────────────*/
+const ChallengeSolutionSchema = z.object({
+  content: z.string(),
+  correctAnswer: z.string().nullable(),
+});
+
+/* ─────────────────────────────────────────────────────
  * 오픈챌린지 리뷰 Domain
  * ────────────────────────────────────────────────────*/
 const ChallengeReviewSchema = z.object({
@@ -116,6 +125,7 @@ export const domain = {
   listItem: ChallengeListItemSchema,
   detail: ChallengeDetailSchema,
   answerResult: ChallengeAnswerResultSchema,
+  solution: ChallengeSolutionSchema,
   review: ChallengeReviewSchema,
   nextChallenge: NextChallengeSchema,
   ranking: UserRankingSchema,

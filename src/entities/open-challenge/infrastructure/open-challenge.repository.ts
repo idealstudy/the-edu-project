@@ -15,6 +15,7 @@ import {
   type ChallengeListParams,
   type ChallengeReview,
   type ChallengeReviewSort,
+  type ChallengeSolution,
   type CreateAiCoachingSessionPayload,
   type CreateChallengeReviewPayload,
   type MyChallengeDetail,
@@ -346,6 +347,21 @@ const submitChallengeAnswer = async (
 };
 
 /* ─────────────────────────────────────────────────────
+ * [READ] 정답 해설 조회
+ *  GET /api/common/challenge-attempts/{attemptId}/solution
+ *  - 호출 시 백엔드가 usedSolutionView=true 처리 + 포인트 −30 차감(이벤트).
+ *    → 차감 경고 Dialog 확인 후에만 호출해야 한다.
+ * ────────────────────────────────────────────────────*/
+const getChallengeSolution = async (
+  attemptId: string
+): Promise<ChallengeSolution> => {
+  const response = await api.private.get(
+    `/common/challenge-attempts/${attemptId}/solution`
+  );
+  return domain.solution.parse(unwrapEnvelope(response, dto.solution));
+};
+
+/* ─────────────────────────────────────────────────────
  * [READ] 오픈챌린지 리뷰 목록 조회
  * ────────────────────────────────────────────────────*/
 const getChallengeReviews = async (
@@ -550,6 +566,7 @@ export const repository = {
   deleteAdmin: deleteAdminChallenge,
   startAttempt: startChallengeAttempt,
   submitAnswer: submitChallengeAnswer,
+  getSolution: getChallengeSolution,
   getReviews: getChallengeReviews,
   createReview: createChallengeReview,
   recommendReview: recommendChallengeReview,

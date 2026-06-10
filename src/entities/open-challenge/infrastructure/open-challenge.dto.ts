@@ -95,6 +95,20 @@ const AnswerResultDtoSchema = z
   }));
 
 /* ─────────────────────────────────────────────────────
+ * 정답 해설 DTO (백엔드 SolutionResponse)
+ *  - 조회 시 백엔드가 usedSolutionView=true 처리 + 포인트 −30 차감.
+ *  - content: 마크다운/KaTeX 해설 본문.
+ * ────────────────────────────────────────────────────*/
+const SolutionDtoSchema = z.object({
+  content: z
+    .string()
+    .nullable()
+    .optional()
+    .transform((value) => value ?? ''),
+  correctAnswer: z.string().nullable().optional().default(null),
+});
+
+/* ─────────────────────────────────────────────────────
  * 오픈챌린지 리뷰 DTO
  * ────────────────────────────────────────────────────*/
 const ChallengeReviewDtoSchema = z.object({
@@ -305,6 +319,7 @@ export const dto = {
   detail: ChallengeDetailDtoSchema,
   attempt: AttemptDtoSchema,
   answerResult: AnswerResultDtoSchema,
+  solution: SolutionDtoSchema,
   review: ChallengeReviewDtoSchema,
   reviews: z.array(ChallengeReviewDtoSchema),
   reviewPage: page(ChallengeReviewDtoSchema),
