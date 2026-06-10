@@ -9,20 +9,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { NotificationPopover } from '@/features/notifications/components/notification-popover';
 import { useProfileImage } from '@/features/profile-image/hooks/use-profile-image';
-import {
-  useStudentStudyRoomsQuery,
-  useTeacherStudyRoomsQuery,
-} from '@/features/study-rooms';
-import type {
-  StudentStudyRoom,
-  StudyRoom,
-} from '@/features/study-rooms/model/types';
-import {
-  FindingIcon,
-  HomeIcon,
-  PlusIcon,
-  TextIcon,
-} from '@/shared/components/icons';
+import { HomeIcon } from '@/shared/components/icons';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 import {
   Popover,
@@ -30,7 +17,6 @@ import {
   PopoverItem,
   PopoverLink,
   PopoverNav,
-  PopoverSection,
   PopoverSeparator,
   PopoverTrigger,
 } from '@/shared/components/ui/popover';
@@ -64,23 +50,6 @@ export const Header = () => {
     profileImageData?.imageUrl,
     DEFAULT_PROFILE_IMAGE.HEADER
   );
-
-  // 역할에 따라 조건부로 API 호출
-  const { data: teacherStudyRoomList } = useTeacherStudyRoomsQuery({
-    enabled: session?.role === 'ROLE_TEACHER',
-  });
-
-  const { data: studentStudyRoomList } = useStudentStudyRoomsQuery({
-    enabled: session?.role === 'ROLE_STUDENT',
-  });
-
-  // 역할에 따라 적절한 리스트 선택
-  const studyRoomList: StudyRoom[] | StudentStudyRoom[] | undefined =
-    session?.role === 'ROLE_TEACHER'
-      ? teacherStudyRoomList
-      : session?.role === 'ROLE_STUDENT'
-        ? studentStudyRoomList
-        : undefined;
 
   const goToMypage = () => {
     router.push('/mypage');
@@ -119,17 +88,6 @@ export const Header = () => {
           />
 
           <div className="ml-5 flex gap-2">
-            <Link
-              href={PUBLIC.CORE.LIST.STUDY_ROOMS}
-              className={cn(
-                'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
-                pathname.startsWith(PUBLIC.CORE.LIST.BASE)
-                  ? 'bg-gray-11'
-                  : 'hover:bg-gray-11'
-              )}
-            >
-              탐색하기
-            </Link>
             <Link
               href={PUBLIC.COMMUNITY.COLUMN.LIST}
               className={cn(
@@ -251,54 +209,6 @@ export const Header = () => {
                     onClick={() => setIsOpen(false)}
                   >
                     <span>오픈챌린지</span>
-                  </PopoverLink>
-
-                  {/* 스터디룸 섹션 */}
-                  <div className="mt-2 flex flex-col gap-1">
-                    <PopoverSection
-                      action={
-                        session?.role === 'ROLE_TEACHER' ? (
-                          <Link
-                            href={PRIVATE.ROOM.CREATE}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 transition-colors hover:bg-gray-200"
-                            onClick={() => setIsOpen(false)}
-                            aria-label="스터디룸 생성"
-                          >
-                            <PlusIcon />
-                          </Link>
-                        ) : null
-                      }
-                    >
-                      <TextIcon />
-                      <span>스터디룸</span>
-                    </PopoverSection>
-
-                    {/* 스터디룸 리스트 */}
-                    {studyRoomList && studyRoomList.length > 0 ? (
-                      <div className="flex max-h-50 flex-col gap-1 overflow-auto">
-                        {studyRoomList.map((item) => (
-                          <PopoverLink
-                            key={item.id}
-                            href={PRIVATE.ROOM.DETAIL(item.id)}
-                            onClick={() => setIsOpen(false)}
-                            className="text-gray-600 hover:text-gray-900"
-                          >
-                            {item.name}
-                          </PopoverLink>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="px-3 py-2 text-sm text-gray-400">
-                        스터디룸이 없습니다
-                      </p>
-                    )}
-                  </div>
-                  <PopoverLink
-                    href={PUBLIC.CORE.LIST.STUDY_ROOMS}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <FindingIcon />
-                    <span>탐색하기</span>
                   </PopoverLink>
 
                   <PopoverSeparator />
