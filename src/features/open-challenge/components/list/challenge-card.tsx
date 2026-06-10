@@ -25,52 +25,54 @@ type SubjectConfig = {
   borderClass: string;
 };
 
+// B+A: 브랜드색은 오렌지 하나. 과목은 중립 그레이 칩(임의색 금지),
+// 난이도는 오렌지 강도 한 축으로 표현(트리 시그니처와 일관).
 const SUBJECT_CONFIG: Record<ChallengeSubject, SubjectConfig> = {
   MATH: {
     label: '수학',
-    tagClass: 'bg-orange-7 text-white',
+    tagClass: 'bg-gray-11 text-white',
     bgClass: 'bg-orange-1',
-    borderClass: 'border-orange-3',
+    borderClass: 'border-line-line1',
   },
   KOREAN: {
     label: '국어',
-    tagClass: 'bg-blue-500 text-white',
-    bgClass: 'bg-blue-50',
-    borderClass: 'border-blue-100',
+    tagClass: 'bg-gray-11 text-white',
+    bgClass: 'bg-gray-1',
+    borderClass: 'border-line-line1',
   },
   ENGLISH: {
     label: '영어',
-    tagClass: 'bg-green-600 text-white',
-    bgClass: 'bg-green-50',
-    borderClass: 'border-green-100',
+    tagClass: 'bg-gray-11 text-white',
+    bgClass: 'bg-gray-1',
+    borderClass: 'border-line-line1',
   },
   SCIENCE: {
     label: '탐구',
-    tagClass: 'bg-purple-500 text-white',
-    bgClass: 'bg-purple-50',
-    borderClass: 'border-purple-100',
+    tagClass: 'bg-gray-11 text-white',
+    bgClass: 'bg-gray-1',
+    borderClass: 'border-line-line1',
   },
 };
 
 const DIFFICULTY_CONFIG = {
   TOP: {
     label: '최상',
-    tagClass: 'bg-red-500 text-white',
-    cardClass: 'border-red-400 shadow-[0_0_0_1px_rgba(239,68,68,0.28)]',
+    tagClass: 'bg-orange-9 text-white',
+    cardClass: 'border-orange-7',
   },
   HIGH: {
     label: '상',
     tagClass: 'bg-orange-7 text-white',
-    cardClass: 'border-orange-7 shadow-[0_0_0_1px_rgba(255,92,53,0.22)]',
+    cardClass: 'border-orange-4',
   },
   MID: {
     label: '중',
-    tagClass: 'bg-gray-8 text-white',
+    tagClass: 'bg-orange-4 text-gray-11',
     cardClass: '',
   },
   LOW: {
     label: '하',
-    tagClass: 'bg-gray-6 text-white',
+    tagClass: 'bg-gray-3 text-gray-11',
     cardClass: '',
   },
 } as const;
@@ -135,11 +137,11 @@ export const ChallengeCard = ({
         ) : (
           <div className="flex h-[190px] w-full items-center justify-center">
             <div className="border-line-line2 relative h-full w-full max-w-[300px] rotate-[-1deg] overflow-hidden rounded-sm border bg-white px-6 py-4 shadow-sm">
-              <div className="absolute inset-x-0 top-8 border-t border-blue-100" />
-              <div className="absolute inset-x-0 top-16 border-t border-blue-100" />
-              <div className="absolute inset-x-0 top-24 border-t border-blue-100" />
-              <div className="absolute inset-x-0 top-32 border-t border-blue-100" />
-              <div className="absolute inset-y-0 left-9 border-l border-red-100" />
+              <div className="border-line-line1 absolute inset-x-0 top-8 border-t" />
+              <div className="border-line-line1 absolute inset-x-0 top-16 border-t" />
+              <div className="border-line-line1 absolute inset-x-0 top-24 border-t" />
+              <div className="border-line-line1 absolute inset-x-0 top-32 border-t" />
+              <div className="border-orange-3 absolute inset-y-0 left-9 border-l" />
               <p
                 className="text-text-main line-clamp-3 pt-6 text-center text-2xl leading-[1.65] font-normal"
                 style={{ fontFamily: HANDWRITING_FONT }}
