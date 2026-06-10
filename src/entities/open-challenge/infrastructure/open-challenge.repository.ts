@@ -22,6 +22,8 @@ import {
   type MyChallengeListItem,
   type MyChallengeListParams,
   type NextChallenge,
+  type RecommendedChallengeItem,
+  type RecommendedChallengeParams,
   type SendAiCoachingMessagePayload,
   type StartChallengeAttemptPayload,
   type SubmitChallengeAnswerPayload,
@@ -119,6 +121,27 @@ const toListItem = (raw: unknown): ChallengeListItem => {
     questionImageUrl: parsed.questionImageUrl,
     passRate: parsed.passRate,
     participantCount: parsed.participantCount,
+  });
+};
+
+const toRecommended = (raw: unknown): RecommendedChallengeItem => {
+  const parsed = dto.recommended.parse(raw);
+  const id = parsed.id ?? parsed.challengeId;
+
+  if (!id) {
+    throw new Error('Challenge id is missing.');
+  }
+
+  return domain.recommended.parse({
+    id,
+    subject: toSubject(parsed.subject),
+    difficulty: toAdminDifficulty(parsed.difficulty),
+    title: parsed.questionText ?? parsed.sourceText,
+    sourceText: parsed.sourceText,
+    questionImageUrl: parsed.questionImageUrl,
+    wrongAnswerRate: parsed.wrongAnswerRate ?? 0,
+    participantCount: parsed.participantCount,
+    recommendReason: parsed.recommendReason,
   });
 };
 
@@ -236,6 +259,29 @@ const getChallengeList = async (
   });
   const page = unwrapEnvelope(response, dto.listPage);
   return page.content.map(toListItem);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [READ] 추천 오픈챌린지 조회 (공개 · 오답률·등급 기반)
+ *  GET /api/public/challenges/recommended?grade=&subject=
+ *  - grade 미지정 시 백엔드가 오답률 내림차순으로 추천.
+ *  - subject 'ALL'/미지정은 파라미터 생략(전체 과목).
+ *  - 응답은 평면 배열(List<RecommendedChallengeResponse>).
+ * ────────────────────────────────────────────────────*/
+const getRecommendedChallenges = async (
+  params: RecommendedChallengeParams = {}
+): Promise<RecommendedChallengeItem[]> => {
+  const response = await api.public.get('/public/challenges/recommended', {
+    params: {
+      grade: params.grade ?? undefined,
+      subject:
+        !params.subject || params.subject === 'ALL'
+          ? undefined
+          : params.subject,
+    },
+  });
+  const list = unwrapEnvelope(response, dto.recommendedList);
+  return list.map(toRecommended);
 };
 
 /* ─────────────────────────────────────────────────────
@@ -556,6 +602,7 @@ const getNextChallenge = async (
  * ────────────────────────────────────────────────────*/
 export const repository = {
   getList: getChallengeList,
+  getRecommended: getRecommendedChallenges,
   getAdminList: getAdminChallengeList,
   getDetail: getChallengeDetail,
   getAdminDetail: getAdminChallengeDetail,

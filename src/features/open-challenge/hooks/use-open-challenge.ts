@@ -6,6 +6,7 @@ import {
   type ChallengeReviewSort,
   type CreateAiCoachingSessionPayload,
   type CreateChallengeReviewPayload,
+  type RecommendedChallengeParams,
   type SendAiCoachingMessagePayload,
   type StartChallengeAttemptPayload,
   type SubmitChallengeAnswerPayload,
@@ -24,6 +25,14 @@ export const useOpenChallengeListQuery = (params: ChallengeListParams = {}) =>
   useQuery({
     queryKey: openChallengeKeys.list(params),
     queryFn: () => repository.getList(params),
+  });
+
+export const useRecommendedChallengesQuery = (
+  params: RecommendedChallengeParams = {}
+) =>
+  useQuery({
+    queryKey: openChallengeKeys.recommended(params),
+    queryFn: () => repository.getRecommended(params),
   });
 
 export const useOpenChallengeDetailQuery = (

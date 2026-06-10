@@ -52,6 +52,25 @@ const ChallengeListItemDtoSchema = z.object({
   passRate: NullableNumberSchema,
 });
 
+/* ─────────────────────────────────────────────────────
+ * 추천 오픈챌린지 DTO (공개)
+ *  백엔드 RecommendedChallengeResponse: challengeId·subject·difficulty·
+ *  wrongAnswerRate·sourceText·questionText·questionImageUrl·
+ *  participantCount·recommendReason. (passRate 미제공)
+ * ────────────────────────────────────────────────────*/
+const RecommendedChallengeDtoSchema = z.object({
+  id: IdSchema.optional(),
+  challengeId: IdSchema.optional(),
+  subject: ChallengeSubjectDtoSchema,
+  difficulty: DifficultyDtoSchema,
+  wrongAnswerRate: z.number().nullable().optional().default(0),
+  sourceText: z.string().optional().default('출처 정보'),
+  questionText: z.string().nullable().optional(),
+  questionImageUrl: z.string().nullable().optional().default(null),
+  participantCount: z.number().optional().default(0),
+  recommendReason: z.string().optional().default('오답률 기반 추천'),
+});
+
 const ChallengeDetailDtoSchema = ChallengeListItemDtoSchema.extend({
   topic: z.string().optional(),
   questionNumber: z.number().optional().default(1),
@@ -316,6 +335,8 @@ export const dto = {
   listItem: ChallengeListItemDtoSchema,
   list: z.array(ChallengeListItemDtoSchema),
   listPage: page(ChallengeListItemDtoSchema),
+  recommended: RecommendedChallengeDtoSchema,
+  recommendedList: z.array(RecommendedChallengeDtoSchema),
   detail: ChallengeDetailDtoSchema,
   attempt: AttemptDtoSchema,
   answerResult: AnswerResultDtoSchema,

@@ -19,6 +19,24 @@ const ChallengeListItemSchema = z.object({
   participantCount: z.number(),
 });
 
+/* ─────────────────────────────────────────────────────
+ * 추천 오픈챌린지 Domain (오답률·등급 기반)
+ *  GET /api/public/challenges/recommended
+ *  - 리스트 카드와 메타는 동일하되 추천 사유(recommendReason)와
+ *    오답률(wrongAnswerRate)을 추가로 노출한다. (passRate 미제공)
+ * ────────────────────────────────────────────────────*/
+const RecommendedChallengeSchema = z.object({
+  id: z.string(),
+  subject: ChallengeSubjectSchema,
+  difficulty: z.enum(['TOP', 'HIGH', 'MID', 'LOW']),
+  title: z.string(),
+  sourceText: z.string(),
+  questionImageUrl: z.string().nullable(),
+  wrongAnswerRate: z.number(),
+  participantCount: z.number(),
+  recommendReason: z.string(),
+});
+
 const ChallengeDetailSchema = z.object({
   id: z.string(),
   subject: z.string(),
@@ -123,6 +141,7 @@ const MyChallengeDetailSchema = z.object({
 export const domain = {
   subject: ChallengeSubjectSchema,
   listItem: ChallengeListItemSchema,
+  recommended: RecommendedChallengeSchema,
   detail: ChallengeDetailSchema,
   answerResult: ChallengeAnswerResultSchema,
   solution: ChallengeSolutionSchema,
