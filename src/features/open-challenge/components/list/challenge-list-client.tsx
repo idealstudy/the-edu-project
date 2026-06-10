@@ -7,9 +7,13 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Pagination } from '@/shared/components/ui';
 import { Inbox } from 'lucide-react';
 
-import { useOpenChallengeListQuery } from '../../hooks/use-open-challenge';
+import {
+  useOpenChallengeListQuery,
+  useRecommendedChallengesQuery,
+} from '../../hooks/use-open-challenge';
 import { ChallengeCard } from './challenge-card';
 import { ChallengeListSkeleton } from './challenge-list-skeleton';
+import { RecommendedChallengeCard } from './recommended-challenge-card';
 
 type SortOption = 'latest' | 'popular';
 
@@ -34,6 +38,13 @@ export const ChallengeListClient = ({
     sort,
   });
 
+  // 오늘의 추천 1문제 — 로그인 등급 정보가 없으면 grade 미지정(오답률순) 호출.
+  // 현재 화면엔 과목 필터 UI가 없어 전체 과목으로 추천을 받는다.
+  const { data: recommended } = useRecommendedChallengesQuery({
+    subject: 'ALL',
+  });
+  const topRecommended = recommended?.[0];
+
   const totalPages = Math.ceil((challenges?.length ?? 0) / PAGE_SIZE);
   const visibleChallenges = (challenges ?? []).slice(
     (page - 1) * PAGE_SIZE,
@@ -51,6 +62,9 @@ export const ChallengeListClient = ({
 
   return (
     <>
+      {page === 1 && topRecommended && (
+        <RecommendedChallengeCard challenge={topRecommended} />
+      )}
       {isLoading ? (
         <ChallengeListSkeleton />
       ) : (
