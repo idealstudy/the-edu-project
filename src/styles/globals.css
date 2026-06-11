@@ -1,6 +1,6 @@
+/* 손글씨 해설용 폰트는 layout <head>의 <link>로 로드(Tailwind v4가 외부 @import url을 처리 못 함).
+   .ai-coach-solution은 'Nanum Pen Script','Gaegu',cursive 폴백으로 미로드 시에도 동작. */
 @import 'tailwindcss';
-/* 손글씨 해설용 한글 필기체 폰트(런타임 로드, 빌드 의존 없음). 미로드 시 cursive 폴백. */
-@import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Pen+Script&display=swap');
 
 :root {
   /* ========================================

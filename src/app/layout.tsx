@@ -40,6 +40,11 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="bg-[#F9F9F9] antialiased">
+        {/* 손글씨 해설용 한글 필기체 폰트 (Next가 head로 호이스팅). 미로드 시 .ai-coach-solution의 cursive 폴백 */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Pen+Script&display=swap"
+        />
         {/* GTM Head 스니펫 */}
         {/* 배포환경일때만 작동되게 */}
         {shouldLoadGtm && (
