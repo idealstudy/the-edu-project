@@ -39,9 +39,26 @@ const FRIENDS = {
 /* ─────────────────────────────────────────────────────
  * DASHBOARD
  * ────────────────────────────────────────────────────*/
+type DashboardRole = 'ROLE_TEACHER' | 'ROLE_STUDENT' | 'ROLE_PARENT';
+
 const DASHBOARD = {
   INDEX: '/dashboard',
+  TEACHER: '/dashboard/teacher',
+  STUDENT: '/dashboard/student',
+  PARENT: '/dashboard/parent',
   INQUIRY: '/dashboard/inquiry',
+
+  /** 사용자 역할에 맞는 실제 대시보드 경로를 반환합니다. */
+  byRole: (role: DashboardRole): string => {
+    switch (role) {
+      case 'ROLE_TEACHER':
+        return '/dashboard/teacher';
+      case 'ROLE_STUDENT':
+        return '/dashboard/student';
+      case 'ROLE_PARENT':
+        return '/dashboard/parent';
+    }
+  },
 } as const;
 
 /* ─────────────────────────────────────────────────────
@@ -154,8 +171,8 @@ const INQUIRY = {
 const OPEN_CHALLENGE = {
   // 오픈챌린지 리스트가 사이트 메인('/')으로 승격됨. 상세/결과는 기존 경로 유지.
   LIST: '/',
-  DETAIL: (id: string) => `/open-challenge/${id}`,
-  RESULT: (id: string) => `/open-challenge/${id}/result`,
+  DETAIL: (id: string | number) => `/open-challenge/${id}`,
+  RESULT: (id: string | number) => `/open-challenge/${id}/result`,
 } as const;
 
 /* ─────────────────────────────────────────────────────
@@ -205,7 +222,7 @@ const ADMIN = {
   OPEN_CHALLENGE: {
     LIST: '/admin/open-challenge',
     NEW: '/admin/open-challenge/new',
-    EDIT: (id: string) => `/admin/open-challenge/${id}/edit`,
+    EDIT: (id: string | number) => `/admin/open-challenge/${id}/edit`,
   },
 } as const;
 
