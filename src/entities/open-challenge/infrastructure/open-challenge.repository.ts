@@ -195,6 +195,9 @@ const toAdminDetail = (raw: unknown): AdminChallengeDetail => {
   };
 };
 
+const toSolutionType = (value: string): 'TEXT' | 'DRAWING' =>
+  value.toUpperCase() === 'DRAWING' ? 'DRAWING' : 'TEXT';
+
 const toReview = (raw: unknown): ChallengeReview => {
   const parsed = dto.review.parse(raw);
   return domain.review.parse({
@@ -205,6 +208,8 @@ const toReview = (raw: unknown): ChallengeReview => {
     nickname: parsed.nickname,
     subject: parsed.subject,
     content: parsed.content,
+    solutionType: toSolutionType(parsed.solutionType),
+    drawingImageUrl: parsed.drawingImageUrl,
     recommendCount: parsed.recommendCount,
     isBest: parsed.isBest ?? parsed.best ?? false,
     isRecommendedByMe:

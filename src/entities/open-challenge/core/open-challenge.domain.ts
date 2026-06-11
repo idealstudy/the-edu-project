@@ -71,13 +71,21 @@ const ChallengeSolutionSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 풀이 유형 Domain (텍스트 / 손글씨 드로잉)
+ * ────────────────────────────────────────────────────*/
+const SolutionTypeSchema = z.enum(['TEXT', 'DRAWING']);
+
+/* ─────────────────────────────────────────────────────
  * 오픈챌린지 리뷰 Domain
+ *  - solutionType=DRAWING이면 drawingImageUrl(presigned)로 손글씨 스냅샷을 노출.
  * ────────────────────────────────────────────────────*/
 const ChallengeReviewSchema = z.object({
   id: z.string(),
   nickname: z.string(),
   subject: z.string(),
   content: z.string(),
+  solutionType: SolutionTypeSchema,
+  drawingImageUrl: z.string().nullable(),
   recommendCount: z.number(),
   isBest: z.boolean(),
   isRecommendedByMe: z.boolean(),
@@ -140,6 +148,7 @@ const MyChallengeDetailSchema = z.object({
  * ────────────────────────────────────────────────────*/
 export const domain = {
   subject: ChallengeSubjectSchema,
+  solutionType: SolutionTypeSchema,
   listItem: ChallengeListItemSchema,
   recommended: RecommendedChallengeSchema,
   detail: ChallengeDetailSchema,
