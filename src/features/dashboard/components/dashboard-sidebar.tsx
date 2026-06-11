@@ -11,8 +11,10 @@ import { PRIVATE, PUBLIC } from '@/shared/constants/route';
 import { useRole } from '@/shared/hooks/use-role';
 import { trackGnbLogoutClick } from '@/shared/lib/analytics';
 import {
+  BookOpen,
   Flame,
   GraduationCap,
+  Handshake,
   LogOut,
   ShieldUserIcon,
   Sprout,
@@ -63,6 +65,30 @@ export const DashboardSidebar = () => {
           className="shrink-0"
         />
         <Sidebar.Text>오픈챌린지</Sidebar.Text>
+      </Sidebar.Item>
+
+      {/* 코스 (2.0 — 공개 코스 목록·맛보기·수강) */}
+      <Sidebar.Item
+        href={PUBLIC.COURSE.LIST}
+        matchPath={PUBLIC.COURSE.LIST}
+      >
+        <BookOpen
+          size={20}
+          className="shrink-0"
+        />
+        <Sidebar.Text>코스</Sidebar.Text>
+      </Sidebar.Item>
+
+      {/* 친구 (2.0 — 친구·도전장) */}
+      <Sidebar.Item
+        href={PRIVATE.FRIENDS.INDEX}
+        matchPath={PRIVATE.FRIENDS.INDEX}
+      >
+        <Handshake
+          size={20}
+          className="shrink-0"
+        />
+        <Sidebar.Text>친구</Sidebar.Text>
       </Sidebar.Item>
 
       {/* 약점 트리 (2.0 학생 중심 코어) */}

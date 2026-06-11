@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 
 import { type ChallengeReviewSort } from '@/entities/open-challenge';
+import { ChallengeShareButton } from '@/features/social';
 import { BackButton } from '@/shared/components/ui';
 
 import {
@@ -113,6 +114,22 @@ export const ChallengeResult = ({ challengeId }: ChallengeResultProps) => {
         </div>
 
         <aside className="flex w-full flex-col gap-4 lg:w-[340px] lg:shrink-0">
+          {Number.isInteger(Number(challengeId)) && (
+            <div className="border-line-line2 flex flex-col gap-3 rounded-[12px] border bg-white p-5">
+              <div className="flex flex-col gap-1">
+                <h2 className="font-body1-heading text-text-main">
+                  친구와 대결
+                </h2>
+                <p className="font-caption-normal text-text-sub2 text-balance">
+                  이 문제로 도전장을 보내 누가 더 잘 푸는지 겨뤄봐요.
+                </p>
+              </div>
+              <ChallengeShareButton
+                challengeId={Number(challengeId)}
+                className="w-full"
+              />
+            </div>
+          )}
           <AiFeedbackForm attemptId={submittedResult?.attemptId} />
           {nextChallenge && <NextChallengeCard {...nextChallenge} />}
         </aside>

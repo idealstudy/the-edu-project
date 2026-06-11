@@ -15,7 +15,24 @@ const CORE = {
     ERROR: (reason: string) => `/invite/error?reason=${reason}`,
     SUCCESS: (studyRoomId: number) =>
       `/invite/success?studyRoomId=${studyRoomId}`,
+    CHALLENGE: (token: string) => `/invite/challenge/${token}`,
   },
+} as const;
+
+/* ─────────────────────────────────────────────────────
+ * COURSE (코스 — 공개 목록·상세 / 수강 차시 뷰)
+ * ────────────────────────────────────────────────────*/
+const COURSE = {
+  LIST: '/courses',
+  DETAIL: (id: number) => `/courses/${id}`,
+  LEARN: (id: number) => `/courses/${id}/learn`,
+} as const;
+
+/* ─────────────────────────────────────────────────────
+ * FRIENDS (친구 — 목록·요청·수락)
+ * ────────────────────────────────────────────────────*/
+const FRIENDS = {
+  INDEX: '/friends',
 } as const;
 
 /* ─────────────────────────────────────────────────────
@@ -217,6 +234,7 @@ export const PUBLIC = {
   COMMUNITY: PUBLIC_COMMUNITY,
   INQUIRY,
   OPEN_CHALLENGE,
+  COURSE,
 } as const;
 
 /* ─────────────────────────────────────────────────────
@@ -238,4 +256,6 @@ export const PRIVATE = {
   MYPAGE,
   ADMIN,
   SETTINGS,
+  COURSE,
+  FRIENDS,
 } as const;

@@ -1,0 +1,133 @@
+import {
+  type ChallengeInvite,
+  type ChallengeInvitePreview,
+  type ChallengeInviteResult,
+  type CreateChallengeInvitePayload,
+  type FriendRequestPayload,
+  type Friendship,
+} from '@/entities/social/types';
+import { api } from '@/shared/api';
+import { unwrapEnvelope } from '@/shared/lib/api-utils';
+import { z } from 'zod';
+
+import { domain } from './../core/social.domain';
+import { dto, payload } from './social.dto';
+
+/* ─────────────────────────────────────────────────────
+ * DTO → Domain 변환
+ * ────────────────────────────────────────────────────*/
+const toFriendship = (raw: unknown): Friendship => {
+  const parsed = dto.friendship.parse(raw);
+  return domain.friendship.parse({
+    ...parsed,
+    regDate: parsed.regDate ?? null,
+  });
+};
+
+const toChallengeInvite = (raw: unknown): ChallengeInvite => {
+  const parsed = dto.challengeInvite.parse(raw);
+  return domain.challengeInvite.parse({
+    ...parsed,
+    inviteeId: parsed.inviteeId ?? null,
+    regDate: parsed.regDate ?? null,
+  });
+};
+
+const toInvitePreview = (raw: unknown): ChallengeInvitePreview => {
+  const parsed = dto.challengeInvitePreview.parse(raw);
+  return domain.challengeInvitePreview.parse({
+    ...parsed,
+    subject: parsed.subject ?? null,
+    difficulty: parsed.difficulty ?? null,
+  });
+};
+
+const toInviteResult = (raw: unknown): ChallengeInviteResult => {
+  const parsed = dto.challengeInviteResult.parse(raw);
+  return domain.challengeInviteResult.parse({
+    ...parsed,
+    myCorrect: parsed.myCorrect ?? null,
+    opponentCorrect: parsed.opponentCorrect ?? null,
+  });
+};
+
+/* ─────────────────────────────────────────────────────
+ * 친구 API
+ * ────────────────────────────────────────────────────*/
+const requestFriend = async (
+  body: FriendRequestPayload
+): Promise<Friendship> => {
+  const validated = payload.friendRequest.parse(body);
+  const response = await api.private.post('/common/friends', validated);
+  return toFriendship(unwrapEnvelope(response, z.unknown()));
+};
+
+const acceptFriend = async (friendshipId: number): Promise<Friendship> => {
+  const response = await api.private.post(
+    `/common/friends/${friendshipId}/accept`
+  );
+  return toFriendship(unwrapEnvelope(response, z.unknown()));
+};
+
+const getMyFriends = async (): Promise<Friendship[]> => {
+  const response = await api.private.get('/common/friends');
+  const list = unwrapEnvelope(response, z.array(z.unknown()));
+  return list.map(toFriendship);
+};
+
+/* ─────────────────────────────────────────────────────
+ * 도전장 API
+ * ────────────────────────────────────────────────────*/
+const createInvite = async (
+  body: CreateChallengeInvitePayload
+): Promise<ChallengeInvite> => {
+  const validated = payload.createChallengeInvite.parse(body);
+  const response = await api.private.post(
+    '/common/challenge-invites',
+    validated
+  );
+  return toChallengeInvite(unwrapEnvelope(response, z.unknown()));
+};
+
+const getMyInvites = async (): Promise<ChallengeInvite[]> => {
+  const response = await api.private.get('/common/challenge-invites/me');
+  const list = unwrapEnvelope(response, z.array(z.unknown()));
+  return list.map(toChallengeInvite);
+};
+
+const acceptInvite = async (token: string): Promise<ChallengeInvite> => {
+  const response = await api.private.post(
+    `/common/challenge-invites/${token}/accept`
+  );
+  return toChallengeInvite(unwrapEnvelope(response, z.unknown()));
+};
+
+const getInviteResult = async (
+  token: string
+): Promise<ChallengeInviteResult> => {
+  const response = await api.private.get(
+    `/common/challenge-invites/${token}/result`
+  );
+  return toInviteResult(unwrapEnvelope(response, z.unknown()));
+};
+
+/* ─────────────────────────────────────────────────────
+ * 도전장 미리보기 (공개·비로그인)
+ * ────────────────────────────────────────────────────*/
+const getPublicInvitePreview = async (
+  token: string
+): Promise<ChallengeInvitePreview> => {
+  const response = await api.public.get(`/public/challenge-invites/${token}`);
+  return toInvitePreview(unwrapEnvelope(response, z.unknown()));
+};
+
+export const repository = {
+  requestFriend,
+  acceptFriend,
+  getMyFriends,
+  createInvite,
+  getMyInvites,
+  acceptInvite,
+  getInviteResult,
+  getPublicInvitePreview,
+};
