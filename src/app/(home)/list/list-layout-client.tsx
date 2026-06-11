@@ -10,7 +10,6 @@ import {
   ENROLLMENT_STATUS_TO_KOREAN,
   SUBJECT_TO_KOREAN,
 } from '@/entities/study-room-preview/core/preview.domain';
-import { DashboardSidebar } from '@/features/dashboard/components/dashboard-sidebar';
 import BackLink from '@/features/dashboard/studynote/components/back-link';
 import {
   StudyRoomsListSkeleton,
@@ -129,16 +128,8 @@ export default function ListLayoutClient({
   }, [pathname, role]);
 
   return (
-    <div className="flex min-h-screen w-full">
-      {/* 사이드바 영역: 로그인 시에만 노출 */}
-      {isAuthenticated && <DashboardSidebar />}
-
-      <main
-        className={cn(
-          'flex-1 transition-all duration-300',
-          isAuthenticated ? 'desktop:ml-sidebar-width' : 'pl-0'
-        )}
-      >
+    // 로그인 시 사이드바 셸은 상위 (home)/layout.tsx 의 AppShell 이 담당한다.
+    <main className="min-h-screen w-full">
         <div className="mb-4 min-h-screen w-full bg-white">
           <div className="bg-system-background w-full">
             <div className="mx-auto max-w-[1440px] px-4 pt-8 md:px-8 lg:px-20">
@@ -320,7 +311,6 @@ export default function ListLayoutClient({
             </div>
           </div>
         </div>
-      </main>
-    </div>
+    </main>
   );
 }
