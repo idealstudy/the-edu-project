@@ -68,7 +68,6 @@ const toNodeView = (raw: unknown): TreeNodeView => {
   const node = dto.node.parse(raw);
   const parsed = domain.node.parse({
     ...node,
-    nodeId: node.id, // 백엔드 응답 필드 id → 도메인 nodeId
     subject: toSubject(node.subject),
   });
 
