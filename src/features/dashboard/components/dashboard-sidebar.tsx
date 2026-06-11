@@ -17,6 +17,7 @@ import {
   ShieldUserIcon,
   Sprout,
   User2Icon,
+  Users,
   Wallet,
 } from 'lucide-react';
 
@@ -87,6 +88,20 @@ export const DashboardSidebar = () => {
         />
         <Sidebar.Text>포인트</Sidebar.Text>
       </Sidebar.Item>
+
+      {/* 자녀 학습 (학부모 전용 — 자녀 목록·학습 리포트) */}
+      {role === 'ROLE_PARENT' && (
+        <Sidebar.Item
+          href={PRIVATE.PARENT.INDEX}
+          matchPath={PRIVATE.PARENT.INDEX}
+        >
+          <Users
+            size={20}
+            className="shrink-0"
+          />
+          <Sidebar.Text>자녀 학습</Sidebar.Text>
+        </Sidebar.Item>
+      )}
 
       {role === 'ROLE_ADMIN' && (
         <>

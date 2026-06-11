@@ -185,6 +185,14 @@ const POINTS = {
 } as const;
 
 /* ─────────────────────────────────────────────────────
+ * PARENT (학부모 — 자녀 목록 대시보드 · 자녀 학습 리포트)
+ * ────────────────────────────────────────────────────*/
+const PARENT = {
+  INDEX: '/parent',
+  CHILD_REPORT: (childId: number) => `/parent/children/${childId}`,
+} as const;
+
+/* ─────────────────────────────────────────────────────
  * ADMIN
  * ────────────────────────────────────────────────────*/
 const ADMIN = {
@@ -220,6 +228,7 @@ export const PRIVATE = {
   TREE,
   ONBOARDING,
   POINTS,
+  PARENT,
   ROOM,
   NOTE,
   STUDENT_NOTE,
