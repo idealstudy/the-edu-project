@@ -14,10 +14,11 @@
 
 ```
 e2e/
-  fixtures/            — shared login logic and reusable setup
-  helpers/             — utility functions
+  helpers/             — shared login logic, reusable setup, utility functions
   {feature}.spec.ts    — test files
 ```
+
+Current spec files: `login`, `homework`, `study-note`, `study-room`, `onboarding-student`, `onboarding-teacher`.
 
 ---
 

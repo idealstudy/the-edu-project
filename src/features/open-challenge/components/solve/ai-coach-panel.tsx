@@ -8,13 +8,15 @@ import { type AiCoachingPreference } from '@/entities/open-challenge';
 import { Button } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
 import { cn } from '@/shared/lib';
+import { katex } from '@mdit/plugin-katex';
+import { renderToString } from 'katex';
 import { Bot, RotateCcw, Send, Settings } from 'lucide-react';
+import MarkdownIt from 'markdown-it';
 
 import {
   useAbandonAiCoachingSessionMutation,
   useAiCoachingPreferenceEnumsQuery,
   useCreateAiCoachingSessionMutation,
-  useFinishAiCoachingSessionMutation,
   useMyAiCoachingPreferenceQuery,
   useSendAiCoachingMessageMutation,
   useStartChallengeAttemptMutation,
@@ -50,7 +52,7 @@ type AiCoachPanelProps = {
   isLoggedIn: boolean;
   onAttemptCreated: (attemptId: string) => void;
   onAttemptCleared: () => void;
-  onReturnToProblem?: () => void;
+  onSessionChange?: (sessionId: string | null) => void;
 };
 
 const MAX_COMMENT_LENGTH = 200;
@@ -59,6 +61,124 @@ const AI_COACH_INITIAL_MESSAGE =
   '좋아요. 정답을 바로 고르기보다, 먼저 문제에서 무엇을 묻는지 같이 정리해볼게요.';
 
 const AI_COACH_QUICK_REPLIES = ['잘 모르겠어요', '더 쉽게요', '다음 힌트'];
+
+const MARKDOWN_SANITIZE_OPTIONS = {
+  USE_PROFILES: { html: true, mathMl: true },
+} as const;
+
+const KATEX_INLINE_OPTIONS = {
+  displayMode: false,
+  throwOnError: false,
+} as const;
+
+const MATH_CODE_PATTERN =
+  /(?:\\(?:frac|sqrt|sum|int|lim|left|right|cdot|times|pm)|[A-Za-z0-9)]\s*\^\s*(?:[A-Za-z0-9]|\{[^}]+\})|[A-Za-z]\s*=\s*[-+*/()A-Za-z0-9\s^]+|[+\-*/]\s*[A-Za-z0-9(\\])/;
+
+const KOREAN_POSTPOSITION_STRONG_PATTERN =
+  /^\*\*([^*\n]+[)\]}])\*\*(?=[가-힣])/;
+const SUPERSCRIPT_BRACED_PATTERN = /^\^\{([^{}\n]+)\}/;
+const SUPERSCRIPT_SIMPLE_PATTERN = /^\^([+-]?(?:\d+|[A-Za-z]+))/;
+
+const applyKoreanPostpositionStrongRule = (markdown: MarkdownIt) => {
+  markdown.inline.ruler.before(
+    'emphasis',
+    'korean_postposition_strong',
+    (state, silent) => {
+      const match = state.src
+        .slice(state.pos)
+        .match(KOREAN_POSTPOSITION_STRONG_PATTERN);
+
+      if (!match) return false;
+      if (silent) return true;
+
+      const fullMatch = match[0];
+      const strongText = match[1];
+
+      if (!fullMatch || !strongText) return false;
+
+      state.push('strong_open', 'strong', 1);
+      const textToken = state.push('text', '', 0);
+      textToken.content = strongText;
+      state.push('strong_close', 'strong', -1);
+      state.pos += fullMatch.length;
+
+      return true;
+    }
+  );
+};
+
+const applySuperscriptRule = (markdown: MarkdownIt) => {
+  markdown.inline.ruler.after(
+    'emphasis',
+    'math_superscript',
+    (state, silent) => {
+      const { pos, src } = state;
+      const previousChar = src.charAt(pos - 1);
+
+      if (
+        src.charCodeAt(pos) !== 0x5e ||
+        pos === 0 ||
+        /\s/.test(previousChar)
+      ) {
+        return false;
+      }
+
+      const remainingSource = src.slice(pos);
+      const match =
+        remainingSource.match(SUPERSCRIPT_BRACED_PATTERN) ??
+        remainingSource.match(SUPERSCRIPT_SIMPLE_PATTERN);
+
+      if (!match) return false;
+      if (silent) return true;
+
+      const fullMatch = match[0];
+      const exponent = match[1];
+
+      if (!fullMatch || !exponent) return false;
+
+      state.push('sup_open', 'sup', 1);
+      const textToken = state.push('text', '', 0);
+      textToken.content = exponent;
+      state.push('sup_close', 'sup', -1);
+      state.pos += fullMatch.length;
+
+      return true;
+    }
+  );
+};
+
+const markdownRenderer = new MarkdownIt({
+  breaks: true,
+  html: false,
+  linkify: true,
+});
+
+applyKoreanPostpositionStrongRule(markdownRenderer);
+applySuperscriptRule(markdownRenderer);
+markdownRenderer.use(katex, {
+  delimiters: 'all',
+  mathFence: true,
+});
+
+const defaultCodeInlineRule = markdownRenderer.renderer.rules.code_inline;
+
+markdownRenderer.renderer.rules.code_inline = (
+  tokens,
+  index,
+  options,
+  env,
+  self
+) => {
+  const content = tokens[index]?.content ?? '';
+
+  if (MATH_CODE_PATTERN.test(content)) {
+    return renderToString(content, KATEX_INLINE_OPTIONS);
+  }
+
+  return defaultCodeInlineRule
+    ? defaultCodeInlineRule(tokens, index, options, env, self)
+    : self.renderToken(tokens, index, options);
+};
 
 const toSettings = (
   preference: NonNullable<AiCoachingPreference>
@@ -171,13 +291,48 @@ const getStatusLabel = (status: AiCoachStatus) => {
   }
 };
 
+const MarkdownMessage = ({ content }: { content: string }) => {
+  const [html, setHtml] = useState('');
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    const renderMarkdown = async () => {
+      const { default: DOMPurify } = await import('dompurify');
+
+      if (!isCurrent) return;
+
+      setHtml(
+        DOMPurify.sanitize(
+          markdownRenderer.render(content),
+          MARKDOWN_SANITIZE_OPTIONS
+        )
+      );
+    };
+
+    setHtml('');
+    renderMarkdown();
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [content]);
+
+  return (
+    <div
+      className="ai-coach-markdown"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
+};
+
 export const AiCoachPanel = ({
   challengeId,
   attemptId,
   isLoggedIn,
   onAttemptCreated,
   onAttemptCleared,
-  onReturnToProblem,
+  onSessionChange,
 }: AiCoachPanelProps) => {
   const [messages, setMessages] = useState<AiCoachMessage[]>([]);
   const [inputMessage, setInputMessage] = useState('');
@@ -197,7 +352,6 @@ export const AiCoachPanel = ({
   const updatePreferenceMutation = useUpdateMyAiCoachingPreferenceMutation();
   const createSessionMutation = useCreateAiCoachingSessionMutation();
   const sendMessageMutation = useSendAiCoachingMessageMutation(sessionId);
-  const finishSessionMutation = useFinishAiCoachingSessionMutation();
   const abandonSessionMutation = useAbandonAiCoachingSessionMutation();
 
   const hasLoadedSettings =
@@ -207,7 +361,6 @@ export const AiCoachPanel = ({
     updatePreferenceMutation.isPending ||
     createSessionMutation.isPending ||
     sendMessageMutation.isPending ||
-    finishSessionMutation.isPending ||
     abandonSessionMutation.isPending;
 
   useEffect(() => {
@@ -265,6 +418,7 @@ export const AiCoachPanel = ({
       });
 
       setSessionId(session.sessionId);
+      onSessionChange?.(session.sessionId);
       setMessages([createAiMessage(getIntroMessage(nextSettings))]);
       setStatus('WAITING_ANSWER');
       setIsSettingsOpen(false);
@@ -351,26 +505,13 @@ export const AiCoachPanel = ({
     );
   };
 
-  const handleFinishAndReturn = () => {
-    if (!sessionId) {
-      onReturnToProblem?.();
-      return;
-    }
-
-    finishSessionMutation.mutate(sessionId, {
-      onSuccess: () => {
-        setStatus('FINISHED');
-        onReturnToProblem?.();
-      },
-    });
-  };
-
   const handleRestart = () => {
     if (sessionId && status !== 'FINISHED' && status !== 'ABANDONED') {
       abandonSessionMutation.mutate(sessionId);
     }
     setMessages([]);
     setSessionId('');
+    onSessionChange?.(null);
     setStatus('READY');
     onAttemptCleared();
   };
@@ -502,7 +643,7 @@ export const AiCoachPanel = ({
           <>
             <div
               ref={scrollAreaRef}
-              className="flex flex-1 flex-col gap-4 overflow-y-auto p-4"
+              className="ai-coach-conversation flex flex-1 flex-col gap-4 overflow-y-auto p-4"
             >
               {messages.map((message) => (
                 <div
@@ -535,13 +676,19 @@ export const AiCoachPanel = ({
                     )}
                     <div
                       className={cn(
-                        'rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-line',
+                        'rounded-2xl px-4 py-3 text-sm leading-relaxed',
                         message.role === 'ai'
                           ? 'bg-gray-1 text-text-main rounded-tl-none'
                           : 'bg-orange-7 rounded-tr-none text-white'
                       )}
                     >
-                      {message.content}
+                      {message.role === 'ai' ? (
+                        <MarkdownMessage content={message.content} />
+                      ) : (
+                        <span className="whitespace-pre-line">
+                          {message.content}
+                        </span>
+                      )}
                     </div>
                     <span className="text-gray-6 text-xs">
                       {message.timestamp}
@@ -550,19 +697,6 @@ export const AiCoachPanel = ({
                 </div>
               ))}
             </div>
-
-            {status === 'GUIDE_TO_PROBLEM' && (
-              <div className="border-line-line1 border-t px-4 py-3">
-                <Button
-                  type="button"
-                  onClick={handleFinishAndReturn}
-                  disabled={finishSessionMutation.isPending}
-                  className="w-full"
-                >
-                  문제로 돌아가 답 선택하기
-                </Button>
-              </div>
-            )}
 
             <div className="flex gap-2 px-4 pb-2">
               {AI_COACH_QUICK_REPLIES.map((replyOption) => (

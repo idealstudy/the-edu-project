@@ -18,11 +18,14 @@ import { Bot, ChevronDown, ChevronUp, Pencil, X } from 'lucide-react';
 
 import {
   useCreateChallengeReviewMutation,
+  useFinishAiCoachingSessionMutation,
+  useMyOpenChallengeDetailQuery,
   useOpenChallengeDetailQuery,
   useStartChallengeAttemptMutation,
   useSubmitChallengeAnswerMutation,
 } from '../../hooks/use-open-challenge';
 import { AiCoachPanel } from './ai-coach-panel';
+import { ChallengeHistoryDialog } from './challenge-history-dialog';
 import { ChallengeSolveSkeleton } from './challenge-solve-skeleton';
 import { ChoiceList } from './choice-list';
 
@@ -47,7 +50,9 @@ export const ChallengeSolveClient = ({
   const [submitError, setSubmitError] = useState('');
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const [isMobileAiOpen, setIsMobileAiOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [aiAttemptId, setAiAttemptId] = useState<string | null>(null);
+  const [aiSessionId, setAiSessionId] = useState<string | null>(null);
   const choiceSectionRef = useRef<HTMLDivElement>(null);
   const draftKey = `${DRAFT_KEY_PREFIX}:${challengeId}`;
 
@@ -61,11 +66,22 @@ export const ChallengeSolveClient = ({
 
   const { data: challenge, isLoading: isChallengeLoading } =
     useOpenChallengeDetailQuery(challengeId);
+  const { data: challengeHistory } = useMyOpenChallengeDetailQuery(
+    challengeId,
+    { enabled: isLoggedIn }
+  );
   const startAttemptMutation = useStartChallengeAttemptMutation();
   const submitAnswerMutation = useSubmitChallengeAnswerMutation(challengeId);
   const createReviewMutation = useCreateChallengeReviewMutation();
+  const finishAiCoachingSessionMutation = useFinishAiCoachingSessionMutation();
   const isSubmitting =
-    startAttemptMutation.isPending || submitAnswerMutation.isPending;
+    startAttemptMutation.isPending ||
+    submitAnswerMutation.isPending ||
+    finishAiCoachingSessionMutation.isPending;
+  const hasChallengeHistory =
+    !!challengeHistory &&
+    (challengeHistory.attempts.length > 0 ||
+      challengeHistory.reviews.length > 0);
 
   const handleSubmit = async () => {
     if (!isLoggedIn) {
@@ -87,6 +103,16 @@ export const ChallengeSolveClient = ({
       const attemptId =
         aiAttemptId ??
         (await startAttemptMutation.mutateAsync({ challengeId })).attemptId;
+
+      if (aiSessionId) {
+        try {
+          await finishAiCoachingSessionMutation.mutateAsync(aiSessionId);
+        } catch {
+          // 세션 종료 실패가 답안 제출을 막지는 않도록 한다.
+        }
+        setAiSessionId(null);
+      }
+
       const result = await submitAnswerMutation.mutateAsync({
         attemptId,
         params: { selectedAnswer },
@@ -119,13 +145,9 @@ export const ChallengeSolveClient = ({
     setSubmitError('');
   };
 
-  const focusChoiceSection = () => {
-    setIsMobileAiOpen(false);
-    choiceSectionRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'center',
-    });
-    choiceSectionRef.current?.focus();
+  const handleAiAttemptCleared = () => {
+    setAiAttemptId(null);
+    setAiSessionId(null);
   };
 
   if (isChallengeLoading) return <ChallengeSolveSkeleton />;
@@ -140,8 +162,8 @@ export const ChallengeSolveClient = ({
           attemptId={aiAttemptId}
           isLoggedIn={isLoggedIn}
           onAttemptCreated={setAiAttemptId}
-          onAttemptCleared={() => setAiAttemptId(null)}
-          onReturnToProblem={focusChoiceSection}
+          onAttemptCleared={handleAiAttemptCleared}
+          onSessionChange={setAiSessionId}
         />
       </aside>
 
@@ -159,6 +181,27 @@ export const ChallengeSolveClient = ({
               {challenge.topic}
             </span>
           </div>
+
+          {hasChallengeHistory && (
+            <div className="border-line-line1 bg-orange-1 mb-5 flex flex-col gap-3 rounded-xl border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-text-main font-semibold">
+                  전에 도전했던 문제예요.
+                </p>
+                <p className="text-gray-8 mt-1 text-sm">
+                  이전 답안과 공유한 풀이를 다시 확인할 수 있어요.
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setIsHistoryOpen(true)}
+                className="h-9 shrink-0 px-4 text-sm"
+              >
+                도전 내역 보기
+              </Button>
+            </div>
+          )}
 
           <div className="border-line-line1 mb-5 overflow-hidden rounded-xl border bg-white">
             <button
@@ -223,7 +266,7 @@ export const ChallengeSolveClient = ({
               placeholder="식, 풀이 과정, 떠오른 단서를 자유롭게 적어보세요."
               minHeight="420px"
               maxHeight="none"
-              ariaLabel="오픈 챌린지 풀이 입력"
+              ariaLabel="오픈챌린지 풀이 입력"
             />
           </div>
 
@@ -315,12 +358,19 @@ export const ChallengeSolveClient = ({
               attemptId={aiAttemptId}
               isLoggedIn={isLoggedIn}
               onAttemptCreated={setAiAttemptId}
-              onAttemptCleared={() => setAiAttemptId(null)}
-              onReturnToProblem={focusChoiceSection}
+              onAttemptCleared={handleAiAttemptCleared}
+              onSessionChange={setAiSessionId}
             />
           </Dialog.Body>
         </Dialog.Content>
       </Dialog>
+
+      <ChallengeHistoryDialog
+        challengeId={challengeId}
+        challenge={challenge}
+        isOpen={isHistoryOpen}
+        onOpenChange={setIsHistoryOpen}
+      />
 
       <Dialog
         isOpen={isLoginDialogOpen}

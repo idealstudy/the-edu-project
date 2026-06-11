@@ -7,6 +7,7 @@ import { Header } from '@/layout/header';
 import { GlobalProvider } from '@/providers';
 import '@/shared/components/editor/styles/text-editor.css';
 import '@/styles/globals.css';
+import 'katex/dist/katex.min.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_CONFIG.url),
