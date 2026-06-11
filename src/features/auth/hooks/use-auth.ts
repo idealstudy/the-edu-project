@@ -11,6 +11,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 // 로그인
 export const useLogin = () => {
   const queryClient = useQueryClient();
+  const router = useRouter();
   const loginRequest = async (body: LoginBody) => {
     return await api.bff.client.post('/api/v1/auth/login', body, {
       withCredentials: true,
@@ -25,6 +26,14 @@ export const useLogin = () => {
       );
       // 로그인 성공 이벤트
       trackAuthLoginSuccess(member?.role ?? null);
+      // 역할별 랜딩 — 학생은 개인화 허브(/learning)로
+      const dest =
+        member?.role === 'ROLE_MEMBER'
+          ? '/select-role'
+          : member?.role === 'ROLE_STUDENT'
+            ? '/learning'
+            : '/dashboard';
+      router.replace(dest);
     },
   });
 };

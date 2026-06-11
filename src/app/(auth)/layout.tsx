@@ -13,6 +13,7 @@ export default async function AuthLayout({
 
   if (session.status === 'authenticated') {
     if (session.role === 'ROLE_MEMBER') redirect('/select-role');
+    else if (session.role === 'ROLE_STUDENT') redirect('/learning');
     else redirect(PRIVATE.DASHBOARD.INDEX);
   }
 

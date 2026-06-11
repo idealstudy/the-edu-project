@@ -40,8 +40,11 @@ const TreeNodeDtoSchema = z.object({
 /* ─────────────────────────────────────────────────────
  * 내 약점 트리 응답 DTO ({ nodes: [...] })
  * ────────────────────────────────────────────────────*/
+// nodes는 required — .optional().default([])를 두면 unwrapEnvelope의
+// z.union([dataSchema, envelopeSchema])에서 envelope({status,message,data})이
+// dataSchema에 먼저 매칭되어 {nodes:[]}로 반환되고 실제 data를 못 꺼낸다.
 const TreeResponseDtoSchema = z.object({
-  nodes: z.array(TreeNodeDtoSchema).optional().default([]),
+  nodes: z.array(TreeNodeDtoSchema),
 });
 
 /* ─────────────────────────────────────────────────────
