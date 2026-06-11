@@ -1,36 +1,38 @@
 import { Sparkles } from 'lucide-react';
 
 /* ─────────────────────────────────────────────────────
- * LevelBadge — 레벨(성장 지표) 자리표시 컴포넌트
+ * LevelBadge — 레벨(성장 지표) 표시 컴포넌트 (presentational)
  *
  *  레벨은 "꾸준히 성장한 흔적"을 보여 주는 축으로,
  *  소모 화폐인 포인트와는 **다른 축**이다.
  *  (포인트를 써도 레벨은 내려가지 않는다.)
  *
- *  실제 레벨/경험치 API가 아직 없어 정적 placeholder로 둔다.
- *  - 형태(Lv.N + 경험치 게이지)로 포인트 잔액 카드와 시각적으로 구분.
- *  - 백엔드 연동 시 props로 level/exp/nextExp를 받도록 확장.
+ *  실제 값은 GET /api/common/me/level (UserLevelResponse)에서 온다.
+ *  데이터 fetch는 features/level 의 connected 래퍼가 담당하고,
+ *  이 컴포넌트는 받은 값을 형태(Lv.N + 경험치 게이지)로만 그린다.
  * ────────────────────────────────────────────────────*/
 type LevelBadgeProps = {
-  /** 현재 레벨 (API 연동 전 정적 기본값) */
+  /** 현재 레벨 */
   level?: number;
-  /** 현재 레벨 내 누적 경험치 */
-  exp?: number;
-  /** 다음 레벨까지 필요한 경험치 */
-  nextExp?: number;
+  /** 현재 레벨 내 진행률(0~100) — API progressPercent */
+  progressPercent?: number;
+  /** 다음 레벨까지 남은 경험치 — API expToNextLevel */
+  expToNextLevel?: number;
+  /** 로딩 상태(게이지·숫자를 placeholder로) */
+  isLoading?: boolean;
 };
 
 export const LevelBadge = ({
   level = 1,
-  exp = 0,
-  nextExp = 100,
+  progressPercent = 0,
+  expToNextLevel = 0,
+  isLoading = false,
 }: LevelBadgeProps) => {
-  const ratio =
-    nextExp > 0 ? Math.min(100, Math.round((exp / nextExp) * 100)) : 0;
+  const ratio = Math.min(100, Math.max(0, Math.round(progressPercent)));
 
   return (
     <section
-      className="border-line-line1 flex flex-col gap-4 rounded-[12px] border bg-white p-5"
+      className="border-line-line1 flex h-full flex-col gap-4 rounded-[12px] border bg-white p-5"
       aria-label="레벨"
     >
       <div className="flex items-center gap-3">
@@ -46,7 +48,7 @@ export const LevelBadge = ({
             레벨 · 성장 지표
           </span>
           <span className="font-body1-heading text-text-main tabular-nums">
-            Lv.{level}
+            {isLoading ? 'Lv.—' : `Lv.${level}`}
           </span>
         </div>
       </div>
@@ -55,7 +57,7 @@ export const LevelBadge = ({
         <div className="bg-gray-1 h-2 w-full overflow-hidden rounded-full">
           <div
             className="bg-orange-7 h-full rounded-full transition-[width] duration-500 motion-reduce:transition-none"
-            style={{ width: `${ratio}%` }}
+            style={{ width: `${isLoading ? 0 : ratio}%` }}
           />
         </div>
         <div className="flex items-center justify-between">
@@ -63,7 +65,7 @@ export const LevelBadge = ({
             다음 레벨까지
           </span>
           <span className="font-caption-heading text-text-sub1 tabular-nums">
-            {exp} / {nextExp} XP
+            {isLoading ? '— XP' : `${expToNextLevel.toLocaleString('ko-KR')} XP`}
           </span>
         </div>
       </div>

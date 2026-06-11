@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { LevelBadge } from '@/features/point/components/level-badge';
+import { LevelBadgeConnected } from '@/features/level';
 import { useMyPointWalletQuery } from '@/features/point/hooks/use-point';
 import { PRIVATE } from '@/shared/constants';
 import { ChevronRight, Wallet } from 'lucide-react';
@@ -63,7 +63,7 @@ export const PointSummaryCard = () => {
 
       {/* 레벨 — 포인트와 다른 축(성장 지표) */}
       <div className="w-full md:w-[300px] md:shrink-0">
-        <LevelBadge />
+        <LevelBadgeConnected />
       </div>
     </section>
   );

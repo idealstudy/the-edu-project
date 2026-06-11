@@ -1,10 +1,10 @@
 'use client';
 
 import { type PointTransactionView } from '@/entities/point';
+import { LevelBadgeConnected } from '@/features/level';
 import { ArrowDownRight, ArrowUpRight, TriangleAlert, Wallet } from 'lucide-react';
 
 import { useMyPointWalletQuery } from '../hooks/use-point';
-import { LevelBadge } from './level-badge';
 import { PointWalletSkeleton } from './point-wallet-skeleton';
 
 /* ─────────────────────────────────────────────────────
@@ -180,7 +180,7 @@ export const PointWalletClient = () => {
 
       {/* 레벨 (성장 지표 — 포인트와 다른 축) */}
       <div className="w-full shrink-0 min-[1200px]:w-[300px]">
-        <LevelBadge />
+        <LevelBadgeConnected />
       </div>
     </div>
   );
