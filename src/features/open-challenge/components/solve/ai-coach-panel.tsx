@@ -13,6 +13,7 @@ import { renderToString } from 'katex';
 import {
   BookOpenCheck,
   Bot,
+  PenLine,
   RotateCcw,
   Send,
   Settings,
@@ -52,6 +53,8 @@ type AiCoachMessage = {
   content: string;
   timestamp: string;
   step?: AiCoachProgressStep;
+  // 'solution' 메시지는 손글씨 스타일(노트 톤)로 렌더한다.
+  kind?: 'solution';
 };
 
 type AiCoachPanelProps = {
@@ -402,13 +405,15 @@ export const AiCoachPanel = ({
 
   const createAiMessage = (
     content: string,
-    step?: AiCoachProgressStep
+    step?: AiCoachProgressStep,
+    kind?: AiCoachMessage['kind']
   ): AiCoachMessage => ({
     id: `ai-${Date.now()}-${Math.random()}`,
     role: 'ai',
     content,
     timestamp: getTimestamp(),
     step,
+    kind,
   });
 
   const startCoach = async (nextSettings: AiCoachSettings) => {
@@ -542,7 +547,9 @@ export const AiCoachPanel = ({
         setMessages((previousMessages) => [
           ...previousMessages,
           createAiMessage(
-            `${answerLine}${solution.content || '해설 본문이 준비되지 않았어요.'}`
+            `${answerLine}${solution.content || '해설 본문이 준비되지 않았어요.'}`,
+            undefined,
+            'solution'
           ),
         ]);
       },
@@ -714,11 +721,19 @@ export const AiCoachPanel = ({
                         {getProgressStepLabel(message.step)}
                       </span>
                     )}
+                    {message.kind === 'solution' && (
+                      <span className="text-orange-7 flex items-center gap-1 text-xs font-semibold">
+                        <PenLine size={13} />
+                        손글씨 해설
+                      </span>
+                    )}
                     <div
                       className={cn(
                         'rounded-2xl px-4 py-3 text-sm leading-relaxed',
                         message.role === 'ai'
-                          ? 'bg-gray-1 text-text-main rounded-tl-none'
+                          ? message.kind === 'solution'
+                            ? 'ai-coach-solution border-orange-2 rounded-tl-none border bg-[#fffdf3]'
+                            : 'bg-gray-1 text-text-main rounded-tl-none'
                           : 'bg-orange-7 rounded-tr-none text-white'
                       )}
                     >

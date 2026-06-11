@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+/* 손글씨 해설용 한글 필기체 폰트(런타임 로드, 빌드 의존 없음). 미로드 시 cursive 폴백. */
+@import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Pen+Script&display=swap');
 
 :root {
   /* ========================================
@@ -177,6 +179,34 @@ body {
 .ai-coach-markdown td {
   border: 1px solid var(--gray-3);
   padding: 0.375rem 0.5rem;
+}
+
+/* 손글씨 해설 — 노트 톤 배경(버블)에 한글 필기체로 본문 렌더.
+   가독성 우선: 폰트 크기·행간을 살짝 키우고, 수식(KaTeX)은 자체 폰트라 영향받지 않는다. */
+.ai-coach-solution {
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 1.85rem,
+    rgba(255, 92, 53, 0.08) 1.85rem,
+    rgba(255, 92, 53, 0.08) calc(1.85rem + 1px)
+  );
+}
+
+.ai-coach-solution .ai-coach-markdown {
+  font-family: 'Nanum Pen Script', 'Gaegu', 'Pretendard', cursive;
+  font-size: 1.15rem;
+  line-height: 1.85rem;
+  letter-spacing: 0.01em;
+  color: #2b2b2b;
+}
+
+.ai-coach-solution .ai-coach-markdown strong {
+  color: var(--orange-8);
+}
+
+/* 수식은 본문 손글씨 톤과 공존하되 KaTeX 기본 폰트로 가독성 유지 */
+.ai-coach-solution .ai-coach-markdown .katex {
+  font-size: 1em;
 }
 
 @theme {
