@@ -224,6 +224,7 @@ const toMyChallengeListItem = (raw: unknown): MyChallengeListItem => {
     challengeId: parsed.challengeId,
     subject: toSubject(parsed.subject),
     difficulty: parsed.difficulty,
+    status: parsed.status,
     sourceText: parsed.sourceText,
     questionText: parsed.questionText ?? '문제 이미지를 보고 답을 선택했어요.',
     questionImageUrl: parsed.questionImageUrl,
@@ -567,6 +568,8 @@ const getChallengeRanking = async (): Promise<UserRanking[]> => {
 const getMyChallengeList = async (params: MyChallengeListParams = {}) => {
   const response = await api.private.get('/common/me/challenges', {
     params: {
+      // status 미지정=ALL (하위호환: 완료 답안만 반환하던 기존 동작 유지)
+      status: params.status ?? 'ALL',
       result: params.result ?? 'ALL',
       page: params.page ?? 0,
       size: params.size ?? 10,

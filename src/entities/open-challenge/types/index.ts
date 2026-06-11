@@ -97,7 +97,15 @@ export type MyChallengeResultFilter = z.infer<
   typeof params.myChallengeResultFilter
 >;
 
+export type MyChallengeStatusFilter = z.infer<
+  typeof params.myChallengeStatusFilter
+>;
+
+/** 항목별 최신 attempt 상태 (목록 item.status) */
+export type MyChallengeItemStatus = MyChallengeListItem['status'];
+
 export type MyChallengeListParams = {
+  status?: MyChallengeStatusFilter;
   result?: MyChallengeResultFilter;
   page?: number;
   size?: number;

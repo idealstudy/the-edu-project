@@ -38,6 +38,7 @@ export const MyOpenChallengeList = () => {
 
   const currentPage = parsePage(searchParams.get('page') ?? undefined);
   const { data, isLoading, isError, refetch } = useMyOpenChallenges({
+    status: 'COMPLETED',
     result: 'ALL',
     page: currentPage - 1,
   });
@@ -77,7 +78,11 @@ export const MyOpenChallengeList = () => {
                 key={challenge.challengeId}
                 id={Number(challenge.challengeId)}
                 title={challenge.questionText}
-                subtitle={`${challenge.sourceText} | 마지막 제출 ${getRelativeTimeString(challenge.completedAt)}`}
+                subtitle={`${challenge.sourceText}${
+                  challenge.completedAt
+                    ? ` | 마지막 제출 ${getRelativeTimeString(challenge.completedAt)}`
+                    : ''
+                }`}
                 rightTitle={
                   <StatusBadge
                     label={DIFFICULTY_LABEL[challenge.difficulty]}

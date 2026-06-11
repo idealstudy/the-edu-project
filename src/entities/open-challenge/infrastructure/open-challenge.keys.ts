@@ -23,6 +23,7 @@ const normalizeRecommendedParams = (params: RecommendedChallengeParams = {}) => 
 const normalizeMyChallengeListParams = (
   params: MyChallengeListParams = {}
 ) => ({
+  status: params.status ?? 'ALL',
   result: params.result ?? 'ALL',
   page: params.page ?? 0,
   size: params.size ?? 10,

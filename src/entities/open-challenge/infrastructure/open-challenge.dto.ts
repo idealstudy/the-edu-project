@@ -178,18 +178,37 @@ const UserRankingDtoSchema = z.object({
 const MyChallengeResultFilterSchema = z.enum(['ALL', 'CORRECT', 'WRONG']);
 
 /* ─────────────────────────────────────────────────────
+ * 내 문제 상태 필터 (최신 attempt 상태 기준)
+ *  ALL=전체 / IN_PROGRESS=시도 중 / UNRESOLVED=미해결 / COMPLETED=완료
+ * ────────────────────────────────────────────────────*/
+const MyChallengeStatusFilterSchema = z.enum([
+  'ALL',
+  'IN_PROGRESS',
+  'UNRESOLVED',
+  'COMPLETED',
+]);
+
+/* 항목별 최신 attempt 상태 (AI_COACHING은 진행 중으로 취급) */
+const MyChallengeItemStatusSchema = z
+  .enum(['IN_PROGRESS', 'AI_COACHING', 'UNRESOLVED', 'COMPLETED'])
+  .optional()
+  .default('COMPLETED');
+
+/* ─────────────────────────────────────────────────────
  * 마이페이지 오픈챌린지 DTO
+ *  status=최신 attempt 상태, completedAt=완료가 아니면 null.
  * ────────────────────────────────────────────────────*/
 const MyChallengeListItemDtoSchema = z.object({
   challengeId: IdSchema,
   subject: ChallengeSubjectDtoSchema,
   difficulty: AdminChallengeDifficultySchema,
+  status: MyChallengeItemStatusSchema,
   sourceText: z.string().optional().default('출처 정보'),
   questionText: z.string().nullable().optional(),
   questionImageUrl: z.string().nullable().optional().default(null),
   isCorrect: z.boolean().nullable(),
   usedAi: z.boolean().optional().default(false),
-  completedAt: z.string(),
+  completedAt: z.string().nullable().optional().default(null),
 });
 
 const MyChallengeAttemptDtoSchema = z.object({
@@ -416,4 +435,5 @@ export const payload = {
 
 export const params = {
   myChallengeResultFilter: MyChallengeResultFilterSchema,
+  myChallengeStatusFilter: MyChallengeStatusFilterSchema,
 };

@@ -111,12 +111,13 @@ const MyChallengeListItemSchema = z.object({
   challengeId: z.string(),
   subject: ChallengeSubjectSchema,
   difficulty: z.enum(['TOP', 'HIGH', 'MID', 'LOW']),
+  status: z.enum(['IN_PROGRESS', 'AI_COACHING', 'UNRESOLVED', 'COMPLETED']),
   sourceText: z.string(),
   questionText: z.string(),
   questionImageUrl: z.string().nullable(),
   isCorrect: z.boolean().nullable(),
   usedAi: z.boolean(),
-  completedAt: z.string(),
+  completedAt: z.string().nullable(),
 });
 
 const MyChallengeAttemptSchema = z.object({
