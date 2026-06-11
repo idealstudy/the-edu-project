@@ -164,6 +164,13 @@ const TREE = {
 } as const;
 
 /* ─────────────────────────────────────────────────────
+ * ONBOARDING (학생 온보딩 — 학년·과목·등급·약점 진단)
+ * ────────────────────────────────────────────────────*/
+const ONBOARDING = {
+  INDEX: '/onboarding',
+} as const;
+
+/* ─────────────────────────────────────────────────────
  * POINTS (포인트 지갑)
  * ────────────────────────────────────────────────────*/
 const POINTS = {
@@ -203,6 +210,7 @@ export const PUBLIC = {
 export const PRIVATE = {
   DASHBOARD,
   TREE,
+  ONBOARDING,
   POINTS,
   ROOM,
   NOTE,
