@@ -1,18 +1,12 @@
 'use client';
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
-import {
-  HomeIcon,
-  ListIcon,
-  NotepadIcon,
-} from '@/shared/components/icons';
+import { ListIcon } from '@/shared/components/icons';
 import { Sidebar } from '@/shared/components/sidebar';
-import { PRIVATE, PUBLIC } from '@/shared/constants/route';
+import { PRIVATE } from '@/shared/constants/route';
 import { useRole } from '@/shared/hooks/use-role';
 import { trackGnbLogoutClick } from '@/shared/lib/analytics';
 import {
-  BookOpen,
-  Flame,
   GraduationCap,
   Handshake,
   LogOut,
@@ -20,7 +14,6 @@ import {
   Sprout,
   User2Icon,
   Users,
-  Wallet,
 } from 'lucide-react';
 
 export const DashboardSidebar = () => {
@@ -34,16 +27,7 @@ export const DashboardSidebar = () => {
 
   return (
     <Sidebar>
-      {/* 대시보드 */}
-      <Sidebar.Item
-        href={PRIVATE.DASHBOARD.INDEX}
-        matchPath={PRIVATE.DASHBOARD.INDEX}
-      >
-        <HomeIcon />
-        <Sidebar.Text>대시보드</Sidebar.Text>
-      </Sidebar.Item>
-
-      {/* 내 학습 (2.0 학생 1순위 — 약점 트리·포인트·내 문제 허브) */}
+      {/* 내 학습 (2.0 학생 1순위 — 약점 트리·포인트·뱃지·내 문제 허브) */}
       <Sidebar.Item
         href={PRIVATE.LEARNING.INDEX}
         matchPath={PRIVATE.LEARNING.INDEX}
@@ -53,30 +37,6 @@ export const DashboardSidebar = () => {
           className="shrink-0"
         />
         <Sidebar.Text>내 학습</Sidebar.Text>
-      </Sidebar.Item>
-
-      {/* 오픈챌린지 (2.0 학생 중심 코어) */}
-      <Sidebar.Item
-        href={PUBLIC.OPEN_CHALLENGE.LIST}
-        matchPath={PUBLIC.OPEN_CHALLENGE.LIST}
-      >
-        <Flame
-          size={20}
-          className="shrink-0"
-        />
-        <Sidebar.Text>오픈챌린지</Sidebar.Text>
-      </Sidebar.Item>
-
-      {/* 코스 (2.0 — 공개 코스 목록·맛보기·수강) */}
-      <Sidebar.Item
-        href={PUBLIC.COURSE.LIST}
-        matchPath={PUBLIC.COURSE.LIST}
-      >
-        <BookOpen
-          size={20}
-          className="shrink-0"
-        />
-        <Sidebar.Text>코스</Sidebar.Text>
       </Sidebar.Item>
 
       {/* 친구 (2.0 — 친구·도전장) */}
@@ -103,16 +63,13 @@ export const DashboardSidebar = () => {
         <Sidebar.Text>약점 트리</Sidebar.Text>
       </Sidebar.Item>
 
-      {/* 포인트 지갑 (2.0 학생 중심 코어 — 소모 화폐) */}
+      {/* 마이페이지 */}
       <Sidebar.Item
-        href={PRIVATE.POINTS.INDEX}
-        matchPath={PRIVATE.POINTS.INDEX}
+        href={PRIVATE.MYPAGE}
+        matchPath={PRIVATE.MYPAGE}
       >
-        <Wallet
-          size={20}
-          className="shrink-0"
-        />
-        <Sidebar.Text>포인트</Sidebar.Text>
+        <User2Icon className="shrink-0" />
+        <Sidebar.Text>마이페이지</Sidebar.Text>
       </Sidebar.Item>
 
       {/* 자녀 학습 (학부모 전용 — 자녀 목록·학습 리포트) */}
@@ -166,22 +123,6 @@ export const DashboardSidebar = () => {
           </Sidebar.List>
         </>
       )}
-
-      <Sidebar.Item
-        href={PUBLIC.COMMUNITY.COLUMN.LIST}
-        matchPath={PUBLIC.COMMUNITY.BASE}
-      >
-        <NotepadIcon className="shrink-0" />
-        <Sidebar.Text>게시판</Sidebar.Text>
-      </Sidebar.Item>
-
-      <Sidebar.Item
-        href={PRIVATE.MYPAGE}
-        matchPath={PRIVATE.MYPAGE}
-      >
-        <User2Icon className="shrink-0" />
-        <Sidebar.Text>마이페이지</Sidebar.Text>
-      </Sidebar.Item>
 
       <div className="mt-auto flex justify-end p-2">
         <button

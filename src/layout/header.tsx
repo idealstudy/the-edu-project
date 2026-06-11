@@ -66,9 +66,9 @@ export const Header = () => {
       <div className="mx-auto flex w-full items-center justify-between">
         <div className="flex items-center gap-2">
           <Link
-            href={PUBLIC.CORE.INDEX}
+            href={PUBLIC.CORE.WELCOME}
             onClick={() => {
-              // GNB 로고 클릭 이벤트 전송
+              // GNB 로고 클릭 → 마케팅 랜딩(/welcome). 메인('/')은 오픈챌린지 리스트.
               trackGnbLogoClick(session?.role ?? null);
             }}
           >
@@ -89,6 +89,28 @@ export const Header = () => {
 
           <div className="ml-5 flex gap-2">
             <Link
+              href={PUBLIC.OPEN_CHALLENGE.LIST}
+              className={cn(
+                'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
+                pathname === '/' || pathname.startsWith('/open-challenge')
+                  ? 'bg-gray-11'
+                  : 'hover:bg-gray-11'
+              )}
+            >
+              오픈챌린지
+            </Link>
+            <Link
+              href={PUBLIC.COURSE.LIST}
+              className={cn(
+                'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
+                pathname.startsWith(PUBLIC.COURSE.LIST)
+                  ? 'bg-gray-11'
+                  : 'hover:bg-gray-11'
+              )}
+            >
+              코스
+            </Link>
+            <Link
               href={PUBLIC.COMMUNITY.COLUMN.LIST}
               className={cn(
                 'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
@@ -98,17 +120,6 @@ export const Header = () => {
               )}
             >
               게시판
-            </Link>
-            <Link
-              href={PUBLIC.OPEN_CHALLENGE.LIST}
-              className={cn(
-                'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
-                pathname.startsWith(PUBLIC.OPEN_CHALLENGE.LIST)
-                  ? 'bg-gray-11'
-                  : 'hover:bg-gray-11'
-              )}
-            >
-              오픈챌린지
             </Link>
           </div>
         </div>
@@ -187,13 +198,21 @@ export const Header = () => {
                 className="w-[320px]"
               >
                 <PopoverNav>
-                  {/* 홈 링크 */}
+                  {/* 오픈챌린지 (사이트 메인) */}
                   <PopoverLink
-                    href={PRIVATE.DASHBOARD.INDEX}
+                    href={PUBLIC.OPEN_CHALLENGE.LIST}
                     onClick={() => setIsOpen(false)}
                   >
                     <HomeIcon />
-                    <span>대시보드</span>
+                    <span>오픈챌린지</span>
+                  </PopoverLink>
+
+                  {/* 코스 */}
+                  <PopoverLink
+                    href={PUBLIC.COURSE.LIST}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <span>코스</span>
                   </PopoverLink>
 
                   {/* 게시판 */}
@@ -202,13 +221,6 @@ export const Header = () => {
                     onClick={() => setIsOpen(false)}
                   >
                     <span>게시판</span>
-                  </PopoverLink>
-
-                  <PopoverLink
-                    href={PUBLIC.OPEN_CHALLENGE.LIST}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <span>오픈챌린지</span>
                   </PopoverLink>
 
                   <PopoverSeparator />
