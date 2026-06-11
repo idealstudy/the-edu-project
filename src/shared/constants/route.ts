@@ -157,6 +157,13 @@ const OPEN_CHALLENGE = {
 } as const;
 
 /* ─────────────────────────────────────────────────────
+ * LEARNING (내 학습 허브 — 약점 트리·포인트·내 문제)
+ * ────────────────────────────────────────────────────*/
+const LEARNING = {
+  INDEX: '/learning',
+} as const;
+
+/* ─────────────────────────────────────────────────────
  * WEAKNESS TREE (약점 트리)
  * ────────────────────────────────────────────────────*/
 const TREE = {
@@ -209,6 +216,7 @@ export const PUBLIC = {
  * ────────────────────────────────────────────────────*/
 export const PRIVATE = {
   DASHBOARD,
+  LEARNING,
   TREE,
   ONBOARDING,
   POINTS,

@@ -12,6 +12,7 @@ import { useRole } from '@/shared/hooks/use-role';
 import { trackGnbLogoutClick } from '@/shared/lib/analytics';
 import {
   Flame,
+  GraduationCap,
   LogOut,
   ShieldUserIcon,
   Sprout,
@@ -37,6 +38,18 @@ export const DashboardSidebar = () => {
       >
         <HomeIcon />
         <Sidebar.Text>대시보드</Sidebar.Text>
+      </Sidebar.Item>
+
+      {/* 내 학습 (2.0 학생 1순위 — 약점 트리·포인트·내 문제 허브) */}
+      <Sidebar.Item
+        href={PRIVATE.LEARNING.INDEX}
+        matchPath={PRIVATE.LEARNING.INDEX}
+      >
+        <GraduationCap
+          size={20}
+          className="shrink-0"
+        />
+        <Sidebar.Text>내 학습</Sidebar.Text>
       </Sidebar.Item>
 
       {/* 오픈챌린지 (2.0 학생 중심 코어) */}
