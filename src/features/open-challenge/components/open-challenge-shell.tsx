@@ -31,7 +31,7 @@ export default function OpenChallengeShell({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const isOpenChallenge = pathname === '/open-challenge';
+  const isOpenChallenge = pathname === '/' || pathname === '/open-challenge';
   const sortBy = searchParams.get('sort') ?? 'latest';
 
   const updateFilter = (key: string, value: string) => {
@@ -54,7 +54,7 @@ export default function OpenChallengeShell({
 
           <div className="relative flex gap-6 lg:gap-10">
             <Link
-              href="/open-challenge"
+              href="/"
               replace
             >
               <div
