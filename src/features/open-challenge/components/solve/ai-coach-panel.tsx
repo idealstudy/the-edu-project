@@ -5,17 +5,25 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 
 import { type AiCoachingPreference } from '@/entities/open-challenge';
-import { Button } from '@/shared/components/ui';
+import { Button, Dialog } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import { katex } from '@mdit/plugin-katex';
 import { renderToString } from 'katex';
-import { Bot, RotateCcw, Send, Settings } from 'lucide-react';
+import {
+  BookOpenCheck,
+  Bot,
+  RotateCcw,
+  Send,
+  Settings,
+  TriangleAlert,
+} from 'lucide-react';
 import MarkdownIt from 'markdown-it';
 
 import {
   useAbandonAiCoachingSessionMutation,
   useAiCoachingPreferenceEnumsQuery,
+  useChallengeSolutionMutation,
   useCreateAiCoachingSessionMutation,
   useMyAiCoachingPreferenceQuery,
   useSendAiCoachingMessageMutation,
@@ -60,7 +68,11 @@ const MAX_COMMENT_LENGTH = 200;
 const AI_COACH_INITIAL_MESSAGE =
   '좋아요. 정답을 바로 고르기보다, 먼저 문제에서 무엇을 묻는지 같이 정리해볼게요.';
 
-const AI_COACH_QUICK_REPLIES = ['잘 모르겠어요', '더 쉽게요', '다음 힌트'];
+const SOLUTION_COST = 30;
+
+// 칩 클릭 시 보내는 템플릿 메시지 — 백엔드 progression(progressionStep)이 단계 답변을 싣는다.
+const CONCEPT_PROMPT = '이 문제 개념부터 알려줘';
+const HINT_PROMPT = '다음 힌트 줘';
 
 const MARKDOWN_SANITIZE_OPTIONS = {
   USE_PROFILES: { html: true, mathMl: true },
@@ -340,6 +352,8 @@ export const AiCoachPanel = ({
   const [settings, setSettings] = useState<AiCoachSettings | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [sessionId, setSessionId] = useState('');
+  const [isSolutionWarningOpen, setIsSolutionWarningOpen] = useState(false);
+  const [hasViewedSolution, setHasViewedSolution] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const preferenceEnumsQuery = useAiCoachingPreferenceEnumsQuery({
@@ -353,6 +367,7 @@ export const AiCoachPanel = ({
   const createSessionMutation = useCreateAiCoachingSessionMutation();
   const sendMessageMutation = useSendAiCoachingMessageMutation(sessionId);
   const abandonSessionMutation = useAbandonAiCoachingSessionMutation();
+  const solutionMutation = useChallengeSolutionMutation();
 
   const hasLoadedSettings =
     !isLoggedIn || myPreferenceQuery.isFetched || myPreferenceQuery.isError;
@@ -361,7 +376,11 @@ export const AiCoachPanel = ({
     updatePreferenceMutation.isPending ||
     createSessionMutation.isPending ||
     sendMessageMutation.isPending ||
-    abandonSessionMutation.isPending;
+    abandonSessionMutation.isPending ||
+    solutionMutation.isPending;
+  const isSending = status === 'COACHING' || isBusy;
+  // 풀이를 시작(attempt 생성)하고 로그인한 상태에서만, 아직 안 본 해설을 열 수 있다.
+  const canViewSolution = isLoggedIn && !!attemptId && !hasViewedSolution;
 
   useEffect(() => {
     if (myPreferenceQuery.data && !settings) {
@@ -464,9 +483,10 @@ export const AiCoachPanel = ({
     }
   };
 
-  const handleSendMessage = () => {
-    const trimmedMessage = inputMessage.trim();
-    if (!trimmedMessage || status === 'READY' || !sessionId) return;
+  const sendMessage = (rawMessage: string) => {
+    const trimmedMessage = rawMessage.trim();
+    if (!trimmedMessage || status === 'READY' || isSending || !sessionId)
+      return;
     setMessages((previousMessages) => [
       ...previousMessages,
       {
@@ -476,7 +496,6 @@ export const AiCoachPanel = ({
         timestamp: getTimestamp(),
       },
     ]);
-    setInputMessage('');
     setStatus('COACHING');
 
     sendMessageMutation.mutate(
@@ -505,6 +524,31 @@ export const AiCoachPanel = ({
     );
   };
 
+  const handleSendMessage = () => {
+    if (!inputMessage.trim()) return;
+    sendMessage(inputMessage);
+    setInputMessage('');
+  };
+
+  const handleConfirmViewSolution = () => {
+    if (!attemptId) return;
+    solutionMutation.mutate(attemptId, {
+      onSuccess: (solution) => {
+        setHasViewedSolution(true);
+        setIsSolutionWarningOpen(false);
+        const answerLine = solution.correctAnswer
+          ? `**정답: ${solution.correctAnswer}**\n\n`
+          : '';
+        setMessages((previousMessages) => [
+          ...previousMessages,
+          createAiMessage(
+            `${answerLine}${solution.content || '해설 본문이 준비되지 않았어요.'}`
+          ),
+        ]);
+      },
+    });
+  };
+
   const handleRestart = () => {
     if (sessionId && status !== 'FINISHED' && status !== 'ABANDONED') {
       abandonSessionMutation.mutate(sessionId);
@@ -522,10 +566,6 @@ export const AiCoachPanel = ({
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') handleSendMessage();
-  };
-
-  const handleQuickReply = (replyText: string) => {
-    setInputMessage(replyText);
   };
 
   const enumOptions = preferenceEnumsQuery.data;
@@ -698,17 +738,37 @@ export const AiCoachPanel = ({
               ))}
             </div>
 
-            <div className="flex gap-2 px-4 pb-2">
-              {AI_COACH_QUICK_REPLIES.map((replyOption) => (
+            {/* 빠른 동작 칩 — 개념/힌트는 권장(쉽게), 정답 해설은 차감 명시(신중) */}
+            <div className="flex flex-col gap-2 px-4 pb-2">
+              <div className="flex gap-2">
                 <button
-                  key={replyOption}
                   type="button"
-                  onClick={() => handleQuickReply(replyOption)}
-                  className="border-line-line2 hover:bg-gray-1 flex-1 cursor-pointer rounded-full border px-2 py-1.5 text-xs"
+                  onClick={() => sendMessage(CONCEPT_PROMPT)}
+                  disabled={isSending}
+                  className="border-orange-3 bg-orange-1 text-orange-7 hover:bg-orange-2 flex h-11 flex-1 cursor-pointer items-center justify-center rounded-xl border text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  {replyOption}
+                  개념 보기
                 </button>
-              ))}
+                <button
+                  type="button"
+                  onClick={() => sendMessage(HINT_PROMPT)}
+                  disabled={isSending}
+                  className="border-orange-3 bg-orange-1 text-orange-7 hover:bg-orange-2 flex h-11 flex-1 cursor-pointer items-center justify-center rounded-xl border text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  힌트 보기
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsSolutionWarningOpen(true)}
+                disabled={!canViewSolution || isSending}
+                className="text-gray-7 hover:bg-gray-1 flex h-11 cursor-pointer items-center justify-center gap-1.5 rounded-xl text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <BookOpenCheck size={16} />
+                {hasViewedSolution
+                  ? '해설을 확인했어요'
+                  : `정답 해설 보기 (−${SOLUTION_COST}P)`}
+              </button>
             </div>
 
             <div className="border-line-line1 flex items-center gap-2 border-t px-4 py-3">
@@ -754,6 +814,55 @@ export const AiCoachPanel = ({
             : () => setIsSettingsOpen(false)
         }
       />
+
+      {/* 정답 해설 — 차감·트리 제외 경고 후 열람(코치보다 조용히) */}
+      <Dialog
+        isOpen={isSolutionWarningOpen}
+        onOpenChange={setIsSolutionWarningOpen}
+      >
+        <Dialog.Content className="w-full max-w-[380px] gap-5 p-6 text-center">
+          <Dialog.Header className="items-center">
+            <div className="bg-orange-1 flex h-14 w-14 items-center justify-center rounded-full">
+              <TriangleAlert
+                size={26}
+                className="text-orange-7"
+                aria-hidden
+              />
+            </div>
+            <Dialog.Title className="text-text-main text-lg font-bold">
+              해설을 볼까요?
+            </Dialog.Title>
+            <Dialog.Description className="text-gray-8 text-sm leading-relaxed">
+              해설을 보면{' '}
+              <span className="text-orange-7 font-semibold tabular-nums">
+                −{SOLUTION_COST}P
+              </span>{' '}
+              차감되고, 이 문제는 약점 지도에 채워지지 않아요. 그래도 볼까요?
+            </Dialog.Description>
+          </Dialog.Header>
+          <Dialog.Footer className="flex-col">
+            <Button
+              type="button"
+              onClick={handleConfirmViewSolution}
+              disabled={solutionMutation.isPending}
+              className="w-full"
+            >
+              {solutionMutation.isPending
+                ? '해설 불러오는 중...'
+                : `해설 보기 (−${SOLUTION_COST}P)`}
+            </Button>
+            <Button
+              type="button"
+              variant="outlined"
+              onClick={() => setIsSolutionWarningOpen(false)}
+              disabled={solutionMutation.isPending}
+              className="w-full"
+            >
+              조금 더 풀어볼게요
+            </Button>
+          </Dialog.Footer>
+        </Dialog.Content>
+      </Dialog>
     </>
   );
 };

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -10,16 +10,9 @@ import {
   type Stroke,
   useDrawingUpload,
 } from '@/shared/components/drawing';
-import {
-  TextEditor,
-  type TextEditorValue,
-  initialTextEditorValue,
-  prepareContentForSave,
-} from '@/shared/components/editor';
 import { BackButton, Button, Dialog } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
-import { cn, extractText } from '@/shared/lib';
-import { Bot, ChevronDown, ChevronUp, Pencil, PenLine, X } from 'lucide-react';
+import { Bot, ChevronDown, ChevronUp, Pencil, X } from 'lucide-react';
 
 import {
   useCreateChallengeReviewMutation,
@@ -33,7 +26,6 @@ import { AiCoachPanel } from './ai-coach-panel';
 import { ChallengeHistoryDialog } from './challenge-history-dialog';
 import { ChallengeSolveSkeleton } from './challenge-solve-skeleton';
 import { ChoiceList } from './choice-list';
-import { SolutionPanel } from './solution-panel';
 
 type ChallengeSolveClientProps = {
   challengeId: string;
@@ -41,7 +33,6 @@ type ChallengeSolveClientProps = {
 };
 
 const RESULT_STORAGE_KEY_PREFIX = 'open-challenge-result';
-const DRAFT_KEY_PREFIX = 'open-challenge-draft';
 
 export const ChallengeSolveClient = ({
   challengeId,
@@ -49,11 +40,8 @@ export const ChallengeSolveClient = ({
 }: ChallengeSolveClientProps) => {
   const router = useRouter();
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [solutionMode, setSolutionMode] = useState<'TEXT' | 'DRAWING'>('TEXT');
+  // 풀이는 손글씨 전용 — 펜으로만 기록하며, 미입력 제출도 허용한다(보조 기록).
   const [drawingStrokes, setDrawingStrokes] = useState<Stroke[]>([]);
-  const [solutionContent, setSolutionContent] = useState<TextEditorValue>(
-    initialTextEditorValue
-  );
   const [isQuestionOpen, setIsQuestionOpen] = useState(true);
   const [submitError, setSubmitError] = useState('');
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
@@ -62,15 +50,6 @@ export const ChallengeSolveClient = ({
   const [aiAttemptId, setAiAttemptId] = useState<string | null>(null);
   const [aiSessionId, setAiSessionId] = useState<string | null>(null);
   const choiceSectionRef = useRef<HTMLDivElement>(null);
-  const draftKey = `${DRAFT_KEY_PREFIX}:${challengeId}`;
-
-  useEffect(() => {
-    const saved = sessionStorage.getItem(draftKey);
-    if (saved) {
-      setSolutionContent(JSON.parse(saved));
-      sessionStorage.removeItem(draftKey);
-    }
-  }, [draftKey]);
 
   const { data: challenge, isLoading: isChallengeLoading } =
     useOpenChallengeDetailQuery(challengeId);
@@ -128,35 +107,19 @@ export const ChallengeSolveClient = ({
         params: { selectedAnswer },
       });
 
-      // 정답일 때만 풀이를 공유한다(기존 정책 유지).
-      if (result.isCorrect) {
-        if (solutionMode === 'DRAWING' && drawingStrokes.length > 0) {
-          try {
-            const { mediaId } = await uploadDrawingAsync(drawingStrokes);
-            const { contentString } = prepareContentForSave(solutionContent);
-            const hasMemo =
-              extractText(JSON.stringify(solutionContent)).trim().length > 0;
-            createReviewMutation.mutate({
-              challengeId,
-              attemptId,
-              solutionType: 'DRAWING',
-              content: hasMemo ? contentString : '',
-              drawingImageMediaId: mediaId,
-            });
-          } catch {
-            // 드로잉 업로드 실패가 결과 화면 이동을 막지 않도록 한다.
-          }
-        } else if (
-          solutionMode === 'TEXT' &&
-          extractText(JSON.stringify(solutionContent)).trim().length > 0
-        ) {
-          const { contentString } = prepareContentForSave(solutionContent);
+      // 정답이고 손글씨 풀이가 있을 때만 풀이를 공유한다(기존 정책 유지).
+      if (result.isCorrect && drawingStrokes.length > 0) {
+        try {
+          const { mediaId } = await uploadDrawingAsync(drawingStrokes);
           createReviewMutation.mutate({
             challengeId,
             attemptId,
-            solutionType: 'TEXT',
-            content: contentString,
+            solutionType: 'DRAWING',
+            content: '',
+            drawingImageMediaId: mediaId,
           });
+        } catch {
+          // 드로잉 업로드 실패가 결과 화면 이동을 막지 않도록 한다.
         }
       }
 
@@ -283,65 +246,18 @@ export const ChallengeSolveClient = ({
           </div>
 
           <div className="mb-5 flex flex-col gap-3">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <Pencil
-                  size={18}
-                  className="text-orange-7"
-                />
-                <p className="font-body1-heading text-text-main">풀이 공간</p>
-              </div>
-
-              {/* 풀이 유형 토글 — 태블릿+펜슬은 손글씨 1순위 */}
-              <div
-                role="tablist"
-                aria-label="풀이 유형 선택"
-                className="border-line-line1 bg-gray-1 inline-flex items-center gap-1 rounded-full border p-1"
-              >
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={solutionMode === 'TEXT'}
-                  onClick={() => setSolutionMode('TEXT')}
-                  className={cn(
-                    'flex h-9 items-center gap-1.5 rounded-full px-4 text-sm font-semibold transition-colors',
-                    solutionMode === 'TEXT'
-                      ? 'bg-white text-orange-7 shadow-sm'
-                      : 'text-gray-7'
-                  )}
-                >
-                  <PenLine size={16} />글
-                </button>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={solutionMode === 'DRAWING'}
-                  onClick={() => setSolutionMode('DRAWING')}
-                  className={cn(
-                    'flex h-9 items-center gap-1.5 rounded-full px-4 text-sm font-semibold transition-colors',
-                    solutionMode === 'DRAWING'
-                      ? 'bg-white text-orange-7 shadow-sm'
-                      : 'text-gray-7'
-                  )}
-                >
-                  <Pencil size={16} />
-                  손글씨
-                </button>
-              </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Pencil
+                size={18}
+                className="text-orange-7"
+              />
+              <p className="font-body1-heading text-text-main">풀이 공간</p>
+              <span className="text-gray-7 text-sm">
+                펜으로 자유롭게 풀어보세요 (선택)
+              </span>
             </div>
 
-            {solutionMode === 'TEXT' ? (
-              <TextEditor
-                value={solutionContent}
-                onChange={setSolutionContent}
-                placeholder="식, 풀이 과정, 떠오른 단서를 자유롭게 적어보세요."
-                minHeight="420px"
-                maxHeight="none"
-                ariaLabel="오픈챌린지 풀이 입력"
-              />
-            ) : (
-              <SolutionDrawingPad onStrokesChange={setDrawingStrokes} />
-            )}
+            <SolutionDrawingPad onStrokesChange={setDrawingStrokes} />
           </div>
 
           <div
@@ -376,14 +292,6 @@ export const ChallengeSolveClient = ({
                 {submitError}
               </p>
             )}
-          </div>
-
-          {/* 정답 해설 (코치보다 조용히 — 차감·트리 제외 경고 후 열람) */}
-          <div className="mt-5">
-            <SolutionPanel
-              attemptId={aiAttemptId}
-              isLoggedIn={isLoggedIn}
-            />
           </div>
         </div>
 
@@ -477,10 +385,6 @@ export const ChallengeSolveClient = ({
             <Button
               type="button"
               onClick={() => {
-                sessionStorage.setItem(
-                  draftKey,
-                  JSON.stringify(solutionContent)
-                );
                 const from = encodeURIComponent(
                   PUBLIC.OPEN_CHALLENGE.DETAIL(challengeId)
                 );
