@@ -15,19 +15,29 @@ import { dto } from './tree.dto';
 /* ─────────────────────────────────────────────────────
  * 변환 상수 / Helper
  * ────────────────────────────────────────────────────*/
-const SUBJECT_ORDER: TreeSubject[] = ['MATH', 'KOREAN', 'ENGLISH', 'SCIENCE'];
+const SUBJECT_ORDER: TreeSubject[] = [
+  'MATH_1',
+  'MATH_2',
+  'CALCULUS',
+  'PROBABILITY_STATISTICS',
+  'GEOMETRY',
+  'OTHER',
+];
 
 const toSubject = (subject: string): TreeSubject => {
-  switch (subject.toLowerCase()) {
-    case 'korean':
-      return 'KOREAN';
-    case 'english':
-      return 'ENGLISH';
-    case 'science':
-      return 'SCIENCE';
-    case 'math':
+  switch (subject.toUpperCase()) {
+    case 'MATH_1':
+      return 'MATH_1';
+    case 'MATH_2':
+      return 'MATH_2';
+    case 'CALCULUS':
+      return 'CALCULUS';
+    case 'PROBABILITY_STATISTICS':
+      return 'PROBABILITY_STATISTICS';
+    case 'GEOMETRY':
+      return 'GEOMETRY';
     default:
-      return 'MATH';
+      return 'OTHER';
   }
 };
 
@@ -55,9 +65,11 @@ const toDifficulty = (difficulty: string): NodeChallenge['difficulty'] => {
  * DTO → UI-ready 변환
  * ────────────────────────────────────────────────────*/
 const toNodeView = (raw: unknown): TreeNodeView => {
+  const node = dto.node.parse(raw);
   const parsed = domain.node.parse({
-    ...dto.node.parse(raw),
-    subject: toSubject(dto.node.parse(raw).subject),
+    ...node,
+    nodeId: node.id, // 백엔드 응답 필드 id → 도메인 nodeId
+    subject: toSubject(node.subject),
   });
 
   return {

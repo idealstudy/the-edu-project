@@ -3,7 +3,14 @@ import { z } from 'zod';
 /* ─────────────────────────────────────────────────────
  * 약점 트리 과목 Domain
  * ────────────────────────────────────────────────────*/
-const TreeSubjectSchema = z.enum(['MATH', 'KOREAN', 'ENGLISH', 'SCIENCE']);
+const TreeSubjectSchema = z.enum([
+  'MATH_1',
+  'MATH_2',
+  'CALCULUS',
+  'PROBABILITY_STATISTICS',
+  'GEOMETRY',
+  'OTHER',
+]);
 
 /* ─────────────────────────────────────────────────────
  * 정복도 강도 4단계 Domain

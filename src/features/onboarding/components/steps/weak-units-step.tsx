@@ -9,10 +9,12 @@ import { Check } from 'lucide-react';
 import { QuestionHeader } from '../question-header';
 
 const SUBJECT_LABEL: Record<TreeSubjectGroup['subject'], string> = {
-  MATH: '수학',
-  KOREAN: '국어',
-  ENGLISH: '영어',
-  SCIENCE: '탐구',
+  MATH_1: '수학Ⅰ',
+  MATH_2: '수학Ⅱ',
+  CALCULUS: '미적분',
+  PROBABILITY_STATISTICS: '확률과 통계',
+  GEOMETRY: '기하',
+  OTHER: '기타',
 };
 
 /* ─────────────────────────────────────────────────────

@@ -25,7 +25,7 @@ const TreeSubjectDtoSchema = z
  *  - diagnosedScore: 모의 자기신고 점수(백엔드 미제공 가능 → optional)
  * ────────────────────────────────────────────────────*/
 const TreeNodeDtoSchema = z.object({
-  nodeId: IdSchema,
+  id: IdSchema,
   parentId: NullableIdSchema,
   subject: TreeSubjectDtoSchema,
   unit: z.string().optional().default(''),
