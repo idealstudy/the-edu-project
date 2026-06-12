@@ -6,6 +6,7 @@ import {
   type ChallengeReviewSort,
   type CreateAiCoachingSessionPayload,
   type CreateChallengeReviewPayload,
+  type RecommendedChallengeParams,
   type SendAiCoachingMessagePayload,
   type StartChallengeAttemptPayload,
   type SubmitChallengeAnswerPayload,
@@ -24,6 +25,14 @@ export const useOpenChallengeListQuery = (params: ChallengeListParams = {}) =>
   useQuery({
     queryKey: openChallengeKeys.list(params),
     queryFn: () => repository.getList(params),
+  });
+
+export const useRecommendedChallengesQuery = (
+  params: RecommendedChallengeParams = {}
+) =>
+  useQuery({
+    queryKey: openChallengeKeys.recommended(params),
+    queryFn: () => repository.getRecommended(params),
   });
 
 export const useOpenChallengeDetailQuery = (
@@ -147,6 +156,34 @@ export const useSubmitChallengeAnswerMutation = (challengeId: string) => {
             () => router.replace(PUBLIC.OPEN_CHALLENGE.LIST),
             ERROR_REDIRECT_DELAY_MS
           ),
+        onAuth: () =>
+          setTimeout(
+            () => router.replace(PUBLIC.CORE.LOGIN),
+            ERROR_REDIRECT_DELAY_MS
+          ),
+      });
+    },
+  });
+};
+
+/* ─────────────────────────────────────────────────────
+ * 정답 해설 조회 — Mutation으로 모델링.
+ *  호출 자체가 포인트 −30 차감 + usedSolutionView 처리(부수효과)이므로
+ *  query 자동 refetch로 중복 차감되지 않도록 사용자가 명시 호출할 때만 실행한다.
+ * ────────────────────────────────────────────────────*/
+export const useChallengeSolutionMutation = () => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (attemptId: string) => repository.getSolution(attemptId),
+    onSuccess: () => {
+      // 잔액·약점 트리가 바뀌므로 관련 캐시를 무효화한다.
+      queryClient.invalidateQueries({ queryKey: ['point'] });
+      queryClient.invalidateQueries({ queryKey: ['tree'] });
+    },
+    onError: (error) => {
+      handleApiError(error, classifyOpenChallengeError, {
         onAuth: () =>
           setTimeout(
             () => router.replace(PUBLIC.CORE.LOGIN),

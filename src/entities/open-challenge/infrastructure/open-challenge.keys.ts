@@ -1,4 +1,8 @@
-import { type ChallengeListParams, type MyChallengeListParams } from '../types';
+import {
+  type ChallengeListParams,
+  type MyChallengeListParams,
+  type RecommendedChallengeParams,
+} from '../types';
 
 /* ─────────────────────────────────────────────────────
  * Query Key 파라미터 정규화
@@ -9,6 +13,11 @@ const normalizeListParams = (params: ChallengeListParams = {}) => ({
   sort: params.sort ?? 'latest',
   page: params.page ?? 0,
   size: params.size ?? 20,
+});
+
+const normalizeRecommendedParams = (params: RecommendedChallengeParams = {}) => ({
+  grade: params.grade ?? null,
+  subject: params.subject ?? 'ALL',
 });
 
 const normalizeMyChallengeListParams = (
@@ -26,6 +35,12 @@ export const openChallengeKeys = {
   all: ['open-challenge'] as const,
   list: (params: ChallengeListParams = {}) =>
     [...openChallengeKeys.all, 'list', normalizeListParams(params)] as const,
+  recommended: (params: RecommendedChallengeParams = {}) =>
+    [
+      ...openChallengeKeys.all,
+      'recommended',
+      normalizeRecommendedParams(params),
+    ] as const,
   detail: (id: string) => [...openChallengeKeys.all, 'detail', id] as const,
   next: (id: string) => [...openChallengeKeys.all, 'next', id] as const,
   reviewsBase: (challengeId: string) =>
@@ -55,4 +70,6 @@ export const openChallengeKeys = {
     [...openChallengeKeys.all, 'ai-coaching-preference', 'me'] as const,
   aiCoachingMessages: (sessionId: string) =>
     [...openChallengeKeys.all, 'ai-coaching-messages', sessionId] as const,
+  solution: (attemptId: string) =>
+    [...openChallengeKeys.all, 'solution', attemptId] as const,
 };

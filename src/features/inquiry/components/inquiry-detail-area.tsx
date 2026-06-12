@@ -28,7 +28,7 @@ export default function InquiryDetailArea({ id }: { id: number }) {
       // INQUIRY_ACCESS_FORBIDDEN, INQUIRY_NOT_FOUND
       onContext: () => {
         setTimeout(() => {
-          router.replace(PUBLIC.CORE.LIST.STUDY_ROOMS);
+          router.replace(PUBLIC.CORE.INDEX);
         }, 1500);
       },
     });

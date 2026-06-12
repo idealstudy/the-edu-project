@@ -52,6 +52,25 @@ const ChallengeListItemDtoSchema = z.object({
   passRate: NullableNumberSchema,
 });
 
+/* ─────────────────────────────────────────────────────
+ * 추천 오픈챌린지 DTO (공개)
+ *  백엔드 RecommendedChallengeResponse: challengeId·subject·difficulty·
+ *  wrongAnswerRate·sourceText·questionText·questionImageUrl·
+ *  participantCount·recommendReason. (passRate 미제공)
+ * ────────────────────────────────────────────────────*/
+const RecommendedChallengeDtoSchema = z.object({
+  id: IdSchema.optional(),
+  challengeId: IdSchema.optional(),
+  subject: ChallengeSubjectDtoSchema,
+  difficulty: DifficultyDtoSchema,
+  wrongAnswerRate: z.number().nullable().optional().default(0),
+  sourceText: z.string().optional().default('출처 정보'),
+  questionText: z.string().nullable().optional(),
+  questionImageUrl: z.string().nullable().optional().default(null),
+  participantCount: z.number().optional().default(0),
+  recommendReason: z.string().optional().default('오답률 기반 추천'),
+});
+
 const ChallengeDetailDtoSchema = ChallengeListItemDtoSchema.extend({
   topic: z.string().optional(),
   questionNumber: z.number().optional().default(1),
@@ -95,7 +114,32 @@ const AnswerResultDtoSchema = z
   }));
 
 /* ─────────────────────────────────────────────────────
+ * 정답 해설 DTO (백엔드 SolutionResponse)
+ *  - 조회 시 백엔드가 usedSolutionView=true 처리 + 포인트 −30 차감.
+ *  - content: 마크다운/KaTeX 해설 본문.
+ * ────────────────────────────────────────────────────*/
+const SolutionDtoSchema = z.object({
+  content: z
+    .string()
+    .nullable()
+    .optional()
+    .transform((value) => value ?? ''),
+  correctAnswer: z.string().nullable().optional().default(null),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 풀이 유형 (텍스트 / 손글씨 드로잉)
+ * ────────────────────────────────────────────────────*/
+const SolutionTypeDtoSchema = z
+  .union([z.enum(['TEXT', 'DRAWING']), z.string()])
+  .optional()
+  .default('TEXT');
+
+/* ─────────────────────────────────────────────────────
  * 오픈챌린지 리뷰 DTO
+ *  - solutionType: TEXT(글) | DRAWING(손글씨 캔버스 스냅샷)
+ *  - drawingImageUrl: presigned 조회 URL (DRAWING일 때만 채워짐)
+ *  - content: TEXT면 본문, DRAWING이면 보조 메모(비어 있을 수 있음)
  * ────────────────────────────────────────────────────*/
 const ChallengeReviewDtoSchema = z.object({
   id: IdSchema.optional(),
@@ -106,7 +150,13 @@ const ChallengeReviewDtoSchema = z.object({
     .optional()
     .transform((v) => v ?? '익명'),
   subject: z.string().optional().default('수학'),
-  content: z.string(),
+  content: z
+    .string()
+    .nullable()
+    .optional()
+    .transform((v) => v ?? ''),
+  solutionType: SolutionTypeDtoSchema,
+  drawingImageUrl: z.string().nullable().optional().default(null),
   recommendCount: z.number().optional().default(0),
   isBest: z.boolean().optional(),
   best: z.boolean().optional(),
@@ -245,11 +295,38 @@ const SubmitAnswerPayloadSchema = z.object({
   selectedAnswer: z.string().min(1),
 });
 
-const CreateReviewPayloadSchema = z.object({
-  challengeId: z.string().min(1),
-  attemptId: z.string().min(1),
-  content: z.string().min(1),
-});
+/* ─────────────────────────────────────────────────────
+ * 리뷰(풀이) 작성 Payload
+ *  - solutionType=TEXT: content 필수.
+ *  - solutionType=DRAWING: drawingImageMediaId 필수(스냅샷 업로드 후 media_id),
+ *    drawingData(획 원본 JSON)는 선택, content는 보조 메모로 선택.
+ *  백엔드: POST /api/common/challenge-reviews
+ * ────────────────────────────────────────────────────*/
+const CreateReviewPayloadSchema = z
+  .object({
+    challengeId: z.string().min(1),
+    attemptId: z.string().min(1),
+    solutionType: z.enum(['TEXT', 'DRAWING']).default('TEXT'),
+    content: z.string().default(''),
+    drawingData: z.string().nullable().optional(),
+    drawingImageMediaId: z.string().nullable().optional(),
+  })
+  .superRefine((value, ctx) => {
+    if (value.solutionType === 'TEXT' && value.content.trim().length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['content'],
+        message: '풀이 내용을 입력해 주세요.',
+      });
+    }
+    if (value.solutionType === 'DRAWING' && !value.drawingImageMediaId) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['drawingImageMediaId'],
+        message: '드로잉 이미지를 먼저 업로드해 주세요.',
+      });
+    }
+  });
 
 const SubmitFeedbackPayloadSchema = z.object({
   attemptId: z.string().min(1),
@@ -302,9 +379,12 @@ export const dto = {
   listItem: ChallengeListItemDtoSchema,
   list: z.array(ChallengeListItemDtoSchema),
   listPage: page(ChallengeListItemDtoSchema),
+  recommended: RecommendedChallengeDtoSchema,
+  recommendedList: z.array(RecommendedChallengeDtoSchema),
   detail: ChallengeDetailDtoSchema,
   attempt: AttemptDtoSchema,
   answerResult: AnswerResultDtoSchema,
+  solution: SolutionDtoSchema,
   review: ChallengeReviewDtoSchema,
   reviews: z.array(ChallengeReviewDtoSchema),
   reviewPage: page(ChallengeReviewDtoSchema),

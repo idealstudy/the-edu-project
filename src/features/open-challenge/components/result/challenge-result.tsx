@@ -8,6 +8,7 @@ import { BackButton } from '@/shared/components/ui';
 import {
   useCancelChallengeReviewRecommendMutation,
   useChallengeReviewsQuery,
+  useMyOpenChallengeDetailQuery,
   useNextChallengeQuery,
   useRecommendChallengeReviewMutation,
 } from '../../hooks/use-open-challenge';
@@ -38,8 +39,18 @@ export const ChallengeResult = ({ challengeId }: ChallengeResultProps) => {
   const [reviewSort, setReviewSort] =
     useState<ChallengeReviewSort>('recommend');
 
+  // 컨닝가드: 본인이 이 문제를 COMPLETED 한 경우에만 다른 풀이 열람.
+  const { data: myChallengeDetail, isLoading: isMyDetailLoading } =
+    useMyOpenChallengeDetailQuery(challengeId);
+  const hasCompletedAttempt =
+    myChallengeDetail?.attempts.some(
+      (attempt) => attempt.status === 'COMPLETED'
+    ) ?? false;
+  // 방금 제출하고 결과 페이지에 도달한 경우도 완료로 간주(데이터 동기화 지연 대비).
+  const isUnlocked = hasCompletedAttempt || submittedResult !== null;
+
   const { data: solutions, isLoading: isSolutionsLoading } =
-    useChallengeReviewsQuery(challengeId, reviewSort);
+    useChallengeReviewsQuery(challengeId, reviewSort, { enabled: isUnlocked });
   const { data: nextChallenge, isLoading: isNextChallengeLoading } =
     useNextChallengeQuery(challengeId);
   const recommendMutation = useRecommendChallengeReviewMutation(challengeId);
@@ -54,7 +65,12 @@ export const ChallengeResult = ({ challengeId }: ChallengeResultProps) => {
     setIsResultLoaded(true);
   }, [challengeId]);
 
-  if (!isResultLoaded || isSolutionsLoading || isNextChallengeLoading) {
+  if (
+    !isResultLoaded ||
+    isMyDetailLoading ||
+    (isUnlocked && isSolutionsLoading) ||
+    isNextChallengeLoading
+  ) {
     return <ChallengeResultSkeleton />;
   }
 
@@ -87,6 +103,7 @@ export const ChallengeResult = ({ challengeId }: ChallengeResultProps) => {
             solutions={solutions ?? ([] as SolutionItem[])}
             totalCount={solutions?.length ?? 0}
             sort={reviewSort}
+            isLocked={!isUnlocked}
             isRecommendPending={
               recommendMutation.isPending || cancelRecommendMutation.isPending
             }

@@ -10,8 +10,10 @@ import { z } from 'zod';
  * ────────────────────────────────────────────────────*/
 export type ChallengeSubject = z.infer<typeof domain.subject>;
 export type ChallengeListItem = z.infer<typeof domain.listItem>;
+export type RecommendedChallengeItem = z.infer<typeof domain.recommended>;
 export type ChallengeDetail = z.infer<typeof domain.detail>;
 export type ChallengeAnswerResult = z.infer<typeof domain.answerResult>;
+export type ChallengeSolution = z.infer<typeof domain.solution>;
 export type ChallengeReview = z.infer<typeof domain.review>;
 export type NextChallenge = z.infer<typeof domain.nextChallenge>;
 export type UserRanking = z.infer<typeof domain.ranking>;
@@ -82,6 +84,11 @@ export type ChallengeListParams = {
   sort?: 'latest' | 'popular';
   page?: number;
   size?: number;
+};
+
+export type RecommendedChallengeParams = {
+  grade?: number;
+  subject?: ChallengeSubject | 'ALL';
 };
 
 export type ChallengeReviewSort = 'recommend' | 'latest';

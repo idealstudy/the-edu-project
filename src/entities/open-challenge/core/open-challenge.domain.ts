@@ -19,6 +19,24 @@ const ChallengeListItemSchema = z.object({
   participantCount: z.number(),
 });
 
+/* ─────────────────────────────────────────────────────
+ * 추천 오픈챌린지 Domain (오답률·등급 기반)
+ *  GET /api/public/challenges/recommended
+ *  - 리스트 카드와 메타는 동일하되 추천 사유(recommendReason)와
+ *    오답률(wrongAnswerRate)을 추가로 노출한다. (passRate 미제공)
+ * ────────────────────────────────────────────────────*/
+const RecommendedChallengeSchema = z.object({
+  id: z.string(),
+  subject: ChallengeSubjectSchema,
+  difficulty: z.enum(['TOP', 'HIGH', 'MID', 'LOW']),
+  title: z.string(),
+  sourceText: z.string(),
+  questionImageUrl: z.string().nullable(),
+  wrongAnswerRate: z.number(),
+  participantCount: z.number(),
+  recommendReason: z.string(),
+});
+
 const ChallengeDetailSchema = z.object({
   id: z.string(),
   subject: z.string(),
@@ -44,13 +62,30 @@ const ChallengeAnswerResultSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 정답 해설 Domain
+ *  열람 시 포인트 −30 차감 + 약점 지도 제외(usedSolutionView).
+ * ────────────────────────────────────────────────────*/
+const ChallengeSolutionSchema = z.object({
+  content: z.string(),
+  correctAnswer: z.string().nullable(),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 풀이 유형 Domain (텍스트 / 손글씨 드로잉)
+ * ────────────────────────────────────────────────────*/
+const SolutionTypeSchema = z.enum(['TEXT', 'DRAWING']);
+
+/* ─────────────────────────────────────────────────────
  * 오픈챌린지 리뷰 Domain
+ *  - solutionType=DRAWING이면 drawingImageUrl(presigned)로 손글씨 스냅샷을 노출.
  * ────────────────────────────────────────────────────*/
 const ChallengeReviewSchema = z.object({
   id: z.string(),
   nickname: z.string(),
   subject: z.string(),
   content: z.string(),
+  solutionType: SolutionTypeSchema,
+  drawingImageUrl: z.string().nullable(),
   recommendCount: z.number(),
   isBest: z.boolean(),
   isRecommendedByMe: z.boolean(),
@@ -113,9 +148,12 @@ const MyChallengeDetailSchema = z.object({
  * ────────────────────────────────────────────────────*/
 export const domain = {
   subject: ChallengeSubjectSchema,
+  solutionType: SolutionTypeSchema,
   listItem: ChallengeListItemSchema,
+  recommended: RecommendedChallengeSchema,
   detail: ChallengeDetailSchema,
   answerResult: ChallengeAnswerResultSchema,
+  solution: ChallengeSolutionSchema,
   review: ChallengeReviewSchema,
   nextChallenge: NextChallengeSchema,
   ranking: UserRankingSchema,

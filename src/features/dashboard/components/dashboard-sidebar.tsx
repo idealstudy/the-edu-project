@@ -2,26 +2,24 @@
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import {
-  useStudentStudyRoomsQuery,
-  useTeacherStudyRoomsQuery,
-} from '@/features/study-rooms';
-import {
-  FindingIcon,
   HomeIcon,
   ListIcon,
   NotepadIcon,
-  PlusIcon,
 } from '@/shared/components/icons';
 import { Sidebar } from '@/shared/components/sidebar';
 import { PRIVATE, PUBLIC } from '@/shared/constants/route';
 import { useRole } from '@/shared/hooks/use-role';
 import { trackGnbLogoutClick } from '@/shared/lib/analytics';
-import { Flame, LogOut, ShieldUserIcon, User2Icon } from 'lucide-react';
+import {
+  Flame,
+  LogOut,
+  ShieldUserIcon,
+  Sprout,
+  User2Icon,
+  Wallet,
+} from 'lucide-react';
 
 export const DashboardSidebar = () => {
-  // [CRITICAL TODO: API 구현 누락] useDashboardQuery의 데이터(data)를 사용할 수 있도록 백엔드 API 및 바인딩 작업을 즉시 진행해야 합니다.
-  // const { data, isLoading, isError } = useDashboardQuery();
-
   const { role } = useRole();
   const { logout } = useAuth();
 
@@ -29,25 +27,6 @@ export const DashboardSidebar = () => {
     logout();
     trackGnbLogoutClick(role ?? null);
   };
-
-  /* ─────────────────────────────────────────────────────
-   * 역할에 따라 다른 쿼리 사용
-   * ────────────────────────────────────────────────────*/
-  const { data: teacherStudyRoomList } = useTeacherStudyRoomsQuery({
-    enabled: role === 'ROLE_TEACHER',
-  });
-
-  const { data: studentStudyRoomList } = useStudentStudyRoomsQuery({
-    enabled: role === 'ROLE_STUDENT',
-  });
-
-  // 역할에 따라 적절한 리스트 선택
-  const studyRoomList =
-    role === 'ROLE_TEACHER'
-      ? teacherStudyRoomList
-      : role === 'ROLE_STUDENT'
-        ? studentStudyRoomList
-        : undefined;
 
   return (
     <Sidebar>
@@ -60,6 +39,7 @@ export const DashboardSidebar = () => {
         <Sidebar.Text>대시보드</Sidebar.Text>
       </Sidebar.Item>
 
+      {/* 오픈챌린지 (2.0 학생 중심 코어) */}
       <Sidebar.Item
         href={PUBLIC.OPEN_CHALLENGE.LIST}
         matchPath={PUBLIC.OPEN_CHALLENGE.LIST}
@@ -71,39 +51,29 @@ export const DashboardSidebar = () => {
         <Sidebar.Text>오픈챌린지</Sidebar.Text>
       </Sidebar.Item>
 
-      {/* 부모에겐 보여주지 않기 */}
-      {role !== 'ROLE_PARENT' && (
-        <Sidebar.Header>
-          <div className="flex items-center gap-2">
-            <Sidebar.SectionIcon />
-            <Sidebar.HeaderText>스터디룸</Sidebar.HeaderText>
-          </div>
-          {/* 선생님만 스터디룸 생성 버튼 표시 */}
-          {role === 'ROLE_TEACHER' && (
-            <Sidebar.Item
-              href={PRIVATE.ROOM.CREATE}
-              className="h-9 w-9 justify-center bg-transparent px-0"
-            >
-              <PlusIcon />
-              <span className="sr-only">스터디룸 생성</span>
-            </Sidebar.Item>
-          )}
-        </Sidebar.Header>
-      )}
+      {/* 약점 트리 (2.0 학생 중심 코어) */}
+      <Sidebar.Item
+        href={PRIVATE.TREE.INDEX}
+        matchPath={PRIVATE.TREE.INDEX}
+      >
+        <Sprout
+          size={20}
+          className="shrink-0"
+        />
+        <Sidebar.Text>약점 트리</Sidebar.Text>
+      </Sidebar.Item>
 
-      <Sidebar.ScrollArea>
-        <Sidebar.List>
-          {studyRoomList?.map((item) => (
-            <Sidebar.ListItem
-              key={item.id}
-              item={{
-                id: item.id,
-                text: item.name,
-              }}
-            />
-          ))}
-        </Sidebar.List>
-      </Sidebar.ScrollArea>
+      {/* 포인트 지갑 (2.0 학생 중심 코어 — 소모 화폐) */}
+      <Sidebar.Item
+        href={PRIVATE.POINTS.INDEX}
+        matchPath={PRIVATE.POINTS.INDEX}
+      >
+        <Wallet
+          size={20}
+          className="shrink-0"
+        />
+        <Sidebar.Text>포인트</Sidebar.Text>
+      </Sidebar.Item>
 
       {role === 'ROLE_ADMIN' && (
         <>
@@ -142,14 +112,6 @@ export const DashboardSidebar = () => {
           </Sidebar.List>
         </>
       )}
-
-      <Sidebar.Item
-        href={PUBLIC.CORE.LIST.STUDY_ROOMS}
-        matchPath={PUBLIC.CORE.LIST.BASE}
-      >
-        <FindingIcon className="shrink-0" />
-        <Sidebar.Text>탐색하기</Sidebar.Text>
-      </Sidebar.Item>
 
       <Sidebar.Item
         href={PUBLIC.COMMUNITY.COLUMN.LIST}

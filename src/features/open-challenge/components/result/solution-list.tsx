@@ -2,17 +2,21 @@
 
 import { useState } from 'react';
 
+import Image from 'next/image';
+
 import { type ChallengeReviewSort } from '@/entities/open-challenge';
 import { TextViewer, parseEditorContent } from '@/shared/components/editor';
 import { Select } from '@/shared/components/ui';
 import { cn, extractText } from '@/shared/lib';
-import { ThumbsUp, User } from 'lucide-react';
+import { Lock, PencilLine, ThumbsUp, User } from 'lucide-react';
 
 export type SolutionItem = {
   id: string;
   nickname: string;
   subject: string;
   content: string;
+  solutionType: 'TEXT' | 'DRAWING';
+  drawingImageUrl: string | null;
   recommendCount: number;
   isBest: boolean;
   isRecommendedByMe: boolean;
@@ -23,6 +27,11 @@ type SolutionListProps = {
   totalCount: number;
   sort: ChallengeReviewSort;
   isRecommendPending?: boolean;
+  /**
+   * 컨닝가드: 본인이 아직 이 문제를 완료(COMPLETED)하지 않았으면 true.
+   * true면 풀이 목록 대신 잠금 안내를 노출한다.
+   */
+  isLocked?: boolean;
   onSortChange: (sort: ChallengeReviewSort) => void;
   onRecommendToggle: (solution: SolutionItem) => void;
 };
@@ -53,6 +62,7 @@ export const SolutionList = ({
   totalCount,
   sort,
   isRecommendPending = false,
+  isLocked = false,
   onSortChange,
   onRecommendToggle,
 }: SolutionListProps) => {
@@ -60,6 +70,53 @@ export const SolutionList = ({
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   const visibleSolutions = expanded ? solutions : solutions.slice(0, 3);
+
+  // ── 컨닝가드: 미완료 시 잠금 ──────────────────────────────
+  if (isLocked) {
+    return (
+      <div className="flex flex-col gap-4">
+        <h2 className="font-body1-heading text-text-main">다른 사람 풀이</h2>
+        <div className="border-line-line1 flex flex-col items-center gap-3 rounded-xl border bg-white px-6 py-12 text-center">
+          <div className="bg-orange-1 flex size-14 items-center justify-center rounded-full">
+            <Lock
+              size={24}
+              className="text-orange-7"
+            />
+          </div>
+          <p className="font-body1-heading text-text-main">
+            먼저 문제를 풀어야 볼 수 있어요
+          </p>
+          <p className="font-body2-normal text-gray-8 max-w-[320px] text-sm leading-relaxed text-balance">
+            풀고 나면 다른 학생들의 손글씨 풀이와 베스트 풀이를 확인할 수
+            있어요.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // ── 빈 상태 ──────────────────────────────────────────────
+  if (solutions.length === 0) {
+    return (
+      <div className="flex flex-col gap-4">
+        <h2 className="font-body1-heading text-text-main">다른 사람 풀이 0개</h2>
+        <div className="border-line-line1 flex flex-col items-center gap-3 rounded-xl border bg-white px-6 py-12 text-center">
+          <div className="bg-gray-1 flex size-14 items-center justify-center rounded-full">
+            <PencilLine
+              size={24}
+              className="text-gray-6"
+            />
+          </div>
+          <p className="font-body2-heading text-text-main">
+            아직 공유된 풀이가 없어요
+          </p>
+          <p className="font-caption-normal text-gray-8 text-sm">
+            첫 번째 풀이를 남겨보세요.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const toggleContentExpand = (id: string) => {
     setExpandedIds((prev) => {
@@ -103,6 +160,8 @@ export const SolutionList = ({
 
       <div className="flex flex-col gap-3">
         {visibleSolutions.map((solution) => {
+          const isDrawing = solution.solutionType === 'DRAWING';
+          const hasContent = solution.content.trim().length > 0;
           const parsedContent = parseEditorContent(solution.content);
           const plainText = extractText(solution.content);
           const isLong =
@@ -119,8 +178,8 @@ export const SolutionList = ({
               )}
             >
               {solution.isBest && (
-                <span className="bg-orange-7 mb-3 inline-block rounded-md px-2 py-0.5 text-xs font-semibold text-white">
-                  베스트 풀이
+                <span className="bg-orange-7 mb-3 inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold text-white">
+                  ★ 베스트 풀이
                 </span>
               )}
               <div className="flex items-start justify-between gap-4">
@@ -132,26 +191,52 @@ export const SolutionList = ({
                     />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="font-body2-heading text-text-main text-sm">
-                      {solution.nickname}
-                    </p>
-                    <p className="text-gray-8 text-xs">{solution.subject}</p>
-                    <div
-                      className={cn(
-                        'mt-3',
-                        !isContentExpanded && isLong && 'line-clamp-4'
+                    <div className="flex items-center gap-2">
+                      <p className="font-body2-heading text-text-main text-sm">
+                        {solution.nickname}
+                      </p>
+                      {isDrawing && (
+                        <span className="bg-orange-1 text-orange-10 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold">
+                          <PencilLine size={11} />
+                          손글씨
+                        </span>
                       )}
-                    >
-                      <TextViewer value={parsedContent} />
                     </div>
-                    {isLong && (
-                      <button
-                        type="button"
-                        onClick={() => toggleContentExpand(solution.id)}
-                        className="text-gray-7 hover:text-text-main mt-2 cursor-pointer text-xs font-semibold"
-                      >
-                        {isContentExpanded ? '접기' : '더보기'}
-                      </button>
+                    <p className="text-gray-8 text-xs">{solution.subject}</p>
+
+                    {isDrawing && solution.drawingImageUrl && (
+                      <div className="border-line-line2 bg-gray-1 mt-3 overflow-hidden rounded-lg border">
+                        <Image
+                          src={solution.drawingImageUrl}
+                          alt={`${solution.nickname}님의 손글씨 풀이`}
+                          width={760}
+                          height={440}
+                          unoptimized
+                          className="h-auto w-full object-contain"
+                        />
+                      </div>
+                    )}
+
+                    {hasContent && (
+                      <>
+                        <div
+                          className={cn(
+                            'mt-3',
+                            !isContentExpanded && isLong && 'line-clamp-4'
+                          )}
+                        >
+                          <TextViewer value={parsedContent} />
+                        </div>
+                        {isLong && (
+                          <button
+                            type="button"
+                            onClick={() => toggleContentExpand(solution.id)}
+                            className="text-gray-7 hover:text-text-main mt-2 cursor-pointer text-xs font-semibold"
+                          >
+                            {isContentExpanded ? '접기' : '더보기'}
+                          </button>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>

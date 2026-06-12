@@ -15,12 +15,15 @@ import {
   type ChallengeListParams,
   type ChallengeReview,
   type ChallengeReviewSort,
+  type ChallengeSolution,
   type CreateAiCoachingSessionPayload,
   type CreateChallengeReviewPayload,
   type MyChallengeDetail,
   type MyChallengeListItem,
   type MyChallengeListParams,
   type NextChallenge,
+  type RecommendedChallengeItem,
+  type RecommendedChallengeParams,
   type SendAiCoachingMessagePayload,
   type StartChallengeAttemptPayload,
   type SubmitChallengeAnswerPayload,
@@ -121,6 +124,27 @@ const toListItem = (raw: unknown): ChallengeListItem => {
   });
 };
 
+const toRecommended = (raw: unknown): RecommendedChallengeItem => {
+  const parsed = dto.recommended.parse(raw);
+  const id = parsed.id ?? parsed.challengeId;
+
+  if (!id) {
+    throw new Error('Challenge id is missing.');
+  }
+
+  return domain.recommended.parse({
+    id,
+    subject: toSubject(parsed.subject),
+    difficulty: toAdminDifficulty(parsed.difficulty),
+    title: parsed.questionText ?? parsed.sourceText,
+    sourceText: parsed.sourceText,
+    questionImageUrl: parsed.questionImageUrl,
+    wrongAnswerRate: parsed.wrongAnswerRate ?? 0,
+    participantCount: parsed.participantCount,
+    recommendReason: parsed.recommendReason,
+  });
+};
+
 const toDetail = (raw: unknown): ChallengeDetail => {
   const parsed = dto.detail.parse(raw);
   const subject = toSubject(parsed.subject);
@@ -171,6 +195,9 @@ const toAdminDetail = (raw: unknown): AdminChallengeDetail => {
   };
 };
 
+const toSolutionType = (value: string): 'TEXT' | 'DRAWING' =>
+  value.toUpperCase() === 'DRAWING' ? 'DRAWING' : 'TEXT';
+
 const toReview = (raw: unknown): ChallengeReview => {
   const parsed = dto.review.parse(raw);
   return domain.review.parse({
@@ -181,6 +208,8 @@ const toReview = (raw: unknown): ChallengeReview => {
     nickname: parsed.nickname,
     subject: parsed.subject,
     content: parsed.content,
+    solutionType: toSolutionType(parsed.solutionType),
+    drawingImageUrl: parsed.drawingImageUrl,
     recommendCount: parsed.recommendCount,
     isBest: parsed.isBest ?? parsed.best ?? false,
     isRecommendedByMe:
@@ -235,6 +264,29 @@ const getChallengeList = async (
   });
   const page = unwrapEnvelope(response, dto.listPage);
   return page.content.map(toListItem);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [READ] 추천 오픈챌린지 조회 (공개 · 오답률·등급 기반)
+ *  GET /api/public/challenges/recommended?grade=&subject=
+ *  - grade 미지정 시 백엔드가 오답률 내림차순으로 추천.
+ *  - subject 'ALL'/미지정은 파라미터 생략(전체 과목).
+ *  - 응답은 평면 배열(List<RecommendedChallengeResponse>).
+ * ────────────────────────────────────────────────────*/
+const getRecommendedChallenges = async (
+  params: RecommendedChallengeParams = {}
+): Promise<RecommendedChallengeItem[]> => {
+  const response = await api.public.get('/public/challenges/recommended', {
+    params: {
+      grade: params.grade ?? undefined,
+      subject:
+        !params.subject || params.subject === 'ALL'
+          ? undefined
+          : params.subject,
+    },
+  });
+  const list = unwrapEnvelope(response, dto.recommendedList);
+  return list.map(toRecommended);
 };
 
 /* ─────────────────────────────────────────────────────
@@ -343,6 +395,21 @@ const submitChallengeAnswer = async (
     validated
   );
   return domain.answerResult.parse(unwrapEnvelope(response, dto.answerResult));
+};
+
+/* ─────────────────────────────────────────────────────
+ * [READ] 정답 해설 조회
+ *  GET /api/common/challenge-attempts/{attemptId}/solution
+ *  - 호출 시 백엔드가 usedSolutionView=true 처리 + 포인트 −30 차감(이벤트).
+ *    → 차감 경고 Dialog 확인 후에만 호출해야 한다.
+ * ────────────────────────────────────────────────────*/
+const getChallengeSolution = async (
+  attemptId: string
+): Promise<ChallengeSolution> => {
+  const response = await api.private.get(
+    `/common/challenge-attempts/${attemptId}/solution`
+  );
+  return domain.solution.parse(unwrapEnvelope(response, dto.solution));
 };
 
 /* ─────────────────────────────────────────────────────
@@ -540,6 +607,7 @@ const getNextChallenge = async (
  * ────────────────────────────────────────────────────*/
 export const repository = {
   getList: getChallengeList,
+  getRecommended: getRecommendedChallenges,
   getAdminList: getAdminChallengeList,
   getDetail: getChallengeDetail,
   getAdminDetail: getAdminChallengeDetail,
@@ -550,6 +618,7 @@ export const repository = {
   deleteAdmin: deleteAdminChallenge,
   startAttempt: startChallengeAttempt,
   submitAnswer: submitChallengeAnswer,
+  getSolution: getChallengeSolution,
   getReviews: getChallengeReviews,
   createReview: createChallengeReview,
   recommendReview: recommendChallengeReview,
