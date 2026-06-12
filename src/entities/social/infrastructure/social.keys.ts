@@ -6,6 +6,9 @@ export const socialKeys = {
 
   friends: () => [...socialKeys.all, 'friends'] as const,
 
+  memberSearch: (q: string) =>
+    [...socialKeys.all, 'member-search', q] as const,
+
   invitesAll: () => [...socialKeys.all, 'challenge-invites'] as const,
   myInvites: () => [...socialKeys.invitesAll(), 'me'] as const,
   invitePreview: (token: string) =>

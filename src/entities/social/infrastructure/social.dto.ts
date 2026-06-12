@@ -52,11 +52,23 @@ const ChallengeInviteResultDtoSchema = z.object({
   opponentCorrect: z.boolean().nullable().optional(),
 });
 
+/* ─────────────────────────────────────────────────────
+ * 회원 검색 DTO (MemberSearchResult)
+ *  GET /api/common/members/search?q=
+ * ────────────────────────────────────────────────────*/
+const MemberSearchResultDtoSchema = z.object({
+  memberId: z.number(),
+  name: z.string(),
+  nickname: NullableString,
+});
+
 export const dto = {
   friendship: FriendshipDtoSchema,
   challengeInvite: ChallengeInviteDtoSchema,
   challengeInvitePreview: ChallengeInvitePreviewDtoSchema,
   challengeInviteResult: ChallengeInviteResultDtoSchema,
+  memberSearchResult: MemberSearchResultDtoSchema,
+  memberSearchResults: z.array(MemberSearchResultDtoSchema),
 };
 
 /* ─────────────────────────────────────────────────────
@@ -70,7 +82,12 @@ const CreateChallengeInvitePayloadSchema = z.object({
   challengeId: z.number(),
 });
 
+const MemberSearchQuerySchema = z.object({
+  q: z.string().trim().min(1),
+});
+
 export const payload = {
   friendRequest: FriendRequestPayloadSchema,
   createChallengeInvite: CreateChallengeInvitePayloadSchema,
+  memberSearchQuery: MemberSearchQuerySchema,
 };
