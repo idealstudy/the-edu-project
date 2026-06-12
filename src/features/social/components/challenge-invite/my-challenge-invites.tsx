@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import Link from 'next/link';
 
 import { Button, StatusBadge, showBottomToast } from '@/shared/components/ui';
@@ -8,6 +10,7 @@ import { Swords } from 'lucide-react';
 
 import { useMyChallengeInvitesQuery } from '../../hooks';
 import { inviteStatusLabel } from '../../lib/labels';
+import { ChallengeResultDialog } from './challenge-result-dialog';
 
 const STATUS_VARIANT = {
   OPEN: 'default',
@@ -21,6 +24,7 @@ const STATUS_VARIANT = {
 export const MyChallengeInvites = () => {
   const { data: invites, isLoading, isError, refetch } =
     useMyChallengeInvitesQuery();
+  const [resultToken, setResultToken] = useState<string | null>(null);
 
   const handleCopy = async (token: string) => {
     if (typeof window === 'undefined') return;
@@ -95,13 +99,22 @@ export const MyChallengeInvites = () => {
                       variant={STATUS_VARIANT[invite.status]}
                       label={inviteStatusLabel(invite.status)}
                     />
-                    <Button
-                      variant="outlined"
-                      size="xsmall"
-                      onClick={() => handleCopy(invite.shareToken)}
-                    >
-                      링크 복사
-                    </Button>
+                    {invite.status === 'COMPLETED' ? (
+                      <Button
+                        size="xsmall"
+                        onClick={() => setResultToken(invite.shareToken)}
+                      >
+                        결과 보기
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outlined"
+                        size="xsmall"
+                        onClick={() => handleCopy(invite.shareToken)}
+                      >
+                        링크 복사
+                      </Button>
+                    )}
                   </div>
                 </li>
               ))}
@@ -117,6 +130,16 @@ export const MyChallengeInvites = () => {
             </div>
           )}
         </>
+      )}
+
+      {resultToken && (
+        <ChallengeResultDialog
+          token={resultToken}
+          isOpen={resultToken !== null}
+          onOpenChange={(open) => {
+            if (!open) setResultToken(null);
+          }}
+        />
       )}
     </section>
   );
