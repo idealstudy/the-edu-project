@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
+import { MathMarkdown } from '@/shared/components/markdown';
 import { Button } from '@/shared/components/ui';
 import { CheckCircle2, Lock } from 'lucide-react';
 
@@ -117,10 +118,17 @@ export const LessonViewClient = ({ courseId }: { courseId: number }) => {
           />
         ) : (
           <>
-            <article className="font-body2-normal text-text-main min-h-[160px] whitespace-pre-wrap">
-              {selected.contentRef && selected.contentRef.trim().length > 0
-                ? selected.contentRef
-                : '이 차시의 학습 내용이 곧 제공될 예정이에요.'}
+            <article className="min-h-[160px]">
+              {selected.contentRef && selected.contentRef.trim().length > 0 ? (
+                <MathMarkdown
+                  content={selected.contentRef}
+                  className="font-body2-normal text-text-main"
+                />
+              ) : (
+                <p className="font-body2-normal text-text-sub2">
+                  콘텐츠 준비 중이에요.
+                </p>
+              )}
             </article>
 
             <footer className="border-line-line2 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
