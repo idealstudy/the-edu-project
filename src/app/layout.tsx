@@ -41,6 +41,7 @@ export default function RootLayout({
     >
       <body className="bg-[#F9F9F9] antialiased">
         {/* 손글씨 해설용 한글 필기체 폰트 (Next가 head로 호이스팅). 미로드 시 .ai-coach-solution의 cursive 폴백 */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font -- App Router head 호이스팅 + cursive 폴백 의도, 전역 1회 로드 */}
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Pen+Script&display=swap"
