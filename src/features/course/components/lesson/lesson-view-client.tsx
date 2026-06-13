@@ -2,9 +2,14 @@
 
 import { useEffect, useState } from 'react';
 
+import Link from 'next/link';
+
+import { type LessonProblem } from '@/entities/course';
 import { MathMarkdown } from '@/shared/components/markdown';
 import { Button } from '@/shared/components/ui';
-import { CheckCircle2, Lock } from 'lucide-react';
+import { PUBLIC } from '@/shared/constants';
+import { cn } from '@/shared/lib';
+import { CheckCircle2, ChevronRight, Lock } from 'lucide-react';
 
 import {
   useCourseDetailQuery,
@@ -131,6 +136,8 @@ export const LessonViewClient = ({ courseId }: { courseId: number }) => {
               )}
             </article>
 
+            <LessonProblems problems={selected.problems} />
+
             <footer className="border-line-line2 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
               {selected.progressStatus === 'COMPLETED' ? (
                 <span className="text-system-success font-label-heading flex items-center gap-1.5">
@@ -181,6 +188,72 @@ export const LessonViewClient = ({ courseId }: { courseId: number }) => {
         )}
       </section>
     </div>
+  );
+};
+
+/* ─────────────────────────────────────────────────────
+ * 이 차시의 문제 — 연결된 오픈챌린지로 이동.
+ *  난이도는 오렌지 단일 accent 강도 한 축으로 표현.
+ * ────────────────────────────────────────────────────*/
+const DIFFICULTY_BADGE = {
+  TOP: { label: '최상', className: 'bg-orange-9 text-white' },
+  HIGH: { label: '상', className: 'bg-orange-7 text-white' },
+  MID: { label: '중', className: 'bg-orange-4 text-gray-11' },
+  LOW: { label: '하', className: 'bg-gray-3 text-gray-11' },
+} as const;
+
+const LessonProblems = ({ problems }: { problems: LessonProblem[] }) => {
+  if (problems.length === 0) {
+    return (
+      <section
+        aria-label="이 차시의 문제"
+        className="border-line-line2 rounded-[12px] border border-dashed p-5 text-center"
+      >
+        <p className="font-caption-normal text-text-sub2">
+          이 차시의 문제는 준비 중이거나 잠겨 있어요.
+        </p>
+      </section>
+    );
+  }
+
+  return (
+    <section
+      aria-label="이 차시의 문제"
+      className="flex flex-col gap-2"
+    >
+      <h2 className="font-label-heading text-text-main">이 차시의 문제</h2>
+      <ul className="flex flex-col gap-2">
+        {[...problems]
+          .sort((a, b) => a.orderIndex - b.orderIndex)
+          .map((problem) => {
+            const badge = DIFFICULTY_BADGE[problem.difficulty];
+            return (
+              <li key={problem.challengeId}>
+                <Link
+                  href={PUBLIC.OPEN_CHALLENGE.DETAIL(problem.challengeId)}
+                  className="group border-line-line2 hover:border-key-color-primary flex items-center gap-3 rounded-[12px] border bg-white px-4 py-3 transition-colors"
+                >
+                  <span
+                    className={cn(
+                      'font-caption-heading shrink-0 rounded-md px-2 py-0.5',
+                      badge.className
+                    )}
+                  >
+                    {badge.label}
+                  </span>
+                  <span className="font-body2-normal text-text-main min-w-0 flex-1 truncate">
+                    {problem.title}
+                  </span>
+                  <ChevronRight
+                    size={18}
+                    className="text-text-sub2 group-hover:text-key-color-primary shrink-0"
+                  />
+                </Link>
+              </li>
+            );
+          })}
+      </ul>
+    </section>
   );
 };
 
