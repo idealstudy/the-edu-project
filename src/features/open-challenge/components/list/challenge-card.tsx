@@ -16,6 +16,10 @@ export type ChallengeCardData = {
   questionImageUrl: string | null;
   passRate: number | null;
   participantCount: number;
+  /** 단원/유형 — 티저 주인공(없으면 sourceText 끝 segment에서 유도) */
+  topic?: string;
+  /** 오답률 — 정답률(100-오답률) 도발 스탯(없으면 passRate→난이도 폴백) */
+  wrongAnswerRate?: number;
 };
 
 type SubjectConfig = {
@@ -95,14 +99,25 @@ export const ChallengeCard = ({
       : null;
 
   // 출처 배지: "<출처> · N번" (번호는 제목 앞머리에서 파싱, 없으면 출처만).
+  // 번호만 보조 표기로 쓰고, 제목(수식·문제 내용)은 티저에 노출하지 않는다.
   const numberMatch = challenge.title.match(QUESTION_NUMBER_PREFIX);
   const questionNumber = numberMatch ? numberMatch[1] : null;
-  const displayTitle = numberMatch
-    ? challenge.title.slice(numberMatch[0].length)
-    : challenge.title;
   const sourceBadge = questionNumber
     ? `${challenge.sourceText} · ${questionNumber}번`
     : challenge.sourceText;
+
+  // 단원/유형: card data의 topic 우선, 없으면 출처 끝 segment("… · <단원>")에서 유도.
+  const topic =
+    challenge.topic ??
+    challenge.sourceText.split('·').pop()?.trim() ??
+    challenge.sourceText;
+
+  // 정답률(도발 스탯): 오답률 있으면 100-오답률, 없으면 통과율, 둘 다 없으면 난이도로 대체.
+  const correctRate =
+    challenge.wrongAnswerRate != null
+      ? 100 - challenge.wrongAnswerRate
+      : challenge.passRate;
+  const isHardStat = correctRate !== null && correctRate < 40;
 
   return (
     <Link
@@ -148,23 +163,45 @@ export const ChallengeCard = ({
             className="max-h-[160px] object-contain"
           />
         ) : (
-          // 이미지 없을 때: 오렌지 그라데이션 + 큰 출처 배지·번호 워터마크·큰 제목으로 '도전' 느낌.
+          // 이미지 없을 때: '퀴즈 티저' — 문제 내용·수식은 숨기고 단원/난이도/정답률·출처로 궁금증 유발.
           <div className="from-orange-1 to-orange-3 relative flex min-h-[200px] w-full flex-col overflow-hidden bg-gradient-to-br px-5 pt-12 pb-5">
-            {questionNumber && (
-              <span className="text-orange-4/50 pointer-events-none absolute -right-3 -bottom-7 text-[120px] leading-none font-black tabular-nums select-none">
-                {questionNumber}
+            {/* 배경: 정답률을 큰 숫자로 — 수식 대신 도발 스탯 */}
+            {correctRate !== null && (
+              <span className="text-orange-4/40 pointer-events-none absolute -right-2 -bottom-6 text-[96px] leading-none font-black tabular-nums select-none">
+                {correctRate}
+                <span className="text-[40px]">%</span>
               </span>
             )}
-            <span className="text-orange-9 relative z-10 w-fit rounded-full bg-white/85 px-3 py-1 text-xs font-bold shadow-sm">
-              {sourceBadge}
-            </span>
-            <p className="text-text-main relative z-10 mt-3 line-clamp-3 text-xl leading-snug font-extrabold text-balance">
-              {displayTitle}
+
+            {/* 단원/유형 — 주인공 */}
+            <p className="text-text-main relative z-10 line-clamp-2 text-2xl leading-tight font-extrabold text-balance">
+              {topic}
             </p>
-            <span className="text-orange-9 relative z-10 mt-auto flex items-center gap-1 pt-3 text-sm font-bold">
-              <Flame size={15} />
-              지금 도전하기
-            </span>
+
+            <div className="relative z-10 mt-auto flex flex-col gap-1.5 pt-3">
+              {/* 정답률 도발 (없으면 난이도로 대체) */}
+              {correctRate !== null ? (
+                <p className="text-orange-9 text-sm font-bold">
+                  정답률 {correctRate}%
+                  <span className="text-orange-7 font-semibold">
+                    {' · '}
+                    {isHardStat ? '상위권만 푼 문제' : '도전해 볼 만해요'}
+                  </span>
+                </p>
+              ) : (
+                <p className="text-orange-9 text-sm font-bold">
+                  난이도 {difficultyConfig.label}
+                </p>
+              )}
+
+              {/* 출처 — 작게 보조 */}
+              <p className="text-gray-8 text-xs font-medium">{sourceBadge}</p>
+
+              {/* 호기심 카피 */}
+              <span className="text-orange-9 mt-0.5 flex items-center gap-1 text-base font-extrabold">
+                <Flame size={16} />이 문제, 풀 수 있을까?
+              </span>
+            </div>
           </div>
         )}
       </div>
