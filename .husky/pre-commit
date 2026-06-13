@@ -1,2 +1,5 @@
-npx lint-staged
-npm run check-types
+if git diff --cached --name-only | grep -q '^mvp-front/'; then
+  cd mvp-front || exit 1
+  npx lint-staged
+  npm run check-types
+fi

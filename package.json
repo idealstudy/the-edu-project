@@ -15,7 +15,7 @@
     "format:check": "prettier -c */**/*.{js,jsx,json,ts,tsx,scss,css,md}",
     "test": "vitest",
     "test:ci": "vitest run",
-    "prepare": "husky",
+    "prepare": "cd .. && husky mvp-front/.husky",
     "check-types": "tsc --noEmit",
     "check-types:watch": "tsc --noEmit --watch",
     "storybook": "storybook dev -p 6006",
