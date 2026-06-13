@@ -78,8 +78,9 @@ const DIFFICULTY_CONFIG = {
 } as const;
 
 const PASS_RATE_DENOMINATOR = 10;
-const HANDWRITING_FONT =
-  '"Nanum Pen Script", "Nanum Brush Script", "KyoboHandwriting2020A", "Cafe24 Ssurround air", "Segoe Print", "Comic Sans MS", cursive';
+
+// 제목 앞머리의 "16." / "16)" 패턴 → 문항 번호로 추출.
+const QUESTION_NUMBER_PREFIX = /^\s*(\d{1,3})\s*[.)]\s*/;
 
 export const ChallengeCard = ({
   challenge,
@@ -93,6 +94,16 @@ export const ChallengeCard = ({
       ? Math.round((challenge.passRate / 100) * PASS_RATE_DENOMINATOR)
       : null;
 
+  // 출처 배지: "<출처> · N번" (번호는 제목 앞머리에서 파싱, 없으면 출처만).
+  const numberMatch = challenge.title.match(QUESTION_NUMBER_PREFIX);
+  const questionNumber = numberMatch ? numberMatch[1] : null;
+  const displayTitle = numberMatch
+    ? challenge.title.slice(numberMatch[0].length)
+    : challenge.title;
+  const sourceBadge = questionNumber
+    ? `${challenge.sourceText} · ${questionNumber}번`
+    : challenge.sourceText;
+
   return (
     <Link
       href={PUBLIC.OPEN_CHALLENGE.DETAIL(challenge.id)}
@@ -104,11 +115,13 @@ export const ChallengeCard = ({
     >
       <div
         className={cn(
-          'relative flex min-h-[200px] items-center justify-center p-6',
-          challenge.questionImageUrl ? 'bg-white' : config.bgClass
+          'relative min-h-[200px]',
+          challenge.questionImageUrl
+            ? 'flex items-center justify-center bg-white p-6'
+            : ''
         )}
       >
-        <div className="absolute top-3 left-3 z-10 flex gap-1.5">
+        <div className="absolute top-3 left-3 z-20 flex gap-1.5">
           <span
             className={cn(
               'rounded-md px-2 py-0.5 text-xs font-semibold',
@@ -135,20 +148,23 @@ export const ChallengeCard = ({
             className="max-h-[160px] object-contain"
           />
         ) : (
-          <div className="flex h-[190px] w-full items-center justify-center">
-            <div className="border-line-line2 relative h-full w-full max-w-[300px] rotate-[-1deg] overflow-hidden rounded-sm border bg-white px-6 py-4 shadow-sm">
-              <div className="border-line-line1 absolute inset-x-0 top-8 border-t" />
-              <div className="border-line-line1 absolute inset-x-0 top-16 border-t" />
-              <div className="border-line-line1 absolute inset-x-0 top-24 border-t" />
-              <div className="border-line-line1 absolute inset-x-0 top-32 border-t" />
-              <div className="border-orange-3 absolute inset-y-0 left-9 border-l" />
-              <p
-                className="text-text-main line-clamp-3 pt-6 text-center text-2xl leading-[1.65] font-normal"
-                style={{ fontFamily: HANDWRITING_FONT }}
-              >
-                {challenge.title}
-              </p>
-            </div>
+          // 이미지 없을 때: 오렌지 그라데이션 + 큰 출처 배지·번호 워터마크·큰 제목으로 '도전' 느낌.
+          <div className="from-orange-1 to-orange-3 relative flex min-h-[200px] w-full flex-col overflow-hidden bg-gradient-to-br px-5 pt-12 pb-5">
+            {questionNumber && (
+              <span className="text-orange-4/50 pointer-events-none absolute -right-3 -bottom-7 text-[120px] leading-none font-black tabular-nums select-none">
+                {questionNumber}
+              </span>
+            )}
+            <span className="text-orange-9 relative z-10 w-fit rounded-full bg-white/85 px-3 py-1 text-xs font-bold shadow-sm">
+              {sourceBadge}
+            </span>
+            <p className="text-text-main relative z-10 mt-3 line-clamp-3 text-xl leading-snug font-extrabold text-balance">
+              {displayTitle}
+            </p>
+            <span className="text-orange-9 relative z-10 mt-auto flex items-center gap-1 pt-3 text-sm font-bold">
+              <Flame size={15} />
+              지금 도전하기
+            </span>
           </div>
         )}
       </div>
