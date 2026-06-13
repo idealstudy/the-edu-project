@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 import { type LessonProblem } from '@/entities/course';
 import { MathMarkdown } from '@/shared/components/markdown';
@@ -39,12 +40,26 @@ export const LessonViewClient = ({ courseId }: { courseId: number }) => {
 
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
-  // 최초 로드 시 첫 열린 차시(없으면 첫 차시)를 자동 선택.
+  // 코스 상세에서 넘어올 때 ?lesson=<id> 로 진입 차시를 지정할 수 있다.
+  const searchParams = useSearchParams();
+  const lessonParam = searchParams.get('lesson');
+
+  // 최초 로드 시 차시를 자동 선택.
+  //  - ?lesson= 가 가리키는 차시가 잠겨있지 않으면 그 차시
+  //  - 없거나 잠긴 차시면 첫 열린 차시(없으면 첫 차시)로 폴백
   useEffect(() => {
     if (!lessons || lessons.length === 0 || selectedId !== null) return;
-    const fallback = lessons.find((lesson) => !lesson.isLocked) ?? lessons[0];
+    const requestedId = lessonParam ? Number(lessonParam) : null;
+    const requested =
+      requestedId != null
+        ? lessons.find(
+            (lesson) => lesson.lessonId === requestedId && !lesson.isLocked
+          )
+        : undefined;
+    const fallback =
+      requested ?? lessons.find((lesson) => !lesson.isLocked) ?? lessons[0];
     if (fallback) setSelectedId(fallback.lessonId);
-  }, [lessons, selectedId]);
+  }, [lessons, selectedId, lessonParam]);
 
   if (isLoading) {
     return <LessonViewSkeleton />;

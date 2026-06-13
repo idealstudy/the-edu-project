@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { useSession } from '@/providers';
 import { Button, StatusBadge } from '@/shared/components/ui';
@@ -25,6 +26,7 @@ import { LessonRow } from '../common/lesson-row';
  *  - 로그인: 게이팅된 차시 목록 + 잠긴 차시 있으면 수강 신청 CTA.
  * ────────────────────────────────────────────────────*/
 export const CourseDetailClient = ({ courseId }: { courseId: number }) => {
+  const router = useRouter();
   const { status } = useSession();
   const isAuthenticated = status === 'authenticated';
 
@@ -108,6 +110,15 @@ export const CourseDetailClient = ({ courseId }: { courseId: number }) => {
                     key={lesson.lessonId}
                     lesson={lesson}
                     index={index}
+                    interactive
+                    onSelect={(target) => {
+                      // 잠긴 차시는 이동 막고 수강 CTA 그대로(무동작),
+                      // 무료/해제 차시는 해당 차시로 바로 이동.
+                      if (target.isLocked) return;
+                      router.push(
+                        `${PRIVATE.COURSE.LEARN(courseId)}?lesson=${target.lessonId}`
+                      );
+                    }}
                   />
                 ))}
               </div>
