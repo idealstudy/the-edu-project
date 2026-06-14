@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { PUBLIC } from '@/shared/constants';
@@ -128,14 +127,8 @@ export const ChallengeCard = ({
       )}
       aria-label={`${challenge.title} 도전하기`}
     >
-      <div
-        className={cn(
-          'relative min-h-[200px]',
-          challenge.questionImageUrl
-            ? 'flex items-center justify-center bg-white p-6'
-            : ''
-        )}
-      >
+      {/* 썸네일은 항상 '퀴즈 티저' — 원본 문제(이미지)는 풀이 화면에서만 노출한다. */}
+      <div className="relative min-h-[200px]">
         <div className="absolute top-3 left-3 z-20 flex gap-1.5">
           <span
             className={cn(
@@ -154,16 +147,8 @@ export const ChallengeCard = ({
             {difficultyConfig.label}
           </span>
         </div>
-        {challenge.questionImageUrl ? (
-          <Image
-            src={challenge.questionImageUrl}
-            alt={challenge.title}
-            width={280}
-            height={160}
-            className="max-h-[160px] object-contain"
-          />
-        ) : (
-          // 이미지 없을 때: '퀴즈 티저' — 문제 내용·수식은 숨기고 단원/난이도/정답률·출처로 궁금증 유발.
+        {(
+          // '퀴즈 티저' — 문제 내용·수식은 숨기고 단원/난이도/정답률·출처로 궁금증 유발.
           <div className="from-orange-1 to-orange-3 relative flex min-h-[200px] w-full flex-col overflow-hidden bg-gradient-to-br px-5 pt-12 pb-5">
             {/* 배경: 정답률을 큰 숫자로 — 수식 대신 도발 스탯 */}
             {correctRate !== null && (
