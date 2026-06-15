@@ -5,6 +5,7 @@ import {
   type CreateChallengeInvitePayload,
   type FriendRequestPayload,
   type Friendship,
+  type MemberSearchResult,
 } from '@/entities/social/types';
 import { api } from '@/shared/api';
 import { unwrapEnvelope } from '@/shared/lib/api-utils';
@@ -51,9 +52,24 @@ const toInviteResult = (raw: unknown): ChallengeInviteResult => {
   });
 };
 
+const toMemberSearchResult = (raw: unknown): MemberSearchResult => {
+  const parsed = dto.memberSearchResult.parse(raw);
+  return domain.memberSearchResult.parse({
+    ...parsed,
+    nickname: parsed.nickname ?? null,
+  });
+};
+
 /* ─────────────────────────────────────────────────────
  * 친구 API
  * ────────────────────────────────────────────────────*/
+const searchMembers = async (q: string): Promise<MemberSearchResult[]> => {
+  const params = payload.memberSearchQuery.parse({ q });
+  const response = await api.private.get('/common/members/search', { params });
+  const list = unwrapEnvelope(response, z.array(z.unknown()));
+  return list.map(toMemberSearchResult);
+};
+
 const requestFriend = async (
   body: FriendRequestPayload
 ): Promise<Friendship> => {
@@ -122,6 +138,7 @@ const getPublicInvitePreview = async (
 };
 
 export const repository = {
+  searchMembers,
   requestFriend,
   acceptFriend,
   getMyFriends,

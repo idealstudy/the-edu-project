@@ -2,8 +2,15 @@
 
 import { useEffect, useState } from 'react';
 
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+
+import { type LessonProblem } from '@/entities/course';
+import { MathMarkdown } from '@/shared/components/markdown';
 import { Button } from '@/shared/components/ui';
-import { CheckCircle2, Lock } from 'lucide-react';
+import { PUBLIC } from '@/shared/constants';
+import { cn } from '@/shared/lib';
+import { CheckCircle2, ChevronRight, Lock } from 'lucide-react';
 
 import {
   useCourseDetailQuery,
@@ -33,12 +40,26 @@ export const LessonViewClient = ({ courseId }: { courseId: number }) => {
 
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
-  // 최초 로드 시 첫 열린 차시(없으면 첫 차시)를 자동 선택.
+  // 코스 상세에서 넘어올 때 ?lesson=<id> 로 진입 차시를 지정할 수 있다.
+  const searchParams = useSearchParams();
+  const lessonParam = searchParams.get('lesson');
+
+  // 최초 로드 시 차시를 자동 선택.
+  //  - ?lesson= 가 가리키는 차시가 잠겨있지 않으면 그 차시
+  //  - 없거나 잠긴 차시면 첫 열린 차시(없으면 첫 차시)로 폴백
   useEffect(() => {
     if (!lessons || lessons.length === 0 || selectedId !== null) return;
-    const fallback = lessons.find((lesson) => !lesson.isLocked) ?? lessons[0];
+    const requestedId = lessonParam ? Number(lessonParam) : null;
+    const requested =
+      requestedId != null
+        ? lessons.find(
+            (lesson) => lesson.lessonId === requestedId && !lesson.isLocked
+          )
+        : undefined;
+    const fallback =
+      requested ?? lessons.find((lesson) => !lesson.isLocked) ?? lessons[0];
     if (fallback) setSelectedId(fallback.lessonId);
-  }, [lessons, selectedId]);
+  }, [lessons, selectedId, lessonParam]);
 
   if (isLoading) {
     return <LessonViewSkeleton />;
@@ -117,11 +138,20 @@ export const LessonViewClient = ({ courseId }: { courseId: number }) => {
           />
         ) : (
           <>
-            <article className="font-body2-normal text-text-main min-h-[160px] whitespace-pre-wrap">
-              {selected.contentRef && selected.contentRef.trim().length > 0
-                ? selected.contentRef
-                : '이 차시의 학습 내용이 곧 제공될 예정이에요.'}
+            <article className="min-h-[160px]">
+              {selected.contentRef && selected.contentRef.trim().length > 0 ? (
+                <MathMarkdown
+                  content={selected.contentRef}
+                  className="font-body2-normal text-text-main"
+                />
+              ) : (
+                <p className="font-body2-normal text-text-sub2">
+                  콘텐츠 준비 중이에요.
+                </p>
+              )}
             </article>
+
+            <LessonProblems problems={selected.problems} />
 
             <footer className="border-line-line2 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
               {selected.progressStatus === 'COMPLETED' ? (
@@ -173,6 +203,72 @@ export const LessonViewClient = ({ courseId }: { courseId: number }) => {
         )}
       </section>
     </div>
+  );
+};
+
+/* ─────────────────────────────────────────────────────
+ * 이 차시의 문제 — 연결된 오픈챌린지로 이동.
+ *  난이도는 오렌지 단일 accent 강도 한 축으로 표현.
+ * ────────────────────────────────────────────────────*/
+const DIFFICULTY_BADGE = {
+  TOP: { label: '최상', className: 'bg-orange-9 text-white' },
+  HIGH: { label: '상', className: 'bg-orange-7 text-white' },
+  MID: { label: '중', className: 'bg-orange-4 text-gray-11' },
+  LOW: { label: '하', className: 'bg-gray-3 text-gray-11' },
+} as const;
+
+const LessonProblems = ({ problems }: { problems: LessonProblem[] }) => {
+  if (problems.length === 0) {
+    return (
+      <section
+        aria-label="이 차시의 문제"
+        className="border-line-line2 rounded-[12px] border border-dashed p-5 text-center"
+      >
+        <p className="font-caption-normal text-text-sub2">
+          이 차시의 문제는 준비 중이거나 잠겨 있어요.
+        </p>
+      </section>
+    );
+  }
+
+  return (
+    <section
+      aria-label="이 차시의 문제"
+      className="flex flex-col gap-2"
+    >
+      <h2 className="font-label-heading text-text-main">이 차시의 문제</h2>
+      <ul className="flex flex-col gap-2">
+        {[...problems]
+          .sort((a, b) => a.orderIndex - b.orderIndex)
+          .map((problem) => {
+            const badge = DIFFICULTY_BADGE[problem.difficulty];
+            return (
+              <li key={problem.challengeId}>
+                <Link
+                  href={PUBLIC.OPEN_CHALLENGE.DETAIL(problem.challengeId)}
+                  className="group border-line-line2 hover:border-key-color-primary flex items-center gap-3 rounded-[12px] border bg-white px-4 py-3 transition-colors"
+                >
+                  <span
+                    className={cn(
+                      'font-caption-heading shrink-0 rounded-md px-2 py-0.5',
+                      badge.className
+                    )}
+                  >
+                    {badge.label}
+                  </span>
+                  <span className="font-body2-normal text-text-main min-w-0 flex-1 truncate">
+                    {problem.title}
+                  </span>
+                  <ChevronRight
+                    size={18}
+                    className="text-text-sub2 group-hover:text-key-color-primary shrink-0"
+                  />
+                </Link>
+              </li>
+            );
+          })}
+      </ul>
+    </section>
   );
 };
 

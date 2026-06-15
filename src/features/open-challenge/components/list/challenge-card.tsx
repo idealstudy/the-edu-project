@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { PUBLIC } from '@/shared/constants';
@@ -16,6 +15,10 @@ export type ChallengeCardData = {
   questionImageUrl: string | null;
   passRate: number | null;
   participantCount: number;
+  /** 단원/유형 — 티저 주인공(없으면 sourceText 끝 segment에서 유도) */
+  topic?: string;
+  /** 오답률 — 정답률(100-오답률) 도발 스탯(없으면 passRate→난이도 폴백) */
+  wrongAnswerRate?: number;
 };
 
 type SubjectConfig = {
@@ -78,8 +81,9 @@ const DIFFICULTY_CONFIG = {
 } as const;
 
 const PASS_RATE_DENOMINATOR = 10;
-const HANDWRITING_FONT =
-  '"Nanum Pen Script", "Nanum Brush Script", "KyoboHandwriting2020A", "Cafe24 Ssurround air", "Segoe Print", "Comic Sans MS", cursive';
+
+// 제목 앞머리의 "16." / "16)" 패턴 → 문항 번호로 추출.
+const QUESTION_NUMBER_PREFIX = /^\s*(\d{1,3})\s*[.)]\s*/;
 
 export const ChallengeCard = ({
   challenge,
@@ -93,6 +97,27 @@ export const ChallengeCard = ({
       ? Math.round((challenge.passRate / 100) * PASS_RATE_DENOMINATOR)
       : null;
 
+  // 출처 배지: "<출처> · N번" (번호는 제목 앞머리에서 파싱, 없으면 출처만).
+  // 번호만 보조 표기로 쓰고, 제목(수식·문제 내용)은 티저에 노출하지 않는다.
+  const numberMatch = challenge.title.match(QUESTION_NUMBER_PREFIX);
+  const questionNumber = numberMatch ? numberMatch[1] : null;
+  const sourceBadge = questionNumber
+    ? `${challenge.sourceText} · ${questionNumber}번`
+    : challenge.sourceText;
+
+  // 단원/유형: card data의 topic 우선, 없으면 출처 끝 segment("… · <단원>")에서 유도.
+  const topic =
+    challenge.topic ??
+    challenge.sourceText.split('·').pop()?.trim() ??
+    challenge.sourceText;
+
+  // 정답률(도발 스탯): 오답률 있으면 100-오답률, 없으면 통과율, 둘 다 없으면 난이도로 대체.
+  const correctRate =
+    challenge.wrongAnswerRate != null
+      ? 100 - challenge.wrongAnswerRate
+      : challenge.passRate;
+  const isHardStat = correctRate !== null && correctRate < 40;
+
   return (
     <Link
       href={PUBLIC.OPEN_CHALLENGE.DETAIL(challenge.id)}
@@ -102,13 +127,9 @@ export const ChallengeCard = ({
       )}
       aria-label={`${challenge.title} 도전하기`}
     >
-      <div
-        className={cn(
-          'relative flex min-h-[200px] items-center justify-center p-6',
-          challenge.questionImageUrl ? 'bg-white' : config.bgClass
-        )}
-      >
-        <div className="absolute top-3 left-3 z-10 flex gap-1.5">
+      {/* 썸네일은 항상 '퀴즈 티저' — 원본 문제(이미지)는 풀이 화면에서만 노출한다. */}
+      <div className="relative min-h-[200px]">
+        <div className="absolute top-3 left-3 z-20 flex gap-1.5">
           <span
             className={cn(
               'rounded-md px-2 py-0.5 text-xs font-semibold',
@@ -126,28 +147,45 @@ export const ChallengeCard = ({
             {difficultyConfig.label}
           </span>
         </div>
-        {challenge.questionImageUrl ? (
-          <Image
-            src={challenge.questionImageUrl}
-            alt={challenge.title}
-            width={280}
-            height={160}
-            className="max-h-[160px] object-contain"
-          />
-        ) : (
-          <div className="flex h-[190px] w-full items-center justify-center">
-            <div className="border-line-line2 relative h-full w-full max-w-[300px] rotate-[-1deg] overflow-hidden rounded-sm border bg-white px-6 py-4 shadow-sm">
-              <div className="border-line-line1 absolute inset-x-0 top-8 border-t" />
-              <div className="border-line-line1 absolute inset-x-0 top-16 border-t" />
-              <div className="border-line-line1 absolute inset-x-0 top-24 border-t" />
-              <div className="border-line-line1 absolute inset-x-0 top-32 border-t" />
-              <div className="border-orange-3 absolute inset-y-0 left-9 border-l" />
-              <p
-                className="text-text-main line-clamp-3 pt-6 text-center text-2xl leading-[1.65] font-normal"
-                style={{ fontFamily: HANDWRITING_FONT }}
-              >
-                {challenge.title}
-              </p>
+        {(
+          // '퀴즈 티저' — 문제 내용·수식은 숨기고 단원/난이도/정답률·출처로 궁금증 유발.
+          <div className="from-orange-1 to-orange-3 relative flex min-h-[200px] w-full flex-col overflow-hidden bg-gradient-to-br px-5 pt-12 pb-5">
+            {/* 배경: 정답률을 큰 숫자로 — 수식 대신 도발 스탯 */}
+            {correctRate !== null && (
+              <span className="text-orange-4/40 pointer-events-none absolute -right-2 -bottom-6 text-[96px] leading-none font-black tabular-nums select-none">
+                {correctRate}
+                <span className="text-[40px]">%</span>
+              </span>
+            )}
+
+            {/* 단원/유형 — 주인공 */}
+            <p className="text-text-main relative z-10 line-clamp-2 text-2xl leading-tight font-extrabold text-balance">
+              {topic}
+            </p>
+
+            <div className="relative z-10 mt-auto flex flex-col gap-1.5 pt-3">
+              {/* 정답률 도발 (없으면 난이도로 대체) */}
+              {correctRate !== null ? (
+                <p className="text-orange-9 text-sm font-bold">
+                  정답률 {correctRate}%
+                  <span className="text-orange-7 font-semibold">
+                    {' · '}
+                    {isHardStat ? '상위권만 푼 문제' : '도전해 볼 만해요'}
+                  </span>
+                </p>
+              ) : (
+                <p className="text-orange-9 text-sm font-bold">
+                  난이도 {difficultyConfig.label}
+                </p>
+              )}
+
+              {/* 출처 — 작게 보조 */}
+              <p className="text-gray-8 text-xs font-medium">{sourceBadge}</p>
+
+              {/* 호기심 카피 */}
+              <span className="text-orange-9 mt-0.5 flex items-center gap-1 text-base font-extrabold">
+                <Flame size={16} />이 문제, 풀 수 있을까?
+              </span>
             </div>
           </div>
         )}

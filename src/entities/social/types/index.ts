@@ -15,6 +15,8 @@ export type ChallengeInvitePreview = z.infer<
 >;
 export type ChallengeInviteResult = z.infer<typeof domain.challengeInviteResult>;
 
+export type MemberSearchResult = z.infer<typeof domain.memberSearchResult>;
+
 /* ─────────────────────────────────────────────────────
  * Payload Type
  * ────────────────────────────────────────────────────*/
@@ -22,3 +24,4 @@ export type FriendRequestPayload = z.infer<typeof payload.friendRequest>;
 export type CreateChallengeInvitePayload = z.infer<
   typeof payload.createChallengeInvite
 >;
+export type MemberSearchQuery = z.infer<typeof payload.memberSearchQuery>;

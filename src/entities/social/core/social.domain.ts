@@ -59,6 +59,17 @@ const ChallengeInviteResultSchema = z.object({
   opponentCorrect: z.boolean().nullable(),
 });
 
+/* ─────────────────────────────────────────────────────
+ * 회원 검색 결과 (친구 요청 대상 찾기) Domain
+ *  GET /api/common/members/search?q=
+ *  - 이름/닉네임으로 검색, 본인 제외 상위 N명.
+ * ────────────────────────────────────────────────────*/
+const MemberSearchResultSchema = z.object({
+  memberId: z.number(),
+  name: z.string(),
+  nickname: z.string().nullable(),
+});
+
 export const domain = {
   friendshipState: FriendshipStateSchema,
   friendship: FriendshipSchema,
@@ -66,4 +77,5 @@ export const domain = {
   challengeInvite: ChallengeInviteSchema,
   challengeInvitePreview: ChallengeInvitePreviewSchema,
   challengeInviteResult: ChallengeInviteResultSchema,
+  memberSearchResult: MemberSearchResultSchema,
 };

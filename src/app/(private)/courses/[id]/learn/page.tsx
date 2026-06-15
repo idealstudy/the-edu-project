@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+
 import { notFound } from 'next/navigation';
 
 import { LessonViewClient } from '@/features/course';
@@ -26,7 +28,9 @@ export default async function LessonViewPage({ params }: LessonViewPageProps) {
         <div className="mb-6">
           <BackButton />
         </div>
-        <LessonViewClient courseId={courseId} />
+        <Suspense fallback={null}>
+          <LessonViewClient courseId={courseId} />
+        </Suspense>
       </div>
     </div>
   );

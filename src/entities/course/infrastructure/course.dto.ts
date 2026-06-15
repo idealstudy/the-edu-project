@@ -61,6 +61,68 @@ const CoursePageDtoSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 차시 연결 문제 정규화 helper
+ *  백엔드 난이도/과목 직렬화 케이스(대/소문자·한글)를 도메인 enum으로 흡수.
+ * ────────────────────────────────────────────────────*/
+const toProblemDifficulty = (
+  value: string
+): 'TOP' | 'HIGH' | 'MID' | 'LOW' => {
+  switch (value.toUpperCase()) {
+    case 'TOP':
+    case 'HIGHEST':
+    case '최상':
+      return 'TOP';
+    case 'HIGH':
+    case '상':
+      return 'HIGH';
+    case 'LOW':
+    case '하':
+      return 'LOW';
+    default:
+      return 'MID';
+  }
+};
+
+const toProblemSubject = (
+  value: string
+): 'MATH' | 'KOREAN' | 'ENGLISH' | 'SCIENCE' => {
+  switch (value.toLowerCase()) {
+    case 'korean':
+    case '국어':
+      return 'KOREAN';
+    case 'english':
+    case '영어':
+      return 'ENGLISH';
+    case 'science':
+    case '탐구':
+    case '과학':
+      return 'SCIENCE';
+    default:
+      return 'MATH';
+  }
+};
+
+/* ─────────────────────────────────────────────────────
+ * 차시에 연결된 오픈챌린지 문제 DTO
+ *  잠긴(locked) 차시는 백엔드가 빈 배열을 내려준다.
+ * ────────────────────────────────────────────────────*/
+const LessonProblemDtoSchema = z
+  .object({
+    challengeId: z.union([z.string(), z.number()]).transform(String),
+    title: z.string().optional().default('오픈챌린지 문제'),
+    difficulty: z.string().optional().default('MID'),
+    subject: z.string().optional().default('MATH'),
+    orderIndex: z.number().optional().default(0),
+  })
+  .transform((raw) => ({
+    challengeId: raw.challengeId,
+    title: raw.title,
+    difficulty: toProblemDifficulty(raw.difficulty),
+    subject: toProblemSubject(raw.subject),
+    orderIndex: raw.orderIndex,
+  }));
+
+/* ─────────────────────────────────────────────────────
  * 차시(게이팅) DTO (LessonWithGatingResponse)
  * ────────────────────────────────────────────────────*/
 const LessonDtoSchema = z
@@ -75,6 +137,7 @@ const LessonDtoSchema = z
       .enum(['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED'])
       .optional()
       .default('NOT_STARTED'),
+    problems: z.array(LessonProblemDtoSchema).optional().default([]),
   })
   .transform((raw) => ({
     lessonId: raw.lessonId,
@@ -83,6 +146,7 @@ const LessonDtoSchema = z
     isLocked: raw.isLocked ?? raw.locked ?? false,
     contentRef: raw.contentRef ?? null,
     progressStatus: raw.progressStatus,
+    problems: raw.problems,
   }));
 
 /* ─────────────────────────────────────────────────────

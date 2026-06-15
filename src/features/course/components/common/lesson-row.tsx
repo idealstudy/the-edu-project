@@ -14,19 +14,21 @@ type LessonRowProps = {
   lesson: Lesson;
   index: number;
   isActive?: boolean;
+  /** 버튼으로 동작시킬지 — 기본은 onSelect 유무로 판단 */
+  interactive?: boolean;
   onSelect?: (lesson: Lesson) => void;
 };
 
 /* ─────────────────────────────────────────────────────
- * 차시 행 — 잠금/진도 표시. onSelect 가 있으면 버튼으로 동작.
+ * 차시 행 — 잠금/진도 표시. interactive(또는 onSelect)면 버튼으로 동작.
  * ────────────────────────────────────────────────────*/
 export const LessonRow = ({
   lesson,
   index,
   isActive = false,
   onSelect,
+  interactive = Boolean(onSelect),
 }: LessonRowProps) => {
-  const interactive = Boolean(onSelect);
   const progressLabel = PROGRESS_LABEL[lesson.progressStatus];
 
   const content = (

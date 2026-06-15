@@ -1,58 +1,178 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { Button, Input } from '@/shared/components/ui';
+import { type MemberSearchResult } from '@/entities/social';
+import { Button, Input, SearchInput } from '@/shared/components/ui';
+import { Loader2, UserPlus } from 'lucide-react';
 
-import { useRequestFriendMutation } from '../../hooks';
+import { useRequestFriendMutation, useSearchMembersQuery } from '../../hooks';
 
 /* ─────────────────────────────────────────────────────
- * 친구 요청 폼 — 상대 회원 ID 로 요청 전송.
- *  (백엔드가 회원 검색 API 를 제공하지 않아 ID 기반 입력)
+ * 친구 요청 폼 — 이름/닉네임으로 검색 → 결과에서 친구 요청.
+ *  - 디바운스 검색 + 4상태(빈/로딩/없음/결과)
+ *  - 회원 번호 직접 입력은 폴백으로 유지.
  * ────────────────────────────────────────────────────*/
 export const FriendRequestForm = () => {
-  const [value, setValue] = useState('');
+  const [keyword, setKeyword] = useState('');
+  const [debounced, setDebounced] = useState('');
   const { mutate, isPending } = useRequestFriendMutation();
 
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setDebounced(keyword.trim());
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [keyword]);
+
+  const {
+    data: results,
+    isFetching,
+  } = useSearchMembersQuery(debounced, {
+    enabled: debounced.length > 0,
+  });
+
+  const handleRequest = (memberId: number) => {
+    if (isPending) return;
+    mutate({ addresseeId: memberId });
+  };
+
+  return (
+    <div className="border-line-line2 flex flex-col gap-4 rounded-[12px] border bg-white p-5">
+      <div className="flex flex-col gap-1">
+        <h2 className="font-body1-heading text-text-main">친구 찾기</h2>
+        <p className="font-caption-normal text-text-sub2">
+          함께 도전할 친구를 이름이나 닉네임으로 검색해 요청을 보내요.
+        </p>
+      </div>
+
+      <SearchInput
+        value={keyword}
+        onChange={setKeyword}
+        placeholder="이름 또는 닉네임으로 검색"
+        aria-label="친구 검색"
+        className="w-full"
+      />
+
+      {/* 검색 결과 4상태 */}
+      {debounced.length > 0 && (
+        <div className="flex flex-col gap-2">
+          {isFetching ? (
+            <div className="text-text-sub2 flex items-center justify-center gap-2 py-6">
+              <Loader2
+                size={18}
+                className="animate-spin"
+              />
+              <span className="font-caption-normal">검색 중이에요…</span>
+            </div>
+          ) : !results || results.length === 0 ? (
+            <p className="font-caption-normal text-text-sub2 py-6 text-center">
+              검색 결과가 없어요. 다른 이름으로 찾아보세요.
+            </p>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {results.map((member) => (
+                <MemberRow
+                  key={member.memberId}
+                  member={member}
+                  disabled={isPending}
+                  onRequest={() => handleRequest(member.memberId)}
+                />
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+
+      <MemberNumberFallback
+        disabled={isPending}
+        onRequest={handleRequest}
+      />
+    </div>
+  );
+};
+
+const MemberRow = ({
+  member,
+  disabled,
+  onRequest,
+}: {
+  member: MemberSearchResult;
+  disabled: boolean;
+  onRequest: () => void;
+}) => (
+  <li className="border-line-line2 flex items-center justify-between gap-3 rounded-[12px] border px-4 py-3">
+    <div className="flex min-w-0 items-center gap-3">
+      <span className="bg-orange-1 text-key-color-primary flex size-10 shrink-0 items-center justify-center rounded-full">
+        <UserPlus size={18} />
+      </span>
+      <div className="flex min-w-0 flex-col">
+        <span className="font-body2-heading text-text-main truncate">
+          {member.name}
+        </span>
+        <span className="font-caption-normal text-text-sub2 truncate">
+          {member.nickname ?? `회원 #${member.memberId}`}
+        </span>
+      </div>
+    </div>
+    <Button
+      size="xsmall"
+      disabled={disabled}
+      onClick={onRequest}
+      className="shrink-0"
+    >
+      친구 요청
+    </Button>
+  </li>
+);
+
+/* 회원 번호 직접 입력 폴백 (검색이 안 될 때) */
+const MemberNumberFallback = ({
+  disabled,
+  onRequest,
+}: {
+  disabled: boolean;
+  onRequest: (memberId: number) => void;
+}) => {
+  const [value, setValue] = useState('');
   const parsedId = Number(value);
-  const isValid = value.trim().length > 0 && Number.isInteger(parsedId) && parsedId > 0;
+  const isValid =
+    value.trim().length > 0 && Number.isInteger(parsedId) && parsedId > 0;
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (!isValid || isPending) return;
-    mutate(
-      { addresseeId: parsedId },
-      { onSuccess: () => setValue('') }
-    );
+    if (!isValid || disabled) return;
+    onRequest(parsedId);
+    setValue('');
   };
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="border-line-line2 flex flex-col gap-3 rounded-[12px] border bg-white p-5"
+      className="border-line-line2 flex flex-col gap-2 border-t pt-4"
     >
-      <div className="flex flex-col gap-1">
-        <h2 className="font-body1-heading text-text-main">친구 요청 보내기</h2>
-        <p className="font-caption-normal text-text-sub2">
-          함께 도전할 친구의 회원 번호를 입력해 요청을 보내요.
-        </p>
-      </div>
+      <span className="font-caption-normal text-text-sub2">
+        회원 번호를 알고 있나요?
+      </span>
       <div className="flex items-stretch gap-2">
         <Input
           inputMode="numeric"
           value={value}
-          onChange={(event) => setValue(event.target.value.replace(/[^0-9]/g, ''))}
+          onChange={(event) =>
+            setValue(event.target.value.replace(/[^0-9]/g, ''))
+          }
           placeholder="상대 회원 번호"
           aria-label="친구 요청 대상 회원 번호"
           className="flex-1"
         />
         <Button
           type="submit"
+          variant="outlined"
           size="small"
-          disabled={!isValid || isPending}
+          disabled={!isValid || disabled}
           className="shrink-0"
         >
-          {isPending ? '전송 중…' : '요청'}
+          요청
         </Button>
       </div>
     </form>

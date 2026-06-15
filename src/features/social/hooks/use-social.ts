@@ -18,6 +18,16 @@ export const useMyFriendsQuery = () =>
     queryFn: repository.getMyFriends,
   });
 
+export const useSearchMembersQuery = (
+  q: string,
+  options?: { enabled?: boolean }
+) =>
+  useQuery({
+    queryKey: socialKeys.memberSearch(q),
+    queryFn: () => repository.searchMembers(q),
+    enabled: (options?.enabled ?? true) && q.trim().length > 0,
+  });
+
 export const useRequestFriendMutation = () => {
   const queryClient = useQueryClient();
 
@@ -78,6 +88,17 @@ export const usePublicInvitePreviewQuery = (
   useQuery({
     queryKey: socialKeys.invitePreview(token),
     queryFn: () => repository.getPublicInvitePreview(token),
+    enabled: (options?.enabled ?? true) && token.length > 0,
+    retry: false,
+  });
+
+export const useInviteResultQuery = (
+  token: string,
+  options?: { enabled?: boolean }
+) =>
+  useQuery({
+    queryKey: socialKeys.inviteResult(token),
+    queryFn: () => repository.getInviteResult(token),
     enabled: (options?.enabled ?? true) && token.length > 0,
     retry: false,
   });
