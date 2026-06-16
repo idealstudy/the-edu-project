@@ -385,6 +385,9 @@ const CreateAiCoachingSessionPayloadSchema = z.object({
 
 const SendAiCoachingMessagePayloadSchema = z.object({
   message: z.string().trim().min(1).max(1000),
+  // 학생 손글씨 풀이 스냅샷 media_id (선택) — 있으면 백엔드가 vision 으로 첨부해
+  // "어디까지 맞고 어디서 막혔는지" 풀이 기반 코칭을 한다.
+  studentSolutionImageMediaId: z.string().min(1).optional(),
 });
 
 const ChallengeIdResponseSchema = z.object({

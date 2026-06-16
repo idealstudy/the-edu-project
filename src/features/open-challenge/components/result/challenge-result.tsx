@@ -25,6 +25,8 @@ type SubmittedResult = {
   passRate: number | null;
   participantCount: number;
   attemptId?: string;
+  // 방금 푼 내 손글씨 풀이 스냅샷(PNG dataURL). strokes 가 있을 때만 채워진다.
+  myDrawingDataUrl?: string;
 };
 
 type ChallengeResultProps = {
@@ -99,6 +101,20 @@ export const ChallengeResult = ({ challengeId }: ChallengeResultProps) => {
               passRate={submittedResult.passRate}
               participantCount={submittedResult.participantCount}
             />
+          )}
+          {submittedResult?.myDrawingDataUrl && (
+            <section className="border-line-line2 flex flex-col gap-3 rounded-[12px] border bg-white p-5">
+              <h2 className="font-body1-heading text-text-main">내 풀이</h2>
+              <div className="border-line-line2 bg-gray-1 overflow-hidden rounded-lg border">
+                {/* dataURL 스냅샷 — next/image 최적화 대상 아님 */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={submittedResult.myDrawingDataUrl}
+                  alt="내가 작성한 손글씨 풀이"
+                  className="h-auto w-full object-contain"
+                />
+              </div>
+            </section>
           )}
           <SolutionList
             solutions={solutions ?? ([] as SolutionItem[])}

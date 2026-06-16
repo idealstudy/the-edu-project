@@ -19,6 +19,7 @@ export const ChoiceList = ({
           <button
             type="button"
             key={idx}
+            data-testid={`choice-option-${idx}`}
             onClick={() => onSelect(choice)}
             className={cn(
               'flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 px-3 py-4 text-sm font-medium transition-colors md:flex-col md:py-5',

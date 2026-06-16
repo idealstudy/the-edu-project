@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 
 import { type AiCoachingPreference } from '@/entities/open-challenge';
+import { type Stroke, useDrawingUpload } from '@/shared/components/drawing';
 import { Button, Dialog } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
 import { cn } from '@/shared/lib';
@@ -64,6 +65,9 @@ type AiCoachPanelProps = {
   onAttemptCreated: (attemptId: string) => void;
   onAttemptCleared: () => void;
   onSessionChange?: (sessionId: string | null) => void;
+  // 학생이 풀이 공간에 쓴 손글씨 strokes — 메시지 전송 시 스냅샷을 업로드해
+  // AI 가 "현재 풀이"를 보고 코칭하도록 넘긴다.
+  drawingStrokes?: Stroke[];
 };
 
 const MAX_COMMENT_LENGTH = 200;
@@ -348,6 +352,7 @@ export const AiCoachPanel = ({
   onAttemptCreated,
   onAttemptCleared,
   onSessionChange,
+  drawingStrokes = [],
 }: AiCoachPanelProps) => {
   const [messages, setMessages] = useState<AiCoachMessage[]>([]);
   const [inputMessage, setInputMessage] = useState('');
@@ -371,6 +376,12 @@ export const AiCoachPanel = ({
   const sendMessageMutation = useSendAiCoachingMessageMutation(sessionId);
   const abandonSessionMutation = useAbandonAiCoachingSessionMutation();
   const solutionMutation = useChallengeSolutionMutation();
+  const { uploadDrawingAsync } = useDrawingUpload();
+  // 같은 strokes 를 중복 업로드하지 않도록 마지막 업로드 결과를 캐시한다.
+  const lastDrawingUploadRef = useRef<{
+    strokes: Stroke[];
+    mediaId: string;
+  } | null>(null);
 
   const hasLoadedSettings =
     !isLoggedIn || myPreferenceQuery.isFetched || myPreferenceQuery.isError;
@@ -488,7 +499,23 @@ export const AiCoachPanel = ({
     }
   };
 
-  const sendMessage = (rawMessage: string) => {
+  // 현재 손글씨 풀이 스냅샷을 업로드해 media_id 를 얻는다(있을 때만).
+  // 같은 strokes 면 이전 업로드를 재사용하고, 업로드 실패는 전송을 막지 않는다.
+  const resolveSolutionMediaId = async (): Promise<string | undefined> => {
+    if (drawingStrokes.length === 0) return undefined;
+    if (lastDrawingUploadRef.current?.strokes === drawingStrokes) {
+      return lastDrawingUploadRef.current.mediaId;
+    }
+    try {
+      const { mediaId } = await uploadDrawingAsync(drawingStrokes);
+      lastDrawingUploadRef.current = { strokes: drawingStrokes, mediaId };
+      return mediaId;
+    } catch {
+      return undefined;
+    }
+  };
+
+  const sendMessage = async (rawMessage: string) => {
     const trimmedMessage = rawMessage.trim();
     if (!trimmedMessage || status === 'READY' || isSending || !sessionId)
       return;
@@ -503,8 +530,10 @@ export const AiCoachPanel = ({
     ]);
     setStatus('COACHING');
 
+    const studentSolutionImageMediaId = await resolveSolutionMediaId();
+
     sendMessageMutation.mutate(
-      { message: trimmedMessage },
+      { message: trimmedMessage, studentSolutionImageMediaId },
       {
         onSuccess: (response) => {
           setMessages((previousMessages) => [

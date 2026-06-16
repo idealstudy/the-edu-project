@@ -30,6 +30,8 @@ export default function LoginForm() {
   const searchParams = useSearchParams();
   const inviteToken = searchParams.get('token');
   const from = searchParams.get('from');
+  // 도전장 등에서 넘어온 복귀 경로 — 로그인 후 이 경로로 되돌아간다.
+  const redirect = searchParams.get('redirect');
 
   const {
     register,
@@ -41,7 +43,7 @@ export default function LoginForm() {
     mode: 'onChange',
   });
 
-  const { login, isLoggingIn } = useAuth();
+  const { login, isLoggingIn } = useAuth(redirect);
 
   const onSubmit = async (data: LoginFormValues) => {
     trackAuthLoginClick();
@@ -71,6 +73,7 @@ export default function LoginForm() {
     const params = new URLSearchParams();
     if (inviteToken) params.set('token', inviteToken);
     if (from) params.set('from', from);
+    if (redirect) params.set('redirect', redirect);
     const query = params.toString();
     return query ? `${PUBLIC.CORE.SIGNUP}?${query}` : PUBLIC.CORE.SIGNUP;
   };

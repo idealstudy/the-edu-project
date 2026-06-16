@@ -14,6 +14,9 @@ import {
   openChallengeKeys,
   repository,
 } from '@/entities/open-challenge';
+import { levelKeys } from '@/entities/level';
+import { pointKeys } from '@/entities/point';
+import { treeKeys } from '@/entities/tree';
 import { PUBLIC } from '@/shared/constants';
 import { handleApiError } from '@/shared/lib/errors/error-handler';
 import { classifyOpenChallengeError } from '@/shared/lib/errors/errors';
@@ -148,6 +151,11 @@ export const useSubmitChallengeAnswerMutation = (challengeId: string) => {
       queryClient.invalidateQueries({
         queryKey: openChallengeKeys.detail(challengeId),
       });
+      // 정답 제출은 백엔드에서 포인트·레벨/뱃지·약점트리를 갱신(이벤트 핸들러)하므로
+      // 관련 캐시를 무효화해 화면이 새로고침 없이 최신 값을 반영하게 한다.
+      queryClient.invalidateQueries({ queryKey: pointKeys.all });
+      queryClient.invalidateQueries({ queryKey: levelKeys.all });
+      queryClient.invalidateQueries({ queryKey: treeKeys.all });
     },
     onError: (error) => {
       handleApiError(error, classifyOpenChallengeError, {

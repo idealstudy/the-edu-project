@@ -121,6 +121,7 @@ export const ChallengeCard = ({
   return (
     <Link
       href={PUBLIC.OPEN_CHALLENGE.DETAIL(challenge.id)}
+      data-testid="open-challenge-card"
       className={cn(
         'group focus-visible:ring-key-color-primary flex min-h-full flex-col overflow-hidden rounded-xl border transition-transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:outline-none',
         difficultyConfig.cardClass || config.borderClass

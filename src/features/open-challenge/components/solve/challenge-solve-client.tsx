@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import {
   SolutionDrawingPad,
   type Stroke,
+  exportStrokesToDataURL,
   useDrawingUpload,
 } from '@/shared/components/drawing';
 import { BackButton, Button, Dialog } from '@/shared/components/ui';
@@ -123,10 +124,29 @@ export const ChallengeSolveClient = ({
         }
       }
 
-      window.sessionStorage.setItem(
-        `${RESULT_STORAGE_KEY_PREFIX}:${challengeId}`,
-        JSON.stringify({ ...result, attemptId })
-      );
+      // 정답·오답·공유 여부와 무관하게, 내가 쓴 손글씨 풀이를 결과 화면 상단에 보여준다.
+      let myDrawingDataUrl: string | undefined;
+      if (drawingStrokes.length > 0) {
+        try {
+          myDrawingDataUrl = exportStrokesToDataURL(drawingStrokes);
+        } catch {
+          // 렌더 실패가 결과 화면 이동을 막지 않도록 한다.
+        }
+      }
+
+      const storageKey = `${RESULT_STORAGE_KEY_PREFIX}:${challengeId}`;
+      try {
+        window.sessionStorage.setItem(
+          storageKey,
+          JSON.stringify({ ...result, attemptId, myDrawingDataUrl })
+        );
+      } catch {
+        // 드로잉 dataURL 로 용량 초과 시, 드로잉 없이 결과만 저장한다.
+        window.sessionStorage.setItem(
+          storageKey,
+          JSON.stringify({ ...result, attemptId })
+        );
+      }
       router.push(PUBLIC.OPEN_CHALLENGE.RESULT(challengeId));
     } catch {
       // mutation hook에서 공통 API 에러 처리를 수행한다.
@@ -157,6 +177,7 @@ export const ChallengeSolveClient = ({
           onAttemptCreated={setAiAttemptId}
           onAttemptCleared={handleAiAttemptCleared}
           onSessionChange={setAiSessionId}
+          drawingStrokes={drawingStrokes}
         />
       </aside>
 
@@ -312,6 +333,7 @@ export const ChallengeSolveClient = ({
           <Button
             onClick={handleSubmit}
             disabled={!selectedAnswer || isSubmitting}
+            data-testid="challenge-submit-button"
             className="h-9 px-5 text-sm"
           >
             {isSubmitting ? '제출 중...' : '제출하기'}
@@ -350,6 +372,7 @@ export const ChallengeSolveClient = ({
               onAttemptCreated={setAiAttemptId}
               onAttemptCleared={handleAiAttemptCleared}
               onSessionChange={setAiSessionId}
+              drawingStrokes={drawingStrokes}
             />
           </Dialog.Body>
         </Dialog.Content>
