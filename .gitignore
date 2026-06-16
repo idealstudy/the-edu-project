@@ -56,4 +56,9 @@ certificates
 CLAUDE.md
 .omc/
 .ai/tmp/
-/public/mock-problems/
+
+# 저작권: 모의고사 문제/해설 이미지 — 기본 ignore, 단 시드에 포함된 EBSi 세트(ebsi/)만 추적
+/public/mock-problems/*
+!/public/mock-problems/ebsi/
+/public/mock-solutions/*
+!/public/mock-solutions/ebsi/
