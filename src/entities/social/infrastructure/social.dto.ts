@@ -78,6 +78,11 @@ const FriendRequestPayloadSchema = z.object({
   addresseeId: z.number(),
 });
 
+// 전화번호로 친구요청 — 숫자는 String 으로 유지(앞 0 보존). 하이픈은 백엔드/입력에서 정규화.
+const FriendRequestByPhonePayloadSchema = z.object({
+  phoneNumber: z.string().trim().min(1),
+});
+
 const CreateChallengeInvitePayloadSchema = z.object({
   challengeId: z.number(),
 });
@@ -88,6 +93,7 @@ const MemberSearchQuerySchema = z.object({
 
 export const payload = {
   friendRequest: FriendRequestPayloadSchema,
+  friendRequestByPhone: FriendRequestByPhonePayloadSchema,
   createChallengeInvite: CreateChallengeInvitePayloadSchema,
   memberSearchQuery: MemberSearchQuerySchema,
 };

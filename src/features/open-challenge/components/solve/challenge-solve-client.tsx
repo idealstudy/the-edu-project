@@ -278,7 +278,10 @@ export const ChallengeSolveClient = ({
               </span>
             </div>
 
-            <SolutionDrawingPad onStrokesChange={setDrawingStrokes} />
+            <SolutionDrawingPad
+              onStrokesChange={setDrawingStrokes}
+              persistKey={`open-challenge-solve:${challengeId}`}
+            />
           </div>
 
           <div

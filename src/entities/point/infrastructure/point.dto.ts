@@ -41,9 +41,20 @@ const PointWalletDtoSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 다음 해설 비용/무료 DTO (백엔드 SolutionViewCostResponse)
+ *  - free=true 면 다음 해설 보기 무료(cost=0, freeRemaining>0).
+ * ────────────────────────────────────────────────────*/
+const SolutionViewCostDtoSchema = z.object({
+  free: z.boolean().optional().default(false),
+  cost: z.number().optional().default(0),
+  freeRemaining: z.number().optional().default(0),
+});
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const dto = {
   transaction: PointTransactionDtoSchema,
   wallet: PointWalletDtoSchema,
+  solutionViewCost: SolutionViewCostDtoSchema,
 };

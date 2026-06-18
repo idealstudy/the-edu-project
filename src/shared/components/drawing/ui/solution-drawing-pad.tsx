@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { cn } from '@/shared/lib';
 import { Eraser, Pencil, Redo2, Trash2, Undo2 } from 'lucide-react';
 
+import { loadPageStrokes, savePageStrokes } from '../model/drawing-storage';
 import { useStrokes } from '../model/use-strokes';
 import type { DrawingTool, Stroke } from '../types';
 import { DrawingCanvas } from './drawing-canvas';
@@ -33,12 +34,17 @@ type SolutionDrawingPadProps = {
   onStrokesChange?: (strokes: Stroke[]) => void;
   /** 캔버스 가시 높이(px). 기본 440 (태블릿 기준) */
   height?: number;
+  /** 주어지면 이 키로 IndexedDB 자동저장·복원 (예: open-challenge-solve:{id}) */
+  persistKey?: string;
   className?: string;
 };
+
+const AUTOSAVE_DEBOUNCE_MS = 800;
 
 export function SolutionDrawingPad({
   onStrokesChange,
   height = DEFAULT_HEIGHT,
+  persistKey,
   className,
 }: SolutionDrawingPadProps) {
   const [tool, setTool] = useState<DrawingTool>('pen');
@@ -57,7 +63,12 @@ export function SolutionDrawingPad({
     redo,
     canUndo,
     canRedo,
+    setStrokes,
   } = useStrokes();
+
+  // 자동저장 상태: 마지막 저장 시각(HH:MM). null이면 아직 저장 안 됨.
+  const [savedAt, setSavedAt] = useState<string | null>(null);
+  const restoredRef = useRef(false);
 
   const onStrokesChangeRef = useRef(onStrokesChange);
   onStrokesChangeRef.current = onStrokesChange;
@@ -65,6 +76,35 @@ export function SolutionDrawingPad({
   useEffect(() => {
     onStrokesChangeRef.current?.(strokes);
   }, [strokes]);
+
+  // 마운트 시 1회 복원 (persistKey 있을 때만)
+  useEffect(() => {
+    if (!persistKey || restoredRef.current) return;
+    restoredRef.current = true;
+    let alive = true;
+    void loadPageStrokes(persistKey, 0).then((saved) => {
+      if (alive && saved.length > 0) setStrokes(saved);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [persistKey, setStrokes]);
+
+  // 획 변경 시 디바운스 자동저장 + "저장됨 HH:MM" 표시 (persistKey 있을 때만)
+  useEffect(() => {
+    if (!persistKey || !restoredRef.current) return;
+    const timer = window.setTimeout(() => {
+      void savePageStrokes(persistKey, 0, strokes).then(() => {
+        setSavedAt(
+          new Date().toLocaleTimeString('ko-KR', {
+            hour: '2-digit',
+            minute: '2-digit',
+          })
+        );
+      });
+    }, AUTOSAVE_DEBOUNCE_MS);
+    return () => window.clearTimeout(timer);
+  }, [persistKey, strokes]);
 
   // 캔버스 너비 측정 (좌표 정규화 기준)
   useEffect(() => {
@@ -194,6 +234,15 @@ export function SolutionDrawingPad({
         )}
 
         <div className="flex-1" />
+
+        {persistKey && savedAt && (
+          <span
+            className="font-caption-normal text-gray-6 mr-1 whitespace-nowrap"
+            aria-live="polite"
+          >
+            저장됨 {savedAt}
+          </span>
+        )}
 
         <div className="flex items-center gap-1">
           <PadIconButton

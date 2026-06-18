@@ -2,6 +2,7 @@
 
 import {
   type CreateChallengeInvitePayload,
+  type FriendRequestByPhonePayload,
   type FriendRequestPayload,
   repository,
   socialKeys,
@@ -39,6 +40,25 @@ export const useRequestFriendMutation = () => {
     },
     onError: () => {
       showBottomToast('친구 요청에 실패했어요. 잠시 후 다시 시도해 주세요.');
+    },
+  });
+};
+
+// 전화번호로 친구요청 — 미존재 시 "회원을 찾을 수 없어요" 안내.
+export const useRequestFriendByPhoneMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (body: FriendRequestByPhonePayload) =>
+      repository.requestFriendByPhone(body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: socialKeys.friends() });
+      showBottomToast('친구 요청을 보냈어요.');
+    },
+    onError: () => {
+      showBottomToast(
+        '그 전화번호의 회원을 찾을 수 없어요. 번호를 다시 확인해 주세요.'
+      );
     },
   });
 };

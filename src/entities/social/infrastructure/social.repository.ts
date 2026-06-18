@@ -3,6 +3,7 @@ import {
   type ChallengeInvitePreview,
   type ChallengeInviteResult,
   type CreateChallengeInvitePayload,
+  type FriendRequestByPhonePayload,
   type FriendRequestPayload,
   type Friendship,
   type MemberSearchResult,
@@ -78,6 +79,15 @@ const requestFriend = async (
   return toFriendship(unwrapEnvelope(response, z.unknown()));
 };
 
+// 전화번호로 친구요청 — phoneNumber 를 String 그대로 전송(앞 0 보존).
+const requestFriendByPhone = async (
+  body: FriendRequestByPhonePayload
+): Promise<Friendship> => {
+  const validated = payload.friendRequestByPhone.parse(body);
+  const response = await api.private.post('/common/friends/by-phone', validated);
+  return toFriendship(unwrapEnvelope(response, z.unknown()));
+};
+
 const acceptFriend = async (friendshipId: number): Promise<Friendship> => {
   const response = await api.private.post(
     `/common/friends/${friendshipId}/accept`
@@ -140,6 +150,7 @@ const getPublicInvitePreview = async (
 export const repository = {
   searchMembers,
   requestFriend,
+  requestFriendByPhone,
   acceptFriend,
   getMyFriends,
   createInvite,

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 
 import { type AiCoachingPreference } from '@/entities/open-challenge';
+import { useSolutionViewCostQuery } from '@/features/point/hooks/use-point';
 import { type Stroke, useDrawingUpload } from '@/shared/components/drawing';
 import { Button, Dialog } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
@@ -396,6 +397,12 @@ export const AiCoachPanel = ({
   // 풀이를 시작(attempt 생성)하고 로그인한 상태에서만, 아직 안 본 해설을 열 수 있다.
   const canViewSolution = isLoggedIn && !!attemptId && !hasViewedSolution;
 
+  // 다음 해설 보기가 무료인지/얼마인지 — 버튼·다이얼로그 카피를 정직하게 표시.
+  const solutionCostQuery = useSolutionViewCostQuery({ enabled: isLoggedIn });
+  const isSolutionFree = solutionCostQuery.data?.free ?? false;
+  const solutionCostP = solutionCostQuery.data?.cost ?? SOLUTION_COST;
+  const solutionCostLabel = isSolutionFree ? '무료' : `−${solutionCostP}P`;
+
   useEffect(() => {
     if (myPreferenceQuery.data && !settings) {
       setSettings(toSettings(myPreferenceQuery.data));
@@ -761,13 +768,22 @@ export const AiCoachPanel = ({
                         'rounded-2xl px-4 py-3 text-sm leading-relaxed',
                         message.role === 'ai'
                           ? message.kind === 'solution'
-                            ? 'ai-coach-solution border-orange-2 rounded-tl-none border bg-[#fffdf3]'
-                            : 'bg-gray-1 text-text-main rounded-tl-none'
+                            ? 'ai-coach-handwriting border-orange-2 rounded-tl-none border bg-[#fffdf3]'
+                            : 'ai-coach-handwriting text-text-main rounded-tl-none bg-[#fffdf6]'
                           : 'bg-orange-7 rounded-tr-none text-white'
                       )}
                     >
                       {message.role === 'ai' ? (
-                        <MarkdownMessage content={message.content} />
+                        <>
+                          <MarkdownMessage content={message.content} />
+                          {/* 디에듀 로고 워터마크 — 손글씨 노트에 도장 찍듯 */}
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src="/logo.svg"
+                            alt="디에듀"
+                            className="ai-coach-logo"
+                          />
+                        </>
                       ) : (
                         <span className="whitespace-pre-line">
                           {message.content}
@@ -811,7 +827,7 @@ export const AiCoachPanel = ({
                 <BookOpenCheck size={16} />
                 {hasViewedSolution
                   ? '해설을 확인했어요'
-                  : `정답 해설 보기 (−${SOLUTION_COST}P)`}
+                  : `정답 해설 보기 (${solutionCostLabel})`}
               </button>
             </div>
 
@@ -877,11 +893,24 @@ export const AiCoachPanel = ({
               해설을 볼까요?
             </Dialog.Title>
             <Dialog.Description className="text-gray-8 text-sm leading-relaxed">
-              해설을 보면{' '}
-              <span className="text-orange-7 font-semibold tabular-nums">
-                −{SOLUTION_COST}P
-              </span>{' '}
-              차감되고, 이 문제는 약점 지도에 채워지지 않아요. 그래도 볼까요?
+              {isSolutionFree ? (
+                <>
+                  이번 해설은{' '}
+                  <span className="text-orange-7 font-semibold">
+                    무료
+                  </span>
+                  예요 (포인트 차감 없음). 단, 이 문제는 약점 지도에 채워지지
+                  않아요. 그래도 볼까요?
+                </>
+              ) : (
+                <>
+                  해설을 보면{' '}
+                  <span className="text-orange-7 font-semibold tabular-nums">
+                    −{solutionCostP}P
+                  </span>{' '}
+                  차감되고, 이 문제는 약점 지도에 채워지지 않아요. 그래도 볼까요?
+                </>
+              )}
             </Dialog.Description>
           </Dialog.Header>
           <Dialog.Footer className="flex-col">
@@ -893,7 +922,7 @@ export const AiCoachPanel = ({
             >
               {solutionMutation.isPending
                 ? '해설 불러오는 중...'
-                : `해설 보기 (−${SOLUTION_COST}P)`}
+                : `해설 보기 (${solutionCostLabel})`}
             </Button>
             <Button
               type="button"

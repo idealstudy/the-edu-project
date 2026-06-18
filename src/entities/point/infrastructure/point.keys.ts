@@ -4,4 +4,5 @@
 export const pointKeys = {
   all: ['point'] as const,
   wallet: () => [...pointKeys.all, 'wallet'] as const,
+  solutionViewCost: () => [...pointKeys.all, 'solution-view-cost'] as const,
 };

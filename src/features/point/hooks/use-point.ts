@@ -11,3 +11,11 @@ export const useMyPointWalletQuery = () =>
     queryKey: pointKeys.wallet(),
     queryFn: repository.getMyWallet,
   });
+
+/* 다음 해설 보기 비용/무료 여부 (버튼·다이얼로그 카피용) */
+export const useSolutionViewCostQuery = (options?: { enabled?: boolean }) =>
+  useQuery({
+    queryKey: pointKeys.solutionViewCost(),
+    queryFn: repository.getSolutionViewCost,
+    enabled: options?.enabled ?? true,
+  });

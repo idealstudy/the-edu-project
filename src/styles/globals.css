@@ -205,8 +205,46 @@ body {
 }
 
 /* 수식은 본문 손글씨 톤과 공존하되 KaTeX 기본 폰트로 가독성 유지 */
-.ai-coach-solution .ai-coach-markdown .katex {
+.ai-coach-solution .ai-coach-markdown .katex,
+.ai-coach-handwriting .ai-coach-markdown .katex {
   font-size: 1em;
+}
+
+/* AI 코치 답변(개념·힌트·해설) 공통 손글씨 톤 + 디에듀 로고 워터마크.
+   노트에 손으로 적어 도장 찍어 돌려주는 느낌. 수식은 KaTeX 폰트로 가독성 유지. */
+.ai-coach-handwriting {
+  position: relative;
+  padding-bottom: 1.7rem;
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 1.85rem,
+    rgba(255, 92, 53, 0.08) 1.85rem,
+    rgba(255, 92, 53, 0.08) calc(1.85rem + 1px)
+  );
+}
+
+.ai-coach-handwriting .ai-coach-markdown {
+  font-family: 'Nanum Pen Script', 'Gaegu', 'Pretendard', cursive;
+  font-size: 1.15rem;
+  line-height: 1.85rem;
+  letter-spacing: 0.01em;
+  color: #2b2b2b;
+}
+
+.ai-coach-handwriting .ai-coach-markdown strong {
+  color: var(--orange-8);
+}
+
+/* 디에듀 로고 워터마크 — 말풍선 우하단 */
+.ai-coach-logo {
+  position: absolute;
+  right: 0.7rem;
+  bottom: 0.5rem;
+  height: 0.9rem;
+  width: auto;
+  opacity: 0.4;
+  pointer-events: none;
+  user-select: none;
 }
 
 @theme {

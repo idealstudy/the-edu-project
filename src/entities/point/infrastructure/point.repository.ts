@@ -3,6 +3,7 @@ import {
   type PointTransactionType,
   type PointTransactionView,
   type PointWallet,
+  type SolutionViewCost,
 } from '@/entities/point/types';
 import { api } from '@/shared/api';
 import { unwrapEnvelope } from '@/shared/lib/api-utils';
@@ -73,8 +74,18 @@ const getMyWallet = async (): Promise<PointWallet> => {
 };
 
 /* ─────────────────────────────────────────────────────
+ * [READ] 다음 해설 보기 비용/무료 여부
+ *  GET /api/common/me/solution-view-cost
+ * ────────────────────────────────────────────────────*/
+const getSolutionViewCost = async (): Promise<SolutionViewCost> => {
+  const response = await api.private.get('/common/me/solution-view-cost');
+  return unwrapEnvelope(response, dto.solutionViewCost);
+};
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const repository = {
   getMyWallet,
+  getSolutionViewCost,
 };

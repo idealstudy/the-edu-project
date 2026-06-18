@@ -25,3 +25,12 @@ export type PointWallet = {
   balance: number;
   transactions: PointTransactionView[];
 };
+
+/* ─────────────────────────────────────────────────────
+ * 다음 해설 보기 비용/무료
+ * ────────────────────────────────────────────────────*/
+export type SolutionViewCost = {
+  free: boolean;
+  cost: number;
+  freeRemaining: number;
+};

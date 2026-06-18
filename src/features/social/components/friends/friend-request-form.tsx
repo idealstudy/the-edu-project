@@ -6,7 +6,11 @@ import { type MemberSearchResult } from '@/entities/social';
 import { Button, Input, SearchInput } from '@/shared/components/ui';
 import { Loader2, UserPlus } from 'lucide-react';
 
-import { useRequestFriendMutation, useSearchMembersQuery } from '../../hooks';
+import {
+  useRequestFriendByPhoneMutation,
+  useRequestFriendMutation,
+  useSearchMembersQuery,
+} from '../../hooks';
 
 /* ─────────────────────────────────────────────────────
  * 친구 요청 폼 — 이름/닉네임으로 검색 → 결과에서 친구 요청.
@@ -84,10 +88,7 @@ export const FriendRequestForm = () => {
         </div>
       )}
 
-      <MemberNumberFallback
-        disabled={isPending}
-        onRequest={handleRequest}
-      />
+      <PhoneNumberFallback />
     </div>
   );
 };
@@ -126,24 +127,21 @@ const MemberRow = ({
   </li>
 );
 
-/* 회원 번호 직접 입력 폴백 (검색이 안 될 때) */
-const MemberNumberFallback = ({
-  disabled,
-  onRequest,
-}: {
-  disabled: boolean;
-  onRequest: (memberId: number) => void;
-}) => {
+/* 전화번호로 친구 추가 (검색이 안 될 때) — 숫자/하이픈을 String 으로 유지해 앞 0 보존 */
+const PhoneNumberFallback = () => {
   const [value, setValue] = useState('');
-  const parsedId = Number(value);
-  const isValid =
-    value.trim().length > 0 && Number.isInteger(parsedId) && parsedId > 0;
+  const { mutate, isPending } = useRequestFriendByPhoneMutation();
+  // 하이픈 제거한 순수 숫자 — 휴대폰 번호는 보통 10~11자리.
+  const digits = value.replace(/[^0-9]/g, '');
+  const isValid = digits.length >= 9 && digits.length <= 11;
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (!isValid || disabled) return;
-    onRequest(parsedId);
-    setValue('');
+    if (!isValid || isPending) return;
+    mutate(
+      { phoneNumber: digits },
+      { onSuccess: () => setValue('') }
+    );
   };
 
   return (
@@ -152,24 +150,24 @@ const MemberNumberFallback = ({
       className="border-line-line2 flex flex-col gap-2 border-t pt-4"
     >
       <span className="font-caption-normal text-text-sub2">
-        회원 번호를 알고 있나요?
+        전화번호로 친구를 추가할 수 있어요.
       </span>
       <div className="flex items-stretch gap-2">
         <Input
-          inputMode="numeric"
+          inputMode="tel"
           value={value}
           onChange={(event) =>
-            setValue(event.target.value.replace(/[^0-9]/g, ''))
+            setValue(event.target.value.replace(/[^0-9-]/g, ''))
           }
-          placeholder="상대 회원 번호"
-          aria-label="친구 요청 대상 회원 번호"
+          placeholder="상대 전화번호 (예: 010-1234-5678)"
+          aria-label="친구 요청 대상 전화번호"
           className="flex-1"
         />
         <Button
           type="submit"
           variant="outlined"
           size="small"
-          disabled={!isValid || disabled}
+          disabled={!isValid || isPending}
           className="shrink-0"
         >
           요청

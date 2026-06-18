@@ -116,16 +116,18 @@ const AnswerResultDtoSchema = z
 /* ─────────────────────────────────────────────────────
  * 정답 해설 DTO (백엔드 SolutionResponse)
  *  - 조회 시 백엔드가 usedSolutionView=true 처리 + 포인트 −30 차감.
- *  - content: 마크다운/KaTeX 해설 본문.
+ *  - 백엔드 필드는 solutionText(마크다운/KaTeX·이미지 해설) — 이를 content 로 매핑한다.
  * ────────────────────────────────────────────────────*/
-const SolutionDtoSchema = z.object({
-  content: z
-    .string()
-    .nullable()
-    .optional()
-    .transform((value) => value ?? ''),
-  correctAnswer: z.string().nullable().optional().default(null),
-});
+const SolutionDtoSchema = z
+  .object({
+    // 백엔드 SolutionResponse 의 실제 필드명.
+    solutionText: z.string().nullable().optional(),
+    correctAnswer: z.string().nullable().optional(),
+  })
+  .transform((value) => ({
+    content: value.solutionText ?? '',
+    correctAnswer: value.correctAnswer ?? null,
+  }));
 
 /* ─────────────────────────────────────────────────────
  * 풀이 유형 (텍스트 / 손글씨 드로잉)

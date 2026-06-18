@@ -2,6 +2,7 @@ export {
   useMyFriendsQuery,
   useSearchMembersQuery,
   useRequestFriendMutation,
+  useRequestFriendByPhoneMutation,
   useAcceptFriendMutation,
   useMyChallengeInvitesQuery,
   useCreateChallengeInviteMutation,
