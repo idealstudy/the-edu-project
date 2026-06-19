@@ -13,6 +13,7 @@ import { courseSubjectLabel, priceLabel } from '../../lib/format';
 export const CourseCard = ({ course }: { course: CourseListItem }) => (
   <Link
     href={PUBLIC.COURSE.DETAIL(course.courseId)}
+    data-testid="course-card"
     className="border-line-line2 hover:border-key-color-primary group flex flex-col gap-4 rounded-[12px] border bg-white p-5 transition-colors"
   >
     <div className="flex items-start justify-between gap-3">
