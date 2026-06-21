@@ -390,6 +390,8 @@ const SendAiCoachingMessagePayloadSchema = z.object({
   // 학생 손글씨 풀이 스냅샷 media_id (선택) — 있으면 백엔드가 vision 으로 첨부해
   // "어디까지 맞고 어디서 막혔는지" 풀이 기반 코칭을 한다.
   studentSolutionImageMediaId: z.string().min(1).optional(),
+  // 요청 의도 — '개념 보기'/'힌트 보기' 칩과 자유 채팅을 구분해 백엔드가 응답 전략을 바꾼다.
+  intent: z.enum(['concept', 'hint', 'chat']).optional(),
 });
 
 const ChallengeIdResponseSchema = z.object({

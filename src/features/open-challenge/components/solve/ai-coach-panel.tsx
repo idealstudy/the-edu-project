@@ -522,7 +522,10 @@ export const AiCoachPanel = ({
     }
   };
 
-  const sendMessage = async (rawMessage: string) => {
+  const sendMessage = async (
+    rawMessage: string,
+    intent: 'concept' | 'hint' | 'chat' = 'chat'
+  ) => {
     const trimmedMessage = rawMessage.trim();
     if (!trimmedMessage || status === 'READY' || isSending || !sessionId)
       return;
@@ -540,7 +543,7 @@ export const AiCoachPanel = ({
     const studentSolutionImageMediaId = await resolveSolutionMediaId();
 
     sendMessageMutation.mutate(
-      { message: trimmedMessage, studentSolutionImageMediaId },
+      { message: trimmedMessage, studentSolutionImageMediaId, intent },
       {
         onSuccess: (response) => {
           setMessages((previousMessages) => [
@@ -803,7 +806,7 @@ export const AiCoachPanel = ({
               <div className="flex gap-2">
                 <button
                   type="button"
-                  onClick={() => sendMessage(CONCEPT_PROMPT)}
+                  onClick={() => sendMessage(CONCEPT_PROMPT, 'concept')}
                   disabled={isSending}
                   className="border-orange-3 bg-orange-1 text-orange-7 hover:bg-orange-2 flex h-11 flex-1 cursor-pointer items-center justify-center rounded-xl border text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40"
                 >
@@ -811,7 +814,7 @@ export const AiCoachPanel = ({
                 </button>
                 <button
                   type="button"
-                  onClick={() => sendMessage(HINT_PROMPT)}
+                  onClick={() => sendMessage(HINT_PROMPT, 'hint')}
                   disabled={isSending}
                   className="border-orange-3 bg-orange-1 text-orange-7 hover:bg-orange-2 flex h-11 flex-1 cursor-pointer items-center justify-center rounded-xl border text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40"
                 >
