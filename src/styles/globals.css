@@ -186,28 +186,32 @@ body {
 .ai-coach-solution {
   background-image: repeating-linear-gradient(
     transparent,
-    transparent 1.85rem,
-    rgba(255, 92, 53, 0.08) 1.85rem,
-    rgba(255, 92, 53, 0.08) calc(1.85rem + 1px)
+    transparent 2rem,
+    rgba(255, 92, 53, 0.08) 2rem,
+    rgba(255, 92, 53, 0.08) calc(2rem + 1px)
   );
 }
 
 .ai-coach-solution .ai-coach-markdown {
-  font-family: 'Nanum Pen Script', 'Gaegu', 'Pretendard', cursive;
-  font-size: 1.15rem;
-  line-height: 1.85rem;
+  /* 가독성 우선: 얇은 펜글씨(Nanum Pen) 대신 둥글고 굵은 Gaegu 를 본문 기본으로. */
+  font-family: 'Gaegu', 'Nanum Pen Script', 'Pretendard', sans-serif;
+  font-size: 1.25rem;
+  line-height: 2rem;
   letter-spacing: 0.01em;
-  color: #2b2b2b;
+  color: #1f1f1f;
 }
 
 .ai-coach-solution .ai-coach-markdown strong {
   color: var(--orange-8);
+  font-weight: 700;
 }
 
-/* 수식은 본문 손글씨 톤과 공존하되 KaTeX 기본 폰트로 가독성 유지 */
+/* 수식은 손글씨 폰트를 절대 상속하지 않고 KaTeX 자체 폰트로 렌더 → 수식 가독성 보장 */
 .ai-coach-solution .ai-coach-markdown .katex,
 .ai-coach-handwriting .ai-coach-markdown .katex {
-  font-size: 1em;
+  font-size: 1.05em;
+  font-family: KaTeX_Main, 'Times New Roman', serif;
+  color: #1a1a1a;
 }
 
 /* AI 코치 답변(개념·힌트·해설) 공통 손글씨 톤 + 디에듀 로고 워터마크.
@@ -217,22 +221,24 @@ body {
   padding-bottom: 1.7rem;
   background-image: repeating-linear-gradient(
     transparent,
-    transparent 1.85rem,
-    rgba(255, 92, 53, 0.08) 1.85rem,
-    rgba(255, 92, 53, 0.08) calc(1.85rem + 1px)
+    transparent 2rem,
+    rgba(255, 92, 53, 0.08) 2rem,
+    rgba(255, 92, 53, 0.08) calc(2rem + 1px)
   );
 }
 
 .ai-coach-handwriting .ai-coach-markdown {
-  font-family: 'Nanum Pen Script', 'Gaegu', 'Pretendard', cursive;
-  font-size: 1.15rem;
-  line-height: 1.85rem;
+  /* 가독성 우선: 얇은 펜글씨(Nanum Pen) 대신 둥글고 굵은 Gaegu 를 본문 기본으로. */
+  font-family: 'Gaegu', 'Nanum Pen Script', 'Pretendard', sans-serif;
+  font-size: 1.25rem;
+  line-height: 2rem;
   letter-spacing: 0.01em;
-  color: #2b2b2b;
+  color: #1f1f1f;
 }
 
 .ai-coach-handwriting .ai-coach-markdown strong {
   color: var(--orange-8);
+  font-weight: 700;
 }
 
 /* 디에듀 로고 워터마크 — 말풍선 우하단 */

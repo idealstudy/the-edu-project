@@ -394,6 +394,8 @@ export const AiCoachPanel = ({
     abandonSessionMutation.isPending ||
     solutionMutation.isPending;
   const isSending = status === 'COACHING' || isBusy;
+  // AI가 실제로 답변을 생성 중인 정확한 신호 — 타이핑 인디케이터용(무관한 mutation 제외).
+  const isAiReplying = status === 'COACHING' || sendMessageMutation.isPending;
   // 풀이를 시작(attempt 생성)하고 로그인한 상태에서만, 아직 안 본 해설을 열 수 있다.
   const canViewSolution = isLoggedIn && !!attemptId && !hasViewedSolution;
 
@@ -413,7 +415,7 @@ export const AiCoachPanel = ({
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isAiReplying]);
 
   const getTimestamp = () =>
     new Date().toLocaleTimeString('ko-KR', {
@@ -799,6 +801,27 @@ export const AiCoachPanel = ({
                   </div>
                 </div>
               ))}
+
+              {/* AI 응답 생성 중 — 타이핑 인디케이터(… 점 애니메이션) */}
+              {isAiReplying && (
+                <div
+                  className="flex items-start gap-2"
+                  aria-live="polite"
+                  aria-label="AI 코치가 답변을 작성하고 있어요"
+                >
+                  <div className="bg-gray-1 mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full">
+                    <Bot
+                      size={16}
+                      className="text-gray-7"
+                    />
+                  </div>
+                  <div className="text-text-main flex items-center gap-1 rounded-2xl rounded-tl-none bg-[#fffdf6] px-4 py-3.5">
+                    <span className="bg-orange-7/60 h-2 w-2 animate-bounce rounded-full [animation-delay:-0.3s]" />
+                    <span className="bg-orange-7/60 h-2 w-2 animate-bounce rounded-full [animation-delay:-0.15s]" />
+                    <span className="bg-orange-7/60 h-2 w-2 animate-bounce rounded-full" />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* 빠른 동작 칩 — 개념/힌트는 권장(쉽게), 정답 해설은 차감 명시(신중) */}
