@@ -1,8 +1,11 @@
 'use client';
 
+import { useEffect } from 'react';
+
 import { type ChallengeInviteResult } from '@/entities/social';
 import { Button } from '@/shared/components/ui';
 import { Dialog } from '@/shared/components/ui/dialog';
+import { trackVersusView } from '@/shared/lib/analytics';
 import { cn } from '@/shared/lib';
 import { Check, Swords, X } from 'lucide-react';
 
@@ -124,6 +127,12 @@ export const ChallengeResultDialog = ({
 const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
   const outcome = resolveOutcome(result);
   const copy = OUTCOME_COPY[outcome];
+
+  // D2 계측: versus_view — 결과 다이얼로그 마운트 시 1회
+  // is_inviter: ChallengeInviteResult에 inviterId 미포함 → false 기본값(수신자 관점)
+  useEffect(() => {
+    trackVersusView({ outcome, is_inviter: false });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>

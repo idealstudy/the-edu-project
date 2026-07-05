@@ -1,10 +1,11 @@
 'use client';
 
-import { useTransition } from 'react';
+import { useEffect, useRef, useTransition } from 'react';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { Pagination } from '@/shared/components/ui';
+import { trackOcLand } from '@/shared/lib/analytics';
 import { Inbox } from 'lucide-react';
 
 import {
@@ -13,6 +14,7 @@ import {
 } from '../../hooks/use-open-challenge';
 import { ChallengeCard } from './challenge-card';
 import { ChallengeListSkeleton } from './challenge-list-skeleton';
+import { MotiveHeader } from './motive-header';
 import { RecommendedChallengeCard } from './recommended-challenge-card';
 
 type SortOption = 'latest' | 'popular';
@@ -32,6 +34,16 @@ export const ChallengeListClient = ({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
+  const hasFiredLandRef = useRef(false);
+
+  useEffect(() => {
+    if (hasFiredLandRef.current) return;
+    hasFiredLandRef.current = true;
+    trackOcLand({
+      src: searchParams.get('src') ?? 'direct',
+      entry_kind: 'normal',
+    });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { data: challenges, isLoading } = useOpenChallengeListQuery({
     subject: 'ALL',
@@ -62,6 +74,7 @@ export const ChallengeListClient = ({
 
   return (
     <>
+      {page === 1 && <MotiveHeader />}
       {page === 1 && topRecommended && (
         <RecommendedChallengeCard challenge={topRecommended} />
       )}

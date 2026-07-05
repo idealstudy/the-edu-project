@@ -7,6 +7,8 @@ import { Button, Dialog, showBottomToast } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
 import { Check, Copy, Swords } from 'lucide-react';
 
+import { trackOcInviteSent } from '@/shared/lib/analytics';
+
 import { useCreateChallengeInviteMutation } from '../../hooks';
 
 type ChallengeShareButtonProps = {
@@ -47,7 +49,13 @@ export const ChallengeShareButton = ({
     reset();
     mutate(
       { challengeId },
-      { onSuccess: (created) => setInvite(created) }
+      {
+        onSuccess: (created) => {
+          setInvite(created);
+          // D2 계측: oc_invite_sent
+          trackOcInviteSent({ problem_id: challengeId });
+        },
+      }
     );
   };
 

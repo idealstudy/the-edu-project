@@ -98,6 +98,29 @@ const AttemptDtoSchema = z.object({
 /* ─────────────────────────────────────────────────────
  * 오픈챌린지 풀이 결과 DTO
  * ────────────────────────────────────────────────────*/
+
+/**
+ * 표시용 투영 보상 델타 (D1 옵션 A).
+ * 백엔드 RewardDelta record 와 1:1 매핑. 구버전 백엔드 대비 nullable·optional 허용.
+ */
+const RewardDeltaDtoSchema = z
+  .object({
+    pointDelta: z.number().default(0),
+    pointBalance: z.number().default(0),
+    streakKept: z.boolean().default(false),
+    streakDays: z.number().default(0),
+    expDelta: z.number().optional().default(0),
+    expBefore: z.number().optional().default(0),
+    level: z.number().optional().default(1),
+    leveledUp: z.boolean().optional().default(false),
+    treeNodeName: z.string().nullable().optional().default(null),
+    masteryBefore: z.number().default(0),
+    masteryAfter: z.number().default(0),
+    conquered: z.boolean().default(false),
+  })
+  .nullable()
+  .optional();
+
 const AnswerResultDtoSchema = z
   .object({
     isCorrect: z.boolean().optional(),
@@ -105,12 +128,14 @@ const AnswerResultDtoSchema = z
     correctAnswer: z.string(),
     participantCount: z.number(),
     passRate: z.number().nullable().optional(),
+    reward: RewardDeltaDtoSchema,
   })
   .transform((value) => ({
     isCorrect: value.isCorrect ?? value.correct ?? false,
     correctAnswer: value.correctAnswer,
     participantCount: value.participantCount,
     passRate: value.passRate ?? null,
+    reward: value.reward ?? null,
   }));
 
 /* ─────────────────────────────────────────────────────
@@ -399,6 +424,14 @@ const ChallengeIdResponseSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 스트릭 스냅샷 DTO (D-Home 동기 헤더용 — GET /api/common/me/streak)
+ * ────────────────────────────────────────────────────*/
+const StreakSnapshotDtoSchema = z.object({
+  streakDays: z.number().optional().default(0),
+  todayCompleted: z.boolean().optional().default(false),
+});
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const dto = {
@@ -427,6 +460,7 @@ export const dto = {
   aiCoachingMessage: AiCoachingMessageSchema,
   aiCoachingMessages: z.array(AiCoachingMessageSchema),
   aiCoachingMessageResponse: AiCoachingMessageResponseSchema,
+  streakSnapshot: StreakSnapshotDtoSchema,
 };
 
 export const payload = {

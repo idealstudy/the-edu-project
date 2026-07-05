@@ -4,6 +4,7 @@ import { GA4_EVENTS, withUserType } from './events';
 import type {
   AuthSignupStepEnterParams,
   DashboardTab,
+  HomeViewParams,
   Dedu101ProfileEnterParams,
   Dedu101ScrollDepthParams,
   Dedu101StudyroomFeatureClickParams,
@@ -12,8 +13,17 @@ import type {
   HomeworkCreateParams,
   HomeworkReplyParams,
   HomeworkSubmitParams,
+  OcCoachUseParams,
+  OcCompleteParams,
+  OcInviteSentParams,
+  OcLandParams,
+  OcSignupPromptParams,
+  OcSolutionViewParams,
+  OcStartParams,
+  OcSubmitParams,
   QuestionCreateParams,
   ReplyCreateParams,
+  RewardShownParams,
   StudentInviteParams,
   StudynoteCreateEnterParams,
   StudynoteCreateParams,
@@ -23,6 +33,7 @@ import type {
   StudyroomCreateParams,
   StudyroomEndParams,
   StudyroomTitleUpdateParams,
+  VersusViewParams,
 } from './events';
 import { track } from './track';
 import { getUserType } from './user';
@@ -610,4 +621,84 @@ export const trackHomeDedu101Click = (source: 'hero' | 'floating_cta') => {
 
 export const trackHomeStartClick = () => {
   track(GA4_EVENTS.HOME_START_CLICK, withUserType({}));
+};
+
+// ==================== 오픈챌린지 홈 이벤트 (MVP-E D-Home) ====================
+
+export const trackHomeView = (
+  params: Omit<HomeViewParams, 'user_type'>,
+  role?: Role | null
+) => {
+  track(GA4_EVENTS.HOME_VIEW, withUserType(params, role));
+};
+
+// ==================== 오픈챌린지 이벤트 (MVP-E D2) ====================
+
+export const trackOcLand = (
+  params: Omit<OcLandParams, 'user_type'>,
+  role?: Role | null
+) => {
+  track(GA4_EVENTS.OC_LAND, withUserType(params, role));
+};
+
+export const trackOcStart = (
+  params: Omit<OcStartParams, 'user_type'>,
+  role?: Role | null
+) => {
+  track(GA4_EVENTS.OC_START, withUserType(params, role));
+};
+
+export const trackOcCoachUse = (
+  params: Omit<OcCoachUseParams, 'user_type'>,
+  role?: Role | null
+) => {
+  track(GA4_EVENTS.OC_COACH_USE, withUserType(params, role));
+};
+
+export const trackOcSolutionView = (
+  params: Omit<OcSolutionViewParams, 'user_type'>,
+  role?: Role | null
+) => {
+  track(GA4_EVENTS.OC_SOLUTION_VIEW, withUserType(params, role));
+};
+
+export const trackOcSubmit = (
+  params: Omit<OcSubmitParams, 'user_type'>,
+  role?: Role | null
+) => {
+  track(GA4_EVENTS.OC_SUBMIT, withUserType(params, role));
+};
+
+export const trackOcComplete = (
+  params: Omit<OcCompleteParams, 'user_type'>,
+  role?: Role | null
+) => {
+  track(GA4_EVENTS.OC_COMPLETE, withUserType(params, role));
+};
+
+export const trackOcSignupPrompt = (
+  params: Omit<OcSignupPromptParams, 'user_type'>
+) => {
+  track(GA4_EVENTS.OC_SIGNUP_PROMPT, withUserType(params));
+};
+
+export const trackOcInviteSent = (
+  params: Omit<OcInviteSentParams, 'user_type'>,
+  role?: Role | null
+) => {
+  track(GA4_EVENTS.OC_INVITE_SENT, withUserType(params, role));
+};
+
+export const trackRewardShown = (
+  params: Omit<RewardShownParams, 'user_type'>,
+  role?: Role | null
+) => {
+  track(GA4_EVENTS.REWARD_SHOWN, withUserType(params, role));
+};
+
+export const trackVersusView = (
+  params: Omit<VersusViewParams, 'user_type'>,
+  role?: Role | null
+) => {
+  track(GA4_EVENTS.VERSUS_VIEW, withUserType(params, role));
 };

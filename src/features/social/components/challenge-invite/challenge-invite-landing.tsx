@@ -1,11 +1,14 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
+
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { useSession } from '@/providers';
 import { Button, StatusBadge, showBottomToast } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
+import { trackOcLand } from '@/shared/lib/analytics';
 import { Swords } from 'lucide-react';
 
 import {
@@ -26,6 +29,13 @@ export const ChallengeInviteLanding = ({ token }: { token: string }) => {
   const router = useRouter();
   const { status } = useSession();
   const isAuthenticated = status === 'authenticated';
+  const hasFiredLandRef = useRef(false);
+
+  useEffect(() => {
+    if (hasFiredLandRef.current) return;
+    hasFiredLandRef.current = true;
+    trackOcLand({ src: 'friend', entry_kind: 'friend' });
+  }, []);
 
   const { data: preview, isLoading, isError } =
     usePublicInvitePreviewQuery(token);

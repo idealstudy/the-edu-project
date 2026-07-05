@@ -23,3 +23,4 @@ export { Toggle } from './toggle';
 export { showBottomToast } from './bottom-toast';
 export { StatusBadge } from './status-badge';
 export { StudyroomStatusToggle } from './studyroom-status-toggle';
+export { Confetti } from './confetti';

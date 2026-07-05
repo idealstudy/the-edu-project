@@ -9,6 +9,7 @@ import { useSolutionViewCostQuery } from '@/features/point/hooks/use-point';
 import { type Stroke, useDrawingUpload } from '@/shared/components/drawing';
 import { Button, Dialog } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
+import { trackOcCoachUse, trackOcSolutionView } from '@/shared/lib/analytics';
 import { cn } from '@/shared/lib';
 import { katex } from '@mdit/plugin-katex';
 import { renderToString } from 'katex';
@@ -69,6 +70,10 @@ type AiCoachPanelProps = {
   // 학생이 풀이 공간에 쓴 손글씨 strokes — 메시지 전송 시 스냅샷을 업로드해
   // AI 가 "현재 풀이"를 보고 코칭하도록 넘긴다.
   drawingStrokes?: Stroke[];
+  /** D2 계측 콜백: 해설 열람 시 부모에게 알림 (used_solution 플래그) */
+  onSolutionViewed?: () => void;
+  /** D2 계측 콜백: 메시지 전송 시 부모에게 알림 (hint_count 증가) */
+  onMessageSent?: () => void;
 };
 
 const MAX_COMMENT_LENGTH = 200;
@@ -354,6 +359,8 @@ export const AiCoachPanel = ({
   onAttemptCleared,
   onSessionChange,
   drawingStrokes = [],
+  onSolutionViewed,
+  onMessageSent,
 }: AiCoachPanelProps) => {
   const [messages, setMessages] = useState<AiCoachMessage[]>([]);
   const [inputMessage, setInputMessage] = useState('');
@@ -542,6 +549,11 @@ export const AiCoachPanel = ({
     ]);
     setStatus('COACHING');
 
+    // D2 계측: oc_coach_use
+    const nextCount = messages.filter((m) => m.role === 'user').length + 1;
+    trackOcCoachUse({ intent, count: nextCount });
+    onMessageSent?.();
+
     const studentSolutionImageMediaId = await resolveSolutionMediaId();
 
     sendMessageMutation.mutate(
@@ -582,6 +594,9 @@ export const AiCoachPanel = ({
       onSuccess: (solution) => {
         setHasViewedSolution(true);
         setIsSolutionWarningOpen(false);
+        // D2 계측: oc_solution_view (자력 깨짐 유일 기준)
+        trackOcSolutionView({ problem_id: challengeId });
+        onSolutionViewed?.();
         const answerLine = solution.correctAnswer
           ? `**정답: ${solution.correctAnswer}**\n\n`
           : '';

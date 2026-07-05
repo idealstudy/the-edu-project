@@ -374,7 +374,115 @@ export const GA4_EVENTS = {
   // Home
   HOME_DEDU101_CLICK: 'home_dedu101_click',
   HOME_START_CLICK: 'home_start_click',
+
+  // Open Challenge — Home (MVP-E D-Home)
+  HOME_VIEW: 'home_view',
+
+  // Open Challenge (MVP-E)
+  OC_LAND: 'oc_land',
+  OC_START: 'oc_start',
+  OC_COACH_USE: 'oc_coach_use',
+  OC_SOLUTION_VIEW: 'oc_solution_view',
+  OC_SUBMIT: 'oc_submit',
+  OC_COMPLETE: 'oc_complete',
+  OC_SIGNUP_PROMPT: 'oc_signup_prompt',
+  OC_INVITE_SENT: 'oc_invite_sent',
+  REWARD_SHOWN: 'reward_shown',
+  VERSUS_VIEW: 'versus_view',
 } as const;
+
+// ==================== 오픈챌린지 이벤트 파라미터 ====================
+
+/**
+ * home_view — 로그인 홈(오픈챌린지 리스트) 동기 헤더 노출
+ */
+export interface HomeViewParams extends CommonEventParams {
+  streak_day: number;
+  level: number;
+  points: number;
+}
+
+/**
+ * oc_land — 오픈챌린지 랜딩 도달
+ */
+export interface OcLandParams extends CommonEventParams {
+  src: string;
+  entry_kind: 'normal' | 'friend';
+}
+
+/**
+ * oc_start — "바로 풀기" / 문제 열람
+ */
+export interface OcStartParams extends CommonEventParams {
+  problem_id: string;
+  src: string;
+}
+
+/**
+ * oc_coach_use — AI 코치 메시지 전송
+ */
+export interface OcCoachUseParams extends CommonEventParams {
+  intent: 'concept' | 'hint' | 'chat';
+  count: number;
+}
+
+/**
+ * oc_solution_view — 해설(정답 공개) 열람 — 자력 깨짐 유일 기준
+ */
+export interface OcSolutionViewParams extends CommonEventParams {
+  problem_id: string;
+}
+
+/**
+ * oc_submit — 답 제출
+ */
+export interface OcSubmitParams extends CommonEventParams {
+  is_correct: boolean;
+  used_solution: boolean;
+  hint_count: number;
+  elapsed: number;
+}
+
+/**
+ * oc_complete — 결과/보상 화면 도달 (루프 1바퀴 완주)
+ */
+export interface OcCompleteParams extends CommonEventParams {
+  is_correct: boolean;
+  tree_node: string | null;
+  is_guest: boolean;
+}
+
+/**
+ * oc_signup_prompt — 가입 유도 노출
+ */
+export interface OcSignupPromptParams extends CommonEventParams {
+  trigger: 'post_reward' | 'limit_reached';
+}
+
+/**
+ * oc_invite_sent — 친구 도전장 보냄
+ */
+export interface OcInviteSentParams extends CommonEventParams {
+  problem_id: number;
+}
+
+/**
+ * reward_shown — 보상 UI 렌더 (D1과 동시 배선)
+ */
+export interface RewardShownParams extends CommonEventParams {
+  points: number;
+  exp: number;
+  streak: number;
+  conquered: boolean;
+}
+
+/**
+ * versus_view — 도전장 승패 결과 다이얼로그 열림
+ */
+export interface VersusViewParams extends CommonEventParams {
+  outcome: 'WIN' | 'LOSE' | 'DRAW';
+  is_inviter: boolean;
+}
 
 /**
  * user_type을 자동으로 추가하는 헬퍼 함수

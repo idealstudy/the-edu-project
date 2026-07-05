@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { type ChallengeReviewSort } from '@/entities/open-challenge';
 import { ChallengeShareButton } from '@/features/social';
 import { BackButton } from '@/shared/components/ui';
+import { trackOcComplete } from '@/shared/lib/analytics';
 
 import {
   useCancelChallengeReviewRecommendMutation,
@@ -15,9 +16,25 @@ import {
 } from '../../hooks/use-open-challenge';
 import { AiFeedbackForm } from './ai-feedback-form';
 import { ChallengeResultSkeleton } from './challenge-result-skeleton';
+import { ChallengeReward } from './challenge-reward';
 import { NextChallengeCard } from './next-challenge-card';
 import { ResultStats } from './result-stats';
 import { type SolutionItem, SolutionList } from './solution-list';
+
+type RewardDelta = {
+  pointDelta: number;
+  pointBalance: number;
+  streakKept: boolean;
+  streakDays: number;
+  expDelta: number;
+  expBefore: number;
+  level: number;
+  leveledUp: boolean;
+  treeNodeName: string | null;
+  masteryBefore: number;
+  masteryAfter: number;
+  conquered: boolean;
+} | null;
 
 type SubmittedResult = {
   isCorrect: boolean;
@@ -27,20 +44,28 @@ type SubmittedResult = {
   attemptId?: string;
   // 방금 푼 내 손글씨 풀이 스냅샷(PNG dataURL). strokes 가 있을 때만 채워진다.
   myDrawingDataUrl?: string;
+  // 표시용 투영 보상 델타(D1). 구버전 백엔드 대비 optional.
+  reward?: RewardDelta;
 };
 
 type ChallengeResultProps = {
   challengeId: string;
+  /** 비로그인(게스트) 여부. oc_complete 이벤트의 is_guest 차원. */
+  isGuest?: boolean;
 };
 
 const RESULT_STORAGE_KEY_PREFIX = 'open-challenge-result';
 
-export const ChallengeResult = ({ challengeId }: ChallengeResultProps) => {
+export const ChallengeResult = ({
+  challengeId,
+  isGuest = false,
+}: ChallengeResultProps) => {
   const [isResultLoaded, setIsResultLoaded] = useState(false);
   const [submittedResult, setSubmittedResult] =
     useState<SubmittedResult | null>(null);
   const [reviewSort, setReviewSort] =
     useState<ChallengeReviewSort>('recommend');
+  const hasFiredCompleteRef = useRef(false);
 
   // 컨닝가드: 본인이 이 문제를 COMPLETED 한 경우에만 다른 풀이 열람.
   const { data: myChallengeDetail, isLoading: isMyDetailLoading } =
@@ -68,6 +93,17 @@ export const ChallengeResult = ({ challengeId }: ChallengeResultProps) => {
     setIsResultLoaded(true);
   }, [challengeId]);
 
+  // oc_complete: 방금 제출한 결과가 있을 때 1회 발화 (루프 1바퀴 완주)
+  useEffect(() => {
+    if (!submittedResult || hasFiredCompleteRef.current) return;
+    hasFiredCompleteRef.current = true;
+    trackOcComplete({
+      is_correct: submittedResult.isCorrect,
+      tree_node: submittedResult.reward?.treeNodeName ?? null,
+      is_guest: isGuest,
+    });
+  }, [submittedResult, isGuest]);
+
   if (
     !isResultLoaded ||
     isMyDetailLoading ||
@@ -94,6 +130,12 @@ export const ChallengeResult = ({ challengeId }: ChallengeResultProps) => {
 
       <div className="flex flex-col gap-6 lg:flex-row">
         <div className="flex min-w-0 flex-1 flex-col gap-6">
+          {submittedResult && (
+            <ChallengeReward
+              isCorrect={submittedResult.isCorrect}
+              reward={submittedResult.reward}
+            />
+          )}
           {submittedResult && (
             <ResultStats
               isCorrect={submittedResult.isCorrect}

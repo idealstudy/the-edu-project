@@ -54,11 +54,34 @@ const ChallengeDetailSchema = z.object({
 /* ─────────────────────────────────────────────────────
  * 오픈챌린지 풀이 결과 Domain
  * ────────────────────────────────────────────────────*/
+
+/**
+ * 표시용 투영 보상 델타 (D1 옵션 A).
+ * dto transform 결과를 그대로 통과시킨다.
+ */
+const RewardDeltaSchema = z
+  .object({
+    pointDelta: z.number(),
+    pointBalance: z.number(),
+    streakKept: z.boolean(),
+    streakDays: z.number(),
+    expDelta: z.number(),
+    expBefore: z.number(),
+    level: z.number(),
+    leveledUp: z.boolean(),
+    treeNodeName: z.string().nullable(),
+    masteryBefore: z.number(),
+    masteryAfter: z.number(),
+    conquered: z.boolean(),
+  })
+  .nullable();
+
 const ChallengeAnswerResultSchema = z.object({
   isCorrect: z.boolean(),
   correctAnswer: z.string(),
   participantCount: z.number(),
   passRate: z.number().nullable(),
+  reward: RewardDeltaSchema.optional(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -154,6 +177,7 @@ export const domain = {
   recommended: RecommendedChallengeSchema,
   detail: ChallengeDetailSchema,
   answerResult: ChallengeAnswerResultSchema,
+  rewardDelta: RewardDeltaSchema,
   solution: ChallengeSolutionSchema,
   review: ChallengeReviewSchema,
   nextChallenge: NextChallengeSchema,

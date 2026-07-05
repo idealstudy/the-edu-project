@@ -596,6 +596,16 @@ const getMyChallengeDetail = async (
 };
 
 /* ─────────────────────────────────────────────────────
+ * [READ] 내 스트릭 스냅샷 조회 (D-Home 동기 헤더)
+ *  GET /api/common/me/streak
+ *  — user_ranking 레코드 없으면 { streakDays:0, todayCompleted:false }
+ * ────────────────────────────────────────────────────*/
+const getMyStreak = async () => {
+  const response = await api.private.get('/common/me/streak');
+  return unwrapEnvelope(response, dto.streakSnapshot);
+};
+
+/* ─────────────────────────────────────────────────────
  * [READ] 다음 오픈챌린지 조회
  * ────────────────────────────────────────────────────*/
 const getNextChallenge = async (
@@ -631,6 +641,7 @@ export const repository = {
   getMyList: getMyChallengeList,
   getMyDetail: getMyChallengeDetail,
   getNextChallenge,
+  getMyStreak,
   getAiCoachingPreferenceEnums,
   getMyAiCoachingPreference,
   updateMyAiCoachingPreference,

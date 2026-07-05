@@ -1,9 +1,9 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import {
   SolutionDrawingPad,
@@ -13,6 +13,7 @@ import {
 } from '@/shared/components/drawing';
 import { BackButton, Button, Dialog } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
+import { trackOcStart, trackOcSubmit } from '@/shared/lib/analytics';
 import { Bot, ChevronDown, ChevronUp, Pencil, X } from 'lucide-react';
 
 import {
@@ -40,6 +41,7 @@ export const ChallengeSolveClient = ({
   isLoggedIn,
 }: ChallengeSolveClientProps) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   // 풀이는 손글씨 전용 — 펜으로만 기록하며, 미입력 제출도 허용한다(보조 기록).
   const [drawingStrokes, setDrawingStrokes] = useState<Stroke[]>([]);
@@ -51,6 +53,11 @@ export const ChallengeSolveClient = ({
   const [aiAttemptId, setAiAttemptId] = useState<string | null>(null);
   const [aiSessionId, setAiSessionId] = useState<string | null>(null);
   const choiceSectionRef = useRef<HTMLDivElement>(null);
+  // 계측 보조 refs (D2)
+  const mountTimeRef = useRef(Date.now());
+  const hasFiredStartRef = useRef(false);
+  const solutionViewedRef = useRef(false);
+  const messageCountRef = useRef(0);
 
   const { data: challenge, isLoading: isChallengeLoading } =
     useOpenChallengeDetailQuery(challengeId);
@@ -72,6 +79,16 @@ export const ChallengeSolveClient = ({
     !!challengeHistory &&
     (challengeHistory.attempts.length > 0 ||
       challengeHistory.reviews.length > 0);
+
+  // oc_start: 문제 데이터가 처음 로드됐을 때 1회 발화
+  useEffect(() => {
+    if (!challenge || hasFiredStartRef.current) return;
+    hasFiredStartRef.current = true;
+    trackOcStart({
+      problem_id: challengeId,
+      src: searchParams.get('src') ?? 'direct',
+    });
+  }, [challenge, challengeId, searchParams]);
 
   const handleSubmit = async () => {
     if (!isLoggedIn) {
@@ -106,6 +123,14 @@ export const ChallengeSolveClient = ({
       const result = await submitAnswerMutation.mutateAsync({
         attemptId,
         params: { selectedAnswer },
+      });
+
+      // oc_submit 계측 (D2)
+      trackOcSubmit({
+        is_correct: result.isCorrect,
+        used_solution: solutionViewedRef.current,
+        hint_count: messageCountRef.current,
+        elapsed: Math.round((Date.now() - mountTimeRef.current) / 1000),
       });
 
       // 정답이고 손글씨 풀이가 있을 때만 풀이를 공유한다(기존 정책 유지).
@@ -178,6 +203,8 @@ export const ChallengeSolveClient = ({
           onAttemptCleared={handleAiAttemptCleared}
           onSessionChange={setAiSessionId}
           drawingStrokes={drawingStrokes}
+          onSolutionViewed={() => { solutionViewedRef.current = true; }}
+          onMessageSent={() => { messageCountRef.current += 1; }}
         />
       </aside>
 
@@ -376,6 +403,8 @@ export const ChallengeSolveClient = ({
               onAttemptCleared={handleAiAttemptCleared}
               onSessionChange={setAiSessionId}
               drawingStrokes={drawingStrokes}
+              onSolutionViewed={() => { solutionViewedRef.current = true; }}
+              onMessageSent={() => { messageCountRef.current += 1; }}
             />
           </Dialog.Body>
         </Dialog.Content>
