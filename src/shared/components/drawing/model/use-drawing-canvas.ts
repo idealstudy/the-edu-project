@@ -118,9 +118,10 @@ function strokesSignature(strokes: Stroke[]) {
 export function renderStrokes(
   ctx: CanvasRenderingContext2D,
   strokes: Stroke[],
-  liveStrokeId?: string | null
+  liveStrokeId?: string | null,
+  layoutSize?: { width: number; height: number }
 ) {
-  const { width, height } = ctx.canvas;
+  const { width, height } = layoutSize ?? ctx.canvas;
   ctx.clearRect(0, 0, width, height);
 
   for (const stroke of strokes) {
@@ -285,9 +286,10 @@ export function useDrawingCanvas({
       size: sizeRef.current,
       tool: toolRef.current,
       layoutHeight: pageSize.height,
+      layoutWidth: pageSize.width,
     };
     paintStrokes([...strokesRef.current, liveStroke], strokeIdRef.current);
-  }, [paintStrokes, pageSize.height]);
+  }, [paintStrokes, pageSize.height, pageSize.width]);
 
   const releaseCapture = useCallback(
     (pointerId: number) => {
@@ -316,6 +318,7 @@ export function useDrawingCanvas({
         size: sizeRef.current,
         tool: toolRef.current,
         layoutHeight: pageSize.height,
+        layoutWidth: pageSize.width,
       };
 
       localPendingStrokeIdRef.current = stroke.id;

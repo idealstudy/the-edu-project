@@ -132,6 +132,7 @@ export function SolutionDrawingPad({
       <div
         ref={surfaceRef}
         data-drawing-surface
+        data-testid="solution-drawing-surface"
         className="border-line-line1 relative overflow-hidden rounded-xl border-2 border-dashed bg-white"
         style={{ height }}
       >

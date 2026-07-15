@@ -187,8 +187,8 @@ export const useChallengeSolutionMutation = () => {
     mutationFn: (attemptId: string) => repository.getSolution(attemptId),
     onSuccess: () => {
       // 잔액·약점 트리가 바뀌므로 관련 캐시를 무효화한다.
-      queryClient.invalidateQueries({ queryKey: ['point'] });
-      queryClient.invalidateQueries({ queryKey: ['tree'] });
+      queryClient.invalidateQueries({ queryKey: pointKeys.all });
+      queryClient.invalidateQueries({ queryKey: treeKeys.all });
     },
     onError: (error) => {
       handleApiError(error, classifyOpenChallengeError, {

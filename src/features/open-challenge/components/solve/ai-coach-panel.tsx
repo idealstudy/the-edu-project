@@ -10,7 +10,7 @@ import { type Stroke, useDrawingUpload } from '@/shared/components/drawing';
 import { Button, Dialog } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
 import { trackOcCoachUse, trackOcSolutionView } from '@/shared/lib/analytics';
-import { cn } from '@/shared/lib';
+import { ShowErrorToast, cn } from '@/shared/lib';
 import { katex } from '@mdit/plugin-katex';
 import { renderToString } from 'katex';
 import {
@@ -384,12 +384,21 @@ export const AiCoachPanel = ({
   const sendMessageMutation = useSendAiCoachingMessageMutation(sessionId);
   const abandonSessionMutation = useAbandonAiCoachingSessionMutation();
   const solutionMutation = useChallengeSolutionMutation();
-  const { uploadDrawingAsync } = useDrawingUpload();
+  const { uploadDrawingAsync, isUploading: isUploadingDrawing } =
+    useDrawingUpload();
   // 같은 strokes 를 중복 업로드하지 않도록 마지막 업로드 결과를 캐시한다.
   const lastDrawingUploadRef = useRef<{
     strokes: Stroke[];
     mediaId: string;
   } | null>(null);
+  // 풀이 이미지 업로드 실패 시, 사용자가 "재시도" / "이미지 없이 보내기"를
+  // 고를 때까지 보류해두는 원본 메시지(A-2: 무음 삼킴 금지).
+  const pendingMessageRef = useRef<{
+    rawMessage: string;
+    intent: 'concept' | 'hint' | 'chat';
+  } | null>(null);
+  const [isDrawingUploadFailedOpen, setIsDrawingUploadFailedOpen] =
+    useState(false);
 
   const hasLoadedSettings =
     !isLoggedIn || myPreferenceQuery.isFetched || myPreferenceQuery.isError;
@@ -399,7 +408,8 @@ export const AiCoachPanel = ({
     createSessionMutation.isPending ||
     sendMessageMutation.isPending ||
     abandonSessionMutation.isPending ||
-    solutionMutation.isPending;
+    solutionMutation.isPending ||
+    isUploadingDrawing;
   const isSending = status === 'COACHING' || isBusy;
   // AI가 실제로 답변을 생성 중인 정확한 신호 — 타이핑 인디케이터용(무관한 mutation 제외).
   const isAiReplying = status === 'COACHING' || sendMessageMutation.isPending;
@@ -516,28 +526,45 @@ export const AiCoachPanel = ({
   };
 
   // 현재 손글씨 풀이 스냅샷을 업로드해 media_id 를 얻는다(있을 때만).
-  // 같은 strokes 면 이전 업로드를 재사용하고, 업로드 실패는 전송을 막지 않는다.
-  const resolveSolutionMediaId = async (): Promise<string | undefined> => {
+  // 같은 strokes 면 이전 업로드를 재사용한다. 업로드 실패는 여기서 삼키지 않고
+  // 그대로 던진다 — 호출부(sendMessage)가 사용자에게 실패를 표면화한다(A-2).
+  const uploadSolutionMediaId = async (): Promise<string | undefined> => {
     if (drawingStrokes.length === 0) return undefined;
     if (lastDrawingUploadRef.current?.strokes === drawingStrokes) {
       return lastDrawingUploadRef.current.mediaId;
     }
-    try {
-      const { mediaId } = await uploadDrawingAsync(drawingStrokes);
-      lastDrawingUploadRef.current = { strokes: drawingStrokes, mediaId };
-      return mediaId;
-    } catch {
-      return undefined;
-    }
+    const { mediaId } = await uploadDrawingAsync(drawingStrokes);
+    lastDrawingUploadRef.current = { strokes: drawingStrokes, mediaId };
+    return mediaId;
   };
 
   const sendMessage = async (
     rawMessage: string,
-    intent: 'concept' | 'hint' | 'chat' = 'chat'
+    intent: 'concept' | 'hint' | 'chat' = 'chat',
+    sendOptions: { skipSolutionImage?: boolean } = {}
   ) => {
     const trimmedMessage = rawMessage.trim();
     if (!trimmedMessage || status === 'READY' || isSending || !sessionId)
       return;
+
+    // 풀이 이미지 업로드를 메시지 전송보다 먼저 확정한다 — 실패 시 사용자
+    // 확인(재시도/이미지 없이 진행) 전에는 AI를 조용히 부르지 않는다(A-2).
+    let studentSolutionImageMediaId: string | undefined;
+    if (!sendOptions.skipSolutionImage) {
+      try {
+        studentSolutionImageMediaId = await uploadSolutionMediaId();
+      } catch {
+        pendingMessageRef.current = { rawMessage: trimmedMessage, intent };
+        ShowErrorToast(
+          'ai-coach-solution-upload-failed',
+          '풀이 이미지 전송에 실패했어요. 다시 시도해 주세요.'
+        );
+        setIsDrawingUploadFailedOpen(true);
+        return;
+      }
+    }
+    pendingMessageRef.current = null;
+
     setMessages((previousMessages) => [
       ...previousMessages,
       {
@@ -553,8 +580,6 @@ export const AiCoachPanel = ({
     const nextCount = messages.filter((m) => m.role === 'user').length + 1;
     trackOcCoachUse({ intent, count: nextCount });
     onMessageSent?.();
-
-    const studentSolutionImageMediaId = await resolveSolutionMediaId();
 
     sendMessageMutation.mutate(
       { message: trimmedMessage, studentSolutionImageMediaId, intent },
@@ -586,6 +611,24 @@ export const AiCoachPanel = ({
     if (!inputMessage.trim()) return;
     sendMessage(inputMessage);
     setInputMessage('');
+  };
+
+  // 풀이 이미지 업로드 실패 다이얼로그 — "다시 시도"는 이미지 재업로드부터,
+  // "그냥 질문만 보낼게요"는 사용자의 명시 동의로 이미지 없이 진행한다(A-2).
+  const handleRetryDrawingUpload = () => {
+    const pending = pendingMessageRef.current;
+    setIsDrawingUploadFailedOpen(false);
+    if (!pending) return;
+    sendMessage(pending.rawMessage, pending.intent);
+  };
+
+  const handleSendWithoutSolutionImage = () => {
+    const pending = pendingMessageRef.current;
+    setIsDrawingUploadFailedOpen(false);
+    if (!pending) return;
+    sendMessage(pending.rawMessage, pending.intent, {
+      skipSolutionImage: true,
+    });
   };
 
   const handleConfirmViewSolution = () => {
@@ -729,6 +772,7 @@ export const AiCoachPanel = ({
               onClick={handleStartClick}
               disabled={!hasLoadedSettings || isBusy}
               className="w-full"
+              data-testid="ai-coach-start-button"
             >
               {isBusy ? 'AI 코치 준비 중...' : 'AI 힌트 받기'}
             </Button>
@@ -884,6 +928,7 @@ export const AiCoachPanel = ({
                     : '메시지를 입력하세요...'
                 }
                 className="placeholder:text-gray-6 flex-1 text-sm outline-none disabled:cursor-not-allowed"
+                data-testid="ai-coach-message-input"
               />
               <button
                 type="button"
@@ -893,6 +938,7 @@ export const AiCoachPanel = ({
                 }
                 className="bg-orange-7 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-white disabled:cursor-not-allowed disabled:opacity-40"
                 aria-label="AI 코치에게 메시지 보내기"
+                data-testid="ai-coach-send-button"
               >
                 <Send size={14} />
               </button>
@@ -973,6 +1019,52 @@ export const AiCoachPanel = ({
               className="w-full"
             >
               조금 더 풀어볼게요
+            </Button>
+          </Dialog.Footer>
+        </Dialog.Content>
+      </Dialog>
+
+      {/* 풀이 이미지 업로드 실패 — 무음 삼킴 금지(A-2). 명시 확인 후에만 이미지 없이 진행 */}
+      <Dialog
+        isOpen={isDrawingUploadFailedOpen}
+        onOpenChange={setIsDrawingUploadFailedOpen}
+      >
+        <Dialog.Content className="w-full max-w-[380px] gap-5 p-6 text-center">
+          <Dialog.Header className="items-center">
+            <div className="bg-orange-1 flex h-14 w-14 items-center justify-center rounded-full">
+              <TriangleAlert
+                size={26}
+                className="text-orange-7"
+                aria-hidden
+              />
+            </div>
+            <Dialog.Title className="text-text-main text-lg font-bold">
+              풀이 이미지 전송에 실패했어요
+            </Dialog.Title>
+            <Dialog.Description className="text-gray-8 text-sm leading-relaxed">
+              손글씨 풀이를 AI 코치에게 보내지 못했어요. 다시 시도하거나,
+              이미지 없이 질문만 보낼 수 있어요.
+            </Dialog.Description>
+          </Dialog.Header>
+          <Dialog.Footer className="flex-col">
+            <Button
+              type="button"
+              onClick={handleRetryDrawingUpload}
+              disabled={isUploadingDrawing}
+              className="w-full"
+              data-testid="ai-coach-upload-retry-button"
+            >
+              {isUploadingDrawing ? '다시 시도 중...' : '다시 시도'}
+            </Button>
+            <Button
+              type="button"
+              variant="outlined"
+              onClick={handleSendWithoutSolutionImage}
+              disabled={isUploadingDrawing}
+              className="w-full"
+              data-testid="ai-coach-send-without-image-button"
+            >
+              그냥 질문만 보낼게요
             </Button>
           </Dialog.Footer>
         </Dialog.Content>

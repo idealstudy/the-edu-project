@@ -315,6 +315,7 @@ export const AiCoachSettingsDialog = ({
             variant="outlined"
             onClick={onSkip}
             className="w-full sm:w-auto"
+            data-testid="ai-coach-settings-skip-button"
           >
             나중에 할게요
           </Button>
@@ -322,6 +323,7 @@ export const AiCoachSettingsDialog = ({
             type="button"
             onClick={handleSubmit}
             className="w-full sm:w-auto"
+            data-testid="ai-coach-settings-submit-button"
           >
             AI 코치 시작
           </Button>
