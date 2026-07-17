@@ -176,6 +176,43 @@ const OPEN_CHALLENGE = {
 } as const;
 
 /* ─────────────────────────────────────────────────────
+ * CHALLENGES (MVP-G 공개 포털 — 오픈챌린지 재노출)
+ *  실제 상세 화면은 기존 /open-challenge/:id 를 그대로 재사용한다
+ *  (풀이 세션·AI 코치 등 상태가 이미 그 경로에 결선돼 있어 URL만
+ *  옮기면 회귀 위험이 큼 — mvp-g frd §7 G4 처리안: "공개 URL은
+ *  id 사용 또는 상수 매핑"을 상수 매핑 없이 기존 경로 재사용으로 택함).
+ * ────────────────────────────────────────────────────*/
+const CHALLENGES = {
+  LIST: '/challenges',
+  DETAIL: (id: string | number) => `/open-challenge/${id}`,
+} as const;
+
+/* ─────────────────────────────────────────────────────
+ * TEACHERS (MVP-G 공개 포털 — 대표 멘토 조성진 단독 프로필)
+ * ────────────────────────────────────────────────────*/
+const TEACHERS = {
+  LIST: '/teachers',
+  MENTOR_SLUG: 'jo-sungjin',
+  DETAIL: '/teachers/jo-sungjin',
+} as const;
+
+/* ─────────────────────────────────────────────────────
+ * CONSULT (MVP-G 공개 포털 — 비회원 상담 접수 신규 세로 슬라이스)
+ * ────────────────────────────────────────────────────*/
+const CONSULT = {
+  INDEX: '/consult',
+  CASE_DETAIL: (id: number) => `/consult/${id}`,
+} as const;
+
+/* ─────────────────────────────────────────────────────
+ * BOARD (MVP-G 공개 포털 — 칼럼/매거진, 기존 column_article 재노출)
+ * ────────────────────────────────────────────────────*/
+const BOARD = {
+  LIST: '/board',
+  DETAIL: (id: number) => `/board/${id}`,
+} as const;
+
+/* ─────────────────────────────────────────────────────
  * LEARNING (내 학습 허브 — 약점 트리·포인트·내 문제)
  * ────────────────────────────────────────────────────*/
 const LEARNING = {
@@ -237,6 +274,10 @@ export const PUBLIC = {
   INQUIRY,
   OPEN_CHALLENGE,
   COURSE,
+  CHALLENGES,
+  TEACHERS,
+  CONSULT,
+  BOARD,
 } as const;
 
 /* ─────────────────────────────────────────────────────

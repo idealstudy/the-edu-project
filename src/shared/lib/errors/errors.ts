@@ -124,6 +124,28 @@ export function classifyColumnError(code?: string): ApiErrorType {
   }
 }
 
+// MVP-G 공개 포털 — 비회원 상담 리드 접수(/consult) 관련 에러
+export function classifyConsultationLeadError(code?: string): ApiErrorType {
+  switch (code) {
+    // FIELD (폼 입력값 문제 — 필드 옆에 표시)
+    case 'CONSULTATION_CONSENT_REQUIRED':
+    case 'CONSULTATION_CONSENT_VERSION_MISMATCH':
+    case 'CONSULTATION_CONTACT_INVALID':
+    case 'CONSULTATION_MESSAGE_TOO_SHORT':
+    case 'CONSULTATION_MESSAGE_TOO_LONG':
+    case 'CONSULTATION_MINOR_GUARDIAN_REQUIRED':
+      return 'FIELD';
+
+    // CONTEXT (레이트리밋·봇 방어 — 폼 상단 배너로 표시)
+    case 'CONSULTATION_RATE_LIMITED':
+    case 'CONSULTATION_BOT_SUSPECTED':
+      return 'CONTEXT';
+
+    default:
+      return 'UNKNOWN';
+  }
+}
+
 // open challenge 관련 에러
 export function classifyOpenChallengeError(code?: string): ApiErrorType {
   switch (code) {
