@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-import { type LessonProblem } from '@/entities/course';
+import { type LessonProblem, type LessonSegment } from '@/entities/course';
 import { MathMarkdown } from '@/shared/components/markdown';
 import { Button } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
@@ -16,9 +16,13 @@ import {
   useCourseDetailQuery,
   useCourseLessonsQuery,
   useEnrollCourseMutation,
+  useLessonSegmentsQuery,
   useUpdateLessonProgressMutation,
 } from '../../hooks';
 import { LessonRow } from '../common/lesson-row';
+import { ConceptNoteRewardPanel } from './concept-note-reward-panel';
+import { SegmentCheckpointDialog } from './segment-checkpoint-dialog';
+import { SegmentStageBar } from './segment-stage-bar';
 
 /* ─────────────────────────────────────────────────────
  * 차시 학습 뷰 (수강용·인증)
@@ -39,6 +43,16 @@ export const LessonViewClient = ({ courseId }: { courseId: number }) => {
     useUpdateLessonProgressMutation(courseId);
 
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [checkpointSegment, setCheckpointSegment] =
+    useState<LessonSegment | null>(null);
+
+  const selectedLessonLocked =
+    lessons?.find((lesson) => lesson.lessonId === selectedId)?.isLocked ??
+    true;
+  // 세그먼트/체크포인트(frd-v2 §4, api-contract-v2 ⑦) — 잠긴 차시는 조회하지 않는다.
+  const { data: segmentGroup } = useLessonSegmentsQuery(selectedId, {
+    enabled: selectedId != null && !selectedLessonLocked,
+  });
 
   // 코스 상세에서 넘어올 때 ?lesson=<id> 로 진입 차시를 지정할 수 있다.
   const searchParams = useSearchParams();
@@ -138,6 +152,17 @@ export const LessonViewClient = ({ courseId }: { courseId: number }) => {
           />
         ) : (
           <>
+            {segmentGroup && segmentGroup.segments.length > 0 && (
+              <SegmentStageBar
+                segments={segmentGroup.segments}
+                activeSegmentId={checkpointSegment?.segmentId ?? null}
+                onSelectSegment={(segment) => {
+                  if (segment.cleared) return;
+                  setCheckpointSegment(segment);
+                }}
+              />
+            )}
+
             <article className="min-h-[160px]">
               {selected.contentRef && selected.contentRef.trim().length > 0 ? (
                 <MathMarkdown
@@ -150,6 +175,13 @@ export const LessonViewClient = ({ courseId }: { courseId: number }) => {
                 </p>
               )}
             </article>
+
+            {segmentGroup && segmentGroup.segments.length > 0 && (
+              <ConceptNoteRewardPanel
+                unlocked={segmentGroup.noteSlotUnlocked}
+                dayType={segmentGroup.dayType}
+              />
+            )}
 
             <LessonProblems problems={selected.problems} />
 
@@ -202,6 +234,21 @@ export const LessonViewClient = ({ courseId }: { courseId: number }) => {
           </>
         )}
       </section>
+
+      {checkpointSegment && (
+        <SegmentCheckpointDialog
+          isOpen={checkpointSegment != null}
+          onOpenChange={(open) => {
+            if (!open) setCheckpointSegment(null);
+          }}
+          segment={checkpointSegment}
+          lessonId={selected.lessonId}
+          // ⛔ 회장 확인 필요: enrollmentId를 노출하는 조회 API가 없다
+          // (segment-checkpoint-dialog.tsx 상단 주석 참조). 연동 전까지 null.
+          enrollmentId={null}
+          onCleared={() => setCheckpointSegment(null)}
+        />
+      )}
     </div>
   );
 };

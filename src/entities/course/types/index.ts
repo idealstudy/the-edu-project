@@ -18,7 +18,25 @@ export type CoursePage = {
   hasNext: boolean;
 };
 
+export type PlanType = z.infer<typeof domain.planType>;
+export type CourseProduct = z.infer<typeof domain.courseProduct>;
+export type CourseOrderCreateResult = z.infer<typeof domain.orderCreateResult>;
+export type DayType = z.infer<typeof domain.dayType>;
+export type LessonSegment = z.infer<typeof domain.lessonSegment>;
+export type LessonSegmentGroup = z.infer<typeof domain.lessonSegmentGroup>;
+export type PlaybackTicket = z.infer<typeof domain.playbackTicket>;
+export type CheckpointResult = z.infer<typeof domain.checkpointResult>;
+
 /* ─────────────────────────────────────────────────────
  * Payload Type
  * ────────────────────────────────────────────────────*/
 export type UpdateProgressPayload = z.infer<typeof payload.updateProgress>;
+export type CreateCourseOrderPayload = z.infer<
+  typeof payload.createCourseOrder
+>;
+export type SubmitCheckpointPayload = z.infer<
+  typeof payload.submitCheckpoint
+>;
+export type SaveWatchPositionPayload = z.infer<
+  typeof payload.saveWatchPosition
+>;

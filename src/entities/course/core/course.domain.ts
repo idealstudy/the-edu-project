@@ -78,6 +78,94 @@ const ProgressResultSchema = z.object({
   completedAt: z.string().nullable(),
 });
 
+/* ─────────────────────────────────────────────────────
+ * 3티어 상품 Domain (MVP-F api-contract-v2 ①)
+ *  GET /api/public/courses/{courseId}/products
+ * ────────────────────────────────────────────────────*/
+const PlanTypeSchema = z.enum(['SELF_PACED', 'MANAGED', 'PREMIUM_1ON1']);
+
+const CourseProductSchema = z.object({
+  productId: z.number(),
+  planType: PlanTypeSchema,
+  planLabel: z.string(),
+  price: z.number(),
+  refundGuaranteed: z.boolean(),
+  reviewManaged: z.boolean(),
+  best: z.boolean(),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 주문 생성 결과 Domain (api-contract-v2 ②)
+ *  POST /api/common/course-orders
+ *  실결제(confirm)는 PG 미정(⛔ R-A)이라 프론트는 스텁 — 주문 생성까지.
+ * ────────────────────────────────────────────────────*/
+const CourseOrderCreateResultSchema = z.object({
+  orderId: z.number(),
+  orderKey: z.string(),
+  amount: z.number(),
+  courseTitle: z.string(),
+  planLabel: z.string(),
+  pgProvider: z.string(),
+  pgClientKey: z.string(),
+  customerName: z.string(),
+});
+
+/* ─────────────────────────────────────────────────────
+ * Day 유형 Domain (frd-v2 §3.2)
+ * ────────────────────────────────────────────────────*/
+const DayTypeSchema = z.enum([
+  'LECTURE_NOTE',
+  'PROBLEM_SET',
+  'REVIEW',
+  'REMEASURE',
+]);
+
+/* ─────────────────────────────────────────────────────
+ * 영상 세그먼트 Domain (api-contract-v2 ⑦)
+ *  GET /api/common/lessons/{lessonId}/segments
+ * ────────────────────────────────────────────────────*/
+const LessonSegmentSchema = z.object({
+  segmentId: z.number(),
+  orderIndex: z.number(),
+  title: z.string(),
+  durationSec: z.number(),
+  hasCheckpoint: z.boolean(),
+  cleared: z.boolean(),
+  lastPositionSec: z.number(),
+});
+
+const LessonSegmentGroupSchema = z.object({
+  lessonId: z.number(),
+  dayType: DayTypeSchema,
+  requireSegmentClear: z.boolean(),
+  noteSlotUnlocked: z.boolean(),
+  segments: z.array(LessonSegmentSchema),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 재생 티켓 Domain (api-contract-v2 ⑧)
+ * ────────────────────────────────────────────────────*/
+const PlaybackTicketSchema = z.object({
+  playbackUrl: z.string(),
+  expiresAt: z.string(),
+  provider: z.string(),
+  startSec: z.number(),
+  endSec: z.number(),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 체크포인트 제출 결과 Domain (api-contract-v2 ⑨)
+ *  능동 행위 = 보상의 유일한 근거. 보상은 이 결과에만 걸린다.
+ * ────────────────────────────────────────────────────*/
+const CheckpointResultSchema = z.object({
+  correct: z.boolean(),
+  attemptNo: z.number(),
+  clearedAt: z.string().nullable(),
+  allSegmentsCleared: z.boolean(),
+  noteSlotUnlocked: z.boolean(),
+  nextSegmentId: z.number().nullable(),
+});
+
 export const domain = {
   progressStatus: ProgressStatusSchema,
   listItem: CourseListItemSchema,
@@ -86,4 +174,12 @@ export const domain = {
   lessonProblem: LessonProblemSchema,
   enrollResult: EnrollResultSchema,
   progressResult: ProgressResultSchema,
+  planType: PlanTypeSchema,
+  courseProduct: CourseProductSchema,
+  orderCreateResult: CourseOrderCreateResultSchema,
+  dayType: DayTypeSchema,
+  lessonSegment: LessonSegmentSchema,
+  lessonSegmentGroup: LessonSegmentGroupSchema,
+  playbackTicket: PlaybackTicketSchema,
+  checkpointResult: CheckpointResultSchema,
 };

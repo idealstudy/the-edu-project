@@ -164,6 +164,69 @@ const ProgressResultDtoSchema = z.object({
   completedAt: z.string().nullable().optional(),
 });
 
+/* ─────────────────────────────────────────────────────
+ * 3티어 상품 DTO (api-contract-v2 ①)
+ * ────────────────────────────────────────────────────*/
+const CourseProductDtoSchema = z.object({
+  productId: z.number(),
+  planType: z.enum(['SELF_PACED', 'MANAGED', 'PREMIUM_1ON1']),
+  planLabel: z.string(),
+  price: z.number(),
+  refundGuaranteed: z.boolean().optional().default(false),
+  reviewManaged: z.boolean().optional().default(false),
+  best: z.boolean().optional().default(false),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 주문 생성 결과 DTO (api-contract-v2 ②)
+ * ────────────────────────────────────────────────────*/
+const CourseOrderCreateResultDtoSchema = z.object({
+  orderId: z.number(),
+  orderKey: z.string(),
+  amount: z.number(),
+  courseTitle: z.string(),
+  planLabel: z.string(),
+  pgProvider: z.string(),
+  pgClientKey: z.string(),
+  customerName: z.string(),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 영상 세그먼트 DTO (api-contract-v2 ⑦)
+ * ────────────────────────────────────────────────────*/
+const LessonSegmentDtoSchema = z.object({
+  segmentId: z.number(),
+  orderIndex: z.number(),
+  title: z.string(),
+  durationSec: z.number().optional().default(0),
+  hasCheckpoint: z.boolean().optional().default(false),
+  cleared: z.boolean().optional().default(false),
+  lastPositionSec: z.number().optional().default(0),
+});
+
+const LessonSegmentGroupDtoSchema = z.object({
+  lessonId: z.number(),
+  dayType: z
+    .enum(['LECTURE_NOTE', 'PROBLEM_SET', 'REVIEW', 'REMEASURE'])
+    .optional()
+    .default('LECTURE_NOTE'),
+  requireSegmentClear: z.boolean().optional().default(false),
+  noteSlotUnlocked: z.boolean().optional().default(false),
+  segments: z.array(LessonSegmentDtoSchema).optional().default([]),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 체크포인트 제출 결과 DTO (api-contract-v2 ⑨)
+ * ────────────────────────────────────────────────────*/
+const CheckpointResultDtoSchema = z.object({
+  correct: z.boolean(),
+  attemptNo: z.number().optional().default(1),
+  clearedAt: z.string().nullable().optional(),
+  allSegmentsCleared: z.boolean().optional().default(false),
+  noteSlotUnlocked: z.boolean().optional().default(false),
+  nextSegmentId: z.number().nullable().optional(),
+});
+
 export const dto = {
   listItem: CourseListItemDtoSchema,
   detail: CourseDetailDtoSchema,
@@ -171,6 +234,10 @@ export const dto = {
   lesson: LessonDtoSchema,
   enrollResult: EnrollResultDtoSchema,
   progressResult: ProgressResultDtoSchema,
+  courseProduct: CourseProductDtoSchema,
+  orderCreateResult: CourseOrderCreateResultDtoSchema,
+  lessonSegmentGroup: LessonSegmentGroupDtoSchema,
+  checkpointResult: CheckpointResultDtoSchema,
 };
 
 /* ─────────────────────────────────────────────────────
@@ -180,6 +247,28 @@ const UpdateProgressPayloadSchema = z.object({
   status: z.enum(['IN_PROGRESS', 'COMPLETED']),
 });
 
+/* 주문 생성 요청 (api-contract-v2 ②) — studentId null=본인 수강 */
+const CreateCourseOrderPayloadSchema = z.object({
+  courseId: z.number(),
+  productId: z.number(),
+  studentId: z.number().nullable().optional(),
+});
+
+/* 체크포인트 제출 요청 (api-contract-v2 ⑨) */
+const SubmitCheckpointPayloadSchema = z.object({
+  enrollmentId: z.number(),
+  choice: z.number(),
+});
+
+/* 이어보기 위치 저장 요청 (api-contract-v2 ⑩) — 보상·진도 무관 */
+const SaveWatchPositionPayloadSchema = z.object({
+  enrollmentId: z.number(),
+  lastPositionSec: z.number(),
+});
+
 export const payload = {
   updateProgress: UpdateProgressPayloadSchema,
+  createCourseOrder: CreateCourseOrderPayloadSchema,
+  submitCheckpoint: SubmitCheckpointPayloadSchema,
+  saveWatchPosition: SaveWatchPositionPayloadSchema,
 };

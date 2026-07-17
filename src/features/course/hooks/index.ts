@@ -4,4 +4,9 @@ export {
   useCourseLessonsQuery,
   useEnrollCourseMutation,
   useUpdateLessonProgressMutation,
+  useCourseProductsQuery,
+  useCreateCourseOrderMutation,
+  useLessonSegmentsQuery,
+  useSubmitCheckpointMutation,
+  useSaveWatchPositionMutation,
 } from './use-course';

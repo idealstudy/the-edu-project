@@ -19,6 +19,7 @@ import {
   priceLabel,
 } from '../../lib/format';
 import { LessonRow } from '../common/lesson-row';
+import { CourseTierSection } from './course-tier-section';
 
 /* ─────────────────────────────────────────────────────
  * 코스 상세 (공개) — 코스 메타 + 차시 목록(게이팅) + 수강 신청
@@ -90,6 +91,19 @@ export const CourseDetailClient = ({ courseId }: { courseId: number }) => {
             </p>
           )}
         </div>
+
+        {/* 3티어 선택·구매 */}
+        <CourseTierSection
+          courseId={courseId}
+          isAuthenticated={isAuthenticated}
+          onRequireLogin={() =>
+            router.push(
+              `${PUBLIC.CORE.LOGIN}?redirect=${encodeURIComponent(
+                PUBLIC.COURSE.DETAIL(courseId)
+              )}`
+            )
+          }
+        />
 
         {/* 차시 목록 */}
         <section className="flex flex-col gap-3">
