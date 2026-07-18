@@ -199,26 +199,28 @@ export function ConsultForm() {
 
       {/* 동의 */}
       <div className="flex flex-col gap-3">
-        <Checkbox.Label className="items-start gap-3">
-          <Checkbox
-            checked={watch('consentPrivacy')}
-            onCheckedChange={(checked) =>
-              setValue(
-                'consentPrivacy',
-                (checked === true) as true,
-                { shouldValidate: true }
-              )
-            }
-          />
-          <span className={cn('font-body2-normal', errors.consentPrivacy && 'text-system-warning')}>
-            {/* ⛔ 회장 확인 필요: 개인정보 수집·이용 동의 문구 최종본 (frd-public-portal-v1 §9) */}
-            (필수) 개인정보 수집·이용에 동의합니다. 접수 목적(상담 연락)
-            외에는 사용하지 않으며, 상담 종료 후 일정 기간 뒤 파기됩니다.
-          </span>
-        </Checkbox.Label>
-        <Form.ErrorMessage className="ml-9 text-sm">
-          {errors.consentPrivacy?.message}
-        </Form.ErrorMessage>
+        <Form.Item error={!!errors.consentPrivacy}>
+          <Checkbox.Label className="items-start gap-3">
+            <Checkbox
+              checked={watch('consentPrivacy')}
+              onCheckedChange={(checked) =>
+                setValue(
+                  'consentPrivacy',
+                  (checked === true) as true,
+                  { shouldValidate: true }
+                )
+              }
+            />
+            <span className={cn('font-body2-normal', errors.consentPrivacy && 'text-system-warning')}>
+              {/* ⛔ 회장 확인 필요: 개인정보 수집·이용 동의 문구 최종본 (frd-public-portal-v1 §9) */}
+              (필수) 개인정보 수집·이용에 동의합니다. 접수 목적(상담 연락)
+              외에는 사용하지 않으며, 상담 종료 후 일정 기간 뒤 파기됩니다.
+            </span>
+          </Checkbox.Label>
+          <Form.ErrorMessage className="ml-9 text-sm">
+            {errors.consentPrivacy?.message}
+          </Form.ErrorMessage>
+        </Form.Item>
 
         <Checkbox.Label className="items-start gap-3">
           <Checkbox
