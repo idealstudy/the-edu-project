@@ -1,11 +1,6 @@
 import type { Metadata } from 'next';
 
-import { ChallengeListClient } from '@/features/open-challenge/components/list/challenge-list-client';
-import OpenChallengeShell from '@/features/open-challenge/components/open-challenge-shell';
-import { PortalConsultCta } from '@/features/home/components/portal-consult-cta';
-import { PortalHero } from '@/features/home/components/portal-hero';
-import { PortalMentorTeaser } from '@/features/home/components/portal-mentor-teaser';
-import { PortalPopularPosts } from '@/features/home/components/portal-popular-posts';
+import { PortalHome } from '@/features/home/components/portal-home';
 import { PageViewTracker } from '@/shared/components/analytics';
 
 // MVP-G 공개 포털 홈 — frd-public-portal-v1 §4.1 모듈 순서(모바일 고정,
@@ -19,39 +14,11 @@ export const metadata: Metadata = {
     '디에듀 AI 코치와 함께 문제를 제대로 풀어보세요. 고민이 있다면 비공개로 상담을 신청할 수 있어요.',
 };
 
-type HomePageProps = {
-  searchParams: Promise<{ sort?: string; page?: string }>;
-};
-
-const parseSort = (value?: string) => {
-  if (value === 'popular') return value;
-  return 'latest';
-};
-
-const parsePage = (value?: string) => {
-  const parsed = Number(value);
-  if (!Number.isInteger(parsed) || parsed < 1) return 1;
-  return parsed;
-};
-
-export default async function HomePage({ searchParams }: HomePageProps) {
-  const { sort, page } = await searchParams;
-
+export default function HomePage() {
   return (
     <>
       <PageViewTracker pageName="open-challenge" />
-      <PortalHero />
-      <div id="today-challenge">
-        <OpenChallengeShell>
-          <ChallengeListClient
-            sort={parseSort(sort)}
-            page={parsePage(page)}
-          />
-        </OpenChallengeShell>
-      </div>
-      <PortalPopularPosts />
-      <PortalConsultCta />
-      <PortalMentorTeaser />
+      <PortalHome />
     </>
   );
 }
