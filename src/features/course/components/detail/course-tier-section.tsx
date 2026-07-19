@@ -125,8 +125,9 @@ export const CourseTierSection = ({
           .sort((a, b) => a.price - b.price)
           .map((product) => {
             const copy = TIER_COPY[product.planType] ?? {
-              tagline: product.planLabel,
-              bullets: [],
+              tagline: product.planLabel ?? planTypeLabel(product.planType),
+              bullets: [] as string[],
+              comparison: undefined as string | undefined,
               honestNote: '',
             };
             const isPremium = product.planType === 'PREMIUM_1ON1';

@@ -87,7 +87,8 @@ const PlanTypeSchema = z.enum(['SELF_PACED', 'MANAGED', 'PREMIUM_1ON1']);
 const CourseProductSchema = z.object({
   productId: z.number(),
   planType: PlanTypeSchema,
-  planLabel: z.string(),
+  // 백엔드 미제공 — planType 에서 라벨 생성(TIER_COPY). optional.
+  planLabel: z.string().optional(),
   price: z.number(),
   refundGuaranteed: z.boolean(),
   reviewManaged: z.boolean(),

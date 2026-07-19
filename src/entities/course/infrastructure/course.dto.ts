@@ -170,7 +170,10 @@ const ProgressResultDtoSchema = z.object({
 const CourseProductDtoSchema = z.object({
   productId: z.number(),
   planType: z.enum(['SELF_PACED', 'MANAGED', 'PREMIUM_1ON1']),
-  planLabel: z.string(),
+  // 백엔드 상품 응답에 planLabel 이 없다(planType 만 내려줌). 화면 라벨은
+  // TIER_COPY/planTypeLabel 로 planType 에서 생성하므로 optional 로 둔다.
+  // (필수로 두면 parse throw → tier 섹션 return null → 3티어가 화면에 안 뜸.)
+  planLabel: z.string().optional(),
   price: z.number(),
   refundGuaranteed: z.boolean().optional().default(false),
   reviewManaged: z.boolean().optional().default(false),
