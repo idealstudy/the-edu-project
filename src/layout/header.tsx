@@ -111,6 +111,28 @@ export const Header = () => {
               코스
             </Link>
             <Link
+              href={PUBLIC.TEACHERS.LIST}
+              className={cn(
+                'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
+                pathname.startsWith(PUBLIC.TEACHERS.LIST)
+                  ? 'bg-gray-11'
+                  : 'hover:bg-gray-11'
+              )}
+            >
+              대표 멘토
+            </Link>
+            <Link
+              href={PUBLIC.CONSULT.INDEX}
+              className={cn(
+                'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
+                pathname.startsWith(PUBLIC.CONSULT.INDEX)
+                  ? 'bg-gray-11'
+                  : 'hover:bg-gray-11'
+              )}
+            >
+              상담소
+            </Link>
+            <Link
               href={PUBLIC.COMMUNITY.COLUMN.LIST}
               className={cn(
                 'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
@@ -213,6 +235,22 @@ export const Header = () => {
                     onClick={() => setIsOpen(false)}
                   >
                     <span>코스</span>
+                  </PopoverLink>
+
+                  {/* 대표 멘토 */}
+                  <PopoverLink
+                    href={PUBLIC.TEACHERS.LIST}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <span>대표 멘토</span>
+                  </PopoverLink>
+
+                  {/* 상담소 */}
+                  <PopoverLink
+                    href={PUBLIC.CONSULT.INDEX}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <span>상담소</span>
                   </PopoverLink>
 
                   {/* 게시판 */}
