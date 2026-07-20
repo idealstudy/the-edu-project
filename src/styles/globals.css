@@ -522,6 +522,17 @@ body {
   }
 }
 
+/* 정복 능선(약점트리 v4) — 90%+ 트로피 그라데이션 shine 스윕 */
+@keyframes ridge-trophy-sweep {
+  0%,
+  55% {
+    left: -60%;
+  }
+  100% {
+    left: 130%;
+  }
+}
+
 @keyframes toast-fade-in {
   from {
     opacity: 0;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import Link from 'next/link';
 
@@ -9,20 +9,45 @@ import { PUBLIC } from '@/shared/constants';
 import { Sprout, TriangleAlert } from 'lucide-react';
 
 import { useMyTreeQuery } from '../hooks/use-tree';
+import { buildRidge, findValley, type RidgeNode } from '../lib/ridge';
 import { NodeChallengeDialog } from './node-challenge-dialog';
+import { RidgeDrilldown } from './ridge-drilldown';
+import { RidgeMap } from './ridge-map';
+import { ALL_TAB, SubjectTabs, type SubjectTabValue } from './subject-tabs';
+import { TreeActionBand } from './tree-action-band';
+import { TreeHero } from './tree-hero';
 import { TreeLegend } from './tree-legend';
-import { TreeMap } from './tree-map';
 import { TreeSkeleton } from './tree-skeleton';
 import { TreeSummary } from './tree-summary';
 
 /* ─────────────────────────────────────────────────────
- * 약점 트리 페이지 클라이언트
+ * 약점 트리 페이지 클라이언트 — "정복 능선"(v4) 재구현
+ *  prototypes/mvp-e-약점트리-재설계-v4.html 이 정본.
  *  로딩 / 에러 / 빈(신규=전부 회색) / 정상 4상태.
- *  "약점" 단정 대신 "더 풀어볼까?" 톤.
  * ────────────────────────────────────────────────────*/
 export const WeaknessTreeClient = () => {
   const { data, isLoading, isError, refetch } = useMyTreeQuery();
   const [selectedNode, setSelectedNode] = useState<TreeNodeView | null>(null);
+  const [selectedPeakId, setSelectedPeakId] = useState<string | null>(null);
+  const [tab, setTab] = useState<SubjectTabValue>(ALL_TAB);
+
+  const allNodes = useMemo(
+    () => (data ? data.groups.flatMap((g) => g.nodes) : []),
+    [data]
+  );
+
+  const peaks = useMemo(() => {
+    if (tab === ALL_TAB) return buildRidge(allNodes);
+    const group = data?.groups.find((g) => g.subject === tab);
+    return buildRidge(group?.nodes ?? []);
+  }, [tab, allNodes, data]);
+
+  const valley = useMemo(() => findValley(peaks), [peaks]);
+
+  const selectedPeak: RidgeNode | null = useMemo(
+    () => peaks.find((p) => p.nodeId === selectedPeakId) ?? null,
+    [peaks, selectedPeakId]
+  );
 
   if (isLoading) {
     return <TreeSkeleton />;
@@ -64,7 +89,7 @@ export const WeaknessTreeClient = () => {
           아직 채워진 지도가 없어요.
         </p>
         <p className="font-body2-normal text-text-sub1 max-w-[320px] text-balance">
-          첫 문제를 제대로 풀면 단원이 오렌지로 채워지기 시작해요.
+          첫 문제를 제대로 풀면 능선이 솟아오르기 시작해요.
         </p>
         <Link
           href={PUBLIC.OPEN_CHALLENGE.LIST}
@@ -78,12 +103,60 @@ export const WeaknessTreeClient = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <TreeSummary mastery={data!.mastery} />
-      <TreeLegend />
-      <TreeMap
-        groups={data!.groups}
-        onSelectNode={setSelectedNode}
+      <TreeHero
+        mastery={data!.mastery}
+        valley={valley}
       />
+
+      <section className="flex flex-col gap-3">
+        <div className="flex items-baseline justify-between gap-2">
+          <h2 className="font-body1-heading text-text-main">정복 능선</h2>
+          <span className="font-caption-normal text-text-sub2">
+            봉우리를 누르면 세부 트리가 열려요
+          </span>
+        </div>
+
+        <SubjectTabs
+          groups={data!.groups}
+          value={tab}
+          onChange={(next) => {
+            setTab(next);
+            setSelectedPeakId(null);
+          }}
+        />
+
+        <div className="border-line-line1 rounded-[16px] border bg-white px-4 pt-5 pb-4 md:px-5">
+          <p className="font-caption-normal text-text-sub2 mb-1 px-1">
+            봉우리 높이 = 해설 안 보고 맞힌 비율(자력, 실측) · 90%+는 정복
+            그라데이션
+          </p>
+          <RidgeMap
+            peaks={peaks}
+            selectedPeakId={selectedPeakId}
+            onSelectPeak={(peak) =>
+              setSelectedPeakId((cur) =>
+                cur === peak.nodeId ? null : peak.nodeId
+              )
+            }
+          />
+          <div className="mt-3">
+            <TreeLegend />
+          </div>
+        </div>
+
+        <RidgeDrilldown
+          peak={selectedPeak}
+          onClose={() => setSelectedPeakId(null)}
+          onOpenNode={setSelectedNode}
+        />
+      </section>
+
+      <TreeActionBand
+        valley={valley}
+        onAction={(node) => setSelectedNode(node)}
+      />
+
+      <TreeSummary mastery={data!.mastery} />
 
       <NodeChallengeDialog
         node={selectedNode}
