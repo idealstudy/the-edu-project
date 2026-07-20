@@ -188,10 +188,14 @@ const CourseOrderCreateResultDtoSchema = z.object({
   orderKey: z.string(),
   amount: z.number(),
   courseTitle: z.string(),
-  planLabel: z.string(),
+  // 백엔드는 planType 을 준다(planLabel 없음). PG 실연동 전(stub)이라
+  // pgClientKey·customerName 도 미제공 → optional 로 두어 파싱 실패를 막는다.
+  // (필수로 두면 parse throw → "주문 생성에 실패" 로 구매가 아예 막힌다.)
+  planType: z.enum(['SELF_PACED', 'MANAGED', 'PREMIUM_1ON1']).optional(),
+  planLabel: z.string().optional(),
   pgProvider: z.string(),
-  pgClientKey: z.string(),
-  customerName: z.string(),
+  pgClientKey: z.string().optional(),
+  customerName: z.string().optional(),
 });
 
 /* ─────────────────────────────────────────────────────

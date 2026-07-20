@@ -66,9 +66,9 @@ export const Header = () => {
       <div className="mx-auto flex w-full items-center justify-between">
         <div className="flex items-center gap-2">
           <Link
-            href={PUBLIC.CORE.WELCOME}
+            href={PUBLIC.CORE.INDEX}
             onClick={() => {
-              // GNB 로고 클릭 → 마케팅 랜딩(/welcome). 메인('/')은 오픈챌린지 리스트.
+              // GNB 로고 클릭 → 포털 홈('/'). 마케팅 랜딩(/welcome)은 별도 진입.
               trackGnbLogoClick(session?.role ?? null);
             }}
           >

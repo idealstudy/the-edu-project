@@ -102,7 +102,10 @@ export const CourseTierSection = ({
           setOrderStub({
             orderKey: result.orderKey,
             amount: result.amount,
-            planLabel: result.planLabel,
+            // 백엔드는 planLabel 을 주지 않는다 → planType 으로 라벨 생성.
+            planLabel:
+              result.planLabel ??
+              planTypeLabel(result.planType ?? product.planType),
           });
           showBottomToast('주문이 생성됐어요. 결제 연동은 준비 중이에요.');
         },

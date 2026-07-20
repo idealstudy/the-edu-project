@@ -105,10 +105,13 @@ const CourseOrderCreateResultSchema = z.object({
   orderKey: z.string(),
   amount: z.number(),
   courseTitle: z.string(),
-  planLabel: z.string(),
+  // 백엔드 CourseOrderCreateResponse 는 planType 을 주고 planLabel 은 없다.
+  planType: PlanTypeSchema.optional(),
+  planLabel: z.string().optional(),
   pgProvider: z.string(),
-  pgClientKey: z.string(),
-  customerName: z.string(),
+  // PG 실연동 전(stub)이라 백엔드가 아직 내려주지 않는다 → optional.
+  pgClientKey: z.string().optional(),
+  customerName: z.string().optional(),
 });
 
 /* ─────────────────────────────────────────────────────
