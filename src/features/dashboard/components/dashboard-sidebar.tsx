@@ -7,9 +7,11 @@ import { PRIVATE } from '@/shared/constants/route';
 import { useRole } from '@/shared/hooks/use-role';
 import { trackGnbLogoutClick } from '@/shared/lib/analytics';
 import {
+  ClipboardListIcon,
   GraduationCap,
   Handshake,
   LogOut,
+  MessageCircleQuestionIcon,
   ShieldUserIcon,
   Sprout,
   User2Icon,
@@ -27,41 +29,70 @@ export const DashboardSidebar = () => {
 
   return (
     <Sidebar>
-      {/* 내 학습 (2.0 학생 1순위 — 약점 트리·포인트·뱃지·내 문제 허브) */}
-      <Sidebar.Item
-        href={PRIVATE.LEARNING.INDEX}
-        matchPath={PRIVATE.LEARNING.INDEX}
-      >
-        <GraduationCap
-          size={20}
-          className="shrink-0"
-        />
-        <Sidebar.Text>내 학습</Sidebar.Text>
-      </Sidebar.Item>
+      {/* 학생 전용: 내 학습 / 친구 / 약점 트리 (2.0 학생 중심 코어) — 선생님·학부모 화면 아님 */}
+      {role === 'ROLE_STUDENT' && (
+        <>
+          <Sidebar.Item
+            href={PRIVATE.LEARNING.INDEX}
+            matchPath={PRIVATE.LEARNING.INDEX}
+          >
+            <GraduationCap
+              size={20}
+              className="shrink-0"
+            />
+            <Sidebar.Text>내 학습</Sidebar.Text>
+          </Sidebar.Item>
 
-      {/* 친구 (2.0 — 친구·도전장) */}
-      <Sidebar.Item
-        href={PRIVATE.FRIENDS.INDEX}
-        matchPath={PRIVATE.FRIENDS.INDEX}
-      >
-        <Handshake
-          size={20}
-          className="shrink-0"
-        />
-        <Sidebar.Text>친구</Sidebar.Text>
-      </Sidebar.Item>
+          <Sidebar.Item
+            href={PRIVATE.FRIENDS.INDEX}
+            matchPath={PRIVATE.FRIENDS.INDEX}
+          >
+            <Handshake
+              size={20}
+              className="shrink-0"
+            />
+            <Sidebar.Text>친구</Sidebar.Text>
+          </Sidebar.Item>
 
-      {/* 약점 트리 (2.0 학생 중심 코어) */}
-      <Sidebar.Item
-        href={PRIVATE.TREE.INDEX}
-        matchPath={PRIVATE.TREE.INDEX}
-      >
-        <Sprout
-          size={20}
-          className="shrink-0"
-        />
-        <Sidebar.Text>약점 트리</Sidebar.Text>
-      </Sidebar.Item>
+          <Sidebar.Item
+            href={PRIVATE.TREE.INDEX}
+            matchPath={PRIVATE.TREE.INDEX}
+          >
+            <Sprout
+              size={20}
+              className="shrink-0"
+            />
+            <Sidebar.Text>약점 트리</Sidebar.Text>
+          </Sidebar.Item>
+        </>
+      )}
+
+      {/* 선생님 전용: 스터디 관리 / Q&A 관리 — 학생이 맡던 자리에 선생님 업무 도구 배치 */}
+      {role === 'ROLE_TEACHER' && (
+        <>
+          <Sidebar.Item
+            href={PRIVATE.DASHBOARD.TEACHER}
+            matchPath={PRIVATE.DASHBOARD.TEACHER}
+          >
+            <ClipboardListIcon
+              size={20}
+              className="shrink-0"
+            />
+            <Sidebar.Text>스터디 관리</Sidebar.Text>
+          </Sidebar.Item>
+
+          <Sidebar.Item
+            href={PRIVATE.DASHBOARD.QNA}
+            matchPath={PRIVATE.DASHBOARD.QNA}
+          >
+            <MessageCircleQuestionIcon
+              size={20}
+              className="shrink-0"
+            />
+            <Sidebar.Text>Q&A 관리</Sidebar.Text>
+          </Sidebar.Item>
+        </>
+      )}
 
       {/* 마이페이지 */}
       <Sidebar.Item
