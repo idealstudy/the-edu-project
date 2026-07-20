@@ -33,9 +33,9 @@ describe('ChallengeReward (풀이 완료 보상 영역)', () => {
   test('정답이면 포인트·나무 성장 보상과 "약점 나무 보기" 링크(/tree)를 보여준다', () => {
     renderWithProviders(<ChallengeReward isCorrect={true} />);
 
-    expect(screen.getByText('정답입니다!')).toBeInTheDocument();
+    expect(screen.getByText(/정답이야!/)).toBeInTheDocument();
     expect(
-      screen.getByText(/약점 나무의 이 개념이 한 칸 자랐어요/)
+      screen.getByText(/약점 나무의 이 개념이 한 칸 자랐어/)
     ).toBeInTheDocument();
 
     const link = screen.getByRole('link', { name: /약점 나무 보기/ });
@@ -46,7 +46,7 @@ describe('ChallengeReward (풀이 완료 보상 영역)', () => {
     renderWithProviders(<ChallengeReward isCorrect={false} />);
 
     expect(
-      screen.getByText('이 개념이 약점으로 표시됐어요')
+      screen.getByText(/여기가 네 약점이야/)
     ).toBeInTheDocument();
 
     const link = screen.getByRole('link', { name: /약점 나무에서 채우기/ });
@@ -59,7 +59,7 @@ describe('ChallengeReward (풀이 완료 보상 영역)', () => {
       <ChallengeReward isCorrect={true} reward={mockReward} />
     );
 
-    expect(screen.getByText('정답입니다!')).toBeInTheDocument();
+    expect(screen.getByText(/정답이야!/)).toBeInTheDocument();
     expect(screen.getByTestId('reward-point-badge')).toHaveTextContent('+10 포인트');
     expect(screen.getByTestId('reward-streak-badge')).toHaveTextContent('3일 연속');
     expect(screen.getByTestId('reward-mastery-badge')).toHaveTextContent('이차방정식 30→40');
@@ -80,7 +80,7 @@ describe('ChallengeReward (풀이 완료 보상 영역)', () => {
       <ChallengeReward isCorrect={false} reward={incorrectReward} />
     );
 
-    expect(screen.getByText('이 개념이 약점으로 표시됐어요')).toBeInTheDocument();
+    expect(screen.getByText(/여기가 네 약점이야/)).toBeInTheDocument();
     expect(screen.queryByTestId('reward-point-badge')).not.toBeInTheDocument();
     expect(screen.getByTestId('reward-streak-badge')).toHaveTextContent('3일 연속');
   });
@@ -90,7 +90,7 @@ describe('ChallengeReward (풀이 완료 보상 영역)', () => {
       <ChallengeReward isCorrect={true} reward={null} />
     );
 
-    expect(screen.getByText('정답입니다!')).toBeInTheDocument();
+    expect(screen.getByText(/정답이야!/)).toBeInTheDocument();
     expect(screen.queryByTestId('reward-badges')).not.toBeInTheDocument();
   });
 
@@ -99,6 +99,6 @@ describe('ChallengeReward (풀이 완료 보상 영역)', () => {
       <ChallengeReward isCorrect={false} reward={null} />
     );
 
-    expect(screen.getByText('이 개념이 약점으로 표시됐어요')).toBeInTheDocument();
+    expect(screen.getByText(/여기가 네 약점이야/)).toBeInTheDocument();
   });
 });

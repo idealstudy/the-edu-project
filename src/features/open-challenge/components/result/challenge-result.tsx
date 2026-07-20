@@ -134,6 +134,8 @@ export const ChallengeResult = ({
             <ChallengeReward
               isCorrect={submittedResult.isCorrect}
               reward={submittedResult.reward}
+              passRate={submittedResult.passRate}
+              participantCount={submittedResult.participantCount}
             />
           )}
           {submittedResult && (
