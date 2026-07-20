@@ -37,6 +37,18 @@ export const CourseCard = ({ course }: { course: CourseListItem }) => (
       )}
     </div>
 
+    <div className="flex flex-wrap gap-1.5">
+      <span className="font-caption-normal text-text-sub1 bg-gray-1 rounded-[6px] px-2 py-1">
+        인강+개념노트
+      </span>
+      <span className="font-caption-normal text-text-sub1 bg-gray-1 rounded-[6px] px-2 py-1">
+        매일 3제
+      </span>
+      <span className="font-caption-normal text-text-sub1 bg-gray-1 rounded-[6px] px-2 py-1">
+        50~100일
+      </span>
+    </div>
+
     <div className="mt-auto flex items-center justify-between">
       <span className="font-body2-heading text-text-main tabular-nums">
         {priceLabel(course.price)}

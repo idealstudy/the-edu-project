@@ -300,6 +300,43 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
                 회독 상태는 학습이 시작된 뒤 실제 제출·풀이 기록으로 표시됩니다.
               </p>
             </div>
+            <div className="border-line-line2 mt-4 rounded-[14px] border bg-white p-5">
+              <p className="font-body2-heading text-text-main">
+                50일 뒤, 완주자 평균 궤적{' '}
+                <sup className="font-caption-normal text-text-sub2">*</sup>
+              </p>
+              <svg
+                viewBox="0 0 320 110"
+                className="mt-3 w-full"
+                role="img"
+                aria-label="완주자 평균 등급 곡선 예시: Day 1 3.9등급에서 Day 50 2.1등급으로 상승"
+              >
+                <line x1="10" y1="90" x2="310" y2="90" stroke="#eeeae6" strokeWidth="1" />
+                <path
+                  d="M20 78 C 90 74, 150 52, 200 38 S 280 20, 300 16"
+                  fill="none"
+                  stroke="#ff4805"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                />
+                <circle cx="20" cy="78" r="4" fill="#ffbaa9" />
+                <circle cx="160" cy="46" r="4" fill="#ff714e" />
+                <circle cx="300" cy="16" r="5" fill="#ff4805" />
+                <text x="20" y="103" fontSize="10" fill="#adadad" textAnchor="middle">
+                  Day 1
+                </text>
+                <text x="160" y="103" fontSize="10" fill="#adadad" textAnchor="middle">
+                  Day 25
+                </text>
+                <text x="295" y="103" fontSize="10" fill="#7c7c7c" fontWeight="700" textAnchor="middle">
+                  Day 50
+                </text>
+              </svg>
+              <p className="font-caption-normal mt-2 text-text-sub2">
+                * 예시 시드 데이터입니다. 실측 완주자 데이터가 쌓이기 전까지는
+                성적 보장이 아닌 학습 설계 방향을 보여드리는 참고 곡선이에요.
+              </p>
+            </div>
           </section>
 
           <CourseCurriculum
@@ -401,6 +438,21 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
             </div>
           </section>
 
+          <div className="rounded-[16px] bg-gradient-to-b from-transparent to-orange-50 px-4 py-8 text-center">
+            <p className="font-title-heading text-balance text-text-main">
+              새 문제집을 또 사는 대신,{' '}
+              <span className="text-key-color-primary">이 문제를 될 때까지.</span>
+            </p>
+            <p className="font-caption-normal mt-2 text-text-sub1">
+              오늘 시작하면 첫 검수는 다음 학습일에 도착해요.
+            </p>
+            <Button asChild size="medium" className="mt-4">
+              <a href="#course-tiers">
+                숨은 등급 찾기 시작 <ArrowRight size={16} aria-hidden="true" />
+              </a>
+            </Button>
+          </div>
+
           <p className="font-caption-normal border-t border-[#e7ddd7] pt-5 text-text-sub2">
             수강생 수·성적 변화·후기는 실측 데이터가 준비되기 전까지 표시하지
             않습니다.
@@ -417,6 +469,21 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
               {free ? '무료 수강 가능' : `기본 수강료 ${priceLabel(course.price)}`}
             </p>
           </div>
+          <ul className="flex flex-col gap-2">
+            {[
+              `${course.lessonCount}차시 커리큘럼 + 매일 3제 검수`,
+              '개념노트 제출·검토',
+              '학부모 주간 리포트 (관리형)',
+            ].map((item) => (
+              <li
+                key={item}
+                className="font-caption-normal flex items-start gap-1.5 text-text-sub1"
+              >
+                <Check size={14} className="text-key-color-primary mt-0.5 shrink-0" aria-hidden="true" />
+                {item}
+              </li>
+            ))}
+          </ul>
           <div className="bg-orange-1 rounded-[10px] p-3">
             <p className="font-caption-heading text-text-main">
               관리형은 등급 인증 시 전액 환급
@@ -425,6 +492,12 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
               기준 미달 시 환급되지 않아요.
             </p>
           </div>
+          <UnavailableOffer
+            icon={<CirclePlay size={18} aria-hidden="true" />}
+            title="무료 OT 준비 중"
+            description="결제 전 학습 방식 확인 영상"
+            label="준비 중"
+          />
           {isEnrolled ? (
             <Button asChild size="medium" className="w-full">
               <Link href={PRIVATE.COURSE.LEARN(courseId)}>오늘의 Day 이어가기</Link>
