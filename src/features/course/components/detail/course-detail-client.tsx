@@ -24,6 +24,7 @@ import {
 } from '../../hooks';
 import {
   courseSubjectLabel,
+  groupLessonsByUnit,
   isFreeCourse,
   priceLabel,
 } from '../../lib/format';
@@ -640,19 +641,35 @@ const CourseCurriculum = ({
     </div>
     {isAuthenticated && lessons ? (
       lessons.length > 0 ? (
-        <div className="mt-5 flex flex-col gap-2">
-          {lessons.map((lesson, index) => (
-            <div key={lesson.lessonId} className="flex items-center gap-3">
-              <span className="font-caption-heading w-12 shrink-0 text-text-sub2">
-                Day {String(index + 1).padStart(2, '0')}
-              </span>
-              <div className="min-w-0 flex-1">
-                <LessonRow
-                  lesson={lesson}
-                  index={index}
-                  interactive
-                  onSelect={onSelect}
-                />
+        <div className="mt-5 flex flex-col gap-6">
+          {groupLessonsByUnit(lessons).map((unit) => (
+            <div key={unit.unitName}>
+              <div className="mb-2.5 flex items-center gap-2">
+                <span className="font-caption-heading flex size-6 shrink-0 items-center justify-center rounded-[7px] bg-text-main text-[12px] font-extrabold text-white">
+                  {unit.unitName === '기타' ? '−' : unit.unitName.slice(0, 1)}
+                </span>
+                <span className="font-body2-heading text-text-main">
+                  {unit.unitName}
+                </span>
+                <span className="font-caption-normal ml-auto text-text-sub2">
+                  {unit.lessons.length}강
+                </span>
+              </div>
+              <div className="flex flex-col gap-2">
+                {unit.lessons.map((lesson) => {
+                  const globalIndex = lessons.findIndex(
+                    (l) => l.lessonId === lesson.lessonId
+                  );
+                  return (
+                    <LessonRow
+                      key={lesson.lessonId}
+                      lesson={lesson}
+                      index={globalIndex}
+                      interactive
+                      onSelect={onSelect}
+                    />
+                  );
+                })}
               </div>
             </div>
           ))}

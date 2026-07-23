@@ -1,6 +1,7 @@
 'use client';
 
 import { type Lesson } from '@/entities/course';
+import { lessonDurationLabel } from '@/features/course/lib/format';
 import { cn } from '@/shared/lib';
 import { CheckCircle2, Lock, PlayCircle } from 'lucide-react';
 
@@ -30,18 +31,39 @@ export const LessonRow = ({
   interactive = Boolean(onSelect),
 }: LessonRowProps) => {
   const progressLabel = PROGRESS_LABEL[lesson.progressStatus];
+  const durationLabel = lessonDurationLabel(lesson.durationSec);
 
   const content = (
     <>
-      <span
-        className={cn(
-          'font-caption-heading flex size-7 shrink-0 items-center justify-center rounded-full tabular-nums',
-          lesson.isLocked
-            ? 'bg-gray-1 text-text-sub2'
-            : 'bg-orange-1 text-key-color-primary'
+      <span className="relative block h-11 w-[72px] shrink-0 overflow-hidden rounded-[8px] bg-gray-1">
+        {lesson.thumbnailUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element -- 외부 CDN 썸네일, 다수(23강) 목록 최적화 불필요
+          <img
+            src={lesson.thumbnailUrl}
+            alt=""
+            loading="lazy"
+            className={cn(
+              'size-full object-cover',
+              lesson.isLocked && 'opacity-60'
+            )}
+          />
+        ) : (
+          <span
+            className={cn(
+              'font-caption-heading flex size-full items-center justify-center tabular-nums',
+              lesson.isLocked
+                ? 'bg-gray-1 text-text-sub2'
+                : 'bg-orange-1 text-key-color-primary'
+            )}
+          >
+            {index + 1}
+          </span>
         )}
-      >
-        {index + 1}
+        {durationLabel && (
+          <span className="font-caption-normal absolute bottom-0.5 right-0.5 rounded bg-black/70 px-1 text-[10px] leading-tight text-white">
+            {durationLabel}
+          </span>
+        )}
       </span>
 
       <span className="flex min-w-0 flex-1 flex-col">

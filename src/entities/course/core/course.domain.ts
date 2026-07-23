@@ -56,6 +56,12 @@ const LessonSchema = z.object({
   contentRef: z.string().nullable(),
   progressStatus: ProgressStatusSchema,
   problems: z.array(LessonProblemSchema).default([]),
+  /** 커리큘럼 단원 그룹명. 없으면 null(프론트가 "기타"로 묶음). */
+  unitName: z.string().nullable(),
+  /** 강의 재생시간(초). 없으면 null. */
+  durationSec: z.number().nullable(),
+  /** 강의 썸네일 URL. 없으면 null(프론트가 placeholder 렌더). */
+  thumbnailUrl: z.string().nullable(),
 });
 
 /* ─────────────────────────────────────────────────────

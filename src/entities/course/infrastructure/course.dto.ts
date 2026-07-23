@@ -138,6 +138,11 @@ const LessonDtoSchema = z
       .optional()
       .default('NOT_STARTED'),
     problems: z.array(LessonProblemDtoSchema).optional().default([]),
+    // 커리큘럼 확장 필드(단원·재생시간·썸네일) — 구 백엔드/시드 데이터엔 없을 수 있어
+    // 전부 optional. 없으면 프론트가 "기타" 그룹·placeholder 썸네일로 폴백한다.
+    unitName: z.string().nullable().optional(),
+    durationSec: z.number().nullable().optional(),
+    thumbnailUrl: z.string().nullable().optional(),
   })
   .transform((raw) => ({
     lessonId: raw.lessonId,
@@ -147,6 +152,9 @@ const LessonDtoSchema = z
     contentRef: raw.contentRef ?? null,
     progressStatus: raw.progressStatus,
     problems: raw.problems,
+    unitName: raw.unitName ?? null,
+    durationSec: raw.durationSec ?? null,
+    thumbnailUrl: raw.thumbnailUrl ?? null,
   }));
 
 /* ─────────────────────────────────────────────────────
