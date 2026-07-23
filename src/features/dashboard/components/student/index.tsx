@@ -10,7 +10,10 @@ import CalendarSection from '../section/calendar-section';
 import QnASection from '../section/qna-section';
 import StudentTabSection from '../section/student-tab-section';
 import { ConfirmParentRequestDialog } from './confirm-dialog';
+import { ExamHallCard } from './exam-hall-card';
+import { GrowthBand } from './growth-band';
 import StudentOnboarding from './student-onboarding';
+import { TodayTodoCard } from './today-todo-card';
 
 const DashboardStudent = ({
   initialMemberName,
@@ -60,6 +63,13 @@ const DashboardStudent = ({
         {!studentStepsCompleted && (
           <StudentOnboarding completionStatus={studentCompletionStatus} />
         )}
+        {/* MVP-G v3 — ① 응시장 → ② 성장 → ③ 오늘 할 일
+            ⛔ 백엔드 계약 필요 — 실 데이터 없어 summary 없이 "준비 중" 빈 상태로 렌더 */}
+        <div className="flex w-full flex-col gap-4">
+          <ExamHallCard />
+          <GrowthBand />
+          <TodayTodoCard />
+        </div>
         <div className="tablet:gap-25 flex w-full flex-col gap-8">
           <QnASection />
           <CalendarSection />

@@ -16,6 +16,7 @@ import { ConsultationSection } from '../section/parent-consultation-section';
 import { ParentLinkSection } from '../section/parent-link-section';
 import { StudyNewsSection } from '../section/parent-study-news-section';
 import { StudyRoomPreviewSection } from '../section/parent-studyroom-preview-section';
+import { WeeklyReassuranceCard } from './weekly-reassurance-card';
 
 const DashboardParent = ({
   initialMemberName,
@@ -146,6 +147,8 @@ const DashboardParent = ({
       <ParentDashboardHeader initialMemberName={initialMemberName} />
       <main className="tablet:gap-12 desktop:gap-20 bg-gray-white tablet:py-12 desktop:pb-25 tablet:px-20 relative flex w-full flex-col gap-8 px-4.5 py-8">
         <ParentLinkSection connectedStudents={connectedStudentData ?? []} />
+        {/* MVP-G v3 — 주간 안심 카드 (⛔ 백엔드 계약 필요) */}
+        <WeeklyReassuranceCard />
         <div className="tablet:gap-25 flex w-full flex-col gap-8">
           {shouldShowStudentSections && (
             <StudyNewsSection
