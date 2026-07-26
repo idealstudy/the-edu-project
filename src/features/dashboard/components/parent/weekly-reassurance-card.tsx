@@ -32,6 +32,18 @@ export const WeeklyReassuranceCard = ({
           응시장·성장 지표가 쌓이면 이 카드에 나타나요
         </p>
       </div>
+
+      {/* MVP-G v4 — 학부모 신뢰 각주(신규). "공유 안 함"을 숨기지 않고 구조로 설명한다. */}
+      <div className="border-gray-4 mt-4 rounded-xl border p-3.5">
+        <p className="font-caption-normal text-gray-9 leading-relaxed">
+          <span aria-hidden className="mr-1">
+            🔒
+          </span>
+          아이가 매일 쓰는 회고와 AI 코멘트는 부모님께 공유되지 않아요. 아이가
+          솔직하게 기록할 수 있도록 선생님과 본인만 볼 수 있는 공간으로
+          운영돼요.
+        </p>
+      </div>
     </section>
   );
 };

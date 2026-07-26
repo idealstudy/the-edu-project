@@ -20,11 +20,14 @@ const SOURCE_BADGE_CLASS: Record<string, string> = {
   teacher: 'bg-green-50 text-green-700',
   'exam-hall': 'bg-orange-2 text-orange-7',
   'open-challenge': 'bg-gray-2 text-gray-8',
+  me: 'bg-gray-white text-orange-7 border border-dashed border-orange-6',
 };
 
 /**
- * 오늘 할 일 — MVP-G v3 학생 대시보드 ③ 블록. 선생님·응시장·오픈챌린지 통합 피드.
+ * 오늘 할 일 — MVP-G v4 학생 대시보드 ③ 블록. 선생님·응시장·오픈챌린지·학생 직접입력(내가) 통합 피드
+ * + 맨 아래 "오늘 회고" 행 고정(v4 회고 루프 — 할 일의 마지막 항목 = 기록).
  * 실측 없는 진행률·리워드 숫자는 렌더하지 않는다(회장 지시 2026-07-23).
+ * ⛔ 백엔드 계약 필요: 회고 저장 API 부재로 회고 행은 아직 CTA 없는 안내 상태.
  */
 export const TodayTodoCard = ({ summary, className }: Props) => {
   const items = summary?.items ?? [];
@@ -105,6 +108,15 @@ export const TodayTodoCard = ({ summary, className }: Props) => {
           </li>
         ))}
       </ul>
+
+      <div className="bg-orange-1 border-orange-3 mt-3.5 flex items-center gap-3 rounded-xl border px-3.5 py-3">
+        <div className="min-w-0 flex-1">
+          <p className="font-body2-heading text-orange-9">오늘 회고</p>
+          <p className="font-caption-normal text-orange-8 mt-0.5">
+            30초면 끝나요 · 곧 열려요 — 기록하면 온도나무가 회복돼요
+          </p>
+        </div>
+      </div>
     </section>
   );
 };

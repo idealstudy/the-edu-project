@@ -42,19 +42,28 @@ export const GrowthBand = ({ summary, className }: Props) => {
     100,
     Math.round((summary.xp / summary.xpToNextLevel) * 100)
   );
+  // v4 — 시듦 단계(1/2/휴면)는 띠 톤을 낮춰 "회고를 쓰면 되돌아온다"는 회복 여지를 시각으로 남긴다.
+  // (죽음 단계 없음 — 회장 확정: 공부 안 하면 시들고, 기록하면 회복, 죽지 않는다.)
+  const isWilting = summary.stage !== 0;
 
   return (
     <section
       className={cn(
-        'bg-gray-white border-gray-4 flex items-center gap-4.5 rounded-2xl border px-5.5 py-3.5',
+        'flex items-center gap-4.5 rounded-2xl border px-5.5 py-3.5',
+        isWilting ? 'bg-gray-1 border-gray-3' : 'bg-gray-white border-gray-4',
         className
       )}
     >
       <TreeIcon stage={summary.stage} size={40} />
-      <span className="font-body2-heading text-gray-12 whitespace-nowrap">
+      <span
+        className={cn(
+          'font-body2-heading whitespace-nowrap',
+          isWilting ? 'text-gray-9' : 'text-gray-12'
+        )}
+      >
         온도나무 Lv.{summary.level}{' '}
         <span className="font-caption-normal text-gray-8">
-          · {summary.daysGrown}일째
+          · {summary.daysGrown}일째{isWilting && ' · 기록하면 회복돼요'}
         </span>
       </span>
       <div className="min-w-0 flex-1">

@@ -14,6 +14,7 @@ import { ExamHallCard } from './exam-hall-card';
 import { GrowthBand } from './growth-band';
 import StudentOnboarding from './student-onboarding';
 import { TodayTodoCard } from './today-todo-card';
+import { WeeklyRetroCard } from './weekly-retro-card';
 
 const DashboardStudent = ({
   initialMemberName,
@@ -71,6 +72,8 @@ const DashboardStudent = ({
           <TodayTodoCard />
         </div>
         <div className="tablet:gap-25 flex w-full flex-col gap-8">
+          {/* MVP-G v4 — 4 · 주간 회고 (⛔ 백엔드 계약 필요) */}
+          <WeeklyRetroCard />
           <QnASection />
           <CalendarSection />
           <StudentTabSection studyRooms={studyRooms} />

@@ -39,7 +39,7 @@ export interface ExamHallSummary {
   ctaSubLabel?: string;
 }
 
-export type TodoSource = 'teacher' | 'exam-hall' | 'open-challenge';
+export type TodoSource = 'teacher' | 'exam-hall' | 'open-challenge' | 'me';
 
 export interface TodoItem {
   id: string;
@@ -59,4 +59,32 @@ export const TODO_SOURCE_LABEL: Record<TodoSource, string> = {
   teacher: '선생님',
   'exam-hall': '응시장',
   'open-challenge': '오픈챌린지',
+  me: '내가',
 };
+
+/**
+ * MVP-G v4 — 회고 루프 (2026-07-22 fable v4 프로토타입)
+ * ⛔ 백엔드 계약 필요: 회고 저장 API·주간 AI 요약 배치가 아직 없다.
+ * 타입 계약만 남기고 값 상수는 만들지 않는다(회장 지시 2026-07-23 원칙 승계).
+ *
+ * ⛔ 회수 필요: 매일 회고는 v4 프로토타입에 부담 2안이 나란히 제시돼 있다
+ *  (㉠ 30초·자동채움+탭 vs ㉡ 서술형 5칸 전부 키보드). 어느 안을 기본값으로 확정할지 회장 결정 필요.
+ *  같은 이유로 "학생이 직접 할 일 꽂기"도 2안(㉮ AI 추천칩 vs ㉯ 완전 자유입력) 미결.
+ *  본 구현은 UI 골격만 두고 실제 폼은 백엔드 계약 이후로 미룬다.
+ */
+export interface DailyRetroSummary {
+  hasWrittenToday: boolean;
+  lastRetroDateLabel?: string;
+}
+
+export interface WeeklyRetroSummary {
+  rangeLabel: string;
+  aiSummary?: string;
+  evidenceTags?: string[];
+}
+
+export interface TeacherAiCommentSummary {
+  weekRangeLabel: string;
+  studentCount: number;
+  comments?: { studentName: string; comment: string; evidenceTags: string[] }[];
+}
