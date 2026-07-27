@@ -3,7 +3,7 @@
 import { type Lesson } from '@/entities/course';
 import { lessonDurationLabel } from '@/features/course/lib/format';
 import { cn } from '@/shared/lib';
-import { CheckCircle2, Lock, PlayCircle } from 'lucide-react';
+import { CheckCircle2, Lock, NotebookPen, PlayCircle } from 'lucide-react';
 
 const PROGRESS_LABEL = {
   NOT_STARTED: null,
@@ -32,11 +32,29 @@ export const LessonRow = ({
 }: LessonRowProps) => {
   const progressLabel = PROGRESS_LABEL[lesson.progressStatus];
   const durationLabel = lessonDurationLabel(lesson.durationSec);
+  /** durationSec=null·thumbnailUrl=null = 영상이 아니라 문제풀이 Day(lesson_problem 연결). */
+  const isProblemSession = lesson.durationSec == null;
+  const problemCountLabel =
+    lesson.problems.length > 0 ? `문제 ${lesson.problems.length}제` : '문제풀이';
 
   const content = (
     <>
-      <span className="relative block h-11 w-[72px] shrink-0 overflow-hidden rounded-[8px] bg-gray-1">
-        {lesson.thumbnailUrl ? (
+      <span
+        className={cn(
+          'relative flex h-11 w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-[8px]',
+          isProblemSession
+            ? lesson.isLocked
+              ? 'bg-gray-1'
+              : 'bg-orange-1'
+            : 'bg-gray-1'
+        )}
+      >
+        {isProblemSession ? (
+          <NotebookPen
+            size={20}
+            className={lesson.isLocked ? 'text-text-sub2' : 'text-key-color-primary'}
+          />
+        ) : lesson.thumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element -- 외부 CDN 썸네일, 다수(23강) 목록 최적화 불필요
           <img
             src={lesson.thumbnailUrl}
@@ -59,10 +77,16 @@ export const LessonRow = ({
             {index + 1}
           </span>
         )}
-        {durationLabel && (
+        {isProblemSession ? (
           <span className="font-caption-normal absolute bottom-0.5 right-0.5 rounded bg-black/70 px-1 text-[10px] leading-tight text-white">
-            {durationLabel}
+            {problemCountLabel}
           </span>
+        ) : (
+          durationLabel && (
+            <span className="font-caption-normal absolute bottom-0.5 right-0.5 rounded bg-black/70 px-1 text-[10px] leading-tight text-white">
+              {durationLabel}
+            </span>
+          )
         )}
       </span>
 
