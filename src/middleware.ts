@@ -64,6 +64,13 @@ function handleAuthGuard(req: NextRequest) {
   return NextResponse.next();
 }
 
+function isPublicCourseLessonsRequest(req: NextRequest) {
+  return (
+    req.method === 'GET' &&
+    /^\/api\/v1\/common\/courses\/[^/]+\/lessons$/.test(req.nextUrl.pathname)
+  );
+}
+
 // 미들웨어 메인함수
 export function middleware(req: NextRequest) {
   const { pathname, origin } = req.nextUrl;
@@ -99,6 +106,11 @@ export function middleware(req: NextRequest) {
 
   // 백엔드 공개 API 경로는 인증 없이 통과 (BFF에서 쿠키는 자동으로 붙음)
   if (pathname.startsWith('/api/v1/public/')) {
+    return NextResponse.next();
+  }
+
+  // 구매 전 커리큘럼 메타데이터 공개. 백엔드가 잠긴 본문·문제는 제거한다.
+  if (isPublicCourseLessonsRequest(req)) {
     return NextResponse.next();
   }
 
