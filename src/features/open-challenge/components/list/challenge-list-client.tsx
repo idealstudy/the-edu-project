@@ -104,6 +104,7 @@ export const ChallengeListClient = ({
                 <ChallengeCard
                   key={challenge.id}
                   challenge={challenge}
+                  isLoggedIn={sessionStatus === 'authenticated'}
                 />
               ))}
             </div>

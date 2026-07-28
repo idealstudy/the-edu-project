@@ -175,6 +175,16 @@ export const useSubmitChallengeAnswerMutation = (challengeId: string) => {
 };
 
 /* ─────────────────────────────────────────────────────
+ * 게스트 무료 채점 (맛보기) — attempt 생성 없이 O/X만 받는다.
+ * 로그인 유저 attempt 흐름(useSubmitChallengeAnswerMutation)과 완전히 분리된 경로.
+ * ────────────────────────────────────────────────────*/
+export const useGuestGradeChallengeMutation = (challengeId: string) =>
+  useMutation({
+    mutationFn: (selectedAnswer: string) =>
+      repository.gradeAsGuest(challengeId, selectedAnswer),
+  });
+
+/* ─────────────────────────────────────────────────────
  * 정답 해설 조회 — Mutation으로 모델링.
  *  호출 자체가 포인트 −30 차감 + usedSolutionView 처리(부수효과)이므로
  *  query 자동 refetch로 중복 차감되지 않도록 사용자가 명시 호출할 때만 실행한다.

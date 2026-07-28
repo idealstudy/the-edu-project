@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { ChallengeShareButton } from '@/features/social';
 import { PUBLIC } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import { Flame, User } from 'lucide-react';
@@ -87,8 +88,11 @@ const QUESTION_NUMBER_PREFIX = /^\s*(\d{1,3})\s*[.)]\s*/;
 
 export const ChallengeCard = ({
   challenge,
+  isLoggedIn = false,
 }: {
   challenge: ChallengeCardData;
+  /** 로그인 유저에게만 카드에서 바로 도전장을 보낼 수 있게 공유 버튼을 노출한다. */
+  isLoggedIn?: boolean;
 }) => {
   const config = SUBJECT_CONFIG[challenge.subject];
   const difficultyConfig = DIFFICULTY_CONFIG[challenge.difficulty];
@@ -148,6 +152,22 @@ export const ChallengeCard = ({
             {difficultyConfig.label}
           </span>
         </div>
+        {isLoggedIn && (
+          <div
+            className="absolute top-3 right-3 z-20"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          >
+            <ChallengeShareButton
+              challengeId={Number(challenge.id)}
+              variant="secondary"
+              size="xsmall"
+              label="도전장"
+            />
+          </div>
+        )}
         {(
           // '퀴즈 티저' — 문제 내용·수식은 숨기고 단원/난이도/정답률·출처로 궁금증 유발.
           <div className="from-orange-1 to-orange-3 relative flex min-h-[200px] w-full flex-col overflow-hidden bg-gradient-to-br px-5 pt-12 pb-5">

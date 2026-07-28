@@ -75,6 +75,25 @@ export const ChallengeShareButton = ({
     }
   };
 
+  // Web Share API 지원 브라우저(대부분 모바일)면 카카오톡·문자 등 네이티브 공유 시트를 띄운다.
+  // 미지원(대부분 데스크톱)이면 기존 클립보드 복사로 폴백한다.
+  const canNativeShare =
+    typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+
+  const handleNativeShare = async () => {
+    if (!shareUrl) return;
+    try {
+      await navigator.share({
+        title: '도전장이 도착했어요',
+        text: '이 문제, 나랑 겨뤄볼래?',
+        url: shareUrl,
+      });
+      trackOcInviteSent({ problem_id: challengeId });
+    } catch {
+      // 사용자가 공유 시트를 취소한 경우 등 — 별도 에러 토스트 없이 조용히 무시한다.
+    }
+  };
+
   return (
     <>
       <Button
@@ -117,32 +136,44 @@ export const ChallengeShareButton = ({
             )}
 
             {invite && (
-              <div className="flex items-stretch gap-2">
-                <div className="border-line-line2 bg-gray-1 flex min-w-0 flex-1 items-center rounded-[8px] border px-3">
-                  <span className="font-caption-normal text-text-sub1 truncate">
-                    {shareUrl}
-                  </span>
+              <>
+                <div className="flex items-stretch gap-2">
+                  <div className="border-line-line2 bg-gray-1 flex min-w-0 flex-1 items-center rounded-[8px] border px-3">
+                    <span className="font-caption-normal text-text-sub1 truncate">
+                      {shareUrl}
+                    </span>
+                  </div>
+                  <Button
+                    size="small"
+                    variant="primary"
+                    className="shrink-0"
+                    onClick={handleCopy}
+                  >
+                    {copied ? (
+                      <Check
+                        size={18}
+                        className="mr-1 shrink-0"
+                      />
+                    ) : (
+                      <Copy
+                        size={18}
+                        className="mr-1 shrink-0"
+                      />
+                    )}
+                    {copied ? '복사됨' : '복사'}
+                  </Button>
                 </div>
-                <Button
-                  size="small"
-                  variant="primary"
-                  className="shrink-0"
-                  onClick={handleCopy}
-                >
-                  {copied ? (
-                    <Check
-                      size={18}
-                      className="mr-1 shrink-0"
-                    />
-                  ) : (
-                    <Copy
-                      size={18}
-                      className="mr-1 shrink-0"
-                    />
-                  )}
-                  {copied ? '복사됨' : '복사'}
-                </Button>
-              </div>
+                {canNativeShare && (
+                  <Button
+                    size="small"
+                    variant="secondary"
+                    className="w-full"
+                    onClick={handleNativeShare}
+                  >
+                    💬 카카오톡·문자로 바로 보내기
+                  </Button>
+                )}
+              </>
             )}
           </Dialog.Body>
 

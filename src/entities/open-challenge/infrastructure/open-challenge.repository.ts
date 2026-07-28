@@ -32,6 +32,7 @@ import {
 } from '@/entities/open-challenge/types';
 import { api } from '@/shared/api';
 import { unwrapEnvelope } from '@/shared/lib/api-utils';
+import { z } from 'zod';
 
 import { dto, payload } from './open-challenge.dto';
 
@@ -606,6 +607,20 @@ const getMyStreak = async () => {
 };
 
 /* ─────────────────────────────────────────────────────
+ * [CREATE] 게스트 무료 채점 (맛보기) — O/X 만 반환, attempt·정답 미저장
+ * ────────────────────────────────────────────────────*/
+const gradeChallengeAsGuest = async (
+  challengeId: string,
+  selectedAnswer: string
+): Promise<{ correct: boolean }> => {
+  const response = await api.public.post(
+    `/public/challenges/${challengeId}/grade`,
+    { selectedAnswer }
+  );
+  return unwrapEnvelope(response, z.object({ correct: z.boolean() }));
+};
+
+/* ─────────────────────────────────────────────────────
  * [READ] 다음 오픈챌린지 조회
  * ────────────────────────────────────────────────────*/
 const getNextChallenge = async (
@@ -631,6 +646,7 @@ export const repository = {
   deleteAdmin: deleteAdminChallenge,
   startAttempt: startChallengeAttempt,
   submitAnswer: submitChallengeAnswer,
+  gradeAsGuest: gradeChallengeAsGuest,
   getSolution: getChallengeSolution,
   getReviews: getChallengeReviews,
   createReview: createChallengeReview,

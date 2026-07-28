@@ -11,6 +11,7 @@ import {
   exportStrokesToDataURL,
   useDrawingUpload,
 } from '@/shared/components/drawing';
+import { ChallengeShareButton } from '@/features/social';
 import { BackButton, Button, Dialog } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
 import { trackOcStart, trackOcSubmit } from '@/shared/lib/analytics';
@@ -19,11 +20,13 @@ import { Bot, ChevronDown, ChevronUp, Pencil, X } from 'lucide-react';
 import {
   useCreateChallengeReviewMutation,
   useFinishAiCoachingSessionMutation,
+  useGuestGradeChallengeMutation,
   useMyOpenChallengeDetailQuery,
   useOpenChallengeDetailQuery,
   useStartChallengeAttemptMutation,
   useSubmitChallengeAnswerMutation,
 } from '../../hooks/use-open-challenge';
+import { SignupSheet } from '../guest/signup-sheet';
 import { AiCoachPanel } from './ai-coach-panel';
 import { ChallengeHistoryDialog } from './challenge-history-dialog';
 import { ChallengeSolveSkeleton } from './challenge-solve-skeleton';
@@ -35,6 +38,25 @@ type ChallengeSolveClientProps = {
 };
 
 const RESULT_STORAGE_KEY_PREFIX = 'open-challenge-result';
+
+// 게스트 무료 풀이 한도 — 정본(mvp-e-입구플로우-v5) 미확정 값이라 회장 권장값(3문제)을 기본으로 둔다.
+const GUEST_FREE_LIMIT = 3;
+const GUEST_SOLVED_COUNT_KEY = 'oc-guest-solved-count';
+
+const readGuestSolvedCount = (): number => {
+  if (typeof window === 'undefined') return 0;
+  const raw = window.localStorage.getItem(GUEST_SOLVED_COUNT_KEY);
+  const parsed = raw ? Number.parseInt(raw, 10) : 0;
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+};
+
+const bumpGuestSolvedCount = (): number => {
+  const next = readGuestSolvedCount() + 1;
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem(GUEST_SOLVED_COUNT_KEY, String(next));
+  }
+  return next;
+};
 
 export const ChallengeSolveClient = ({
   challengeId,
@@ -52,6 +74,14 @@ export const ChallengeSolveClient = ({
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [aiAttemptId, setAiAttemptId] = useState<string | null>(null);
   const [aiSessionId, setAiSessionId] = useState<string | null>(null);
+  // 게스트 무료 풀이(클라 채점 맛보기) 상태
+  const [guestGradeResult, setGuestGradeResult] = useState<boolean | null>(
+    null
+  );
+  const [isSignupSheetOpen, setIsSignupSheetOpen] = useState(false);
+  const [signupTrigger, setSignupTrigger] = useState<
+    'limit-reached' | 'correct-answer'
+  >('correct-answer');
   const choiceSectionRef = useRef<HTMLDivElement>(null);
   // 계측 보조 refs (D2)
   const mountTimeRef = useRef(Date.now());
@@ -67,12 +97,14 @@ export const ChallengeSolveClient = ({
   );
   const startAttemptMutation = useStartChallengeAttemptMutation();
   const submitAnswerMutation = useSubmitChallengeAnswerMutation(challengeId);
+  const guestGradeMutation = useGuestGradeChallengeMutation(challengeId);
   const createReviewMutation = useCreateChallengeReviewMutation();
   const finishAiCoachingSessionMutation = useFinishAiCoachingSessionMutation();
   const { uploadDrawingAsync, isUploading } = useDrawingUpload();
   const isSubmitting =
     startAttemptMutation.isPending ||
     submitAnswerMutation.isPending ||
+    guestGradeMutation.isPending ||
     finishAiCoachingSessionMutation.isPending ||
     isUploading;
   const hasChallengeHistory =
@@ -90,9 +122,44 @@ export const ChallengeSolveClient = ({
     });
   }, [challenge, challengeId, searchParams]);
 
+  const handleGuestSubmit = async () => {
+    if (!selectedAnswer) {
+      setSubmitError('답을 먼저 선택해 주세요.');
+      choiceSectionRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+      choiceSectionRef.current?.focus();
+      return;
+    }
+
+    try {
+      const { correct } = await guestGradeMutation.mutateAsync(selectedAnswer);
+      setGuestGradeResult(correct);
+
+      trackOcSubmit({
+        is_correct: correct,
+        used_solution: false,
+        hint_count: messageCountRef.current,
+        elapsed: Math.round((Date.now() - mountTimeRef.current) / 1000),
+      });
+
+      const solvedCount = bumpGuestSolvedCount();
+      if (solvedCount >= GUEST_FREE_LIMIT) {
+        setSignupTrigger('limit-reached');
+        setIsSignupSheetOpen(true);
+      } else if (correct) {
+        setSignupTrigger('correct-answer');
+        setIsSignupSheetOpen(true);
+      }
+    } catch {
+      // mutation hook 내부 공통 에러 처리(handleApiError)로 위임한다.
+    }
+  };
+
   const handleSubmit = async () => {
     if (!isLoggedIn) {
-      setIsLoginDialogOpen(true);
+      await handleGuestSubmit();
       return;
     }
 
@@ -181,6 +248,7 @@ export const ChallengeSolveClient = ({
   const handleAnswerSelect = (answer: string) => {
     setSelectedAnswer(answer);
     setSubmitError('');
+    setGuestGradeResult(null);
   };
 
   const handleAiAttemptCleared = () => {
@@ -211,8 +279,15 @@ export const ChallengeSolveClient = ({
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* 문제 + 선택지 + 풀이 에디터 */}
         <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-8">
-          <div className="mb-5">
+          <div className="mb-5 flex items-center justify-between gap-3">
             <BackButton />
+            {isLoggedIn && (
+              <ChallengeShareButton
+                challengeId={Number(challengeId)}
+                variant="outlined"
+                size="small"
+              />
+            )}
           </div>
 
           <div className="text-gray-8 mb-3 flex min-w-0 items-center gap-2 text-sm">
@@ -343,6 +418,21 @@ export const ChallengeSolveClient = ({
                 {submitError}
               </p>
             )}
+            {!isLoggedIn && guestGradeResult !== null && (
+              <div
+                data-testid="guest-grade-result"
+                className={
+                  guestGradeResult
+                    ? 'border-orange-3 bg-orange-1 text-orange-8 rounded-xl border px-4 py-3 text-sm font-semibold'
+                    : 'border-line-line1 bg-gray-1 text-text-main rounded-xl border px-4 py-3 text-sm font-semibold'
+                }
+              >
+                {guestGradeResult ? '정답이에요! 🎉' : '아쉽지만 오답이에요.'}
+                <span className="text-gray-8 mt-1 block text-xs font-normal">
+                  레벨·포인트·약점트리는 가입하면 이 결과부터 쌓여요.
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -362,7 +452,11 @@ export const ChallengeSolveClient = ({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={!selectedAnswer || isSubmitting}
+            disabled={
+              !selectedAnswer ||
+              isSubmitting ||
+              (!isLoggedIn && guestGradeResult !== null)
+            }
             data-testid="challenge-submit-button"
             className="h-9 px-5 text-sm"
           >
@@ -415,6 +509,13 @@ export const ChallengeSolveClient = ({
         challenge={challenge}
         isOpen={isHistoryOpen}
         onOpenChange={setIsHistoryOpen}
+      />
+
+      <SignupSheet
+        isOpen={isSignupSheetOpen}
+        onOpenChange={setIsSignupSheetOpen}
+        trigger={signupTrigger}
+        challengeId={challengeId}
       />
 
       <Dialog
