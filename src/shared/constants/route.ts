@@ -48,6 +48,9 @@ const DASHBOARD = {
   PARENT: '/dashboard/parent',
   INQUIRY: '/dashboard/inquiry',
   QNA: '/dashboard/qna',
+  WRONG_ANSWERS: '/dashboard/student/wrong-answers',
+  WRONG_ANSWER_REVIEW: (id: number) =>
+    `/dashboard/student/wrong-answers/${id}`,
 
   /** 사용자 역할에 맞는 실제 대시보드 경로를 반환합니다. */
   byRole: (role: DashboardRole): string => {

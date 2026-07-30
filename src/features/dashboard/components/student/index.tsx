@@ -14,6 +14,7 @@ import { ExamHallCard } from './exam-hall-card';
 import { GrowthBand } from './growth-band';
 import StudentOnboarding from './student-onboarding';
 import { TodayTodoCard } from './today-todo-card';
+import { TodayProblemsSection } from './today-problems-section';
 import { WeeklyRetroCard } from './weekly-retro-card';
 
 const DashboardStudent = ({
@@ -67,6 +68,7 @@ const DashboardStudent = ({
         {/* MVP-G v3 — ① 응시장 → ② 성장 → ③ 오늘 할 일
             ⛔ 백엔드 계약 필요 — 실 데이터 없어 summary 없이 "준비 중" 빈 상태로 렌더 */}
         <div className="flex w-full flex-col gap-4">
+          <TodayProblemsSection />
           <ExamHallCard />
           <GrowthBand />
           <TodayTodoCard />

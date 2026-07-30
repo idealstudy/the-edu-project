@@ -272,3 +272,22 @@ export function classifyWithdrawError(code?: string): ApiErrorType {
       return 'UNKNOWN';
   }
 }
+
+// MVP-G 오답 회독 관련 에러
+export function classifyWrongAnswerError(code?: string): ApiErrorType {
+  switch (code) {
+    case 'WRONG_ANSWER_ALREADY_GRADUATED':
+    case 'WRONG_ANSWER_ALREADY_REVIEWED_TODAY':
+    case 'WRONG_ANSWER_REVIEW_NOT_DUE':
+      return 'FIELD';
+
+    case 'WRONG_ANSWER_NOT_FOUND':
+      return 'CONTEXT';
+
+    case 'MEMBER_NOT_EXIST':
+      return 'AUTH';
+
+    default:
+      return 'UNKNOWN';
+  }
+}
