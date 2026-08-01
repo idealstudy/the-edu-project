@@ -9,6 +9,9 @@ import { Check } from 'lucide-react';
 import { QuestionHeader } from '../question-header';
 
 const SUBJECT_LABEL: Record<TreeSubjectGroup['subject'], string> = {
+  MIDDLE_MATH: '중학 수학',
+  COMMON_MATH_1: '공통수학Ⅰ',
+  COMMON_MATH_2: '공통수학Ⅱ',
   MATH_1: '수학Ⅰ',
   MATH_2: '수학Ⅱ',
   CALCULUS: '미적분',
@@ -90,7 +93,7 @@ export const WeakUnitsStep = ({
               aria-pressed={on}
               onClick={() => onToggle(node.nodeId)}
               className={cn(
-                'flex min-h-[44px] items-center gap-2 rounded-full border px-3.5 py-2.5 font-label-heading transition',
+                'font-label-heading flex min-h-[44px] items-center gap-2 rounded-full border px-3.5 py-2.5 transition',
                 'focus-visible:ring-key-color-primary focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none',
                 on
                   ? 'border-key-color-primary bg-background-orange text-orange-10'
@@ -118,8 +121,8 @@ export const WeakUnitsStep = ({
       </div>
 
       <p className="font-caption-normal text-text-sub2">
-        <b className="text-key-color-primary">{selectedIds.length}개</b> 선택됨 ·
-        모르겠으면 비워두고 진단부터 받아도 돼요
+        <b className="text-key-color-primary">{selectedIds.length}개</b> 선택됨
+        · 모르겠으면 비워두고 진단부터 받아도 돼요
       </p>
     </div>
   );

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
+import { UnitNoteEntryCard } from '@/features/unit-note/components/unit-note-entry-card';
 import { useMemberStore } from '@/store';
 
 import { useReceivedConnectionList } from '../../connect/hooks/use-connection';
@@ -13,8 +14,8 @@ import { ConfirmParentRequestDialog } from './confirm-dialog';
 import { ExamHallCard } from './exam-hall-card';
 import { GrowthBand } from './growth-band';
 import StudentOnboarding from './student-onboarding';
-import { TodayTodoCard } from './today-todo-card';
 import { TodayProblemsSection } from './today-problems-section';
+import { TodayTodoCard } from './today-todo-card';
 import { WeeklyRetroCard } from './weekly-retro-card';
 
 const DashboardStudent = ({
@@ -71,6 +72,7 @@ const DashboardStudent = ({
           <TodayProblemsSection />
           <ExamHallCard />
           <GrowthBand />
+          <UnitNoteEntryCard />
           <TodayTodoCard />
         </div>
         <div className="tablet:gap-25 flex w-full flex-col gap-8">

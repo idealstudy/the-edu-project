@@ -49,8 +49,9 @@ const DASHBOARD = {
   INQUIRY: '/dashboard/inquiry',
   QNA: '/dashboard/qna',
   WRONG_ANSWERS: '/dashboard/student/wrong-answers',
-  WRONG_ANSWER_REVIEW: (id: number) =>
-    `/dashboard/student/wrong-answers/${id}`,
+  WRONG_ANSWER_REVIEW: (id: number) => `/dashboard/student/wrong-answers/${id}`,
+  UNIT_NOTES: '/dashboard/student/unit-notes',
+  UNIT_NOTE_ROOM: (id: number) => `/dashboard/student/unit-notes/${id}`,
 
   /** 사용자 역할에 맞는 실제 대시보드 경로를 반환합니다. */
   byRole: (role: DashboardRole): string => {

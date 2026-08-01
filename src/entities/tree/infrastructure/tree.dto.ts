@@ -35,6 +35,7 @@ const TreeNodeDtoSchema = z.object({
   diagnosedScore: z.number().nullable().optional().default(null),
   attemptCount: z.number().optional().default(0),
   correctCount: z.number().optional().default(0),
+  unitNotePageCount: z.number().optional().default(0),
 });
 
 /* ─────────────────────────────────────────────────────

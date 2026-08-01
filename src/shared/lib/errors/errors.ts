@@ -291,3 +291,23 @@ export function classifyWrongAnswerError(code?: string): ApiErrorType {
       return 'UNKNOWN';
   }
 }
+
+// MVP-G 단권화 관련 에러
+export function classifyUnitNoteError(code?: string): ApiErrorType {
+  switch (code) {
+    case 'UNIT_NOTE_POSITION_INVALID':
+      return 'FIELD';
+
+    case 'UNIT_NOTE_NODE_NOT_FOUND':
+    case 'UNIT_NOTE_PAGE_NOT_FOUND':
+    case 'MEDIA_NOT_EXIST':
+      return 'CONTEXT';
+
+    case 'MEDIA_NOT_OWNED':
+    case 'MEMBER_NOT_EXIST':
+      return 'AUTH';
+
+    default:
+      return 'UNKNOWN';
+  }
+}

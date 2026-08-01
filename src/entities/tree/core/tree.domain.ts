@@ -4,6 +4,9 @@ import { z } from 'zod';
  * 약점 트리 과목 Domain
  * ────────────────────────────────────────────────────*/
 const TreeSubjectSchema = z.enum([
+  'MIDDLE_MATH',
+  'COMMON_MATH_1',
+  'COMMON_MATH_2',
   'MATH_1',
   'MATH_2',
   'CALCULUS',
@@ -43,6 +46,7 @@ const TreeNodeSchema = z.object({
   diagnosedScore: z.number().nullable(),
   attemptCount: z.number(),
   correctCount: z.number(),
+  unitNotePageCount: z.number(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -53,6 +57,7 @@ const UserNodeStatusSchema = z.object({
   diagnosedScore: z.number().nullable(),
   attemptCount: z.number(),
   correctCount: z.number(),
+  unitNotePageCount: z.number(),
 });
 
 /* ─────────────────────────────────────────────────────

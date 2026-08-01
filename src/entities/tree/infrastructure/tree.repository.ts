@@ -16,6 +16,9 @@ import { dto } from './tree.dto';
  * 변환 상수 / Helper
  * ────────────────────────────────────────────────────*/
 const SUBJECT_ORDER: TreeSubject[] = [
+  'MIDDLE_MATH',
+  'COMMON_MATH_1',
+  'COMMON_MATH_2',
   'MATH_1',
   'MATH_2',
   'CALCULUS',
@@ -26,6 +29,12 @@ const SUBJECT_ORDER: TreeSubject[] = [
 
 const toSubject = (subject: string): TreeSubject => {
   switch (subject.toUpperCase()) {
+    case 'MIDDLE_MATH':
+      return 'MIDDLE_MATH';
+    case 'COMMON_MATH_1':
+      return 'COMMON_MATH_1';
+    case 'COMMON_MATH_2':
+      return 'COMMON_MATH_2';
     case 'MATH_1':
       return 'MATH_1';
     case 'MATH_2':
