@@ -66,8 +66,7 @@ const DashboardStudent = ({
         {!studentStepsCompleted && (
           <StudentOnboarding completionStatus={studentCompletionStatus} />
         )}
-        {/* MVP-G v3 — ① 응시장 → ② 성장 → ③ 오늘 할 일
-            ⛔ 백엔드 계약 필요 — 실 데이터 없어 summary 없이 "준비 중" 빈 상태로 렌더 */}
+        {/* MVP-G v3 — ① 응시장 → ② 성장 → ③ 오늘 할 일 */}
         <div className="flex w-full flex-col gap-4">
           <TodayProblemsSection />
           <ExamHallCard />
@@ -76,7 +75,7 @@ const DashboardStudent = ({
           <TodayTodoCard />
         </div>
         <div className="tablet:gap-25 flex w-full flex-col gap-8">
-          {/* MVP-G v4 — 4 · 주간 회고 (⛔ 백엔드 계약 필요) */}
+          {/* MVP-G v4 — 4 · 주간 회고 */}
           <WeeklyRetroCard />
           <QnASection />
           <CalendarSection />

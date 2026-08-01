@@ -311,3 +311,41 @@ export function classifyUnitNoteError(code?: string): ApiErrorType {
       return 'UNKNOWN';
   }
 }
+
+// MVP-G 주간 할 일 관련 에러
+export function classifyTodoError(code?: string): ApiErrorType {
+  switch (code) {
+    case 'TODO_SKIP_REASON_REQUIRED':
+    case 'TODO_INVALID_STATUS':
+    case 'TODO_ALREADY_RESOLVED':
+      return 'FIELD';
+
+    case 'TODO_NOT_FOUND':
+      return 'CONTEXT';
+
+    case 'TODO_TEACHER_CONNECTION_REQUIRED':
+    case 'MEMBER_NOT_EXIST':
+      return 'AUTH';
+
+    default:
+      return 'UNKNOWN';
+  }
+}
+
+// MVP-G 매일 회고 관련 에러
+export function classifyRetrospectError(code?: string): ApiErrorType {
+  switch (code) {
+    case 'RETROSPECT_CONTENT_REQUIRED':
+    case 'RETROSPECT_ALREADY_EXISTS':
+      return 'FIELD';
+
+    case 'RETROSPECT_NOT_FOUND':
+      return 'CONTEXT';
+
+    case 'MEMBER_NOT_EXIST':
+      return 'AUTH';
+
+    default:
+      return 'UNKNOWN';
+  }
+}

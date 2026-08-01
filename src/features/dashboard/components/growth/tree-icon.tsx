@@ -1,24 +1,23 @@
-import type { TreeStage } from '../../mock/mvp-g-dashboard.mock';
+import type { GrowthStage } from '@/entities/growth';
 
 type Props = {
-  stage: TreeStage;
+  stage: GrowthStage;
   size?: number;
   className?: string;
 };
 
 const STAGE_PRESET: Record<
-  TreeStage,
+  GrowthStage,
   { leaf: string; stem: string; opacity: number }
 > = {
-  0: { leaf: '#ff4805', stem: '#8a6a52', opacity: 1 },
-  1: { leaf: '#ffd0c0', stem: '#8a6a52', opacity: 1 },
-  2: { leaf: '#e8d5cd', stem: '#9a8a7c', opacity: 1 },
-  '3-dormant': { leaf: '#e5e3df', stem: '#a8a29a', opacity: 0.9 },
+  HEALTHY: { leaf: '#ff4805', stem: '#8a6a52', opacity: 1 },
+  WILTING: { leaf: '#ffd0c0', stem: '#8a6a52', opacity: 1 },
+  WITHERED: { leaf: '#e8d5cd', stem: '#9a8a7c', opacity: 1 },
+  DORMANT: { leaf: '#e5e3df', stem: '#a8a29a', opacity: 0.9 },
 };
 
 /**
- * 온도나무 아이콘 — MVP-G v3 성장 표현 승계.
- * ⛔ 백엔드 계약 필요: stage 판정 로직(며칠 미접속 → 시들기)은 게이미피케이션 도메인 확정 후 연결.
+ * 온도나무 아이콘 — 백엔드의 성장 단계 4종을 MVP-G v3 표현에 매핑한다.
  */
 export const TreeIcon = ({ stage, size = 46, className }: Props) => {
   const preset = STAGE_PRESET[stage];
@@ -39,7 +38,13 @@ export const TreeIcon = ({ stage, size = 46, className }: Props) => {
         fill="none"
         strokeLinecap="round"
       />
-      <ellipse cx={50} cy={26} rx={13} ry={20} fill={preset.leaf} />
+      <ellipse
+        cx={50}
+        cy={26}
+        rx={13}
+        ry={20}
+        fill={preset.leaf}
+      />
       <ellipse
         cx={33}
         cy={38}
