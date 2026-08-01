@@ -1,5 +1,6 @@
 import { useRouter } from 'next/navigation';
 
+import { levelKeys } from '@/entities/level';
 import {
   type AiCoachingPreferencePayload,
   type ChallengeListParams,
@@ -14,13 +15,20 @@ import {
   openChallengeKeys,
   repository,
 } from '@/entities/open-challenge';
-import { levelKeys } from '@/entities/level';
 import { pointKeys } from '@/entities/point';
 import { treeKeys } from '@/entities/tree';
 import { PUBLIC } from '@/shared/constants';
 import { handleApiError } from '@/shared/lib/errors/error-handler';
 import { classifyOpenChallengeError } from '@/shared/lib/errors/errors';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+
+// 404(존재하지 않는 챌린지)는 재시도해도 결과가 바뀌지 않으므로 즉시 실패 처리한다.
+// 그 외(네트워크/5xx)는 기본 재시도 정책을 유지한다.
+const retryUnlessNotFound = (failureCount: number, error: unknown) => {
+  if (axios.isAxiosError(error) && error.response?.status === 404) return false;
+  return failureCount < 3;
+};
 
 const ERROR_REDIRECT_DELAY_MS = 1500;
 
@@ -46,6 +54,7 @@ export const useOpenChallengeDetailQuery = (
     queryKey: openChallengeKeys.detail(id),
     queryFn: () => repository.getDetail(id),
     enabled: (options?.enabled ?? true) && id.length > 0,
+    retry: retryUnlessNotFound,
   });
 
 export const useChallengeReviewsQuery = (
