@@ -6,11 +6,12 @@ import Link from 'next/link';
 
 import { Button, StatusBadge, showBottomToast } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
-import { Swords } from 'lucide-react';
+import { Link2, Swords } from 'lucide-react';
 
 import { useMyChallengeInvitesQuery } from '../../hooks';
 import { inviteStatusLabel } from '../../lib/labels';
 import { ChallengeResultDialog } from './challenge-result-dialog';
+import { ChallengeShareButton } from './challenge-share-button';
 
 const STATUS_VARIANT = {
   OPEN: 'default',
@@ -22,8 +23,12 @@ const STATUS_VARIANT = {
  * 내 도전 기록 — 내가 보낸 도전장 목록 + 상태/링크 복사
  * ────────────────────────────────────────────────────*/
 export const MyChallengeInvites = () => {
-  const { data: invites, isLoading, isError, refetch } =
-    useMyChallengeInvitesQuery();
+  const {
+    data: invites,
+    isLoading,
+    isError,
+    refetch,
+  } = useMyChallengeInvitesQuery();
   const [resultToken, setResultToken] = useState<string | null>(null);
 
   const handleCopy = async (token: string) => {
@@ -100,20 +105,44 @@ export const MyChallengeInvites = () => {
                       label={inviteStatusLabel(invite.status)}
                     />
                     {invite.status === 'COMPLETED' ? (
-                      <Button
-                        size="xsmall"
-                        onClick={() => setResultToken(invite.shareToken)}
-                      >
-                        결과 보기
-                      </Button>
+                      <>
+                        {/* 완료된 도전장은 "결과 보기"가 주 동작 — 4-C 비교 화면 진입 */}
+                        <Button
+                          size="xsmall"
+                          onClick={() => setResultToken(invite.shareToken)}
+                        >
+                          결과 보기
+                        </Button>
+                        {/* 재도전 유도 — 같은 챌린지에 새 도전장(idempotent) 발급 */}
+                        <ChallengeShareButton
+                          challengeId={invite.challengeId}
+                          variant="outlined"
+                          size="xsmall"
+                          label="다시 도전"
+                        />
+                      </>
                     ) : (
-                      <Button
-                        variant="outlined"
-                        size="xsmall"
-                        onClick={() => handleCopy(invite.shareToken)}
-                      >
-                        링크 복사
-                      </Button>
+                      <>
+                        {/* 진행 중인 도전장은 "도전장 보내기"가 주 동작(공유 다이얼로그) —
+                            같은 챌린지에 이미 OPEN 도전장이 있으면 백엔드가 idempotent 하게
+                            기존 shareToken 을 그대로 재사용해 새 레코드가 쌓이지 않는다. */}
+                        <ChallengeShareButton
+                          challengeId={invite.challengeId}
+                          variant="primary"
+                          size="xsmall"
+                          label="도전장 보내기"
+                        />
+                        {/* 링크 복사는 보조 동작으로 격하 — 아이콘 버튼 */}
+                        <Button
+                          variant="outlined"
+                          size="xsmall"
+                          aria-label="도전장 링크 복사"
+                          className="px-2"
+                          onClick={() => handleCopy(invite.shareToken)}
+                        >
+                          <Link2 size={16} />
+                        </Button>
+                      </>
                     )}
                   </div>
                 </li>

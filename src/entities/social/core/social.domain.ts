@@ -14,6 +14,10 @@ const FriendshipSchema = z.object({
   addresseeId: z.number(),
   state: FriendshipStateSchema,
   regDate: z.string().nullable(),
+  requesterName: z.string().nullable(),
+  requesterProfileImageUrl: z.string().nullable(),
+  addresseeName: z.string().nullable(),
+  addresseeProfileImageUrl: z.string().nullable(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -51,12 +55,20 @@ const ChallengeInvitePreviewSchema = z.object({
  * 도전장 결과 비교 (컨닝 가드 통과 후) Domain
  *  GET /api/common/challenge-invites/{token}/result
  * ────────────────────────────────────────────────────*/
+const AttemptSummarySchema = z.object({
+  isCorrect: z.boolean().nullable(),
+  timeSpentSeconds: z.number().nullable(),
+  solutionImageUrl: z.string().nullable(),
+});
+
 const ChallengeInviteResultSchema = z.object({
   shareToken: z.string(),
   status: InviteStatusSchema,
   challengeId: z.number(),
   myCorrect: z.boolean().nullable(),
   opponentCorrect: z.boolean().nullable(),
+  myAttempt: AttemptSummarySchema.nullable(),
+  opponentAttempt: AttemptSummarySchema.nullable(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -77,5 +89,6 @@ export const domain = {
   challengeInvite: ChallengeInviteSchema,
   challengeInvitePreview: ChallengeInvitePreviewSchema,
   challengeInviteResult: ChallengeInviteResultSchema,
+  attemptSummary: AttemptSummarySchema,
   memberSearchResult: MemberSearchResultSchema,
 };

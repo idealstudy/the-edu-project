@@ -1,22 +1,13 @@
 import { useRouter } from 'next/navigation';
 
 import { getCurrentMemberOptions, repository } from '@/entities/member';
+import { resolveLoginDestination } from '@/features/auth/lib/redirect';
 import { LoginBody } from '@/features/auth/types';
 import { useSession } from '@/providers/session/session-context';
 import { api } from '@/shared/api';
 import { trackAuthLoginSuccess } from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-
-/**
- * 오픈 리다이렉트 가드: 앱 내부 절대경로(`/...`)만 허용한다.
- * 프로토콜 상대경로(`//`)·외부 URL(`http(s):`)·백슬래시 트릭은 차단.
- */
-const sanitizeRedirect = (raw?: string | null): string | null => {
-  if (!raw || !raw.startsWith('/') || raw.startsWith('//')) return null;
-  if (raw.includes('\\') || raw.startsWith('/\t')) return null;
-  return raw;
-};
 
 // 로그인 — redirectTo 가 주어지면(예: 도전장 링크) 로그인 후 그 경로로 복귀한다.
 export const useLogin = (redirectTo?: string | null) => {
@@ -39,12 +30,13 @@ export const useLogin = (redirectTo?: string | null) => {
       // 역할별 랜딩 — 학생은 개인화 허브(/learning)로
       const roleDest =
         member?.role === 'ROLE_STUDENT' ? '/learning' : '/dashboard';
-      const safeRedirect = sanitizeRedirect(redirectTo);
-      // 프로필 미완성(ROLE_MEMBER)은 역할선택을 우선. 그 외에는 안전한 redirect 우선.
-      const dest =
-        member?.role === 'ROLE_MEMBER'
-          ? '/select-role'
-          : (safeRedirect ?? roleDest);
+      // 프로필 미완성(ROLE_MEMBER)은 역할선택을 우선하되, redirect 를 쿼리로 들고 가
+      // 프로필 완성 후 SocialSelectRole 이 이어서 그 경로로 복귀시킨다.
+      const dest = resolveLoginDestination({
+        role: member?.role,
+        redirectTo,
+        roleDest,
+      });
       router.replace(dest);
     },
   });

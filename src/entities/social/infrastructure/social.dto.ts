@@ -14,6 +14,10 @@ const FriendshipDtoSchema = z.object({
   addresseeId: z.number(),
   state: z.enum(['PENDING', 'ACCEPTED']),
   regDate: NullableString,
+  requesterName: NullableString,
+  requesterProfileImageUrl: NullableString,
+  addresseeName: NullableString,
+  addresseeProfileImageUrl: NullableString,
 });
 
 /* ─────────────────────────────────────────────────────
@@ -44,12 +48,20 @@ const ChallengeInvitePreviewDtoSchema = z.object({
 /* ─────────────────────────────────────────────────────
  * 도전장 결과 비교 DTO (ChallengeInviteResultResponse)
  * ────────────────────────────────────────────────────*/
+const AttemptSummaryDtoSchema = z.object({
+  isCorrect: z.boolean().nullable().optional(),
+  timeSpentSeconds: z.number().nullable().optional(),
+  solutionImageUrl: NullableString,
+});
+
 const ChallengeInviteResultDtoSchema = z.object({
   shareToken: z.string(),
   status: z.enum(['OPEN', 'ACCEPTED', 'COMPLETED']),
   challengeId: z.number(),
   myCorrect: z.boolean().nullable().optional(),
   opponentCorrect: z.boolean().nullable().optional(),
+  myAttempt: AttemptSummaryDtoSchema.nullable().optional(),
+  opponentAttempt: AttemptSummaryDtoSchema.nullable().optional(),
 });
 
 /* ─────────────────────────────────────────────────────

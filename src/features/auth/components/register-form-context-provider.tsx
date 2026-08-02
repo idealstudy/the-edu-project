@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
+import { buildPostSignupLoginQuery } from '@/features/auth/lib/redirect';
 import { Form } from '@/shared/components/ui/form';
 import { PUBLIC } from '@/shared/constants';
 import { useCheckboxGroup } from '@/shared/hooks/use-checkbox-group';
@@ -56,6 +57,9 @@ export const RegisterFormContextProvider = ({
   const searchParams = useSearchParams();
   const inviteToken = searchParams.get('token');
   const from = searchParams.get('from');
+  // 도전장 등에서 넘어온 복귀 경로 — 스터디룸 초대의 `token`과는 별개 파라미터.
+  // 회원가입 완료 후 로그인 페이지로 넘어갈 때 끝까지 들고 간다(로그인 후 이 경로로 복귀).
+  const redirect = searchParams.get('redirect');
 
   const form = useForm<RegisterForm>({
     resolver: zodResolver(RegisterForm),
@@ -96,10 +100,11 @@ export const RegisterFormContextProvider = ({
         onSuccess: () => {
           // 회원가입 성공 이벤트
           trackAuthSignupSuccess(data.role ?? null, 'email');
-          const params = new URLSearchParams();
-          if (inviteToken) params.set('token', inviteToken);
-          if (from) params.set('from', from);
-          const query = params.toString();
+          const query = buildPostSignupLoginQuery({
+            inviteToken,
+            from,
+            redirect,
+          });
           router.replace(
             query ? `${PUBLIC.CORE.LOGIN}?${query}` : PUBLIC.CORE.LOGIN
           );

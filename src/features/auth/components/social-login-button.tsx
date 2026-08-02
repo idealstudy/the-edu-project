@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { useSearchParams } from 'next/navigation';
 
+import { resolveOAuthFrom } from '@/features/auth/lib/redirect';
 import { env, serverEnv } from '@/shared/constants/api';
 import { trackAuthKakaoLoginClick } from '@/shared/lib/analytics';
 
@@ -11,7 +12,13 @@ export default function SocialLoginButton() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
   const inviteToken = searchParams.get('token');
-  const from = searchParams.get('from');
+  // 도전장 등 이메일 로그인 경로가 쓰는 `redirect`도 함께 받아 `from`으로 승계한다
+  // (redirect.ts#resolveOAuthFrom — 카카오 state에 redirect가 실리지 않아 유실되던
+  // 버그의 수정. 백엔드는 이미 `from`을 select-role/홈 경로로 그대로 복원해준다).
+  const from = resolveOAuthFrom({
+    from: searchParams.get('from'),
+    redirect: searchParams.get('redirect'),
+  });
 
   const [kakaoAuthUrl, setKakaoAuthUrl] = useState('');
 
