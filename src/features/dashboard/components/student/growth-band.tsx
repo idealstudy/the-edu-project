@@ -1,52 +1,51 @@
 'use client';
 
-import type { GrowthStage } from '@/entities/growth';
+import Link from 'next/link';
+
 import { useStudentGrowthQuery } from '@/features/dashboard/hooks/use-growth-query';
 import { Skeleton } from '@/shared/components/loading';
 import { Button } from '@/shared/components/ui';
+import { PRIVATE } from '@/shared/constants/route';
 import { cn } from '@/shared/lib';
-import { Flame, RefreshCw } from 'lucide-react';
-
-import { TreeIcon } from '../growth/tree-icon';
+import { Flame, RefreshCw, Sprout } from 'lucide-react';
 
 type Props = {
   className?: string;
 };
 
-const STAGE_COPY: Record<GrowthStage, { label: string; description: string }> =
-  {
-    HEALTHY: {
-      label: '건강',
-      description: '오늘도 기록을 이어가고 있어요',
-    },
-    WILTING: {
-      label: '조금 시듦',
-      description: '오늘 기록하면 바로 건강해져요',
-    },
-    WITHERED: {
-      label: '많이 시듦',
-      description: '기록을 다시 시작하면 한 단계씩 회복해요',
-    },
-    DORMANT: {
-      label: '휴면',
-      description: '나무와 경험치는 그대로예요. 다시 깨워보세요',
-    },
-  };
+const TREE_CELLS = Array.from({ length: 12 }, (_, index) => index);
 
 const GrowthBandLoading = ({ className }: Props) => (
   <section
     className={cn(
-      'bg-gray-white border-gray-4 flex items-center gap-4 rounded-2xl border px-5.5 py-3.5',
+      'bg-gray-white border-gray-4 flex items-center gap-4 rounded-xl border p-5',
       className
     )}
     data-testid="student-growth-loading"
   >
-    <Skeleton.Block className="size-10 shrink-0 rounded-full" />
+    <Skeleton.Block className="h-20 w-24 shrink-0 rounded-xl" />
     <div className="flex min-w-0 flex-1 flex-col gap-2">
-      <Skeleton.Block className="h-4 w-40" />
+      <Skeleton.Block className="h-6 w-48" />
+      <Skeleton.Block className="h-4 w-56" />
       <Skeleton.Block className="h-2 w-full" />
     </div>
   </section>
+);
+
+const WeaknessTreeMiniGrid = () => (
+  <div
+    className="grid shrink-0 grid-cols-4 gap-1"
+    role="img"
+    aria-label="약점트리 정복도 데이터 미연결"
+    data-testid="student-growth-tree-grid"
+  >
+    {TREE_CELLS.map((cell) => (
+      <span
+        key={cell}
+        className="bg-gray-2 size-5 rounded-md"
+      />
+    ))}
+  </div>
 );
 
 export const GrowthBand = ({ className }: Props) => {
@@ -60,7 +59,7 @@ export const GrowthBand = ({ className }: Props) => {
     return (
       <section
         className={cn(
-          'bg-gray-white border-gray-4 flex flex-wrap items-center gap-3 rounded-2xl border px-5.5 py-4',
+          'bg-gray-white border-gray-4 flex flex-wrap items-center gap-3 rounded-xl border p-5',
           className
         )}
         data-testid="student-growth-error"
@@ -72,7 +71,7 @@ export const GrowthBand = ({ className }: Props) => {
         />
         <div className="min-w-0 flex-1">
           <p className="font-body2-heading text-gray-10">
-            온도나무를 불러오지 못했어요
+            성장 지표를 불러오지 못했어요
           </p>
           <p className="font-caption-normal text-gray-8 mt-0.5">
             잠시 후 다시 시도해주세요.
@@ -90,78 +89,101 @@ export const GrowthBand = ({ className }: Props) => {
   }
 
   const growth = growthQuery.data;
-  const stageCopy = STAGE_COPY[growth.stage];
   const xpRatio = Math.min(
     100,
     Math.round((growth.xp / growth.xpToNextLevel) * 100)
   );
-  const isWilting = growth.stage !== 'HEALTHY';
+  const isEmpty = growth.totalExperience === 0;
+
+  if (isEmpty) {
+    return (
+      <section
+        className={cn(
+          'bg-gray-white border-gray-4 flex flex-col items-center rounded-xl border p-6 text-center',
+          className
+        )}
+        data-testid="student-growth-empty"
+      >
+        <WeaknessTreeMiniGrid />
+        <Sprout
+          size={24}
+          className="text-orange-6 mt-4"
+          aria-hidden
+        />
+        <h3 className="font-body1-heading text-gray-11 mt-2">
+          아직 회색이에요. 첫 문제를 풀면
+          <br />내 트리가 오렌지로 데워지기 시작해요
+        </h3>
+        <p className="font-caption-normal text-gray-7 mt-2">
+          제대로 푼 문제만 트리를 채워요 — 찍은 건 반영하지 않아요.
+        </p>
+        <Link
+          href={PRIVATE.TREE.INDEX}
+          className="bg-orange-7 hover:bg-orange-8 border-gray-11 mt-4 rounded-lg border px-5 py-3 text-sm font-bold text-white"
+        >
+          첫 진단 1세트 풀고 내 트리 깨우기 (+0xp)
+        </Link>
+      </section>
+    );
+  }
 
   return (
     <section
       className={cn(
-        'tablet:flex-nowrap flex flex-wrap items-center gap-x-4.5 gap-y-3 rounded-2xl border px-5.5 py-3.5',
-        isWilting ? 'bg-gray-1 border-gray-3' : 'bg-gray-white border-gray-4',
+        'bg-gray-white border-gray-4 flex flex-col gap-5 rounded-xl border p-5 sm:flex-row sm:items-center',
         className
       )}
-      aria-label={`온도나무 ${stageCopy.label}`}
+      aria-label={`성장 레벨 ${growth.level}, ${growth.streakDays}일 연속`}
       data-testid="student-growth-band"
     >
-      <TreeIcon
-        stage={growth.stage}
-        size={42}
-      />
-      <div className="tablet:flex tablet:items-center tablet:gap-4 min-w-0 flex-1">
-        <div className="shrink-0">
-          <p
-            className={cn(
-              'font-body2-heading whitespace-nowrap',
-              isWilting ? 'text-gray-9' : 'text-gray-12'
-            )}
-          >
-            온도나무 Lv.{growth.level}
-            <span className="font-caption-normal text-gray-8 ml-1.5">
-              · {growth.daysGrown}일째
-            </span>
-          </p>
-          <p className="font-caption-normal text-gray-8 mt-0.5">
-            {stageCopy.label} · {stageCopy.description}
-          </p>
-        </div>
-        <div className="tablet:mt-0 mt-2 min-w-0 flex-1">
-          <div
-            className="bg-gray-2 h-2 w-full overflow-hidden rounded-full"
-            role="progressbar"
-            aria-label="다음 레벨 경험치"
-            aria-valuemin={0}
-            aria-valuemax={growth.xpToNextLevel}
-            aria-valuenow={growth.xp}
-          >
-            <div
-              className="bg-orange-7 h-full rounded-full"
-              style={{ width: `${xpRatio}%` }}
-            />
-          </div>
-          <p className="font-caption-normal text-gray-8 mt-1 tabular-nums">
-            {growth.xp} / {growth.xpToNextLevel} xp · 누적{' '}
-            {growth.totalExperience} xp
-          </p>
-        </div>
+      <div className="flex shrink-0 flex-col items-center gap-2">
+        <WeaknessTreeMiniGrid />
+        <span className="font-caption-heading text-gray-7">정복도 0%</span>
       </div>
-      <div className="tablet:ml-0 ml-14 flex shrink-0 items-center gap-4">
-        {isWilting && (
-          <span className="font-caption-heading text-gray-8 whitespace-nowrap">
-            시듦 {growth.wiltingDays}일
+
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+          <h3 className="text-gray-12 text-2xl font-extrabold">
+            Lv.{growth.level}
+          </h3>
+          <span className="font-caption-normal text-gray-7">
+            수학 정복도 0% · {growth.daysGrown}일째 성장
           </span>
-        )}
-        <span className="text-orange-7 font-body2-heading flex items-center gap-1 whitespace-nowrap">
+        </div>
+        <p className="text-orange-7 mt-1 flex items-center gap-1.5 text-sm font-bold">
           <Flame
             size={17}
             aria-hidden
           />
-          {growth.streakDays}일
-          <span className="font-caption-normal text-gray-8">연속</span>
-        </span>
+          {growth.streakDays}일 연속
+          {growth.streakDays > 0 && (
+            <span className="font-caption-normal text-gray-8">
+              — 오늘 안 하면 끊겨요
+            </span>
+          )}
+        </p>
+        <div
+          className="bg-gray-2 mt-3 h-2 w-full max-w-md overflow-hidden rounded-full"
+          role="progressbar"
+          aria-label="다음 레벨 경험치"
+          aria-valuemin={0}
+          aria-valuemax={growth.xpToNextLevel}
+          aria-valuenow={growth.xp}
+          data-testid="student-growth-xp-bar"
+        >
+          <div
+            className="bg-orange-7 h-full rounded-full"
+            style={{ width: `${xpRatio}%` }}
+          />
+        </div>
+        <p className="font-caption-normal text-gray-7 mt-1 tabular-nums">
+          {growth.xp} / {growth.xpToNextLevel} xp · 누적{' '}
+          {growth.totalExperience} xp
+        </p>
+        <p className="border-gray-3 bg-gray-1 font-caption-normal text-gray-7 mt-3 rounded-lg border px-3 py-2 leading-relaxed">
+          약점트리 셀 농도·정복도 계약이 없어 현재 12칸과 0%로 표시합니다.
+          레벨·스트릭·xp는 실 API 값입니다.
+        </p>
       </div>
     </section>
   );

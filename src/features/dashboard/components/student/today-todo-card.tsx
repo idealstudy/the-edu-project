@@ -4,22 +4,13 @@ import { FormEvent, useState } from 'react';
 
 import type { TodoItem } from '@/entities/todo';
 import { Skeleton } from '@/shared/components/loading';
-import { Button, Input, Prompt, showBottomToast } from '@/shared/components/ui';
+import { Button, Input, showBottomToast } from '@/shared/components/ui';
 import { cn } from '@/shared/lib';
 import { handleApiError } from '@/shared/lib/errors/error-handler';
 import { classifyTodoError } from '@/shared/lib/errors/errors';
-import {
-  Check,
-  CircleX,
-  ListChecks,
-  Plus,
-  RefreshCw,
-  Trash2,
-} from 'lucide-react';
+import { Check, CircleX, ListChecks, RefreshCw } from 'lucide-react';
 
 import {
-  useCreateTodo,
-  useDeleteTodo,
   useStudentTodosQuery,
   useUpdateTodo,
 } from '../../hooks/use-todo-query';
@@ -28,11 +19,21 @@ type Props = {
   className?: string;
 };
 
-const QUICK_TODO_SUGGESTIONS = [
-  '오답 3문제 다시 풀기',
-  '수업노트 10분 복습',
-  '영단어 30개 외우기',
-] as const;
+type TodoSupply = 'TEACHER' | 'EXAM_HALL' | 'OPEN_CHALLENGE' | 'UNLINKED';
+
+const SUPPLY_LABEL: Record<TodoSupply, string> = {
+  TEACHER: '선생님',
+  EXAM_HALL: '응시장',
+  OPEN_CHALLENGE: '오픈챌린지',
+  UNLINKED: '공급원 미연결',
+};
+
+const SUPPLY_STYLE: Record<TodoSupply, string> = {
+  TEACHER: 'bg-green-50 text-green-800',
+  EXAM_HALL: 'bg-orange-1 text-orange-10',
+  OPEN_CHALLENGE: 'bg-gray-2 text-gray-9',
+  UNLINKED: 'border-gray-4 bg-white text-gray-7 border border-dashed',
+};
 
 const STATUS_LABEL: Record<TodoItem['status'], string> = {
   TODO: '할 일',
@@ -45,35 +46,36 @@ const formatMonthDay = (date: string) => {
   return `${Number(month)}/${Number(day)}`;
 };
 
+const getTodoSupply = (item: TodoItem): TodoSupply =>
+  item.assignerRole === 'TEACHER' ? 'TEACHER' : 'UNLINKED';
+
 const getTodoMeta = (item: TodoItem) =>
   [item.subject, item.book].filter(Boolean).join(' · ') ||
-  (item.assignerRole === 'TEACHER' ? '선생님이 배정한 계획' : '내가 세운 계획');
+  (item.assignerRole === 'TEACHER'
+    ? '선생님이 배정한 계획'
+    : '기존 직접 입력 계획 · 공급원 전환 필요');
 
 const TodoCardLoading = ({ className }: Props) => (
   <section
     className={cn(
-      'bg-gray-white border-gray-4 flex flex-col gap-3 rounded-2xl border p-6',
+      'bg-gray-white border-gray-4 flex flex-col gap-3 rounded-xl border p-6',
       className
     )}
     data-testid="student-todos-loading"
   >
     <Skeleton.Block className="h-6 w-32" />
+    <Skeleton.Block className="h-2 w-full" />
     <Skeleton.Block className="h-16 w-full" />
     <Skeleton.Block className="h-16 w-full" />
-    <Skeleton.Block className="h-10 w-full" />
   </section>
 );
 
 export const TodayTodoCard = ({ className }: Props) => {
   const todosQuery = useStudentTodosQuery();
-  const createTodo = useCreateTodo();
   const updateTodo = useUpdateTodo();
-  const deleteTodo = useDeleteTodo();
-  const [newTodoTitle, setNewTodoTitle] = useState('');
   const [skipTodoId, setSkipTodoId] = useState<number | null>(null);
   const [skipReason, setSkipReason] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
-  const [todoToDelete, setTodoToDelete] = useState<TodoItem | null>(null);
 
   if (todosQuery.isPending) {
     return <TodoCardLoading className={className} />;
@@ -83,7 +85,7 @@ export const TodayTodoCard = ({ className }: Props) => {
     return (
       <section
         className={cn(
-          'bg-gray-white border-gray-4 flex flex-col items-center rounded-2xl border px-6 py-10 text-center',
+          'bg-gray-white border-gray-4 flex flex-col items-center rounded-xl border px-6 py-10 text-center',
           className
         )}
         data-testid="student-todos-error"
@@ -94,7 +96,7 @@ export const TodayTodoCard = ({ className }: Props) => {
           aria-hidden
         />
         <h3 className="font-body1-heading text-gray-12 mt-3">
-          이번 주 할 일을 불러오지 못했어요
+          오늘 할 일을 불러오지 못했어요
         </h3>
         <p className="font-body2-normal text-gray-8 mt-1">
           잠시 후 다시 시도해주세요.
@@ -113,37 +115,17 @@ export const TodayTodoCard = ({ className }: Props) => {
 
   const summary = todosQuery.data;
   const items = summary.items;
-  const isMutating =
-    createTodo.isPending || updateTodo.isPending || deleteTodo.isPending;
+  const progressPercent =
+    summary.totalCount === 0
+      ? 0
+      : Math.round((summary.doneCount / summary.totalCount) * 100);
+  const totalRewardPoints = 0;
   const handleMutationError = (error: unknown) => {
     handleApiError(error, classifyTodoError, {
       onField: setFormError,
       onContext: setFormError,
       onUnknown: setFormError,
     });
-  };
-  const createTodoWithTitle = (title: string) => {
-    const trimmedTitle = title.trim();
-    if (!trimmedTitle) {
-      setFormError('할 일을 한 글자 이상 입력해주세요.');
-      return;
-    }
-
-    setFormError(null);
-    createTodo.mutate(
-      { title: trimmedTitle },
-      {
-        onSuccess: () => {
-          setNewTodoTitle('');
-          showBottomToast('이번 주 할 일에 추가했어요.');
-        },
-        onError: handleMutationError,
-      }
-    );
-  };
-  const handleCreate = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    createTodoWithTitle(newTodoTitle);
   };
   const handleComplete = (item: TodoItem) => {
     setFormError(null);
@@ -179,71 +161,94 @@ export const TodayTodoCard = ({ className }: Props) => {
       }
     );
   };
-  const handleDelete = () => {
-    if (!todoToDelete) return;
-
-    deleteTodo.mutate(todoToDelete.id, {
-      onSuccess: () => {
-        setTodoToDelete(null);
-        showBottomToast('할 일을 삭제했어요.');
-      },
-    });
-  };
 
   return (
     <section
       className={cn(
-        'bg-gray-white border-gray-4 flex flex-col rounded-2xl border p-6',
+        'bg-gray-white border-gray-4 flex flex-col rounded-xl border p-5 md:p-6',
         className
       )}
       aria-labelledby="student-todos-title"
       data-testid="student-todos-card"
     >
-      <div className="flex flex-wrap items-start justify-between gap-2">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3
             id="student-todos-title"
             className="font-body1-heading text-gray-12"
           >
             오늘 할 일
+            <span className="font-body2-normal text-gray-7 ml-2">
+              {formatMonthDay(summary.weekOf)}–{formatMonthDay(summary.weekEnd)}
+            </span>
           </h3>
           <p className="font-caption-normal text-gray-8 mt-1">
-            이번 주 {formatMonthDay(summary.weekOf)}–
-            {formatMonthDay(summary.weekEnd)} · {summary.doneCount}/
-            {summary.totalCount} 완료
+            선생님·응시장·오픈챌린지가 채워주고, 학생은 실행에 집중해요.
           </p>
         </div>
-        <span className="bg-orange-1 border-orange-3 text-orange-10 font-caption-heading rounded-full border px-3 py-1.5">
+        <span className="bg-orange-1 border-orange-3 text-orange-10 rounded-full border px-3 py-1.5 text-xs font-bold">
           {summary.totalCount - summary.doneCount - summary.skippedCount}개 남음
         </span>
+      </div>
+
+      <div
+        className="mt-3 flex flex-wrap gap-1.5"
+        aria-label="할 일 공급원"
+        data-testid="student-todo-supply-legend"
+      >
+        {(['TEACHER', 'EXAM_HALL', 'OPEN_CHALLENGE'] as const).map((supply) => (
+          <span
+            key={supply}
+            className={cn(
+              'rounded-full px-2.5 py-1 text-[11px] font-bold',
+              SUPPLY_STYLE[supply]
+            )}
+          >
+            {SUPPLY_LABEL[supply]}
+          </span>
+        ))}
       </div>
 
       <div className="bg-gray-2 mt-4 h-2 w-full overflow-hidden rounded-full">
         <div
           className="bg-orange-7 h-full rounded-full transition-[width]"
-          style={{
-            width: `${summary.totalCount === 0 ? 0 : Math.round((summary.doneCount / summary.totalCount) * 100)}%`,
-          }}
-          aria-hidden
+          style={{ width: `${progressPercent}%` }}
+          role="progressbar"
+          aria-label="오늘 할 일 진행률"
+          aria-valuemin={0}
+          aria-valuemax={summary.totalCount}
+          aria-valuenow={summary.doneCount}
+          data-testid="student-todo-progress"
         />
       </div>
+      <p className="font-caption-normal text-gray-7 mt-1.5 tabular-nums">
+        {summary.doneCount} / {summary.totalCount} 완료 · 다 끝내면 오늘 +
+        {totalRewardPoints}P
+      </p>
 
       {items.length === 0 ? (
         <div
-          className="border-gray-2 bg-gray-1 mt-4 flex flex-col items-center gap-1 rounded-xl border py-8 text-center"
+          className="border-gray-3 mt-4 flex flex-col items-center rounded-xl border border-dashed px-5 py-9 text-center"
           data-testid="student-todos-empty"
         >
           <ListChecks
-            size={30}
+            size={32}
             className="text-gray-6"
             aria-hidden
           />
-          <p className="font-body2-heading text-gray-10 mt-2">
-            이번 주 할 일이 아직 없어요
+          <p className="font-body2-heading text-gray-10 mt-3">
+            오늘 배정된 할 일이 아직 없어요
           </p>
-          <p className="font-caption-normal text-gray-8">
-            아래 빠른 입력이나 자유 입력으로 첫 계획을 넣어보세요.
+          <p className="font-caption-normal text-gray-8 mt-1 leading-relaxed">
+            선생님이 과제를 올리거나 시험·오픈챌린지 공급원이 연결되면 여기
+            쌓여요.
           </p>
+          <Button
+            className="mt-4"
+            disabled
+          >
+            기출 1세트 풀고 오늘 할 일 채우기 (+0P)
+          </Button>
         </div>
       ) : (
         <ul
@@ -253,11 +258,12 @@ export const TodayTodoCard = ({ className }: Props) => {
           {items.map((item) => {
             const isResolved = item.status !== 'TODO';
             const isSkipping = skipTodoId === item.id;
+            const supply = getTodoSupply(item);
 
             return (
               <li
                 key={item.id}
-                className="border-gray-2 flex flex-col border-b py-3.5 last:border-b-0"
+                className="border-gray-2 flex flex-col border-b py-4 last:border-b-0"
                 data-testid={`student-todo-${item.id}`}
               >
                 <div className="flex items-start gap-3">
@@ -272,7 +278,7 @@ export const TodayTodoCard = ({ className }: Props) => {
                           : 'border-gray-4 hover:border-orange-7'
                     )}
                     aria-label={`${item.title} 완료 처리`}
-                    disabled={isResolved || isMutating}
+                    disabled={isResolved || updateTodo.isPending}
                     onClick={() => handleComplete(item)}
                     data-testid={`student-todo-complete-${item.id}`}
                   >
@@ -302,13 +308,11 @@ export const TodayTodoCard = ({ className }: Props) => {
                     <div className="font-caption-normal text-gray-8 mt-1 flex flex-wrap items-center gap-1.5">
                       <span
                         className={cn(
-                          'font-caption-heading rounded-full px-2 py-0.5',
-                          item.assignerRole === 'TEACHER'
-                            ? 'bg-green-50 text-green-700'
-                            : 'bg-gray-white border-orange-6 text-orange-9 border border-dashed'
+                          'rounded-full px-2 py-0.5 text-[11px] font-bold',
+                          SUPPLY_STYLE[supply]
                         )}
                       >
-                        {item.assignerRole === 'TEACHER' ? '선생님' : '내가'}
+                        {SUPPLY_LABEL[supply]}
                       </span>
                       <span>{getTodoMeta(item)}</span>
                       {isResolved && (
@@ -324,13 +328,16 @@ export const TodayTodoCard = ({ className }: Props) => {
                     )}
                   </div>
 
-                  <div className="flex shrink-0 items-center gap-1">
+                  <div className="flex shrink-0 flex-col items-end gap-2">
+                    <span className="text-orange-7 text-xs font-extrabold tabular-nums">
+                      +0P{item.status === 'DONE' ? ' ✓' : ''}
+                    </span>
                     {!isResolved && (
                       <Button
                         size="xsmall"
                         variant="outlined"
                         className="h-8 px-2.5"
-                        disabled={isMutating}
+                        disabled={updateTodo.isPending}
                         onClick={() => {
                           setFormError(null);
                           setSkipTodoId(isSkipping ? null : item.id);
@@ -341,25 +348,12 @@ export const TodayTodoCard = ({ className }: Props) => {
                         못했어요
                       </Button>
                     )}
-                    <button
-                      type="button"
-                      className="text-gray-7 hover:bg-gray-1 hover:text-gray-11 flex size-8 cursor-pointer items-center justify-center rounded-lg"
-                      aria-label={`${item.title} 삭제`}
-                      disabled={isMutating}
-                      onClick={() => setTodoToDelete(item)}
-                      data-testid={`student-todo-delete-${item.id}`}
-                    >
-                      <Trash2
-                        size={16}
-                        aria-hidden
-                      />
-                    </button>
                   </div>
                 </div>
 
                 {isSkipping && (
                   <form
-                    className="border-orange-3 bg-orange-1 tablet:flex-row mt-3 ml-9 flex flex-col gap-2 rounded-xl border p-3"
+                    className="border-orange-3 bg-orange-1 mt-3 ml-9 flex flex-col gap-2 rounded-xl border p-3 sm:flex-row"
                     onSubmit={(event) => handleSkip(event, item)}
                     data-testid={`student-todo-skip-form-${item.id}`}
                   >
@@ -387,60 +381,10 @@ export const TodayTodoCard = ({ className }: Props) => {
         </ul>
       )}
 
-      <div className="border-orange-3 bg-orange-1 mt-4 rounded-xl border p-4">
-        <div className="flex items-center gap-2">
-          <Plus
-            size={18}
-            className="text-orange-8"
-            aria-hidden
-          />
-          <p className="font-body2-heading text-orange-10">할 일 추가</p>
-        </div>
-        <p className="font-caption-normal text-gray-8 mt-1">
-          빠른 입력을 누르거나 직접 적어 이번 주 계획에 넣어요.
-        </p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {QUICK_TODO_SUGGESTIONS.map((suggestion, index) => (
-            <button
-              key={suggestion}
-              type="button"
-              className="border-orange-3 bg-gray-white text-gray-10 hover:border-orange-7 hover:text-orange-10 font-caption-heading cursor-pointer rounded-full border border-dashed px-3 py-2 text-left"
-              disabled={createTodo.isPending}
-              onClick={() => createTodoWithTitle(suggestion)}
-              data-testid={`student-todo-suggestion-${index + 1}`}
-            >
-              {suggestion}
-            </button>
-          ))}
-        </div>
-        <form
-          className="tablet:flex-row mt-3 flex flex-col gap-2"
-          onSubmit={handleCreate}
-          data-testid="student-todo-create-form"
-        >
-          <Input
-            value={newTodoTitle}
-            onChange={(event) => setNewTodoTitle(event.target.value)}
-            maxLength={120}
-            placeholder="예: 물리 오답노트 정리"
-            className="h-11 flex-1 bg-white px-3"
-            aria-label="새 할 일"
-            data-testid="student-todo-title-input"
-          />
-          <Button
-            type="submit"
-            size="xsmall"
-            className="h-11"
-            disabled={createTodo.isPending}
-            data-testid="student-todo-create-button"
-          >
-            추가하기
-          </Button>
-        </form>
-        <p className="font-caption-normal text-gray-8 mt-2">
-          직접 넣은 계획에는 「내가」 라벨이 붙어요.
-        </p>
-      </div>
+      <p className="border-gray-3 bg-gray-1 font-caption-normal text-gray-8 mt-4 rounded-xl border p-3 leading-relaxed">
+        응시장·오픈챌린지 공급원과 항목별 포인트 계약이 아직 없어 기존 SELF
+        항목은 「공급원 미연결」, 보상은 +0P로 표시합니다.
+      </p>
 
       {formError && (
         <p
@@ -451,31 +395,6 @@ export const TodayTodoCard = ({ className }: Props) => {
           {formError}
         </p>
       )}
-
-      <Prompt
-        isOpen={Boolean(todoToDelete)}
-        onOpenChange={(isOpen) => {
-          if (!isOpen) setTodoToDelete(null);
-        }}
-      >
-        <Prompt.Content>
-          <Prompt.Header>
-            <Prompt.Title>이 할 일을 삭제할까요?</Prompt.Title>
-            <Prompt.Description className="text-gray-8 text-center">
-              {todoToDelete?.title}
-            </Prompt.Description>
-          </Prompt.Header>
-          <Prompt.Footer>
-            <Prompt.Cancel>취소</Prompt.Cancel>
-            <Prompt.Action
-              onClick={handleDelete}
-              disabled={deleteTodo.isPending}
-            >
-              삭제
-            </Prompt.Action>
-          </Prompt.Footer>
-        </Prompt.Content>
-      </Prompt>
     </section>
   );
 };

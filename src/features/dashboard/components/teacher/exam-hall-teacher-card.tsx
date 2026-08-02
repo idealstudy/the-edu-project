@@ -8,7 +8,8 @@ import {
   useCreateExam,
   useUploadExamPdf,
 } from '@/features/exam/hooks/use-exam-mutation';
-import { Button, Input, Select } from '@/shared/components/ui';
+import { useGetTeacherNoteMembers } from '@/features/study-notes/hooks';
+import { Button, Checkbox, Input, Select } from '@/shared/components/ui';
 import { cn } from '@/shared/lib';
 import { FileCheck2, Upload } from 'lucide-react';
 
@@ -26,6 +27,19 @@ export const ExamHallTeacherCard = ({ className }: { className?: string }) => {
   const [treeNodeIds, setTreeNodeIds] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [excludedStudentIds, setExcludedStudentIds] = useState<Set<number>>(
+    new Set()
+  );
+
+  const roomMembersQuery = useGetTeacherNoteMembers({
+    studyRoomId: Number(studyRoomId) || 0,
+    size: 100,
+    enabled: Boolean(studyRoomId),
+  });
+  const roomMembers = roomMembersQuery.data?.data.members ?? [];
+  const includedStudentCount = roomMembers.filter(
+    (member) => !excludedStudentIds.has(member.studentInfo.id)
+  ).length;
 
   const answers = useMemo(
     () =>
@@ -91,7 +105,7 @@ export const ExamHallTeacherCard = ({ className }: { className?: string }) => {
         examId: created.examId,
         input: {
           studyRoomId: Number(studyRoomId),
-          excludedStudentIds: [],
+          excludedStudentIds: [...excludedStudentIds],
           periodStart: new Date().toISOString(),
           periodEnd: null,
         },
@@ -101,6 +115,7 @@ export const ExamHallTeacherCard = ({ className }: { className?: string }) => {
       setAnswerKey('');
       setTreeNodeIds('');
       setFile(null);
+      setExcludedStudentIds(new Set());
     } catch (error) {
       setMessage(
         error instanceof Error
@@ -108,6 +123,24 @@ export const ExamHallTeacherCard = ({ className }: { className?: string }) => {
           : '시험 생성·배정에 실패했습니다.'
       );
     }
+  };
+
+  const handleStudyRoomChange = (value: string) => {
+    setStudyRoomId(value);
+    setExcludedStudentIds(new Set());
+    setMessage(null);
+  };
+
+  const handleStudentIncludedChange = (
+    studentId: number,
+    included: boolean
+  ) => {
+    setExcludedStudentIds((current) => {
+      const next = new Set(current);
+      if (included) next.delete(studentId);
+      else next.add(studentId);
+      return next;
+    });
   };
 
   return (
@@ -157,7 +190,7 @@ export const ExamHallTeacherCard = ({ className }: { className?: string }) => {
         </Select>
         <Select
           value={studyRoomId}
-          onValueChange={setStudyRoomId}
+          onValueChange={handleStudyRoomChange}
         >
           <Select.Trigger
             placeholder="배정할 반"
@@ -214,6 +247,79 @@ export const ExamHallTeacherCard = ({ className }: { className?: string }) => {
         후속 연동 안내를 표시합니다.
       </p>
 
+      <div
+        className="border-gray-3 bg-gray-1 mt-4 rounded-xl border p-4"
+        data-testid="teacher-exam-student-exclusions"
+      >
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <div>
+            <p className="font-body2-heading text-gray-11">학생별 제외</p>
+            <p className="font-caption-normal text-gray-7 mt-1">
+              반 전체가 기본 선택됩니다. 이번 회차에서 뺄 학생만 체크를 풀어
+              주세요.
+            </p>
+          </div>
+          {studyRoomId && !roomMembersQuery.isPending && (
+            <span className="border-orange-3 bg-orange-1 text-orange-10 rounded-full border px-3 py-1 text-xs font-bold">
+              {includedStudentCount}명 배정 · {excludedStudentIds.size}명 제외
+            </span>
+          )}
+        </div>
+
+        {!studyRoomId ? (
+          <p className="font-caption-normal text-gray-7 mt-4">
+            배정할 반을 고르면 학생 명단이 표시됩니다.
+          </p>
+        ) : roomMembersQuery.isPending ? (
+          <p className="font-caption-normal text-gray-7 mt-4">
+            학생 명단을 불러오는 중...
+          </p>
+        ) : roomMembersQuery.isError ? (
+          <p className="text-system-warning font-caption-normal mt-4">
+            학생 명단을 불러오지 못해 제외 대상을 정할 수 없습니다.
+          </p>
+        ) : roomMembers.length === 0 ? (
+          <p className="font-caption-normal text-gray-7 mt-4">
+            이 반에 배정할 학생이 없습니다.
+          </p>
+        ) : (
+          <Checkbox.Group
+            className="mt-3 grid gap-2 sm:grid-cols-2"
+            aria-label="시험 배정 학생"
+          >
+            {roomMembers.map((member) => {
+              const student = member.studentInfo;
+              const isIncluded = !excludedStudentIds.has(student.id);
+              return (
+                <Checkbox.Label
+                  key={student.id}
+                  className={cn(
+                    'border-gray-3 bg-gray-white rounded-xl border p-3 transition-colors',
+                    isIncluded && 'border-orange-4 bg-orange-1'
+                  )}
+                >
+                  <Checkbox
+                    checked={isIncluded}
+                    onCheckedChange={(checked) =>
+                      handleStudentIncludedChange(student.id, checked === true)
+                    }
+                    data-testid={`teacher-exam-student-${student.id}`}
+                  />
+                  <span className="min-w-0">
+                    <span className="font-body2-heading text-gray-11 block truncate">
+                      {student.name}
+                    </span>
+                    <span className="font-caption-normal text-gray-7 block truncate">
+                      {isIncluded ? '이번 회차 포함' : '이번 회차 제외'}
+                    </span>
+                  </span>
+                </Checkbox.Label>
+              );
+            })}
+          </Checkbox.Group>
+        )}
+      </div>
+
       {message && (
         <p
           className="font-caption-normal text-gray-9 mt-3"
@@ -224,11 +330,19 @@ export const ExamHallTeacherCard = ({ className }: { className?: string }) => {
       )}
       <Button
         className="mt-4"
-        disabled={isPending}
+        disabled={
+          isPending ||
+          roomMembersQuery.isPending ||
+          (roomMembers.length > 0 && includedStudentCount === 0)
+        }
         onClick={handleCreateAndAssign}
         data-testid="teacher-exam-assign-button"
       >
-        {isPending ? '시험을 여는 중...' : 'PDF 업로드하고 반에 배정'}
+        {isPending
+          ? '시험을 여는 중...'
+          : roomMembers.length > 0
+            ? `${includedStudentCount}명에게 시험 열기`
+            : 'PDF 업로드하고 반에 배정'}
       </Button>
     </section>
   );
