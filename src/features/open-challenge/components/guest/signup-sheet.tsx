@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 
 import { Button, Dialog } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
+import { Check, X } from 'lucide-react';
 
 type SignupSheetTrigger = 'limit-reached' | 'correct-answer';
 
@@ -12,6 +13,13 @@ type SignupSheetProps = {
   onOpenChange: (isOpen: boolean) => void;
   trigger: SignupSheetTrigger;
   challengeId: string;
+  /**
+   * 무료 한도 도달(limit-reached) 시점의 방금 문제 정오 여부.
+   * 정답 시엔 별도 'correct-answer' 트리거를 쓰므로 보통 undefined지만,
+   * 한도 도달과 오답이 동시에 발생하면(예: 마지막 무료 문제를 틀림)
+   * 모달이 정오 표시 없이 곧장 뜨는 비대칭을 막기 위해 넘겨받는다.
+   */
+  isCorrect?: boolean;
 };
 
 const COPY: Record<
@@ -38,9 +46,12 @@ export const SignupSheet = ({
   onOpenChange,
   trigger,
   challengeId,
+  isCorrect,
 }: SignupSheetProps) => {
   const router = useRouter();
   const copy = COPY[trigger];
+  // limit-reached 트리거에서만 방금 문제 정오를 상단에 먼저 알린다(오답 시 무표시 비대칭 방지).
+  const showVerdict = trigger === 'limit-reached' && typeof isCorrect === 'boolean';
 
   const handleSignup = () => {
     const from = encodeURIComponent(PUBLIC.OPEN_CHALLENGE.DETAIL(challengeId));
@@ -57,6 +68,31 @@ export const SignupSheet = ({
         className="fixed bottom-0 top-auto left-0 w-full max-w-full translate-x-0 translate-y-0 gap-5 rounded-t-[24px] rounded-b-none p-6 pb-8 text-center sm:top-1/2 sm:left-1/2 sm:max-w-[420px] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[24px]"
       >
         <Dialog.Header className="items-center">
+          {showVerdict && (
+            <p
+              data-testid="signup-sheet-verdict"
+              className={
+                isCorrect
+                  ? 'text-system-success flex items-center gap-1 text-sm font-bold'
+                  : 'text-system-warning flex items-center gap-1 text-sm font-bold'
+              }
+            >
+              {isCorrect ? (
+                <Check
+                  size={16}
+                  aria-hidden
+                />
+              ) : (
+                <X
+                  size={16}
+                  aria-hidden
+                />
+              )}
+              {isCorrect
+                ? '방금 문제, 맞혔어요!'
+                : '아쉽게 틀렸어요 — 가입하면 왜 틀렸는지 알려드려요'}
+            </p>
+          )}
           <Dialog.Title className="text-text-main text-lg font-bold">
             {copy.title}
           </Dialog.Title>

@@ -565,6 +565,7 @@ export const ChallengeSolveClient = ({
         onOpenChange={setIsSignupSheetOpen}
         trigger={signupTrigger}
         challengeId={challengeId}
+        isCorrect={guestGradeResult ?? undefined}
       />
 
       <Dialog

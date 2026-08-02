@@ -129,6 +129,8 @@ const AnswerResultDtoSchema = z
     participantCount: z.number(),
     passRate: z.number().nullable().optional(),
     reward: RewardDeltaDtoSchema,
+    // 결과화면 해설 섹션 표시 전용 시드 해설. 판정에는 영향 없음(제출 후 노출).
+    solutionText: z.string().nullable().optional(),
   })
   .transform((value) => ({
     isCorrect: value.isCorrect ?? value.correct ?? false,
@@ -136,6 +138,7 @@ const AnswerResultDtoSchema = z
     participantCount: value.participantCount,
     passRate: value.passRate ?? null,
     reward: value.reward ?? null,
+    solutionText: value.solutionText ?? null,
   }));
 
 /* ─────────────────────────────────────────────────────

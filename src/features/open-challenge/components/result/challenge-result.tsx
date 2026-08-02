@@ -4,8 +4,10 @@ import { useEffect, useRef, useState } from 'react';
 
 import { type ChallengeReviewSort } from '@/entities/open-challenge';
 import { ChallengeShareButton } from '@/features/social';
+import { MathMarkdown } from '@/shared/components/markdown';
 import { BackButton } from '@/shared/components/ui';
 import { trackOcComplete } from '@/shared/lib/analytics';
+import { BookOpenCheck } from 'lucide-react';
 
 import {
   useCancelChallengeReviewRecommendMutation,
@@ -46,6 +48,8 @@ type SubmittedResult = {
   myDrawingDataUrl?: string;
   // 표시용 투영 보상 델타(D1). 구버전 백엔드 대비 optional.
   reward?: RewardDelta;
+  // 결과화면 해설 섹션 표시 전용 시드 해설(마크다운). 판정(자력 여부)에는 영향 없음 — 제출 후 노출.
+  solutionText?: string | null;
 };
 
 type ChallengeResultProps = {
@@ -145,6 +149,27 @@ export const ChallengeResult = ({
               passRate={submittedResult.passRate}
               participantCount={submittedResult.participantCount}
             />
+          )}
+          {submittedResult?.solutionText && (
+            <section
+              className="border-line-line2 flex flex-col gap-3 rounded-[12px] border bg-white p-5"
+              aria-label="정답 해설"
+            >
+              <div className="flex items-center gap-2">
+                <BookOpenCheck
+                  size={18}
+                  className="text-gray-7"
+                  aria-hidden
+                />
+                <h2 className="font-body1-heading text-text-main">
+                  정답 해설
+                </h2>
+              </div>
+              <MathMarkdown
+                content={submittedResult.solutionText}
+                className="text-text-main text-sm leading-relaxed"
+              />
+            </section>
           )}
           {submittedResult?.myDrawingDataUrl && (
             <section className="border-line-line2 flex flex-col gap-3 rounded-[12px] border bg-white p-5">
