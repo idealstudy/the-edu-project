@@ -76,11 +76,14 @@ export const useChallengeReviewsQuery = (
 
 export const useNextChallengeQuery = (
   challengeId: string,
-  options?: { enabled?: boolean }
+  options?: { enabled?: boolean; isGuest?: boolean }
 ) =>
   useQuery({
-    queryKey: openChallengeKeys.next(challengeId),
-    queryFn: () => repository.getNextChallenge(challengeId),
+    queryKey: openChallengeKeys.next(challengeId, options?.isGuest ?? false),
+    queryFn: () =>
+      repository.getNextChallenge(challengeId, {
+        isGuest: options?.isGuest ?? false,
+      }),
     enabled: (options?.enabled ?? true) && challengeId.length > 0,
   });
 

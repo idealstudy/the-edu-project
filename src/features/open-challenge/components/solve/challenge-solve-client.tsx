@@ -310,13 +310,18 @@ export const ChallengeSolveClient = ({
       try {
         window.sessionStorage.setItem(
           storageKey,
-          JSON.stringify({ ...result, attemptId, myDrawingDataUrl })
+          JSON.stringify({
+            ...result,
+            attemptId,
+            selectedAnswer,
+            myDrawingDataUrl,
+          })
         );
       } catch {
         // 드로잉 dataURL 로 용량 초과 시, 드로잉 없이 결과만 저장한다.
         window.sessionStorage.setItem(
           storageKey,
-          JSON.stringify({ ...result, attemptId })
+          JSON.stringify({ ...result, attemptId, selectedAnswer })
         );
       }
       router.push(PUBLIC.OPEN_CHALLENGE.RESULT(challengeId));

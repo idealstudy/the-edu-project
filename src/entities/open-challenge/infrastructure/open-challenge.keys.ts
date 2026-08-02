@@ -15,7 +15,9 @@ const normalizeListParams = (params: ChallengeListParams = {}) => ({
   size: params.size ?? 20,
 });
 
-const normalizeRecommendedParams = (params: RecommendedChallengeParams = {}) => ({
+const normalizeRecommendedParams = (
+  params: RecommendedChallengeParams = {}
+) => ({
   grade: params.grade ?? null,
   subject: params.subject ?? 'ALL',
 });
@@ -43,7 +45,8 @@ export const openChallengeKeys = {
       normalizeRecommendedParams(params),
     ] as const,
   detail: (id: string) => [...openChallengeKeys.all, 'detail', id] as const,
-  next: (id: string) => [...openChallengeKeys.all, 'next', id] as const,
+  next: (id: string, isGuest = false) =>
+    [...openChallengeKeys.all, 'next', id, isGuest] as const,
   reviewsBase: (challengeId: string) =>
     [...openChallengeKeys.all, 'reviews', challengeId] as const,
   reviews: (challengeId: string, sort = 'recommend') =>

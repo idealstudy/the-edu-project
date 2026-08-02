@@ -4,23 +4,22 @@ import { useEffect, useRef, useState } from 'react';
 
 import { type ChallengeReviewSort } from '@/entities/open-challenge';
 import { ChallengeShareButton } from '@/features/social';
-import { MathMarkdown } from '@/shared/components/markdown';
 import { BackButton } from '@/shared/components/ui';
 import { trackOcComplete } from '@/shared/lib/analytics';
-import { BookOpenCheck } from 'lucide-react';
 
 import {
   useCancelChallengeReviewRecommendMutation,
   useChallengeReviewsQuery,
   useMyOpenChallengeDetailQuery,
   useNextChallengeQuery,
+  useOpenChallengeDetailQuery,
   useRecommendChallengeReviewMutation,
 } from '../../hooks/use-open-challenge';
 import { AiFeedbackForm } from './ai-feedback-form';
 import { ChallengeResultSkeleton } from './challenge-result-skeleton';
 import { ChallengeReward } from './challenge-reward';
 import { NextChallengeCard } from './next-challenge-card';
-import { ResultStats } from './result-stats';
+import { ResultCrossCheck } from './result-cross-check';
 import { type SolutionItem, SolutionList } from './solution-list';
 
 type RewardDelta = {
@@ -44,6 +43,8 @@ type SubmittedResult = {
   passRate: number | null;
   participantCount: number;
   attemptId?: string;
+  // 방금 제출 시 내가 고른 답. 크로스체크 좌측 비교에 쓴다. 구버전 저장분엔 없을 수 있어 optional.
+  selectedAnswer?: string | null;
   // 방금 푼 내 손글씨 풀이 스냅샷(PNG dataURL). strokes 가 있을 때만 채워진다.
   myDrawingDataUrl?: string;
   // 표시용 투영 보상 델타(D1). 구버전 백엔드 대비 optional.
@@ -71,20 +72,29 @@ export const ChallengeResult = ({
     useState<ChallengeReviewSort>('recommend');
   const hasFiredCompleteRef = useRef(false);
 
+  const isLoggedIn = !isGuest;
+
   // 컨닝가드: 본인이 이 문제를 COMPLETED 한 경우에만 다른 풀이 열람.
+  // 게스트는 private 엔드포인트(401)이므로 애초에 호출하지 않는다.
   const { data: myChallengeDetail, isLoading: isMyDetailLoading } =
-    useMyOpenChallengeDetailQuery(challengeId);
-  const hasCompletedAttempt =
-    myChallengeDetail?.attempts.some(
+    useMyOpenChallengeDetailQuery(challengeId, { enabled: isLoggedIn });
+  const completedAttempt =
+    myChallengeDetail?.attempts.find(
       (attempt) => attempt.status === 'COMPLETED'
-    ) ?? false;
+    ) ?? null;
   // 방금 제출하고 결과 페이지에 도달한 경우도 완료로 간주(데이터 동기화 지연 대비).
-  const isUnlocked = hasCompletedAttempt || submittedResult !== null;
+  const isUnlocked = completedAttempt !== null || submittedResult !== null;
+  // sessionStorage 소실(새로고침·직접 진입) 시 재조회 폴백 여부.
+  const isFallback = !submittedResult && isUnlocked;
+
+  // 크로스체크(문제+정오 비교) 좌측에 쓸 문제 원문 — 새로고침에도 항상 공개 API로 조회.
+  const { data: challengeDetail, isLoading: isChallengeDetailLoading } =
+    useOpenChallengeDetailQuery(challengeId, { enabled: isUnlocked });
 
   const { data: solutions, isLoading: isSolutionsLoading } =
     useChallengeReviewsQuery(challengeId, reviewSort, { enabled: isUnlocked });
   const { data: nextChallenge, isLoading: isNextChallengeLoading } =
-    useNextChallengeQuery(challengeId);
+    useNextChallengeQuery(challengeId, { isGuest });
   const recommendMutation = useRecommendChallengeReviewMutation(challengeId);
   const cancelRecommendMutation =
     useCancelChallengeReviewRecommendMutation(challengeId);
@@ -112,6 +122,7 @@ export const ChallengeResult = ({
     !isResultLoaded ||
     isMyDetailLoading ||
     (isUnlocked && isSolutionsLoading) ||
+    (isUnlocked && isChallengeDetailLoading) ||
     isNextChallengeLoading
   ) {
     return <ChallengeResultSkeleton />;
@@ -125,6 +136,19 @@ export const ChallengeResult = ({
 
     recommendMutation.mutate(solution.id);
   };
+
+  // 크로스체크 카드에 넘길 값 — 방금 제출 직후 응답을 우선, 없으면(새로고침) 재조회로 폴백.
+  const crossCheckSelectedAnswer =
+    submittedResult?.selectedAnswer ?? completedAttempt?.selectedAnswer ?? null;
+  const crossCheckIsCorrect =
+    submittedResult?.isCorrect ?? completedAttempt?.isCorrect ?? null;
+  const crossCheckCorrectAnswer = submittedResult?.correctAnswer ?? null;
+  const crossCheckPassRate =
+    submittedResult?.passRate ?? challengeDetail?.passRate ?? null;
+  const crossCheckParticipantCount =
+    submittedResult?.participantCount ??
+    challengeDetail?.participantCount ??
+    null;
 
   return (
     <main className="tablet:px-8 mx-auto w-full max-w-[1200px] px-4 py-8">
@@ -142,33 +166,34 @@ export const ChallengeResult = ({
               participantCount={submittedResult.participantCount}
             />
           )}
-          {submittedResult && (
-            <ResultStats
-              isCorrect={submittedResult.isCorrect}
-              correctAnswer={submittedResult.correctAnswer}
-              passRate={submittedResult.passRate}
-              participantCount={submittedResult.participantCount}
+          {isUnlocked && challengeDetail && (
+            <ResultCrossCheck
+              questionText={challengeDetail.questionText}
+              questionImageUrl={challengeDetail.questionImageUrl}
+              selectedAnswer={crossCheckSelectedAnswer}
+              correctAnswer={crossCheckCorrectAnswer}
+              isCorrect={crossCheckIsCorrect}
+              passRate={crossCheckPassRate}
+              participantCount={crossCheckParticipantCount}
+              solutionText={submittedResult?.solutionText ?? null}
+              fallbackAttemptId={
+                isFallback ? (completedAttempt?.attemptId ?? null) : null
+              }
+              isLoggedIn={isLoggedIn}
             />
           )}
-          {submittedResult?.solutionText && (
+          {!isUnlocked && isGuest && (
             <section
-              className="border-line-line2 flex flex-col gap-3 rounded-[12px] border bg-white p-5"
-              aria-label="정답 해설"
+              className="border-line-line2 flex flex-col gap-2 rounded-[12px] border bg-white p-5"
+              aria-label="게스트 결과 안내"
             >
-              <div className="flex items-center gap-2">
-                <BookOpenCheck
-                  size={18}
-                  className="text-gray-7"
-                  aria-hidden
-                />
-                <h2 className="font-body1-heading text-text-main">
-                  정답 해설
-                </h2>
-              </div>
-              <MathMarkdown
-                content={submittedResult.solutionText}
-                className="text-text-main text-sm leading-relaxed"
-              />
+              <h2 className="font-body1-heading text-text-main">
+                결과를 다시 볼 수 없어요
+              </h2>
+              <p className="font-caption-normal text-text-sub2">
+                게스트는 풀이 기록이 저장되지 않아 새로고침하면 결과가 사라져요.
+                로그인하면 문제·정답·해설을 언제든 다시 볼 수 있어요.
+              </p>
             </section>
           )}
           {submittedResult?.myDrawingDataUrl && (
