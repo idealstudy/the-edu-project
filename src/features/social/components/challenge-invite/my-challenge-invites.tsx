@@ -104,9 +104,12 @@ export const MyChallengeInvites = () => {
                       variant={STATUS_VARIANT[invite.status]}
                       label={inviteStatusLabel(invite.status)}
                     />
-                    {invite.status === 'COMPLETED' ? (
+                    {invite.status === 'ACCEPTED' ||
+                    invite.status === 'COMPLETED' ? (
                       <>
-                        {/* 완료된 도전장은 "결과 보기"가 주 동작 — 4-C 비교 화면 진입 */}
+                        {/* 수락됨/완료 — 양측 결과가 존재할 수 있으므로 "결과 보기"가
+                            주 동작(4-C 비교 화면 진입). ACCEPTED는 상대가 아직
+                            안 풀었을 수 있어 다이얼로그 내부에서 진행 상태를 보여준다. */}
                         <Button
                           size="xsmall"
                           onClick={() => setResultToken(invite.shareToken)}
