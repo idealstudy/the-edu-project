@@ -52,7 +52,7 @@ export const TreeNodeButton = ({ node, onSelect }: TreeNodeButtonProps) => {
       type="button"
       onClick={() => onSelect(node)}
       className={cn(
-        'relative flex min-h-[88px] flex-col justify-between rounded-[12px] p-4 text-left',
+        'relative flex h-full min-h-[88px] flex-col justify-between rounded-[12px] p-4 text-left',
         'transition-transform duration-150 hover:scale-[1.02] active:scale-[0.99]',
         'focus-visible:ring-key-color-primary focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
         style.fill
@@ -73,7 +73,12 @@ export const TreeNodeButton = ({ node, onSelect }: TreeNodeButtonProps) => {
       )}
 
       <div className="flex flex-col gap-1 pr-5">
-        <span className={cn('font-body2-heading line-clamp-2', style.text)}>
+        <span
+          className={cn(
+            'font-body2-heading line-clamp-2 text-balance break-keep',
+            style.text
+          )}
+        >
           {node.displayName}
         </span>
         {node.diagnosedOnly && (

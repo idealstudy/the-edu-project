@@ -12,28 +12,34 @@ const ITEMS: { label: string; swatch: string }[] = [
 ];
 
 export const TreeLegend = () => (
-  <div className="border-line-line1 flex flex-wrap items-center gap-x-5 gap-y-2 rounded-xl border bg-white px-4 py-3">
-    {ITEMS.map((item) => (
-      <span
-        key={item.label}
-        className="flex items-center gap-2"
-      >
+  <div className="border-line-line1 flex flex-col gap-2 rounded-xl border bg-white px-4 py-3">
+    <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+      {ITEMS.map((item) => (
         <span
-          className={`size-4 rounded-[5px] ${item.swatch}`}
+          key={item.label}
+          className="flex items-center gap-2"
+        >
+          <span
+            className={`size-4 rounded-[5px] ${item.swatch}`}
+            aria-hidden
+          />
+          <span className="font-caption-heading text-text-sub1">
+            {item.label}
+          </span>
+        </span>
+      ))}
+      <span className="flex items-center gap-1.5">
+        <AlertTriangle
+          size={15}
+          className="text-system-warning"
           aria-hidden
         />
-        <span className="font-caption-heading text-text-sub1">
-          {item.label}
-        </span>
+        <span className="font-caption-heading text-text-sub1">막힘</span>
       </span>
-    ))}
-    <span className="flex items-center gap-1.5">
-      <AlertTriangle
-        size={15}
-        className="text-system-warning"
-        aria-hidden
-      />
-      <span className="font-caption-heading text-text-sub1">막힘</span>
-    </span>
+    </div>
+    <p className="font-caption-normal text-text-sub2">
+      %는 스스로 힘으로 맞힌 만큼 채워지는 정복도예요. 문제 하나를 직접 풀어
+      맞히면 10%씩 올라가요.
+    </p>
   </div>
 );

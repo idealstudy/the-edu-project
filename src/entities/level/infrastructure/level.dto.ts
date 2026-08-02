@@ -33,7 +33,12 @@ const BadgeDtoSchema = z.object({
   description: z.string().optional().default(''),
   conditionType: BadgeConditionTypeDtoSchema,
   threshold: z.number().nullable().optional().default(null),
-  icon: z.string().optional().default(''),
+  icon: z
+    .string()
+    .nullable()
+    .optional()
+    .default('')
+    .transform((v) => v ?? ''),
   earned: z.boolean().optional().default(false),
   earnedAt: z.string().nullable().optional().default(null),
 });
