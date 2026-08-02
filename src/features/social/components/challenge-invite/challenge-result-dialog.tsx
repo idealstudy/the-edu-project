@@ -5,8 +5,8 @@ import { useEffect } from 'react';
 import { type ChallengeInviteResult } from '@/entities/social';
 import { Button } from '@/shared/components/ui';
 import { Dialog } from '@/shared/components/ui/dialog';
-import { trackVersusView } from '@/shared/lib/analytics';
 import { cn } from '@/shared/lib';
+import { trackVersusView } from '@/shared/lib/analytics';
 import { Check, Swords, X } from 'lucide-react';
 
 import { useInviteResultQuery } from '../../hooks';
@@ -148,11 +148,15 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
           label="나"
           correct={result.myCorrect ?? false}
           highlight={outcome === 'WIN'}
+          timeSpentSeconds={result.myAttempt?.timeSpentSeconds ?? null}
+          solutionImageUrl={result.myAttempt?.solutionImageUrl ?? null}
         />
         <ResultCell
           label="상대"
           correct={result.opponentCorrect ?? false}
           highlight={outcome === 'LOSE'}
+          timeSpentSeconds={result.opponentAttempt?.timeSpentSeconds ?? null}
+          solutionImageUrl={result.opponentAttempt?.solutionImageUrl ?? null}
         />
       </div>
 
@@ -171,37 +175,71 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
   );
 };
 
+/**
+ * 소요시간(초)을 "1분 30초" 형태로 포맷한다. null 이면 표시하지 않는다.
+ */
+const formatTimeSpent = (seconds: number | null): string | null => {
+  if (seconds == null || seconds < 0) return null;
+  const minutes = Math.floor(seconds / 60);
+  const rest = seconds % 60;
+  if (minutes === 0) return `${rest}초`;
+  return `${minutes}분 ${rest}초`;
+};
+
 const ResultCell = ({
   label,
   correct,
   highlight,
+  timeSpentSeconds,
+  solutionImageUrl,
 }: {
   label: string;
   correct: boolean;
   highlight: boolean;
-}) => (
-  <div
-    className={cn(
-      'border-line-line2 flex flex-col items-center gap-2 rounded-[12px] border p-4',
-      highlight && 'border-key-color-primary bg-orange-1'
-    )}
-  >
-    <span className="font-caption-heading text-text-sub2">{label}</span>
-    <span
+  timeSpentSeconds?: number | null;
+  solutionImageUrl?: string | null;
+}) => {
+  const timeLabel = formatTimeSpent(timeSpentSeconds ?? null);
+
+  return (
+    <div
       className={cn(
-        'flex size-12 items-center justify-center rounded-full',
-        correct ? 'bg-system-success/10 text-system-success' : 'bg-gray-1 text-text-sub2'
+        'border-line-line2 flex flex-col items-center gap-2 rounded-[12px] border p-4',
+        highlight && 'border-key-color-primary bg-orange-1'
       )}
     >
-      {correct ? <Check size={26} /> : <X size={26} />}
-    </span>
-    <span
-      className={cn(
-        'font-label-heading',
-        correct ? 'text-system-success' : 'text-text-sub2'
+      <span className="font-caption-heading text-text-sub2">{label}</span>
+      <span
+        className={cn(
+          'flex size-12 items-center justify-center rounded-full',
+          correct
+            ? 'bg-system-success/10 text-system-success'
+            : 'bg-gray-1 text-text-sub2'
+        )}
+      >
+        {correct ? <Check size={26} /> : <X size={26} />}
+      </span>
+      <span
+        className={cn(
+          'font-label-heading',
+          correct ? 'text-system-success' : 'text-text-sub2'
+        )}
+      >
+        {correct ? '정답' : '오답'}
+      </span>
+      {timeLabel && (
+        <span className="font-caption-normal text-text-sub2 tabular-nums">
+          {timeLabel}
+        </span>
       )}
-    >
-      {correct ? '정답' : '오답'}
-    </span>
-  </div>
-);
+      {solutionImageUrl && (
+        // eslint-disable-next-line @next/next/no-img-element -- presigned S3 URL, next/image 도메인 미등록
+        <img
+          src={solutionImageUrl}
+          alt={`${label} 풀이 이미지`}
+          className="border-line-line2 mt-1 h-16 w-full rounded-[8px] border object-cover"
+        />
+      )}
+    </div>
+  );
+};

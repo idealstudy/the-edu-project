@@ -15,7 +15,14 @@ import {
 import { BackButton, Button, Dialog } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
 import { trackOcStart, trackOcSubmit } from '@/shared/lib/analytics';
-import { Bot, ChevronDown, ChevronUp, Pencil, X } from 'lucide-react';
+import {
+  Bot,
+  ChevronDown,
+  ChevronUp,
+  ChevronsLeftRight,
+  Pencil,
+  X,
+} from 'lucide-react';
 
 import {
   useCreateChallengeReviewMutation,
@@ -42,6 +49,21 @@ const RESULT_STORAGE_KEY_PREFIX = 'open-challenge-result';
 // 게스트 무료 풀이 한도 — 정본(mvp-e-입구플로우-v5) 미확정 값이라 회장 권장값(3문제)을 기본으로 둔다.
 const GUEST_FREE_LIMIT = 3;
 const GUEST_SOLVED_COUNT_KEY = 'oc-guest-solved-count';
+
+// AI 코치 패널 폭 — 고정 380px 대신 드래그 리사이즈 + 좁게/넓게 2단 토글을 함께 제공한다.
+const AI_PANEL_WIDTH_KEY = 'oc-ai-panel-width';
+const AI_PANEL_MIN_WIDTH = 300;
+const AI_PANEL_MAX_WIDTH = 640;
+const AI_PANEL_NARROW_WIDTH = 380;
+const AI_PANEL_WIDE_WIDTH = 520;
+
+const readAiPanelWidth = (): number => {
+  if (typeof window === 'undefined') return AI_PANEL_NARROW_WIDTH;
+  const raw = window.localStorage.getItem(AI_PANEL_WIDTH_KEY);
+  const parsed = raw ? Number.parseInt(raw, 10) : NaN;
+  if (!Number.isFinite(parsed)) return AI_PANEL_NARROW_WIDTH;
+  return Math.min(Math.max(parsed, AI_PANEL_MIN_WIDTH), AI_PANEL_MAX_WIDTH);
+};
 
 const readGuestSolvedCount = (): number => {
   if (typeof window === 'undefined') return 0;
@@ -78,6 +100,8 @@ export const ChallengeSolveClient = ({
   const [guestGradeResult, setGuestGradeResult] = useState<boolean | null>(
     null
   );
+  const [aiPanelWidth, setAiPanelWidth] = useState(AI_PANEL_NARROW_WIDTH);
+  const isDraggingAiPanelRef = useRef(false);
   const [isSignupSheetOpen, setIsSignupSheetOpen] = useState(false);
   const [signupTrigger, setSignupTrigger] = useState<
     'limit-reached' | 'correct-answer'
@@ -114,6 +138,59 @@ export const ChallengeSolveClient = ({
     !!challengeHistory &&
     (challengeHistory.attempts.length > 0 ||
       challengeHistory.reviews.length > 0);
+
+  // AI 코치 패널 폭 — 마지막으로 쓰던 값을 기억한다(브라우저별 저장).
+  useEffect(() => {
+    setAiPanelWidth(readAiPanelWidth());
+  }, []);
+
+  const persistAiPanelWidth = (width: number) => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(AI_PANEL_WIDTH_KEY, String(width));
+    }
+  };
+
+  const handleAiPanelResizeStart = (
+    event: React.MouseEvent<HTMLDivElement>
+  ) => {
+    event.preventDefault();
+    isDraggingAiPanelRef.current = true;
+    const startX = event.clientX;
+    const startWidth = aiPanelWidth;
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      if (!isDraggingAiPanelRef.current) return;
+      const nextWidth = Math.min(
+        Math.max(startWidth + (moveEvent.clientX - startX), AI_PANEL_MIN_WIDTH),
+        AI_PANEL_MAX_WIDTH
+      );
+      setAiPanelWidth(nextWidth);
+    };
+
+    const handleMouseUp = () => {
+      isDraggingAiPanelRef.current = false;
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      setAiPanelWidth((current) => {
+        persistAiPanelWidth(current);
+        return current;
+      });
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleToggleAiPanelWidth = () => {
+    setAiPanelWidth((current) => {
+      const next =
+        current >= (AI_PANEL_NARROW_WIDTH + AI_PANEL_WIDE_WIDTH) / 2
+          ? AI_PANEL_NARROW_WIDTH
+          : AI_PANEL_WIDE_WIDTH;
+      persistAiPanelWidth(next);
+      return next;
+    });
+  };
 
   // oc_start: 문제 데이터가 처음 로드됐을 때 1회 발화
   useEffect(() => {
@@ -233,13 +310,18 @@ export const ChallengeSolveClient = ({
       try {
         window.sessionStorage.setItem(
           storageKey,
-          JSON.stringify({ ...result, attemptId, myDrawingDataUrl })
+          JSON.stringify({
+            ...result,
+            attemptId,
+            selectedAnswer,
+            myDrawingDataUrl,
+          })
         );
       } catch {
         // 드로잉 dataURL 로 용량 초과 시, 드로잉 없이 결과만 저장한다.
         window.sessionStorage.setItem(
           storageKey,
-          JSON.stringify({ ...result, attemptId })
+          JSON.stringify({ ...result, attemptId, selectedAnswer })
         );
       }
       router.push(PUBLIC.OPEN_CHALLENGE.RESULT(challengeId));
@@ -302,8 +384,20 @@ export const ChallengeSolveClient = ({
 
   return (
     <div className="flex h-[calc(100vh-var(--spacing-header-height,64px))] overflow-hidden">
-      {/* AI 코치 — 모바일에서 숨김 */}
-      <aside className="border-line-line1 hidden w-[380px] shrink-0 border-r p-4 lg:block">
+      {/* AI 코치 — 모바일에서 숨김. 폭은 드래그 핸들 또는 좁게/넓게 토글로 조절한다. */}
+      <aside
+        className="border-line-line1 relative hidden shrink-0 border-r p-4 lg:block"
+        style={{ width: aiPanelWidth }}
+      >
+        <button
+          type="button"
+          onClick={handleToggleAiPanelWidth}
+          className="border-line-line1 text-gray-7 hover:bg-gray-1 absolute top-4 right-2 z-10 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border bg-white shadow-sm"
+          aria-label="AI 코치 패널 폭 전환 (좁게/넓게)"
+          data-testid="ai-panel-width-toggle"
+        >
+          <ChevronsLeftRight size={14} />
+        </button>
         <AiCoachPanel
           challengeId={challengeId}
           attemptId={aiAttemptId}
@@ -318,6 +412,15 @@ export const ChallengeSolveClient = ({
           onMessageSent={() => {
             messageCountRef.current += 1;
           }}
+        />
+        {/* 드래그 리사이즈 핸들 */}
+        <div
+          onMouseDown={handleAiPanelResizeStart}
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="AI 코치 패널 폭 조절"
+          data-testid="ai-panel-resize-handle"
+          className="hover:bg-orange-3 absolute top-0 right-0 z-10 h-full w-1.5 -translate-x-1/2 cursor-col-resize"
         />
       </aside>
 

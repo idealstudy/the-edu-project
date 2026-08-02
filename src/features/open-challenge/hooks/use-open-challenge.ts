@@ -32,6 +32,12 @@ const retryUnlessNotFound = (failureCount: number, error: unknown) => {
 
 const ERROR_REDIRECT_DELAY_MS = 1500;
 
+// 정답 제출 반영(포인트/레벨/약점트리)은 백엔드 AFTER_COMMIT 이벤트 핸들러가
+// 커밋 이후 비동기로 처리한다. 응답이 오는 시점엔 아직 커밋 전일 수 있어
+// 그 즉시 invalidate하면 "풀어도 안 변함"처럼 보이는 레이스가 생긴다.
+// 커밋+이벤트 처리가 끝날 시간을 짧게 벌어준 뒤 invalidate한다.
+const AFTER_COMMIT_INVALIDATE_DELAY_MS = 1200;
+
 export const useOpenChallengeListQuery = (params: ChallengeListParams = {}) =>
   useQuery({
     queryKey: openChallengeKeys.list(params),
@@ -70,11 +76,14 @@ export const useChallengeReviewsQuery = (
 
 export const useNextChallengeQuery = (
   challengeId: string,
-  options?: { enabled?: boolean }
+  options?: { enabled?: boolean; isGuest?: boolean }
 ) =>
   useQuery({
-    queryKey: openChallengeKeys.next(challengeId),
-    queryFn: () => repository.getNextChallenge(challengeId),
+    queryKey: openChallengeKeys.next(challengeId, options?.isGuest ?? false),
+    queryFn: () =>
+      repository.getNextChallenge(challengeId, {
+        isGuest: options?.isGuest ?? false,
+      }),
     enabled: (options?.enabled ?? true) && challengeId.length > 0,
   });
 
@@ -160,11 +169,13 @@ export const useSubmitChallengeAnswerMutation = (challengeId: string) => {
       queryClient.invalidateQueries({
         queryKey: openChallengeKeys.detail(challengeId),
       });
-      // 정답 제출은 백엔드에서 포인트·레벨/뱃지·약점트리를 갱신(이벤트 핸들러)하므로
-      // 관련 캐시를 무효화해 화면이 새로고침 없이 최신 값을 반영하게 한다.
-      queryClient.invalidateQueries({ queryKey: pointKeys.all });
-      queryClient.invalidateQueries({ queryKey: levelKeys.all });
-      queryClient.invalidateQueries({ queryKey: treeKeys.all });
+      // 정답 제출은 백엔드에서 포인트·레벨/뱃지·약점트리를 갱신(AFTER_COMMIT 이벤트 핸들러)하므로
+      // 커밋+이벤트 처리가 끝날 시간을 벌어준 뒤 관련 캐시를 무효화한다(레이스 방지).
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: pointKeys.all });
+        queryClient.invalidateQueries({ queryKey: levelKeys.all });
+        queryClient.invalidateQueries({ queryKey: treeKeys.all });
+      }, AFTER_COMMIT_INVALIDATE_DELAY_MS);
     },
     onError: (error) => {
       handleApiError(error, classifyOpenChallengeError, {

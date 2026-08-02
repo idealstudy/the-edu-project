@@ -9,8 +9,8 @@ import { useSolutionViewCostQuery } from '@/features/point/hooks/use-point';
 import { type Stroke, useDrawingUpload } from '@/shared/components/drawing';
 import { Button, Dialog } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
-import { trackOcCoachUse, trackOcSolutionView } from '@/shared/lib/analytics';
 import { ShowErrorToast, cn } from '@/shared/lib';
+import { trackOcCoachUse, trackOcSolutionView } from '@/shared/lib/analytics';
 import { katex } from '@mdit/plugin-katex';
 import { renderToString } from 'katex';
 import {
@@ -761,11 +761,28 @@ export const AiCoachPanel = ({
               <p className="font-body1-heading text-text-main">
                 막히는 지점부터 같이 생각해요
               </p>
-              <p className="text-gray-8 mt-2 text-sm leading-relaxed">
+              <p className="text-gray-8 font-body2-normal mt-2 leading-relaxed">
                 AI 코치는 정답을 알려주지 않고,
                 <br />
                 직접 답을 고를 수 있게 힌트를 나눠서 줘요.
               </p>
+            </div>
+            {/* 아직 대화 시작 전에도 AI 호출 없이 정적인 첫 인사를 미리 보여준다.
+                실제 코칭 시작 시 나오는 메시지와 같은 문구(getIntroMessage)를 재사용해
+                READY 화면이 텅 비어 보이지 않게 한다. */}
+            <div className="ai-coach-handwriting font-body2-normal text-text-main w-full rounded-2xl rounded-tl-none bg-[#fffdf6] px-4 py-3 text-left leading-relaxed">
+              <MarkdownMessage
+                content={getIntroMessage(
+                  settings ?? {
+                    subject: '수학',
+                    skipped: true,
+                    learningGoal: 'CSAT',
+                    learningStage: 'CONCEPT_FOCUSED',
+                    difficultAreas: [],
+                    customText: '',
+                  }
+                )}
+              />
             </div>
             <Button
               type="button"
@@ -829,7 +846,7 @@ export const AiCoachPanel = ({
                     )}
                     <div
                       className={cn(
-                        'rounded-2xl px-4 py-3 text-sm leading-relaxed',
+                        'font-body2-normal rounded-2xl px-4 py-3 leading-relaxed',
                         message.role === 'ai'
                           ? message.kind === 'solution'
                             ? 'ai-coach-handwriting border-orange-2 rounded-tl-none border bg-[#fffdf3]'
@@ -927,7 +944,7 @@ export const AiCoachPanel = ({
                     ? 'AI 코치가 생각 중이에요...'
                     : '메시지를 입력하세요...'
                 }
-                className="placeholder:text-gray-6 flex-1 text-sm outline-none disabled:cursor-not-allowed"
+                className="placeholder:text-gray-6 font-body2-normal flex-1 outline-none disabled:cursor-not-allowed"
                 data-testid="ai-coach-message-input"
               />
               <button
@@ -983,9 +1000,7 @@ export const AiCoachPanel = ({
               {isSolutionFree ? (
                 <>
                   이번 해설은{' '}
-                  <span className="text-orange-7 font-semibold">
-                    무료
-                  </span>
+                  <span className="text-orange-7 font-semibold">무료</span>
                   예요 (포인트 차감 없음). 단, 이 문제는 약점 지도에 채워지지
                   않아요. 그래도 볼까요?
                 </>
@@ -995,7 +1010,8 @@ export const AiCoachPanel = ({
                   <span className="text-orange-7 font-semibold tabular-nums">
                     −{solutionCostP}P
                   </span>{' '}
-                  차감되고, 이 문제는 약점 지도에 채워지지 않아요. 그래도 볼까요?
+                  차감되고, 이 문제는 약점 지도에 채워지지 않아요. 그래도
+                  볼까요?
                 </>
               )}
             </Dialog.Description>
@@ -1042,8 +1058,8 @@ export const AiCoachPanel = ({
               풀이 이미지 전송에 실패했어요
             </Dialog.Title>
             <Dialog.Description className="text-gray-8 text-sm leading-relaxed">
-              손글씨 풀이를 AI 코치에게 보내지 못했어요. 다시 시도하거나,
-              이미지 없이 질문만 보낼 수 있어요.
+              손글씨 풀이를 AI 코치에게 보내지 못했어요. 다시 시도하거나, 이미지
+              없이 질문만 보낼 수 있어요.
             </Dialog.Description>
           </Dialog.Header>
           <Dialog.Footer className="flex-col">

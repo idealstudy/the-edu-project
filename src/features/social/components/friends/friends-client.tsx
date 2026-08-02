@@ -5,10 +5,7 @@ import { useSession } from '@/providers';
 import { Button, StatusBadge } from '@/shared/components/ui';
 import { UserPlus, Users } from 'lucide-react';
 
-import {
-  useAcceptFriendMutation,
-  useMyFriendsQuery,
-} from '../../hooks';
+import { useAcceptFriendMutation, useMyFriendsQuery } from '../../hooks';
 import { FriendRequestForm } from './friend-request-form';
 
 /* ─────────────────────────────────────────────────────
@@ -16,10 +13,24 @@ import { FriendRequestForm } from './friend-request-form';
  *  - 로딩 / 에러 / 빈 / 콘텐츠 4상태
  *  - 내 회원 ID 기준으로 받은 요청 / 보낸 요청 / 친구를 분류
  * ────────────────────────────────────────────────────*/
-const otherMemberId = (friendship: Friendship, myId: number): number =>
+type OtherIdentity = {
+  memberId: number;
+  name: string | null;
+  profileImageUrl: string | null;
+};
+
+const otherIdentity = (friendship: Friendship, myId: number): OtherIdentity =>
   friendship.requesterId === myId
-    ? friendship.addresseeId
-    : friendship.requesterId;
+    ? {
+        memberId: friendship.addresseeId,
+        name: friendship.addresseeName,
+        profileImageUrl: friendship.addresseeProfileImageUrl,
+      }
+    : {
+        memberId: friendship.requesterId,
+        name: friendship.requesterName,
+        profileImageUrl: friendship.requesterProfileImageUrl,
+      };
 
 export const FriendsClient = () => {
   const { member } = useSession();
@@ -76,7 +87,7 @@ export const FriendsClient = () => {
                     key={item.id}
                     className="border-line-line2 flex items-center justify-between gap-3 rounded-[12px] border bg-white px-4 py-3"
                   >
-                    <FriendIdentity memberId={otherMemberId(item, myId)} />
+                    <FriendIdentity {...otherIdentity(item, myId)} />
                     <Button
                       size="xsmall"
                       disabled={isAccepting}
@@ -100,7 +111,7 @@ export const FriendsClient = () => {
                     key={item.id}
                     className="border-line-line2 flex items-center justify-between gap-3 rounded-[12px] border bg-white px-4 py-3"
                   >
-                    <FriendIdentity memberId={otherMemberId(item, myId)} />
+                    <FriendIdentity {...otherIdentity(item, myId)} />
                     <StatusBadge
                       variant="default"
                       label="수락 대기"
@@ -126,7 +137,7 @@ export const FriendsClient = () => {
                     key={item.id}
                     className="border-line-line2 flex items-center justify-between gap-3 rounded-[12px] border bg-white px-4 py-3"
                   >
-                    <FriendIdentity memberId={otherMemberId(item, myId)} />
+                    <FriendIdentity {...otherIdentity(item, myId)} />
                     <StatusBadge
                       variant="success"
                       label="친구"
@@ -144,17 +155,23 @@ export const FriendsClient = () => {
   );
 };
 
-const FriendIdentity = ({ memberId }: { memberId: number }) => (
+const FriendIdentity = ({ name, profileImageUrl }: OtherIdentity) => (
   <div className="flex min-w-0 items-center gap-3">
-    <span className="bg-orange-1 text-key-color-primary flex size-10 shrink-0 items-center justify-center rounded-full">
-      <Users size={20} />
-    </span>
+    {profileImageUrl ? (
+      // eslint-disable-next-line @next/next/no-img-element -- presigned S3 URL, next/image 도메인 미등록
+      <img
+        src={profileImageUrl}
+        alt=""
+        className="size-10 shrink-0 rounded-full object-cover"
+      />
+    ) : (
+      <span className="bg-orange-1 text-key-color-primary flex size-10 shrink-0 items-center justify-center rounded-full">
+        <Users size={20} />
+      </span>
+    )}
     <div className="flex min-w-0 flex-col">
       <span className="font-body2-heading text-text-main truncate">
-        회원 #{memberId}
-      </span>
-      <span className="font-caption-normal text-text-sub2 tabular-nums">
-        회원 번호 {memberId}
+        {name ?? '이름 미설정 회원'}
       </span>
     </div>
   </div>

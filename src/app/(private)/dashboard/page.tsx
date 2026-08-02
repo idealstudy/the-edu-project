@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
+import { resolveDashboardFromRedirect } from '@/features/auth/lib/redirect';
 import { PRIVATE } from '@/shared/constants';
 import { fetchMemberRole } from '@/shared/lib/server';
 
@@ -47,13 +48,11 @@ export default async function HomePage({
 }: {
   searchParams: Promise<{ from?: string }>;
 }) {
-  // OAuth 전용 리다이렉트
+  // OAuth 전용 리다이렉트 (기존 카카오 회원 등 — 신규회원 select-role 경로와 동일하게
+  // sanitizeRedirect 오픈 리다이렉트 가드를 거친 안전한 경로만 복귀시킨다)
   const { from } = await searchParams;
-
-  if (from) {
-    const decoded = decodeURIComponent(from);
-    if (decoded.startsWith('/')) redirect(decoded);
-  }
+  const safeFrom = resolveDashboardFromRedirect(from);
+  if (safeFrom) redirect(safeFrom);
 
   const session = await fetchMemberRole();
 

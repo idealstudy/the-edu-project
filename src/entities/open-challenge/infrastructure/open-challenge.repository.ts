@@ -622,10 +622,57 @@ const gradeChallengeAsGuest = async (
 
 /* ─────────────────────────────────────────────────────
  * [READ] 다음 오픈챌린지 조회
+ *  추천 API(오답률·등급 기반) 결과를 우선 순환시키고, 로그인 사용자는
+ *  이미 완료(COMPLETED)한 문제를 제외한다. 게스트는 현재 풀고 있는
+ *  문제만 제외하고 추천 순서대로 진행한다. 추천 목록이 소진되면
+ *  (전부 완료했거나 목록이 짧으면) 기존 인기순 목록으로 폴백한다.
+ *  ※ 전용 "다음 문제" 백엔드 API는 신설하지 않고, 기존 추천 API +
+ *    클라이언트 필터링으로 반복 문제를 해소한다(후속 과제: 백엔드
+ *    전용 next API로 서버사이드 제외 처리).
  * ────────────────────────────────────────────────────*/
+const toNextChallengeFromRecommended = (
+  item: RecommendedChallengeItem
+): NextChallenge => ({
+  id: item.id,
+  subject: item.subject,
+  difficulty: item.difficulty,
+  title: item.title,
+  sourceText: item.sourceText,
+  questionImageUrl: item.questionImageUrl,
+  // 추천 API는 passRate 대신 wrongAnswerRate(오답률)를 제공한다 —
+  // 통과율 근사치로 환산해 기존 NextChallengeCard(passRate 소비)를 재사용한다.
+  passRate: Math.max(0, Math.round(100 - item.wrongAnswerRate)),
+  participantCount: item.participantCount,
+});
+
 const getNextChallenge = async (
-  currentChallengeId: string
+  currentChallengeId: string,
+  options?: { isGuest?: boolean }
 ): Promise<NextChallenge | null> => {
+  const recommended = await getRecommendedChallenges({});
+  let candidates = recommended.filter((item) => item.id !== currentChallengeId);
+
+  if (!options?.isGuest) {
+    try {
+      const completed = await getMyChallengeList({
+        status: 'COMPLETED',
+        size: 100,
+      });
+      const completedIds = new Set(
+        completed.content.map((item) => item.challengeId)
+      );
+      candidates = candidates.filter((item) => !completedIds.has(item.id));
+    } catch {
+      // 완료 목록 조회 실패 시 필터 없이 추천 목록만으로 진행한다.
+    }
+  }
+
+  const firstCandidate = candidates[0];
+  if (firstCandidate) {
+    return toNextChallengeFromRecommended(firstCandidate);
+  }
+
+  // 추천 목록 소진(전부 완료 또는 목록이 짧음) 시 기존 인기순 목록으로 폴백.
   const list = await getChallengeList({ subject: 'MATH', sort: 'popular' });
   return list.find((challenge) => challenge.id !== currentChallengeId) ?? null;
 };

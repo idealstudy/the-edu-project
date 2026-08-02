@@ -36,7 +36,7 @@ export const ChoiceList = ({
             >
               {idx + 1}
             </span>
-            <span>{choice}</span>
+            {choice !== String(idx + 1) && <span>{choice}</span>}
           </button>
         );
       })}

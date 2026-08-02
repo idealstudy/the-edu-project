@@ -23,6 +23,10 @@ const toFriendship = (raw: unknown): Friendship => {
   return domain.friendship.parse({
     ...parsed,
     regDate: parsed.regDate ?? null,
+    requesterName: parsed.requesterName ?? null,
+    requesterProfileImageUrl: parsed.requesterProfileImageUrl ?? null,
+    addresseeName: parsed.addresseeName ?? null,
+    addresseeProfileImageUrl: parsed.addresseeProfileImageUrl ?? null,
   });
 };
 
@@ -44,12 +48,32 @@ const toInvitePreview = (raw: unknown): ChallengeInvitePreview => {
   });
 };
 
+const toAttemptSummary = (
+  raw:
+    | {
+        isCorrect?: boolean | null;
+        timeSpentSeconds?: number | null;
+        solutionImageUrl?: string | null;
+      }
+    | null
+    | undefined
+) => {
+  if (!raw) return null;
+  return {
+    isCorrect: raw.isCorrect ?? null,
+    timeSpentSeconds: raw.timeSpentSeconds ?? null,
+    solutionImageUrl: raw.solutionImageUrl ?? null,
+  };
+};
+
 const toInviteResult = (raw: unknown): ChallengeInviteResult => {
   const parsed = dto.challengeInviteResult.parse(raw);
   return domain.challengeInviteResult.parse({
     ...parsed,
     myCorrect: parsed.myCorrect ?? null,
     opponentCorrect: parsed.opponentCorrect ?? null,
+    myAttempt: toAttemptSummary(parsed.myAttempt),
+    opponentAttempt: toAttemptSummary(parsed.opponentAttempt),
   });
 };
 
@@ -84,7 +108,10 @@ const requestFriendByPhone = async (
   body: FriendRequestByPhonePayload
 ): Promise<Friendship> => {
   const validated = payload.friendRequestByPhone.parse(body);
-  const response = await api.private.post('/common/friends/by-phone', validated);
+  const response = await api.private.post(
+    '/common/friends/by-phone',
+    validated
+  );
   return toFriendship(unwrapEnvelope(response, z.unknown()));
 };
 
