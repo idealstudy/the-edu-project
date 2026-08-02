@@ -7,6 +7,7 @@ import TeacherStudyroomSection from '../section/teacher-studyroom-section';
 import TeacherTabSection from '../section/teacher-tab-section';
 import { AiCommentCard } from './ai-comment-card';
 import { ExamHallTeacherCard } from './exam-hall-teacher-card';
+import { LearningInboxCard } from './learning-inbox-card';
 import TeacherOnboarding from './teacher-onboarding';
 
 const DashboardTeacher = ({
@@ -28,7 +29,8 @@ const DashboardTeacher = ({
         {shouldShowOnboarding && <TeacherOnboarding />}
         {/* MVP-G v4 — 이번 주 AI 코멘트 (신규, ⛔ 백엔드 계약 필요) */}
         <AiCommentCard />
-        {/* MVP-G v3 — 응시장(배정·결과) 요약 (⛔ 백엔드 계약 필요) */}
+        <LearningInboxCard />
+        {/* MVP-G v4 — PDF 시험 생성·반 단위 배정 실 API */}
         <ExamHallTeacherCard />
         <div className="tablet:gap-25 flex w-full flex-col gap-8">
           <TeacherQnASection />

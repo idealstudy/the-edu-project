@@ -12,3 +12,9 @@ export const useWrongAnswersQuery = (nodeId?: number) =>
     queryKey: wrongAnswerKeys.list(nodeId),
     queryFn: () => repository.getWrongAnswers(nodeId),
   });
+
+export const useTeacherWrongAnswerInboxQuery = () =>
+  useQuery({
+    queryKey: wrongAnswerKeys.teacherInbox(),
+    queryFn: repository.getTeacherInbox,
+  });

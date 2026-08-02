@@ -349,3 +349,25 @@ export function classifyRetrospectError(code?: string): ApiErrorType {
       return 'UNKNOWN';
   }
 }
+
+// MVP-G 시험 응시·분석 관련 에러
+export function classifyExamError(code?: string): ApiErrorType {
+  switch (code) {
+    case 'EXAM_INVALID_ANSWERS':
+    case 'EXAM_EMPTY_STUDY_ROOM':
+    case 'EXAM_ALREADY_SUBMITTED':
+      return 'FIELD';
+
+    case 'EXAM_NOT_FOUND':
+    case 'EXAM_ASSIGNMENT_NOT_FOUND':
+    case 'EXAM_ATTEMPT_NOT_FOUND':
+      return 'CONTEXT';
+
+    case 'MEDIA_NOT_OWNED':
+    case 'MEMBER_NOT_EXIST':
+      return 'AUTH';
+
+    default:
+      return 'UNKNOWN';
+  }
+}

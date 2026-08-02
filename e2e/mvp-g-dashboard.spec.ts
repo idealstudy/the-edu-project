@@ -119,6 +119,54 @@ const DAILY_PROBLEMS = {
   ],
 };
 
+const ASSIGNED_EXAMS = [
+  {
+    examId: 801,
+    attemptId: 901,
+    title: '수학Ⅰ 수열 진단시험',
+    subject: 'MATH',
+    examType: 'SCHOOL',
+    status: 'ANALYZED',
+    totalQuestions: 10,
+    periodStart: '2026-07-30T09:00:00',
+    periodEnd: null,
+    predictedGradeLow: 2,
+    predictedGradeHigh: 3,
+  },
+];
+
+const EXAM_ANALYSIS = {
+  attemptId: 901,
+  examTitle: '수학Ⅰ 수열 진단시험',
+  examType: 'SCHOOL',
+  rawScore: 80,
+  predictedGradeLow: 2,
+  predictedGradeHigh: 3,
+  weakUnits: [
+    { treeNodeId: 11, name: '수열', wrongCount: 2 },
+    { treeNodeId: 12, name: '수열의 합', wrongCount: 1 },
+    { treeNodeId: 13, name: '수학적 귀납법', wrongCount: 0 },
+  ],
+  evidence: [
+    { source: 'EXAM_SCORE', label: '시험 정답률 80%', value: 80 },
+    {
+      source: 'WRONG_ANSWER_REVIEW',
+      label: '오답 회독 진행도 40%',
+      value: 40,
+    },
+    {
+      source: 'WEAKNESS_TREE',
+      label: '약점트리 평균 숙련도 40점',
+      value: 40,
+    },
+  ],
+  estimateSource: 'AI_STUB',
+  realDataLinked: false,
+  referenceOnly: true,
+  realDataFollowUpRequired: false,
+  dataNotice: '내신 시험 분석은 AI 추정이며 참고용입니다.',
+};
+
 const setupDashboardApi = async (page: Page) => {
   await page.route('**/api/v1/**', async (route) => {
     await route.fulfill({
@@ -142,6 +190,13 @@ const setupDashboardApi = async (page: Page) => {
         totalCount: WRONG_ANSWER_ITEMS.length,
         items: WRONG_ANSWER_ITEMS,
       }),
+    });
+  });
+  await page.route('**/api/v1/student/exams', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: okBody(ASSIGNED_EXAMS),
     });
   });
 };
@@ -233,5 +288,45 @@ test.describe('MVP-G 학생 대시보드 코어', () => {
       '같은 오답은 하루에 한 번만 회독할 수 있습니다.'
     );
     await expect(page.getByText('401')).toHaveCount(0);
+  });
+
+  test('예상등급 범위·약점 3개·추정 근거를 분석 화면에 표시한다', async ({
+    page,
+  }) => {
+    await setupDashboardApi(page);
+    await page.route('**/api/v1/student/exams/901', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: okBody({
+          attemptId: 901,
+          title: '수학Ⅰ 수열 진단시험',
+          examType: 'SCHOOL',
+          totalQuestions: 10,
+          questions: [],
+          status: 'ANALYZED',
+        }),
+      });
+    });
+    await page.route('**/api/v1/student/exams/901/analysis', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: okBody(EXAM_ANALYSIS),
+      });
+    });
+
+    await page.goto('/dashboard/student/exams/901');
+
+    await expect(page.getByTestId('exam-analysis-card')).toContainText(
+      '2~3등급'
+    );
+    await expect(page.getByText('내신 · AI 추정 참고용')).toBeVisible();
+    await expect(page.getByText('이 추정이 나온 곳')).toBeVisible();
+    await expect(page.getByText(/수열 · 오답 2/)).toBeVisible();
+    await expect(page.getByText(/수학적 귀납법 · 숙련도 보완/)).toBeVisible();
+    await expect(
+      page.getByText('내신 시험 분석은 AI 추정이며 참고용입니다.')
+    ).toBeVisible();
   });
 });

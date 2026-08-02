@@ -44,8 +44,14 @@ const reviewWrongAnswer = async (
   return unwrapEnvelope(response, dto.reviewResult);
 };
 
+const getTeacherInbox = async () => {
+  const response = await api.private.get('/teacher/inbox');
+  return unwrapEnvelope(response, dto.teacherInbox);
+};
+
 export const repository = {
   getDailyProblems,
   getWrongAnswers,
   reviewWrongAnswer,
+  getTeacherInbox,
 };

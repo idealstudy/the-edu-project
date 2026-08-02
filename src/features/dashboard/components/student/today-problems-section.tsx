@@ -243,8 +243,16 @@ export const TodayProblemsSection = () => {
         </h2>
         <p className="font-body2-normal text-gray-8 mt-2 leading-relaxed">
           오늘의 문제는 시험 오답과 수업에서 만들어져요.
-          <br />첫 시험이 열리기 전에는 풀 문제가 없어요.
+          <br />선생님이 첫 시험을 열면 채워집니다.
         </p>
+        <Button
+          asChild
+          size="small"
+          variant="outlined"
+          className="mt-5"
+        >
+          <Link href={PRIVATE.DASHBOARD.UNIT_NOTES}>단권화 책 구경</Link>
+        </Button>
       </section>
     );
   }

@@ -1,47 +1,71 @@
 'use client';
 
+import { useParentGradeSummaryQuery } from '@/features/exam/hooks/use-exam-query';
+import { Skeleton } from '@/shared/components/loading';
 import { cn } from '@/shared/lib';
+import { LockKeyhole, TrendingUp } from 'lucide-react';
 
-/**
- * 학부모 주간 안심 카드 — MVP-G v3. 응시 횟수·할 일 완료율·스트릭·점수 흐름·선생님 한마디를
- * 한 장으로 모은 보기 전용 카드(독려 버튼 없음 — 회장 확정: 학부모는 보는 사람).
- * ⛔ 백엔드 계약 필요: 응시장/성장(스트릭·xp) 도메인이 아직 없어 집계할 값이 없다.
- * 실제 지표가 없는 채로 숫자를 지어내지 않고 준비중 상태만 노출한다.
- */
-export const WeeklyReassuranceCard = ({
-  className,
-}: {
+type WeeklyReassuranceCardProps = {
+  childId: number | null;
   className?: string;
-}) => {
+};
+
+export const WeeklyReassuranceCard = ({
+  childId,
+  className,
+}: WeeklyReassuranceCardProps) => {
+  const summaryQuery = useParentGradeSummaryQuery(childId, {
+    enabled: childId !== null,
+  });
+
+  if (childId !== null && summaryQuery.isPending) {
+    return <Skeleton.Block className="h-60 w-full" />;
+  }
+
+  const summary = summaryQuery.data;
   return (
     <section
       className={cn(
-        'bg-gray-white border-gray-4 flex flex-col rounded-2xl border p-6',
+        'bg-gray-white border-gray-4 flex flex-col rounded-xl border p-6',
         className
       )}
+      data-testid="parent-grade-summary-card"
     >
-      <h3 className="font-body1-heading text-gray-12">주간 안심 카드</h3>
-      <p className="font-body2-normal text-gray-8 mt-2 leading-relaxed">
-        응시 횟수·할 일 완료율·연속 학습일·점수 흐름을 한 주 단위로 모아
-        보여드릴 예정이에요. 원점수·오답 상세는 선생님이 공유를 승인한
-        범위만 노출돼요.
-      </p>
-      <div className="border-gray-2 bg-gray-1 mt-4 flex flex-col items-center gap-1 rounded-xl border py-6 text-center">
-        <p className="font-body2-heading text-gray-10">준비 중이에요</p>
-        <p className="font-caption-normal text-gray-8">
-          응시장·성장 지표가 쌓이면 이 카드에 나타나요
-        </p>
+      <div className="flex items-center gap-2">
+        <TrendingUp size={21} className="text-orange-7" aria-hidden />
+        <h3 className="font-body1-heading text-gray-12">예상 등급 안심 카드</h3>
       </div>
 
-      {/* MVP-G v4 — 학부모 신뢰 각주(신규). "공유 안 함"을 숨기지 않고 구조로 설명한다. */}
-      <div className="border-gray-4 mt-4 rounded-xl border p-3.5">
+      {!summary || summary.predictedGradeLow === null ? (
+        <div className="border-gray-2 bg-gray-1 mt-4 rounded-xl border py-7 text-center">
+          <p className="font-body2-heading text-gray-10">
+            첫 시험이 열리면 범위를 알려드릴게요
+          </p>
+        </div>
+      ) : (
+        <div className="border-orange-3 bg-orange-1 mt-4 rounded-xl border p-5 text-center">
+          <p className="font-caption-heading text-orange-10">
+            {summary.childName} 학생의 현재 예상 범위
+          </p>
+          <p className="text-orange-7 mt-1 text-4xl font-extrabold tabular-nums">
+            {summary.predictedGradeLow}~{summary.predictedGradeHigh}등급
+          </p>
+          <p className="font-body2-normal text-gray-9 mt-2">
+            {summary.reassuranceSummary}
+          </p>
+          {summary.estimate && (
+            <span className="font-caption-heading border-orange-3 mt-3 inline-flex rounded-full border px-2.5 py-1 text-orange-10">
+              추정 범위 · 참고용
+            </span>
+          )}
+        </div>
+      )}
+
+      <div className="border-gray-4 mt-4 flex gap-2 rounded-xl border p-3.5">
+        <LockKeyhole size={17} className="text-gray-8 mt-0.5 shrink-0" aria-hidden />
         <p className="font-caption-normal text-gray-9 leading-relaxed">
-          <span aria-hidden className="mr-1">
-            🔒
-          </span>
-          아이가 매일 쓰는 회고와 AI 코멘트는 부모님께 공유되지 않아요. 아이가
-          솔직하게 기록할 수 있도록 선생님과 본인만 볼 수 있는 공간으로
-          운영돼요.
+          {summary?.notice ??
+            '아이가 매일 쓰는 회고와 문항별 답, 세부 활동은 부모님께 공유되지 않아요.'}
         </p>
       </div>
     </section>

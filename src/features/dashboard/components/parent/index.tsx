@@ -147,8 +147,8 @@ const DashboardParent = ({
       <ParentDashboardHeader initialMemberName={initialMemberName} />
       <main className="tablet:gap-12 desktop:gap-20 bg-gray-white tablet:py-12 desktop:pb-25 tablet:px-20 relative flex w-full flex-col gap-8 px-4.5 py-8">
         <ParentLinkSection connectedStudents={connectedStudentData ?? []} />
-        {/* MVP-G v3 — 주간 안심 카드 (⛔ 백엔드 계약 필요) */}
-        <WeeklyReassuranceCard />
+        {/* MVP-G v4 — 학부모 전용 예상등급 안심 요약 실 API */}
+        <WeeklyReassuranceCard childId={selectedStudentId} />
         <div className="tablet:gap-25 flex w-full flex-col gap-8">
           {shouldShowStudentSections && (
             <StudyNewsSection

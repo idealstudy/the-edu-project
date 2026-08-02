@@ -7,4 +7,5 @@ export const wrongAnswerKeys = {
     [...wrongAnswerKeys.all, 'daily-problems', date ?? 'today'] as const,
   list: (nodeId?: number) =>
     [...wrongAnswerKeys.all, 'list', nodeId ?? 'all'] as const,
+  teacherInbox: () => [...wrongAnswerKeys.all, 'teacher-inbox'] as const,
 };

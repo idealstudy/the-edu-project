@@ -10,3 +10,4 @@ export type WrongAnswerItem = z.infer<typeof dto.wrongAnswerItem>;
 export type WrongAnswerList = z.infer<typeof dto.wrongAnswerList>;
 export type ReviewWrongAnswerPayload = z.infer<typeof payload.review>;
 export type WrongAnswerReviewResult = z.infer<typeof dto.reviewResult>;
+export type TeacherWrongAnswerInbox = z.infer<typeof dto.teacherInbox>;

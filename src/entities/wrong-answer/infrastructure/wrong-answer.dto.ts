@@ -54,6 +54,14 @@ const wrongAnswerList = z.object({
   items: z.array(wrongAnswerItem),
 });
 
+const teacherInbox = z.object({
+  stuckAfterGraduationCount: z.number().int().nonnegative(),
+  stuckAfterGraduation: z.array(wrongAnswerItem),
+  neglectedCount: z.number().int().nonnegative(),
+  neglected: z.array(wrongAnswerItem),
+  neglectedThresholdDays: z.number().int().positive(),
+});
+
 /* ─────────────────────────────────────────────────────
  * [CREATE] 회독 제출
  * ────────────────────────────────────────────────────*/
@@ -78,6 +86,7 @@ export const dto = {
   dailyProblemQueue,
   wrongAnswerItem,
   wrongAnswerList,
+  teacherInbox,
   reviewResult,
 };
 
