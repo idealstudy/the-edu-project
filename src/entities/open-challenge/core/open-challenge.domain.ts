@@ -82,6 +82,8 @@ const ChallengeAnswerResultSchema = z.object({
   participantCount: z.number(),
   passRate: z.number().nullable(),
   reward: RewardDeltaSchema.optional(),
+  // 결과화면 해설 섹션 표시 전용 시드 해설(마크다운). 판정에는 영향 없음.
+  solutionText: z.string().nullable().optional(),
 });
 
 /* ─────────────────────────────────────────────────────

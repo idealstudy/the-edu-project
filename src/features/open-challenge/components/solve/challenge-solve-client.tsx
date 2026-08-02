@@ -5,13 +5,13 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+import { ChallengeShareButton } from '@/features/social';
 import {
   SolutionDrawingPad,
   type Stroke,
   exportStrokesToDataURL,
   useDrawingUpload,
 } from '@/shared/components/drawing';
-import { ChallengeShareButton } from '@/features/social';
 import { BackButton, Button, Dialog } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
 import { trackOcStart, trackOcSubmit } from '@/shared/lib/analytics';
@@ -89,8 +89,11 @@ export const ChallengeSolveClient = ({
   const solutionViewedRef = useRef(false);
   const messageCountRef = useRef(0);
 
-  const { data: challenge, isLoading: isChallengeLoading } =
-    useOpenChallengeDetailQuery(challengeId);
+  const {
+    data: challenge,
+    isLoading: isChallengeLoading,
+    isError: isChallengeError,
+  } = useOpenChallengeDetailQuery(challengeId);
   const { data: challengeHistory } = useMyOpenChallengeDetailQuery(
     challengeId,
     { enabled: isLoggedIn }
@@ -257,7 +260,45 @@ export const ChallengeSolveClient = ({
   };
 
   if (isChallengeLoading) return <ChallengeSolveSkeleton />;
-  if (!challenge) return null;
+
+  if (isChallengeError || !challenge) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-4 text-center">
+        <p className="font-body1-heading text-text-main">
+          문제를 찾을 수 없어요.
+        </p>
+        <p className="text-gray-8 text-sm">
+          링크가 잘못됐거나 삭제된 문제일 수 있어요.
+        </p>
+        <Button
+          type="button"
+          variant="outlined"
+          onClick={() => router.push(PUBLIC.OPEN_CHALLENGE.LIST)}
+        >
+          문제 목록으로 가기
+        </Button>
+      </div>
+    );
+  }
+
+  // 아직 지원하지 않는 문제 유형(선택지 없음, 예: 주관식) — 직링크 진입 시 dead-end 방지.
+  if (challenge.choices.length === 0) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-4 text-center">
+        <p className="font-body1-heading text-text-main">
+          아직 지원하지 않는 문제 유형이에요.
+        </p>
+        <p className="text-gray-8 text-sm">다른 문제를 풀어보시겠어요?</p>
+        <Button
+          type="button"
+          variant="outlined"
+          onClick={() => router.push(PUBLIC.OPEN_CHALLENGE.LIST)}
+        >
+          다른 문제 풀러가기
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-[calc(100vh-var(--spacing-header-height,64px))] overflow-hidden">
@@ -271,8 +312,12 @@ export const ChallengeSolveClient = ({
           onAttemptCleared={handleAiAttemptCleared}
           onSessionChange={setAiSessionId}
           drawingStrokes={drawingStrokes}
-          onSolutionViewed={() => { solutionViewedRef.current = true; }}
-          onMessageSent={() => { messageCountRef.current += 1; }}
+          onSolutionViewed={() => {
+            solutionViewedRef.current = true;
+          }}
+          onMessageSent={() => {
+            messageCountRef.current += 1;
+          }}
         />
       </aside>
 
@@ -497,8 +542,12 @@ export const ChallengeSolveClient = ({
               onAttemptCleared={handleAiAttemptCleared}
               onSessionChange={setAiSessionId}
               drawingStrokes={drawingStrokes}
-              onSolutionViewed={() => { solutionViewedRef.current = true; }}
-              onMessageSent={() => { messageCountRef.current += 1; }}
+              onSolutionViewed={() => {
+                solutionViewedRef.current = true;
+              }}
+              onMessageSent={() => {
+                messageCountRef.current += 1;
+              }}
             />
           </Dialog.Body>
         </Dialog.Content>
@@ -516,6 +565,7 @@ export const ChallengeSolveClient = ({
         onOpenChange={setIsSignupSheetOpen}
         trigger={signupTrigger}
         challengeId={challengeId}
+        isCorrect={guestGradeResult ?? undefined}
       />
 
       <Dialog
