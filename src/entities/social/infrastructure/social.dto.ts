@@ -37,6 +37,8 @@ const ChallengeInviteDtoSchema = z.object({
   subject: NullableString,
   unitName: NullableString,
   viewerCompleted: z.boolean().nullable().optional(),
+  // R-08: 조회자 기준 상대방 표시 이름. 과거 응답 호환을 위해 optional.
+  opponentName: NullableString,
 });
 
 /* ─────────────────────────────────────────────────────

@@ -40,6 +40,7 @@ const toChallengeInvite = (raw: unknown): ChallengeInvite => {
     subject: parsed.subject ?? null,
     unitName: parsed.unitName ?? null,
     viewerCompleted: parsed.viewerCompleted ?? false,
+    opponentName: parsed.opponentName ?? null,
   });
 };
 

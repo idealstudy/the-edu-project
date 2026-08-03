@@ -2,6 +2,7 @@ import { renderWithProviders } from '@/tests/utils';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, test, vi } from 'vitest';
 
+import { inviteStatusLabel } from '../../lib/labels';
 import { MyChallengeInvites } from './my-challenge-invites';
 
 const mockUseMyChallengeInvitesQuery = vi.fn();
@@ -153,6 +154,187 @@ describe('MyChallengeInvites', () => {
     renderWithProviders(<MyChallengeInvites />);
 
     expect(screen.getByText('결과 보기')).toBeInTheDocument();
+  });
+
+  test('같은 문제(challengeId)의 도전장 2건은 한 행으로 묶인다', () => {
+    mockUseMyChallengeInvitesQuery.mockReturnValue({
+      data: [
+        {
+          id: 10,
+          challengeId: 20,
+          status: 'OPEN',
+          shareToken: 'tok-a',
+          regDate: '2026-08-01T00:00:00',
+          challengeTitle: '이차방정식 활용',
+          subject: 'MATH',
+          unitName: '이차방정식',
+          inviteeId: null,
+          viewerCompleted: false,
+        },
+        {
+          id: 11,
+          challengeId: 20,
+          status: 'ACCEPTED',
+          shareToken: 'tok-b',
+          regDate: '2026-08-02T00:00:00',
+          challengeTitle: '이차방정식 활용',
+          subject: 'MATH',
+          unitName: '이차방정식',
+          inviteeId: 99,
+          viewerCompleted: true,
+        },
+      ],
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(),
+    });
+
+    renderWithProviders(<MyChallengeInvites />);
+
+    // 제목은 한 번만 뜬다(묶였다는 뜻)
+    expect(screen.getAllByText('이차방정식 활용')).toHaveLength(1);
+    expect(screen.getByText('대결 2건', { exact: false })).toBeInTheDocument();
+
+    const toggle = screen.getByRole('button', { name: /보기/ });
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('묶인 행을 펼치면 대결 2건이 각각 상대별로 보인다', async () => {
+    const { default: userEvent } = await import('@testing-library/user-event');
+
+    mockUseMyChallengeInvitesQuery.mockReturnValue({
+      data: [
+        {
+          id: 20,
+          challengeId: 30,
+          status: 'OPEN',
+          shareToken: 'tok-c',
+          regDate: '2026-08-01T00:00:00',
+          challengeTitle: '함수의 그래프',
+          subject: 'MATH',
+          unitName: null,
+          inviteeId: null,
+          viewerCompleted: false,
+        },
+        {
+          id: 21,
+          challengeId: 30,
+          status: 'ACCEPTED',
+          shareToken: 'tok-d',
+          regDate: '2026-08-02T00:00:00',
+          challengeTitle: '함수의 그래프',
+          subject: 'MATH',
+          unitName: null,
+          inviteeId: 42,
+          viewerCompleted: true,
+          opponentName: '민지',
+        },
+      ],
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(),
+    });
+
+    renderWithProviders(<MyChallengeInvites />);
+
+    const toggle = screen.getByRole('button', { name: /보기/ });
+    await userEvent.setup().click(toggle);
+
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    // OPEN 건의 "공유하기" 와 ACCEPTED+완료 건의 "결과 보기" 가 각각 뜬다
+    expect(screen.getByText('공유하기')).toBeInTheDocument();
+    expect(screen.getByText('결과 보기')).toBeInTheDocument();
+    // 상대 이름(opponentName)이 내부 회원 번호 대신 실명으로 뜬다
+    expect(screen.getByText('민지')).toBeInTheDocument();
+  });
+
+  test('상대 이름(opponentName)이 없으면 "상대 정보 없음"으로 폴백하고, 화면 어디에도 내부 회원 번호(#숫자)가 노출되지 않는다', async () => {
+    const { default: userEvent } = await import('@testing-library/user-event');
+
+    mockUseMyChallengeInvitesQuery.mockReturnValue({
+      data: [
+        {
+          id: 40,
+          challengeId: 50,
+          status: 'OPEN',
+          shareToken: 'tok-g',
+          regDate: '2026-08-01T00:00:00',
+          challengeTitle: '수열의 극한',
+          subject: 'MATH',
+          unitName: null,
+          inviteeId: null,
+          viewerCompleted: false,
+        },
+        {
+          id: 41,
+          challengeId: 50,
+          status: 'ACCEPTED',
+          shareToken: 'tok-h',
+          regDate: '2026-08-02T00:00:00',
+          challengeTitle: '수열의 극한',
+          subject: 'MATH',
+          unitName: null,
+          inviteeId: 123,
+          viewerCompleted: true,
+          // opponentName 없음(과거 응답 등). 내부 번호 대신 완곡한 문구로 폴백해야 함
+        },
+      ],
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(),
+    });
+
+    const { container } = renderWithProviders(<MyChallengeInvites />);
+
+    const toggle = screen.getByRole('button', { name: /보기/ });
+    await userEvent.setup().click(toggle);
+
+    expect(screen.getByText('상대 대기 중')).toBeInTheDocument();
+    expect(screen.getByText('상대 정보 없음')).toBeInTheDocument();
+    expect(container.textContent).not.toMatch(/#\d+/);
+  });
+
+  test('묶인 행의 대표 상태 배지는 완료 > 수락됨 > 대기중 순으로 가장 진행된 상태를 보여준다', () => {
+    mockUseMyChallengeInvitesQuery.mockReturnValue({
+      data: [
+        {
+          id: 30,
+          challengeId: 40,
+          status: 'OPEN',
+          shareToken: 'tok-e',
+          regDate: '2026-08-01T00:00:00',
+          challengeTitle: '삼각함수',
+          subject: 'MATH',
+          unitName: null,
+          inviteeId: null,
+          viewerCompleted: false,
+        },
+        {
+          id: 31,
+          challengeId: 40,
+          status: 'COMPLETED',
+          shareToken: 'tok-f',
+          regDate: '2026-08-02T00:00:00',
+          challengeTitle: '삼각함수',
+          subject: 'MATH',
+          unitName: null,
+          inviteeId: 7,
+          viewerCompleted: true,
+        },
+      ],
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(),
+    });
+
+    renderWithProviders(<MyChallengeInvites />);
+
+    expect(
+      screen.getByText(inviteStatusLabel('COMPLETED'))
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(inviteStatusLabel('OPEN'))
+    ).not.toBeInTheDocument();
   });
 
   test('"결과 보기" 클릭 시 결과 비교 다이얼로그가 열린다', async () => {
