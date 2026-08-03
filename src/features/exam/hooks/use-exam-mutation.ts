@@ -50,3 +50,31 @@ export const useSubmitExamAttempt = (attemptId: number) => {
     },
   });
 };
+
+export const useAcknowledgeExamPin = (attemptId: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (pinId: number) => repository.acknowledgePin(attemptId, pinId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: examKeys.analysis(attemptId),
+      });
+    },
+  });
+};
+
+export const useCreateExamPin = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      attemptId,
+      input,
+    }: {
+      attemptId: number;
+      input: { treeNodeId?: number | null; comment: string };
+    }) => repository.createPin(attemptId, input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: examKeys.teacherPins() });
+    },
+  });
+};

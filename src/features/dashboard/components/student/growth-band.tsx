@@ -13,7 +13,12 @@ type Props = {
   className?: string;
 };
 
-const TREE_CELLS = Array.from({ length: 12 }, (_, index) => index);
+const INTENSITY_STYLE = [
+  'bg-gray-2',
+  'bg-orange-2',
+  'bg-orange-5',
+  'bg-orange-7',
+] as const;
 
 const GrowthBandLoading = ({ className }: Props) => (
   <section
@@ -32,17 +37,31 @@ const GrowthBandLoading = ({ className }: Props) => (
   </section>
 );
 
-const WeaknessTreeMiniGrid = () => (
+const WeaknessTreeMiniGrid = ({
+  cells,
+}: {
+  cells: Array<{
+    nodeId: number;
+    unitName: string;
+    masteryScore: number;
+    intensity: number;
+  }>;
+}) => (
   <div
     className="grid shrink-0 grid-cols-4 gap-1"
     role="img"
-    aria-label="약점트리 정복도 데이터 미연결"
+    aria-label={`약점트리 숙련도 ${cells.length}개 단원`}
     data-testid="student-growth-tree-grid"
   >
-    {TREE_CELLS.map((cell) => (
+    {cells.map((cell) => (
       <span
-        key={cell}
-        className="bg-gray-2 size-5 rounded-md"
+        key={cell.nodeId}
+        className={cn(
+          'size-5 rounded-md',
+          INTENSITY_STYLE[cell.intensity] ?? INTENSITY_STYLE[0]
+        )}
+        title={`${cell.unitName} ${cell.masteryScore}%`}
+        aria-label={`${cell.unitName} 숙련도 ${cell.masteryScore}%`}
       />
     ))}
   </div>
@@ -104,7 +123,7 @@ export const GrowthBand = ({ className }: Props) => {
         )}
         data-testid="student-growth-empty"
       >
-        <WeaknessTreeMiniGrid />
+        <WeaknessTreeMiniGrid cells={growth.weaknessTreeCells} />
         <Sprout
           size={24}
           className="text-orange-6 mt-4"
@@ -137,8 +156,10 @@ export const GrowthBand = ({ className }: Props) => {
       data-testid="student-growth-band"
     >
       <div className="flex shrink-0 flex-col items-center gap-2">
-        <WeaknessTreeMiniGrid />
-        <span className="font-caption-heading text-gray-7">정복도 0%</span>
+        <WeaknessTreeMiniGrid cells={growth.weaknessTreeCells} />
+        <span className="font-caption-heading text-gray-7">
+          정복도 {growth.overallMasteryPercent}%
+        </span>
       </div>
 
       <div className="min-w-0 flex-1">
@@ -147,7 +168,8 @@ export const GrowthBand = ({ className }: Props) => {
             Lv.{growth.level}
           </h3>
           <span className="font-caption-normal text-gray-7">
-            수학 정복도 0% · {growth.daysGrown}일째 성장
+            수학 정복도 {growth.overallMasteryPercent}% · {growth.daysGrown}
+            일째 성장
           </span>
         </div>
         <p className="text-orange-7 mt-1 flex items-center gap-1.5 text-sm font-bold">
@@ -181,8 +203,8 @@ export const GrowthBand = ({ className }: Props) => {
           {growth.totalExperience} xp
         </p>
         <p className="border-gray-3 bg-gray-1 font-caption-normal text-gray-7 mt-3 rounded-lg border px-3 py-2 leading-relaxed">
-          약점트리 셀 농도·정복도 계약이 없어 현재 12칸과 0%로 표시합니다.
-          레벨·스트릭·xp는 실 API 값입니다.
+          자력 정답으로 쌓인 단원 숙련도 평균입니다. 셀은 0·1–33·34–66·67–100의
+          네 농도로 표시합니다.
         </p>
       </div>
     </section>

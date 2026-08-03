@@ -1,5 +1,5 @@
 import { repository, wrongAnswerKeys } from '@/entities/wrong-answer';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const useDailyProblemsQuery = (date?: string) =>
   useQuery({
@@ -18,3 +18,16 @@ export const useTeacherWrongAnswerInboxQuery = () =>
     queryKey: wrongAnswerKeys.teacherInbox(),
     queryFn: repository.getTeacherInbox,
   });
+
+export const useSaveTeacherWrongAnswerComment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, comment }: { id: number; comment: string }) =>
+      repository.saveTeacherComment(id, comment),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: wrongAnswerKeys.teacherInbox(),
+      });
+    },
+  });
+};

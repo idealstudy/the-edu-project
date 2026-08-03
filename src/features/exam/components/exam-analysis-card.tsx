@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 import type { ExamAnalysis } from '@/entities/exam';
+import { useAcknowledgeExamPin } from '@/features/exam/hooks/use-exam-mutation';
 import { Button } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants/route';
 import {
@@ -53,7 +54,13 @@ const getLeafColor = (wrongCount: number) => {
 };
 
 export const ExamAnalysisCard = ({ analysis }: ExamAnalysisCardProps) => {
-  const [isPinAcknowledged, setIsPinAcknowledged] = useState(false);
+  const [acknowledgedPinIds, setAcknowledgedPinIds] = useState<Set<number>>(
+    new Set()
+  );
+  const acknowledgePin = useAcknowledgeExamPin(analysis.attemptId);
+  const visiblePins = analysis.teacherPins.filter(
+    (pin) => !acknowledgedPinIds.has(pin.id)
+  );
   const bandStyle = getGradeBandStyle(
     analysis.predictedGradeLow,
     analysis.predictedGradeHigh
@@ -222,56 +229,59 @@ export const ExamAnalysisCard = ({ analysis }: ExamAnalysisCardProps) => {
         )}
       </div>
 
-      <div
-        className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-4"
-        data-testid="exam-teacher-pin-loop"
-      >
-        <div className="flex items-center gap-2 text-blue-900">
-          <Pin
-            size={18}
-            aria-hidden
-          />
-          <h2 className="font-body2-heading">선생님 핀 확인 루프</h2>
-        </div>
-        <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-center">
-          <div className="min-w-0 flex-1">
-            <p className="font-body2-heading text-gray-10">
-              핀 코멘트 데이터 미연결
-            </p>
-            <p className="font-caption-normal text-gray-7 mt-1">
-              서버 코멘트 대신 계약 상태만 표시합니다. 아래 확인은 UI 동작
-              대조용이며 서버에는 저장되지 않습니다.
-            </p>
+      {visiblePins.map((pin) => (
+        <div
+          key={pin.id}
+          className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-4"
+          data-testid={`exam-teacher-pin-${pin.id}`}
+        >
+          <div className="flex items-center gap-2 text-blue-900">
+            <Pin
+              size={18}
+              aria-hidden
+            />
+            <h2 className="font-body2-heading">
+              {pin.teacherName} 선생님 · 핀 코멘트
+            </h2>
           </div>
-          {isPinAcknowledged ? (
-            <span className="rounded-full bg-green-50 px-3 py-1.5 text-xs font-bold text-green-800">
-              확인했어요
-            </span>
-          ) : (
+          <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-center">
+            <div className="min-w-0 flex-1">
+              <p className="font-body2-normal text-gray-10 leading-relaxed">
+                {pin.comment}
+              </p>
+              <p className="font-caption-normal text-gray-7 mt-1">
+                {new Date(pin.createdAt).toLocaleDateString('ko-KR')} · 확인하면
+                이 화면에서 사라지고 선생님에게 확인 시각이 전달됩니다.
+              </p>
+            </div>
             <Button
               size="xsmall"
               variant="outlined"
-              aria-describedby="exam-pin-contract-notice"
-              onClick={() => setIsPinAcknowledged(true)}
-              data-testid="exam-pin-acknowledge-button"
+              disabled={acknowledgePin.isPending}
+              onClick={() =>
+                acknowledgePin.mutate(pin.id, {
+                  onSuccess: () =>
+                    setAcknowledgedPinIds((current) => {
+                      const next = new Set(current);
+                      next.add(pin.id);
+                      return next;
+                    }),
+                })
+              }
+              data-testid={`exam-pin-acknowledge-${pin.id}`}
             >
               확인했어요
             </Button>
-          )}
+          </div>
+          <p className="font-caption-normal mt-3 flex items-center gap-1.5 text-blue-800">
+            <MessageSquareText
+              size={14}
+              aria-hidden
+            />
+            선생님뷰 상태: 미확인
+          </p>
         </div>
-        <p
-          id="exam-pin-contract-notice"
-          className="font-caption-normal mt-3 flex items-center gap-1.5 text-blue-800"
-          role="status"
-        >
-          <MessageSquareText
-            size={14}
-            aria-hidden
-          />
-          선생님뷰 상태:{' '}
-          {isPinAcknowledged ? '확인함 · 로컬 UI만' : '미확인 · 서버 미연결'}
-        </p>
-      </div>
+      ))}
 
       <Link
         href={PRIVATE.DASHBOARD.WRONG_ANSWERS}

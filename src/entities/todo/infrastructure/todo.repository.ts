@@ -47,9 +47,23 @@ const remove = async (id: number): Promise<void> => {
   await api.private.delete(`/student/todos/${id}`);
 };
 
+const getTeacherRecommendations = async (): Promise<TodoWeekly> => {
+  const response = await api.private.get('/teacher/todos/recommendations');
+  return unwrapEnvelope(response, dto.weekly);
+};
+
+const approveRecommendation = async (id: number): Promise<TodoItem> => {
+  const response = await api.private.post(
+    `/teacher/todos/recommendations/${id}/approve`
+  );
+  return unwrapEnvelope(response, dto.item);
+};
+
 export const repository = {
   getWeekly,
   create,
   update,
   remove,
+  getTeacherRecommendations,
+  approveRecommendation,
 };

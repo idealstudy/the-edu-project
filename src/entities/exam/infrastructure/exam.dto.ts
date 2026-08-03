@@ -49,6 +49,18 @@ const weakUnit = z.object({
   wrongCount: z.number().int().nonnegative(),
 });
 
+const teacherPin = z.object({
+  id: z.number().int().positive(),
+  attemptId: z.number().int().positive(),
+  treeNodeId: z.number().int().positive().nullable(),
+  teacherId: z.number().int().positive(),
+  teacherName: z.string(),
+  comment: z.string(),
+  createdAt: z.string(),
+  acknowledgedAt: z.string().nullable(),
+  acknowledged: z.boolean(),
+});
+
 const analysis = z.object({
   attemptId: z.number().int().positive(),
   examTitle: z.string(),
@@ -58,6 +70,7 @@ const analysis = z.object({
   predictedGradeHigh: z.number().int().min(1).max(9),
   weakUnits: z.array(weakUnit),
   evidence: z.array(predictionEvidence),
+  teacherPins: z.array(teacherPin),
   estimateSource: z.enum(['AI_STUB', 'EBSI_REAL']),
   realDataLinked: z.boolean(),
   referenceOnly: z.boolean(),
@@ -121,6 +134,10 @@ const submitAnswer = z.object({
 });
 
 const submitAttempt = z.object({ answers: z.array(submitAnswer).min(1) });
+const createPin = z.object({
+  treeNodeId: z.number().int().positive().nullable().optional(),
+  comment: z.string().trim().min(1).max(500),
+});
 
 export const dto = {
   assignedExamList: z.array(assignedExam),
@@ -133,10 +150,13 @@ export const dto = {
     examId: z.number().int().positive(),
     assignedStudentCount: z.number().int().nonnegative(),
   }),
+  teacherPin,
+  teacherPins: z.array(teacherPin),
 };
 
 export const payload = {
   create: createExam,
   assign: assignExam,
   submit: submitAttempt,
+  createPin,
 };

@@ -1,6 +1,6 @@
 'use client';
 
-import { useParentGradeSummaryQuery } from '@/features/exam/hooks/use-exam-query';
+import { useChildReportQuery } from '@/features/parent';
 import { Skeleton } from '@/shared/components/loading';
 import { cn } from '@/shared/lib';
 import { ArrowRight, LockKeyhole, ShieldCheck, Sprout } from 'lucide-react';
@@ -14,9 +14,7 @@ export const WeeklyReassuranceCard = ({
   childId,
   className,
 }: WeeklyReassuranceCardProps) => {
-  const summaryQuery = useParentGradeSummaryQuery(childId, {
-    enabled: childId !== null,
-  });
+  const summaryQuery = useChildReportQuery(childId ?? 0);
 
   if (childId !== null && summaryQuery.isPending) {
     return <Skeleton.Block className="h-96 w-full" />;
@@ -24,9 +22,23 @@ export const WeeklyReassuranceCard = ({
 
   const summary = summaryQuery.data;
   const childName = summary?.childName ?? '자녀';
+  const beforeAfter = summary?.beforeAfter;
   const hasGradeRange =
-    summary?.predictedGradeLow !== null &&
-    summary?.predictedGradeLow !== undefined;
+    summary?.expectedGradeRange !== undefined &&
+    summary.expectedGradeRange !== '데이터 없음';
+  const formatPercent = (value: number | undefined) =>
+    value === undefined ? '—' : `${Math.round(value)}%`;
+  const formatDays = (value: number | undefined) =>
+    value === undefined ? '—' : `주 ${Number(value.toFixed(1))}일`;
+  const trackTotal =
+    (beforeAfter?.solutionViewRateBefore ?? 0) +
+    (beforeAfter?.solutionViewRateAfter ?? 0);
+  const beforeTrack =
+    trackTotal === 0
+      ? 0
+      : Math.round(
+          ((beforeAfter?.solutionViewRateBefore ?? 0) / trackTotal) * 100
+        );
 
   return (
     <section
@@ -51,12 +63,12 @@ export const WeeklyReassuranceCard = ({
           학습 변화 기록 · 주간 관리
         </p>
         <span className="bg-orange-1 text-orange-9 mt-3 inline-flex rounded-full px-3 py-1 text-xs font-bold">
-          관리 기간 데이터 연결 전
+          최근 4주 실제 학습 기록
         </span>
       </header>
 
       <p className="font-body2-normal text-gray-9 mx-1 mt-5 text-center leading-relaxed">
-        전후 변화를 계산할 행동 기록이 아직 연결되지 않았어요.
+        처음 2주와 최근 2주의 실제 행동 기록을 비교했어요.
         <br />
         기록이 쌓이면 <b className="text-gray-12">가장 크게 달라진 습관</b>부터
         보여드릴게요.
@@ -72,7 +84,9 @@ export const WeeklyReassuranceCard = ({
         <div className="mt-4 flex items-center gap-3 text-center">
           <div className="flex-1">
             <p className="font-caption-normal text-gray-7">관리 전</p>
-            <p className="text-gray-7 mt-1 text-2xl font-extrabold">—</p>
+            <p className="text-gray-7 mt-1 text-2xl font-extrabold">
+              {formatPercent(beforeAfter?.solutionViewRateBefore)}
+            </p>
           </div>
           <ArrowRight
             size={20}
@@ -81,21 +95,28 @@ export const WeeklyReassuranceCard = ({
           />
           <div className="flex-1">
             <p className="font-caption-normal text-gray-7">지금</p>
-            <p className="text-orange-7 mt-1 text-3xl font-extrabold">—</p>
+            <p className="text-orange-7 mt-1 text-3xl font-extrabold">
+              {formatPercent(beforeAfter?.solutionViewRateAfter)}
+            </p>
           </div>
         </div>
         <div
           className="bg-gray-2 mt-4 flex h-2.5 overflow-hidden rounded-full"
           role="img"
-          aria-label="전후 변화 데이터 미연결"
+          aria-label={`해설 열람 비율 ${formatPercent(beforeAfter?.solutionViewRateBefore)}에서 ${formatPercent(beforeAfter?.solutionViewRateAfter)}로 변화`}
           data-testid="parent-before-after-track"
         >
-          <div className="bg-gray-4 h-full w-0" />
-          <div className="bg-orange-7 h-full w-0" />
+          <div
+            className="bg-gray-4 h-full"
+            style={{ width: `${beforeTrack}%` }}
+          />
+          <div
+            className="bg-orange-7 h-full"
+            style={{ width: `${100 - beforeTrack}%` }}
+          />
         </div>
         <p className="font-caption-normal text-gray-8 mt-3 leading-relaxed">
-          해설 열람 비율·스스로 고민한 시간의 전후 데이터가 현재 응답 계약에
-          없습니다.
+          해설을 먼저 연 완료 기록 ÷ 해당 2주 완료 기록으로 계산합니다.
         </p>
       </div>
 
@@ -108,14 +129,17 @@ export const WeeklyReassuranceCard = ({
           <p className="font-body2-heading text-gray-11 mt-2">
             {hasGradeRange ? (
               <>
-                <span className="text-gray-7">—</span>
+                <span className="text-gray-7">
+                  {beforeAfter?.expectedGradeRangeBefore ?? '데이터 없음'}
+                </span>
                 <ArrowRight
                   size={14}
                   className="text-orange-5 mx-1 inline"
                   aria-hidden
                 />
                 <span className="text-orange-8">
-                  {summary.predictedGradeLow}~{summary.predictedGradeHigh}등급
+                  {beforeAfter?.expectedGradeRangeAfter ??
+                    summary.expectedGradeRange}
                 </span>
               </>
             ) : (
@@ -125,7 +149,19 @@ export const WeeklyReassuranceCard = ({
         </div>
         <div className="border-gray-3 rounded-xl border p-4 text-center">
           <p className="font-caption-normal text-gray-7">자습 꾸준함</p>
-          <p className="font-body2-heading text-gray-11 mt-2">— → —</p>
+          <p className="font-body2-heading text-gray-11 mt-2">
+            <span className="text-gray-7">
+              {formatDays(beforeAfter?.selfStudyDaysPerWeekBefore)}
+            </span>
+            <ArrowRight
+              size={14}
+              className="text-orange-5 mx-1 inline"
+              aria-hidden
+            />
+            <span className="text-orange-8">
+              {formatDays(beforeAfter?.selfStudyDaysPerWeekAfter)}
+            </span>
+          </p>
         </div>
       </div>
 
@@ -135,15 +171,16 @@ export const WeeklyReassuranceCard = ({
             선
           </span>
           <div>
-            <p className="font-body2-heading text-gray-11">선생님 한마디</p>
+            <p className="font-body2-heading text-gray-11">
+              {summary?.teacherName ?? '담당 선생님'} 한마디
+            </p>
             <p className="font-caption-normal text-gray-7">
               담당 선생님 · 직접 작성
             </p>
           </div>
         </div>
         <p className="font-body2-normal text-gray-8 mt-3 leading-relaxed">
-          아직 등록된 한마디가 없어요. 선생님 코멘트 계약이 연결되면 원문을
-          그대로 보여드립니다.
+          {summary?.teacherComment ?? '아직 등록된 한마디가 없어요.'}
         </p>
       </div>
 
@@ -159,11 +196,12 @@ export const WeeklyReassuranceCard = ({
         </p>
       </div>
       <p className="font-caption-normal text-gray-7 mt-3 text-center leading-relaxed">
-        성과 산출에 연결된 학습 기록 <b className="text-gray-9">0건</b> · 전후
-        변화 계약이 연결되기 전에는 수치를 추정하지 않습니다.
+        성과 산출에 연결된 학습 기록{' '}
+        <b className="text-gray-9">{beforeAfter?.learningRecordCount ?? 0}건</b>{' '}
+        · 첫 2주와 최근 2주를 같은 규칙으로 비교합니다.
       </p>
 
-      {!summary || !hasGradeRange ? (
+      {!summary || !beforeAfter?.sufficientData ? (
         <div className="border-gray-3 mt-5 flex flex-col items-center rounded-2xl border border-dashed px-5 py-8 text-center">
           <Sprout
             size={30}
@@ -179,7 +217,8 @@ export const WeeklyReassuranceCard = ({
         </div>
       ) : (
         <p className="border-orange-3 bg-orange-1 text-orange-10 font-caption-normal mt-5 rounded-xl border p-3 text-center">
-          {summary.reassuranceSummary}
+          최신 분석 시험 예상 위치는 {summary.expectedGradeRange}입니다. 등급은
+          단정값이 아닌 현재 범위로 안내합니다.
         </p>
       )}
 
@@ -190,8 +229,8 @@ export const WeeklyReassuranceCard = ({
           aria-hidden
         />
         <p className="font-caption-normal text-gray-9 leading-relaxed">
-          {summary?.notice ??
-            '아이가 매일 쓰는 회고와 문항별 답, 세부 활동은 부모님께 공유되지 않아요.'}
+          아이가 매일 쓰는 회고와 문항별 답, 세부 활동은 부모님께 공유되지
+          않아요.
         </p>
       </div>
     </section>

@@ -4,6 +4,11 @@ import { useState } from 'react';
 
 import type { WrongAnswerItem } from '@/entities/wrong-answer';
 import { useTeacherWrongAnswerInboxQuery } from '@/features/dashboard/hooks/use-wrong-answer-query';
+import {
+  useApproveTodoRecommendation,
+  useTeacherTodoRecommendationsQuery,
+} from '@/features/dashboard/hooks/use-todo-query';
+import { useSaveTeacherWrongAnswerComment } from '@/features/dashboard/hooks/use-wrong-answer-query';
 import { Skeleton } from '@/shared/components/loading';
 import { Button } from '@/shared/components/ui';
 import { cn } from '@/shared/lib';
@@ -20,10 +25,12 @@ const InboxItem = ({
   item,
   selectedComment,
   onSelectComment,
+  isSaving,
 }: {
   item: WrongAnswerItem;
   selectedComment?: QuickComment;
   onSelectComment: (comment: QuickComment) => void;
+  isSaving: boolean;
 }) => (
   <li className="border-gray-2 border-b py-4 last:border-b-0">
     <p className="font-body2-heading text-gray-11">
@@ -51,6 +58,7 @@ const InboxItem = ({
                 : 'bg-gray-white text-orange-9'
             )}
             aria-pressed={isSelected}
+            disabled={isSaving}
             onClick={() => onSelectComment(comment)}
             data-testid={`teacher-inbox-quick-comment-${item.id}`}
           >
@@ -74,24 +82,36 @@ const InboxItem = ({
       </Button>
     </div>
     <p className="font-caption-normal text-gray-7 mt-2 leading-relaxed">
-      선택한 칩은 화면에만 표시됩니다. 발행 API 연결 전이며, 미처리 시 내일
-      09:00 AI 코멘트 자동 발행 정책을 적용하려면 백엔드 계약이 필요합니다.
+      {item.teacherComment
+        ? `저장됨 · ${item.teacherComment}`
+        : '칩을 누르면 학생 오답에 선생님 코멘트로 바로 저장됩니다.'}
     </p>
   </li>
 );
 
 export const LearningInboxCard = () => {
   const inboxQuery = useTeacherWrongAnswerInboxQuery();
+  const recommendationsQuery = useTeacherTodoRecommendationsQuery();
+  const saveComment = useSaveTeacherWrongAnswerComment();
+  const approveTodo = useApproveTodoRecommendation();
   const [selectedComments, setSelectedComments] = useState<
     Record<number, QuickComment>
   >({});
 
-  if (inboxQuery.isPending) return <Skeleton.Block className="h-44 w-full" />;
+  if (inboxQuery.isPending || recommendationsQuery.isPending)
+    return <Skeleton.Block className="h-44 w-full" />;
 
-  const inbox = inboxQuery.data;
+  const inbox = inboxQuery.data ?? {
+    neglectedCount: 0,
+    neglected: [],
+    stuckAfterGraduationCount: 0,
+    stuckAfterGraduation: [],
+    neglectedThresholdDays: 3,
+  };
+  const recommendations = recommendationsQuery.data?.items ?? [];
   if (
-    !inbox ||
-    (inbox.neglectedCount === 0 && inbox.stuckAfterGraduationCount === 0)
+    (inbox.neglectedCount === 0 && inbox.stuckAfterGraduationCount === 0) &&
+    recommendations.length === 0
   ) {
     return (
       <section className="border-gray-3 bg-gray-white rounded-xl border p-6">
@@ -109,8 +129,7 @@ export const LearningInboxCard = () => {
         <div className="border-gray-3 bg-gray-1 mt-4 rounded-xl border p-4">
           <p className="font-body2-heading text-gray-10">할 일 승인 0</p>
           <p className="font-caption-normal text-gray-7 mt-1">
-            AI 추천 할 일 계약이 연결되면 「이대로 꽂기 / 고쳐서」 1클릭 승인이
-            여기에 표시됩니다.
+            승인 대기 중인 응시장·오픈챌린지 추천이 없습니다.
           </p>
         </div>
       </section>
@@ -172,12 +191,19 @@ export const LearningInboxCard = () => {
             key={item.id}
             item={item}
             selectedComment={selectedComments[item.id]}
-            onSelectComment={(comment) =>
-              setSelectedComments((current) => ({
-                ...current,
-                [item.id]: comment,
-              }))
-            }
+            isSaving={saveComment.isPending}
+            onSelectComment={(comment) => {
+              saveComment.mutate(
+                { id: item.id, comment },
+                {
+                  onSuccess: () =>
+                    setSelectedComments((current) => ({
+                      ...current,
+                      [item.id]: comment,
+                    })),
+                }
+              );
+            }}
           />
         ))}
       </ul>
@@ -186,15 +212,21 @@ export const LearningInboxCard = () => {
         className="border-gray-3 bg-gray-1 mt-4 rounded-xl border p-4"
         data-testid="teacher-todo-approval"
       >
-        <p className="font-body2-heading text-gray-10">할 일 승인 0</p>
+        <p className="font-body2-heading text-gray-10">
+          할 일 승인 {recommendations.length}
+        </p>
         <p className="font-caption-normal text-gray-7 mt-1 leading-relaxed">
-          AI 추천 할 일 데이터가 아직 없습니다. 연결되면 추천 근거와 함께 1클릭
-          승인합니다.
+          {recommendations[0]
+            ? `${recommendations[0].studentName ?? `학생 ${recommendations[0].studentId}`} · ${recommendations[0].title} · +${recommendations[0].rewardPoints}P`
+            : '현재 승인 대기 추천이 없습니다.'}
         </p>
         <div className="mt-3 flex gap-2">
           <Button
             size="xsmall"
-            disabled
+            disabled={!recommendations[0] || approveTodo.isPending}
+            onClick={() => {
+              if (recommendations[0]) approveTodo.mutate(recommendations[0].id);
+            }}
           >
             이대로 꽂기
           </Button>
@@ -207,7 +239,8 @@ export const LearningInboxCard = () => {
           </Button>
         </div>
         <p className="font-caption-normal text-gray-7 mt-2">
-          미처리 시 내일 09:00 자동 발행 폴백도 백엔드 스케줄 계약이 필요합니다.
+          승인된 항목만 학생 오늘 할 일에 노출됩니다. 자동 생성·09:00 폴백은
+          별도 공급 파이프라인 범위입니다.
         </p>
       </div>
     </section>

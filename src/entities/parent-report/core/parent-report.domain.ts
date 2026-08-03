@@ -27,6 +27,18 @@ const ChildReportSchema = z.object({
   aiUsageRate: z.number(),
   solutionViewRate: z.number(),
   expectedGradeRange: z.string(),
+  beforeAfter: z.object({
+    solutionViewRateBefore: z.number(),
+    solutionViewRateAfter: z.number(),
+    selfStudyDaysPerWeekBefore: z.number(),
+    selfStudyDaysPerWeekAfter: z.number(),
+    expectedGradeRangeBefore: z.string(),
+    expectedGradeRangeAfter: z.string(),
+    learningRecordCount: z.number().int().nonnegative(),
+    sufficientData: z.boolean(),
+  }),
+  teacherComment: z.string().nullable(),
+  teacherName: z.string().nullable(),
   lastActivityAt: z.string().nullable(),
 });
 

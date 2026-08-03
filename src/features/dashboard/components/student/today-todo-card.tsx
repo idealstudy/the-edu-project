@@ -19,20 +19,20 @@ type Props = {
   className?: string;
 };
 
-type TodoSupply = 'TEACHER' | 'EXAM_HALL' | 'OPEN_CHALLENGE' | 'UNLINKED';
+type TodoSupply = 'TEACHER' | 'EXAM_HALL' | 'OPEN_CHALLENGE' | 'STUDENT';
 
 const SUPPLY_LABEL: Record<TodoSupply, string> = {
   TEACHER: '선생님',
   EXAM_HALL: '응시장',
   OPEN_CHALLENGE: '오픈챌린지',
-  UNLINKED: '공급원 미연결',
+  STUDENT: '학생',
 };
 
 const SUPPLY_STYLE: Record<TodoSupply, string> = {
   TEACHER: 'bg-green-50 text-green-800',
   EXAM_HALL: 'bg-orange-1 text-orange-10',
   OPEN_CHALLENGE: 'bg-gray-2 text-gray-9',
-  UNLINKED: 'border-gray-4 bg-white text-gray-7 border border-dashed',
+  STUDENT: 'border-gray-4 bg-white text-gray-7 border',
 };
 
 const STATUS_LABEL: Record<TodoItem['status'], string> = {
@@ -46,14 +46,17 @@ const formatMonthDay = (date: string) => {
   return `${Number(month)}/${Number(day)}`;
 };
 
-const getTodoSupply = (item: TodoItem): TodoSupply =>
-  item.assignerRole === 'TEACHER' ? 'TEACHER' : 'UNLINKED';
+const getTodoSupply = (item: TodoItem): TodoSupply => item.source;
 
 const getTodoMeta = (item: TodoItem) =>
   [item.subject, item.book].filter(Boolean).join(' · ') ||
-  (item.assignerRole === 'TEACHER'
+  (item.source === 'TEACHER'
     ? '선생님이 배정한 계획'
-    : '기존 직접 입력 계획 · 공급원 전환 필요');
+    : item.source === 'EXAM_HALL'
+      ? '배정된 시험 응시 계획'
+      : item.source === 'OPEN_CHALLENGE'
+        ? '약점 기록 기반 추천'
+        : '학생이 직접 입력한 계획');
 
 const TodoCardLoading = ({ className }: Props) => (
   <section
@@ -119,7 +122,10 @@ export const TodayTodoCard = ({ className }: Props) => {
     summary.totalCount === 0
       ? 0
       : Math.round((summary.doneCount / summary.totalCount) * 100);
-  const totalRewardPoints = 0;
+  const totalRewardPoints = items.reduce(
+    (sum, item) => sum + item.rewardPoints,
+    0
+  );
   const handleMutationError = (error: unknown) => {
     handleApiError(error, classifyTodoError, {
       onField: setFormError,
@@ -247,7 +253,7 @@ export const TodayTodoCard = ({ className }: Props) => {
             className="mt-4"
             disabled
           >
-            기출 1세트 풀고 오늘 할 일 채우기 (+0P)
+            기출 1세트 풀고 오늘 할 일 채우기 (+20P)
           </Button>
         </div>
       ) : (
@@ -330,7 +336,7 @@ export const TodayTodoCard = ({ className }: Props) => {
 
                   <div className="flex shrink-0 flex-col items-end gap-2">
                     <span className="text-orange-7 text-xs font-extrabold tabular-nums">
-                      +0P{item.status === 'DONE' ? ' ✓' : ''}
+                      +{item.rewardPoints}P{item.status === 'DONE' ? ' ✓' : ''}
                     </span>
                     {!isResolved && (
                       <Button
@@ -382,8 +388,8 @@ export const TodayTodoCard = ({ className }: Props) => {
       )}
 
       <p className="border-gray-3 bg-gray-1 font-caption-normal text-gray-8 mt-4 rounded-xl border p-3 leading-relaxed">
-        응시장·오픈챌린지 공급원과 항목별 포인트 계약이 아직 없어 기존 SELF
-        항목은 「공급원 미연결」, 보상은 +0P로 표시합니다.
+        완료 포인트는 공급원별 저장값으로 적립됩니다. 선생님 15P · 응시장 20P
+        · 오픈챌린지 5P · 학생 직접 입력 0P가 기본값입니다.
       </p>
 
       {formError && (

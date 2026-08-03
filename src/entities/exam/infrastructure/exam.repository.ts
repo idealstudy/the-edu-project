@@ -95,6 +95,30 @@ const getParentSummary = async (childId: number) => {
   return unwrapEnvelope(response, dto.parentSummary);
 };
 
+const acknowledgePin = async (attemptId: number, pinId: number) => {
+  const response = await api.private.patch(
+    `/student/exams/${attemptId}/pins/${pinId}/ack`
+  );
+  return unwrapEnvelope(response, dto.teacherPin);
+};
+
+const getTeacherPins = async () => {
+  const response = await api.private.get('/teacher/exams/pins');
+  return unwrapEnvelope(response, dto.teacherPins);
+};
+
+const createPin = async (
+  attemptId: number,
+  input: { treeNodeId?: number | null; comment: string }
+) => {
+  const validated = payload.createPin.parse(input);
+  const response = await api.private.post(
+    `/teacher/exams/attempts/${attemptId}/pins`,
+    validated
+  );
+  return unwrapEnvelope(response, dto.teacherPin);
+};
+
 export const repository = {
   getAssignedExams,
   getAttempt,
@@ -105,4 +129,7 @@ export const repository = {
   assignExam,
   uploadExamPdf,
   getParentSummary,
+  acknowledgePin,
+  getTeacherPins,
+  createPin,
 };

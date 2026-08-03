@@ -11,6 +11,15 @@ const state = z.object({
   wiltingDays: z.number().int().nonnegative(),
   lastActivityDate: z.string().nullable(),
   lastReflectionDate: z.string().nullable(),
+  overallMasteryPercent: z.number().int().min(0).max(100),
+  weaknessTreeCells: z.array(
+    z.object({
+      nodeId: z.number().int().positive(),
+      unitName: z.string(),
+      masteryScore: z.number().int().min(0).max(100),
+      intensity: z.number().int().min(0).max(3),
+    })
+  ),
 });
 
 export const dto = { state };

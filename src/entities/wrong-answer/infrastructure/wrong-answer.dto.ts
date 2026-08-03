@@ -42,6 +42,9 @@ const wrongAnswerItem = z.object({
   wrongAgainCount: z.number().int().nonnegative(),
   nextReviewAt: z.string().nullable(),
   graduatedAt: z.string().nullable(),
+  teacherComment: z.string().nullable(),
+  commentedByTeacherId: z.number().int().positive().nullable(),
+  commentedAt: z.string().nullable(),
   difficulty: z.string().nullable(),
   nationalWrongRate: z.number().int().min(0).max(100).nullable(),
   title: z.string().nullable(),
@@ -71,6 +74,10 @@ const reviewPayload = z.object({
   usedAi: z.boolean(),
 });
 
+const commentPayload = z.object({
+  comment: z.string().trim().min(1).max(500),
+});
+
 const reviewResult = z.object({
   reviewNo: z.number().int().positive(),
   reviewCount: z.number().int().min(1).max(5),
@@ -92,4 +99,5 @@ export const dto = {
 
 export const payload = {
   review: reviewPayload,
+  comment: commentPayload,
 };

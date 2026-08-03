@@ -9,3 +9,5 @@ export type ParentGradeSummary = z.infer<typeof dto.parentSummary>;
 export type CreateExamPayload = z.infer<typeof payload.create>;
 export type AssignExamPayload = z.infer<typeof payload.assign>;
 export type SubmitExamPayload = z.infer<typeof payload.submit>;
+export type ExamTeacherPin = z.infer<typeof dto.teacherPin>;
+export type CreateExamPinPayload = z.infer<typeof payload.createPin>;

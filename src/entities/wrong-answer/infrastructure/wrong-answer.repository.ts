@@ -49,9 +49,19 @@ const getTeacherInbox = async () => {
   return unwrapEnvelope(response, dto.teacherInbox);
 };
 
+const saveTeacherComment = async (id: number, comment: string) => {
+  const validated = payload.comment.parse({ comment });
+  const response = await api.private.post(
+    `/teacher/inbox/wrong-answers/${id}/comments`,
+    validated
+  );
+  return unwrapEnvelope(response, dto.wrongAnswerItem);
+};
+
 export const repository = {
   getDailyProblems,
   getWrongAnswers,
   reviewWrongAnswer,
   getTeacherInbox,
+  saveTeacherComment,
 };

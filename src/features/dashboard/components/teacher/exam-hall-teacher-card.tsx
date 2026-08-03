@@ -8,6 +8,7 @@ import {
   useCreateExam,
   useUploadExamPdf,
 } from '@/features/exam/hooks/use-exam-mutation';
+import { useTeacherExamPinsQuery } from '@/features/exam/hooks/use-exam-query';
 import { useGetTeacherNoteMembers } from '@/features/study-notes/hooks';
 import { Button, Checkbox, Input, Select } from '@/shared/components/ui';
 import { cn } from '@/shared/lib';
@@ -20,6 +21,7 @@ export const ExamHallTeacherCard = ({ className }: { className?: string }) => {
   const uploadMutation = useUploadExamPdf();
   const createMutation = useCreateExam();
   const assignMutation = useAssignExam();
+  const pinsQuery = useTeacherExamPinsQuery();
   const [title, setTitle] = useState('');
   const [examType, setExamType] = useState<'NATIONAL' | 'SCHOOL'>('SCHOOL');
   const [studyRoomId, setStudyRoomId] = useState<string>('');
@@ -344,6 +346,57 @@ export const ExamHallTeacherCard = ({ className }: { className?: string }) => {
             ? `${includedStudentCount}명에게 시험 열기`
             : 'PDF 업로드하고 반에 배정'}
       </Button>
+
+      <div
+        className="border-gray-3 mt-5 rounded-xl border p-4"
+        data-testid="teacher-exam-pins"
+      >
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="font-body2-heading text-gray-11">내가 단 핀</p>
+            <p className="font-caption-normal text-gray-7 mt-1">
+              학생이 확인하면 확인 시각이 남습니다.
+            </p>
+          </div>
+          <span className="bg-gray-2 text-gray-8 rounded-full px-3 py-1 text-xs font-bold">
+            {pinsQuery.data?.length ?? 0}개
+          </span>
+        </div>
+        {pinsQuery.isPending ? (
+          <p className="font-caption-normal text-gray-7 mt-3">
+            핀 상태를 불러오는 중...
+          </p>
+        ) : pinsQuery.data?.length ? (
+          <ul className="mt-2">
+            {pinsQuery.data.slice(0, 4).map((pin) => (
+              <li
+                key={pin.id}
+                className="border-gray-2 flex items-start gap-3 border-b py-3 last:border-b-0"
+              >
+                <p className="font-caption-normal text-gray-9 min-w-0 flex-1 leading-relaxed">
+                  {pin.comment}
+                </p>
+                <span
+                  className={cn(
+                    'shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold',
+                    pin.acknowledged
+                      ? 'bg-green-50 text-green-800'
+                      : 'bg-gray-2 text-gray-7'
+                  )}
+                >
+                  {pin.acknowledgedAt
+                    ? `확인함 · ${new Date(pin.acknowledgedAt).toLocaleDateString('ko-KR')}`
+                    : '미확인'}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="font-caption-normal text-gray-7 mt-3">
+            아직 저장된 핀 코멘트가 없습니다.
+          </p>
+        )}
+      </div>
     </section>
   );
 };

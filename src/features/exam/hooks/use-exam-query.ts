@@ -33,6 +33,12 @@ export const useTeacherExamsQuery = () =>
     queryFn: repository.getTeacherExams,
   });
 
+export const useTeacherExamPinsQuery = () =>
+  useQuery({
+    queryKey: examKeys.teacherPins(),
+    queryFn: repository.getTeacherPins,
+  });
+
 export const useParentGradeSummaryQuery = (
   childId: number | null,
   options?: { enabled?: boolean }

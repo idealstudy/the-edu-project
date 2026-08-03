@@ -8,4 +8,5 @@ export const examKeys = {
   teacherList: () => [...examKeys.all, 'teacher', 'list'] as const,
   parentSummary: (childId: number) =>
     [...examKeys.all, 'parent', 'summary', childId] as const,
+  teacherPins: () => [...examKeys.all, 'teacher', 'pins'] as const,
 };

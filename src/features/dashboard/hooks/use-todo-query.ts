@@ -50,3 +50,19 @@ export const useDeleteTodo = () => {
     },
   });
 };
+
+export const useTeacherTodoRecommendationsQuery = () =>
+  useQuery({
+    queryKey: [...todoKeys.all, 'teacher-recommendations'],
+    queryFn: repository.getTeacherRecommendations,
+  });
+
+export const useApproveTodoRecommendation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => repository.approveRecommendation(id),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: todoKeys.all });
+    },
+  });
+};
