@@ -1,8 +1,22 @@
 import { type Page, expect, test } from '@playwright/test';
 
-import { okBody } from './helpers/api-mock';
+import type {
+  UnitNoteDetail,
+  UnitNoteLibrary,
+  UnitNoteNode,
+} from '@/entities/unit-note';
 
-const nodes = [
+import { okBody } from './helpers/api-mock';
+import { mockMemberInfo, setAuthCookie } from './helpers/auth-mock';
+
+const STUDENT_MEMBER = {
+  id: 7,
+  email: 'mvp-g-student@test.com',
+  name: 'MVP-G 학생',
+  role: 'ROLE_STUDENT',
+};
+
+const nodes: UnitNoteNode[] = [
   {
     nodeId: 10,
     parentId: null,
@@ -25,36 +39,38 @@ const nodes = [
     ['geometric_sequence', '등비수열', 12, 2],
     ['sum_of_sequences', '수열의 합', 13, 0],
     ['mathematical_induction', '수학적 귀납법', 14, 3],
-  ].map(([unit, displayName, nodeId, pageCount]) => ({
-    nodeId,
-    parentId: 10,
-    subject: 'MATH_1',
-    unit,
-    displayName,
-    depth: 1,
-    pageCount,
-    penPageCount: nodeId === 14 ? 1 : 0,
-    uploadPageCount: Number(pageCount) - (nodeId === 14 ? 1 : 0),
-    teachingNoteCount: nodeId === 14 ? 2 : 0,
-    relatedProblemCount: nodeId === 14 ? 2 : 0,
-    masteryScore: nodeId === 14 ? 30 : 0,
-    hintFreeSolveCount: nodeId === 14 ? 1 : 0,
-    leafLevel:
-      Number(pageCount) === 0 ? 'GRAY' : nodeId === 14 ? 'DEEP' : 'LIT',
-    coverPage:
-      Number(pageCount) === 0
-        ? null
-        : {
-            pageId: Number(nodeId) * 10,
-            source: nodeId === 14 ? 'PEN' : 'UPLOAD',
-            fileName: `${displayName}-표지.png`,
-            mimeType: 'image/png',
-            viewUrl: null,
-          },
-  })),
+  ].map(
+    ([unit, displayName, nodeId, pageCount]): UnitNoteNode => ({
+      nodeId: Number(nodeId),
+      parentId: 10,
+      subject: 'MATH_1',
+      unit: String(unit),
+      displayName: String(displayName),
+      depth: 1,
+      pageCount: Number(pageCount),
+      penPageCount: nodeId === 14 ? 1 : 0,
+      uploadPageCount: Number(pageCount) - (nodeId === 14 ? 1 : 0),
+      teachingNoteCount: nodeId === 14 ? 2 : 0,
+      relatedProblemCount: nodeId === 14 ? 2 : 0,
+      masteryScore: nodeId === 14 ? 30 : 0,
+      hintFreeSolveCount: nodeId === 14 ? 1 : 0,
+      leafLevel:
+        Number(pageCount) === 0 ? 'GRAY' : nodeId === 14 ? 'DEEP' : 'LIT',
+      coverPage:
+        Number(pageCount) === 0
+          ? null
+          : {
+              pageId: Number(nodeId) * 10,
+              source: nodeId === 14 ? 'PEN' : 'UPLOAD',
+              fileName: `${String(displayName)}-표지.png`,
+              mimeType: 'image/png',
+              viewUrl: null,
+            },
+    })
+  ),
 ];
 
-const detail = {
+const detail: UnitNoteDetail = {
   nodeId: 14,
   pages: [
     {
@@ -127,13 +143,14 @@ const detail = {
   ],
 };
 
-const library = (withDetail: boolean) => ({
+const library = (withDetail: boolean): UnitNoteLibrary => ({
   totalPages: 6,
   nodes,
   detail: withDetail ? detail : null,
 });
 
 const setupUnitNoteApi = async (page: Page) => {
+  await setAuthCookie(page);
   await page.route('**/api/v1/**', async (route) => {
     await route.fulfill({
       status: 200,
@@ -141,6 +158,7 @@ const setupUnitNoteApi = async (page: Page) => {
       body: okBody({}),
     });
   });
+  await mockMemberInfo(page, STUDENT_MEMBER);
   await page.route('**/api/v1/student/unit-notes**', async (route) => {
     const request = route.request();
     if (request.method() === 'POST') {

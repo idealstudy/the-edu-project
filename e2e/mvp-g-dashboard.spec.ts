@@ -1,7 +1,21 @@
 // student dashboard (API route fixtures; authentication guard renders guest-safe shell)
 import { type Page, expect, test } from '@playwright/test';
 
+import type {
+  DailyProblemQueue,
+  WrongAnswerItem,
+} from '@/entities/wrong-answer';
+import type { AssignedExam, ExamAnalysis } from '@/entities/exam';
+
 import { okBody } from './helpers/api-mock';
+import { mockMemberInfo, setAuthCookie } from './helpers/auth-mock';
+
+const STUDENT_MEMBER = {
+  id: 7,
+  email: 'mvp-g-student@test.com',
+  name: 'MVP-G 학생',
+  role: 'ROLE_STUDENT',
+};
 
 const WRONG_ANSWER_ITEMS = [
   {
@@ -23,6 +37,9 @@ const WRONG_ANSWER_ITEMS = [
     wrongAgainCount: 0,
     nextReviewAt: null,
     graduatedAt: null,
+    teacherComment: null,
+    commentedByTeacherId: null,
+    commentedAt: null,
     difficulty: 'HIGHEST',
     nationalWrongRate: 89,
     title: '역수형 점화식',
@@ -45,6 +62,9 @@ const WRONG_ANSWER_ITEMS = [
     wrongAgainCount: 0,
     nextReviewAt: null,
     graduatedAt: null,
+    teacherComment: null,
+    commentedByTeacherId: null,
+    commentedAt: null,
     difficulty: 'MIDDLE',
     nationalWrongRate: 46,
     title: '로그 방정식',
@@ -67,13 +87,16 @@ const WRONG_ANSWER_ITEMS = [
     wrongAgainCount: 0,
     nextReviewAt: null,
     graduatedAt: '2026-07-29T12:00:00',
+    teacherComment: null,
+    commentedByTeacherId: null,
+    commentedAt: null,
     difficulty: null,
     nationalWrongRate: null,
     title: '졸업한 문제',
     questionText: '목록에 보이면 안 되는 문제',
     questionImageUrl: null,
   },
-];
+] satisfies WrongAnswerItem[];
 
 const DAILY_PROBLEMS = {
   queueDate: '2026-07-30',
@@ -117,7 +140,7 @@ const DAILY_PROBLEMS = {
       solvedStatus: 'PENDING',
     },
   ],
-};
+} satisfies DailyProblemQueue;
 
 const ASSIGNED_EXAMS = [
   {
@@ -133,7 +156,7 @@ const ASSIGNED_EXAMS = [
     predictedGradeLow: 2,
     predictedGradeHigh: 3,
   },
-];
+] satisfies AssignedExam[];
 
 const EXAM_ANALYSIS = {
   attemptId: 901,
@@ -147,6 +170,7 @@ const EXAM_ANALYSIS = {
     { treeNodeId: 12, name: '수열의 합', wrongCount: 1 },
     { treeNodeId: 13, name: '수학적 귀납법', wrongCount: 0 },
   ],
+  teacherPins: [],
   evidence: [
     { source: 'EXAM_SCORE', label: '시험 정답률 80%', value: 80 },
     {
@@ -165,9 +189,10 @@ const EXAM_ANALYSIS = {
   referenceOnly: true,
   realDataFollowUpRequired: false,
   dataNotice: '내신 시험 분석은 AI 추정이며 참고용입니다.',
-};
+} satisfies ExamAnalysis;
 
 const setupDashboardApi = async (page: Page) => {
+  await setAuthCookie(page);
   await page.route('**/api/v1/**', async (route) => {
     await route.fulfill({
       status: 200,
@@ -175,6 +200,7 @@ const setupDashboardApi = async (page: Page) => {
       body: okBody({}),
     });
   });
+  await mockMemberInfo(page, STUDENT_MEMBER);
   await page.route('**/api/v1/student/daily-problems**', async (route) => {
     await route.fulfill({
       status: 200,
@@ -323,8 +349,14 @@ test.describe('MVP-G 학생 대시보드 코어', () => {
     );
     await expect(page.getByText('내신 · AI 추정 참고용')).toBeVisible();
     await expect(page.getByText('이 추정이 나온 곳')).toBeVisible();
-    await expect(page.getByText(/수열 · 오답 2/)).toBeVisible();
-    await expect(page.getByText(/수학적 귀납법 · 숙련도 보완/)).toBeVisible();
+    await expect(page.getByText('수열', { exact: true })).toBeVisible();
+    await expect(page.getByText('2문항 오답', { exact: true })).toBeVisible();
+    await expect(
+      page.getByText('수학적 귀납법', { exact: true })
+    ).toBeVisible();
+    await expect(
+      page.getByText('숙련도 보완 필요', { exact: true })
+    ).toBeVisible();
     await expect(
       page.getByText('내신 시험 분석은 AI 추정이며 참고용입니다.')
     ).toBeVisible();
