@@ -36,6 +36,10 @@ const toChallengeInvite = (raw: unknown): ChallengeInvite => {
     ...parsed,
     inviteeId: parsed.inviteeId ?? null,
     regDate: parsed.regDate ?? null,
+    challengeTitle: parsed.challengeTitle ?? null,
+    subject: parsed.subject ?? null,
+    unitName: parsed.unitName ?? null,
+    viewerCompleted: parsed.viewerCompleted ?? false,
   });
 };
 

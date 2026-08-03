@@ -31,7 +31,8 @@ export default function LoginForm() {
   const inviteToken = searchParams.get('token');
   const from = searchParams.get('from');
   // 도전장 등에서 넘어온 복귀 경로 — 로그인 후 이 경로로 되돌아간다.
-  const redirect = searchParams.get('redirect');
+  // 기존 링크 호환: redirect 가 없으면 from 을 대신 읽는다(둘 다 실제 복귀에 반영).
+  const redirect = searchParams.get('redirect') ?? from;
 
   const {
     register,

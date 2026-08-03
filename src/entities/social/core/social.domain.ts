@@ -35,6 +35,14 @@ const ChallengeInviteSchema = z.object({
   inviteeId: z.number().nullable(),
   status: InviteStatusSchema,
   regDate: z.string().nullable(),
+  // R-06(2026-08): 목록 조회에서만 채워지는 챌린지 표시용 필드. 단건 생성/수락
+  // 응답 등에서는 백엔드가 null 로 내려준다. 프론트는 없으면 "챌린지 #id" 로 폴백.
+  challengeTitle: z.string().nullable(),
+  subject: z.string().nullable(),
+  unitName: z.string().nullable(),
+  // R-07(2026-08): 조회자(나)가 이 챌린지를 이미 완료했는지. false 이면 "결과 보기"
+  // 대신 "먼저 풀기"를 노출해야 한다(안 그러면 서버가 컨닝 가드로 정당하게 막는다).
+  viewerCompleted: z.boolean(),
 });
 
 /* ─────────────────────────────────────────────────────

@@ -34,13 +34,7 @@ export const RidgeMap = ({
           onClick={() => onSelectPeak(peak)}
           aria-expanded={isSelected}
           aria-label={`${peak.displayName}, ${
-            untested
-              ? '미진단'
-              : isMastered
-                ? '정복'
-                : isWeak
-                  ? '약점'
-                  : '진행'
+            untested ? '미진단' : isMastered ? '정복' : isWeak ? '약점' : '진행'
           } ${untested ? 0 : peak.masteryScore}퍼센트, 누르면 세부 트리`}
           className="flex min-w-[92px] flex-1 flex-col bg-transparent p-0 font-sans"
         >
@@ -56,7 +50,9 @@ export const RidgeMap = ({
                     : isWeak
                       ? 'var(--tree-weak)'
                       : 'var(--tree-progress)',
-                border: untested ? '1.5px dashed var(--gray-3, #e0e0e0)' : undefined,
+                border: untested
+                  ? '1.5px dashed var(--gray-3, #e0e0e0)'
+                  : undefined,
                 backgroundColor: untested ? 'var(--tree-untested)' : undefined,
                 borderBottom: untested ? 0 : undefined,
                 boxShadow: isSelected
@@ -74,8 +70,7 @@ export const RidgeMap = ({
                     style={{
                       background:
                         'linear-gradient(100deg, transparent, rgba(255,255,255,.45), transparent)',
-                      animation:
-                        'ridge-trophy-sweep 4.6s ease-in-out infinite',
+                      animation: 'ridge-trophy-sweep 4.6s ease-in-out infinite',
                     }}
                   />
                 </span>
@@ -112,7 +107,7 @@ export const RidgeMap = ({
               </span>
             </div>
           </div>
-          <span className="font-body2-heading text-text-sub1 pt-3 text-center leading-tight">
+          <span className="font-body2-heading text-text-sub1 mt-3 line-clamp-2 h-11 text-center leading-tight [text-wrap:balance] break-keep">
             {peak.displayName}
           </span>
         </button>

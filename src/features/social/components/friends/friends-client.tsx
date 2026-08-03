@@ -1,8 +1,11 @@
 'use client';
 
+import Link from 'next/link';
+
 import { type Friendship } from '@/entities/social';
 import { useSession } from '@/providers';
 import { Button, StatusBadge } from '@/shared/components/ui';
+import { PUBLIC } from '@/shared/constants/route';
 import { UserPlus, Users } from 'lucide-react';
 
 import { useAcceptFriendMutation, useMyFriendsQuery } from '../../hooks';
@@ -87,7 +90,7 @@ export const FriendsClient = () => {
                     key={item.id}
                     className="border-line-line2 flex items-center justify-between gap-3 rounded-[12px] border bg-white px-4 py-3"
                   >
-                    <FriendIdentity {...otherIdentity(item, myId)} />
+                    <FriendIdentityLink {...otherIdentity(item, myId)} />
                     <Button
                       size="xsmall"
                       disabled={isAccepting}
@@ -111,7 +114,7 @@ export const FriendsClient = () => {
                     key={item.id}
                     className="border-line-line2 flex items-center justify-between gap-3 rounded-[12px] border bg-white px-4 py-3"
                   >
-                    <FriendIdentity {...otherIdentity(item, myId)} />
+                    <FriendIdentityLink {...otherIdentity(item, myId)} />
                     <StatusBadge
                       variant="default"
                       label="수락 대기"
@@ -137,7 +140,7 @@ export const FriendsClient = () => {
                     key={item.id}
                     className="border-line-line2 flex items-center justify-between gap-3 rounded-[12px] border bg-white px-4 py-3"
                   >
-                    <FriendIdentity {...otherIdentity(item, myId)} />
+                    <FriendIdentityLink {...otherIdentity(item, myId)} />
                     <StatusBadge
                       variant="success"
                       label="친구"
@@ -154,6 +157,24 @@ export const FriendsClient = () => {
     </div>
   );
 };
+
+const FriendIdentityLink = ({
+  memberId,
+  name,
+  profileImageUrl,
+}: OtherIdentity) => (
+  <Link
+    href={PUBLIC.PROFILE.STUDENT(memberId)}
+    aria-label={`${name ?? '이름 미설정 회원'} 프로필 보기`}
+    className="focus-visible:ring-key-color-primary flex min-w-0 flex-1 rounded-lg focus-visible:ring-2 focus-visible:outline-none"
+  >
+    <FriendIdentity
+      memberId={memberId}
+      name={name}
+      profileImageUrl={profileImageUrl}
+    />
+  </Link>
+);
 
 const FriendIdentity = ({ name, profileImageUrl }: OtherIdentity) => (
   <div className="flex min-w-0 items-center gap-3">

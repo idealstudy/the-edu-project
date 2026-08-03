@@ -4,12 +4,13 @@ import { useState } from 'react';
 
 import Link from 'next/link';
 
-import { Button, StatusBadge, showBottomToast } from '@/shared/components/ui';
+import { type ChallengeInvite } from '@/entities/social';
+import { Button, StatusBadge } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
-import { Link2, Swords } from 'lucide-react';
+import { Swords } from 'lucide-react';
 
 import { useMyChallengeInvitesQuery } from '../../hooks';
-import { inviteStatusLabel } from '../../lib/labels';
+import { inviteStatusLabel, subjectLabel } from '../../lib/labels';
 import { ChallengeResultDialog } from './challenge-result-dialog';
 import { ChallengeShareButton } from './challenge-share-button';
 
@@ -19,8 +20,78 @@ const STATUS_VARIANT = {
   COMPLETED: 'success',
 } as const;
 
+/**
+ * 목록 한 행의 제목: 백엔드가 내려준 문제 제목이 있으면 그걸, 없으면(과거 데이터
+ * 등 R-06 배선 이전) 내부 번호 노출을 피해 완곡한 표현으로 폴백한다.
+ */
+const inviteTitle = (invite: ChallengeInvite): string => {
+  if (invite.challengeTitle) return invite.challengeTitle;
+  return '문제 도전장';
+};
+
+const inviteMeta = (invite: ChallengeInvite): string => {
+  const parts = [subjectLabel(invite.subject), invite.unitName].filter(
+    (part): part is string => !!part
+  );
+  return parts.length > 0
+    ? parts.join(' · ')
+    : (invite.regDate?.slice(0, 10) ?? '도전장 발송');
+};
+
+/**
+ * 한 행의 주 동작 버튼. 상태에 따라 라벨/동작만 바뀌고, 개수(1개)와 위치는
+ * 모든 상태에서 고정한다(2026-08 배치: "수락됨/대기중 UI가 안 맞아 일관성
+ * 깨짐" 지적 반영). 링크 복사 등 보조 동작은 공유 다이얼로그 내부로 옮겼다.
+ */
+const PrimaryAction = ({
+  invite,
+  onViewResult,
+}: {
+  invite: ChallengeInvite;
+  onViewResult: (token: string) => void;
+}) => {
+  if (invite.status === 'OPEN') {
+    // 이미 OPEN 도전장이 있으면 백엔드가 idempotent 하게 같은 shareToken 을
+    // 재사용한다. 다시 눌러도 새 레코드가 쌓이지 않는다. 링크 복사는 다이얼로그
+    // 안에서 제공된다(2026-08 배치: "보내기 버튼과 링크가 왜 두개" 지적 반영).
+    return (
+      <ChallengeShareButton
+        challengeId={invite.challengeId}
+        variant="primary"
+        size="xsmall"
+        label="공유하기"
+      />
+    );
+  }
+
+  // ACCEPTED / COMPLETED: 내(조회자)가 이 문제를 아직 안 풀었으면 "결과 보기"를
+  // 눌러도 서버가 컨닝 가드로 정당하게 막는다. 그 전에 "먼저 풀기"로 유도한다.
+  if (!invite.viewerCompleted) {
+    return (
+      <Button
+        size="xsmall"
+        variant="primary"
+        asChild
+      >
+        <Link href={PUBLIC.OPEN_CHALLENGE.DETAIL(invite.challengeId)}>
+          먼저 풀기
+        </Link>
+      </Button>
+    );
+  }
+
+  return (
+    <Button
+      size="xsmall"
+      onClick={() => onViewResult(invite.shareToken)}
+    >
+      결과 보기
+    </Button>
+  );
+};
+
 /* ─────────────────────────────────────────────────────
- * 내 도전 기록 — 내가 보낸 도전장 목록 + 상태/링크 복사
+ * 내 도전 기록. 내가 보낸/받은 도전장 목록 + 상태별 주 동작 1개
  * ────────────────────────────────────────────────────*/
 export const MyChallengeInvites = () => {
   const {
@@ -29,18 +100,9 @@ export const MyChallengeInvites = () => {
     isError,
     refetch,
   } = useMyChallengeInvitesQuery();
-  const [resultToken, setResultToken] = useState<string | null>(null);
-
-  const handleCopy = async (token: string) => {
-    if (typeof window === 'undefined') return;
-    const url = `${window.location.origin}${PUBLIC.CORE.INVITE.CHALLENGE(token)}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      showBottomToast('도전장 링크를 복사했어요.');
-    } catch {
-      showBottomToast('복사에 실패했어요.');
-    }
-  };
+  const [resultInvite, setResultInvite] = useState<ChallengeInvite | null>(
+    null
+  );
 
   return (
     <section className="flex flex-col gap-3">
@@ -92,10 +154,10 @@ export const MyChallengeInvites = () => {
                         )}
                         className="font-body2-heading text-text-main hover:text-key-color-primary truncate"
                       >
-                        챌린지 #{invite.challengeId}
+                        {inviteTitle(invite)}
                       </Link>
-                      <span className="font-caption-normal text-text-sub2">
-                        {invite.regDate?.slice(0, 10) ?? '도전장 발송'}
+                      <span className="font-caption-normal text-text-sub2 truncate">
+                        {inviteMeta(invite)}
                       </span>
                     </div>
                   </div>
@@ -104,49 +166,10 @@ export const MyChallengeInvites = () => {
                       variant={STATUS_VARIANT[invite.status]}
                       label={inviteStatusLabel(invite.status)}
                     />
-                    {invite.status === 'ACCEPTED' ||
-                    invite.status === 'COMPLETED' ? (
-                      <>
-                        {/* 수락됨/완료 — 양측 결과가 존재할 수 있으므로 "결과 보기"가
-                            주 동작(4-C 비교 화면 진입). ACCEPTED는 상대가 아직
-                            안 풀었을 수 있어 다이얼로그 내부에서 진행 상태를 보여준다. */}
-                        <Button
-                          size="xsmall"
-                          onClick={() => setResultToken(invite.shareToken)}
-                        >
-                          결과 보기
-                        </Button>
-                        {/* 재도전 유도 — 같은 챌린지에 새 도전장(idempotent) 발급 */}
-                        <ChallengeShareButton
-                          challengeId={invite.challengeId}
-                          variant="outlined"
-                          size="xsmall"
-                          label="다시 도전"
-                        />
-                      </>
-                    ) : (
-                      <>
-                        {/* 진행 중인 도전장은 "도전장 보내기"가 주 동작(공유 다이얼로그) —
-                            같은 챌린지에 이미 OPEN 도전장이 있으면 백엔드가 idempotent 하게
-                            기존 shareToken 을 그대로 재사용해 새 레코드가 쌓이지 않는다. */}
-                        <ChallengeShareButton
-                          challengeId={invite.challengeId}
-                          variant="primary"
-                          size="xsmall"
-                          label="도전장 보내기"
-                        />
-                        {/* 링크 복사는 보조 동작으로 격하 — 아이콘 버튼 */}
-                        <Button
-                          variant="outlined"
-                          size="xsmall"
-                          aria-label="도전장 링크 복사"
-                          className="px-2"
-                          onClick={() => handleCopy(invite.shareToken)}
-                        >
-                          <Link2 size={16} />
-                        </Button>
-                      </>
-                    )}
+                    <PrimaryAction
+                      invite={invite}
+                      onViewResult={() => setResultInvite(invite)}
+                    />
                   </div>
                 </li>
               ))}
@@ -164,12 +187,13 @@ export const MyChallengeInvites = () => {
         </>
       )}
 
-      {resultToken && (
+      {resultInvite && (
         <ChallengeResultDialog
-          token={resultToken}
-          isOpen={resultToken !== null}
+          token={resultInvite.shareToken}
+          challengeId={resultInvite.challengeId}
+          isOpen={resultInvite !== null}
           onOpenChange={(open) => {
-            if (!open) setResultToken(null);
+            if (!open) setResultInvite(null);
           }}
         />
       )}
