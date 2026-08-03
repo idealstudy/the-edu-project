@@ -46,9 +46,19 @@ export function NotificationPopover() {
   const markAsRead = useMarkAsRead();
   const deleteNotifications = useDeleteNotifications();
 
-  const notifications = data ?? [];
+  const shouldHideHomework =
+    !session?.role ||
+    session.role === 'ROLE_STUDENT' ||
+    session.role === 'ROLE_PARENT';
+  const notifications = (data ?? []).filter(
+    (notification) =>
+      !shouldHideHomework || notification.category !== 'HOMEWORK'
+  );
   const hasNotifications = notifications.length > 0;
-  const unreadNotifications = unread ?? [];
+  const unreadNotifications = (unread ?? []).filter(
+    (notification) =>
+      !shouldHideHomework || notification.category !== 'HOMEWORK'
+  );
   const hasUnreadNotifications = unreadNotifications.length > 0;
 
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
@@ -73,7 +83,7 @@ export function NotificationPopover() {
   const handleMarkAllRead = () => {
     if (!hasUnreadNotifications) return;
 
-    const unreadIds = unread?.map((n) => n.id) ?? [];
+    const unreadIds = unreadNotifications.map((notification) => notification.id);
     markAsRead.mutate(unreadIds);
   };
 
@@ -88,7 +98,7 @@ export function NotificationPopover() {
   const handleDeleteAll = () => {
     if (!hasNotifications) return;
 
-    const allIds = notifications.map((n) => n.id) ?? [];
+    const allIds = notifications.map((notification) => notification.id);
     deleteNotifications.mutate(allIds);
 
     dispatch({ type: 'GO_TO_CONFIRM' });

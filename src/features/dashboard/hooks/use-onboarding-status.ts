@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 
 import {
-  useStudentDashboardHomeworkListQuery,
   useStudentDashboardNoteListQuery,
   useStudentDashboardQnaListQuery,
 } from './use-student-dashboard-query';
@@ -37,14 +36,6 @@ export const useOnboardingStatus = ({
     enabled: !!firstRoomId,
   });
 
-  const { data: homeworkList } = useStudentDashboardHomeworkListQuery({
-    studyRoomId: firstRoomId,
-    page: 0,
-    size: 1,
-    sortKey: 'LATEST',
-    enabled: !!firstRoomId,
-  });
-
   // 학생: 스터디룸에 참여했다면 학생이 있는 것으로 간주
   const hasStudents = useMemo(() => {
     if (!hasRooms || !firstRoomId) return false;
@@ -63,12 +54,6 @@ export const useOnboardingStatus = ({
     return !!qnaList?.content && qnaList.content.length > 0;
   }, [hasRooms, firstRoomId, qnaList]);
 
-  // 학생: 과제 목록에서 과제가 있는지 확인
-  const hasAssignments = useMemo(() => {
-    if (!hasRooms || !firstRoomId) return false;
-    return !!homeworkList?.content && homeworkList.content.length > 0;
-  }, [hasRooms, firstRoomId, homeworkList]);
-
   // 학생: 피드백 확인은 온보딩 단계가 아님
   const hasFeedback = false;
 
@@ -77,7 +62,6 @@ export const useOnboardingStatus = ({
     hasStudents,
     hasNotes,
     hasQuestions,
-    hasAssignments,
     hasFeedback,
   };
 };

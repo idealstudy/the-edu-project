@@ -126,75 +126,17 @@ test.describe('과제 - 선생님', () => {
 test.describe('과제 - 학생', () => {
   test.setTimeout(60000);
 
-  test('과제 진입이 성공적으로 이루어지는지 확인합니다.', async ({ page }) => {
+  test('과제 URL 직접 접근 시 수업노트로 이동한다', async ({ page }) => {
     await loginAsStudent(page);
 
     await page.goto(
       `/study-rooms/${process.env.E2E_TEST_STUDY_ROOM_ID}/homework`
     );
     await page.waitForURL(
-      `/study-rooms/${process.env.E2E_TEST_STUDY_ROOM_ID}/homework`
+      `/study-rooms/${process.env.E2E_TEST_STUDY_ROOM_ID}/note`
     );
     await expect(page).toHaveURL(
-      `/study-rooms/${process.env.E2E_TEST_STUDY_ROOM_ID}/homework`
+      `/study-rooms/${process.env.E2E_TEST_STUDY_ROOM_ID}/note`
     );
-
-    const firstHomeworkLink = page.getByTestId('homework-list-item').first();
-
-    await expect(firstHomeworkLink).toBeVisible({ timeout: 10000 });
-
-    const firstHomeworkTitle = (
-      await firstHomeworkLink.getByTestId('homework-list-title').textContent()
-    )?.trim();
-    expect(firstHomeworkTitle).not.toBeNull();
-
-    const studentHomeworkHref = await firstHomeworkLink.getAttribute('href');
-    expect(studentHomeworkHref).not.toBeNull();
-
-    await page.goto(studentHomeworkHref!);
-    await expect(page).toHaveURL(
-      new RegExp(
-        `/study-rooms/${process.env.E2E_TEST_STUDY_ROOM_ID}/homework/\\d+`
-      )
-    );
-    await expect(
-      page.getByRole('heading', { name: firstHomeworkTitle! })
-    ).toBeVisible();
-  });
-
-  test('과제 미제출인 경우를 찾아 과제를 제출할 수 있다.', async ({ page }) => {
-    await loginAsStudent(page);
-
-    await page.goto(
-      `/study-rooms/${process.env.E2E_TEST_STUDY_ROOM_ID}/homework`
-    );
-    await expect(page).toHaveURL(
-      `/study-rooms/${process.env.E2E_TEST_STUDY_ROOM_ID}/homework`
-    );
-
-    const unsubmittedHomework = page
-      .getByTestId('homework-list-item')
-      .filter({ hasText: '미제출' })
-      .first();
-
-    await expect(unsubmittedHomework).toBeVisible({ timeout: 10000 });
-
-    const homeworkHref = await unsubmittedHomework.getAttribute('href');
-    expect(homeworkHref).not.toBeNull();
-
-    await page.goto(homeworkHref!);
-    await expect(page).toHaveURL(
-      new RegExp(
-        `/study-rooms/${process.env.E2E_TEST_STUDY_ROOM_ID}/homework/\\d+`
-      )
-    );
-
-    const contentEditor = page.locator('.ProseMirror').last();
-    await contentEditor.click();
-    await page.keyboard.type('E2E 학생 제출 내용');
-
-    const submitButton = page.getByTestId('homework-submit-button');
-    await expect(submitButton).toBeEnabled();
-    await submitButton.click();
   });
 });

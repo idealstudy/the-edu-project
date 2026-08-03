@@ -27,14 +27,10 @@ const DashboardStudent = ({
   const [isParentRequestDialogOpen, setIsParentRequestDialogOpen] =
     useState(false);
   const { data: studyRooms = [] } = useStudentDashboardStudyRoomListQuery();
-  const { hasRooms, hasNotes, hasAssignments, hasQuestions } =
-    useOnboardingStatus({ rooms: studyRooms });
-  const studentCompletionStatus = [
-    hasRooms,
-    hasNotes,
-    hasAssignments,
-    hasQuestions,
-  ] as const;
+  const { hasRooms, hasNotes, hasQuestions } = useOnboardingStatus({
+    rooms: studyRooms,
+  });
+  const studentCompletionStatus = [hasRooms, hasNotes, hasQuestions] as const;
   const studentStepsCompleted = studentCompletionStatus.every(Boolean);
   const query = {
     page: 0,

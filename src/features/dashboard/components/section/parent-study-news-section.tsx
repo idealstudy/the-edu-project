@@ -29,8 +29,11 @@ export const StudyNewsSection = ({
   }));
 
   const connectedStudentLength = connectedStudentData.length;
-  const studyNewsContentLength = studyNewsData.totalElements;
-  const limitStudyNews = studyNewsData.content.slice(0, 5);
+  const visibleStudyNews = studyNewsData.content.filter(
+    (item) => item.type !== 'HOMEWORK'
+  );
+  const studyNewsContentLength = visibleStudyNews.length;
+  const limitStudyNews = visibleStudyNews.slice(0, 5);
 
   const title =
     connectedStudentLength === 1

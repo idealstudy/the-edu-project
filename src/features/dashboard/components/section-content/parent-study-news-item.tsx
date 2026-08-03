@@ -8,39 +8,19 @@ import {
   ChevronRight,
   File,
   MessageCircleQuestionMark,
-  PencilLine,
 } from 'lucide-react';
 
-type ParentStudyNewsType = 'HOMEWORK' | 'TEACHING_NOTE' | 'QNA';
-type ParentStudyNewsDeadlineLabel = 'UPCOMING' | 'TODAY' | 'OVERDUE';
+type ParentStudyNewsType = 'TEACHING_NOTE' | 'QNA';
 
 interface StudyNewsItemProps {
   data: ParentDashboardStudyNewsItemDTO;
   selectedStudentId?: number | null;
 }
 
-const formatHomeworkDeadlineLabel = (
-  label?: ParentStudyNewsDeadlineLabel,
-  dday?: number
-) => {
-  if (label === 'TODAY') return 'D-day';
-  if (label === 'OVERDUE') return '마감';
-  if (typeof dday === 'number') return `D-${dday}`;
-  return '';
-};
-
 const getTypeIcon = (type: ParentStudyNewsType) => {
   const iconClassName = 'h-5 w-5 shrink-0 text-gray-12';
 
   switch (type) {
-    case 'HOMEWORK':
-      return (
-        <PencilLine
-          size={36}
-          className={iconClassName}
-          strokeWidth={1.8}
-        />
-      );
     case 'QNA':
       return (
         <MessageCircleQuestionMark
@@ -65,18 +45,13 @@ export const StudyNewsItem = ({
   data,
   selectedStudentId,
 }: StudyNewsItemProps) => {
-  const isHomework = data.type === 'HOMEWORK';
+  if (data.type === 'HOMEWORK') return null;
+
   const isQna = data.type === 'QNA';
 
   let hrefLink = '';
 
   switch (data.type) {
-    case 'HOMEWORK':
-      hrefLink =
-        selectedStudentId !== undefined && selectedStudentId !== null
-          ? `/study-rooms/${data.studyRoomId}/homework/${data.id}?studentId=${selectedStudentId}`
-          : `/study-rooms/${data.studyRoomId}/homework/${data.id}`;
-      break;
     case 'QNA':
       hrefLink =
         selectedStudentId !== undefined && selectedStudentId !== null
@@ -91,13 +66,8 @@ export const StudyNewsItem = ({
       break;
   }
 
-  const metaPrefix =
-    isHomework || isQna ? undefined : data.studyRoomName || undefined;
+  const metaPrefix = isQna ? undefined : data.studyRoomName || undefined;
   const metaText = `${formatDateDot(data.regDate)} 작성 · ${data.teacherName} 선생님`;
-  const homeworkDeadlineLabel =
-    data.type === 'HOMEWORK'
-      ? formatHomeworkDeadlineLabel(data.deadlineLabel, data.dday)
-      : '';
 
   return (
     <Link href={hrefLink}>
@@ -120,12 +90,6 @@ export const StudyNewsItem = ({
           </p>
 
           <div className="mt-1 flex flex-wrap items-center gap-2">
-            {isHomework && (
-              <span className="bg-gray-1 font-caption-normal text-gray-8 rounded px-1.5 py-0.5">
-                제출일
-              </span>
-            )}
-
             {metaPrefix && (
               <span className="font-caption-normal text-gray-8">
                 {metaPrefix}
@@ -133,16 +97,6 @@ export const StudyNewsItem = ({
             )}
 
             <span className="font-caption-normal text-gray-8">{metaText}</span>
-
-            {isHomework && homeworkDeadlineLabel && (
-              <StatusBadge
-                variant={
-                  data.deadlineLabel === 'OVERDUE' ? 'default' : 'primary'
-                }
-                label={homeworkDeadlineLabel}
-                className="font-caption-heading rounded-[4px] px-2 py-1"
-              />
-            )}
 
             {isQna && data.status === 'COMPLETED' && (
               <span className="bg-system-success-alt text-system-success font-caption-heading flex items-center gap-1 rounded-[4px] px-2 py-1">

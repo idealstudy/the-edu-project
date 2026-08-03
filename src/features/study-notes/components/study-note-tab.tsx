@@ -26,6 +26,13 @@ export const StudyNoteTab = ({ studyRoomId, mode, path }: Props) => {
     <ul className="flex gap-2">
       {TABS_CONFIG.map((tab) => {
         if (
+          tab.value === 'homework' &&
+          (!mode || mode === 'ROLE_STUDENT' || mode === 'ROLE_PARENT')
+        ) {
+          return null;
+        }
+
+        if (
           tab.role === 'ROLE_TEACHER' &&
           mode !== 'ROLE_TEACHER' &&
           mode !== 'ROLE_STUDENT'

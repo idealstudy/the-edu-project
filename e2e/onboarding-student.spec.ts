@@ -35,17 +35,6 @@ const QNA = {
   regDate: '2026-01-01',
 };
 
-const HOMEWORK = {
-  id: 1,
-  title: '과제 1',
-  studyRoomId: 1,
-  studyRoomName: STUDENT_ROOM.name,
-  regDate: '2026-01-01',
-  deadlineLabel: 'UPCOMING',
-  submittedRatePercent: 100,
-  dday: 365,
-};
-
 // ─── Mock 헬퍼 ───────────────────────────────────────────────────────────────
 
 async function setStudent(page: Page) {
@@ -73,19 +62,10 @@ async function mockStudentQnA(page: Page, qnas: object[]) {
   await mockGet(page, '**/api/v1/student/dashboard/qna**', pageBody(qnas));
 }
 
-async function mockStudentHomework(page: Page, homeworks: object[]) {
-  await mockGet(
-    page,
-    '**/api/v1/student/dashboard/homeworks**',
-    pageBody(homeworks)
-  );
-}
-
 async function mockAllEmpty(page: Page) {
   await mockStudentStudyRooms(page, []);
   await mockStudentNotes(page, []);
   await mockStudentQnA(page, []);
-  await mockStudentHomework(page, []);
 }
 
 // ─── 학생 온보딩 테스트 ──────────────────────────────────────────────────────
@@ -114,7 +94,6 @@ test.describe('학생 온보딩', () => {
     await mockStudentStudyRooms(page, [STUDENT_ROOM]);
     await mockStudentNotes(page, []);
     await mockStudentQnA(page, []);
-    await mockStudentHomework(page, []);
 
     await page.goto(PRIVATE.DASHBOARD.STUDENT);
     await page.waitForSelector('[data-testid="student-onboarding"]');
@@ -128,6 +107,8 @@ test.describe('학생 온보딩', () => {
     await expect(
       page.getByTestId('onboarding-수업노트 확인하기-incompleted')
     ).toBeVisible();
+    await expect(page.getByText('과제 제출하기')).not.toBeVisible();
+    await expect(page.getByRole('tab', { name: '과제' })).not.toBeVisible();
     await expect(page.getByRole('button', { name: '닫기' })).toBeVisible();
   });
 
@@ -135,7 +116,6 @@ test.describe('학생 온보딩', () => {
     await mockStudentStudyRooms(page, [STUDENT_ROOM]);
     await mockStudentNotes(page, [NOTE]);
     await mockStudentQnA(page, []);
-    await mockStudentHomework(page, []);
 
     await page.goto(PRIVATE.DASHBOARD.STUDENT);
     await page.waitForSelector('[data-testid="student-onboarding"]');
@@ -158,7 +138,6 @@ test.describe('학생 온보딩', () => {
     await mockStudentStudyRooms(page, [STUDENT_ROOM]);
     await mockStudentNotes(page, [NOTE]);
     await mockStudentQnA(page, [QNA]);
-    await mockStudentHomework(page, [HOMEWORK]);
 
     await page.goto(PRIVATE.DASHBOARD.STUDENT);
 
@@ -166,5 +145,12 @@ test.describe('학생 온보딩', () => {
     await expect(page.getByText('질문 1')).toBeVisible();
 
     await expect(page.getByTestId('student-onboarding')).toBeHidden();
+  });
+
+  test('과제 URL 직접 접근 시 수업노트로 이동한다', async ({ page }) => {
+    await page.goto(PRIVATE.HOMEWORK.LIST(STUDENT_ROOM.id));
+
+    await page.waitForURL(PRIVATE.NOTE.LIST(STUDENT_ROOM.id));
+    await expect(page).toHaveURL(PRIVATE.NOTE.LIST(STUDENT_ROOM.id));
   });
 });

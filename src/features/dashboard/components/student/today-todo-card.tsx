@@ -246,8 +246,8 @@ export const TodayTodoCard = ({ className }: Props) => {
             오늘 배정된 할 일이 아직 없어요
           </p>
           <p className="font-caption-normal text-gray-8 mt-1 leading-relaxed">
-            선생님이 과제를 올리거나 시험·오픈챌린지 공급원이 연결되면 여기
-            쌓여요.
+            선생님이 할 일을 배정하거나 시험·오픈챌린지 공급원이 연결되면
+            여기 쌓여요.
           </p>
           <Button
             className="mt-4"

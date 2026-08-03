@@ -36,6 +36,10 @@ export const StudyNewsList = ({
   const selectedStudent = connectedStudentData.find(
     (student) => student.studentId === selectedStudentId
   );
+  const visibleStudyNews = studyNewsData.content.filter(
+    (item) => item.type !== 'HOMEWORK'
+  );
+
   return (
     <div
       className={cn(
@@ -55,15 +59,15 @@ export const StudyNewsList = ({
           ) : null}
 
           <div className="font-body1-heading text-gray-12">
-            {studyNewsData.content.length > 1 ? (
+            {visibleStudyNews.length > 1 ? (
               <div className="flex items-center gap-2">
                 학생별 학습 소식
                 <span className="font-headline1-normal text-orange-7">
-                  {studyNewsData.totalElements}
+                  {visibleStudyNews.length}
                 </span>
               </div>
             ) : (
-              `${selectedStudent?.studentName ?? '-'} 학생의 학습 소식 ${studyNewsData.totalElements}`
+              `${selectedStudent?.studentName ?? '-'} 학생의 학습 소식 ${visibleStudyNews.length}`
             )}
           </div>
         </div>
@@ -77,7 +81,7 @@ export const StudyNewsList = ({
               />
             ))}
           </div>
-        ) : studyNewsData.content.length === 0 ? (
+        ) : visibleStudyNews.length === 0 ? (
           <div className="flex h-22 w-full items-center justify-center">
             <p className="font-body2-normal text-gray-8">
               학생의 학습 소식이 없어요.
@@ -85,7 +89,7 @@ export const StudyNewsList = ({
           </div>
         ) : (
           <>
-            {studyNewsData.content.map((item) => (
+            {visibleStudyNews.map((item) => (
               <StudyNewsItem
                 key={`${item.type}-${item.id}`}
                 data={item}

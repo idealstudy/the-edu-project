@@ -11,11 +11,6 @@ const ACTIVITY_REPORT_META = [
     label: '질문 수',
     unit: '개',
   },
-  {
-    key: 'homeworkCompletionRate',
-    label: '과제 수행률',
-    unit: '%',
-  },
 ] satisfies {
   key: keyof FrontendStudentReport;
   label: string;

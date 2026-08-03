@@ -11,6 +11,7 @@ import {
 } from '@/features/settings/hooks/use-notification';
 import { Toggle } from '@/shared/components/ui/toggle';
 import { link } from '@/shared/constants';
+import { useMemberStore } from '@/store';
 import { Info } from 'lucide-react';
 
 type ServiceSubCategory = Extract<
@@ -37,6 +38,7 @@ const SERVICE_SUB_ITEMS: Record<
 const SERVICE_SUB_KEYS = Object.keys(SERVICE_SUB_ITEMS) as ServiceSubCategory[];
 
 export default function NotificationSettings() {
+  const role = useMemberStore((state) => state.member?.role);
   const { data: notificationSettings, isLoading: isSettingsLoading } =
     useNotificationSettings();
   const updateNotificationSettingMutation = useUpdateNotificationSetting();
@@ -52,6 +54,11 @@ export default function NotificationSettings() {
     settingsMap.get(category) ?? false;
 
   const serviceEnabled = getEnabled('ALL');
+  const shouldHideHomework =
+    !role || role === 'ROLE_STUDENT' || role === 'ROLE_PARENT';
+  const visibleServiceSubKeys = SERVICE_SUB_KEYS.filter(
+    (category) => category !== 'HOMEWORK' || !shouldHideHomework
+  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -82,7 +89,7 @@ export default function NotificationSettings() {
         </p>
 
         <div className="border-gray-4 mt-4 flex flex-col gap-4 border-t pt-4 pl-4">
-          {SERVICE_SUB_KEYS.map((category) => (
+          {visibleServiceSubKeys.map((category) => (
             <div
               key={category}
               className="flex items-center gap-2"

@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import Link from 'next/link';
 
 import {
-  useStudentDashboardHomeworkListQuery,
   useStudentDashboardNoteListQuery,
 } from '@/features/dashboard/hooks/use-student-dashboard-query';
 import { useStudentNoteList } from '@/features/student-study-note/hooks';
@@ -14,7 +13,6 @@ import { Pagination } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants';
 import { differenceInCalendarDays } from 'date-fns';
 
-import HomeworkSectionContent from '../section-content/homework-section-content';
 import NoteSectionContent from '../section-content/note-section-content';
 import TabbedSection from './tabbed-section';
 
@@ -81,50 +79,6 @@ const StudentNoteTabContent = ({ studyRoomId }: { studyRoomId?: number }) => {
       page={page}
       totalPages={data?.totalPages ?? 0}
       onPageChange={setPage}
-    />
-  );
-};
-
-// ─── 과제 탭 ──────────────────────────────────────────────────────────────────
-
-const StudentHomeworkTabContent = ({
-  studyRoomId,
-}: {
-  studyRoomId?: number;
-}) => {
-  const [page, setPage] = useState(1);
-
-  useEffect(() => {
-    setPage(1);
-  }, [studyRoomId]);
-
-  const { data, isPending } = useStudentDashboardHomeworkListQuery({
-    studyRoomId,
-    page: page - 1,
-    size: 8,
-    sortKey: 'DEADLINE_IMMINENT',
-  });
-
-  if (isPending) {
-    return (
-      <div className="flex w-full flex-col gap-3">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div
-            key={i}
-            className="bg-gray-3 h-14 w-full animate-pulse rounded-xl"
-          />
-        ))}
-      </div>
-    );
-  }
-
-  return (
-    <HomeworkSectionContent
-      homeworks={data?.content ?? []}
-      page={page}
-      totalPages={data?.totalPages ?? 0}
-      onPageChange={setPage}
-      emptyMessage="제출할 과제가 없어요."
     />
   );
 };
@@ -212,7 +166,7 @@ const StudentStudyNoteTabContent = () => {
 // - 스터디룸 목록을 fetch하고 선택한 스터디룸 ID를 관리합니다.
 // - 각 탭 콘텐츠 컴포넌트에 selectedId를 전달해 필터링된 데이터를 보여줍니다.
 
-const STUDENT_TABS = ['수업노트', '학습노트', '과제'];
+const STUDENT_TABS = ['수업노트', '학습노트'];
 
 interface StudentTabSectionProps {
   studyRooms: { id: number; name: string }[];
@@ -231,10 +185,6 @@ const StudentTabSection = ({
       studyRoomId={selectedId ?? undefined}
     />,
     <StudentStudyNoteTabContent key="study-note" />,
-    <StudentHomeworkTabContent
-      key="homework"
-      studyRoomId={selectedId ?? undefined}
-    />,
   ];
 
   return (

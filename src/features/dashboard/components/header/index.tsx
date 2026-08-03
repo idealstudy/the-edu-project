@@ -95,11 +95,6 @@ const DashboardHeader = () => {
       unit: '개',
       label: '수집한 답변',
     },
-    {
-      value: studentReport?.submittedHomeworkCount ?? '-',
-      unit: '개',
-      label: '제출한 과제',
-    },
   ];
 
   const parentStats: HeaderStat[] = [

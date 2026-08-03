@@ -8,7 +8,6 @@ import {
   ArrowRightIcon,
   ChatIcon,
   CoiledBookIcon,
-  PenIcon,
   UserPlusIcon,
 } from '@/shared/components/icons';
 import { cn } from '@/shared/lib';
@@ -21,7 +20,6 @@ import { OnboardingStepGroup } from '../onboarding/onboarding-step-group';
 const ONBOARDING_STEPS = [
   { label: '선생님 초대 받기', icon: UserPlusIcon },
   { label: '수업노트 확인하기', icon: CoiledBookIcon },
-  { label: '과제 제출하기', icon: PenIcon },
   { label: '질문하기', icon: ChatIcon },
 ] as const satisfies readonly {
   label: string;
@@ -29,7 +27,7 @@ const ONBOARDING_STEPS = [
 }[];
 
 interface StudentOnboardingProps {
-  completionStatus: readonly [boolean, boolean, boolean, boolean];
+  completionStatus: readonly [boolean, boolean, boolean];
 }
 
 const StudentOnboarding = ({ completionStatus }: StudentOnboardingProps) => {

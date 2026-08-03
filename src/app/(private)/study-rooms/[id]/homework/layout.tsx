@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { useParams, usePathname } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 
 import BackLink from '@/features/dashboard/studynote/components/back-link';
 import { HomeworkTabShell } from '@/features/homework/components/homework-tab-shell';
@@ -10,6 +10,7 @@ import { StudyNoteTab } from '@/features/study-notes/components/study-note-tab';
 import { StudyNoteGroupContext } from '@/features/study-notes/contexts/study-note-group.context';
 import { StudyroomSidebar } from '@/features/study-rooms/components/sidebar';
 import { ColumnLayout } from '@/layout/column-layout';
+import { PRIVATE } from '@/shared/constants';
 import { useRole } from '@/shared/hooks/use-role';
 
 type LayoutProps = {
@@ -17,9 +18,10 @@ type LayoutProps = {
 };
 
 export default function HomeworkLayout({ children }: LayoutProps) {
-  const { role } = useRole();
+  const { role, isLoading } = useRole();
   const params = useParams();
   const path = usePathname();
+  const router = useRouter();
   const studyRoomId = Number(params.id);
 
   const [selectedGroupId, setSelectedGroupId] = useState<number | 'all'>('all');
@@ -31,6 +33,18 @@ export default function HomeworkLayout({ children }: LayoutProps) {
   const isHomeworkRootPage = segment === 'homework';
   const isHomeworkDetailPage =
     secondLastSegment === 'homework' && segment !== 'new';
+  const isHomeworkHiddenRole =
+    role === 'ROLE_STUDENT' || role === 'ROLE_PARENT';
+
+  useEffect(() => {
+    if (isLoading || !isHomeworkHiddenRole) return;
+
+    router.replace(PRIVATE.NOTE.LIST(studyRoomId));
+  }, [isHomeworkHiddenRole, isLoading, router, studyRoomId]);
+
+  if (isLoading || !role || isHomeworkHiddenRole) {
+    return null;
+  }
 
   if (isHomeworkRootPage) {
     return (
