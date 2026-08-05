@@ -376,7 +376,7 @@ const SubmitAnswerPayloadSchema = z.object({
 /* ─────────────────────────────────────────────────────
  * 리뷰(풀이) 작성 Payload
  *  - solutionType=TEXT: content 필수.
- *  - solutionType=DRAWING: drawingImageMediaId 필수(스냅샷 업로드 후 media_id),
+ *  - solutionType=DRAWING: drawingImageMediaId 필수(스냅샷 업로드 후 media_asset.id),
  *    drawingData(획 원본 JSON)는 선택, content는 보조 메모로 선택.
  *  백엔드: POST /api/common/challenge-reviews
  * ────────────────────────────────────────────────────*/
@@ -387,7 +387,7 @@ const CreateReviewPayloadSchema = z
     solutionType: z.enum(['TEXT', 'DRAWING']).default('TEXT'),
     content: z.string().default(''),
     drawingData: z.string().nullable().optional(),
-    drawingImageMediaId: z.string().nullable().optional(),
+    drawingImageMediaId: z.number().int().positive().nullable().optional(),
   })
   .superRefine((value, ctx) => {
     if (value.solutionType === 'TEXT' && value.content.trim().length === 0) {

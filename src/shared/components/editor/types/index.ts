@@ -104,6 +104,11 @@ export type PresignMediaAsset = {
   fileName: string;
   contentType: string;
   sizeBytes: number;
+  targetType:
+    | 'PENDING_ATTACHMENT'
+    | 'CHALLENGE_REVIEW_DRAWING'
+    | 'UNIT_NOTE_PAGE'
+    | 'EXAM_PDF';
 };
 
 /** Presign 요청 Body */
@@ -113,6 +118,7 @@ export type PresignBatchRequest = {
 
 /** Presign 응답 미디어 에셋 */
 export type PresignMediaAssetResponse = {
+  id: number;
   fileName: string;
   mediaId: string;
   uploadUrl: string;

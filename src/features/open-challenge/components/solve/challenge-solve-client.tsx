@@ -141,7 +141,9 @@ export const ChallengeSolveClient = ({
   const createReviewMutation = useCreateChallengeReviewMutation();
   const claimGuestSessionMutation = useClaimGuestSessionMutation();
   const finishAiCoachingSessionMutation = useFinishAiCoachingSessionMutation();
-  const { uploadDrawingAsync, isUploading } = useDrawingUpload();
+  const { uploadDrawingAsync, isUploading } = useDrawingUpload(
+    'CHALLENGE_REVIEW_DRAWING'
+  );
   const isSubmitting =
     startAttemptMutation.isPending ||
     submitAnswerMutation.isPending ||
@@ -322,18 +324,26 @@ export const ChallengeSolveClient = ({
       });
 
       // D-14: 정오와 무관하게 손글씨가 있으면 문제를 푼 사람들에게 공유한다.
+      let drawingShareFailure:
+        | { strokes: Stroke[]; mediaAssetId?: number }
+        | undefined;
       if (drawingStrokes.length > 0) {
+        let mediaAssetId: number | undefined;
         try {
-          const { mediaId } = await uploadDrawingAsync(drawingStrokes);
+          ({ mediaAssetId } = await uploadDrawingAsync(drawingStrokes));
           await createReviewMutation.mutateAsync({
             challengeId,
             attemptId,
             solutionType: 'DRAWING',
             content: '',
-            drawingImageMediaId: mediaId,
+            drawingImageMediaId: mediaAssetId,
           });
         } catch {
-          // 드로잉 업로드 실패가 결과 화면 이동을 막지 않도록 한다.
+          // 결과 화면 이동은 유지하되, 실패 사실과 재시도 정보를 결과에 넘긴다.
+          drawingShareFailure = {
+            strokes: drawingStrokes,
+            mediaAssetId,
+          };
         }
       }
 
@@ -356,13 +366,19 @@ export const ChallengeSolveClient = ({
             attemptId,
             selectedAnswer,
             myDrawingDataUrl,
+            drawingShareFailure,
           })
         );
       } catch {
         // 드로잉 dataURL 로 용량 초과 시, 드로잉 없이 결과만 저장한다.
         window.sessionStorage.setItem(
           storageKey,
-          JSON.stringify({ ...result, attemptId, selectedAnswer })
+          JSON.stringify({
+            ...result,
+            attemptId,
+            selectedAnswer,
+            drawingShareFailure,
+          })
         );
       }
       router.push(PUBLIC.OPEN_CHALLENGE.RESULT(challengeId));
