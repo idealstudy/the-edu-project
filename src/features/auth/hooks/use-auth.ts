@@ -3,7 +3,6 @@ import { useRouter } from 'next/navigation';
 import { getCurrentMemberOptions, repository } from '@/entities/member';
 import { resolveLoginDestination } from '@/features/auth/lib/redirect';
 import { LoginBody } from '@/features/auth/types';
-import { IMPERSONATION_STORAGE_KEY } from '@/features/impersonation/model/storage';
 import { useSession } from '@/providers/session/session-context';
 import { api } from '@/shared/api';
 import { trackAuthLoginSuccess } from '@/shared/lib/analytics';
@@ -23,7 +22,6 @@ export const useLogin = (redirectTo?: string | null) => {
   return useMutation({
     mutationFn: loginRequest,
     onSuccess: async () => {
-      window.sessionStorage.removeItem(IMPERSONATION_STORAGE_KEY);
       const member = await queryClient.fetchQuery(
         getCurrentMemberOptions(true)
       );
@@ -54,7 +52,6 @@ export const useLogout = () => {
     mutationFn: repository.member.logout,
     // 요청 성공/실패와 무관하게 상태 정리
     onSuccess: async () => {
-      window.sessionStorage.removeItem(IMPERSONATION_STORAGE_KEY);
       clearMember();
       queryClient.clear();
       router.replace('/');

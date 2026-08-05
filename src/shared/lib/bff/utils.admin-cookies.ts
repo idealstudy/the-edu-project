@@ -23,6 +23,15 @@ export const applyAdminReturnCookieForBff = (
   collectSetCookies(source)
     .filter((cookie) => cookie.startsWith('admin-return='))
     .forEach((cookie) => {
+      const expired =
+        /^admin-return=;/i.test(cookie) || /Max-Age=0(?:;|$)/i.test(cookie);
+      target.cookies.set('admin-impersonating', expired ? '' : '1', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: expired ? 0 : 30 * 60,
+      });
       target.headers.append('Set-Cookie', adaptAdminCookieForBff(cookie));
     });
 };

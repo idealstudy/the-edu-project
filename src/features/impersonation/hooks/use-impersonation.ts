@@ -6,8 +6,6 @@ import { classifyAdminMemberError } from '@/shared/lib/errors/errors';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 
-import { IMPERSONATION_STORAGE_KEY } from '../model/storage';
-
 const ERROR_REDIRECT_DELAY_MS = 1500;
 
 const impersonationTargetSchema = z.object({
@@ -25,12 +23,8 @@ export const useImpersonateMember = () => {
       await repository.admin.impersonate(validated.memberId);
       return validated;
     },
-    onSuccess: (target) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: memberKeys.all });
-      window.sessionStorage.setItem(
-        IMPERSONATION_STORAGE_KEY,
-        JSON.stringify(target)
-      );
       window.location.assign('/dashboard');
     },
     onError: (error) => {
@@ -53,13 +47,11 @@ export const useExitImpersonation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: memberKeys.all });
       queryClient.clear();
-      window.sessionStorage.removeItem(IMPERSONATION_STORAGE_KEY);
       window.location.assign('/admin/members');
     },
     onError: (error) => {
       handleApiError(error, classifyAdminMemberError, {
         onContext: () => {
-          window.sessionStorage.removeItem(IMPERSONATION_STORAGE_KEY);
           setTimeout(() => router.replace('/login'), ERROR_REDIRECT_DELAY_MS);
         },
         onAuth: () =>
