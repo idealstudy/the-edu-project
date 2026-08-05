@@ -50,4 +50,5 @@ export type {
   FrontendMember,
   AdminMemberListItem,
   AdminMemberRole,
+  AdminMemberDetail,
 } from './types';

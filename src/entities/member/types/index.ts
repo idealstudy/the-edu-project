@@ -9,6 +9,7 @@ export type Role = z.infer<typeof dto.role>;
 export type FrontendMember = z.infer<typeof domain.schema>;
 export type AdminMemberListItem = z.infer<typeof dto.adminListItem>;
 export type AdminMemberRole = z.infer<typeof dto.adminRole>;
+export type AdminMemberDetail = z.infer<typeof dto.adminDetail>;
 
 export type UserBasicInfo =
   | FrontendTeacherBasicInfo

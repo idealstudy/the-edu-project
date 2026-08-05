@@ -50,6 +50,7 @@ const useSidebarContext = () => {
 const SidebarRoot = ({ children }: { children: ReactNode }) => {
   return (
     <div
+      data-dashboard-sidebar
       className={cn(
         'top-header-height fixed left-0 z-50 hidden h-[calc(100dvh-var(--spacing-header-height))] flex-col py-3',
         'desktop:flex'

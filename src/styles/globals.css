@@ -88,6 +88,10 @@
   --tree-mastered: #ff4805; /* 정복 (진한 오렌지, = primary) */
 }
 
+body:has([data-admin-shell]) [data-dashboard-sidebar] {
+  display: none;
+}
+
 html,
 body {
   margin: 0;

@@ -48,6 +48,44 @@ const AdminMemberListResponseSchema = sharedSchema.response(
   AdminMemberListSchema
 );
 
+const AdminMemberRoomSchema = z.object({
+  studyRoomId: z.number().int().positive(),
+  name: z.string(),
+  state: z.string(),
+});
+
+const AdminMemberActionSchema = z.object({
+  actionId: z.number().int().positive(),
+  action: z.enum(['REVOKED', 'RESTORED']),
+  actorId: z.number().int().positive(),
+  actorName: z.string(),
+  reason: z.string(),
+  actedAt: z.string().nullable(),
+});
+
+const AdminMemberDetailSchema = z.object({
+  memberId: z.number().int().positive(),
+  name: z.string().nullable(),
+  email: z.string().email(),
+  role: AdminMemberRoleSchema,
+  signupPath: z.enum(['SELF', 'TEACHER_INVITE', 'OPEN_CHALLENGE']).nullable(),
+  signupAt: z.string().nullable(),
+  lastActiveAt: z.string().nullable(),
+  isQaAccount: z.boolean(),
+  revoked: z.boolean(),
+  revokedAt: z.string().nullable(),
+  studyRooms: z.array(AdminMemberRoomSchema),
+  actionHistory: z.array(AdminMemberActionSchema),
+});
+
+const AdminMemberDetailResponseSchema = sharedSchema.response(
+  AdminMemberDetailSchema
+);
+
+export const AdminMemberRevokePayloadSchema = z.object({
+  reason: z.string().trim().min(5).max(500),
+});
+
 export const dto = {
   schema: MemberDtoSchema,
   envelope: MemberEnvelopeSchema,
@@ -57,4 +95,6 @@ export const dto = {
   adminListItem: AdminMemberListItemSchema,
   adminList: AdminMemberListSchema,
   adminListResponse: AdminMemberListResponseSchema,
+  adminDetail: AdminMemberDetailSchema,
+  adminDetailResponse: AdminMemberDetailResponseSchema,
 };

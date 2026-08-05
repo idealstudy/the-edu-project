@@ -266,7 +266,11 @@ const PARENT = {
 const ADMIN = {
   MEMBERS: {
     LIST: '/admin/members',
+    DETAIL: (id: number) => `/admin/members/${id}`,
   },
+  STUDY_ROOMS: '/admin/study-rooms',
+  PUBLIC_EXAMS: '/admin/public-exams',
+  CONSULTATIONS: '/admin/consultations',
   COLUMN: {
     LIST: '/admin/column',
     DETAIL: (id: number) => `/admin/column/${id}`,

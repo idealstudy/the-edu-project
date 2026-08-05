@@ -1,0 +1,325 @@
+'use client';
+
+import { useMemo, useState } from 'react';
+
+import { type AdminConsultationCase } from '@/entities/admin-operations';
+import { SearchInput, Textarea } from '@/shared/components/ui';
+import { cn } from '@/shared/lib';
+
+import {
+  useAdminConsultations,
+  useAdminSummary,
+  useUpdateAdminConsultation,
+} from '../hooks/use-admin-operations';
+
+const states = [
+  ['RECEIVED', '접수'],
+  ['IN_PROGRESS', '처리 중'],
+  ['ANSWERED', '답변 완료'],
+] as const;
+const badge = {
+  RECEIVED: 'bg-[#fff7ed] text-[#c2410c]',
+  IN_PROGRESS: 'bg-[#eff6ff] text-[#1d4ed8]',
+  ANSWERED: 'bg-[#f0fdf4] text-[#15803d]',
+};
+const roleLabel: Record<string, string> = {
+  STUDENT: '학생',
+  TEACHER: '선생님',
+  PARENT: '보호자',
+};
+
+const date = (value: string | null) =>
+  value
+    ? new Intl.DateTimeFormat('ko-KR', {
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(new Date(value))
+    : '기록 없음';
+
+export const AdminConsultations = () => {
+  const [status, setStatus] = useState<(typeof states)[number][0]>('RECEIVED');
+  const [searchValue, setSearchValue] = useState('');
+  const [keyword, setKeyword] = useState('');
+  const [selected, setSelected] = useState<AdminConsultationCase | null>(null);
+  const [answer, setAnswer] = useState('');
+  const params = useMemo(
+    () => ({ status, keyword: keyword || undefined, page: 0, size: 20 }),
+    [keyword, status]
+  );
+  const query = useAdminConsultations(params);
+  const summary = useAdminSummary();
+  const update = useUpdateAdminConsultation();
+  const selectedCase = selected ?? query.data?.content[0] ?? null;
+
+  const updateCase = (nextStatus: 'IN_PROGRESS' | 'ANSWERED') => {
+    if (!selectedCase || (nextStatus === 'ANSWERED' && !answer.trim())) return;
+    update.mutate(
+      {
+        caseId: selectedCase.caseId,
+        status: nextStatus,
+        answer: answer.trim() || undefined,
+      },
+      {
+        onSuccess: () => {
+          setSelected(null);
+          setAnswer('');
+        },
+      }
+    );
+  };
+
+  return (
+    <main
+      className="p-[14px] md:p-[22px]"
+      data-testid="admin-consultations"
+    >
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <h1 className="text-[19px] font-extrabold">문의와 상담</h1>
+        <span className="text-xs text-[#71717a]">
+          들어온 문의를 받고 답하는 자리입니다. 학습 데이터는 여기서 열지
+          않습니다.
+        </span>
+      </div>
+      <div className="mb-3 flex flex-wrap gap-2">
+        {states.map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            className={cn(
+              'flex min-h-[42px] items-center gap-2 rounded-lg border px-3 text-xs font-bold',
+              status === value
+                ? 'border-[#c2410c] bg-[#fff7ed] text-[#9a3412]'
+                : 'border-[#e4e4e7] bg-white text-[#3f3f46]'
+            )}
+            onClick={() => {
+              setStatus(value);
+              setSelected(null);
+            }}
+          >
+            {label}{' '}
+            <b className="tabular-nums">
+              {query.data?.statusCounts[value] ?? 0}
+            </b>
+          </button>
+        ))}
+        <SearchInput
+          className="min-w-[180px] flex-1 bg-white"
+          value={searchValue}
+          onChange={setSearchValue}
+          onSearch={(value) => setKeyword(value.trim())}
+          placeholder="이름, 내용으로 검색"
+        />
+      </div>
+      {query.isPending && (
+        <section className="rounded-xl border border-[#e4e4e7] bg-white p-10 text-center text-xs text-[#71717a]">
+          문의를 불러오는 중입니다.
+        </section>
+      )}
+      {query.isError && (
+        <section className="rounded-[10px] border border-[#f0c4c0] bg-[#fff4f2] p-4 text-xs text-[#a81b0e]">
+          문의와 상담 목록을 불러오지 못했어요.
+        </section>
+      )}
+      {query.data && query.data.content.length === 0 && (
+        <>
+          <section
+            className="rounded-[10px] border border-dashed border-[#e4e4e7] bg-white px-6 py-[38px] text-center"
+            data-testid="admin-consultations-empty"
+          >
+            <h2 className="text-[15px] font-extrabold">받은 문의가 없어요</h2>
+            <p className="mt-2 text-[12.5px] leading-7 text-[#52525b]">
+              학생과 선생님이 앱 안에서 보낸 문의가 여기로 들어옵니다. 지난 30일
+              동안 받은 문의는 <b>{summary.data?.consultationCount ?? 0}건</b>
+              이고 모두 답변 완료입니다.
+            </p>
+            <button
+              type="button"
+              className="mt-4 min-h-[46px] rounded-lg border border-[#9a3412] bg-[#c2410c] px-5 text-[13px] font-extrabold text-white"
+              onClick={() => setStatus('ANSWERED')}
+            >
+              답변 완료 {summary.data?.consultationCount ?? 0}건 보기
+            </button>
+          </section>
+          <section className="mt-3 rounded-xl border border-[#e4e4e7] bg-white p-4">
+            <h2 className="mb-3 text-sm font-extrabold">지난 30일</h2>
+            <div className="flex justify-between border-b border-[#f4f4f5] py-2 text-xs">
+              <span>받은 문의</span>
+              <b className="tabular-nums">
+                {summary.data?.consultationCount ?? 0}건
+              </b>
+            </div>
+            <div className="flex justify-between border-b border-[#f4f4f5] py-2 text-xs">
+              <span>평균 첫 응답</span>
+              <b className="tabular-nums">
+                {summary.data?.averageFirstResponseMinutes == null
+                  ? '기록 없음'
+                  : `${Math.floor(summary.data.averageFirstResponseMinutes / 60)}시간 ${summary.data.averageFirstResponseMinutes % 60}분`}
+              </b>
+            </div>
+            <div className="flex justify-between py-2 text-xs">
+              <span>가장 많았던 것</span>
+              <b>
+                {summary.data?.mostCommonConsultationCategory ?? '기록 없음'}
+              </b>
+            </div>
+          </section>
+        </>
+      )}
+      {!!query.data?.content.length && selectedCase && (
+        <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.28fr)_minmax(0,1fr)]">
+          <div>
+            <div className="overflow-x-auto rounded-xl border border-[#e4e4e7] bg-white px-2 py-1.5">
+              <table className="w-full min-w-[720px] border-collapse text-left text-xs">
+                <thead>
+                  <tr className="text-[10.5px] text-[#71717a]">
+                    {['상태', '문의', '보낸 사람', '받은 시각', '담당', ''].map(
+                      (label, index) => (
+                        <th
+                          key={`${label}-${index}`}
+                          className="border-b border-[#e4e4e7] px-2.5 py-2 font-extrabold"
+                        >
+                          {label}
+                        </th>
+                      )
+                    )}
+                  </tr>
+                </thead>
+                <tbody>
+                  {query.data.content.map((item) => (
+                    <tr
+                      key={item.caseId}
+                      className="hover:bg-[#fff7ed]"
+                    >
+                      <td className="border-b border-[#f4f4f5] px-2.5 py-3">
+                        <span
+                          className={cn(
+                            'rounded-full px-2 py-1 text-[10.5px] font-extrabold',
+                            badge[item.status]
+                          )}
+                        >
+                          {states.find(([value]) => value === item.status)?.[1]}
+                        </span>
+                      </td>
+                      <td className="border-b border-[#f4f4f5] px-2.5 py-3">
+                        <b className="block">{item.title}</b>
+                        <span className="mt-0.5 block max-w-[260px] truncate text-[11px] text-[#71717a]">
+                          {item.message}
+                        </span>
+                      </td>
+                      <td className="border-b border-[#f4f4f5] px-2.5 py-3 text-[11px] text-[#52525b]">
+                        {item.senderName} (
+                        {roleLabel[item.senderRole] ?? item.senderRole})
+                      </td>
+                      <td className="border-b border-[#f4f4f5] px-2.5 py-3 text-[11px] text-[#52525b] tabular-nums">
+                        {date(item.receivedAt)}
+                      </td>
+                      <td className="border-b border-[#f4f4f5] px-2.5 py-3 text-[11px] text-[#52525b]">
+                        {item.assigneeName ?? '아직 없음'}
+                      </td>
+                      <td className="border-b border-[#f4f4f5] px-2.5 py-3">
+                        <button
+                          type="button"
+                          className={cn(
+                            'min-h-11 rounded-lg border px-3 text-xs font-extrabold',
+                            item.status === 'RECEIVED'
+                              ? 'border-[#9a3412] bg-[#c2410c] text-white'
+                              : 'border-[#e4e4e7]'
+                          )}
+                          onClick={() => {
+                            setSelected(item);
+                            setAnswer(item.answer ?? '');
+                          }}
+                        >
+                          {item.status === 'RECEIVED' ? '답변 쓰기' : '열기'}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="mt-3 text-xs text-[#71717a]">
+              받은 지 <b className="text-[#27272a]">24시간</b>이 지나도 접수
+              상태인 문의는 목록 맨 위로 올라옵니다.
+            </p>
+          </div>
+          <div>
+            <section className="mb-3 rounded-xl border border-[#e4e4e7] bg-white p-4">
+              <div className="mb-3 flex items-baseline justify-between">
+                <h2 className="text-sm font-extrabold">답변 쓰기</h2>
+                <span className="text-xs text-[#71717a]">
+                  {selectedCase.senderName} · {selectedCase.title}
+                </span>
+              </div>
+              <div className="mb-3 rounded-lg border border-[#e4e4e7] p-3 text-[11.5px] leading-7 text-[#52525b]">
+                <b className="text-[#27272a]">
+                  {date(selectedCase.receivedAt)} · {selectedCase.senderName}
+                </b>
+                <br />
+                {selectedCase.message}
+              </div>
+              <label
+                htmlFor="consult-answer"
+                className="text-[10.5px] font-extrabold text-[#71717a]"
+              >
+                답변
+              </label>
+              <Textarea
+                id="consult-answer"
+                className="mt-1 min-h-[120px] px-3 py-2 text-xs"
+                value={answer}
+                onChange={(event) => setAnswer(event.target.value)}
+                placeholder="보낸 사람에게 그대로 전달됩니다. 계정 조치가 필요하면 회원 상세에서 실행하고 여기에 결과만 적습니다."
+              />
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  className="min-h-11 flex-1 rounded-lg border border-[#9a3412] bg-[#c2410c] px-3 text-xs font-extrabold text-white disabled:opacity-50"
+                  disabled={!answer.trim() || update.isPending}
+                  onClick={() => updateCase('ANSWERED')}
+                >
+                  답변 보내고 완료 처리
+                </button>
+                <button
+                  type="button"
+                  className="min-h-11 rounded-lg border border-[#e4e4e7] px-3 text-xs font-extrabold"
+                  disabled={update.isPending}
+                  onClick={() => updateCase('IN_PROGRESS')}
+                >
+                  처리 중으로 두기
+                </button>
+              </div>
+              <p className="mt-2 text-xs text-[#71717a]">
+                답변한 사람과 시각이 이력에 남습니다. 학생 학습 화면은 이
+                자리에서 열 수 없습니다(학습 데이터 격리 §5.4).
+              </p>
+            </section>
+            <section className="rounded-xl border border-[#e4e4e7] bg-white p-4">
+              <div className="mb-3 flex items-baseline justify-between">
+                <h2 className="text-sm font-extrabold">이 사람 계정</h2>
+                <span className="text-xs text-[#71717a]">
+                  문의 처리에 필요한 최소 정보만
+                </span>
+              </div>
+              <div className="text-[11.5px] leading-7 text-[#52525b]">
+                {selectedCase.senderName} ·{' '}
+                {roleLabel[selectedCase.senderRole] ?? selectedCase.senderRole}
+                <br />
+                {selectedCase.senderContact ?? '연락처 미등록'}
+              </div>
+              <button
+                type="button"
+                disabled
+                className="mt-3 min-h-11 w-full rounded-lg border border-[#e4e4e7] text-xs font-extrabold disabled:text-[#a1a1aa]"
+              >
+                회원 상세 열기
+              </button>
+            </section>
+          </div>
+        </div>
+      )}
+    </main>
+  );
+};

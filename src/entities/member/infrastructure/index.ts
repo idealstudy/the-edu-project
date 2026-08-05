@@ -2,6 +2,7 @@ export { repository } from './member.repository';
 export type {
   AdminMemberList,
   AdminMemberListParams,
+  AdminMemberDetail,
 } from './member.repository';
 export { memberKeys } from './member.keys';
 
