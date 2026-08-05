@@ -20,7 +20,7 @@ const NodeSchema = z.object({
   coverPage: z
     .object({
       pageId: IdSchema,
-      source: z.enum(['PEN', 'UPLOAD']),
+      source: z.enum(['PEN', 'UPLOAD', 'TEACHER']),
       fileName: z.string(),
       mimeType: z.string().nullable(),
       viewUrl: z.string().nullable(),
@@ -31,12 +31,15 @@ const NodeSchema = z.object({
 const PageSchema = z.object({
   pageId: IdSchema,
   position: z.number(),
-  source: z.enum(['PEN', 'UPLOAD']),
+  source: z.enum(['PEN', 'UPLOAD', 'TEACHER']),
   fileName: z.string(),
   mimeType: z.string().nullable(),
   sizeBytes: z.number().nullable(),
   viewUrl: z.string().nullable(),
   cover: z.boolean(),
+  hiddenByStudent: z.boolean(),
+  teacherId: IdSchema.nullable(),
+  teacherMemo: z.string().nullable(),
   createdAt: z.string().nullable(),
 });
 
@@ -84,9 +87,13 @@ const UpdatePayloadSchema = z
   .object({
     position: z.number().int().positive().optional(),
     cover: z.boolean().optional(),
+    hidden: z.boolean().optional(),
   })
   .refine(
-    (value) => value.position !== undefined || value.cover !== undefined,
+    (value) =>
+      value.position !== undefined ||
+      value.cover !== undefined ||
+      value.hidden !== undefined,
     '변경할 페이지 속성이 필요합니다.'
   );
 

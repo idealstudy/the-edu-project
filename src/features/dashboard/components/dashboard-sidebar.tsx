@@ -8,10 +8,11 @@ import { useRole } from '@/shared/hooks/use-role';
 import { trackGnbLogoutClick } from '@/shared/lib/analytics';
 import {
   ClipboardListIcon,
+  ChartNoAxesCombined,
+  History,
   GraduationCap,
   Handshake,
   LogOut,
-  MessageCircleQuestionIcon,
   ShieldUserIcon,
   Sprout,
   User2Icon,
@@ -33,14 +34,36 @@ export const DashboardSidebar = () => {
       {role === 'ROLE_STUDENT' && (
         <>
           <Sidebar.Item
-            href={PRIVATE.LEARNING.INDEX}
-            matchPath={PRIVATE.LEARNING.INDEX}
+            href={PRIVATE.DASHBOARD.STUDENT}
+            matchPath={PRIVATE.DASHBOARD.STUDENT}
           >
             <GraduationCap
               size={20}
               className="shrink-0"
             />
             <Sidebar.Text>내 학습</Sidebar.Text>
+          </Sidebar.Item>
+
+          <Sidebar.Item
+            href={PRIVATE.DASHBOARD.STUDENT_RESULTS}
+            matchPath={PRIVATE.DASHBOARD.STUDENT_RESULTS}
+          >
+            <ChartNoAxesCombined
+              size={20}
+              className="shrink-0"
+            />
+            <Sidebar.Text>내 성과</Sidebar.Text>
+          </Sidebar.Item>
+
+          <Sidebar.Item
+            href={PRIVATE.DASHBOARD.STUDENT_LOOK_BACK}
+            matchPath={PRIVATE.DASHBOARD.STUDENT_LOOK_BACK}
+          >
+            <History
+              size={20}
+              className="shrink-0"
+            />
+            <Sidebar.Text>돌아보기</Sidebar.Text>
           </Sidebar.Item>
 
           <Sidebar.Item
@@ -67,7 +90,7 @@ export const DashboardSidebar = () => {
         </>
       )}
 
-      {/* 선생님 전용: 스터디 관리 / Q&A 관리 — 학생이 맡던 자리에 선생님 업무 도구 배치 */}
+      {/* 선생님 전역 메뉴는 내 수업과 마이페이지만 둔다. */}
       {role === 'ROLE_TEACHER' && (
         <>
           <Sidebar.Item
@@ -78,18 +101,7 @@ export const DashboardSidebar = () => {
               size={20}
               className="shrink-0"
             />
-            <Sidebar.Text>스터디 관리</Sidebar.Text>
-          </Sidebar.Item>
-
-          <Sidebar.Item
-            href={PRIVATE.DASHBOARD.QNA}
-            matchPath={PRIVATE.DASHBOARD.QNA}
-          >
-            <MessageCircleQuestionIcon
-              size={20}
-              className="shrink-0"
-            />
-            <Sidebar.Text>Q&A 관리</Sidebar.Text>
+            <Sidebar.Text>내 수업</Sidebar.Text>
           </Sidebar.Item>
         </>
       )}

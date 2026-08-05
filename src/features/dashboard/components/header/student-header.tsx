@@ -1,105 +1,47 @@
 'use client';
 
-import Image from 'next/image';
-
-import { useStudentDashboardReportQuery } from '@/features/dashboard/hooks/use-student-dashboard-query';
-import { cn } from '@/shared/lib';
-
-import { HeaderReport, type HeaderStat } from './report';
+import { useStudentGrowthQuery } from '@/features/dashboard/hooks/use-growth-query';
+import { useWrongAnswersQuery } from '@/features/dashboard/hooks/use-wrong-answer-query';
+import { useMyPointWalletQuery } from '@/features/point/hooks/use-point';
 
 const StudentDashboardHeader = ({
   initialMemberName,
 }: {
   initialMemberName: string;
 }) => {
-  const memberName = initialMemberName.trim();
-  const hasMemberName = memberName.length > 0;
-  const { data: studentReport, isPending } = useStudentDashboardReportQuery();
-
-  const stats: HeaderStat[] = [
-    {
-      value: studentReport?.studyRoomCount ?? '-',
-      unit: '개',
-      label: '스터디룸',
-    },
-    {
-      value: studentReport?.questionCount ?? '-',
-      unit: '개',
-      label: '나의 질문',
-    },
-    {
-      value: studentReport?.answerCount ?? '-',
-      unit: '개',
-      label: '수집한 답변',
-    },
-  ];
-
-  const criticalTextFontClassName =
-    '[font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe_UI",sans-serif]';
+  const growthQuery = useStudentGrowthQuery();
+  const pointQuery = useMyPointWalletQuery();
+  const wrongAnswersQuery = useWrongAnswersQuery();
+  const memberName = initialMemberName.trim() || '학생';
+  const chips = [
+    ['내 오답', `${wrongAnswersQuery.data?.totalCount ?? '-'}개`],
+    ['연속', `${growthQuery.data?.streakDays ?? '-'}일`],
+    ['레벨', `Lv.${growthQuery.data?.level ?? '-'}`],
+    ['포인트', `${pointQuery.data?.balance.toLocaleString('ko-KR') ?? '-'}P`],
+  ] as const;
 
   return (
-    <div
-      className={cn(
-        'bg-system-background flex flex-col items-center gap-3 px-4.5 pt-8 pb-3',
-        'tablet:pt-19 tablet:px-20 tablet:pb-0'
-      )}
-    >
-      <div className="relative flex h-fit w-full items-end justify-between">
-        <div
-          className={cn(
-            'flex h-25 min-w-0 flex-col gap-6',
-            'tablet:h-50 desktop:h-55'
-          )}
-        >
-          <p
-            className={cn(
-              criticalTextFontClassName,
-              'font-body1-normal text-gray-black',
-              'tablet:font-headline1-normal desktop:font-title-normal'
-            )}
-          >
-            {hasMemberName ? (
-              <>
-                <span className={cn(criticalTextFontClassName, 'font-bold')}>
-                  {memberName}
-                </span>{' '}
-                님,
-              </>
-            ) : (
-              '학생님,'
-            )}
-            <br />
-            학습기록이 차곡차곡 쌓이고 있어요
-          </p>
-          <HeaderReport
-            className="tablet:flex hidden"
-            stats={stats}
-            isPending={isPending}
-          />
+    <header className="border-gray-3 bg-gray-white sticky top-0 z-20 border-b px-5 py-3 md:px-8">
+      <div className="mx-auto flex w-full max-w-[1120px] flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-gray-12 text-lg font-extrabold">내 학습</h1>
+          <p className="text-gray-7 text-xs">{memberName} · 고2 수학</p>
         </div>
-
-        <div className="absolute top-0 right-0">
-          <Image
-            src="/dashboard/dashboard-character.png"
-            alt="대시보드 캐릭터"
-            width={220}
-            height={220}
-            priority
-            fetchPriority="high"
-            sizes="(min-width: 1200px) 220px, (min-width: 768px) 200px, 100px"
-            className={cn(
-              'h-25 w-25 object-contain',
-              'tablet:w-50 tablet:h-50 desktop:w-55 desktop:h-55'
-            )}
-          />
+        <div className="flex flex-wrap items-center justify-end gap-1.5">
+          {chips.map(([label, value]) => (
+            <span
+              key={label}
+              className="border-gray-3 bg-gray-1 text-gray-8 rounded-full border px-2.5 py-1 text-[11px] font-bold"
+            >
+              {label} <b className="text-gray-12 tabular-nums">{value}</b>
+            </span>
+          ))}
+          <span className="bg-gray-11 flex size-8 items-center justify-center rounded-full text-xs font-extrabold text-white">
+            {memberName.slice(0, 1)}
+          </span>
         </div>
       </div>
-      <HeaderReport
-        className="tablet:hidden flex"
-        stats={stats}
-        isPending={isPending}
-      />
-    </div>
+    </header>
   );
 };
 

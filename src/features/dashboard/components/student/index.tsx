@@ -7,16 +7,11 @@ import { useReceivedConnectionList } from '../../connect/hooks/use-connection';
 import { useOnboardingStatus } from '../../hooks/use-onboarding-status';
 import { useStudentDashboardStudyRoomListQuery } from '../../hooks/use-student-dashboard-query';
 import StudentDashboardHeader from '../header/student-header';
-import CalendarSection from '../section/calendar-section';
-import QnASection from '../section/qna-section';
-import StudentTabSection from '../section/student-tab-section';
+import { AgendaFlowCard } from './agenda-flow-card';
 import { ConfirmParentRequestDialog } from './confirm-dialog';
 import { ExamHallCard } from './exam-hall-card';
-import { GrowthBand } from './growth-band';
 import StudentOnboarding from './student-onboarding';
 import { TodayProblemsSection } from './today-problems-section';
-import { TodayTodoCard } from './today-todo-card';
-import { WeeklyRetroCard } from './weekly-retro-card';
 
 const DashboardStudent = ({
   initialMemberName,
@@ -58,25 +53,22 @@ const DashboardStudent = ({
   return (
     <div className="flex w-full flex-col">
       <StudentDashboardHeader initialMemberName={initialMemberName} />
-      <main className="tablet:gap-12 desktop:gap-20 bg-gray-white tablet:py-12 desktop:pb-25 tablet:px-20 relative flex w-full flex-col gap-8 px-4.5 py-8">
+      <main className="relative mx-auto flex w-full max-w-[1120px] flex-col gap-4 px-4 py-5 md:px-8">
         {!studentStepsCompleted && (
           <StudentOnboarding completionStatus={studentCompletionStatus} />
         )}
-        {/* MVP-G v3 — ① 응시장 → ② 성장 → ③ 오늘 할 일 */}
-        <div className="flex w-full flex-col gap-4">
-          <TodayProblemsSection />
-          <ExamHallCard />
-          <GrowthBand />
-          <UnitNoteEntryCard />
-          <TodayTodoCard />
+        <div className="mb-1 flex items-baseline gap-2">
+          <h2 className="text-gray-12 text-sm font-extrabold">지금 내 상태</h2>
+          <p className="text-gray-7 text-xs">어디에 있고 무엇을 정리해 뒀나</p>
         </div>
-        <div className="tablet:gap-25 flex w-full flex-col gap-8">
-          {/* MVP-G v4 — 4 · 주간 회고 */}
-          <WeeklyRetroCard />
-          <QnASection />
-          <CalendarSection />
-          <StudentTabSection studyRooms={studyRooms} />
+        <ExamHallCard />
+        <UnitNoteEntryCard />
+        <div className="mt-3 flex items-baseline gap-2">
+          <h2 className="text-gray-12 text-sm font-extrabold">오늘 할 것</h2>
+          <p className="text-gray-7 text-xs">오늘 안에 닫는 일</p>
         </div>
+        <TodayProblemsSection />
+        <AgendaFlowCard />
       </main>
       <ConfirmParentRequestDialog
         connection={receivedParentRequest}

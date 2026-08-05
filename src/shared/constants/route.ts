@@ -45,6 +45,8 @@ const DASHBOARD = {
   INDEX: '/dashboard',
   TEACHER: '/dashboard/teacher',
   STUDENT: '/dashboard/student',
+  STUDENT_RESULTS: '/dashboard/student/results',
+  STUDENT_LOOK_BACK: '/dashboard/student/look-back',
   PARENT: '/dashboard/parent',
   INQUIRY: '/dashboard/inquiry',
   QNA: '/dashboard/qna',
@@ -78,6 +80,7 @@ const SETTINGS = '/settings';
  * ────────────────────────────────────────────────────*/
 const ROOM = {
   DETAIL: (id: number) => `/study-rooms/${id}/note`,
+  MANAGE: (id: number) => `/study-rooms/${id}/manage`,
   CREATE: '/study-rooms/new',
   EDIT: (id: number) => `/study-rooms/${id}/edit`,
 } as const;

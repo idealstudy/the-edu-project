@@ -2,56 +2,155 @@
 
 import Link from 'next/link';
 
-import { Button } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants/route';
-import { BookOpen, ChevronRight } from 'lucide-react';
+import { ChevronRight, RefreshCw } from 'lucide-react';
 
 import { useUnitNoteLibraryQuery } from '../hooks/use-unit-note-query';
 
 export const UnitNoteEntryCard = () => {
   const libraryQuery = useUnitNoteLibraryQuery();
-  const nodesWithNotes =
-    libraryQuery.data?.nodes.filter((node) => node.pageCount > 0).length ?? 0;
-  const totalPages = libraryQuery.data?.totalPages ?? 0;
+  const subjectOrder = ['ALGEBRA', 'CALCULUS_1', 'PROBABILITY_STATISTICS'];
+  const subjectLabels: Record<string, string> = {
+    ALGEBRA: '대수',
+    MATH_1: '대수',
+    CALCULUS_1: '미적분Ⅰ',
+    MATH_2: '미적분Ⅰ',
+    PROBABILITY_STATISTICS: '확률과 통계',
+  };
+  const nodes = libraryQuery.data?.nodes ?? [];
+  const normalizedSubjects = subjectOrder.map((subject) => {
+    const aliases =
+      subject === 'ALGEBRA'
+        ? ['ALGEBRA', 'MATH_1']
+        : subject === 'CALCULUS_1'
+          ? ['CALCULUS_1', 'MATH_2']
+          : [subject];
+    const subjectNodes = nodes.filter((node) => aliases.includes(node.subject));
+    const totalMastery = subjectNodes.reduce(
+      (sum, node) => sum + node.masteryScore,
+      0
+    );
+    const solvedPercent = subjectNodes.length
+      ? Math.round(totalMastery / subjectNodes.length)
+      : 0;
+    const totalPages = subjectNodes.reduce(
+      (sum, node) => sum + node.pageCount,
+      0
+    );
+    const notedPercent = Math.min(40, totalPages * 3);
+    return {
+      subject,
+      label: subjectLabels[subject] ?? subject,
+      unitCount: subjectNodes.length,
+      solvedPercent,
+      notedPercent,
+      totalPercent: Math.min(100, solvedPercent + notedPercent),
+    };
+  });
 
   return (
     <section
-      className="border-gray-3 bg-gray-white rounded-xl border p-5"
+      className="border-gray-3 bg-gray-white rounded-xl border p-5 md:p-6"
       data-testid="unit-note-entry-card"
     >
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div className="flex min-w-0 items-start gap-3">
-          <span className="bg-orange-1 text-orange-8 flex size-11 shrink-0 items-center justify-center rounded-xl">
-            <BookOpen
-              size={23}
-              aria-hidden
-            />
-          </span>
-          <div>
-            <h2 className="font-headline2-heading text-gray-12">나의 단권화</h2>
-            <p className="font-body2-normal text-gray-8 mt-1">
-              선생님 판서와 내 필기, 관련 오답을 개념별로 한 권에 쌓아요.
-            </p>
-            {!libraryQuery.isPending && !libraryQuery.isError && (
-              <p className="font-caption-heading text-orange-10 mt-2">
-                {nodesWithNotes}개 소단원 · 내 페이지 {totalPages}장
-              </p>
-            )}
-          </div>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="text-gray-12 text-base font-extrabold">단권화 노트</h2>
+          <p className="text-gray-7 mt-0.5 text-xs">
+            최근에 정리한 순서 · 3과목
+          </p>
         </div>
-        <Button
-          asChild
-          variant="outlined"
-          size="small"
+        <Link
+          href={PRIVATE.DASHBOARD.UNIT_NOTES}
+          className="border-gray-4 text-gray-9 hover:border-orange-6 hover:text-orange-9 flex items-center gap-1 rounded-lg border px-3 py-2 text-xs font-bold"
         >
-          <Link href={PRIVATE.DASHBOARD.UNIT_NOTES}>
-            책장 열기
-            <ChevronRight
-              size={17}
-              aria-hidden
-            />
-          </Link>
-        </Button>
+          단권화 열기
+          <ChevronRight
+            size={15}
+            aria-hidden
+          />
+        </Link>
+      </div>
+
+      {libraryQuery.isError ? (
+        <div className="border-red-2 bg-red-1 mt-4 flex items-center gap-3 rounded-lg border p-4">
+          <RefreshCw
+            size={18}
+            className="text-red-8"
+            aria-hidden
+          />
+          <p className="text-red-10 flex-1 text-xs font-bold">
+            단권화 현황을 불러오지 못했어요
+          </p>
+          <button
+            type="button"
+            className="border-red-4 cursor-pointer rounded-lg border px-3 py-2 text-xs font-bold"
+            onClick={() => void libraryQuery.refetch()}
+          >
+            다시 불러오기
+          </button>
+        </div>
+      ) : (
+        <div className="mt-4 divide-y divide-[#e0e0e0]">
+          {normalizedSubjects.map((subject, index) => (
+            <div
+              key={subject.subject}
+              className="grid items-center gap-3 py-3 md:grid-cols-[minmax(190px,1fr)_minmax(280px,1.35fr)_112px]"
+            >
+              <div>
+                <p className="text-gray-12 text-sm font-extrabold">
+                  {subject.label}
+                </p>
+                <p className="text-gray-7 mt-0.5 text-[11px]">
+                  {subject.unitCount > 0
+                    ? `${subject.unitCount}단원 · 마지막 정리 기록 있음`
+                    : '아직 시작 전'}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <div
+                  className="bg-gray-3 flex h-2.5 min-w-0 flex-1 overflow-hidden rounded-full"
+                  role="img"
+                  aria-label={`${subject.label} 문제 ${subject.solvedPercent}퍼센트, 정리 ${subject.notedPercent}퍼센트`}
+                >
+                  <span
+                    className="bg-orange-7 h-full"
+                    style={{ width: `${subject.solvedPercent}%` }}
+                  />
+                  <span
+                    className="bg-orange-4 h-full"
+                    style={{ width: `${subject.notedPercent}%` }}
+                  />
+                </div>
+                <span className="text-gray-8 w-9 text-right text-xs font-bold tabular-nums">
+                  {subject.totalPercent}%
+                </span>
+              </div>
+              <Link
+                href={PRIVATE.DASHBOARD.UNIT_NOTES}
+                className={`rounded-lg border px-3 py-2 text-center text-xs font-bold ${
+                  index === 0
+                    ? 'border-orange-7 bg-orange-7 text-white'
+                    : 'border-gray-4 text-gray-9'
+                }`}
+              >
+                {index === 0 ? '이어서 정리하기' : '열기'}
+              </Link>
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="text-gray-7 mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-semibold">
+        <span className="flex items-center gap-1.5">
+          <i className="bg-orange-7 size-2.5 rounded-sm" /> 문제 푼 것
+        </span>
+        <span className="flex items-center gap-1.5">
+          <i className="bg-orange-4 size-2.5 rounded-sm" /> 개념 정리한 것
+        </span>
+        <span className="flex items-center gap-1.5">
+          <i className="bg-gray-3 size-2.5 rounded-sm" /> 아직 비어 있는 곳
+        </span>
+        <span>노트 안 문제를 풀면 진한 색이, 개념을 정리하면 옅은 색이 늡니다</span>
       </div>
     </section>
   );

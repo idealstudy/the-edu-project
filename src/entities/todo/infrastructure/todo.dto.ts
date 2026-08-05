@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const todoStatus = z.enum(['TODO', 'DONE', 'SKIPPED']);
+const todoStatus = z.enum(['TODO', 'DONE', 'SKIPPED', 'NOT_DONE']);
 const todoAssignerRole = z.enum(['SELF', 'TEACHER']);
 const todoSource = z.enum([
   'STUDENT',
@@ -25,6 +25,7 @@ const todoItem = z.object({
   source: todoSource,
   rewardPoints: z.number().int().nonnegative(),
   approvalStatus: todoApprovalStatus,
+  notDoneReason: z.string().nullable(),
   completedAt: z.string().nullable(),
 });
 
@@ -51,6 +52,7 @@ const updateTodo = z.object({
   weekOf: z.string().optional(),
   status: todoStatus.optional(),
   skipReason: z.string().trim().max(200).nullable().optional(),
+  notDoneReason: z.string().trim().max(300).nullable().optional(),
 });
 
 export const dto = {
