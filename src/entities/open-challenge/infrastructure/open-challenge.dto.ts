@@ -214,11 +214,11 @@ const ChallengeReviewDtoSchema = z.object({
   solutionType: SolutionTypeDtoSchema,
   drawingImageUrl: z.string().nullable().optional().default(null),
   recommendCount: z.number().optional().default(0),
-  isBest: z.boolean().optional().default(false),
-  isRecommendedByMe: z.boolean().optional().default(false),
+  isBest: z.boolean(),
+  isRecommendedByMe: z.boolean(),
   isCorrect: z.boolean().nullable().optional().default(null),
   authorNickname: z.string().nullable().optional(),
-  isMine: z.boolean().optional().default(false),
+  isMine: z.boolean(),
 });
 
 /* ─────────────────────────────────────────────────────
