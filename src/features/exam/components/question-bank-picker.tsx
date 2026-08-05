@@ -1,32 +1,31 @@
 'use client';
 
-import type { QuestionBankItem } from '@/entities/exam';
+import type { QuestionBankItem, QuestionBankParams } from '@/entities/exam';
 import { useQuestionBankQuery } from '@/features/exam/hooks/use-exam-query';
 import { cn } from '@/shared/lib';
 
 type QuestionBankPickerProps = {
+  subject: NonNullable<QuestionBankParams['subject']>;
   treeNodeIds: number[];
   difficulty?: 'LOW' | 'MID' | 'HIGH';
-  grade: number;
   selected: QuestionBankItem[];
   onToggle: (question: QuestionBankItem) => void;
   onClearDifficulty: () => void;
 };
 
 export const QuestionBankPicker = ({
+  subject,
   treeNodeIds,
   difficulty,
-  grade,
   selected,
   onToggle,
   onClearDifficulty,
 }: QuestionBankPickerProps) => {
   const selectedIds = selected.map((item) => item.challengeId);
   const query = useQuestionBankQuery({
-    subject: 'MATH',
+    subject,
     treeNodeIds,
     difficulty,
-    grade,
     excludeChallengeIds: [],
     page: 0,
     size: 20,
@@ -66,7 +65,7 @@ export const QuestionBankPicker = ({
           이 조건에 맞는 문항이 아직 없어요
         </h4>
         <p className="mt-2 text-xs leading-6 text-[#71717a]">
-          지금 문제은행에는 고2 수학 문항이 대부분입니다.
+          지금 선택한 과목과 조건에 맞는 문항이 없습니다.
           <br />
           난이도 조건을 풀어 다시 찾아보세요.
         </p>

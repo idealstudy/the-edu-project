@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
-import type { QuestionBankItem } from '@/entities/exam';
+import type { QuestionBankItem, QuestionBankParams } from '@/entities/exam';
+import { SUBJECT_TO_KOREAN } from '@/entities/study-room-preview';
 import { useTeacherDashboardStudyRoomListQuery } from '@/features/dashboard/hooks/use-teacher-dashboard-query';
 import {
   useAssignExam,
@@ -15,6 +16,11 @@ import { QuestionBankPicker } from './question-bank-picker';
 import { TreeNodePicker } from './tree-node-picker';
 
 type ExamCreateProps = { className?: string };
+type QuestionBankSubject = NonNullable<QuestionBankParams['subject']>;
+
+const SUBJECT_OPTIONS = Object.entries(SUBJECT_TO_KOREAN) as Array<
+  [QuestionBankSubject, string]
+>;
 
 export const ExamCreate = ({ className }: ExamCreateProps) => {
   const roomsQuery = useTeacherDashboardStudyRoomListQuery();
@@ -22,7 +28,7 @@ export const ExamCreate = ({ className }: ExamCreateProps) => {
   const assignExam = useAssignExam();
   const [studyRoomId, setStudyRoomId] = useState<number | null>(null);
   const [treeNodeIds, setTreeNodeIds] = useState<number[]>([]);
-  const [grade, setGrade] = useState(2);
+  const [subject, setSubject] = useState<QuestionBankSubject>('MATH');
   const [difficulty, setDifficulty] = useState<
     'LOW' | 'MID' | 'HIGH' | undefined
   >('MID');
@@ -66,10 +72,12 @@ export const ExamCreate = ({ className }: ExamCreateProps) => {
       return;
     }
     try {
-      const titleUnit = selected[0]?.treeNodePath.split(' > ').at(-1) ?? '수학';
+      const titleUnit =
+        selected[0]?.treeNodePath.split(' > ').at(-1) ??
+        SUBJECT_TO_KOREAN[subject];
       const created = await createExam.mutateAsync({
         title: `${titleUnit} 집중 시험`,
-        subject: 'MATH',
+        subject,
         examType: 'NATIONAL',
         examTreeNodeIds: treeNodeIds,
         questions: selected.map((question, index) => ({
@@ -167,26 +175,28 @@ export const ExamCreate = ({ className }: ExamCreateProps) => {
             <span className="text-xs text-[#71717a]">문제은행 276문항</span>
           </div>
           <div className="mb-3 flex flex-wrap gap-2">
-            <span className="rounded-md border border-[#e4e4e7] bg-white px-3 py-2 text-xs font-bold">
-              과목 수학
-            </span>
             <Select
-              value={String(grade)}
-              onValueChange={(value) => setGrade(Number(value))}
+              value={subject}
+              onValueChange={(value) => {
+                setSubject(value as QuestionBankSubject);
+                setTreeNodeIds([]);
+                setSelected([]);
+              }}
             >
               <Select.Trigger
-                className="h-9 w-24 text-xs"
-                data-testid="exam-grade-filter"
+                className="h-9 w-28 text-xs"
+                data-testid="exam-subject-filter"
+                aria-label="과목 필터"
               >
-                고{grade}
+                과목 {SUBJECT_TO_KOREAN[subject]}
               </Select.Trigger>
               <Select.Content>
-                {[1, 2, 3].map((value) => (
+                {SUBJECT_OPTIONS.map(([value, label]) => (
                   <Select.Option
                     key={value}
-                    value={String(value)}
+                    value={value}
                   >
-                    고{value}
+                    {label}
                   </Select.Option>
                 ))}
               </Select.Content>
@@ -227,9 +237,9 @@ export const ExamCreate = ({ className }: ExamCreateProps) => {
             </Select>
           </div>
           <QuestionBankPicker
+            subject={subject}
             treeNodeIds={treeNodeIds}
             difficulty={difficulty}
-            grade={grade}
             selected={selected}
             onToggle={toggleQuestion}
             onClearDifficulty={() => setDifficulty(undefined)}

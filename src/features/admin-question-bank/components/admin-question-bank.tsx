@@ -1,7 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import type { QuestionBankParams } from '@/entities/exam';
+import { SUBJECT_TO_KOREAN } from '@/entities/study-room-preview';
 import { useUpsertGradeCutoff } from '@/features/exam/hooks/use-exam-mutation';
 import {
   useAdminExamsQuery,
@@ -14,9 +17,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { type GradeCutoffForm, GradeCutoffFormSchema } from '../schema/schema';
 
+type QuestionBankSubject = NonNullable<QuestionBankParams['subject']>;
+
+const SUBJECT_OPTIONS = Object.entries(SUBJECT_TO_KOREAN) as Array<
+  [QuestionBankSubject, string]
+>;
+
 export const AdminQuestionBank = () => {
+  const [subject, setSubject] = useState<QuestionBankSubject>('MATH');
   const questionBank = useAdminQuestionBankQuery({
-    subject: 'MATH',
+    subject,
     treeNodeIds: [],
     excludeChallengeIds: [],
     page: 0,
@@ -105,12 +115,30 @@ export const AdminQuestionBank = () => {
               </span>
             </div>
             <div className="mb-3 flex flex-wrap gap-2 text-xs font-bold text-[#52525b]">
-              <span className="rounded-md border border-[#f0a36a] bg-[#fff7f0] px-3 py-2">
-                수학 · 전체 단원
-              </span>
-              <span className="rounded-md border border-[#e4e4e7] px-3 py-2">
-                고2
-              </span>
+              <Select
+                value={subject}
+                onValueChange={(value) =>
+                  setSubject(value as QuestionBankSubject)
+                }
+              >
+                <Select.Trigger
+                  className="h-9 w-28 border-[#f0a36a] bg-[#fff7f0] text-xs"
+                  data-testid="admin-question-bank-subject-filter"
+                  aria-label="과목 필터"
+                >
+                  과목 {SUBJECT_TO_KOREAN[subject]}
+                </Select.Trigger>
+                <Select.Content>
+                  {SUBJECT_OPTIONS.map(([value, label]) => (
+                    <Select.Option
+                      key={value}
+                      value={value}
+                    >
+                      {label}
+                    </Select.Option>
+                  ))}
+                </Select.Content>
+              </Select>
               <span className="rounded-md border border-[#e4e4e7] px-3 py-2">
                 검수 상태 전체
               </span>

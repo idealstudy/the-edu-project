@@ -237,10 +237,20 @@ export const dto = {
 };
 
 const questionBankParams = z.object({
-  subject: z.enum(['MATH']).optional(),
+  subject: z
+    .enum([
+      'KOREAN',
+      'ENGLISH',
+      'MATH',
+      'SCIENCE',
+      'SOCIETY',
+      'ART_PE',
+      'ESSAY',
+      'OTHER',
+    ])
+    .optional(),
   treeNodeIds: z.array(z.number().int().positive()).default([]),
   difficulty: z.enum(['LOW', 'MID', 'HIGH']).optional(),
-  grade: z.number().int().min(1).max(3).optional(),
   excludeChallengeIds: z.array(z.number().int().positive()).default([]),
   page: z.number().int().nonnegative().default(0),
   size: z.number().int().min(1).max(50).default(20),

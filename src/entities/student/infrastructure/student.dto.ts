@@ -139,6 +139,25 @@ const StudentDashboardReportDtoSchema = z.object({
   questionCount: z.number(),
   answerCount: z.number(),
   submittedHomeworkCount: z.number(),
+  referenceExpectedGrade: z
+    .object({
+      predictedGradeLow: z.number().int().min(1).max(9),
+      predictedGradeHigh: z.number().int().min(1).max(9),
+      gradedQuestionCount: z.number().int().min(20),
+      evidence: z
+        .array(
+          z.object({
+            source: z.string(),
+            label: z.string(),
+            value: z.number(),
+          })
+        )
+        .length(3),
+      gradeBasis: z.literal('REFERENCE'),
+      dataNotice: z.string(),
+    })
+    .nullable()
+    .default(null),
 });
 
 /* ─────────────────────────────────────────────────────
