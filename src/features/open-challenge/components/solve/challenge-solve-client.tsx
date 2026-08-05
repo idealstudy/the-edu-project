@@ -7,6 +7,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import { ChallengeShareButton } from '@/features/social';
 import {
+  useClaimGuestSessionMutation,
+  usePublicInvitePreviewQuery,
+} from '@/features/social/hooks';
+import {
   SolutionDrawingPad,
   type Stroke,
   exportStrokesToDataURL,
@@ -25,6 +29,7 @@ import {
 } from 'lucide-react';
 
 import {
+  useCoachOpeningQuery,
   useCreateChallengeReviewMutation,
   useFinishAiCoachingSessionMutation,
   useGuestGradeChallengeMutation,
@@ -46,8 +51,8 @@ type ChallengeSolveClientProps = {
 
 const RESULT_STORAGE_KEY_PREFIX = 'open-challenge-result';
 
-// 게스트 무료 풀이 한도 — 정본(mvp-e-입구플로우-v5) 미확정 값이라 회장 권장값(3문제)을 기본으로 둔다.
-const GUEST_FREE_LIMIT = 3;
+// FDD F-14: 도전장 링크당 한 문제를 가입 없이 풀 수 있다.
+const GUEST_FREE_LIMIT = 1;
 const GUEST_SOLVED_COUNT_KEY = 'oc-guest-solved-count';
 
 // AI 코치 패널 폭 — 고정 380px 대신 드래그 리사이즈 + 좁게/넓게 2단 토글을 함께 제공한다.
@@ -86,10 +91,13 @@ export const ChallengeSolveClient = ({
 }: ChallengeSolveClientProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const inviteToken = searchParams.get('inviteToken') ?? '';
+  const guestToken = searchParams.get('guestToken') ?? '';
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   // 풀이는 손글씨 전용 — 펜으로만 기록하며, 미입력 제출도 허용한다(보조 기록).
   const [drawingStrokes, setDrawingStrokes] = useState<Stroke[]>([]);
   const [isQuestionOpen, setIsQuestionOpen] = useState(true);
+  const [isInviteContextOpen, setIsInviteContextOpen] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const [isMobileAiOpen, setIsMobileAiOpen] = useState(false);
@@ -107,6 +115,7 @@ export const ChallengeSolveClient = ({
     'limit-reached' | 'correct-answer'
   >('correct-answer');
   const choiceSectionRef = useRef<HTMLDivElement>(null);
+  const hasClaimedGuestRef = useRef(false);
   // 계측 보조 refs (D2)
   const mountTimeRef = useRef(Date.now());
   const hasFiredStartRef = useRef(false);
@@ -118,6 +127,10 @@ export const ChallengeSolveClient = ({
     isLoading: isChallengeLoading,
     isError: isChallengeError,
   } = useOpenChallengeDetailQuery(challengeId);
+  const { data: coachOpening } = useCoachOpeningQuery(challengeId);
+  const { data: invitePreview } = usePublicInvitePreviewQuery(inviteToken, {
+    enabled: inviteToken.length > 0,
+  });
   const { data: challengeHistory } = useMyOpenChallengeDetailQuery(
     challengeId,
     { enabled: isLoggedIn }
@@ -126,6 +139,7 @@ export const ChallengeSolveClient = ({
   const submitAnswerMutation = useSubmitChallengeAnswerMutation(challengeId);
   const guestGradeMutation = useGuestGradeChallengeMutation(challengeId);
   const createReviewMutation = useCreateChallengeReviewMutation();
+  const claimGuestSessionMutation = useClaimGuestSessionMutation();
   const finishAiCoachingSessionMutation = useFinishAiCoachingSessionMutation();
   const { uploadDrawingAsync, isUploading } = useDrawingUpload();
   const isSubmitting =
@@ -143,6 +157,18 @@ export const ChallengeSolveClient = ({
   useEffect(() => {
     setAiPanelWidth(readAiPanelWidth());
   }, []);
+
+  useEffect(() => {
+    if (
+      !isLoggedIn ||
+      !guestToken ||
+      hasClaimedGuestRef.current ||
+      claimGuestSessionMutation.isPending
+    )
+      return;
+    hasClaimedGuestRef.current = true;
+    claimGuestSessionMutation.mutate(guestToken);
+  }, [claimGuestSessionMutation, guestToken, isLoggedIn]);
 
   const persistAiPanelWidth = (width: number) => {
     if (typeof window !== 'undefined') {
@@ -214,14 +240,29 @@ export const ChallengeSolveClient = ({
     }
 
     try {
-      const { correct } = await guestGradeMutation.mutateAsync(selectedAnswer);
+      const elapsedSeconds = Math.round(
+        (Date.now() - mountTimeRef.current) / 1000
+      );
+      const { correct } = await guestGradeMutation.mutateAsync(
+        guestToken
+          ? {
+              guestToken,
+              selectedAnswer,
+              elapsedSeconds,
+              drawingData:
+                drawingStrokes.length > 0
+                  ? JSON.stringify(drawingStrokes)
+                  : null,
+            }
+          : selectedAnswer
+      );
       setGuestGradeResult(correct);
 
       trackOcSubmit({
         is_correct: correct,
         used_solution: false,
         hint_count: messageCountRef.current,
-        elapsed: Math.round((Date.now() - mountTimeRef.current) / 1000),
+        elapsed: elapsedSeconds,
       });
 
       const solvedCount = bumpGuestSolvedCount();
@@ -280,11 +321,11 @@ export const ChallengeSolveClient = ({
         elapsed: Math.round((Date.now() - mountTimeRef.current) / 1000),
       });
 
-      // 정답이고 손글씨 풀이가 있을 때만 풀이를 공유한다(기존 정책 유지).
-      if (result.isCorrect && drawingStrokes.length > 0) {
+      // D-14: 정오와 무관하게 손글씨가 있으면 문제를 푼 사람들에게 공유한다.
+      if (drawingStrokes.length > 0) {
         try {
           const { mediaId } = await uploadDrawingAsync(drawingStrokes);
-          createReviewMutation.mutate({
+          await createReviewMutation.mutateAsync({
             challengeId,
             attemptId,
             solutionType: 'DRAWING',
@@ -402,6 +443,8 @@ export const ChallengeSolveClient = ({
           challengeId={challengeId}
           attemptId={aiAttemptId}
           isLoggedIn={isLoggedIn}
+          guestToken={guestToken}
+          openingMessage={coachOpening?.message}
           onAttemptCreated={setAiAttemptId}
           onAttemptCleared={handleAiAttemptCleared}
           onSessionChange={setAiSessionId}
@@ -445,6 +488,71 @@ export const ChallengeSolveClient = ({
               {challenge.topic}
             </span>
           </div>
+
+          {invitePreview && (
+            <section className="border-orange-7 bg-orange-1 mb-5 rounded-r-xl border-l-4 px-4 py-3">
+              <button
+                type="button"
+                onClick={() => setIsInviteContextOpen((open) => !open)}
+                aria-expanded={isInviteContextOpen}
+                className="flex w-full items-center gap-3 text-left"
+              >
+                <span className="text-orange-10 flex size-9 shrink-0 items-center justify-center rounded-full bg-white font-bold">
+                  {(invitePreview.inviterName ?? '친구').slice(0, 1)}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <strong className="text-text-main block text-sm">
+                    {invitePreview.inviterName ?? '친구'}님이 보낸 도전
+                  </strong>
+                  <span className="text-text-sub1 block truncate text-xs">
+                    {invitePreview.opponentSolvedAt
+                      ? `상대는 ${new Intl.DateTimeFormat('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(invitePreview.opponentSolvedAt))}에 풀었어요`
+                      : '상대가 푸는 중이에요'}
+                  </span>
+                </span>
+                <span className="text-orange-10 text-xs font-bold">
+                  도전 기록 {isInviteContextOpen ? '접기' : '보기'}
+                </span>
+              </button>
+              {isInviteContextOpen && (
+                <div className="border-orange-3 mt-3 grid gap-2 border-t pt-3 text-xs sm:grid-cols-3">
+                  <span className="text-text-sub1">
+                    보낸 시각
+                    <br />
+                    <b className="text-text-main">
+                      {invitePreview.sentAt
+                        ? new Intl.DateTimeFormat('ko-KR', {
+                            month: 'numeric',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          }).format(new Date(invitePreview.sentAt))
+                        : '기록 없음'}
+                    </b>
+                  </span>
+                  <span className="text-text-sub1">
+                    상대 제출
+                    <br />
+                    <b className="text-text-main">
+                      {invitePreview.opponentSolvedAt ? '제출 완료' : '푸는 중'}
+                    </b>
+                  </span>
+                  <span className="text-text-sub1">
+                    잠긴 기록
+                    <br />
+                    <b className="text-text-main">
+                      {invitePreview.lockedFieldCount}개
+                    </b>
+                  </span>
+                  {invitePreview.lockReason && (
+                    <p className="text-text-sub1 sm:col-span-3">
+                      {invitePreview.lockReason}
+                    </p>
+                  )}
+                </div>
+              )}
+            </section>
+          )}
 
           {hasChallengeHistory && (
             <div className="border-line-line1 bg-orange-1 mb-5 flex flex-col gap-3 rounded-xl border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
@@ -516,28 +624,10 @@ export const ChallengeSolveClient = ({
             )}
           </div>
 
-          <div className="mb-5 flex flex-col gap-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <Pencil
-                size={18}
-                className="text-orange-7"
-              />
-              <p className="font-body1-heading text-text-main">풀이 공간</p>
-              <span className="text-gray-7 text-sm">
-                펜으로 자유롭게 풀어보세요 (선택)
-              </span>
-            </div>
-
-            <SolutionDrawingPad
-              onStrokesChange={setDrawingStrokes}
-              persistKey={`open-challenge-solve:${challengeId}`}
-            />
-          </div>
-
           <div
             ref={choiceSectionRef}
             tabIndex={-1}
-            className="flex scroll-mt-6 flex-col gap-3 outline-none"
+            className="mb-5 flex scroll-mt-6 flex-col gap-3 outline-none"
           >
             <div className="flex items-center justify-between gap-3">
               <p className="font-body1-heading text-text-main">
@@ -566,22 +656,45 @@ export const ChallengeSolveClient = ({
                 {submitError}
               </p>
             )}
-            {!isLoggedIn && guestGradeResult !== null && (
-              <div
-                data-testid="guest-grade-result"
-                className={
-                  guestGradeResult
-                    ? 'border-orange-3 bg-orange-1 text-orange-8 rounded-xl border px-4 py-3 text-sm font-semibold'
-                    : 'border-line-line1 bg-gray-1 text-text-main rounded-xl border px-4 py-3 text-sm font-semibold'
-                }
-              >
-                {guestGradeResult ? '정답이에요! 🎉' : '아쉽지만 오답이에요.'}
-                <span className="text-gray-8 mt-1 block text-xs font-normal">
-                  레벨·포인트·약점트리는 가입하면 이 결과부터 쌓여요.
-                </span>
-              </div>
-            )}
           </div>
+
+          <div className="mb-5 flex flex-col gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <Pencil
+                size={18}
+                className="text-orange-7"
+              />
+              <p className="font-body1-heading text-text-main">풀이 공간</p>
+              <span className="text-gray-7 text-sm">
+                펜으로 자유롭게 풀어보세요 (선택)
+              </span>
+            </div>
+
+            <SolutionDrawingPad
+              onStrokesChange={setDrawingStrokes}
+              persistKey={`open-challenge-solve:${challengeId}`}
+            />
+            <div className="border-orange-3 bg-orange-1 text-text-main rounded-xl border px-4 py-3 text-sm leading-relaxed">
+              이 손풀이는 이 문제를 푼 사람들에게 내 이름과 함께 보여요. 맞든
+              틀리든 올라가고, 언제든 내릴 수 있어요.
+            </div>
+          </div>
+
+          {!isLoggedIn && guestGradeResult !== null && (
+            <div
+              data-testid="guest-grade-result"
+              className={
+                guestGradeResult
+                  ? 'border-orange-3 bg-orange-1 text-orange-8 rounded-xl border px-4 py-3 text-sm font-semibold'
+                  : 'border-line-line1 bg-gray-1 text-text-main rounded-xl border px-4 py-3 text-sm font-semibold'
+              }
+            >
+              {guestGradeResult ? '정답이에요! 🎉' : '아쉽지만 오답이에요.'}
+              <span className="text-gray-8 mt-1 block text-xs font-normal">
+                레벨·포인트·약점트리는 가입하면 이 결과부터 쌓여요.
+              </span>
+            </div>
+          )}
         </div>
 
         {/* 하단 제출 바 */}
@@ -641,6 +754,8 @@ export const ChallengeSolveClient = ({
               challengeId={challengeId}
               attemptId={aiAttemptId}
               isLoggedIn={isLoggedIn}
+              guestToken={guestToken}
+              openingMessage={coachOpening?.message}
               onAttemptCreated={setAiAttemptId}
               onAttemptCleared={handleAiAttemptCleared}
               onSessionChange={setAiSessionId}
@@ -669,6 +784,8 @@ export const ChallengeSolveClient = ({
         trigger={signupTrigger}
         challengeId={challengeId}
         isCorrect={guestGradeResult ?? undefined}
+        guestToken={guestToken || undefined}
+        inviteToken={inviteToken || undefined}
       />
 
       <Dialog

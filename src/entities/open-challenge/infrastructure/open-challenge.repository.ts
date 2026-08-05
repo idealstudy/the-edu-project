@@ -19,6 +19,8 @@ import {
   type CoachOpening,
   type CreateAiCoachingSessionPayload,
   type CreateChallengeReviewPayload,
+  type GuestCoachMessagePayload,
+  type GuestCoachMessageResult,
   type GuestGradePayload,
   type MyChallengeDetail,
   type MyChallengeListItem,
@@ -641,6 +643,22 @@ const gradeChallengeAsGuest = async (
   return unwrapEnvelope(response, z.object({ correct: z.boolean() }));
 };
 
+const sendGuestCoachMessage = async (
+  params: GuestCoachMessagePayload
+): Promise<GuestCoachMessageResult> => {
+  const response = await api.public.post(
+    '/public/guest-coach-messages',
+    params
+  );
+  return unwrapEnvelope(
+    response,
+    z.object({
+      reply: z.string(),
+      remainingCount: z.number().int().min(0).max(3),
+    })
+  );
+};
+
 /* ─────────────────────────────────────────────────────
  * [READ] 다음 오픈챌린지 조회
  *  추천 API(오답률·등급 기반) 결과를 우선 순환시키고, 로그인 사용자는
@@ -716,6 +734,7 @@ export const repository = {
   startAttempt: startChallengeAttempt,
   submitAnswer: submitChallengeAnswer,
   gradeAsGuest: gradeChallengeAsGuest,
+  sendGuestCoachMessage,
   getSolution: getChallengeSolution,
   getReviews: getChallengeReviews,
   createReview: createChallengeReview,

@@ -11,6 +11,7 @@ import { ChallengeSolveClient } from './challenge-solve-client';
 
 vi.mock('../../hooks/use-open-challenge', () => ({
   useOpenChallengeDetailQuery: vi.fn(),
+  useCoachOpeningQuery: vi.fn(() => ({ data: undefined })),
   useMyOpenChallengeDetailQuery: vi.fn(() => ({ data: undefined })),
   useStartChallengeAttemptMutation: vi.fn(() => ({
     mutateAsync: vi.fn(),
@@ -24,9 +25,17 @@ vi.mock('../../hooks/use-open-challenge', () => ({
     mutateAsync: vi.fn(),
     isPending: false,
   })),
-  useCreateChallengeReviewMutation: vi.fn(() => ({ mutate: vi.fn() })),
+  useCreateChallengeReviewMutation: vi.fn(() => ({ mutateAsync: vi.fn() })),
   useFinishAiCoachingSessionMutation: vi.fn(() => ({
     mutateAsync: vi.fn(),
+    isPending: false,
+  })),
+}));
+
+vi.mock('@/features/social/hooks', () => ({
+  usePublicInvitePreviewQuery: vi.fn(() => ({ data: undefined })),
+  useClaimGuestSessionMutation: vi.fn(() => ({
+    mutate: vi.fn(),
     isPending: false,
   })),
 }));

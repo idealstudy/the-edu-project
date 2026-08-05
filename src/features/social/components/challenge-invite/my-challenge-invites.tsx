@@ -130,7 +130,7 @@ const PrimaryAction = ({
         challengeId={invite.challengeId}
         variant="primary"
         size="xsmall"
-        label="공유하기"
+        label="링크 다시 보내기"
       />
     );
   }
@@ -147,6 +147,18 @@ const PrimaryAction = ({
         <Link href={PUBLIC.OPEN_CHALLENGE.DETAIL(invite.challengeId)}>
           먼저 풀기
         </Link>
+      </Button>
+    );
+  }
+
+  if (invite.opponentSolvedAt == null) {
+    return (
+      <Button
+        size="xsmall"
+        variant="outlined"
+        disabled
+      >
+        결과 기다리는 중
       </Button>
     );
   }

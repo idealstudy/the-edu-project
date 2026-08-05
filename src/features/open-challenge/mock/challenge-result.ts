@@ -35,6 +35,9 @@ export const MOCK_SOLUTIONS: SolutionItem[] = [
     recommendCount: 12,
     isBest: true,
     isRecommendedByMe: false,
+    isCorrect: true,
+    authorNickname: '수학고수',
+    isMine: false,
   },
   {
     id: '2',
@@ -46,6 +49,9 @@ export const MOCK_SOLUTIONS: SolutionItem[] = [
     recommendCount: 9,
     isBest: false,
     isRecommendedByMe: false,
+    isCorrect: true,
+    authorNickname: '풀이장인',
+    isMine: false,
   },
   {
     id: '3',
@@ -57,6 +63,9 @@ export const MOCK_SOLUTIONS: SolutionItem[] = [
     recommendCount: 5,
     isBest: false,
     isRecommendedByMe: false,
+    isCorrect: false,
+    authorNickname: '꾸준한학생',
+    isMine: false,
   },
   {
     id: '4',
@@ -68,6 +77,9 @@ export const MOCK_SOLUTIONS: SolutionItem[] = [
     recommendCount: 3,
     isBest: false,
     isRecommendedByMe: false,
+    isCorrect: true,
+    authorNickname: '논리왕',
+    isMine: false,
   },
 ];
 

@@ -17,7 +17,7 @@ import {
 import { AxiosError } from 'axios';
 import { Check, Swords, X } from 'lucide-react';
 
-import { useInviteResultQuery } from '../../hooks';
+import { useCreateRematchMutation, useInviteResultQuery } from '../../hooks';
 
 /* ─────────────────────────────────────────────────────
  * 도전장 결과 비교 — 나 vs 상대 정답 여부 + 승패.
@@ -25,22 +25,25 @@ import { useInviteResultQuery } from '../../hooks';
  *  - 둘 다 정답=무승부 / 한쪽만=승·패 / 둘 다 오답=무승부(아쉬움).
  *  - 톤: 재미·격려.
  * ────────────────────────────────────────────────────*/
-type Outcome = 'WIN' | 'LOSE' | 'DRAW';
-
-const resolveOutcome = (result: ChallengeInviteResult): Outcome => {
-  const me = result.myCorrect ?? false;
-  const opponent = result.opponentCorrect ?? false;
-  if (me === opponent) return 'DRAW';
-  return me ? 'WIN' : 'LOSE';
-};
+type Outcome = NonNullable<ChallengeInviteResult['outcome']>;
 
 const OUTCOME_COPY: Record<Outcome, { title: string; sub: string }> = {
-  WIN: { title: '승리했어요! 🎉', sub: '실력으로 멋지게 이겼어요.' },
-  LOSE: {
-    title: '아쉽게 졌어요',
-    sub: '다음 도전에선 꼭 설욕해봐요. 다시 도전!',
+  WIN: {
+    title: '이겼어요',
+    sub: '두 사람이 고른 답과 풀이가 어디서 갈렸는지 확인해 보세요.',
   },
-  DRAW: { title: '무승부예요', sub: '막상막하! 다음 문제로 다시 겨뤄봐요.' },
+  LOSE: {
+    title: '졌어요. 어디서 갈렸는지 보고 가요',
+    sub: '상대의 풀이와 내 풀이에서 달라진 줄을 먼저 확인해 보세요.',
+  },
+  BOTH_WRONG: {
+    title: '둘 다 걸렸어요',
+    sub: '같은 문제에서 둘 다 놓친 지점을 확인하고 함께 다시 풀어보세요.',
+  },
+  BOTH_CORRECT: {
+    title: '둘 다 맞혔어요',
+    sub: '서로 다른 풀이 순서를 비교하고 다음 문제로 이어가 보세요.',
+  },
 };
 
 export const ChallengeResultDialog = ({
@@ -183,13 +186,22 @@ export const ChallengeResultDialog = ({
 };
 
 const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
-  const outcome = resolveOutcome(result);
+  const outcome = result.outcome;
+  const rematch = useCreateRematchMutation();
+
+  if (!outcome) return null;
   const copy = OUTCOME_COPY[outcome];
 
   // D2 계측: versus_view — 결과 다이얼로그 마운트 시 1회
   // is_inviter: ChallengeInviteResult에 inviterId 미포함 → false 기본값(수신자 관점)
   useEffect(() => {
-    trackVersusView({ outcome, is_inviter: false });
+    trackVersusView({
+      outcome:
+        outcome === 'BOTH_WRONG' || outcome === 'BOTH_CORRECT'
+          ? 'DRAW'
+          : outcome,
+      is_inviter: false,
+    });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -201,6 +213,17 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
         {copy.sub}
       </Dialog.Description>
 
+      {outcome !== 'WIN' &&
+        result.divergence?.hasData &&
+        result.divergence.reason && (
+          <div className="border-line-line2 bg-gray-1 text-text-main mt-5 w-full rounded-xl border px-4 py-3 text-left text-sm">
+            <strong className="block">갈린 지점</strong>
+            <span className="text-text-sub1 mt-1 block">
+              {result.divergence.reason}
+            </span>
+          </div>
+        )}
+
       <div className="mt-6 grid w-full grid-cols-2 gap-3">
         <ResultCell
           label="나"
@@ -208,26 +231,63 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
           highlight={outcome === 'WIN'}
           timeSpentSeconds={result.myAttempt?.timeSpentSeconds ?? null}
           solutionImageUrl={result.myAttempt?.solutionImageUrl ?? null}
+          selectedAnswer={result.myAttempt?.selectedAnswer ?? null}
+          solvedAt={result.myAttempt?.solvedAt ?? null}
+          solutionWithdrawn={result.myAttempt?.solutionWithdrawn ?? false}
         />
         <ResultCell
-          label="상대"
+          label={result.context?.inviterName ?? '상대'}
           correct={result.opponentCorrect ?? false}
           highlight={outcome === 'LOSE'}
           timeSpentSeconds={result.opponentAttempt?.timeSpentSeconds ?? null}
           solutionImageUrl={result.opponentAttempt?.solutionImageUrl ?? null}
+          selectedAnswer={result.opponentAttempt?.selectedAnswer ?? null}
+          solvedAt={result.opponentAttempt?.solvedAt ?? null}
+          solutionWithdrawn={result.opponentAttempt?.solutionWithdrawn ?? false}
         />
       </div>
 
-      <Dialog.Footer className="mt-6 w-full">
-        <Dialog.Close asChild>
+      <Dialog.Footer className="mt-6 flex w-full flex-col gap-2 sm:flex-row">
+        {outcome === 'LOSE' || outcome === 'BOTH_WRONG' ? (
           <Button
             variant="primary"
             size="large"
-            className="w-full"
+            className="flex-1"
+            asChild
           >
-            확인
+            <Link href={PUBLIC.OPEN_CHALLENGE.LIST}>이 유형 3문제 더 풀기</Link>
           </Button>
-        </Dialog.Close>
+        ) : (
+          <Button
+            variant="primary"
+            size="large"
+            className="flex-1"
+            disabled={rematch.isPending}
+            onClick={() => rematch.mutate(result.shareToken)}
+          >
+            {rematch.isPending ? '문제 고르는 중…' : '다시 붙기'}
+          </Button>
+        )}
+        {outcome === 'LOSE' || outcome === 'BOTH_WRONG' ? (
+          <Button
+            variant="outlined"
+            size="large"
+            className="flex-1"
+            disabled={rematch.isPending}
+            onClick={() => rematch.mutate(result.shareToken)}
+          >
+            다시 붙기
+          </Button>
+        ) : (
+          <Button
+            variant="outlined"
+            size="large"
+            className="flex-1"
+            asChild
+          >
+            <Link href={PUBLIC.OPEN_CHALLENGE.LIST}>다른 문제로</Link>
+          </Button>
+        )}
       </Dialog.Footer>
     </>
   );
@@ -250,12 +310,18 @@ const ResultCell = ({
   highlight,
   timeSpentSeconds,
   solutionImageUrl,
+  selectedAnswer,
+  solvedAt,
+  solutionWithdrawn,
 }: {
   label: string;
   correct: boolean;
   highlight: boolean;
   timeSpentSeconds?: number | null;
   solutionImageUrl?: string | null;
+  selectedAnswer?: string | null;
+  solvedAt?: string | null;
+  solutionWithdrawn?: boolean;
 }) => {
   const timeLabel = formatTimeSpent(timeSpentSeconds ?? null);
 
@@ -277,6 +343,11 @@ const ResultCell = ({
       >
         {correct ? <Check size={26} /> : <X size={26} />}
       </span>
+      {selectedAnswer && (
+        <span className="font-caption-normal text-text-sub2">
+          고른 답 {selectedAnswer}
+        </span>
+      )}
       <span
         className={cn(
           'font-label-heading',
@@ -290,7 +361,23 @@ const ResultCell = ({
           {timeLabel}
         </span>
       )}
-      {solutionImageUrl && (
+      {solvedAt && (
+        <span className="font-caption-normal text-text-sub2">
+          {new Intl.DateTimeFormat('ko-KR', {
+            month: 'numeric',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          }).format(new Date(solvedAt))}
+          에 제출
+        </span>
+      )}
+      {solutionWithdrawn && (
+        <span className="bg-gray-1 text-text-sub1 mt-1 w-full rounded-lg px-2 py-4 text-xs">
+          {label === '나' ? '내가 풀이를 내렸어요' : '상대가 풀이를 내렸어요'}
+        </span>
+      )}
+      {!solutionWithdrawn && solutionImageUrl && (
         // eslint-disable-next-line @next/next/no-img-element -- presigned S3 URL, next/image 도메인 미등록
         <img
           src={solutionImageUrl}

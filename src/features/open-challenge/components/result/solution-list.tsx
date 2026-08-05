@@ -6,9 +6,9 @@ import Image from 'next/image';
 
 import { type ChallengeReviewSort } from '@/entities/open-challenge';
 import { TextViewer, parseEditorContent } from '@/shared/components/editor';
-import { Select } from '@/shared/components/ui';
+import { Button, Dialog, Select } from '@/shared/components/ui';
 import { cn, extractText } from '@/shared/lib';
-import { Lock, PencilLine, ThumbsUp, User } from 'lucide-react';
+import { Lock, MoreVertical, PencilLine, ThumbsUp, User } from 'lucide-react';
 
 export type SolutionItem = {
   id: string;
@@ -20,6 +20,9 @@ export type SolutionItem = {
   recommendCount: number;
   isBest: boolean;
   isRecommendedByMe: boolean;
+  isCorrect: boolean | null;
+  authorNickname: string;
+  isMine: boolean;
 };
 
 type SolutionListProps = {
@@ -27,6 +30,7 @@ type SolutionListProps = {
   totalCount: number;
   sort: ChallengeReviewSort;
   isRecommendPending?: boolean;
+  isWithdrawPending?: boolean;
   /**
    * 컨닝가드: 본인이 아직 이 문제를 완료(COMPLETED)하지 않았으면 true.
    * true면 풀이 목록 대신 잠금 안내를 노출한다.
@@ -34,6 +38,7 @@ type SolutionListProps = {
   isLocked?: boolean;
   onSortChange: (sort: ChallengeReviewSort) => void;
   onRecommendToggle: (solution: SolutionItem) => void;
+  onWithdraw: (solution: SolutionItem) => void;
 };
 
 const CONTENT_EXPAND_THRESHOLD = 150;
@@ -62,12 +67,17 @@ export const SolutionList = ({
   totalCount,
   sort,
   isRecommendPending = false,
+  isWithdrawPending = false,
   isLocked = false,
   onSortChange,
   onRecommendToggle,
+  onWithdraw,
 }: SolutionListProps) => {
   const [expanded, setExpanded] = useState(false);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [withdrawTarget, setWithdrawTarget] = useState<SolutionItem | null>(
+    null
+  );
 
   const visibleSolutions = expanded ? solutions : solutions.slice(0, 3);
 
@@ -99,7 +109,9 @@ export const SolutionList = ({
   if (solutions.length === 0) {
     return (
       <div className="flex flex-col gap-4">
-        <h2 className="font-body1-heading text-text-main">다른 사람 풀이 0개</h2>
+        <h2 className="font-body1-heading text-text-main">
+          다른 사람 풀이 0개
+        </h2>
         <div className="border-line-line1 flex flex-col items-center gap-3 rounded-xl border bg-white px-6 py-12 text-center">
           <div className="bg-gray-1 flex size-14 items-center justify-center rounded-full">
             <PencilLine
@@ -174,7 +186,13 @@ export const SolutionList = ({
               key={solution.id}
               className={cn(
                 'rounded-xl border bg-white p-5',
-                solution.isBest ? 'border-orange-7' : 'border-line-line1'
+                solution.isCorrect === true
+                  ? 'border-system-success/40'
+                  : solution.isCorrect === false
+                    ? 'border-orange-3 bg-orange-1/30'
+                    : solution.isBest
+                      ? 'border-orange-7'
+                      : 'border-line-line1'
               )}
             >
               {solution.isBest && (
@@ -193,8 +211,20 @@ export const SolutionList = ({
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <p className="font-body2-heading text-text-main text-sm">
-                        {solution.nickname}
+                        {solution.authorNickname}
                       </p>
+                      {solution.isCorrect !== null && (
+                        <span
+                          className={cn(
+                            'rounded-full px-2 py-0.5 text-[11px] font-bold',
+                            solution.isCorrect
+                              ? 'bg-system-success/10 text-system-success'
+                              : 'bg-orange-1 text-orange-10'
+                          )}
+                        >
+                          {solution.isCorrect ? '맞은 풀이' : '틀린 풀이'}
+                        </span>
+                      )}
                       {isDrawing && (
                         <span className="bg-orange-1 text-orange-10 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold">
                           <PencilLine size={11} />
@@ -241,6 +271,16 @@ export const SolutionList = ({
                   </div>
                 </div>
                 <div className="flex shrink-0 flex-col items-center gap-1">
+                  {solution.isMine && (
+                    <button
+                      type="button"
+                      onClick={() => setWithdrawTarget(solution)}
+                      className="text-text-sub2 hover:text-text-main flex size-7 items-center justify-center rounded-lg"
+                      aria-label="내 풀이 메뉴"
+                    >
+                      <MoreVertical size={16} />
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={() => onRecommendToggle(solution)}
@@ -276,6 +316,46 @@ export const SolutionList = ({
           {expanded ? '접기' : '더 많은 풀이 보기'}
         </button>
       )}
+
+      <Dialog
+        isOpen={withdrawTarget !== null}
+        onOpenChange={(open) =>
+          !open && !isWithdrawPending && setWithdrawTarget(null)
+        }
+      >
+        <Dialog.Content className="w-full max-w-[400px] gap-5 p-6 text-center">
+          <Dialog.Header>
+            <Dialog.Title className="text-text-main text-lg font-bold">
+              이 풀이를 내릴까요?
+            </Dialog.Title>
+            <Dialog.Description className="text-text-sub1 text-sm leading-relaxed">
+              공개 풀이 목록과 대결 화면에서만 사라져요. 정오 기록, 걸린 시간,
+              정복 지도 점수는 그대로 남습니다.
+            </Dialog.Description>
+          </Dialog.Header>
+          <Dialog.Footer>
+            <Button
+              variant="outlined"
+              className="flex-1"
+              disabled={isWithdrawPending}
+              onClick={() => setWithdrawTarget(null)}
+            >
+              취소
+            </Button>
+            <Button
+              className="flex-1"
+              disabled={isWithdrawPending || !withdrawTarget}
+              onClick={() => {
+                if (!withdrawTarget) return;
+                onWithdraw(withdrawTarget);
+                setWithdrawTarget(null);
+              }}
+            >
+              {isWithdrawPending ? '내리는 중…' : '내리기'}
+            </Button>
+          </Dialog.Footer>
+        </Dialog.Content>
+      </Dialog>
     </div>
   );
 };

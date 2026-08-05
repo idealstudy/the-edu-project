@@ -34,6 +34,7 @@ const COURSE = {
  * ────────────────────────────────────────────────────*/
 const FRIENDS = {
   INDEX: '/friends',
+  DETAIL: (friendId: number) => `/friends/${friendId}`,
 } as const;
 
 /* ─────────────────────────────────────────────────────

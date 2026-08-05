@@ -34,6 +34,10 @@ vi.mock('../../hooks/use-open-challenge', () => ({
     mutate: vi.fn(),
     isPending: false,
   })),
+  useWithdrawChallengeReviewMutation: vi.fn(() => ({
+    mutate: vi.fn(),
+    isPending: false,
+  })),
   // result-cross-check → solve/solution-panel 이 참조하는 훅(폴백 경로용). 이 스위트에선 호출 안 됨.
   useChallengeSolutionMutation: vi.fn(() => ({
     mutate: vi.fn(),

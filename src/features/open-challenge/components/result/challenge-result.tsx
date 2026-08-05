@@ -14,6 +14,7 @@ import {
   useNextChallengeQuery,
   useOpenChallengeDetailQuery,
   useRecommendChallengeReviewMutation,
+  useWithdrawChallengeReviewMutation,
 } from '../../hooks/use-open-challenge';
 import { AiFeedbackForm } from './ai-feedback-form';
 import { ChallengeResultSkeleton } from './challenge-result-skeleton';
@@ -98,6 +99,7 @@ export const ChallengeResult = ({
   const recommendMutation = useRecommendChallengeReviewMutation(challengeId);
   const cancelRecommendMutation =
     useCancelChallengeReviewRecommendMutation(challengeId);
+  const withdrawMutation = useWithdrawChallengeReviewMutation(challengeId);
 
   useEffect(() => {
     const rawResult = window.sessionStorage.getItem(
@@ -218,8 +220,10 @@ export const ChallengeResult = ({
             isRecommendPending={
               recommendMutation.isPending || cancelRecommendMutation.isPending
             }
+            isWithdrawPending={withdrawMutation.isPending}
             onSortChange={setReviewSort}
             onRecommendToggle={handleRecommendToggle}
+            onWithdraw={(solution) => withdrawMutation.mutate(solution.id)}
           />
         </div>
 

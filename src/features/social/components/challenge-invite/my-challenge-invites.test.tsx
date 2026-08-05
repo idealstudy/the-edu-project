@@ -38,7 +38,7 @@ vi.mock('../../hooks', async (importOriginal) => {
  *  1) ACCEPTED/COMPLETED 라도 조회자(viewerCompleted=false)가 문제를 아직
  *     안 풀었으면 "결과 보기" 대신 "먼저 풀기"를 노출해야 한다(안 그러면
  *     서버가 컨닝 가드로 정당하게 막아 엉뚱한 에러처럼 보인다).
- *  2) OPEN 행은 "공유하기" 버튼 1개만 뜬다. 별도 링크 복사 아이콘 버튼은 없앴다
+ *  2) OPEN 행은 "링크 다시 보내기" 버튼 1개만 뜬다.
  *     (공유 다이얼로그 내부에 복사 기능이 있음).
  *  3) 모든 행이 [상태 배지][주 동작 버튼 1개] 구조로 통일된다.
  * ────────────────────────────────────────────────────*/
@@ -48,7 +48,7 @@ describe('MyChallengeInvites', () => {
     vi.clearAllMocks();
   });
 
-  test('OPEN 상태는 "공유하기" 버튼 1개만 뜬다(별도 링크 복사 버튼 없음)', () => {
+  test('OPEN 상태는 "링크 다시 보내기" 버튼 1개만 뜬다', () => {
     mockUseMyChallengeInvitesQuery.mockReturnValue({
       data: [
         {
@@ -70,7 +70,7 @@ describe('MyChallengeInvites', () => {
 
     renderWithProviders(<MyChallengeInvites />);
 
-    expect(screen.getByText('공유하기')).toBeInTheDocument();
+    expect(screen.getByText('링크 다시 보내기')).toBeInTheDocument();
     expect(screen.queryByLabelText('도전장 링크 복사')).not.toBeInTheDocument();
     expect(screen.queryByText('결과 보기')).not.toBeInTheDocument();
     expect(screen.queryByText('먼저 풀기')).not.toBeInTheDocument();
@@ -118,6 +118,7 @@ describe('MyChallengeInvites', () => {
           subject: 'MATH',
           unitName: null,
           viewerCompleted: true,
+          opponentSolvedAt: '2026-08-01T01:00:00',
         },
       ],
       isLoading: false,
@@ -144,6 +145,7 @@ describe('MyChallengeInvites', () => {
           subject: 'MATH',
           unitName: null,
           viewerCompleted: true,
+          opponentSolvedAt: '2026-08-01T01:00:00',
         },
       ],
       isLoading: false,
@@ -182,6 +184,7 @@ describe('MyChallengeInvites', () => {
           unitName: '이차방정식',
           inviteeId: 99,
           viewerCompleted: true,
+          opponentSolvedAt: '2026-08-02T01:00:00',
         },
       ],
       isLoading: false,
@@ -227,6 +230,7 @@ describe('MyChallengeInvites', () => {
           unitName: null,
           inviteeId: 42,
           viewerCompleted: true,
+          opponentSolvedAt: '2026-08-02T01:00:00',
           opponentName: '민지',
         },
       ],
@@ -241,8 +245,8 @@ describe('MyChallengeInvites', () => {
     await userEvent.setup().click(toggle);
 
     expect(toggle).toHaveAttribute('aria-expanded', 'true');
-    // OPEN 건의 "공유하기" 와 ACCEPTED+완료 건의 "결과 보기" 가 각각 뜬다
-    expect(screen.getByText('공유하기')).toBeInTheDocument();
+    // OPEN 건의 "링크 다시 보내기" 와 ACCEPTED+완료 건의 "결과 보기" 가 각각 뜬다
+    expect(screen.getByText('링크 다시 보내기')).toBeInTheDocument();
     expect(screen.getByText('결과 보기')).toBeInTheDocument();
     // 상대 이름(opponentName)이 내부 회원 번호 대신 실명으로 뜬다
     expect(screen.getByText('민지')).toBeInTheDocument();
@@ -276,6 +280,7 @@ describe('MyChallengeInvites', () => {
           unitName: null,
           inviteeId: 123,
           viewerCompleted: true,
+          opponentSolvedAt: '2026-08-02T01:00:00',
           // opponentName 없음(과거 응답 등). 내부 번호 대신 완곡한 문구로 폴백해야 함
         },
       ],
@@ -320,6 +325,7 @@ describe('MyChallengeInvites', () => {
           unitName: null,
           inviteeId: 7,
           viewerCompleted: true,
+          opponentSolvedAt: '2026-08-02T01:00:00',
         },
       ],
       isLoading: false,
@@ -352,6 +358,7 @@ describe('MyChallengeInvites', () => {
           subject: 'MATH',
           unitName: null,
           viewerCompleted: true,
+          opponentSolvedAt: '2026-08-01T01:00:00',
         },
       ],
       isLoading: false,

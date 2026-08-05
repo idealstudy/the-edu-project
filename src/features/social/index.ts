@@ -1,4 +1,5 @@
 export { FriendsClient } from './components/friends/friends-client';
+export { FriendDetailClient } from './components/friends/friend-detail-client';
 export { FriendRequestForm } from './components/friends/friend-request-form';
 export { FriendsTutorial } from './components/friends/friends-tutorial-dialog';
 export { ChallengeShareButton } from './components/challenge-invite/challenge-share-button';

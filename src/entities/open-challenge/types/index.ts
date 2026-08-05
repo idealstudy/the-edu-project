@@ -25,6 +25,17 @@ export type GuestGradePayload = {
   elapsedSeconds: number;
   drawingData?: string | null;
 };
+
+export type GuestCoachMessagePayload = {
+  guestToken: string;
+  challengeId: string;
+  message: string;
+};
+
+export type GuestCoachMessageResult = {
+  reply: string;
+  remainingCount: number;
+};
 export type NextChallenge = z.infer<typeof domain.nextChallenge>;
 export type UserRanking = z.infer<typeof domain.ranking>;
 export type MyChallengeListItem = z.infer<typeof domain.myChallengeListItem>;

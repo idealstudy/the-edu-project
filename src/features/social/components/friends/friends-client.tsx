@@ -5,10 +5,15 @@ import Link from 'next/link';
 import { type Friendship } from '@/entities/social';
 import { useSession } from '@/providers';
 import { Button, StatusBadge } from '@/shared/components/ui';
-import { PUBLIC } from '@/shared/constants/route';
-import { UserPlus, Users } from 'lucide-react';
+import { PRIVATE, PUBLIC } from '@/shared/constants/route';
+import { ChevronRight, Flame, UserPlus, Users } from 'lucide-react';
 
-import { useAcceptFriendMutation, useMyFriendsQuery } from '../../hooks';
+import {
+  useAcceptFriendMutation,
+  useFriendSummaryQuery,
+  useFriendTurnSummaryQuery,
+  useMyFriendsQuery,
+} from '../../hooks';
 import { FriendRequestForm } from './friend-request-form';
 
 /* ─────────────────────────────────────────────────────
@@ -40,6 +45,7 @@ export const FriendsClient = () => {
   const myId = member?.id ?? -1;
 
   const { data: friends, isLoading, isError, refetch } = useMyFriendsQuery();
+  const { data: turnSummary } = useFriendTurnSummaryQuery();
   const { mutate: accept, isPending: isAccepting } = useAcceptFriendMutation();
 
   const incomingRequests =
@@ -54,6 +60,36 @@ export const FriendsClient = () => {
 
   return (
     <div className="flex flex-col gap-6">
+      {turnSummary && turnSummary.myTurnCount > 0 && turnSummary.oldest && (
+        <Link
+          href={`${PUBLIC.CORE.INVITE.CHALLENGE(turnSummary.oldest.shareToken)}`}
+          className="border-orange-7 bg-orange-1 focus-visible:ring-key-color-primary flex items-center gap-3 rounded-r-xl border-l-4 px-4 py-4 focus-visible:ring-2 focus-visible:outline-none"
+        >
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white">
+            <Flame
+              className="text-orange-7"
+              size={20}
+            />
+          </span>
+          <span className="min-w-0 flex-1">
+            <strong className="text-text-main block text-sm">
+              내 차례인 대결 {turnSummary.myTurnCount}건
+            </strong>
+            <span className="text-text-sub1 block truncate text-xs">
+              가장 오래 기다린 것은 {turnSummary.oldest.opponentName}님과의{' '}
+              {turnSummary.oldest.challengeTitle}입니다
+            </span>
+          </span>
+          <span className="text-orange-10 hidden shrink-0 text-xs font-bold sm:block">
+            지금 풀러 가기
+          </span>
+          <ChevronRight
+            className="text-orange-10"
+            size={18}
+          />
+        </Link>
+      )}
+
       <FriendRequestForm />
 
       {isLoading && <FriendsSkeleton />}
@@ -140,11 +176,7 @@ export const FriendsClient = () => {
                     key={item.id}
                     className="border-line-line2 flex items-center justify-between gap-3 rounded-[12px] border bg-white px-4 py-3"
                   >
-                    <FriendIdentityLink {...otherIdentity(item, myId)} />
-                    <StatusBadge
-                      variant="success"
-                      label="친구"
-                    />
+                    <AcceptedFriendRow {...otherIdentity(item, myId)} />
                   </li>
                 ))}
               </ul>
@@ -176,6 +208,37 @@ const FriendIdentityLink = ({
   </Link>
 );
 
+const AcceptedFriendRow = (identity: OtherIdentity) => {
+  const { data: summary } = useFriendSummaryQuery(identity.memberId);
+  const record = summary?.record;
+
+  return (
+    <Link
+      href={PRIVATE.FRIENDS.DETAIL(identity.memberId)}
+      aria-label={`${identity.name ?? '이름 미설정 회원'}님과의 대결 기록 보기`}
+      className="focus-visible:ring-key-color-primary flex min-w-0 flex-1 items-center gap-3 rounded-lg focus-visible:ring-2 focus-visible:outline-none"
+    >
+      <FriendIdentity {...identity} />
+      <span className="ml-auto hidden shrink-0 text-right sm:block">
+        <span className="text-text-main block text-xs font-bold">
+          {record
+            ? `${record.win}승 ${record.lose}패 ${record.draw}무`
+            : '대결 기록 불러오는 중'}
+        </span>
+        {record && record.myTurn > 0 && (
+          <span className="text-orange-10 text-[11px] font-bold">
+            내 차례 {record.myTurn}건
+          </span>
+        )}
+      </span>
+      <ChevronRight
+        className="text-text-sub2 shrink-0"
+        size={18}
+      />
+    </Link>
+  );
+};
+
 const FriendIdentity = ({ name, profileImageUrl }: OtherIdentity) => (
   <div className="flex min-w-0 items-center gap-3">
     {profileImageUrl ? (
@@ -205,7 +268,7 @@ const EmptyFriends = () => (
     </span>
     <p className="font-body2-heading text-text-main">아직 친구가 없어요</p>
     <p className="font-caption-normal text-text-sub2 text-balance">
-      회원 번호로 친구를 추가하고 도전장을 주고받아 보세요.
+      방금 푼 문제를 친구에게 보내면 누가 더 잘 푸는지 겨룰 수 있어요.
     </p>
   </div>
 );

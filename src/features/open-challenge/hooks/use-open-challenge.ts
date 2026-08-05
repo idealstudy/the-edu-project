@@ -7,6 +7,7 @@ import {
   type ChallengeReviewSort,
   type CreateAiCoachingSessionPayload,
   type CreateChallengeReviewPayload,
+  type GuestCoachMessagePayload,
   type GuestGradePayload,
   type RecommendedChallengeParams,
   type SendAiCoachingMessagePayload,
@@ -214,6 +215,12 @@ export const useGuestGradeChallengeMutation = (challengeId: string) =>
   useMutation({
     mutationFn: (params: string | GuestGradePayload) =>
       repository.gradeAsGuest(challengeId, params),
+  });
+
+export const useGuestCoachMessageMutation = () =>
+  useMutation({
+    mutationFn: (params: GuestCoachMessagePayload) =>
+      repository.sendGuestCoachMessage(params),
   });
 
 /* ─────────────────────────────────────────────────────

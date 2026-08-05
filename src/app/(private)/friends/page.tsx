@@ -1,8 +1,4 @@
-import {
-  FriendsClient,
-  FriendsTutorial,
-  MyChallengeInvites,
-} from '@/features/social';
+import { FriendsClient, FriendsTutorial } from '@/features/social';
 
 export const metadata = {
   title: '친구',
@@ -11,7 +7,7 @@ export const metadata = {
 
 export default function FriendsPage() {
   return (
-    <div className="min-h-screen w-full bg-[#F9F9F9]">
+    <div className="bg-system-background min-h-screen w-full">
       <div className="mx-auto w-full max-w-[1200px] px-4 pt-8 pb-16 md:px-8 lg:px-12">
         <header className="mb-6 flex flex-col gap-2">
           <div className="flex flex-col gap-1">
@@ -19,16 +15,13 @@ export default function FriendsPage() {
               친구
             </h1>
             <p className="font-body2-normal text-text-sub1">
-              친구를 추가하고, 같은 문제로 도전장을 주고받아요.
+              친구를 누르면 그 친구와 한 대결이 나옵니다.
             </p>
           </div>
           <FriendsTutorial />
         </header>
 
-        <div className="flex flex-col gap-8">
-          <FriendsClient />
-          <MyChallengeInvites />
-        </div>
+        <FriendsClient />
       </div>
     </div>
   );
