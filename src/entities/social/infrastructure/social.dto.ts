@@ -39,6 +39,7 @@ const ChallengeInviteDtoSchema = z.object({
   viewerCompleted: z.boolean().nullable().optional(),
   // R-08: 조회자 기준 상대방 표시 이름. 과거 응답 호환을 위해 optional.
   opponentName: NullableString,
+  opponentSolvedAt: NullableString,
 });
 
 /* ─────────────────────────────────────────────────────
@@ -51,6 +52,13 @@ const ChallengeInvitePreviewDtoSchema = z.object({
   challengeTitle: z.string(),
   subject: NullableString,
   difficulty: NullableString,
+  inviterName: NullableString,
+  sentAt: NullableString,
+  receivedAt: NullableString,
+  opponentSolvedAt: NullableString,
+  opponentResultVisible: z.boolean().optional().default(false),
+  lockedFieldCount: z.number().int().nonnegative().optional().default(0),
+  lockReason: NullableString,
 });
 
 /* ─────────────────────────────────────────────────────
@@ -58,18 +66,125 @@ const ChallengeInvitePreviewDtoSchema = z.object({
  * ────────────────────────────────────────────────────*/
 const AttemptSummaryDtoSchema = z.object({
   isCorrect: z.boolean().nullable().optional(),
+  selectedAnswer: NullableString,
   timeSpentSeconds: z.number().nullable().optional(),
+  solvedAt: NullableString,
   solutionImageUrl: NullableString,
+  solutionShared: z.boolean().optional().default(false),
+  solutionWithdrawn: z.boolean().optional().default(false),
 });
 
 const ChallengeInviteResultDtoSchema = z.object({
   shareToken: z.string(),
   status: z.enum(['OPEN', 'ACCEPTED', 'COMPLETED']),
   challengeId: z.number(),
+  outcome: z
+    .enum(['WIN', 'LOSE', 'BOTH_WRONG', 'BOTH_CORRECT'])
+    .nullable()
+    .optional(),
   myCorrect: z.boolean().nullable().optional(),
   opponentCorrect: z.boolean().nullable().optional(),
   myAttempt: AttemptSummaryDtoSchema.nullable().optional(),
   opponentAttempt: AttemptSummaryDtoSchema.nullable().optional(),
+  divergence: z
+    .object({
+      hasData: z.boolean(),
+      wrongType: NullableString,
+      reason: NullableString,
+    })
+    .nullable()
+    .optional(),
+  context: z
+    .object({
+      inviterName: NullableString,
+      sentAt: NullableString,
+      opponentSolvedAt: NullableString,
+    })
+    .nullable()
+    .optional(),
+});
+
+const FriendTurnSummaryDtoSchema = z.object({
+  myTurnCount: z.number().int().nonnegative(),
+  oldest: z
+    .object({
+      shareToken: z.string(),
+      opponentName: z.string(),
+      challengeTitle: z.string(),
+      receivedAt: z.string(),
+    })
+    .nullable(),
+});
+
+const FriendMasteryDtoSchema = z.object({
+  friendId: z.number(),
+  units: z.array(
+    z.object({
+      nodeId: z.number(),
+      displayName: z.string(),
+      subjectName: z.string(),
+      masteryScore: z.number().min(0).max(100),
+    })
+  ),
+});
+
+const FriendSummaryDtoSchema = z.object({
+  friendId: z.number(),
+  displayName: z.string(),
+  relation: z.enum(['FRIEND', 'FRIEND_NO_DUEL', 'NOT_FRIEND']),
+  record: z
+    .object({
+      win: z.number().int().nonnegative(),
+      lose: z.number().int().nonnegative(),
+      draw: z.number().int().nonnegative(),
+      myTurn: z.number().int().nonnegative(),
+    })
+    .nullable(),
+  brag: z
+    .object({
+      conqueredUnitCount: z.number().int().nonnegative(),
+      badgeCount: z.number().int().nonnegative(),
+      streakDays: z.number().int().nonnegative(),
+      level: z.number().int().nonnegative(),
+      solvedCount: z.number().int().nonnegative(),
+    })
+    .nullable(),
+});
+
+const FriendDuelItemDtoSchema = z.object({
+  shareToken: z.string(),
+  challengeId: z.number(),
+  challengeTitle: z.string(),
+  unitName: NullableString,
+  status: z.enum(['OPEN', 'ACCEPTED', 'COMPLETED']),
+  viewerCompleted: z.boolean(),
+  opponentSolvedAt: NullableString,
+  outcome: z.enum(['WIN', 'LOSE', 'BOTH_WRONG', 'BOTH_CORRECT']).nullable(),
+  sentAt: z.string(),
+});
+
+const FriendDuelsDtoSchema = z.object({
+  items: z.array(FriendDuelItemDtoSchema),
+  nextCursor: NullableString,
+});
+
+const RematchDtoSchema = z.object({
+  shareToken: z.string(),
+  challengeId: z.number(),
+  challengeTitle: z.string(),
+  unitName: z.string(),
+  rematchOfShareToken: z.string(),
+});
+
+const GuestSessionDtoSchema = z.object({
+  guestToken: z.string(),
+  expiresAt: z.string(),
+});
+
+const GuestClaimDtoSchema = z.object({
+  claimedAttemptCount: z.number().int().nonnegative(),
+  inviteAccepted: z.boolean(),
+  treeNodeUpdatedCount: z.number().int().nonnegative(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -87,6 +202,13 @@ export const dto = {
   challengeInvite: ChallengeInviteDtoSchema,
   challengeInvitePreview: ChallengeInvitePreviewDtoSchema,
   challengeInviteResult: ChallengeInviteResultDtoSchema,
+  friendTurnSummary: FriendTurnSummaryDtoSchema,
+  friendMastery: FriendMasteryDtoSchema,
+  friendSummary: FriendSummaryDtoSchema,
+  friendDuels: FriendDuelsDtoSchema,
+  rematch: RematchDtoSchema,
+  guestSession: GuestSessionDtoSchema,
+  guestClaim: GuestClaimDtoSchema,
   memberSearchResult: MemberSearchResultDtoSchema,
   memberSearchResults: z.array(MemberSearchResultDtoSchema),
 };
@@ -107,6 +229,11 @@ const CreateChallengeInvitePayloadSchema = z.object({
   challengeId: z.number(),
 });
 
+const CreateGuestSessionPayloadSchema = z.object({
+  challengeId: z.number(),
+  shareToken: z.string().optional(),
+});
+
 const MemberSearchQuerySchema = z.object({
   q: z.string().trim().min(1),
 });
@@ -115,5 +242,6 @@ export const payload = {
   friendRequest: FriendRequestPayloadSchema,
   friendRequestByPhone: FriendRequestByPhonePayloadSchema,
   createChallengeInvite: CreateChallengeInvitePayloadSchema,
+  createGuestSession: CreateGuestSessionPayloadSchema,
   memberSearchQuery: MemberSearchQuerySchema,
 };

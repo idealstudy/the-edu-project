@@ -16,8 +16,10 @@ import {
   type ChallengeReview,
   type ChallengeReviewSort,
   type ChallengeSolution,
+  type CoachOpening,
   type CreateAiCoachingSessionPayload,
   type CreateChallengeReviewPayload,
+  type GuestGradePayload,
   type MyChallengeDetail,
   type MyChallengeListItem,
   type MyChallengeListParams,
@@ -167,6 +169,10 @@ const toDetail = (raw: unknown): ChallengeDetail => {
     wrongAnswerRate: parsed.wrongAnswerRate,
     participantCount: parsed.participantCount,
     isAiSupported: parsed.isAiSupported ?? parsed.aiSupported ?? true,
+    points: parsed.points,
+    examRoundCode: parsed.examRoundCode,
+    wrongAnswerRateSource: parsed.wrongAnswerRateSource,
+    units: parsed.units,
   });
 };
 
@@ -215,6 +221,9 @@ const toReview = (raw: unknown): ChallengeReview => {
     isBest: parsed.isBest ?? parsed.best ?? false,
     isRecommendedByMe:
       parsed.isRecommendedByMe ?? parsed.recommendedByMe ?? false,
+    isCorrect: parsed.isCorrect,
+    authorNickname: parsed.authorNickname ?? parsed.nickname,
+    isMine: parsed.isMine,
   });
 };
 
@@ -313,6 +322,13 @@ const getChallengeDetail = async (id: string): Promise<ChallengeDetail> => {
   const response = await api.public.get(`/public/challenges/${id}`);
   const detail = unwrapEnvelope(response, dto.detail);
   return toDetail(detail);
+};
+
+const getCoachOpening = async (id: string): Promise<CoachOpening> => {
+  const response = await api.public.get(
+    `/public/challenges/${id}/coach-opening`
+  );
+  return domain.coachOpening.parse(unwrapEnvelope(response, dto.coachOpening));
 };
 
 /* ─────────────────────────────────────────────────────
@@ -439,6 +455,10 @@ const createChallengeReview = async (
 ): Promise<void> => {
   const validated = payload.createReview.parse(params);
   await api.private.post('/common/challenge-reviews', validated);
+};
+
+const withdrawChallengeReview = async (reviewId: string): Promise<void> => {
+  await api.private.delete(`/common/challenge-reviews/${reviewId}`);
 };
 
 /* ─────────────────────────────────────────────────────
@@ -611,11 +631,12 @@ const getMyStreak = async () => {
  * ────────────────────────────────────────────────────*/
 const gradeChallengeAsGuest = async (
   challengeId: string,
-  selectedAnswer: string
+  params: string | GuestGradePayload
 ): Promise<{ correct: boolean }> => {
+  const body = typeof params === 'string' ? { selectedAnswer: params } : params;
   const response = await api.public.post(
     `/public/challenges/${challengeId}/grade`,
-    { selectedAnswer }
+    body
   );
   return unwrapEnvelope(response, z.object({ correct: z.boolean() }));
 };
@@ -685,6 +706,7 @@ export const repository = {
   getRecommended: getRecommendedChallenges,
   getAdminList: getAdminChallengeList,
   getDetail: getChallengeDetail,
+  getCoachOpening,
   getAdminDetail: getAdminChallengeDetail,
   createAdmin: createAdminChallenge,
   updateAdmin: updateAdminChallenge,
@@ -697,6 +719,7 @@ export const repository = {
   getSolution: getChallengeSolution,
   getReviews: getChallengeReviews,
   createReview: createChallengeReview,
+  withdrawReview: withdrawChallengeReview,
   recommendReview: recommendChallengeReview,
   cancelReviewRecommend: cancelChallengeReviewRecommend,
   submitFeedback: submitChallengeFeedback,

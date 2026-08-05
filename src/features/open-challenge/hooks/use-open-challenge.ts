@@ -7,6 +7,7 @@ import {
   type ChallengeReviewSort,
   type CreateAiCoachingSessionPayload,
   type CreateChallengeReviewPayload,
+  type GuestGradePayload,
   type RecommendedChallengeParams,
   type SendAiCoachingMessagePayload,
   type StartChallengeAttemptPayload,
@@ -59,6 +60,17 @@ export const useOpenChallengeDetailQuery = (
   useQuery({
     queryKey: openChallengeKeys.detail(id),
     queryFn: () => repository.getDetail(id),
+    enabled: (options?.enabled ?? true) && id.length > 0,
+    retry: retryUnlessNotFound,
+  });
+
+export const useCoachOpeningQuery = (
+  id: string,
+  options?: { enabled?: boolean }
+) =>
+  useQuery({
+    queryKey: openChallengeKeys.coachOpening(id),
+    queryFn: () => repository.getCoachOpening(id),
     enabled: (options?.enabled ?? true) && id.length > 0,
     retry: retryUnlessNotFound,
   });
@@ -200,8 +212,8 @@ export const useSubmitChallengeAnswerMutation = (challengeId: string) => {
  * ────────────────────────────────────────────────────*/
 export const useGuestGradeChallengeMutation = (challengeId: string) =>
   useMutation({
-    mutationFn: (selectedAnswer: string) =>
-      repository.gradeAsGuest(challengeId, selectedAnswer),
+    mutationFn: (params: string | GuestGradePayload) =>
+      repository.gradeAsGuest(challengeId, params),
   });
 
 /* ─────────────────────────────────────────────────────
@@ -252,6 +264,22 @@ export const useCreateChallengeReviewMutation = () => {
             ERROR_REDIRECT_DELAY_MS
           ),
       });
+    },
+  });
+};
+
+export const useWithdrawChallengeReviewMutation = (challengeId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (reviewId: string) => repository.withdrawReview(reviewId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: openChallengeKeys.reviewsBase(challengeId),
+      });
+    },
+    onError: (error) => {
+      handleApiError(error, classifyOpenChallengeError, {});
     },
   });
 };

@@ -88,6 +88,32 @@ const ChallengeDetailDtoSchema = ChallengeListItemDtoSchema.extend({
   status: z.string().optional(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
+  points: z.number().nullable().optional().default(null),
+  examRoundCode: z.string().nullable().optional().default(null),
+  wrongAnswerRateSource: z
+    .enum(['EXTERNAL', 'INTERNAL', 'ESTIMATED'])
+    .optional()
+    .default('ESTIMATED'),
+  units: z
+    .array(
+      z.object({
+        nodeId: z.number(),
+        displayName: z.string(),
+        subjectName: z.string(),
+        isPrimary: z.boolean(),
+        examScope: z.string(),
+      })
+    )
+    .optional()
+    .default([]),
+});
+
+const CoachOpeningDtoSchema = z.object({
+  challengeId: IdSchema,
+  message: z.string(),
+  templateCode: z.enum(['T1', 'T2', 'T3', 'T4', 'T5']),
+  progressionStep: z.number(),
+  usedFields: z.record(z.string(), z.unknown()).optional().default({}),
 });
 
 const AttemptDtoSchema = z.object({
@@ -192,6 +218,9 @@ const ChallengeReviewDtoSchema = z.object({
   best: z.boolean().optional(),
   isRecommendedByMe: z.boolean().optional(),
   recommendedByMe: z.boolean().optional().default(false),
+  isCorrect: z.boolean().nullable().optional().default(null),
+  authorNickname: z.string().nullable().optional(),
+  isMine: z.boolean().optional().default(false),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -444,6 +473,7 @@ export const dto = {
   recommended: RecommendedChallengeDtoSchema,
   recommendedList: z.array(RecommendedChallengeDtoSchema),
   detail: ChallengeDetailDtoSchema,
+  coachOpening: CoachOpeningDtoSchema,
   attempt: AttemptDtoSchema,
   answerResult: AnswerResultDtoSchema,
   solution: SolutionDtoSchema,

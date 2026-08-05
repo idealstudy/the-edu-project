@@ -49,6 +49,26 @@ const ChallengeDetailSchema = z.object({
   wrongAnswerRate: z.number(),
   participantCount: z.number(),
   isAiSupported: z.boolean(),
+  points: z.number().nullable(),
+  examRoundCode: z.string().nullable(),
+  wrongAnswerRateSource: z.enum(['EXTERNAL', 'INTERNAL', 'ESTIMATED']),
+  units: z.array(
+    z.object({
+      nodeId: z.number(),
+      displayName: z.string(),
+      subjectName: z.string(),
+      isPrimary: z.boolean(),
+      examScope: z.string(),
+    })
+  ),
+});
+
+const CoachOpeningSchema = z.object({
+  challengeId: z.string(),
+  message: z.string(),
+  templateCode: z.enum(['T1', 'T2', 'T3', 'T4', 'T5']),
+  progressionStep: z.number(),
+  usedFields: z.record(z.string(), z.unknown()),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -114,6 +134,9 @@ const ChallengeReviewSchema = z.object({
   recommendCount: z.number(),
   isBest: z.boolean(),
   isRecommendedByMe: z.boolean(),
+  isCorrect: z.boolean().nullable(),
+  authorNickname: z.string(),
+  isMine: z.boolean(),
 });
 
 const NextChallengeSchema = ChallengeListItemSchema;
@@ -178,6 +201,7 @@ export const domain = {
   listItem: ChallengeListItemSchema,
   recommended: RecommendedChallengeSchema,
   detail: ChallengeDetailSchema,
+  coachOpening: CoachOpeningSchema,
   answerResult: ChallengeAnswerResultSchema,
   rewardDelta: RewardDeltaSchema,
   solution: ChallengeSolutionSchema,

@@ -13,7 +13,16 @@ export type ChallengeInvite = z.infer<typeof domain.challengeInvite>;
 export type ChallengeInvitePreview = z.infer<
   typeof domain.challengeInvitePreview
 >;
-export type ChallengeInviteResult = z.infer<typeof domain.challengeInviteResult>;
+export type ChallengeInviteResult = z.infer<
+  typeof domain.challengeInviteResult
+>;
+export type FriendTurnSummary = z.infer<typeof domain.friendTurnSummary>;
+export type FriendMastery = z.infer<typeof domain.friendMastery>;
+export type FriendSummary = z.infer<typeof domain.friendSummary>;
+export type FriendDuels = z.infer<typeof domain.friendDuels>;
+export type Rematch = z.infer<typeof domain.rematch>;
+export type GuestSession = z.infer<typeof domain.guestSession>;
+export type GuestClaim = z.infer<typeof domain.guestClaim>;
 
 export type MemberSearchResult = z.infer<typeof domain.memberSearchResult>;
 
@@ -26,5 +35,8 @@ export type FriendRequestByPhonePayload = z.infer<
 >;
 export type CreateChallengeInvitePayload = z.infer<
   typeof payload.createChallengeInvite
+>;
+export type CreateGuestSessionPayload = z.infer<
+  typeof payload.createGuestSession
 >;
 export type MemberSearchQuery = z.infer<typeof payload.memberSearchQuery>;

@@ -2,6 +2,7 @@
 
 import {
   type CreateChallengeInvitePayload,
+  type CreateGuestSessionPayload,
   type FriendRequestByPhonePayload,
   type FriendRequestPayload,
   repository,
@@ -17,6 +18,46 @@ export const useMyFriendsQuery = () =>
   useQuery({
     queryKey: socialKeys.friends(),
     queryFn: repository.getMyFriends,
+  });
+
+export const useFriendTurnSummaryQuery = () =>
+  useQuery({
+    queryKey: socialKeys.turnSummary(),
+    queryFn: repository.getFriendTurnSummary,
+  });
+
+export const useFriendSummaryQuery = (
+  friendId: number,
+  options?: { enabled?: boolean }
+) =>
+  useQuery({
+    queryKey: socialKeys.friendSummary(friendId),
+    queryFn: () => repository.getFriendSummary(friendId),
+    enabled: (options?.enabled ?? true) && friendId > 0,
+    retry: false,
+  });
+
+export const useFriendMasteryQuery = (
+  friendId: number,
+  options?: { enabled?: boolean }
+) =>
+  useQuery({
+    queryKey: socialKeys.friendMastery(friendId),
+    queryFn: () => repository.getFriendMastery(friendId),
+    enabled: (options?.enabled ?? true) && friendId > 0,
+    retry: false,
+  });
+
+export const useFriendDuelsQuery = (
+  friendId: number,
+  cursor?: string,
+  options?: { enabled?: boolean }
+) =>
+  useQuery({
+    queryKey: socialKeys.friendDuels(friendId, cursor),
+    queryFn: () => repository.getFriendDuels(friendId, cursor),
+    enabled: (options?.enabled ?? true) && friendId > 0,
+    retry: false,
   });
 
 export const useSearchMembersQuery = (
@@ -67,8 +108,7 @@ export const useAcceptFriendMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (friendshipId: number) =>
-      repository.acceptFriend(friendshipId),
+    mutationFn: (friendshipId: number) => repository.acceptFriend(friendshipId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: socialKeys.friends() });
       showBottomToast('친구 요청을 수락했어요.');
@@ -130,6 +170,38 @@ export const useAcceptChallengeInviteMutation = () => {
     mutationFn: (token: string) => repository.acceptInvite(token),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: socialKeys.invitesAll() });
+    },
+  });
+};
+
+export const useCreateRematchMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (token: string) => repository.createRematch(token),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: socialKeys.invitesAll() });
+      queryClient.invalidateQueries({ queryKey: socialKeys.friends() });
+      showBottomToast('같은 단원의 새 문제로 다시 붙었어요.');
+    },
+  });
+};
+
+export const useCreateGuestSessionMutation = () =>
+  useMutation({
+    mutationFn: (body: CreateGuestSessionPayload) =>
+      repository.createGuestSession(body),
+  });
+
+export const useClaimGuestSessionMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (guestToken: string) =>
+      repository.claimGuestSession(guestToken),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: socialKeys.all });
+      showBottomToast('방금 푼 기록을 내 계정으로 옮겼어요.');
     },
   });
 };
