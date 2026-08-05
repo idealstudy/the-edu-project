@@ -53,6 +53,7 @@ const DASHBOARD = {
   UNIT_NOTES: '/dashboard/student/unit-notes',
   UNIT_NOTE_ROOM: (id: number) => `/dashboard/student/unit-notes/${id}`,
   EXAM_ATTEMPT: (id: number) => `/dashboard/student/exams/${id}`,
+  EXAM_HALL: '/dashboard/student/exam-hall',
 
   /** 사용자 역할에 맞는 실제 대시보드 경로를 반환합니다. */
   byRole: (role: DashboardRole): string => {
@@ -270,6 +271,7 @@ const ADMIN = {
     NEW: '/admin/open-challenge/new',
     EDIT: (id: string | number) => `/admin/open-challenge/${id}/edit`,
   },
+  QUESTION_BANK: '/admin/question-bank',
 } as const;
 
 /* ─────────────────────────────────────────────────────

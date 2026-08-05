@@ -14,6 +14,8 @@ const dailyProblemItem = z.object({
   stampsFilled: z.number().int().nonnegative(),
   stampsTotal: z.number().int().positive(),
   solvedStatus: z.string(),
+  kind: z.enum(['WRONG_ANSWER', 'RECOMMENDED']),
+  badge: z.enum(['선생님 출제', '추천']),
 });
 
 const dailyProblemQueue = z.object({
@@ -21,6 +23,10 @@ const dailyProblemQueue = z.object({
   backlogCount: z.number().int().nonnegative(),
   onboarding: z.boolean(),
   items: z.array(dailyProblemItem),
+  handoff: z.object({
+    returnUrl: z.string(),
+    origin: z.literal('DAILY_PROBLEM'),
+  }),
 });
 
 /* ─────────────────────────────────────────────────────

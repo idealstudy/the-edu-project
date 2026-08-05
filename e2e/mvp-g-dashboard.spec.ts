@@ -1,11 +1,10 @@
 // student dashboard (API route fixtures; authentication guard renders guest-safe shell)
-import { type Page, expect, test } from '@playwright/test';
-
+import type { AssignedExam, ExamAnalysis } from '@/entities/exam';
 import type {
   DailyProblemQueue,
   WrongAnswerItem,
 } from '@/entities/wrong-answer';
-import type { AssignedExam, ExamAnalysis } from '@/entities/exam';
+import { type Page, expect, test } from '@playwright/test';
 
 import { okBody } from './helpers/api-mock';
 import { mockMemberInfo, setAuthCookie } from './helpers/auth-mock';
@@ -114,6 +113,8 @@ const DAILY_PROBLEMS = {
       stampsFilled: 1,
       stampsTotal: 5,
       solvedStatus: 'PENDING',
+      kind: 'WRONG_ANSWER',
+      badge: '선생님 출제',
     },
     {
       position: 2,
@@ -126,6 +127,8 @@ const DAILY_PROBLEMS = {
       stampsFilled: 2,
       stampsTotal: 5,
       solvedStatus: 'PENDING',
+      kind: 'WRONG_ANSWER',
+      badge: '추천',
     },
     {
       position: 3,
@@ -138,8 +141,11 @@ const DAILY_PROBLEMS = {
       stampsFilled: 0,
       stampsTotal: 5,
       solvedStatus: 'PENDING',
+      kind: 'RECOMMENDED',
+      badge: '추천',
     },
   ],
+  handoff: { returnUrl: '/dashboard/student', origin: 'DAILY_PROBLEM' },
 } satisfies DailyProblemQueue;
 
 const ASSIGNED_EXAMS = [
@@ -189,6 +195,15 @@ const EXAM_ANALYSIS = {
   referenceOnly: true,
   realDataFollowUpRequired: false,
   dataNotice: '내신 시험 분석은 AI 추정이며 참고용입니다.',
+  gradeBasis: 'PREDICTED',
+  standardScore: null,
+  confidence: '낮음',
+  adjustmentReason: '기존 규칙 기준선을 유지했습니다.',
+  totalQuestions: 10,
+  answerResults: Array.from({ length: 10 }, (_, index) => ({
+    questionNo: index + 1,
+    correct: index < 8,
+  })),
 } satisfies ExamAnalysis;
 
 const setupDashboardApi = async (page: Page) => {
@@ -348,15 +363,13 @@ test.describe('MVP-G 학생 대시보드 코어', () => {
       '2~3등급'
     );
     await expect(page.getByText('내신 · AI 추정 참고용')).toBeVisible();
-    await expect(page.getByText('이 추정이 나온 곳')).toBeVisible();
+    await expect(page.getByText('무엇을 보고 예측했나요')).toBeVisible();
     await expect(page.getByText('수열', { exact: true })).toBeVisible();
     await expect(page.getByText('2문항 오답', { exact: true })).toBeVisible();
     await expect(
       page.getByText('수학적 귀납법', { exact: true })
     ).toBeVisible();
-    await expect(
-      page.getByText('숙련도 보완 필요', { exact: true })
-    ).toBeVisible();
+    await expect(page.getByText('0문항 오답', { exact: true })).toBeVisible();
     await expect(
       page.getByText('내신 시험 분석은 AI 추정이며 참고용입니다.')
     ).toBeVisible();

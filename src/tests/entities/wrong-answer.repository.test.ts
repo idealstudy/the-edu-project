@@ -32,6 +32,9 @@ const WRONG_ANSWER_ITEM = {
   wrongAgainCount: 0,
   nextReviewAt: '2026-08-02T09:00:00',
   graduatedAt: null,
+  teacherComment: null,
+  commentedByTeacherId: null,
+  commentedAt: null,
   difficulty: 'HIGH',
   nationalWrongRate: 72,
   title: '등차수열의 합',
@@ -65,8 +68,14 @@ describe('wrong-answer repository', () => {
             stampsFilled: 2,
             stampsTotal: 5,
             solvedStatus: 'PENDING',
+            kind: 'WRONG_ANSWER',
+            badge: '선생님 출제',
           },
         ],
+        handoff: {
+          returnUrl: '/dashboard/student',
+          origin: 'DAILY_PROBLEM',
+        },
       },
     });
 
