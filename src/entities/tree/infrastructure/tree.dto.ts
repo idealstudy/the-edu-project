@@ -12,6 +12,19 @@ const NullableIdSchema = z
 
 const TreeSubjectDtoSchema = z
   .union([
+    z.enum([
+      'MIDDLE_MATH',
+      'COMMON_MATH_1',
+      'COMMON_MATH_2',
+      'ALGEBRA',
+      'CALCULUS_1',
+      'CALCULUS_2',
+      'MATH_1',
+      'MATH_2',
+      'CALCULUS',
+      'PROBABILITY_STATISTICS',
+      'GEOMETRY',
+    ]),
     z.enum(['MATH', 'KOREAN', 'ENGLISH', 'SCIENCE']),
     z.enum(['math', 'korean', 'english', 'science']),
     z.string(),

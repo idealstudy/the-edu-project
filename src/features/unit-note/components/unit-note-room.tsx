@@ -212,8 +212,22 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
             />
             <div>
               <p className="font-caption-heading text-gray-7">
-                {root.subject === 'MATH_1' ? '수학Ⅰ' : root.subject} · 내가
-                만드는 책
+                {(
+                  {
+                    MATH_1: '대수',
+                    ALGEBRA: '대수',
+                    MATH_2: '미적분Ⅰ',
+                    CALCULUS_1: '미적분Ⅰ',
+                    CALCULUS: '미적분Ⅱ',
+                    CALCULUS_2: '미적분Ⅱ',
+                    PROBABILITY_STATISTICS: '확률과 통계',
+                    COMMON_MATH_1: '공통수학1',
+                    COMMON_MATH_2: '공통수학2',
+                    MIDDLE_MATH: '중학 수학',
+                    GEOMETRY: '기하',
+                  } as Record<string, string>
+                )[root.subject] ?? root.subject}{' '}
+                · 내가 만드는 책
               </p>
               <h1 className="font-title-heading text-gray-12 mt-1">
                 나의 {root.displayName} 단권화

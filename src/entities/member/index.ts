@@ -44,4 +44,10 @@ export const member = {
 /* ─────────────────────────────────────────────────────
  * 타입
  * ────────────────────────────────────────────────────*/
-export type { MemberDTO, Role, FrontendMember } from './types';
+export type {
+  MemberDTO,
+  Role,
+  FrontendMember,
+  AdminMemberListItem,
+  AdminMemberRole,
+} from './types';

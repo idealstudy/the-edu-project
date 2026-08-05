@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import Link from 'next/link';
 
@@ -17,8 +17,12 @@ type SubjectKey =
   | 'MIDDLE_MATH'
   | 'COMMON_MATH_1'
   | 'COMMON_MATH_2'
+  | 'ALGEBRA'
+  | 'CALCULUS_1'
+  | 'CALCULUS_2'
   | 'MATH_1'
   | 'MATH_2'
+  | 'CALCULUS'
   | 'PROBABILITY_STATISTICS';
 
 type BranchSummary = UnitNoteNode & {
@@ -32,9 +36,13 @@ const SUBJECTS: { key: SubjectKey; label: string }[] = [
   { key: 'MIDDLE_MATH', label: '중학' },
   { key: 'COMMON_MATH_1', label: '공통수학1' },
   { key: 'COMMON_MATH_2', label: '공통수학2' },
-  { key: 'MATH_1', label: '수학Ⅰ' },
-  { key: 'MATH_2', label: '수학Ⅱ' },
-  { key: 'PROBABILITY_STATISTICS', label: '확통' },
+  { key: 'ALGEBRA', label: '대수' },
+  { key: 'CALCULUS_1', label: '미적분Ⅰ' },
+  { key: 'CALCULUS_2', label: '미적분Ⅱ' },
+  { key: 'MATH_1', label: '대수' },
+  { key: 'MATH_2', label: '미적분Ⅰ' },
+  { key: 'CALCULUS', label: '미적분Ⅱ' },
+  { key: 'PROBABILITY_STATISTICS', label: '확률과 통계' },
 ];
 
 const summarizeBranch = (
@@ -74,6 +82,21 @@ const summarizeBranch = (
 export const UnitNoteLibrary = () => {
   const libraryQuery = useUnitNoteLibraryQuery();
   const [subject, setSubject] = useState<SubjectKey>('MATH_1');
+
+  const availableSubjects = useMemo(() => {
+    const nodes = libraryQuery.data?.nodes ?? [];
+    const subjects = new Set(nodes.map((node) => node.subject));
+    return SUBJECTS.filter((item) => subjects.has(item.key));
+  }, [libraryQuery.data?.nodes]);
+
+  useEffect(() => {
+    if (
+      availableSubjects.length > 0 &&
+      !availableSubjects.some((item) => item.key === subject)
+    ) {
+      setSubject(availableSubjects[0]!.key);
+    }
+  }, [availableSubjects, subject]);
 
   const roots = useMemo(() => {
     const nodes = libraryQuery.data?.nodes ?? [];
@@ -143,7 +166,7 @@ export const UnitNoteLibrary = () => {
           aria-label="수학 과목"
           data-testid="unit-note-subject-tabs"
         >
-          {SUBJECTS.map((item) => (
+          {availableSubjects.map((item) => (
             <button
               key={item.key}
               type="button"

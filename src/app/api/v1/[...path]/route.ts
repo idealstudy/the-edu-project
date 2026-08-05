@@ -8,6 +8,7 @@ import {
   extractErrorMessage,
   safeJson,
 } from '@/shared/lib';
+import { applyAdminReturnCookieForBff } from '@/shared/lib/bff/utils.admin-cookies';
 
 if (!serverEnv.backendApiUrl) throw new Error('BASE_URL is not defined');
 
@@ -51,7 +52,13 @@ async function handleRequest(
 
   // 쿠키 수집 및 전달
   const cookieJar = await cookies();
-  const allow = new Set(['Authorization', 'refresh', 'sid']);
+  const allow = new Set([
+    'Authorization',
+    'refresh',
+    'refresh-token',
+    'admin-return',
+    'sid',
+  ]);
   const cookieHeader = cookieJar
     .getAll()
     .filter((cookie) => allow.has(cookie.name))
@@ -134,6 +141,7 @@ async function handleRequest(
     );
     // 에러 응답에도 쿠키 적용 (리프레시 토큰 등)
     applySetCookies(backendResponse, errorResponse);
+    applyAdminReturnCookieForBff(backendResponse, errorResponse);
     return errorResponse;
   }
 
@@ -153,6 +161,7 @@ async function handleRequest(
 
   // 쿠키 적용 (로컬 환경에서는 Domain 제거)
   applySetCookies(backendResponse, response);
+  applyAdminReturnCookieForBff(backendResponse, response);
 
   return response;
 }

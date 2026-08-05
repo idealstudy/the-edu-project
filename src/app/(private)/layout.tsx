@@ -1,6 +1,7 @@
 import { ReactNode, Suspense } from 'react';
 
 import { DashboardSidebar } from '@/features/dashboard/components/dashboard-sidebar';
+import { ImpersonationBanner } from '@/features/impersonation/components/impersonation-banner';
 import { SessionGuard } from '@/providers/session/session-guard';
 import { fetchMemberRole } from '@/shared/lib/server';
 
@@ -27,6 +28,7 @@ export default async function DashboardLayout({
     <SessionGuard>
       <main className="desktop:pl-sidebar-width flex flex-col bg-[#F9F9F9]">
         <DashboardSidebar />
+        <ImpersonationBanner />
         <div className="w-full">{children}</div>
       </main>
     </SessionGuard>

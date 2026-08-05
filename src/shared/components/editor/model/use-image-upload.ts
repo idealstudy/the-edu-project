@@ -9,18 +9,21 @@ import {
 
 type UploadImageParams = {
   file: File;
+  presignPath: string;
 };
 
 type UploadImageBatchParams = {
   files: File[];
+  presignPath: string;
 };
 
 const uploadImageApi = async ({
   file,
+  presignPath,
 }: UploadImageParams): Promise<MediaUploadResult> => {
   // Presign URL 요청
   const presignData = await api.private.post<PresignBatchResponse>(
-    '/common/media/presign-batch',
+    presignPath,
     {
       mediaAssetList: [
         {
@@ -60,6 +63,7 @@ const uploadImageApi = async ({
 // 배치 업로드 API
 const uploadImageBatchApi = async ({
   files,
+  presignPath,
 }: UploadImageBatchParams): Promise<MediaUploadResult[]> => {
   if (files.length === 0) {
     return [];
@@ -67,7 +71,7 @@ const uploadImageBatchApi = async ({
 
   // 모든 파일에 대한 Presign URL 요청
   const presignData = await api.private.post<PresignBatchResponse>(
-    '/common/media/presign-batch',
+    presignPath,
     {
       mediaAssetList: files.map((file) => ({
         fileName: file.name,
@@ -108,8 +112,9 @@ const uploadImageBatchApi = async ({
 };
 
 export const useImageUpload = (options?: UseImageUploadOptions) => {
+  const presignPath = options?.presignPath ?? '/common/media/presign-batch';
   const mutation = useMutation({
-    mutationFn: (file: File) => uploadImageApi({ file }),
+    mutationFn: (file: File) => uploadImageApi({ file, presignPath }),
     onSuccess: (result) => {
       options?.onSuccess?.(result);
     },
@@ -119,7 +124,7 @@ export const useImageUpload = (options?: UseImageUploadOptions) => {
   });
 
   const batchMutation = useMutation({
-    mutationFn: (files: File[]) => uploadImageBatchApi({ files }),
+    mutationFn: (files: File[]) => uploadImageBatchApi({ files, presignPath }),
   });
 
   return {

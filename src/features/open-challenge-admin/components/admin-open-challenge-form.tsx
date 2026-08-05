@@ -149,7 +149,9 @@ export const AdminOpenChallengeForm = ({
     string | null
   >(null);
   const [isQuestionImageRemoved, setIsQuestionImageRemoved] = useState(false);
-  const { uploadAsync, isUploading } = useImageUpload();
+  const { uploadAsync, isUploading } = useImageUpload({
+    presignPath: '/admin/media/presign-batch',
+  });
 
   const {
     control,

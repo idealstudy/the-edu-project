@@ -129,6 +129,18 @@ export const DashboardSidebar = () => {
           <Sidebar.List>
             <li>
               <Sidebar.Item
+                href={PRIVATE.ADMIN.MEMBERS.LIST}
+                matchPath={PRIVATE.ADMIN.MEMBERS.LIST}
+                className="h-12 items-center justify-start gap-[2px]"
+              >
+                <Users size={20} />
+                <Sidebar.Text className="font-body2-normal">
+                  회원 관리
+                </Sidebar.Text>
+              </Sidebar.Item>
+            </li>
+            <li>
+              <Sidebar.Item
                 href={PRIVATE.ADMIN.COLUMN.LIST}
                 matchPath={PRIVATE.ADMIN.COLUMN.LIST}
                 className="h-12 items-center justify-start gap-[2px]"

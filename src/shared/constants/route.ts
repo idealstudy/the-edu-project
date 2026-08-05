@@ -258,6 +258,9 @@ const PARENT = {
  * ADMIN
  * ────────────────────────────────────────────────────*/
 const ADMIN = {
+  MEMBERS: {
+    LIST: '/admin/members',
+  },
   COLUMN: {
     LIST: '/admin/column',
     DETAIL: (id: number) => `/admin/column/${id}`,
