@@ -45,6 +45,7 @@ const DASHBOARD = {
   INDEX: '/dashboard',
   TEACHER: '/dashboard/teacher',
   TEACHER_MY: '/dashboard/teacher/my',
+  TEACHER_EXAMS: '/dashboard/teacher/exams',
   STUDENT: '/dashboard/student',
   STUDENT_RESULTS: '/dashboard/student/results',
   STUDENT_LOOK_BACK: '/dashboard/student/look-back',
