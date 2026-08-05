@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { type ChallengeInviteResult } from '@/entities/social';
 import { Button } from '@/shared/components/ui';
 import { Dialog } from '@/shared/components/ui/dialog';
-import { PUBLIC } from '@/shared/constants';
+import { PRIVATE, PUBLIC } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import { trackVersusView } from '@/shared/lib/analytics';
 import {
@@ -188,13 +188,15 @@ export const ChallengeResultDialog = ({
 const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
   const outcome = result.outcome;
   const rematch = useCreateRematchMutation();
-
-  if (!outcome) return null;
-  const copy = OUTCOME_COPY[outcome];
+  const rematchErrorCode =
+    rematch.error instanceof AxiosError
+      ? extractErrorCode(rematch.error.response?.data)
+      : undefined;
 
   // D2 계측: versus_view — 결과 다이얼로그 마운트 시 1회
   // is_inviter: ChallengeInviteResult에 inviterId 미포함 → false 기본값(수신자 관점)
   useEffect(() => {
+    if (!outcome) return;
     trackVersusView({
       outcome:
         outcome === 'BOTH_WRONG' || outcome === 'BOTH_CORRECT'
@@ -202,7 +204,10 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
           : outcome,
       is_inviter: false,
     });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [outcome]);
+
+  if (!outcome) return null;
+  const copy = OUTCOME_COPY[outcome];
 
   return (
     <>
@@ -289,6 +294,38 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
           </Button>
         )}
       </Dialog.Footer>
+      {rematchErrorCode === 'REMATCH_NO_CANDIDATE' && (
+        <div className="border-line-line2 bg-gray-1 mt-3 w-full rounded-xl border px-4 py-3 text-left">
+          <strong className="text-text-main text-sm">
+            이 단원에서 둘 다 안 푼 문제가 없어요
+          </strong>
+          <p className="text-text-sub1 mt-1 text-xs">
+            둘 다 정복 중인 다른 단원을 고르거나 혼자 다른 문제를 풀어보세요.
+          </p>
+          <Link
+            href={PUBLIC.OPEN_CHALLENGE.LIST}
+            className="text-orange-10 mt-2 inline-block text-xs font-bold"
+          >
+            다른 단원 문제 보기
+          </Link>
+        </div>
+      )}
+      {rematchErrorCode === 'INVITE_LIMIT_EXCEEDED' && (
+        <div className="border-line-line2 bg-gray-1 mt-3 w-full rounded-xl border px-4 py-3 text-left">
+          <strong className="text-text-main text-sm">
+            이 친구와 열려 있는 대결이 3건이에요
+          </strong>
+          <p className="text-text-sub1 mt-1 text-xs">
+            먼저 내 차례인 대결을 끝내면 다시 붙을 수 있어요.
+          </p>
+          <Link
+            href={PRIVATE.FRIENDS.INDEX}
+            className="text-orange-10 mt-2 inline-block text-xs font-bold"
+          >
+            내 차례인 대결 풀러 가기
+          </Link>
+        </div>
+      )}
     </>
   );
 };

@@ -309,8 +309,8 @@ const DuelRow = ({
       </button>
       {menuOpen && (
         <DuelMenu
-          canNotify={duel.status !== 'COMPLETED'}
-          canCancel={duel.status === 'OPEN'}
+          duel={duel}
+          onResult={onResult}
         />
       )}
     </div>
@@ -318,32 +318,62 @@ const DuelRow = ({
 };
 
 const DuelMenu = ({
-  canNotify,
-  canCancel,
+  duel,
+  onResult,
 }: {
-  canNotify: boolean;
-  canCancel: boolean;
+  duel: Duel;
+  onResult: (token: string) => void;
 }) => {
-  const items = [
-    ['도전장 링크 복사하기', true],
-    ['이 대결 자세히', true],
-    ['이 문제 혼자 다시 풀기', true],
-    ['상대에게 알림 보내기', canNotify],
-    ['보낸 도전장 취소하기', canCancel],
-    ['목록에서 숨기기', true],
-    ['신고하기', true],
-  ] as const;
+  const canViewResult = duel.viewerCompleted && duel.opponentSolvedAt !== null;
+  const disabledItems = [
+    '상대에게 알림 보내기',
+    '보낸 도전장 취소하기',
+    '목록에서 숨기기',
+    '신고하기',
+  ];
   return (
     <div className="border-line-line1 absolute top-14 right-0 z-20 w-56 rounded-xl border bg-white p-2 shadow-lg">
-      {items.map(([label, enabled]) => (
+      <button
+        type="button"
+        onClick={() =>
+          navigator.clipboard.writeText(
+            `${window.location.origin}${PUBLIC.CORE.INVITE.CHALLENGE(duel.shareToken)}`
+          )
+        }
+        className="hover:bg-gray-1 text-text-main block w-full rounded-lg px-3 py-2 text-left text-xs"
+      >
+        도전장 링크 복사하기
+      </button>
+      {canViewResult ? (
+        <button
+          type="button"
+          onClick={() => onResult(duel.shareToken)}
+          className="hover:bg-gray-1 text-text-main block w-full rounded-lg px-3 py-2 text-left text-xs"
+        >
+          이 대결 자세히
+        </button>
+      ) : (
+        <Link
+          href={PUBLIC.CORE.INVITE.CHALLENGE(duel.shareToken)}
+          className="hover:bg-gray-1 text-text-main block rounded-lg px-3 py-2 text-xs"
+        >
+          이 대결 자세히
+        </Link>
+      )}
+      <Link
+        href={PUBLIC.OPEN_CHALLENGE.DETAIL(duel.challengeId)}
+        className="hover:bg-gray-1 text-text-main block rounded-lg px-3 py-2 text-xs"
+      >
+        이 문제 혼자 다시 풀기
+      </Link>
+      {disabledItems.map((label) => (
         <button
           key={label}
           type="button"
-          disabled={!enabled}
-          className="hover:bg-gray-1 text-text-main disabled:text-text-inactive block w-full rounded-lg px-3 py-2 text-left text-xs disabled:bg-transparent"
+          disabled
+          className="text-text-inactive block w-full rounded-lg px-3 py-2 text-left text-xs"
         >
-          {label}
-          {!enabled && ' (지금은 안 됨)'}
+          {label} (지금은 안 됨)
         </button>
       ))}
     </div>
