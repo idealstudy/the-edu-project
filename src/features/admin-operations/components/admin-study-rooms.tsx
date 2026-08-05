@@ -23,7 +23,7 @@ const date = (value: string | null) =>
     : '기록 없음';
 
 export const AdminStudyRooms = () => {
-  const [state, setState] = useState<(typeof states)[number][0]>('ACTIVE');
+  const [state, setState] = useState<(typeof states)[number][0] | undefined>();
   const [searchValue, setSearchValue] = useState('');
   const [keyword, setKeyword] = useState('');
   const [showAllEnded, setShowAllEnded] = useState(false);
@@ -58,7 +58,7 @@ export const AdminStudyRooms = () => {
             type="button"
             className={cn(
               'flex min-h-[42px] items-center gap-2 rounded-lg border px-3 text-xs font-bold',
-              state === value
+              (state === undefined && value === 'ACTIVE') || state === value
                 ? 'border-[#c2410c] bg-[#fff7ed] text-[#9a3412]'
                 : 'border-[#e4e4e7] bg-white text-[#3f3f46]'
             )}
@@ -154,7 +154,7 @@ export const AdminStudyRooms = () => {
           </table>
         </div>
       )}
-      {state === 'ENDED' &&
+      {(state === undefined || state === 'ENDED') &&
         !showAllEnded &&
         (query.data?.stateCounts.ENDED ?? 0) > 1 && (
           <div className="mt-3 flex items-center gap-2 rounded-lg border border-[#e4e4e7] bg-white p-3 text-xs text-[#71717a]">

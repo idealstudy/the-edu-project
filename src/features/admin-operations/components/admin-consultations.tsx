@@ -39,7 +39,9 @@ const date = (value: string | null) =>
     : '기록 없음';
 
 export const AdminConsultations = () => {
-  const [status, setStatus] = useState<(typeof states)[number][0]>('RECEIVED');
+  const [status, setStatus] = useState<
+    (typeof states)[number][0] | undefined
+  >();
   const [searchValue, setSearchValue] = useState('');
   const [keyword, setKeyword] = useState('');
   const [selected, setSelected] = useState<AdminConsultationCase | null>(null);
@@ -89,7 +91,7 @@ export const AdminConsultations = () => {
             type="button"
             className={cn(
               'flex min-h-[42px] items-center gap-2 rounded-lg border px-3 text-xs font-bold',
-              status === value
+              (status === undefined && value === 'RECEIVED') || status === value
                 ? 'border-[#c2410c] bg-[#fff7ed] text-[#9a3412]'
                 : 'border-[#e4e4e7] bg-white text-[#3f3f46]'
             )}

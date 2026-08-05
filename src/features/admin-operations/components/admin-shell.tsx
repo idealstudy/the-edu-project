@@ -8,8 +8,6 @@ import { usePathname } from 'next/navigation';
 import { PRIVATE } from '@/shared/constants/route';
 import { cn } from '@/shared/lib';
 
-import { useAdminSummary } from '../hooks/use-admin-operations';
-
 const menu = [
   ['●', '회원 관리', PRIVATE.ADMIN.MEMBERS.LIST],
   ['▣', '수업 전체', PRIVATE.ADMIN.STUDY_ROOMS],
@@ -20,7 +18,6 @@ const menu = [
 
 export const AdminShell = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
-  const summary = useAdminSummary();
 
   return (
     <div
@@ -70,7 +67,7 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
                 전체 회원
               </div>
               <div className="text-sm font-extrabold text-[#27272a] tabular-nums">
-                {summary.data ? `${summary.data.newMemberCount}명` : '34명'}
+                34명
               </div>
             </div>
             <div>
@@ -78,7 +75,7 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
                 최근 7일 가입
               </div>
               <div className="text-sm font-extrabold text-[#27272a] tabular-nums">
-                {summary.data ? `${summary.data.newMemberCount}명` : '6명'}
+                6명
               </div>
             </div>
           </div>
