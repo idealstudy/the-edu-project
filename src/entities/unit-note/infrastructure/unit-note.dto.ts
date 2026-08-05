@@ -37,9 +37,9 @@ const PageSchema = z.object({
   sizeBytes: z.number().nullable(),
   viewUrl: z.string().nullable(),
   cover: z.boolean(),
-  hiddenByStudent: z.boolean(),
-  teacherId: IdSchema.nullable(),
-  teacherMemo: z.string().nullable(),
+  hiddenByStudent: z.boolean().optional().default(false),
+  teacherId: IdSchema.nullable().optional().default(null),
+  teacherMemo: z.string().nullable().optional().default(null),
   createdAt: z.string().nullable(),
 });
 

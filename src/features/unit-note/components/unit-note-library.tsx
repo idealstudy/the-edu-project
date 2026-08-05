@@ -33,15 +33,10 @@ type BranchSummary = UnitNoteNode & {
 };
 
 const SUBJECTS: { key: SubjectKey; label: string }[] = [
-  { key: 'MIDDLE_MATH', label: '중학' },
-  { key: 'COMMON_MATH_1', label: '공통수학1' },
-  { key: 'COMMON_MATH_2', label: '공통수학2' },
   { key: 'ALGEBRA', label: '대수' },
-  { key: 'CALCULUS_1', label: '미적분Ⅰ' },
-  { key: 'CALCULUS_2', label: '미적분Ⅱ' },
   { key: 'MATH_1', label: '대수' },
+  { key: 'CALCULUS_1', label: '미적분Ⅰ' },
   { key: 'MATH_2', label: '미적분Ⅰ' },
-  { key: 'CALCULUS', label: '미적분Ⅱ' },
   { key: 'PROBABILITY_STATISTICS', label: '확률과 통계' },
 ];
 
@@ -86,7 +81,10 @@ export const UnitNoteLibrary = () => {
   const availableSubjects = useMemo(() => {
     const nodes = libraryQuery.data?.nodes ?? [];
     const subjects = new Set(nodes.map((node) => node.subject));
-    return SUBJECTS.filter((item) => subjects.has(item.key));
+    return SUBJECTS.filter((item) => subjects.has(item.key)).filter(
+      (item, index, items) =>
+        items.findIndex((candidate) => candidate.label === item.label) === index
+    );
   }, [libraryQuery.data?.nodes]);
 
   useEffect(() => {
@@ -162,7 +160,7 @@ export const UnitNoteLibrary = () => {
         </header>
 
         <nav
-          className="mt-5 flex gap-2 overflow-x-auto pb-2"
+          className="mt-5 grid grid-cols-3 gap-2"
           aria-label="수학 과목"
           data-testid="unit-note-subject-tabs"
         >
@@ -170,7 +168,7 @@ export const UnitNoteLibrary = () => {
             <button
               key={item.key}
               type="button"
-              className={`font-label-heading min-h-11 shrink-0 cursor-pointer rounded-full border px-4 ${
+              className={`font-label-heading min-h-11 cursor-pointer rounded-lg border px-4 ${
                 subject === item.key
                   ? 'border-orange-7 bg-orange-7 text-white'
                   : 'border-gray-3 bg-gray-white text-gray-8 hover:bg-gray-1'

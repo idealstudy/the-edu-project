@@ -17,6 +17,8 @@ import {
   FileImage,
   FileText,
   GraduationCap,
+  Eye,
+  EyeOff,
   ImageOff,
   PenLine,
   Pin,
@@ -299,7 +301,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
               <button
                 key={concept.nodeId}
                 type="button"
-                className={`border-gray-2 grid min-h-[76px] cursor-pointer grid-cols-[36px_minmax(0,1fr)_92px_48px] items-center gap-3 border-b text-left last:border-b-0 ${
+                className={`border-gray-2 grid h-[46px] cursor-pointer grid-cols-[28px_minmax(0,1fr)_72px_44px] items-center gap-2 border-b text-left last:border-b-0 ${
                   activeNodeId === concept.nodeId ? 'bg-orange-1' : ''
                 }`}
                 onClick={() => setSelectedNodeId(concept.nodeId)}
@@ -307,18 +309,13 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
               >
                 <UnitNoteLeaf
                   level={concept.leafLevel}
-                  className="size-7"
+                  className="size-5"
                 />
                 <span className="min-w-0">
                   <span className="font-body2-heading text-gray-12 block truncate">
                     {concept.displayName}
                   </span>
-                  <span className="font-caption-normal text-gray-7 mt-1 block truncate">
-                    펜 {concept.penPageCount}장 · 업로드{' '}
-                    {concept.uploadPageCount}장 · 판서{' '}
-                    {concept.teachingNoteCount}층 · 다시 풀 문제{' '}
-                    {concept.relatedProblemCount}
-                  </span>
+                  <span className="font-caption-normal text-gray-7 block truncate">펜 {concept.penPageCount} · 업로드 {concept.uploadPageCount} · 선생님 {concept.teachingNoteCount}</span>
                 </span>
                 <span className="font-label-heading text-orange-9 text-right">
                   {concept.pageCount === 0 ? '페이지 만들기' : '열기'}
@@ -445,7 +442,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
               {detail?.pages.map((page, index, pages) => (
                 <article
                   key={page.pageId}
-                  className="border-gray-3 rounded-xl border p-3"
+                  className={`rounded-xl border p-3 ${page.source === 'TEACHER' ? 'border-[#f26a2e] bg-[#fffaf7]' : 'border-gray-3'} ${page.hiddenByStudent ? 'opacity-60' : ''}`}
                   data-testid={`unit-note-page-${page.pageId}`}
                 >
                   <PagePreview page={page} />
@@ -456,7 +453,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                       </p>
                       <p className="font-caption-normal text-gray-7 mt-1">
                         {page.position}페이지 ·{' '}
-                        {page.source === 'PEN' ? '펜' : '업로드'}
+                        {page.source === 'PEN' ? '펜' : page.source === 'TEACHER' ? '선생님' : '업로드'}
                       </p>
                     </div>
                     {page.cover && (
@@ -465,6 +462,14 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                       </span>
                     )}
                   </div>
+                  {page.source === 'TEACHER' ? (
+                    <div className="mt-3 flex items-center gap-2">
+                      <span className="rounded-full bg-[#ffe6d7] px-2 py-1 text-[10px] font-bold text-[#9a441f]">선생님</span>
+                      <button type="button" className="ml-auto flex min-h-11 items-center gap-1 rounded-lg border px-3 text-xs font-bold" onClick={() => updatePage.mutate({ pageId: page.pageId, input: { hidden: !page.hiddenByStudent } })}>
+                        {page.hiddenByStudent ? <Eye size={16} /> : <EyeOff size={16} />}{page.hiddenByStudent ? '다시 꺼내기' : '숨기기'}
+                      </button>
+                    </div>
+                  ) : (
                   <div className="mt-3 flex items-center gap-1">
                     <PageAction
                       label="위로"
@@ -509,6 +514,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                       <Trash2 size={17} />
                     </PageAction>
                   </div>
+                  )}
                 </article>
               ))}
             </div>

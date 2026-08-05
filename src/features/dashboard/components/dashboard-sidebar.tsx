@@ -106,14 +106,22 @@ export const DashboardSidebar = () => {
         </>
       )}
 
-      {/* 마이페이지 */}
-      <Sidebar.Item
-        href={PRIVATE.MYPAGE}
-        matchPath={PRIVATE.MYPAGE}
-      >
-        <User2Icon className="shrink-0" />
-        <Sidebar.Text>마이페이지</Sidebar.Text>
-      </Sidebar.Item>
+      {role === 'ROLE_TEACHER' && (
+        <Sidebar.Item
+          href={PRIVATE.DASHBOARD.TEACHER_MY}
+          matchPath={PRIVATE.DASHBOARD.TEACHER_MY}
+        >
+          <User2Icon className="shrink-0" />
+          <Sidebar.Text>마이페이지</Sidebar.Text>
+        </Sidebar.Item>
+      )}
+
+      {role !== 'ROLE_TEACHER' && (
+        <Sidebar.Item href={PRIVATE.MYPAGE} matchPath={PRIVATE.MYPAGE}>
+          <User2Icon className="shrink-0" />
+          <Sidebar.Text>마이페이지</Sidebar.Text>
+        </Sidebar.Item>
+      )}
 
       {/* 자녀 학습 (학부모 전용 — 자녀 목록·학습 리포트) */}
       {role === 'ROLE_PARENT' && (

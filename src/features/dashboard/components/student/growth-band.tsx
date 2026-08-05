@@ -134,7 +134,7 @@ export const GrowthBand = ({ className }: Props) => {
           <br />내 트리가 오렌지로 데워지기 시작해요
         </h3>
         <p className="font-caption-normal text-gray-7 mt-2">
-          제대로 푼 문제만 트리를 채워요 — 찍은 건 반영하지 않아요.
+          제대로 푼 문제만 트리를 채워요. 찍은 건 반영하지 않아요.
         </p>
         <Link
           href={PRIVATE.TREE.INDEX}
@@ -180,7 +180,7 @@ export const GrowthBand = ({ className }: Props) => {
           {growth.streakDays}일 연속
           {growth.streakDays > 0 && (
             <span className="font-caption-normal text-gray-8">
-              — 오늘 안 하면 끊겨요
+              · 오늘 안 하면 끊겨요
             </span>
           )}
         </p>

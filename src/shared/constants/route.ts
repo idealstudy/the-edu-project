@@ -44,6 +44,7 @@ type DashboardRole = 'ROLE_TEACHER' | 'ROLE_STUDENT' | 'ROLE_PARENT';
 const DASHBOARD = {
   INDEX: '/dashboard',
   TEACHER: '/dashboard/teacher',
+  TEACHER_MY: '/dashboard/teacher/my',
   STUDENT: '/dashboard/student',
   STUDENT_RESULTS: '/dashboard/student/results',
   STUDENT_LOOK_BACK: '/dashboard/student/look-back',
