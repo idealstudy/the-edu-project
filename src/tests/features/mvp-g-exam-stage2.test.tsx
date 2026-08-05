@@ -66,7 +66,7 @@ describe('MVP-G 2단계 시험 분석', () => {
         analysis={{
           ...predicted,
           predictedGradeLow: 2,
-          predictedGradeHigh: 2,
+          predictedGradeHigh: 3,
           estimateSource: 'EBSI_REAL',
           realDataLinked: true,
           referenceOnly: false,
@@ -79,7 +79,9 @@ describe('MVP-G 2단계 시험 분석', () => {
       />
     );
 
-    expect(screen.getByTestId('exam-grade-result')).toHaveTextContent('2등급');
+    expect(screen.getByTestId('exam-grade-result')).toHaveTextContent(
+      '2~3등급'
+    );
     expect(screen.getByText('표준점수 128', { exact: true })).toBeVisible();
     expect(screen.queryByText('실측 아님', { exact: true })).toBeNull();
   });

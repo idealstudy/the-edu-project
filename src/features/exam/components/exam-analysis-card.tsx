@@ -60,9 +60,7 @@ export const ExamAnalysisCard = ({ analysis }: { analysis: ExamAnalysis }) => {
             className="mt-3 text-3xl font-black tracking-tight text-[#27272a]"
             data-testid="exam-grade-result"
           >
-            {analysis.gradeBasis === 'MEASURED'
-              ? `${analysis.predictedGradeLow}등급`
-              : `${analysis.predictedGradeLow}~${analysis.predictedGradeHigh}등급`}
+            {analysis.predictedGradeLow}~{analysis.predictedGradeHigh}등급
           </p>
           {analysis.standardScore !== null && (
             <p className="mt-1 text-sm font-bold text-[#52525b] tabular-nums">

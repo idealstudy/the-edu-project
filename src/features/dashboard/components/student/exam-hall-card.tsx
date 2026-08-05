@@ -61,9 +61,8 @@ export const ExamHallCard = ({ className }: Props) => {
             )}
           </div>
           <p className="mt-3 text-4xl font-black tracking-tight text-[#27272a]">
-            {analysis.data.gradeBasis === 'MEASURED'
-              ? `${analysis.data.predictedGradeLow}등급`
-              : `${analysis.data.predictedGradeLow}~${analysis.data.predictedGradeHigh}등급`}
+            {analysis.data.predictedGradeLow}~
+            {analysis.data.predictedGradeHigh}등급
           </p>
           {analysis.data.standardScore !== null && (
             <p className="mt-1 text-sm font-bold text-[#52525b] tabular-nums">
