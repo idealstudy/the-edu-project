@@ -220,9 +220,8 @@ const toReview = (raw: unknown): ChallengeReview => {
     solutionType: toSolutionType(parsed.solutionType),
     drawingImageUrl: parsed.drawingImageUrl,
     recommendCount: parsed.recommendCount,
-    isBest: parsed.isBest ?? parsed.best ?? false,
-    isRecommendedByMe:
-      parsed.isRecommendedByMe ?? parsed.recommendedByMe ?? false,
+    isBest: parsed.isBest,
+    isRecommendedByMe: parsed.isRecommendedByMe,
     isCorrect: parsed.isCorrect,
     authorNickname: parsed.authorNickname ?? parsed.nickname,
     isMine: parsed.isMine,
