@@ -51,6 +51,11 @@ export const AdminQuestionBank = () => {
       grade1: 92,
       grade2: 84,
       grade3: 76,
+      grade4: 68,
+      grade5: 60,
+      grade6: 52,
+      grade7: 44,
+      grade8: 36,
     },
   });
   const examId = watch('examId');
@@ -67,6 +72,11 @@ export const AdminQuestionBank = () => {
           { grade: 1, minRawScore: form.grade1 },
           { grade: 2, minRawScore: form.grade2 },
           { grade: 3, minRawScore: form.grade3 },
+          { grade: 4, minRawScore: form.grade4 },
+          { grade: 5, minRawScore: form.grade5 },
+          { grade: 6, minRawScore: form.grade6 },
+          { grade: 7, minRawScore: form.grade7 },
+          { grade: 8, minRawScore: form.grade8 },
         ],
       },
       {
@@ -250,19 +260,18 @@ export const AdminQuestionBank = () => {
                 placeholder="출처: EBSi 2027 6월 모의평가"
                 {...register('source')}
               />
-              <div className="mt-2 grid grid-cols-3 gap-2">
-                <Input
-                  aria-label="1등급 원점수 하한"
-                  {...register('grade1')}
-                />
-                <Input
-                  aria-label="2등급 원점수 하한"
-                  {...register('grade2')}
-                />
-                <Input
-                  aria-label="3등급 원점수 하한"
-                  {...register('grade3')}
-                />
+              <p className="mt-3 text-[11px] leading-5 font-bold text-[#52525b]">
+                1등급부터 8등급까지 원점수 하한
+              </p>
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                {([1, 2, 3, 4, 5, 6, 7, 8] as const).map((grade) => (
+                  <Input
+                    key={grade}
+                    aria-label={`${grade}등급 원점수 하한`}
+                    placeholder={`${grade}등급`}
+                    {...register(`grade${grade}`)}
+                  />
+                ))}
               </div>
               <div className="mt-2 grid grid-cols-2 gap-2">
                 <Input

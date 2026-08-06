@@ -10,11 +10,31 @@ export const GradeCutoffFormSchema = z
     grade1: z.coerce.number().nonnegative(),
     grade2: z.coerce.number().nonnegative(),
     grade3: z.coerce.number().nonnegative(),
+    grade4: z.coerce.number().nonnegative(),
+    grade5: z.coerce.number().nonnegative(),
+    grade6: z.coerce.number().nonnegative(),
+    grade7: z.coerce.number().nonnegative(),
+    grade8: z.coerce.number().nonnegative(),
   })
   .refine(
-    (value) => value.grade1 > value.grade2 && value.grade2 > value.grade3,
+    (value) => {
+      const cutoffs = [
+        value.grade1,
+        value.grade2,
+        value.grade3,
+        value.grade4,
+        value.grade5,
+        value.grade6,
+        value.grade7,
+        value.grade8,
+      ];
+      return cutoffs.every(
+        (cutoff, index) => index === 0 || cutoffs[index - 1]! > cutoff
+      );
+    },
     {
-      message: '등급컷은 1등급부터 원점수 하한이 낮아져야 합니다.',
+      message:
+        '1등급부터 8등급까지 원점수 하한을 빠짐없이, 높은 점수부터 낮은 점수 순서로 입력해주세요.',
       path: ['root'],
     }
   );

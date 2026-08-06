@@ -203,6 +203,12 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
   }
 
   const detail = detailQuery.data?.detail;
+  const visiblePages =
+    detail?.pages.filter((page) => !page.hiddenByStudent) ?? [];
+  const hiddenTeacherPages =
+    detail?.pages.filter(
+      (page) => page.source === 'TEACHER' && page.hiddenByStudent
+    ) ?? [];
   const branchPages = concepts.reduce(
     (total, concept) => total + concept.pageCount,
     0
@@ -460,7 +466,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
               <Skeleton.Block className="h-64 w-full" />
               <Skeleton.Block className="h-64 w-full" />
             </div>
-          ) : (detail?.pages.length ?? 0) === 0 ? (
+          ) : visiblePages.length === 0 && hiddenTeacherPages.length === 0 ? (
             <div className="border-gray-3 mt-4 flex min-h-48 flex-col items-center justify-center rounded-xl border border-dashed text-center">
               <BookOpen
                 size={34}
@@ -478,10 +484,10 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
               className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
               data-testid="unit-note-page-grid"
             >
-              {detail?.pages.map((page, index, pages) => (
+              {visiblePages.map((page, index, pages) => (
                 <article
                   key={page.pageId}
-                  className={`rounded-xl border p-3 ${page.source === 'TEACHER' ? 'border-[#f26a2e] bg-[#fffaf7]' : 'border-gray-3'} ${page.hiddenByStudent ? 'opacity-60' : ''}`}
+                  className={`rounded-xl border p-3 ${page.source === 'TEACHER' ? 'border-[#f26a2e] bg-[#fffaf7]' : 'border-gray-3'}`}
                   data-testid={`unit-note-page-${page.pageId}`}
                 >
                   <PagePreview page={page} />
@@ -520,12 +526,8 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                           })
                         }
                       >
-                        {page.hiddenByStudent ? (
-                          <Eye size={16} />
-                        ) : (
-                          <EyeOff size={16} />
-                        )}
-                        {page.hiddenByStudent ? '다시 꺼내기' : '숨기기'}
+                        <EyeOff size={16} />
+                        숨기기
                       </button>
                     </div>
                   ) : (
@@ -577,6 +579,56 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                 </article>
               ))}
             </div>
+          )}
+          {hiddenTeacherPages.length > 0 && (
+            <details
+              className="border-gray-3 bg-gray-1 mt-4 rounded-xl border p-3"
+              data-testid="hidden-teacher-pages"
+            >
+              <summary className="font-label-heading text-gray-10 cursor-pointer">
+                숨긴 선생님 노트 {hiddenTeacherPages.length}장이 있어요 · 숨긴
+                것 보기
+              </summary>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {hiddenTeacherPages.map((page) => (
+                  <article
+                    key={page.pageId}
+                    className="rounded-xl border border-[#f26a2e] bg-[#fffaf7] p-3 opacity-60"
+                    data-testid={`unit-note-page-${page.pageId}`}
+                  >
+                    <PagePreview page={page} />
+                    <div className="mt-3 flex items-start gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-label-heading text-gray-11 truncate">
+                          {page.fileName}
+                        </p>
+                        <p className="font-caption-normal text-gray-7 mt-1">
+                          {page.position}페이지 · 선생님 · 학생이 숨김
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-3 flex items-center gap-2">
+                      <span className="rounded-full bg-[#ffe6d7] px-2 py-1 text-[10px] font-bold text-[#9a441f]">
+                        선생님
+                      </span>
+                      <button
+                        type="button"
+                        className="ml-auto flex min-h-11 cursor-pointer items-center gap-1 rounded-lg border px-3 text-xs font-bold"
+                        onClick={() =>
+                          updatePage.mutate({
+                            pageId: page.pageId,
+                            input: { hidden: false },
+                          })
+                        }
+                      >
+                        <Eye size={16} />
+                        다시 꺼내기
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </details>
           )}
         </section>
       </div>

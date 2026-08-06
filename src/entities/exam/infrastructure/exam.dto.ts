@@ -191,7 +191,7 @@ const gradeCutoff = z.object({
   mean: z.number().nullable(),
   stdDev: z.number().nullable(),
   cutoffs: z.array(
-    z.object({ grade: z.number().int().min(1).max(9), minRawScore: z.number() })
+    z.object({ grade: z.number().int().min(1).max(8), minRawScore: z.number() })
   ),
   gradeBasis: z.literal('MEASURED'),
 });
@@ -264,11 +264,11 @@ const gradeCutoffPayload = z.object({
   cutoffs: z
     .array(
       z.object({
-        grade: z.number().int().min(1).max(9),
+        grade: z.number().int().min(1).max(8),
         minRawScore: z.number().nonnegative(),
       })
     )
-    .min(1),
+    .length(8),
 });
 
 export const payload = {
