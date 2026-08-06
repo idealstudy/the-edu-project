@@ -385,12 +385,38 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
 
     for (const boundary of cases) {
       const title = `${runId}-G${boundary.grade}`;
+      const pdfMedia = await api<{
+        mediaAssetList: Array<{
+          mediaId: string;
+          uploadUrl: string;
+          headers: Record<string, string>;
+        }>;
+      }>(teacher.page, 'POST', '/api/v1/common/media/presign-batch', {
+        mediaAssetList: [
+          {
+            fileName: `${runId}-grade-${boundary.grade}.pdf`,
+            contentType: 'application/pdf',
+            sizeBytes: 8,
+            targetType: 'EXAM_PDF',
+          },
+        ],
+      });
+      const pdfAsset = pdfMedia.mediaAssetList[0]!;
+      const pdfUpload = await teacher.page.request.put(pdfAsset.uploadUrl, {
+        headers: {
+          ...pdfAsset.headers,
+          'Content-Type': 'application/pdf',
+        },
+        data: Buffer.from('%PDF-QA1'),
+      });
+      expect(pdfUpload.status()).toBe(200);
       const created = await api<{ examId: number }>(
         teacher.page,
         'POST',
         '/api/v1/teacher/exams',
         {
           title,
+          sourcePdfMediaId: pdfAsset.mediaId,
           subject: 'MATH',
           examType: 'NATIONAL',
           examTreeNodeIds: [],
