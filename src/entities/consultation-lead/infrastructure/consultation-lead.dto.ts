@@ -46,7 +46,7 @@ const ConsultationCaseListItemDtoSchema = z.object({
 
 const ConsultationCaseListDtoSchema = z.object({
   content: z.array(ConsultationCaseListItemDtoSchema),
-  page: z.number(),
+  number: z.number(),
   size: z.number(),
   totalElements: z.number(),
 });
