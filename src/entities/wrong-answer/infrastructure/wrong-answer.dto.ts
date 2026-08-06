@@ -64,6 +64,8 @@ const wrongAnswerList = z.object({
 });
 
 const teacherInbox = z.object({
+  recentExamCount: z.number().int().nonnegative(),
+  recentExam: z.array(wrongAnswerItem),
   stuckAfterGraduationCount: z.number().int().nonnegative(),
   stuckAfterGraduation: z.array(wrongAnswerItem),
   neglectedCount: z.number().int().nonnegative(),

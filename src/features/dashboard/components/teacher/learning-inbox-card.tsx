@@ -3,12 +3,14 @@
 import { useState } from 'react';
 
 import type { WrongAnswerItem } from '@/entities/wrong-answer';
-import { useTeacherWrongAnswerInboxQuery } from '@/features/dashboard/hooks/use-wrong-answer-query';
 import {
   useApproveTodoRecommendation,
   useTeacherTodoRecommendationsQuery,
 } from '@/features/dashboard/hooks/use-todo-query';
-import { useSaveTeacherWrongAnswerComment } from '@/features/dashboard/hooks/use-wrong-answer-query';
+import {
+  useSaveTeacherWrongAnswerComment,
+  useTeacherWrongAnswerInboxQuery,
+} from '@/features/dashboard/hooks/use-wrong-answer-query';
 import { Skeleton } from '@/shared/components/loading';
 import { Button } from '@/shared/components/ui';
 import { cn } from '@/shared/lib';
@@ -102,6 +104,8 @@ export const LearningInboxCard = () => {
     return <Skeleton.Block className="h-44 w-full" />;
 
   const inbox = inboxQuery.data ?? {
+    recentExamCount: 0,
+    recentExam: [],
     neglectedCount: 0,
     neglected: [],
     stuckAfterGraduationCount: 0,
@@ -110,7 +114,9 @@ export const LearningInboxCard = () => {
   };
   const recommendations = recommendationsQuery.data?.items ?? [];
   if (
-    (inbox.neglectedCount === 0 && inbox.stuckAfterGraduationCount === 0) &&
+    inbox.recentExamCount === 0 &&
+    inbox.neglectedCount === 0 &&
+    inbox.stuckAfterGraduationCount === 0 &&
     recommendations.length === 0
   ) {
     return (
@@ -136,7 +142,11 @@ export const LearningInboxCard = () => {
     );
   }
 
-  const items = [...inbox.neglected, ...inbox.stuckAfterGraduation].filter(
+  const items = [
+    ...inbox.recentExam,
+    ...inbox.neglected,
+    ...inbox.stuckAfterGraduation,
+  ].filter(
     (item, index, allItems) =>
       allItems.findIndex((candidate) => candidate.id === item.id) === index
   );
@@ -158,7 +168,19 @@ export const LearningInboxCard = () => {
         </span>
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+        <div className="border-orange-3 bg-orange-1 rounded-xl border p-4">
+          <div className="flex items-center gap-2">
+            <Inbox
+              size={18}
+              className="text-orange-9"
+              aria-hidden
+            />
+            <p className="font-body2-heading text-gray-11">
+              오늘 시험 오답 · {inbox.recentExamCount}건
+            </p>
+          </div>
+        </div>
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
           <div className="flex items-center gap-2">
             <Clock3
