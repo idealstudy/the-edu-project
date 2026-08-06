@@ -11,8 +11,15 @@ export const ChoiceList = ({
   selected,
   onSelect,
 }: ChoiceListProps) => {
+  const desktopColsClass =
+    choices.length >= 5
+      ? 'md:grid-cols-5'
+      : choices.length === 3
+        ? 'md:grid-cols-3'
+        : 'md:grid-cols-4';
+
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+    <div className={cn('grid grid-cols-1 gap-3', desktopColsClass)}>
       {choices.map((choice, idx) => {
         const isSelected = selected === choice;
         return (
@@ -22,7 +29,7 @@ export const ChoiceList = ({
             data-testid={`choice-option-${idx}`}
             onClick={() => onSelect(choice)}
             className={cn(
-              'flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 px-3 py-4 text-sm font-medium transition-colors md:flex-col md:py-5',
+              'flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border-2 px-3 py-4 text-sm font-medium transition-colors md:flex-col md:py-5',
               isSelected
                 ? 'border-orange-7 bg-orange-1 text-orange-8'
                 : 'border-line-line1 text-text-main hover:border-line-line2 hover:bg-gray-1 bg-white'

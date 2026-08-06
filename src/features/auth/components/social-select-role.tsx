@@ -5,7 +5,10 @@ import { useForm } from 'react-hook-form';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { ProfileForm } from '@/features/auth/components/profile-form';
-import { sanitizeRedirect } from '@/features/auth/lib/redirect';
+import {
+  resolveDashboardFromRedirect,
+  sanitizeRedirect,
+} from '@/features/auth/lib/redirect';
 import { SocialRegisterForm } from '@/features/auth/schemas/social-register';
 import { useUpdateProfile } from '@/features/auth/services/query';
 import { useAcceptInvitation } from '@/features/invite/hooks';
@@ -52,13 +55,10 @@ export const SocialSelectRole = () => {
           } else {
             router.push(PUBLIC.CORE.INVITE.ERROR('ROLE_NOT_MATCH'));
           }
-        } else if (redirect) {
-          // 도전장 링크 등에서 넘어온 경로 — 프로필 완성 후 그대로 복귀시킨다.
-          router.push(redirect);
         } else {
-          router.push(
-            from ? decodeURIComponent(from) : PRIVATE.DASHBOARD.INDEX
-          );
+          // redirect 를 우선하고, 기존 링크 호환을 위해 from 도 같은 가드를 거쳐 받는다.
+          const safeFrom = resolveDashboardFromRedirect(from);
+          router.push(redirect ?? safeFrom ?? PRIVATE.DASHBOARD.INDEX);
         }
       },
       onError: () => {

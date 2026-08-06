@@ -24,21 +24,21 @@ export default function ConsultPage() {
             비공개 상담 신청
           </h1>
           <p className="font-body2-normal text-text-sub2">
-            질문은 비공개로 접수하고, 동의받은 답변만 익명 사례로
-            공개합니다. 상담 신청만으로는 어떤 권한도 생기지 않아요 —
-            그냥 선생님을 찾는 학생·학부모로 남습니다.
+            질문은 비공개로 접수하고, 동의받은 답변만 익명 사례로 공개합니다.
+            상담 신청만으로는 어떤 권한도 생기지 않아요 — 그냥 선생님을 찾는
+            학생·학부모로 남습니다.
           </p>
         </div>
       </div>
 
       <div className="mx-auto grid w-full max-w-[1440px] grid-cols-1 gap-10 px-4 py-10 md:px-8 lg:grid-cols-[1fr_420px] lg:px-20">
-        <section className="order-2 flex flex-col gap-4 lg:order-1">
-          <h2 className="font-headline2-heading">공개된 상담 사례</h2>
-          <ConsultCases />
+        <section>
+          <ConsultForm />
         </section>
 
-        <section className="order-1 lg:order-2">
-          <ConsultForm />
+        <section className="flex flex-col gap-4">
+          <h2 className="font-headline2-heading">공개된 상담 사례</h2>
+          <ConsultCases />
         </section>
       </div>
     </div>

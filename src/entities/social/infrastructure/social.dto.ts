@@ -31,6 +31,14 @@ const ChallengeInviteDtoSchema = z.object({
   inviteeId: z.number().nullable().optional(),
   status: z.enum(['OPEN', 'ACCEPTED', 'COMPLETED']),
   regDate: NullableString,
+  // R-06/R-07: 과거(백엔드 배포 전) 응답 호환을 위해 optional 로 받아 repository
+  // 단에서 안전한 기본값(null/false)으로 채운다.
+  challengeTitle: NullableString,
+  subject: NullableString,
+  unitName: NullableString,
+  viewerCompleted: z.boolean().nullable().optional(),
+  // R-08: 조회자 기준 상대방 표시 이름. 과거 응답 호환을 위해 optional.
+  opponentName: NullableString,
 });
 
 /* ─────────────────────────────────────────────────────

@@ -694,10 +694,11 @@ export const ChallengeSolveClient = ({
             <Button
               type="button"
               onClick={() => {
-                const from = encodeURIComponent(
+                // 복귀 파라미터는 redirect 로 통일(도전장 흐름과 동일 규약).
+                const redirect = encodeURIComponent(
                   PUBLIC.OPEN_CHALLENGE.DETAIL(challengeId)
                 );
-                router.replace(`${PUBLIC.CORE.LOGIN}?from=${from}`);
+                router.replace(`${PUBLIC.CORE.LOGIN}?redirect=${redirect}`);
               }}
               className="w-full"
             >

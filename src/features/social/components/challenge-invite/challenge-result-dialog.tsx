@@ -2,11 +2,19 @@
 
 import { useEffect } from 'react';
 
+import Link from 'next/link';
+
 import { type ChallengeInviteResult } from '@/entities/social';
 import { Button } from '@/shared/components/ui';
 import { Dialog } from '@/shared/components/ui/dialog';
+import { PUBLIC } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import { trackVersusView } from '@/shared/lib/analytics';
+import {
+  extractErrorCode,
+  extractErrorMessage,
+} from '@/shared/lib/bff/utils.message';
+import { AxiosError } from 'axios';
 import { Check, Swords, X } from 'lucide-react';
 
 import { useInviteResultQuery } from '../../hooks';
@@ -37,21 +45,37 @@ const OUTCOME_COPY: Record<Outcome, { title: string; sub: string }> = {
 
 export const ChallengeResultDialog = ({
   token,
+  challengeId,
   isOpen,
   onOpenChange,
 }: {
   token: string;
+  /** 컨닝 가드에 막혔을 때 "먼저 풀기"로 보낼 문제 상세 경로 계산용. */
+  challengeId?: number;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
 }) => {
   const {
     data: result,
+    error,
     isLoading,
     isError,
     refetch,
   } = useInviteResultQuery(token, { enabled: isOpen });
 
   const isPending = !!result && result.status !== 'COMPLETED';
+
+  // 컨닝 가드(CUNNING_GUARD_BLOCKED): 내가 아직 문제를 안 풀어서 결과 조회가
+  // 막힌 정상적인 상황이다. "결과를 불러오지 못했어요"라는 무관한 문구로 덮지 않고
+  // 서버가 준 사유를 그대로 보여준 뒤, 문제 풀이로 보내는 게 맞는 동작이다.
+  // 내부 에러 코드는 화면에 노출하지 않는다.
+  const isCunningGuardBlocked =
+    error instanceof AxiosError &&
+    extractErrorCode(error.response?.data) === 'CUNNING_GUARD_BLOCKED';
+  const cunningGuardMessage =
+    (error instanceof AxiosError
+      ? extractErrorMessage(error.response?.data)
+      : undefined) ?? '아직 문제를 풀지 않아서 상대방 결과를 볼 수 없어요.';
 
   return (
     <Dialog
@@ -72,7 +96,41 @@ export const ChallengeResultDialog = ({
           </>
         )}
 
-        {isError && (
+        {isError && isCunningGuardBlocked && (
+          <>
+            <Dialog.Title className="font-body1-heading text-text-main mb-2">
+              아직 결과를 볼 수 없어요
+            </Dialog.Title>
+            <Dialog.Description className="font-body2-normal text-text-sub1 text-balance">
+              {cunningGuardMessage}
+            </Dialog.Description>
+            <Dialog.Footer className="mt-6 flex w-full gap-2">
+              <Dialog.Close asChild>
+                <Button
+                  variant="outlined"
+                  size="large"
+                  className="flex-1"
+                >
+                  닫기
+                </Button>
+              </Dialog.Close>
+              {challengeId != null && (
+                <Button
+                  variant="primary"
+                  size="large"
+                  className="flex-1"
+                  asChild
+                >
+                  <Link href={PUBLIC.OPEN_CHALLENGE.DETAIL(challengeId)}>
+                    문제 풀러 가기
+                  </Link>
+                </Button>
+              )}
+            </Dialog.Footer>
+          </>
+        )}
+
+        {isError && !isCunningGuardBlocked && (
           <>
             <Dialog.Title className="font-body1-heading text-text-main mb-2">
               결과를 불러오지 못했어요
