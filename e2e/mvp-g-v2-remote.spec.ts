@@ -5,6 +5,12 @@ import { pathToFileURL } from 'node:url';
 
 type Role = 'STUDENT' | 'STUDENT2' | 'TEACHER' | 'ADMIN';
 type JsonRecord = Record<string, unknown>;
+type TreeNodeStatus = {
+  nodeId: number;
+  masteryScore: number;
+  attemptCount: number;
+  correctCount: number;
+};
 
 const credentials: Record<Role, { email: string; password: string }> = {
   STUDENT: {
@@ -70,6 +76,15 @@ async function attachScreenshot(page: Page, name: string) {
   await test.info().attach(name, { body, contentType: 'image/png' });
 }
 
+async function getTreeStatus(page: Page) {
+  const tree = await api<{ nodes: TreeNodeStatus[] }>(
+    page,
+    'GET',
+    '/api/v1/common/tree'
+  );
+  return new Map(tree.nodes.map((node) => [node.nodeId, node]));
+}
+
 test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
   test('health와 401 문구 비노출을 관찰한다', async ({ page }) => {
     const response = await page.request.get('/api/admin/actuator/health');
@@ -123,11 +138,14 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
     await expect(teacher.page.getByTestId('question-bank-list')).toBeVisible();
     await attachScreenshot(teacher.page, 'actual-r1-teacher-question-bank');
 
-    const rooms = await api<Array<{ id: number; name: string }>>(
-      teacher.page,
-      'GET',
-      '/api/v1/teacher/dashboard/study-rooms'
-    );
+    const rooms = await api<
+      Array<{
+        id: number;
+        name: string;
+        studentName: string | null;
+        todoCount: number;
+      }>
+    >(teacher.page, 'GET', '/api/v1/teacher/dashboard/study-rooms');
     expect(rooms.length).toBeGreaterThan(0);
     const bank = await api<{
       content: Array<{ challengeId: number; treeNodeId: number | null }>;
@@ -137,6 +155,15 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
       '/api/v1/teacher/question-bank?subject=MATH&difficulty=MID&page=0&size=10'
     );
     expect(bank.content).toHaveLength(10);
+    const testedNodeIds = [
+      ...new Set(
+        bank.content
+          .map((question) => question.treeNodeId)
+          .filter((nodeId): nodeId is number => nodeId !== null)
+      ),
+    ];
+    expect(testedNodeIds.length).toBeGreaterThan(0);
+    const treeBefore = await getTreeStatus(student.page);
 
     const created = await api<{ examId: number }>(
       teacher.page,
@@ -146,13 +173,7 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
         title: runId,
         subject: 'MATH',
         examType: 'NATIONAL',
-        examTreeNodeIds: [
-          ...new Set(
-            bank.content
-              .map((question) => question.treeNodeId)
-              .filter((nodeId): nodeId is number => nodeId !== null)
-          ),
-        ],
+        examTreeNodeIds: testedNodeIds,
         questions: bank.content.map((question, index) => ({
           questionNo: index + 1,
           challengeId: question.challengeId,
@@ -211,13 +232,52 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
     expect(submitResponse.status()).toBeGreaterThanOrEqual(200);
     expect(submitResponse.status()).toBeLessThan(300);
     const submitBody = (await submitResponse.json()) as {
-      data?: { answerResults?: Array<{ correct: boolean }> };
+      data?: {
+        answerResults?: Array<{ correct: boolean }>;
+        weakUnits?: Array<{
+          treeNodeId: number;
+          name: string;
+          wrongCount: number;
+        }>;
+      };
       answerResults?: Array<{ correct: boolean }>;
+      weakUnits?: Array<{
+        treeNodeId: number;
+        name: string;
+        wrongCount: number;
+      }>;
     };
     const submittedAnalysis = submitBody.data ?? submitBody;
     const submittedWrongCount = (submittedAnalysis.answerResults ?? []).filter(
       (answer) => !answer.correct
     ).length;
+    const treeAfter = await getTreeStatus(student.page);
+    const selectedQuestionCount = bank.content.filter(
+      (question) => question.treeNodeId !== null
+    ).length;
+    const attemptDelta = testedNodeIds.reduce(
+      (sum, nodeId) =>
+        sum +
+        ((treeAfter.get(nodeId)?.attemptCount ?? 0) -
+          (treeBefore.get(nodeId)?.attemptCount ?? 0)),
+      0
+    );
+    expect(attemptDelta).toBe(selectedQuestionCount);
+    expect(
+      testedNodeIds.some(
+        (nodeId) =>
+          (treeAfter.get(nodeId)?.masteryScore ?? 0) !==
+          (treeBefore.get(nodeId)?.masteryScore ?? 0)
+      )
+    ).toBe(true);
+    if (submittedWrongCount > 0) {
+      expect(
+        (submittedAnalysis.weakUnits ?? []).some(
+          (unit) =>
+            unit.wrongCount > 0 && testedNodeIds.includes(unit.treeNodeId)
+        )
+      ).toBe(true);
+    }
     await expect(student.page.getByTestId('exam-submit-result')).toBeVisible();
     await attachScreenshot(student.page, 'actual-r1-submit-result');
     await student.page.getByRole('button', { name: '시험 분석 보기' }).click();
@@ -234,6 +294,29 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
       (item) => item.sourceType === 'EXAM' && !wrongBeforeIds.has(item.id)
     );
     expect(newExamWrongItems).toHaveLength(submittedWrongCount);
+
+    const roomsAfterSubmit = await api<
+      Array<{
+        id: number;
+        name: string;
+        studentName: string | null;
+        todoCount: number;
+      }>
+    >(teacher.page, 'GET', '/api/v1/teacher/dashboard/study-rooms');
+    const roomAfterSubmit = roomsAfterSubmit.find((room) => {
+      const before = rooms.find(
+        (candidate) =>
+          candidate.id === room.id && candidate.studentName === room.studentName
+      );
+      return before !== undefined && room.todoCount > before.todoCount;
+    });
+    expect(roomAfterSubmit).toBeDefined();
+    await teacher.page.goto('/dashboard/teacher');
+    const roomList = teacher.page.getByTestId('teacher-rooms-list');
+    await expect(roomList).toContainText(roomAfterSubmit!.name);
+    await expect(roomList).toContainText(
+      `손볼 것 ${roomAfterSubmit!.todoCount}건`
+    );
     const examWrong = newExamWrongItems[0];
     expect(examWrong).toBeDefined();
     const comment = `${runId} 오답을 풀이 순서부터 다시 확인해요`;
@@ -275,6 +358,117 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
     ).not.toBeNull();
 
     await teacher.context.close();
+    await student.context.close();
+  });
+
+  test('관리자 실측 등급컷으로 4등급, 6등급, 9등급 경계를 고정 검증한다', async ({
+    browser,
+  }) => {
+    const runId = `QA-MVPG-GRADE-${Date.now()}`;
+    const teacher = await newRolePage(browser, 'TEACHER');
+    const admin = await newRolePage(browser, 'ADMIN');
+    const student = await newRolePage(browser, 'STUDENT');
+    const rooms = await api<Array<{ id: number }>>(
+      teacher.page,
+      'GET',
+      '/api/v1/teacher/dashboard/study-rooms'
+    );
+    expect(rooms.length).toBeGreaterThan(0);
+    const cases = [
+      { grade: 4, correctCount: 6 },
+      { grade: 6, correctCount: 4 },
+      { grade: 9, correctCount: 1 },
+    ] as const;
+    const cutoffs = [90, 80, 70, 60, 50, 40, 30, 20].map(
+      (minRawScore, index) => ({ grade: index + 1, minRawScore })
+    );
+
+    for (const boundary of cases) {
+      const title = `${runId}-G${boundary.grade}`;
+      const created = await api<{ examId: number }>(
+        teacher.page,
+        'POST',
+        '/api/v1/teacher/exams',
+        {
+          title,
+          subject: 'MATH',
+          examType: 'NATIONAL',
+          examTreeNodeIds: [],
+          questions: Array.from({ length: 10 }, (_, index) => ({
+            questionNo: index + 1,
+            correctAnswer: '1',
+            prompt: `${title} ${index + 1}번`,
+          })),
+        }
+      );
+      await api(
+        admin.page,
+        'PUT',
+        `/api/v1/admin/exams/${created.examId}/grade-cutoff`,
+        {
+          source: `${runId} deterministic cutoff`,
+          fullScore: 100,
+          mean: null,
+          stdDev: null,
+          cutoffs,
+        }
+      );
+      await api(
+        teacher.page,
+        'POST',
+        `/api/v1/teacher/exams/${created.examId}/assignments`,
+        {
+          studyRoomId: rooms[0]!.id,
+          excludedStudentIds: [],
+          studentIds: [],
+          periodStart: new Date().toISOString(),
+          periodEnd: null,
+        }
+      );
+      const hall = await api<{
+        assigned: Array<{ examId: number; attemptId: number; title: string }>;
+      }>(student.page, 'GET', '/api/v1/student/exam-hall');
+      const assigned = hall.assigned.find((exam) => exam.title === title);
+      expect(assigned).toBeDefined();
+      const analysis = await api<{
+        rawScore: number;
+        predictedGradeLow: number;
+        predictedGradeHigh: number;
+        gradeBasis: string;
+      }>(
+        student.page,
+        'POST',
+        `/api/v1/student/exams/${assigned!.attemptId}/submit`,
+        {
+          answers: Array.from({ length: 10 }, (_, index) => ({
+            questionNo: index + 1,
+            selectedAnswer: index < boundary.correctCount ? '1' : '2',
+            timeSpentSec: 1,
+          })),
+        }
+      );
+      expect(analysis.rawScore).toBe(boundary.correctCount * 10);
+      expect(analysis.gradeBasis).toBe('MEASURED');
+      expect(analysis.predictedGradeLow).toBe(boundary.grade);
+      expect(analysis.predictedGradeHigh).toBe(Math.min(9, boundary.grade + 1));
+
+      await student.page.goto(
+        `/dashboard/student/exams/${assigned!.attemptId}`
+      );
+      await expect(
+        student.page.getByTestId('exam-analysis-card')
+      ).toBeVisible();
+      await expect(student.page.getByTestId('exam-grade-result')).toContainText(
+        `${boundary.grade}~${Math.min(9, boundary.grade + 1)}등급`
+      );
+      await attachScreenshot(
+        student.page,
+        `actual-grade-${boundary.grade}-boundary`
+      );
+    }
+
+    await teacher.context.close();
+    await admin.context.close();
     await student.context.close();
   });
 
