@@ -51,7 +51,13 @@ async function handleRequest(
 
   // 쿠키 수집 및 전달
   const cookieJar = await cookies();
-  const allow = new Set(['Authorization', 'refresh', 'sid']);
+  const allow = new Set([
+    'Authorization',
+    'refresh',
+    'sid',
+    'guest_token',
+    'guest_proof',
+  ]);
   const cookieHeader = cookieJar
     .getAll()
     .filter((cookie) => allow.has(cookie.name))

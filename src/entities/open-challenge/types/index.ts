@@ -20,15 +20,12 @@ export type ChallengeSolution = z.infer<typeof domain.solution>;
 export type ChallengeReview = z.infer<typeof domain.review>;
 
 export type GuestGradePayload = {
-  guestToken: string;
   selectedAnswer: string;
   elapsedSeconds: number;
   drawingData?: string | null;
 };
 
 export type GuestCoachMessagePayload = {
-  guestToken: string;
-  challengeId: string;
   message: string;
 };
 

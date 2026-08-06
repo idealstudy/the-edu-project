@@ -69,13 +69,13 @@ export const ChallengeInviteLanding = ({ token }: { token: string }) => {
   const handleGuestStart = async () => {
     if (!preview) return;
     try {
-      const session = await createGuestSession.mutateAsync({
+      await createGuestSession.mutateAsync({
         challengeId: preview.challengeId,
         shareToken: token,
       });
       const query = new URLSearchParams({
         inviteToken: token,
-        guestToken: session.guestToken,
+        guestSession: '1',
       });
       router.push(
         `${PUBLIC.OPEN_CHALLENGE.DETAIL(preview.challengeId)}?${query.toString()}`

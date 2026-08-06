@@ -9,6 +9,7 @@ import {
   socialKeys,
 } from '@/entities/social';
 import { showBottomToast } from '@/shared/components/ui';
+import { getApiError } from '@/shared/lib/get-api-error';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 /* ─────────────────────────────────────────────────────
@@ -197,11 +198,24 @@ export const useClaimGuestSessionMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (guestToken: string) =>
-      repository.claimGuestSession(guestToken),
+    mutationFn: () => repository.claimGuestSession(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: socialKeys.all });
       showBottomToast('방금 푼 기록을 내 계정으로 옮겼어요.');
+    },
+    onError: (error) => {
+      const apiError = getApiError(error);
+      if (apiError?.code === 'GUEST_SESSION_ALREADY_CLAIMED') {
+        showBottomToast('이 기록은 이미 다른 계정으로 옮겨졌어요.');
+        return;
+      }
+      if (apiError?.code === 'GUEST_SESSION_OWNERSHIP_MISMATCH') {
+        showBottomToast(
+          '이 브라우저에서 푼 기록만 내 계정으로 옮길 수 있어요.'
+        );
+        return;
+      }
+      showBottomToast(apiError?.message ?? '풀이 기록을 옮기지 못했어요.');
     },
   });
 };

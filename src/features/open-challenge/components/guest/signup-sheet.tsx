@@ -20,7 +20,7 @@ type SignupSheetProps = {
    * 모달이 정오 표시 없이 곧장 뜨는 비대칭을 막기 위해 넘겨받는다.
    */
   isCorrect?: boolean;
-  guestToken?: string;
+  hasGuestSession?: boolean;
   inviteToken?: string;
 };
 
@@ -48,7 +48,7 @@ export const SignupSheet = ({
   trigger,
   challengeId,
   isCorrect,
-  guestToken,
+  hasGuestSession,
   inviteToken,
 }: SignupSheetProps) => {
   const router = useRouter();
@@ -59,7 +59,7 @@ export const SignupSheet = ({
 
   const handleSignup = () => {
     const returnQuery = new URLSearchParams();
-    if (guestToken) returnQuery.set('guestToken', guestToken);
+    if (hasGuestSession) returnQuery.set('guestSession', '1');
     if (inviteToken) returnQuery.set('inviteToken', inviteToken);
     const returnPath = `${PUBLIC.OPEN_CHALLENGE.DETAIL(challengeId)}${returnQuery.size > 0 ? `?${returnQuery.toString()}` : ''}`;
     const from = encodeURIComponent(returnPath);

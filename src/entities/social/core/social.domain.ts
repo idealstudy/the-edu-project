@@ -184,7 +184,6 @@ const RematchSchema = z.object({
 });
 
 const GuestSessionSchema = z.object({
-  guestToken: z.string(),
   expiresAt: z.string(),
 });
 

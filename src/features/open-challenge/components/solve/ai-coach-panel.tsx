@@ -65,7 +65,7 @@ type AiCoachPanelProps = {
   challengeId: string;
   attemptId: string | null;
   isLoggedIn: boolean;
-  guestToken?: string | null;
+  hasGuestSession?: boolean;
   openingMessage?: string;
   onAttemptCreated: (attemptId: string) => void;
   onAttemptCleared: () => void;
@@ -358,7 +358,7 @@ export const AiCoachPanel = ({
   challengeId,
   attemptId,
   isLoggedIn,
-  guestToken,
+  hasGuestSession,
   openingMessage,
   onAttemptCreated,
   onAttemptCleared,
@@ -684,10 +684,8 @@ export const AiCoachPanel = ({
   const enumOptions = preferenceEnumsQuery.data;
 
   if (!isLoggedIn) {
-    return guestToken ? (
+    return hasGuestSession ? (
       <GuestCoachPanel
-        guestToken={guestToken}
-        challengeId={challengeId}
         openingMessage={openingMessage ?? AI_COACH_INITIAL_MESSAGE}
         onMessageSent={onMessageSent}
       />
@@ -1101,13 +1099,9 @@ export const AiCoachPanel = ({
 };
 
 const GuestCoachPanel = ({
-  guestToken,
-  challengeId,
   openingMessage,
   onMessageSent,
 }: {
-  guestToken: string;
-  challengeId: string;
   openingMessage: string;
   onMessageSent?: () => void;
 }) => {
@@ -1125,8 +1119,6 @@ const GuestCoachPanel = ({
     setMessages((current) => [...current, { role: 'user', text: message }]);
     try {
       const result = await mutation.mutateAsync({
-        guestToken,
-        challengeId,
         message,
       });
       setMessages((current) => [

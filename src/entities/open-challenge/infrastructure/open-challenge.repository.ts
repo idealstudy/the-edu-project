@@ -635,7 +635,7 @@ const gradeChallengeAsGuest = async (
   params: string | GuestGradePayload
 ): Promise<{ correct: boolean }> => {
   const body = typeof params === 'string' ? { selectedAnswer: params } : params;
-  const response = await api.public.post(
+  const response = await api.private.post(
     `/public/challenges/${challengeId}/grade`,
     body
   );
@@ -645,7 +645,7 @@ const gradeChallengeAsGuest = async (
 const sendGuestCoachMessage = async (
   params: GuestCoachMessagePayload
 ): Promise<GuestCoachMessageResult> => {
-  const response = await api.public.post(
+  const response = await api.private.post(
     '/public/guest-coach-messages',
     params
   );

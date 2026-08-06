@@ -250,14 +250,12 @@ const createGuestSession = async (
   body: CreateGuestSessionPayload
 ): Promise<GuestSession> => {
   const validated = payload.createGuestSession.parse(body);
-  const response = await api.public.post('/public/guest-sessions', validated);
+  const response = await api.private.post('/public/guest-sessions', validated);
   return domain.guestSession.parse(unwrapEnvelope(response, dto.guestSession));
 };
 
-const claimGuestSession = async (guestToken: string): Promise<GuestClaim> => {
-  const response = await api.private.post(
-    `/common/guest-sessions/${guestToken}/claim`
-  );
+const claimGuestSession = async (): Promise<GuestClaim> => {
+  const response = await api.private.post('/common/guest-sessions/claim');
   return domain.guestClaim.parse(unwrapEnvelope(response, dto.guestClaim));
 };
 

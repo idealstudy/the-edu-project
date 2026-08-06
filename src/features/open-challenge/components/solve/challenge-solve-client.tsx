@@ -92,7 +92,7 @@ export const ChallengeSolveClient = ({
   const router = useRouter();
   const searchParams = useSearchParams();
   const inviteToken = searchParams.get('inviteToken') ?? '';
-  const guestToken = searchParams.get('guestToken') ?? '';
+  const hasGuestSession = searchParams.get('guestSession') === '1';
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   // 풀이는 손글씨 전용 — 펜으로만 기록하며, 미입력 제출도 허용한다(보조 기록).
   const [drawingStrokes, setDrawingStrokes] = useState<Stroke[]>([]);
@@ -163,14 +163,14 @@ export const ChallengeSolveClient = ({
   useEffect(() => {
     if (
       !isLoggedIn ||
-      !guestToken ||
+      !hasGuestSession ||
       hasClaimedGuestRef.current ||
       claimGuestSessionMutation.isPending
     )
       return;
     hasClaimedGuestRef.current = true;
-    claimGuestSessionMutation.mutate(guestToken);
-  }, [claimGuestSessionMutation, guestToken, isLoggedIn]);
+    claimGuestSessionMutation.mutate();
+  }, [claimGuestSessionMutation, hasGuestSession, isLoggedIn]);
 
   const persistAiPanelWidth = (width: number) => {
     if (typeof window !== 'undefined') {
@@ -246,9 +246,8 @@ export const ChallengeSolveClient = ({
         (Date.now() - mountTimeRef.current) / 1000
       );
       const { correct } = await guestGradeMutation.mutateAsync(
-        guestToken
+        hasGuestSession
           ? {
-              guestToken,
               selectedAnswer,
               elapsedSeconds,
               drawingData:
@@ -459,7 +458,7 @@ export const ChallengeSolveClient = ({
           challengeId={challengeId}
           attemptId={aiAttemptId}
           isLoggedIn={isLoggedIn}
-          guestToken={guestToken}
+          hasGuestSession={hasGuestSession}
           openingMessage={coachOpening?.message}
           onAttemptCreated={setAiAttemptId}
           onAttemptCleared={handleAiAttemptCleared}
@@ -770,7 +769,7 @@ export const ChallengeSolveClient = ({
               challengeId={challengeId}
               attemptId={aiAttemptId}
               isLoggedIn={isLoggedIn}
-              guestToken={guestToken}
+              hasGuestSession={hasGuestSession}
               openingMessage={coachOpening?.message}
               onAttemptCreated={setAiAttemptId}
               onAttemptCleared={handleAiAttemptCleared}
@@ -800,7 +799,7 @@ export const ChallengeSolveClient = ({
         trigger={signupTrigger}
         challengeId={challengeId}
         isCorrect={guestGradeResult ?? undefined}
-        guestToken={guestToken || undefined}
+        hasGuestSession={hasGuestSession}
         inviteToken={inviteToken || undefined}
       />
 
