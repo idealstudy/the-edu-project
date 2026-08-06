@@ -3,10 +3,18 @@ import {
   type ChallengeInvitePreview,
   type ChallengeInviteResult,
   type CreateChallengeInvitePayload,
+  type CreateGuestSessionPayload,
+  type FriendDuels,
+  type FriendMastery,
   type FriendRequestByPhonePayload,
   type FriendRequestPayload,
+  type FriendSummary,
+  type FriendTurnSummary,
   type Friendship,
+  type GuestClaim,
+  type GuestSession,
   type MemberSearchResult,
+  type Rematch,
 } from '@/entities/social/types';
 import { api } from '@/shared/api';
 import { unwrapEnvelope } from '@/shared/lib/api-utils';
@@ -41,6 +49,7 @@ const toChallengeInvite = (raw: unknown): ChallengeInvite => {
     unitName: parsed.unitName ?? null,
     viewerCompleted: parsed.viewerCompleted ?? false,
     opponentName: parsed.opponentName ?? null,
+    opponentSolvedAt: parsed.opponentSolvedAt ?? null,
   });
 };
 
@@ -50,6 +59,13 @@ const toInvitePreview = (raw: unknown): ChallengeInvitePreview => {
     ...parsed,
     subject: parsed.subject ?? null,
     difficulty: parsed.difficulty ?? null,
+    inviterName: parsed.inviterName ?? null,
+    sentAt: parsed.sentAt ?? null,
+    receivedAt: parsed.receivedAt ?? null,
+    opponentSolvedAt: parsed.opponentSolvedAt ?? null,
+    opponentResultVisible: parsed.opponentResultVisible,
+    lockedFieldCount: parsed.lockedFieldCount,
+    lockReason: parsed.lockReason ?? null,
   });
 };
 
@@ -57,8 +73,12 @@ const toAttemptSummary = (
   raw:
     | {
         isCorrect?: boolean | null;
+        selectedAnswer?: string | null;
         timeSpentSeconds?: number | null;
+        solvedAt?: string | null;
         solutionImageUrl?: string | null;
+        solutionShared?: boolean;
+        solutionWithdrawn?: boolean;
       }
     | null
     | undefined
@@ -66,8 +86,12 @@ const toAttemptSummary = (
   if (!raw) return null;
   return {
     isCorrect: raw.isCorrect ?? null,
+    selectedAnswer: raw.selectedAnswer ?? null,
     timeSpentSeconds: raw.timeSpentSeconds ?? null,
+    solvedAt: raw.solvedAt ?? null,
     solutionImageUrl: raw.solutionImageUrl ?? null,
+    solutionShared: raw.solutionShared ?? false,
+    solutionWithdrawn: raw.solutionWithdrawn ?? false,
   };
 };
 
@@ -77,8 +101,23 @@ const toInviteResult = (raw: unknown): ChallengeInviteResult => {
     ...parsed,
     myCorrect: parsed.myCorrect ?? null,
     opponentCorrect: parsed.opponentCorrect ?? null,
+    outcome: parsed.outcome ?? null,
     myAttempt: toAttemptSummary(parsed.myAttempt),
     opponentAttempt: toAttemptSummary(parsed.opponentAttempt),
+    divergence: parsed.divergence
+      ? {
+          hasData: parsed.divergence.hasData,
+          wrongType: parsed.divergence.wrongType ?? null,
+          reason: parsed.divergence.reason ?? null,
+        }
+      : null,
+    context: parsed.context
+      ? {
+          inviterName: parsed.context.inviterName ?? null,
+          sentAt: parsed.context.sentAt ?? null,
+          opponentSolvedAt: parsed.context.opponentSolvedAt ?? null,
+        }
+      : null,
   });
 };
 
@@ -133,6 +172,37 @@ const getMyFriends = async (): Promise<Friendship[]> => {
   return list.map(toFriendship);
 };
 
+const getFriendTurnSummary = async (): Promise<FriendTurnSummary> => {
+  const response = await api.private.get('/common/friends/turn-summary');
+  return domain.friendTurnSummary.parse(
+    unwrapEnvelope(response, dto.friendTurnSummary)
+  );
+};
+
+const getFriendSummary = async (friendId: number): Promise<FriendSummary> => {
+  const response = await api.private.get(`/common/friends/${friendId}/summary`);
+  return domain.friendSummary.parse(
+    unwrapEnvelope(response, dto.friendSummary)
+  );
+};
+
+const getFriendMastery = async (friendId: number): Promise<FriendMastery> => {
+  const response = await api.private.get(`/common/friends/${friendId}/mastery`);
+  return domain.friendMastery.parse(
+    unwrapEnvelope(response, dto.friendMastery)
+  );
+};
+
+const getFriendDuels = async (
+  friendId: number,
+  cursor?: string
+): Promise<FriendDuels> => {
+  const response = await api.private.get(`/common/friends/${friendId}/duels`, {
+    params: { cursor, size: 20 },
+  });
+  return domain.friendDuels.parse(unwrapEnvelope(response, dto.friendDuels));
+};
+
 /* ─────────────────────────────────────────────────────
  * 도전장 API
  * ────────────────────────────────────────────────────*/
@@ -169,6 +239,26 @@ const getInviteResult = async (
   return toInviteResult(unwrapEnvelope(response, z.unknown()));
 };
 
+const createRematch = async (token: string): Promise<Rematch> => {
+  const response = await api.private.post(
+    `/common/challenge-invites/${token}/rematch`
+  );
+  return domain.rematch.parse(unwrapEnvelope(response, dto.rematch));
+};
+
+const createGuestSession = async (
+  body: CreateGuestSessionPayload
+): Promise<GuestSession> => {
+  const validated = payload.createGuestSession.parse(body);
+  const response = await api.private.post('/public/guest-sessions', validated);
+  return domain.guestSession.parse(unwrapEnvelope(response, dto.guestSession));
+};
+
+const claimGuestSession = async (): Promise<GuestClaim> => {
+  const response = await api.private.post('/common/guest-sessions/claim');
+  return domain.guestClaim.parse(unwrapEnvelope(response, dto.guestClaim));
+};
+
 /* ─────────────────────────────────────────────────────
  * 도전장 미리보기 (공개·비로그인)
  * ────────────────────────────────────────────────────*/
@@ -185,9 +275,16 @@ export const repository = {
   requestFriendByPhone,
   acceptFriend,
   getMyFriends,
+  getFriendTurnSummary,
+  getFriendSummary,
+  getFriendMastery,
+  getFriendDuels,
   createInvite,
   getMyInvites,
   acceptInvite,
   getInviteResult,
+  createRematch,
+  createGuestSession,
+  claimGuestSession,
   getPublicInvitePreview,
 };

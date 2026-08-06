@@ -77,7 +77,7 @@ export const UnitNoteEditor = ({
   const [strokes, setStrokes] = useState<Stroke[]>([]);
   const [uploadRows, setUploadRows] = useState<UploadRow[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const drawingUpload = useDrawingUpload();
+  const drawingUpload = useDrawingUpload('UNIT_NOTE_PAGE');
   const appendMutation = useAppendUnitNotePages(nodeId);
 
   const saveDrawing = async () => {

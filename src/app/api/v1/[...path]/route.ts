@@ -58,6 +58,8 @@ async function handleRequest(
     'refresh-token',
     'admin-return',
     'sid',
+    'guest_token',
+    'guest_proof',
   ]);
   const cookieHeader = cookieJar
     .getAll()

@@ -61,6 +61,7 @@ const uploadPageFile = async (file: File): Promise<UnitNoteUploadResult> => {
           fileName: file.name,
           contentType: file.type,
           sizeBytes: file.size,
+          targetType: 'UNIT_NOTE_PAGE',
         },
       ],
     }

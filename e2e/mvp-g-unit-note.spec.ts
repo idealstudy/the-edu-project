@@ -1,10 +1,9 @@
-import { type Page, expect, test } from '@playwright/test';
-
 import type {
   UnitNoteDetail,
   UnitNoteLibrary,
   UnitNoteNode,
 } from '@/entities/unit-note';
+import { type Page, expect, test } from '@playwright/test';
 
 import { okBody } from './helpers/api-mock';
 import { mockMemberInfo, setAuthCookie } from './helpers/auth-mock';

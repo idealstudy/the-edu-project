@@ -1,9 +1,18 @@
 import { renderWithProviders } from '@/tests/utils';
-import { cleanup, screen } from '@testing-library/react';
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { cleanup, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { useOpenChallengeDetailQuery } from '../../hooks/use-open-challenge';
 import { ChallengeSolveClient } from './challenge-solve-client';
+
+const solveMocks = vi.hoisted(() => ({
+  startAttemptAsync: vi.fn(),
+  submitAnswerAsync: vi.fn(),
+  createReviewAsync: vi.fn(),
+  finishSessionAsync: vi.fn(),
+  uploadDrawingAsync: vi.fn(),
+}));
 
 /* ────────────────────────────────────────────────────────
  * 훅 모킹 — 실제 API 호출 없이 쿼리/뮤테이션 상태를 직접 주입
@@ -11,24 +20,39 @@ import { ChallengeSolveClient } from './challenge-solve-client';
 
 vi.mock('../../hooks/use-open-challenge', () => ({
   useOpenChallengeDetailQuery: vi.fn(),
+  useCoachOpeningQuery: vi.fn(() => ({ data: undefined })),
   useMyOpenChallengeDetailQuery: vi.fn(() => ({ data: undefined })),
   useStartChallengeAttemptMutation: vi.fn(() => ({
-    mutateAsync: vi.fn(),
+    mutateAsync: solveMocks.startAttemptAsync,
     isPending: false,
   })),
   useSubmitChallengeAnswerMutation: vi.fn(() => ({
-    mutateAsync: vi.fn(),
+    mutateAsync: solveMocks.submitAnswerAsync,
     isPending: false,
   })),
   useGuestGradeChallengeMutation: vi.fn(() => ({
     mutateAsync: vi.fn(),
     isPending: false,
   })),
-  useCreateChallengeReviewMutation: vi.fn(() => ({ mutate: vi.fn() })),
+  useCreateChallengeReviewMutation: vi.fn(() => ({
+    mutateAsync: solveMocks.createReviewAsync,
+  })),
   useFinishAiCoachingSessionMutation: vi.fn(() => ({
-    mutateAsync: vi.fn(),
+    mutateAsync: solveMocks.finishSessionAsync,
     isPending: false,
   })),
+}));
+
+vi.mock('@/features/social/hooks', () => ({
+  usePublicInvitePreviewQuery: vi.fn(() => ({ data: undefined })),
+  useClaimGuestSessionMutation: vi.fn(() => ({
+    mutate: vi.fn(),
+    isPending: false,
+  })),
+}));
+
+vi.mock('@/features/social', () => ({
+  ChallengeShareButton: () => null,
 }));
 
 vi.mock('@/shared/components/drawing', async (importOriginal) => {
@@ -37,10 +61,37 @@ vi.mock('@/shared/components/drawing', async (importOriginal) => {
   return {
     ...actual,
     useDrawingUpload: vi.fn(() => ({
-      uploadDrawingAsync: vi.fn(),
+      uploadDrawingAsync: solveMocks.uploadDrawingAsync,
       isUploading: false,
     })),
-    SolutionDrawingPad: () => null,
+    exportStrokesToDataURL: vi.fn(() => 'data:image/png;base64,test'),
+    SolutionDrawingPad: ({
+      onStrokesChange,
+    }: {
+      onStrokesChange?: (strokes: unknown[]) => void;
+    }) => (
+      <button
+        type="button"
+        data-testid="mock-draw-stroke"
+        onClick={() =>
+          onStrokesChange?.([
+            {
+              id: 'stroke-1',
+              pageNumber: 1,
+              points: [
+                { x: 0.1, y: 0.1 },
+                { x: 0.2, y: 0.2 },
+              ],
+              color: '#111111',
+              size: 3,
+              tool: 'pen',
+            },
+          ])
+        }
+      >
+        획 그리기
+      </button>
+    ),
   };
 });
 
@@ -66,6 +117,10 @@ const baseChallenge = {
 };
 
 describe('ChallengeSolveClient (오픈챌린지 풀이 화면 가드)', () => {
+  beforeEach(() => {
+    window.sessionStorage.clear();
+    Object.values(solveMocks).forEach((mock) => mock.mockReset());
+  });
   afterEach(() => cleanup());
 
   test('선택지가 없는 문제(주관식 등)는 풀이 UI 대신 미지원 안내를 보여준다', () => {
@@ -129,5 +184,94 @@ describe('ChallengeSolveClient (오픈챌린지 풀이 화면 가드)', () => {
 
     expect(screen.getByTestId('challenge-submit-button')).toBeInTheDocument();
     expect(screen.getByTestId('choice-option-0')).toBeInTheDocument();
+  });
+
+  test('손풀이 공유가 실패해도 결과를 저장하고 결과 화면 재시도 정보를 남긴다', async () => {
+    const user = userEvent.setup();
+    vi.mocked(useOpenChallengeDetailQuery).mockReturnValue({
+      data: baseChallenge,
+      isLoading: false,
+      isError: false,
+    } as never);
+    solveMocks.startAttemptAsync.mockResolvedValue({ attemptId: 'attempt-1' });
+    solveMocks.submitAnswerAsync.mockResolvedValue({
+      isCorrect: true,
+      correctAnswer: '1',
+      passRate: 70,
+      participantCount: 10,
+    });
+    solveMocks.uploadDrawingAsync.mockRejectedValue(
+      new Error('presign failed')
+    );
+
+    renderWithProviders(
+      <ChallengeSolveClient
+        challengeId={CHALLENGE_ID}
+        isLoggedIn
+      />
+    );
+
+    await user.click(screen.getByTestId('mock-draw-stroke'));
+    await user.click(screen.getByTestId('choice-option-0'));
+    await user.click(screen.getByTestId('challenge-submit-button'));
+
+    await waitFor(() => {
+      const raw = window.sessionStorage.getItem(
+        `open-challenge-result:${CHALLENGE_ID}`
+      );
+      expect(raw).not.toBeNull();
+      const stored = JSON.parse(raw ?? '{}') as {
+        drawingShareFailure?: { strokes?: unknown[] };
+      };
+      expect(stored.drawingShareFailure?.strokes).toHaveLength(1);
+    });
+    expect(solveMocks.createReviewAsync).not.toHaveBeenCalled();
+  });
+
+  test('업로드 뒤 공유 생성 실패 시 숫자 미디어 ID를 재시도 정보에 보존한다', async () => {
+    const user = userEvent.setup();
+    vi.mocked(useOpenChallengeDetailQuery).mockReturnValue({
+      data: baseChallenge,
+      isLoading: false,
+      isError: false,
+    } as never);
+    solveMocks.startAttemptAsync.mockResolvedValue({ attemptId: 'attempt-2' });
+    solveMocks.submitAnswerAsync.mockResolvedValue({
+      isCorrect: false,
+      correctAnswer: '1',
+      passRate: 70,
+      participantCount: 10,
+    });
+    solveMocks.uploadDrawingAsync.mockResolvedValue({
+      mediaId: 'media-uuid',
+      mediaAssetId: 88,
+    });
+    solveMocks.createReviewAsync.mockRejectedValue(new Error('share failed'));
+
+    renderWithProviders(
+      <ChallengeSolveClient
+        challengeId={CHALLENGE_ID}
+        isLoggedIn
+      />
+    );
+
+    await user.click(screen.getByTestId('mock-draw-stroke'));
+    await user.click(screen.getByTestId('choice-option-0'));
+    await user.click(screen.getByTestId('challenge-submit-button'));
+
+    await waitFor(() => {
+      expect(solveMocks.createReviewAsync).toHaveBeenCalledWith({
+        challengeId: CHALLENGE_ID,
+        attemptId: 'attempt-2',
+        solutionType: 'DRAWING',
+        content: '',
+        drawingImageMediaId: 88,
+      });
+    });
+    const stored = JSON.parse(
+      window.sessionStorage.getItem(`open-challenge-result:${CHALLENGE_ID}`) ??
+        '{}'
+    ) as { drawingShareFailure?: { mediaAssetId?: number } };
+    expect(stored.drawingShareFailure?.mediaAssetId).toBe(88);
   });
 });

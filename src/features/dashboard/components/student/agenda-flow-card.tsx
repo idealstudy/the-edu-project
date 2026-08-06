@@ -46,8 +46,8 @@ export const AgendaFlowCard = () => (
       </div>
     </div>
     <p className="border-gray-3 text-gray-7 border-t px-5 py-3 text-xs leading-relaxed md:px-6">
-      선생님이 준 일은 지울 수 없어요. 못했으면 이유를 적으면 선생님에게
-      그대로 전달됩니다. 지난 주와 지난 달은 돌아보기에서 봅니다.
+      선생님이 준 일은 지울 수 없어요. 못했으면 이유를 적으면 선생님에게 그대로
+      전달됩니다. 지난 주와 지난 달은 돌아보기에서 봅니다.
     </p>
   </section>
 );

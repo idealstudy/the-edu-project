@@ -74,6 +74,7 @@ const uploadExamPdf = async (file: File) => {
     {
       mediaAssetList: [
         {
+          targetType: 'EXAM_PDF',
           fileName: file.name,
           contentType: file.type || 'application/pdf',
           sizeBytes: file.size,

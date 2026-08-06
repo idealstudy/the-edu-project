@@ -30,6 +30,7 @@ const uploadImageApi = async ({
           fileName: file.name,
           contentType: file.type,
           sizeBytes: file.size,
+          targetType: 'PENDING_ATTACHMENT',
         },
       ],
     }
@@ -77,6 +78,7 @@ const uploadImageBatchApi = async ({
         fileName: file.name,
         contentType: file.type,
         sizeBytes: file.size,
+        targetType: 'PENDING_ATTACHMENT',
       })),
     }
   );

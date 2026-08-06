@@ -9,4 +9,11 @@ export {
   usePublicInvitePreviewQuery,
   useInviteResultQuery,
   useAcceptChallengeInviteMutation,
+  useFriendTurnSummaryQuery,
+  useFriendSummaryQuery,
+  useFriendMasteryQuery,
+  useFriendDuelsQuery,
+  useCreateRematchMutation,
+  useCreateGuestSessionMutation,
+  useClaimGuestSessionMutation,
 } from './use-social';

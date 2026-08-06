@@ -7,7 +7,7 @@ import { exportStrokesToBlob } from '../utils/export-image';
 
 /* ─────────────────────────────────────────────────────
  * useDrawingUpload — 드로잉 스냅샷 업로드
- *  획(Stroke[]) → PNG Blob → presign-batch → S3 PUT → media_id 반환.
+ *  획(Stroke[]) → PNG Blob → presign-batch → S3 PUT → media_asset 식별자 반환.
  *  풀이공유(solutionType=DRAWING)의 drawingImageMediaId 확보에 사용한다.
  *  presign 흐름은 editor의 useFileUpload와 동일(공통 미디어 파이프라인).
  * ────────────────────────────────────────────────────*/
@@ -17,9 +17,18 @@ const CONTENT_TYPE = 'image/png';
 
 type DrawingUploadResult = {
   mediaId: string;
+  mediaAssetId: number;
 };
 
-const uploadDrawing = async (strokes: Stroke[]): Promise<DrawingUploadResult> => {
+type DrawingTargetType =
+  | 'PENDING_ATTACHMENT'
+  | 'CHALLENGE_REVIEW_DRAWING'
+  | 'UNIT_NOTE_PAGE';
+
+const uploadDrawing = async (
+  strokes: Stroke[],
+  targetType: DrawingTargetType
+): Promise<DrawingUploadResult> => {
   if (strokes.length === 0) {
     throw new Error('드로잉이 비어 있습니다.');
   }
@@ -34,6 +43,7 @@ const uploadDrawing = async (strokes: Stroke[]): Promise<DrawingUploadResult> =>
           fileName: FILE_NAME,
           contentType: CONTENT_TYPE,
           sizeBytes: blob.size,
+          targetType,
         },
       ],
     }
@@ -54,12 +64,14 @@ const uploadDrawing = async (strokes: Stroke[]): Promise<DrawingUploadResult> =>
     throw new Error('드로잉 업로드에 실패했습니다.');
   }
 
-  return { mediaId: mediaAsset.mediaId };
+  return { mediaId: mediaAsset.mediaId, mediaAssetId: mediaAsset.id };
 };
 
-export const useDrawingUpload = () => {
+export const useDrawingUpload = (
+  targetType: DrawingTargetType = 'PENDING_ATTACHMENT'
+) => {
   const mutation = useMutation({
-    mutationFn: (strokes: Stroke[]) => uploadDrawing(strokes),
+    mutationFn: (strokes: Stroke[]) => uploadDrawing(strokes, targetType),
   });
 
   return {

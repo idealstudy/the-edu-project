@@ -1,5 +1,6 @@
 import { renderWithProviders } from '@/tests/utils';
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import {
@@ -10,6 +11,11 @@ import {
   useOpenChallengeDetailQuery,
 } from '../../hooks/use-open-challenge';
 import { ChallengeResult } from './challenge-result';
+
+const mutationMocks = vi.hoisted(() => ({
+  createReviewAsync: vi.fn(),
+  uploadDrawingAsync: vi.fn(),
+}));
 
 /* ────────────────────────────────────────────────────────
  * 훅·하위 컴포넌트 모킹 — 결과화면 크로스체크(문제+정오 비교 / 해설) 렌더 여부를 검증한다.
@@ -34,10 +40,25 @@ vi.mock('../../hooks/use-open-challenge', () => ({
     mutate: vi.fn(),
     isPending: false,
   })),
+  useWithdrawChallengeReviewMutation: vi.fn(() => ({
+    mutate: vi.fn(),
+    isPending: false,
+  })),
+  useCreateChallengeReviewMutation: vi.fn(() => ({
+    mutateAsync: mutationMocks.createReviewAsync,
+    isPending: false,
+  })),
   // result-cross-check → solve/solution-panel 이 참조하는 훅(폴백 경로용). 이 스위트에선 호출 안 됨.
   useChallengeSolutionMutation: vi.fn(() => ({
     mutate: vi.fn(),
     isPending: false,
+  })),
+}));
+
+vi.mock('@/shared/components/drawing', () => ({
+  useDrawingUpload: vi.fn(() => ({
+    uploadDrawingAsync: mutationMocks.uploadDrawingAsync,
+    isUploading: false,
   })),
 }));
 
@@ -85,6 +106,8 @@ const setSubmittedResult = (result: Record<string, unknown> | null) => {
 describe('ChallengeResult (결과화면 크로스체크)', () => {
   beforeEach(() => {
     window.sessionStorage.clear();
+    mutationMocks.createReviewAsync.mockReset();
+    mutationMocks.uploadDrawingAsync.mockReset();
     vi.mocked(useMyOpenChallengeDetailQuery).mockReturnValue({
       data: { attempts: [], reviews: [] },
       isLoading: false,
@@ -205,5 +228,55 @@ describe('ChallengeResult (결과화면 크로스체크)', () => {
 
     expect(screen.getByText('결과를 다시 볼 수 없어요')).toBeInTheDocument();
     expect(screen.queryByText('정답 해설')).not.toBeInTheDocument();
+  });
+
+  test('손풀이 공유 실패를 알리고 다시 올리면 공유 생성 후 성공 상태로 바꾼다', async () => {
+    const user = userEvent.setup();
+    const strokes = [
+      {
+        id: 'stroke-1',
+        pageNumber: 1,
+        points: [
+          { x: 0.1, y: 0.1 },
+          { x: 0.2, y: 0.2 },
+        ],
+        color: '#111111',
+        size: 3,
+        tool: 'pen',
+      },
+    ];
+    setSubmittedResult({
+      isCorrect: true,
+      correctAnswer: '2',
+      passRate: 80,
+      participantCount: 12,
+      attemptId: 'attempt-10',
+      selectedAnswer: '2',
+      drawingShareFailure: { strokes },
+    });
+    mutationMocks.uploadDrawingAsync.mockResolvedValue({
+      mediaId: 'media-uuid',
+      mediaAssetId: 77,
+    });
+    mutationMocks.createReviewAsync.mockResolvedValue(undefined);
+
+    renderWithProviders(<ChallengeResult challengeId={CHALLENGE_ID} />);
+
+    expect(screen.getByText('손풀이를 올리지 못했어요')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: '다시 올리기' }));
+
+    await waitFor(() => {
+      expect(mutationMocks.createReviewAsync).toHaveBeenCalledWith({
+        challengeId: CHALLENGE_ID,
+        attemptId: 'attempt-10',
+        solutionType: 'DRAWING',
+        content: '',
+        drawingImageMediaId: 77,
+      });
+    });
+    expect(screen.getByText('손풀이를 올렸어요.')).toBeInTheDocument();
+    expect(
+      screen.queryByText('손풀이를 올리지 못했어요')
+    ).not.toBeInTheDocument();
   });
 });

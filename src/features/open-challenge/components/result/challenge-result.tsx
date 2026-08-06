@@ -4,16 +4,19 @@ import { useEffect, useRef, useState } from 'react';
 
 import { type ChallengeReviewSort } from '@/entities/open-challenge';
 import { ChallengeShareButton } from '@/features/social';
-import { BackButton } from '@/shared/components/ui';
+import { type Stroke, useDrawingUpload } from '@/shared/components/drawing';
+import { BackButton, Button } from '@/shared/components/ui';
 import { trackOcComplete } from '@/shared/lib/analytics';
 
 import {
   useCancelChallengeReviewRecommendMutation,
   useChallengeReviewsQuery,
+  useCreateChallengeReviewMutation,
   useMyOpenChallengeDetailQuery,
   useNextChallengeQuery,
   useOpenChallengeDetailQuery,
   useRecommendChallengeReviewMutation,
+  useWithdrawChallengeReviewMutation,
 } from '../../hooks/use-open-challenge';
 import { AiFeedbackForm } from './ai-feedback-form';
 import { ChallengeResultSkeleton } from './challenge-result-skeleton';
@@ -47,6 +50,11 @@ type SubmittedResult = {
   selectedAnswer?: string | null;
   // 방금 푼 내 손글씨 풀이 스냅샷(PNG dataURL). strokes 가 있을 때만 채워진다.
   myDrawingDataUrl?: string;
+  drawingShareFailure?: {
+    strokes: Stroke[];
+    mediaAssetId?: number;
+  };
+  drawingShareRecovered?: boolean;
   // 표시용 투영 보상 델타(D1). 구버전 백엔드 대비 optional.
   reward?: RewardDelta;
   // 결과화면 해설 섹션 표시 전용 시드 해설(마크다운). 판정(자력 여부)에는 영향 없음 — 제출 후 노출.
@@ -98,6 +106,10 @@ export const ChallengeResult = ({
   const recommendMutation = useRecommendChallengeReviewMutation(challengeId);
   const cancelRecommendMutation =
     useCancelChallengeReviewRecommendMutation(challengeId);
+  const withdrawMutation = useWithdrawChallengeReviewMutation(challengeId);
+  const createReviewMutation = useCreateChallengeReviewMutation();
+  const { uploadDrawingAsync, isUploading: isRetryUploadPending } =
+    useDrawingUpload('CHALLENGE_REVIEW_DRAWING');
 
   useEffect(() => {
     const rawResult = window.sessionStorage.getItem(
@@ -135,6 +147,49 @@ export const ChallengeResult = ({
     }
 
     recommendMutation.mutate(solution.id);
+  };
+
+  const updateStoredResult = (nextResult: SubmittedResult) => {
+    setSubmittedResult(nextResult);
+    window.sessionStorage.setItem(
+      `${RESULT_STORAGE_KEY_PREFIX}:${challengeId}`,
+      JSON.stringify(nextResult)
+    );
+  };
+
+  const handleDrawingShareRetry = async () => {
+    if (!submittedResult?.attemptId || !submittedResult.drawingShareFailure)
+      return;
+
+    const retry = submittedResult.drawingShareFailure;
+    let mediaAssetId = retry.mediaAssetId;
+
+    try {
+      if (!mediaAssetId) {
+        ({ mediaAssetId } = await uploadDrawingAsync(retry.strokes));
+      }
+      await createReviewMutation.mutateAsync({
+        challengeId,
+        attemptId: submittedResult.attemptId,
+        solutionType: 'DRAWING',
+        content: '',
+        drawingImageMediaId: mediaAssetId,
+      });
+      updateStoredResult({
+        ...submittedResult,
+        drawingShareFailure: undefined,
+        drawingShareRecovered: true,
+      });
+    } catch {
+      updateStoredResult({
+        ...submittedResult,
+        drawingShareFailure: {
+          ...retry,
+          mediaAssetId,
+        },
+        drawingShareRecovered: false,
+      });
+    }
   };
 
   // 크로스체크 카드에 넘길 값 — 방금 제출 직후 응답을 우선, 없으면(새로고침) 재조회로 폴백.
@@ -210,6 +265,42 @@ export const ChallengeResult = ({
               </div>
             </section>
           )}
+          {submittedResult?.drawingShareFailure && (
+            <section
+              className="border-system-warning bg-system-warning-alt flex flex-col items-start gap-3 rounded-[12px] border p-5"
+              role="alert"
+              data-testid="drawing-share-failed"
+            >
+              <div className="flex flex-col gap-1">
+                <h2 className="font-body1-heading text-text-main">
+                  손풀이를 올리지 못했어요
+                </h2>
+                <p className="font-caption-normal text-text-sub2">
+                  문제 결과는 저장됐어요. 다시 올리면 다른 학생들도 볼 수
+                  있어요.
+                </p>
+              </div>
+              <Button
+                size="xsmall"
+                onClick={handleDrawingShareRetry}
+                disabled={
+                  isRetryUploadPending || createReviewMutation.isPending
+                }
+              >
+                {isRetryUploadPending || createReviewMutation.isPending
+                  ? '다시 올리는 중'
+                  : '다시 올리기'}
+              </Button>
+            </section>
+          )}
+          {submittedResult?.drawingShareRecovered && (
+            <p
+              className="bg-system-success-alt text-system-success font-caption-normal rounded-[12px] p-4"
+              role="status"
+            >
+              손풀이를 올렸어요.
+            </p>
+          )}
           <SolutionList
             solutions={solutions ?? ([] as SolutionItem[])}
             totalCount={solutions?.length ?? 0}
@@ -218,8 +309,10 @@ export const ChallengeResult = ({
             isRecommendPending={
               recommendMutation.isPending || cancelRecommendMutation.isPending
             }
+            isWithdrawPending={withdrawMutation.isPending}
             onSortChange={setReviewSort}
             onRecommendToggle={handleRecommendToggle}
+            onWithdraw={(solution) => withdrawMutation.mutate(solution.id)}
           />
         </div>
 

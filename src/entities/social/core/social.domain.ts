@@ -48,6 +48,7 @@ const ChallengeInviteSchema = z.object({
   // 로 받는다. 프론트는 없으면 "상대 대기 중" 등으로 폴백하고 내부 회원 번호를
   // 노출하지 않는다.
   opponentName: z.string().nullable().optional(),
+  opponentSolvedAt: z.string().nullable(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -62,6 +63,13 @@ const ChallengeInvitePreviewSchema = z.object({
   challengeTitle: z.string(),
   subject: z.string().nullable(),
   difficulty: z.string().nullable(),
+  inviterName: z.string().nullable(),
+  sentAt: z.string().nullable(),
+  receivedAt: z.string().nullable(),
+  opponentSolvedAt: z.string().nullable(),
+  opponentResultVisible: z.boolean(),
+  lockedFieldCount: z.number(),
+  lockReason: z.string().nullable(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -70,18 +78,119 @@ const ChallengeInvitePreviewSchema = z.object({
  * ────────────────────────────────────────────────────*/
 const AttemptSummarySchema = z.object({
   isCorrect: z.boolean().nullable(),
+  selectedAnswer: z.string().nullable(),
   timeSpentSeconds: z.number().nullable(),
+  solvedAt: z.string().nullable(),
   solutionImageUrl: z.string().nullable(),
+  solutionShared: z.boolean(),
+  solutionWithdrawn: z.boolean(),
 });
 
 const ChallengeInviteResultSchema = z.object({
   shareToken: z.string(),
   status: InviteStatusSchema,
   challengeId: z.number(),
+  outcome: z.enum(['WIN', 'LOSE', 'BOTH_WRONG', 'BOTH_CORRECT']).nullable(),
   myCorrect: z.boolean().nullable(),
   opponentCorrect: z.boolean().nullable(),
   myAttempt: AttemptSummarySchema.nullable(),
   opponentAttempt: AttemptSummarySchema.nullable(),
+  divergence: z
+    .object({
+      hasData: z.boolean(),
+      wrongType: z.string().nullable(),
+      reason: z.string().nullable(),
+    })
+    .nullable(),
+  context: z
+    .object({
+      inviterName: z.string().nullable(),
+      sentAt: z.string().nullable(),
+      opponentSolvedAt: z.string().nullable(),
+    })
+    .nullable(),
+});
+
+const FriendTurnSummarySchema = z.object({
+  myTurnCount: z.number(),
+  oldest: z
+    .object({
+      shareToken: z.string(),
+      opponentName: z.string(),
+      challengeTitle: z.string(),
+      receivedAt: z.string(),
+    })
+    .nullable(),
+});
+
+const FriendMasterySchema = z.object({
+  friendId: z.number(),
+  units: z.array(
+    z.object({
+      nodeId: z.number(),
+      displayName: z.string(),
+      subjectName: z.string(),
+      masteryScore: z.number(),
+    })
+  ),
+});
+
+const FriendSummarySchema = z.object({
+  friendId: z.number(),
+  displayName: z.string(),
+  relation: z.enum(['FRIEND', 'FRIEND_NO_DUEL', 'NOT_FRIEND']),
+  record: z
+    .object({
+      win: z.number(),
+      lose: z.number(),
+      draw: z.number(),
+      myTurn: z.number(),
+    })
+    .nullable(),
+  brag: z
+    .object({
+      conqueredUnitCount: z.number(),
+      badgeCount: z.number(),
+      streakDays: z.number(),
+      level: z.number(),
+      solvedCount: z.number(),
+    })
+    .nullable(),
+});
+
+const FriendDuelsSchema = z.object({
+  items: z.array(
+    z.object({
+      shareToken: z.string(),
+      challengeId: z.number(),
+      challengeTitle: z.string(),
+      unitName: z.string().nullable(),
+      status: InviteStatusSchema,
+      viewerCompleted: z.boolean(),
+      opponentSolvedAt: z.string().nullable(),
+      outcome: z.enum(['WIN', 'LOSE', 'BOTH_WRONG', 'BOTH_CORRECT']).nullable(),
+      sentAt: z.string(),
+    })
+  ),
+  nextCursor: z.string().nullable(),
+});
+
+const RematchSchema = z.object({
+  shareToken: z.string(),
+  challengeId: z.number(),
+  challengeTitle: z.string(),
+  unitName: z.string(),
+  rematchOfShareToken: z.string(),
+});
+
+const GuestSessionSchema = z.object({
+  expiresAt: z.string(),
+});
+
+const GuestClaimSchema = z.object({
+  claimedAttemptCount: z.number(),
+  inviteAccepted: z.boolean(),
+  treeNodeUpdatedCount: z.number(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -103,5 +212,12 @@ export const domain = {
   challengeInvitePreview: ChallengeInvitePreviewSchema,
   challengeInviteResult: ChallengeInviteResultSchema,
   attemptSummary: AttemptSummarySchema,
+  friendTurnSummary: FriendTurnSummarySchema,
+  friendMastery: FriendMasterySchema,
+  friendSummary: FriendSummarySchema,
+  friendDuels: FriendDuelsSchema,
+  rematch: RematchSchema,
+  guestSession: GuestSessionSchema,
+  guestClaim: GuestClaimSchema,
   memberSearchResult: MemberSearchResultSchema,
 };

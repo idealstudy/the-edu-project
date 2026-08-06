@@ -29,6 +29,7 @@ import {
   useAiCoachingPreferenceEnumsQuery,
   useChallengeSolutionMutation,
   useCreateAiCoachingSessionMutation,
+  useGuestCoachMessageMutation,
   useMyAiCoachingPreferenceQuery,
   useSendAiCoachingMessageMutation,
   useStartChallengeAttemptMutation,
@@ -64,6 +65,8 @@ type AiCoachPanelProps = {
   challengeId: string;
   attemptId: string | null;
   isLoggedIn: boolean;
+  hasGuestSession?: boolean;
+  openingMessage?: string;
   onAttemptCreated: (attemptId: string) => void;
   onAttemptCleared: () => void;
   onSessionChange?: (sessionId: string | null) => void;
@@ -355,6 +358,8 @@ export const AiCoachPanel = ({
   challengeId,
   attemptId,
   isLoggedIn,
+  hasGuestSession,
+  openingMessage,
   onAttemptCreated,
   onAttemptCleared,
   onSessionChange,
@@ -480,7 +485,9 @@ export const AiCoachPanel = ({
 
       setSessionId(session.sessionId);
       onSessionChange?.(session.sessionId);
-      setMessages([createAiMessage(getIntroMessage(nextSettings))]);
+      setMessages([
+        createAiMessage(openingMessage ?? getIntroMessage(nextSettings)),
+      ]);
       setStatus('WAITING_ANSWER');
       setIsSettingsOpen(false);
     } catch {
@@ -677,22 +684,21 @@ export const AiCoachPanel = ({
   const enumOptions = preferenceEnumsQuery.data;
 
   if (!isLoggedIn) {
-    return (
+    return hasGuestSession ? (
+      <GuestCoachPanel
+        openingMessage={openingMessage ?? AI_COACH_INITIAL_MESSAGE}
+        onMessageSent={onMessageSent}
+      />
+    ) : (
       <div className="border-line-line1 flex h-full flex-col items-center justify-center gap-4 rounded-xl border bg-white p-8 text-center">
-        <div className="bg-gray-1 flex h-16 w-16 items-center justify-center rounded-full">
-          <Bot
-            size={32}
-            className="text-gray-7"
-          />
-        </div>
-        <div>
-          <p className="font-body1-heading text-text-main">AI 코치</p>
-          <p className="text-gray-8 mt-1 text-sm">
-            로그인하면 AI 코치와 함께
-            <br />
-            문제를 풀 수 있어요.
-          </p>
-        </div>
+        <Bot
+          size={32}
+          className="text-gray-7"
+        />
+        <p className="font-body1-heading text-text-main">AI 코치</p>
+        <p className="text-gray-8 text-sm">
+          도전장으로 들어오면 가입 없이 코치와 세 번 이야기할 수 있어요.
+        </p>
         <Button
           asChild
           className="w-full"
@@ -772,16 +778,19 @@ export const AiCoachPanel = ({
                 READY 화면이 텅 비어 보이지 않게 한다. */}
             <div className="ai-coach-handwriting font-body2-normal text-text-main w-full rounded-2xl rounded-tl-none bg-[#fffdf6] px-4 py-3 text-left leading-relaxed">
               <MarkdownMessage
-                content={getIntroMessage(
-                  settings ?? {
-                    subject: '수학',
-                    skipped: true,
-                    learningGoal: 'CSAT',
-                    learningStage: 'CONCEPT_FOCUSED',
-                    difficultAreas: [],
-                    customText: '',
-                  }
-                )}
+                content={
+                  openingMessage ??
+                  getIntroMessage(
+                    settings ?? {
+                      subject: '수학',
+                      skipped: true,
+                      learningGoal: 'CSAT',
+                      learningStage: 'CONCEPT_FOCUSED',
+                      difficultAreas: [],
+                      customText: '',
+                    }
+                  )
+                }
               />
             </div>
             <Button
@@ -1086,5 +1095,94 @@ export const AiCoachPanel = ({
         </Dialog.Content>
       </Dialog>
     </>
+  );
+};
+
+const GuestCoachPanel = ({
+  openingMessage,
+  onMessageSent,
+}: {
+  openingMessage: string;
+  onMessageSent?: () => void;
+}) => {
+  const mutation = useGuestCoachMessageMutation();
+  const [input, setInput] = useState('');
+  const [remainingCount, setRemainingCount] = useState(3);
+  const [messages, setMessages] = useState<
+    Array<{ role: 'ai' | 'user'; text: string }>
+  >([{ role: 'ai', text: openingMessage }]);
+
+  const send = async () => {
+    const message = input.trim();
+    if (!message || remainingCount <= 0 || mutation.isPending) return;
+    setInput('');
+    setMessages((current) => [...current, { role: 'user', text: message }]);
+    try {
+      const result = await mutation.mutateAsync({
+        message,
+      });
+      setMessages((current) => [
+        ...current,
+        { role: 'ai', text: result.reply },
+      ]);
+      setRemainingCount(result.remainingCount);
+      onMessageSent?.();
+    } catch {
+      setRemainingCount(0);
+    }
+  };
+
+  return (
+    <div className="border-line-line1 flex h-full min-h-[360px] flex-col rounded-xl border bg-white">
+      <div className="border-line-line1 flex items-center justify-between border-b px-4 py-3">
+        <span className="font-body1-heading text-text-main">AI 코치</span>
+        <span className="text-orange-10 text-xs font-bold">
+          남은 대화 {remainingCount}회
+        </span>
+      </div>
+      <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-4">
+        {messages.map((message, index) => (
+          <div
+            key={`${message.role}-${index}`}
+            className={cn(
+              'max-w-[86%] rounded-xl px-3 py-2 text-sm',
+              message.role === 'ai'
+                ? 'bg-orange-1 text-text-main self-start'
+                : 'bg-gray-1 text-text-main self-end'
+            )}
+          >
+            <MarkdownMessage content={message.text} />
+          </div>
+        ))}
+        {remainingCount === 0 && (
+          <div className="border-line-line1 rounded-xl border p-3 text-center">
+            <p className="text-text-main text-sm font-bold">
+              가입 없이 받는 코칭은 여기까지예요
+            </p>
+            <p className="text-text-sub1 mt-1 text-xs">
+              가입하면 방금 풀이와 대화를 이어갈 수 있어요.
+            </p>
+          </div>
+        )}
+      </div>
+      <div className="border-line-line1 flex gap-2 border-t p-3">
+        <input
+          value={input}
+          onChange={(event) => setInput(event.target.value)}
+          onKeyDown={(event) => event.key === 'Enter' && send()}
+          disabled={remainingCount === 0}
+          placeholder="막힌 지점을 말해 주세요"
+          className="border-line-line2 min-w-0 flex-1 rounded-lg border px-3 text-sm outline-none"
+        />
+        <Button
+          size="xsmall"
+          onClick={send}
+          disabled={!input.trim() || remainingCount === 0 || mutation.isPending}
+          aria-label="코치에게 보내기"
+        >
+          <Send size={15} />
+        </Button>
+      </div>
+    </div>
   );
 };

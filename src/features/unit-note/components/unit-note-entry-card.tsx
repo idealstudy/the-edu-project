@@ -150,7 +150,9 @@ export const UnitNoteEntryCard = () => {
         <span className="flex items-center gap-1.5">
           <i className="bg-gray-3 size-2.5 rounded-sm" /> 아직 비어 있는 곳
         </span>
-        <span>노트 안 문제를 풀면 진한 색이, 개념을 정리하면 옅은 색이 늡니다</span>
+        <span>
+          노트 안 문제를 풀면 진한 색이, 개념을 정리하면 옅은 색이 늡니다
+        </span>
       </div>
     </section>
   );

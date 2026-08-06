@@ -7,11 +7,11 @@ import { PRIVATE } from '@/shared/constants/route';
 import { useRole } from '@/shared/hooks/use-role';
 import { trackGnbLogoutClick } from '@/shared/lib/analytics';
 import {
-  ClipboardListIcon,
   ChartNoAxesCombined,
-  History,
+  ClipboardListIcon,
   GraduationCap,
   Handshake,
+  History,
   LogOut,
   ShieldUserIcon,
   Sprout,
@@ -117,7 +117,10 @@ export const DashboardSidebar = () => {
       )}
 
       {role !== 'ROLE_TEACHER' && (
-        <Sidebar.Item href={PRIVATE.MYPAGE} matchPath={PRIVATE.MYPAGE}>
+        <Sidebar.Item
+          href={PRIVATE.MYPAGE}
+          matchPath={PRIVATE.MYPAGE}
+        >
           <User2Icon className="shrink-0" />
           <Sidebar.Text>마이페이지</Sidebar.Text>
         </Sidebar.Item>

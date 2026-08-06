@@ -250,8 +250,8 @@ export const TodayTodoCard = ({ className }: Props) => {
             오늘 배정된 할 일이 아직 없어요
           </p>
           <p className="font-caption-normal text-gray-8 mt-1 leading-relaxed">
-            선생님이 할 일을 배정하거나 시험·오픈챌린지 공급원이 연결되면
-            여기 쌓여요.
+            선생님이 할 일을 배정하거나 시험·오픈챌린지 공급원이 연결되면 여기
+            쌓여요.
           </p>
           <Button
             className="mt-4"
@@ -399,8 +399,8 @@ export const TodayTodoCard = ({ className }: Props) => {
       )}
 
       <p className="border-gray-3 bg-gray-1 font-caption-normal text-gray-8 mt-4 rounded-xl border p-3 leading-relaxed">
-        완료 포인트는 공급원별 저장값으로 적립됩니다. 선생님 15P · 응시장 20P
-        · 오픈챌린지 5P · 학생 직접 입력 0P가 기본값입니다.
+        완료 포인트는 공급원별 저장값으로 적립됩니다. 선생님 15P · 응시장 20P ·
+        오픈챌린지 5P · 학생 직접 입력 0P가 기본값입니다.
       </p>
 
       {formError && (

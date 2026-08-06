@@ -20,19 +20,20 @@ type SignupSheetProps = {
    * 모달이 정오 표시 없이 곧장 뜨는 비대칭을 막기 위해 넘겨받는다.
    */
   isCorrect?: boolean;
+  hasGuestSession?: boolean;
+  inviteToken?: string;
 };
 
-const COPY: Record<
-  SignupSheetTrigger,
-  { title: string; subtitle: string }
-> = {
+const COPY: Record<SignupSheetTrigger, { title: string; subtitle: string }> = {
   'limit-reached': {
-    title: '여기까지가 게스트 체험',
-    subtitle: '방금 채운 지도 한 칸과 포인트, 저장 안 하면 사라져요.',
+    title: '3초면 됩니다',
+    subtitle:
+      '가입하면 지금 이 자리에서 대결 결과가 열리고, 해설도 볼 수 있어요.',
   },
   'correct-answer': {
     title: '방금 문제, 맞혔어요!',
-    subtitle: '가입하면 이 결과부터 레벨·약점 지도가 쌓여요.',
+    subtitle:
+      '가입하면 지금 이 자리에서 대결 결과가 열리고, 해설도 볼 수 있어요.',
   },
 };
 
@@ -47,14 +48,21 @@ export const SignupSheet = ({
   trigger,
   challengeId,
   isCorrect,
+  hasGuestSession,
+  inviteToken,
 }: SignupSheetProps) => {
   const router = useRouter();
   const copy = COPY[trigger];
   // limit-reached 트리거에서만 방금 문제 정오를 상단에 먼저 알린다(오답 시 무표시 비대칭 방지).
-  const showVerdict = trigger === 'limit-reached' && typeof isCorrect === 'boolean';
+  const showVerdict =
+    trigger === 'limit-reached' && typeof isCorrect === 'boolean';
 
   const handleSignup = () => {
-    const from = encodeURIComponent(PUBLIC.OPEN_CHALLENGE.DETAIL(challengeId));
+    const returnQuery = new URLSearchParams();
+    if (hasGuestSession) returnQuery.set('guestSession', '1');
+    if (inviteToken) returnQuery.set('inviteToken', inviteToken);
+    const returnPath = `${PUBLIC.OPEN_CHALLENGE.DETAIL(challengeId)}${returnQuery.size > 0 ? `?${returnQuery.toString()}` : ''}`;
+    const from = encodeURIComponent(returnPath);
     router.push(`${PUBLIC.CORE.SIGNUP}?redirect=${from}`);
   };
 
@@ -65,7 +73,7 @@ export const SignupSheet = ({
     >
       <Dialog.Content
         data-testid="signup-sheet"
-        className="fixed bottom-0 top-auto left-0 w-full max-w-full translate-x-0 translate-y-0 gap-5 rounded-t-[24px] rounded-b-none p-6 pb-8 text-center sm:top-1/2 sm:left-1/2 sm:max-w-[420px] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[24px]"
+        className="fixed top-auto bottom-0 left-0 w-full max-w-full translate-x-0 translate-y-0 gap-5 rounded-t-[24px] rounded-b-none p-6 pb-8 text-center sm:top-1/2 sm:left-1/2 sm:max-w-[420px] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[24px]"
       >
         <Dialog.Header className="items-center">
           {showVerdict && (
@@ -101,24 +109,14 @@ export const SignupSheet = ({
           </Dialog.Description>
         </Dialog.Header>
 
-        <div className="my-4 flex gap-2.5">
-          <div className="bg-orange-1 border-orange-3 flex-1 rounded-xl border px-3 py-4 text-center">
-            <p className="text-orange-7 text-lg font-extrabold">+10P</p>
-            <p className="text-orange-12 mt-1 text-xs font-bold">
-              모은 포인트
-            </p>
-          </div>
-          <div className="bg-orange-1 border-orange-3 flex-1 rounded-xl border px-3 py-4 text-center">
-            <p className="text-orange-7 text-lg font-extrabold">1칸</p>
-            <p className="text-orange-12 mt-1 text-xs font-bold">
-              채운 약점 지도
-            </p>
-          </div>
+        <div className="bg-orange-1 border-orange-3 my-4 rounded-xl border px-4 py-4 text-left">
+          <p className="text-text-main text-sm font-bold">
+            방금 쓴 손풀이와 풀이 기록이 그대로 옮겨가요.
+          </p>
+          <p className="text-text-sub1 mt-1 text-xs">
+            다시 풀지 않아도 됩니다.
+          </p>
         </div>
-
-        <p className="text-system-warning mb-3 text-xs font-bold">
-          지금 나가면 이 진행이 초기화돼요
-        </p>
 
         <Dialog.Footer className="flex-col gap-2">
           <Button
@@ -127,10 +125,10 @@ export const SignupSheet = ({
             data-testid="signup-sheet-cta"
             className="w-full"
           >
-            💬 카카오로 10초 만에 저장
+            카카오로 3초 만에 시작하기
           </Button>
           <p className="text-gray-8 text-xs">
-            이미 푼 문제·지도 그대로 이어져요 · <b>진행 손실 0</b>
+            가입하지 않고 나가도 됩니다. 게스트 기록은 7일 뒤 만료돼요.
           </p>
           <Button
             type="button"

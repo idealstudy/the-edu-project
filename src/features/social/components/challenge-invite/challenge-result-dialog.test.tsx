@@ -12,6 +12,11 @@ vi.mock('../../hooks', async (importOriginal) => {
   return {
     ...actual,
     useInviteResultQuery: () => mockUseInviteResultQuery(),
+    useCreateRematchMutation: () => ({
+      mutate: vi.fn(),
+      isPending: false,
+      error: null,
+    }),
   };
 });
 
@@ -95,5 +100,65 @@ describe('ChallengeResultDialog', () => {
     expect(screen.getByText('결과를 불러오지 못했어요')).toBeInTheDocument();
     expect(screen.getByText('다시 시도')).toBeInTheDocument();
     expect(screen.queryByText('문제 풀러 가기')).not.toBeInTheDocument();
+  });
+
+  test('서버 outcome과 갈린 지점을 사용하고 내려간 상대 풀이는 사유 문구로 표시한다', () => {
+    mockUseInviteResultQuery.mockReturnValue({
+      data: {
+        shareToken: 'tok',
+        status: 'COMPLETED',
+        challengeId: 42,
+        outcome: 'LOSE',
+        myCorrect: false,
+        opponentCorrect: true,
+        myAttempt: {
+          isCorrect: false,
+          selectedAnswer: '4',
+          timeSpentSeconds: 108,
+          solvedAt: '2026-08-06T08:41:00+09:00',
+          solutionImageUrl: '/mine.png',
+          solutionShared: true,
+          solutionWithdrawn: false,
+        },
+        opponentAttempt: {
+          isCorrect: true,
+          selectedAnswer: '5',
+          timeSpentSeconds: 252,
+          solvedAt: '2026-08-05T21:40:00+09:00',
+          solutionImageUrl: null,
+          solutionShared: false,
+          solutionWithdrawn: true,
+        },
+        divergence: {
+          hasData: true,
+          wrongType: 'CASE_OMITTED',
+          reason: '(2,2)를 빠뜨렸어요.',
+        },
+        context: {
+          inviterName: '조성진',
+          sentAt: '2026-08-05T18:02:00+09:00',
+          opponentSolvedAt: '2026-08-05T21:40:00+09:00',
+        },
+      },
+      error: null,
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(),
+    });
+
+    renderWithProviders(
+      <ChallengeResultDialog
+        token="tok"
+        isOpen
+        onOpenChange={vi.fn()}
+      />
+    );
+
+    expect(
+      screen.getByText('졌어요. 어디서 갈렸는지 보고 가요')
+    ).toBeInTheDocument();
+    expect(screen.getByText('(2,2)를 빠뜨렸어요.')).toBeInTheDocument();
+    expect(screen.getByText('상대가 풀이를 내렸어요')).toBeInTheDocument();
+    expect(screen.getByText('이 유형 3문제 더 풀기')).toBeInTheDocument();
   });
 });

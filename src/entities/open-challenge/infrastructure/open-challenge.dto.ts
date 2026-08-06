@@ -88,6 +88,32 @@ const ChallengeDetailDtoSchema = ChallengeListItemDtoSchema.extend({
   status: z.string().optional(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
+  points: z.number().nullable().optional().default(null),
+  examRoundCode: z.string().nullable().optional().default(null),
+  wrongAnswerRateSource: z
+    .enum(['EXTERNAL', 'INTERNAL', 'ESTIMATED'])
+    .optional()
+    .default('ESTIMATED'),
+  units: z
+    .array(
+      z.object({
+        nodeId: z.number(),
+        displayName: z.string(),
+        subjectName: z.string(),
+        isPrimary: z.boolean(),
+        examScope: z.string(),
+      })
+    )
+    .optional()
+    .default([]),
+});
+
+const CoachOpeningDtoSchema = z.object({
+  challengeId: IdSchema,
+  message: z.string(),
+  templateCode: z.enum(['T1', 'T2', 'T3', 'T4', 'T5']),
+  progressionStep: z.number(),
+  usedFields: z.record(z.string(), z.unknown()).optional().default({}),
 });
 
 const AttemptDtoSchema = z.object({
@@ -188,10 +214,11 @@ const ChallengeReviewDtoSchema = z.object({
   solutionType: SolutionTypeDtoSchema,
   drawingImageUrl: z.string().nullable().optional().default(null),
   recommendCount: z.number().optional().default(0),
-  isBest: z.boolean().optional(),
-  best: z.boolean().optional(),
-  isRecommendedByMe: z.boolean().optional(),
-  recommendedByMe: z.boolean().optional().default(false),
+  isBest: z.boolean(),
+  isRecommendedByMe: z.boolean(),
+  isCorrect: z.boolean().nullable().optional().default(null),
+  authorNickname: z.string().nullable().optional(),
+  isMine: z.boolean(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -347,7 +374,7 @@ const SubmitAnswerPayloadSchema = z.object({
 /* ─────────────────────────────────────────────────────
  * 리뷰(풀이) 작성 Payload
  *  - solutionType=TEXT: content 필수.
- *  - solutionType=DRAWING: drawingImageMediaId 필수(스냅샷 업로드 후 media_id),
+ *  - solutionType=DRAWING: drawingImageMediaId 필수(스냅샷 업로드 후 media_asset.id),
  *    drawingData(획 원본 JSON)는 선택, content는 보조 메모로 선택.
  *  백엔드: POST /api/common/challenge-reviews
  * ────────────────────────────────────────────────────*/
@@ -358,7 +385,7 @@ const CreateReviewPayloadSchema = z
     solutionType: z.enum(['TEXT', 'DRAWING']).default('TEXT'),
     content: z.string().default(''),
     drawingData: z.string().nullable().optional(),
-    drawingImageMediaId: z.string().nullable().optional(),
+    drawingImageMediaId: z.number().int().positive().nullable().optional(),
   })
   .superRefine((value, ctx) => {
     if (value.solutionType === 'TEXT' && value.content.trim().length === 0) {
@@ -444,6 +471,7 @@ export const dto = {
   recommended: RecommendedChallengeDtoSchema,
   recommendedList: z.array(RecommendedChallengeDtoSchema),
   detail: ChallengeDetailDtoSchema,
+  coachOpening: CoachOpeningDtoSchema,
   attempt: AttemptDtoSchema,
   answerResult: AnswerResultDtoSchema,
   solution: SolutionDtoSchema,

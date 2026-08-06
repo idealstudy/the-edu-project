@@ -45,6 +45,8 @@ export const openChallengeKeys = {
       normalizeRecommendedParams(params),
     ] as const,
   detail: (id: string) => [...openChallengeKeys.all, 'detail', id] as const,
+  coachOpening: (id: string) =>
+    [...openChallengeKeys.all, 'coach-opening', id] as const,
   next: (id: string, isGuest = false) =>
     [...openChallengeKeys.all, 'next', id, isGuest] as const,
   reviewsBase: (challengeId: string) =>

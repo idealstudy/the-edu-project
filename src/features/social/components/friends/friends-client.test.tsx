@@ -25,6 +25,8 @@ vi.mock('../../hooks', async (importOriginal) => {
   return {
     ...actual,
     useMyFriendsQuery: () => mockUseMyFriendsQuery(),
+    useFriendTurnSummaryQuery: () => ({ data: undefined }),
+    useFriendSummaryQuery: () => ({ data: undefined }),
     useAcceptFriendMutation: () => ({ mutate: vi.fn(), isPending: false }),
     useRequestFriendMutation: () => ({ mutate: vi.fn(), isPending: false }),
     useRequestFriendByPhoneMutation: () => ({
