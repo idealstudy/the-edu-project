@@ -1,7 +1,7 @@
 import { AdminShell } from '@/features/admin-operations/components/admin-shell';
 import { useMemberStore } from '@/store';
 import { render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 
 vi.mock('next/navigation', () => ({
   usePathname: () => '/admin/members',
@@ -27,10 +27,6 @@ vi.mock('@/features/admin-operations/hooks/use-admin-operations', () => ({
 }));
 
 describe('MVP-G 관리자 셸 실제 값 결선', () => {
-  afterEach(() => {
-    useMemberStore.getState().clearMember();
-  });
-
   test('세션 계정과 요약 API의 회원 수를 표시한다', () => {
     useMemberStore.getState().setMember({
       id: 1,

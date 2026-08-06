@@ -9,6 +9,7 @@ import {
 } from '@/entities/tree/types';
 import { api } from '@/shared/api';
 import { unwrapEnvelope } from '@/shared/lib/api-utils';
+import * as Sentry from '@sentry/nextjs';
 
 import { dto } from './tree.dto';
 
@@ -38,7 +39,10 @@ export const normalizeTreeSubject = (subject: string): TreeSubject => {
     return normalized;
   }
 
-  console.error('[tree] 알 수 없는 과목 코드를 받았습니다.', { subject });
+  Sentry.captureMessage('[tree] 알 수 없는 과목 코드를 받았습니다.', {
+    level: 'error',
+    extra: { subject },
+  });
   return subject;
 };
 
