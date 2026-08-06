@@ -1,6 +1,8 @@
 import type {
   AssignExamPayload,
   CreateExamPayload,
+  GradeCutoffPayload,
+  QuestionBankParams,
   SubmitExamPayload,
 } from '@/entities/exam/types';
 import { api } from '@/shared/api';
@@ -120,6 +122,53 @@ const createPin = async (
   return unwrapEnvelope(response, dto.teacherPin);
 };
 
+const getQuestionBank = async (input: QuestionBankParams) => {
+  const params = payload.questionBankParams.parse(input);
+  const response = await api.private.get('/teacher/question-bank', {
+    params: {
+      ...params,
+      treeNodeIds: params.treeNodeIds.length ? params.treeNodeIds : undefined,
+      excludeChallengeIds: params.excludeChallengeIds.length
+        ? params.excludeChallengeIds
+        : undefined,
+    },
+  });
+  return unwrapEnvelope(response, dto.questionBank);
+};
+
+const getAdminQuestionBank = async (input: QuestionBankParams) => {
+  const params = payload.questionBankParams.parse(input);
+  const response = await api.private.get('/admin/question-bank', {
+    params: {
+      ...params,
+      treeNodeIds: params.treeNodeIds.length ? params.treeNodeIds : undefined,
+      excludeChallengeIds: params.excludeChallengeIds.length
+        ? params.excludeChallengeIds
+        : undefined,
+    },
+  });
+  return unwrapEnvelope(response, dto.questionBank);
+};
+
+const getAdminExams = async () => {
+  const response = await api.private.get('/admin/exams');
+  return unwrapEnvelope(response, dto.teacherExamList);
+};
+
+const getExamHall = async () => {
+  const response = await api.private.get('/student/exam-hall');
+  return unwrapEnvelope(response, dto.examHall);
+};
+
+const upsertGradeCutoff = async (examId: number, input: GradeCutoffPayload) => {
+  const validated = payload.gradeCutoff.parse(input);
+  const response = await api.private.put(
+    `/admin/exams/${examId}/grade-cutoff`,
+    validated
+  );
+  return unwrapEnvelope(response, dto.gradeCutoff);
+};
+
 export const repository = {
   getAssignedExams,
   getAttempt,
@@ -133,4 +182,9 @@ export const repository = {
   acknowledgePin,
   getTeacherPins,
   createPin,
+  getQuestionBank,
+  getAdminQuestionBank,
+  getAdminExams,
+  getExamHall,
+  upsertGradeCutoff,
 };

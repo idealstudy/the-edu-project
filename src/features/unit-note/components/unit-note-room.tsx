@@ -5,7 +5,11 @@ import { useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import type { UnitNoteNode, UnitNotePage } from '@/entities/unit-note';
+import {
+  type UnitNoteNode,
+  type UnitNotePage,
+  repository,
+} from '@/entities/unit-note';
 import { Skeleton } from '@/shared/components/loading';
 import { Button } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants/route';
@@ -14,6 +18,8 @@ import {
   ArrowLeft,
   ArrowUp,
   BookOpen,
+  Eye,
+  EyeOff,
   FileImage,
   FileText,
   GraduationCap,
@@ -21,11 +27,13 @@ import {
   PenLine,
   Pin,
   RefreshCw,
+  Scissors,
   Star,
   Trash2,
 } from 'lucide-react';
 
 import {
+  useAppendUnitNotePages,
   useDeleteUnitNotePage,
   useUnitNoteDetailQuery,
   useUnitNoteLibraryQuery,
@@ -142,6 +150,25 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
   const detailQuery = useUnitNoteDetailQuery(activeNodeId);
   const updatePage = useUpdateUnitNotePage(activeNodeId);
   const deletePage = useDeleteUnitNotePage(activeNodeId);
+  const appendPage = useAppendUnitNotePages(activeNodeId);
+  const [snippingId, setSnippingId] = useState<number | null>(null);
+
+  const appendTeachingSnip = async (layer: {
+    teachingNoteId: number;
+    title: string;
+    summary: string;
+  }) => {
+    setSnippingId(layer.teachingNoteId);
+    try {
+      const file = await teachingSnipFile(layer.title, layer.summary);
+      const uploaded = await repository.uploadPageFile(file);
+      await appendPage.mutateAsync({
+        pages: [{ source: 'UPLOAD', mediaId: uploaded.mediaId, cover: false }],
+      });
+    } finally {
+      setSnippingId(null);
+    }
+  };
 
   if (libraryQuery.isPending) {
     return (
@@ -212,8 +239,22 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
             />
             <div>
               <p className="font-caption-heading text-gray-7">
-                {root.subject === 'MATH_1' ? '수학Ⅰ' : root.subject} · 내가
-                만드는 책
+                {(
+                  {
+                    MATH_1: '대수',
+                    ALGEBRA: '대수',
+                    MATH_2: '미적분Ⅰ',
+                    CALCULUS_1: '미적분Ⅰ',
+                    CALCULUS: '미적분Ⅱ',
+                    CALCULUS_2: '미적분Ⅱ',
+                    PROBABILITY_STATISTICS: '확률과 통계',
+                    COMMON_MATH_1: '공통수학1',
+                    COMMON_MATH_2: '공통수학2',
+                    MIDDLE_MATH: '중학 수학',
+                    GEOMETRY: '기하',
+                  } as Record<string, string>
+                )[root.subject] ?? root.subject}{' '}
+                · 내가 만드는 책
               </p>
               <h1 className="font-title-heading text-gray-12 mt-1">
                 나의 {root.displayName} 단권화
@@ -285,7 +326,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
               <button
                 key={concept.nodeId}
                 type="button"
-                className={`border-gray-2 grid min-h-[76px] cursor-pointer grid-cols-[36px_minmax(0,1fr)_92px_48px] items-center gap-3 border-b text-left last:border-b-0 ${
+                className={`border-gray-2 grid h-[46px] cursor-pointer grid-cols-[28px_minmax(0,1fr)_72px_44px] items-center gap-2 border-b text-left last:border-b-0 ${
                   activeNodeId === concept.nodeId ? 'bg-orange-1' : ''
                 }`}
                 onClick={() => setSelectedNodeId(concept.nodeId)}
@@ -293,17 +334,15 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
               >
                 <UnitNoteLeaf
                   level={concept.leafLevel}
-                  className="size-7"
+                  className="size-5"
                 />
                 <span className="min-w-0">
                   <span className="font-body2-heading text-gray-12 block truncate">
                     {concept.displayName}
                   </span>
-                  <span className="font-caption-normal text-gray-7 mt-1 block truncate">
-                    펜 {concept.penPageCount}장 · 업로드{' '}
-                    {concept.uploadPageCount}장 · 판서{' '}
-                    {concept.teachingNoteCount}층 · 다시 풀 문제{' '}
-                    {concept.relatedProblemCount}
+                  <span className="font-caption-normal text-gray-7 block truncate">
+                    펜 {concept.penPageCount} · 업로드 {concept.uploadPageCount}{' '}
+                    · 선생님 {concept.teachingNoteCount}
                   </span>
                 </span>
                 <span className="font-label-heading text-orange-9 text-right">
@@ -356,6 +395,17 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                       <p className="font-caption-normal text-gray-8 mt-2 leading-relaxed">
                         {layer.summary}
                       </p>
+                      <button
+                        type="button"
+                        className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-lg border border-[#e1aa8d] px-3 text-xs font-bold text-[#9a441f] disabled:opacity-50"
+                        disabled={snippingId !== null}
+                        onClick={() => void appendTeachingSnip(layer)}
+                      >
+                        <Scissors size={16} />
+                        {snippingId === layer.teachingNoteId
+                          ? '조각 붙이는 중'
+                          : '판서 조각을 내 노트에 붙이기'}
+                      </button>
                     </details>
                   ))}
                 </div>
@@ -431,7 +481,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
               {detail?.pages.map((page, index, pages) => (
                 <article
                   key={page.pageId}
-                  className="border-gray-3 rounded-xl border p-3"
+                  className={`rounded-xl border p-3 ${page.source === 'TEACHER' ? 'border-[#f26a2e] bg-[#fffaf7]' : 'border-gray-3'} ${page.hiddenByStudent ? 'opacity-60' : ''}`}
                   data-testid={`unit-note-page-${page.pageId}`}
                 >
                   <PagePreview page={page} />
@@ -442,7 +492,11 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                       </p>
                       <p className="font-caption-normal text-gray-7 mt-1">
                         {page.position}페이지 ·{' '}
-                        {page.source === 'PEN' ? '펜' : '업로드'}
+                        {page.source === 'PEN'
+                          ? '펜'
+                          : page.source === 'TEACHER'
+                            ? '선생님'
+                            : '업로드'}
                       </p>
                     </div>
                     {page.cover && (
@@ -451,50 +505,75 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                       </span>
                     )}
                   </div>
-                  <div className="mt-3 flex items-center gap-1">
-                    <PageAction
-                      label="위로"
-                      disabled={index === 0}
-                      onClick={() =>
-                        updatePage.mutate({
-                          pageId: page.pageId,
-                          input: { position: page.position - 1 },
-                        })
-                      }
-                    >
-                      <ArrowUp size={17} />
-                    </PageAction>
-                    <PageAction
-                      label="아래로"
-                      disabled={index === pages.length - 1}
-                      onClick={() =>
-                        updatePage.mutate({
-                          pageId: page.pageId,
-                          input: { position: page.position + 1 },
-                        })
-                      }
-                    >
-                      <ArrowDown size={17} />
-                    </PageAction>
-                    <PageAction
-                      label="표지로"
-                      disabled={page.cover}
-                      onClick={() =>
-                        updatePage.mutate({
-                          pageId: page.pageId,
-                          input: { cover: true },
-                        })
-                      }
-                    >
-                      <Star size={17} />
-                    </PageAction>
-                    <PageAction
-                      label="삭제"
-                      onClick={() => deletePage.mutate(page.pageId)}
-                    >
-                      <Trash2 size={17} />
-                    </PageAction>
-                  </div>
+                  {page.source === 'TEACHER' ? (
+                    <div className="mt-3 flex items-center gap-2">
+                      <span className="rounded-full bg-[#ffe6d7] px-2 py-1 text-[10px] font-bold text-[#9a441f]">
+                        선생님
+                      </span>
+                      <button
+                        type="button"
+                        className="ml-auto flex min-h-11 items-center gap-1 rounded-lg border px-3 text-xs font-bold"
+                        onClick={() =>
+                          updatePage.mutate({
+                            pageId: page.pageId,
+                            input: { hidden: !page.hiddenByStudent },
+                          })
+                        }
+                      >
+                        {page.hiddenByStudent ? (
+                          <Eye size={16} />
+                        ) : (
+                          <EyeOff size={16} />
+                        )}
+                        {page.hiddenByStudent ? '다시 꺼내기' : '숨기기'}
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="mt-3 flex items-center gap-1">
+                      <PageAction
+                        label="위로"
+                        disabled={index === 0}
+                        onClick={() =>
+                          updatePage.mutate({
+                            pageId: page.pageId,
+                            input: { position: page.position - 1 },
+                          })
+                        }
+                      >
+                        <ArrowUp size={17} />
+                      </PageAction>
+                      <PageAction
+                        label="아래로"
+                        disabled={index === pages.length - 1}
+                        onClick={() =>
+                          updatePage.mutate({
+                            pageId: page.pageId,
+                            input: { position: page.position + 1 },
+                          })
+                        }
+                      >
+                        <ArrowDown size={17} />
+                      </PageAction>
+                      <PageAction
+                        label="표지로"
+                        disabled={page.cover}
+                        onClick={() =>
+                          updatePage.mutate({
+                            pageId: page.pageId,
+                            input: { cover: true },
+                          })
+                        }
+                      >
+                        <Star size={17} />
+                      </PageAction>
+                      <PageAction
+                        label="삭제"
+                        onClick={() => deletePage.mutate(page.pageId)}
+                      >
+                        <Trash2 size={17} />
+                      </PageAction>
+                    </div>
+                  )}
                 </article>
               ))}
             </div>
@@ -526,3 +605,36 @@ const PageAction = ({
     {children}
   </button>
 );
+
+const teachingSnipFile = async (
+  title: string,
+  summary: string
+): Promise<File> => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1200;
+  canvas.height = 800;
+  const context = canvas.getContext('2d');
+  if (!context) throw new Error('판서 조각을 만들 수 없어요.');
+  context.fillStyle = '#fffdf9';
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.strokeStyle = '#f26a2e';
+  context.lineWidth = 12;
+  context.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+  context.fillStyle = '#1f2328';
+  context.font = '700 52px sans-serif';
+  context.fillText(title, 80, 120);
+  context.font = '36px sans-serif';
+  Array.from({ length: Math.ceil(summary.length / 26) }, (_, index) =>
+    summary.slice(index * 26, (index + 1) * 26)
+  ).forEach((line, index) => context.fillText(line, 80, 220 + index * 58));
+  const blob = await new Promise<Blob>((resolve, reject) =>
+    canvas.toBlob(
+      (value) =>
+        value
+          ? resolve(value)
+          : reject(new Error('판서 조각 저장에 실패했어요.')),
+      'image/png'
+    )
+  );
+  return new File([blob], `${title}-판서-조각.png`, { type: 'image/png' });
+};

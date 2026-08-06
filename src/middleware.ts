@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { env } from '@/shared/constants/api';
+import { decodeJwt } from 'jose';
 
 // CORS
 const ALLOWED_ORIGINS = [
@@ -23,6 +24,7 @@ const PUBLIC_PATHS = new Set<string>([
   '/',
   '/login',
   '/register',
+  '/403',
   '/api/v1/auth/login',
   '/api/v1/member/info', // 자체 인증 처리 (쿠키 없으면 204 반환)
   '/api/drawing-session-ingest', // dev: iPad 필기 캡처 (route는 production에서 404)
@@ -59,6 +61,23 @@ function handleAuthGuard(req: NextRequest) {
     url.pathname = '/login';
     url.searchParams.set('from', pathname);
     return NextResponse.redirect(url);
+  }
+
+  if (pathname.startsWith('/admin')) {
+    try {
+      const role = decodeJwt(accessToken).auth;
+      if (role !== 'ROLE_ADMIN') {
+        const url = req.nextUrl.clone();
+        url.pathname = '/403';
+        url.search = '';
+        return NextResponse.redirect(url);
+      }
+    } catch {
+      const url = req.nextUrl.clone();
+      url.pathname = '/login';
+      url.searchParams.set('from', pathname);
+      return NextResponse.redirect(url);
+    }
   }
 
   return NextResponse.next();
@@ -125,5 +144,7 @@ export const config = {
     '/dashboard/:path*',
     '/study-rooms/:path*',
     '/mypage',
+    '/admin/:path*',
+    '/403',
   ],
 };

@@ -11,3 +11,7 @@ export type AssignExamPayload = z.infer<typeof payload.assign>;
 export type SubmitExamPayload = z.infer<typeof payload.submit>;
 export type ExamTeacherPin = z.infer<typeof dto.teacherPin>;
 export type CreateExamPinPayload = z.infer<typeof payload.createPin>;
+export type QuestionBankParams = z.infer<typeof payload.questionBankParams>;
+export type QuestionBankItem = z.infer<typeof dto.questionBankItem>;
+export type ExamHall = z.infer<typeof dto.examHall>;
+export type GradeCutoffPayload = z.infer<typeof payload.gradeCutoff>;

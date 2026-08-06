@@ -7,11 +7,12 @@ import { PRIVATE } from '@/shared/constants/route';
 import { useRole } from '@/shared/hooks/use-role';
 import { trackGnbLogoutClick } from '@/shared/lib/analytics';
 import {
+  ChartNoAxesCombined,
   ClipboardListIcon,
   GraduationCap,
   Handshake,
+  History,
   LogOut,
-  MessageCircleQuestionIcon,
   ShieldUserIcon,
   Sprout,
   User2Icon,
@@ -33,14 +34,36 @@ export const DashboardSidebar = () => {
       {role === 'ROLE_STUDENT' && (
         <>
           <Sidebar.Item
-            href={PRIVATE.LEARNING.INDEX}
-            matchPath={PRIVATE.LEARNING.INDEX}
+            href={PRIVATE.DASHBOARD.STUDENT}
+            matchPath={PRIVATE.DASHBOARD.STUDENT}
           >
             <GraduationCap
               size={20}
               className="shrink-0"
             />
             <Sidebar.Text>내 학습</Sidebar.Text>
+          </Sidebar.Item>
+
+          <Sidebar.Item
+            href={PRIVATE.DASHBOARD.STUDENT_RESULTS}
+            matchPath={PRIVATE.DASHBOARD.STUDENT_RESULTS}
+          >
+            <ChartNoAxesCombined
+              size={20}
+              className="shrink-0"
+            />
+            <Sidebar.Text>내 성과</Sidebar.Text>
+          </Sidebar.Item>
+
+          <Sidebar.Item
+            href={PRIVATE.DASHBOARD.STUDENT_LOOK_BACK}
+            matchPath={PRIVATE.DASHBOARD.STUDENT_LOOK_BACK}
+          >
+            <History
+              size={20}
+              className="shrink-0"
+            />
+            <Sidebar.Text>돌아보기</Sidebar.Text>
           </Sidebar.Item>
 
           <Sidebar.Item
@@ -67,7 +90,7 @@ export const DashboardSidebar = () => {
         </>
       )}
 
-      {/* 선생님 전용: 스터디 관리 / Q&A 관리 — 학생이 맡던 자리에 선생님 업무 도구 배치 */}
+      {/* 선생님 전역 메뉴는 내 수업과 마이페이지만 둔다. */}
       {role === 'ROLE_TEACHER' && (
         <>
           <Sidebar.Item
@@ -78,30 +101,30 @@ export const DashboardSidebar = () => {
               size={20}
               className="shrink-0"
             />
-            <Sidebar.Text>스터디 관리</Sidebar.Text>
-          </Sidebar.Item>
-
-          <Sidebar.Item
-            href={PRIVATE.DASHBOARD.QNA}
-            matchPath={PRIVATE.DASHBOARD.QNA}
-          >
-            <MessageCircleQuestionIcon
-              size={20}
-              className="shrink-0"
-            />
-            <Sidebar.Text>Q&A 관리</Sidebar.Text>
+            <Sidebar.Text>내 수업</Sidebar.Text>
           </Sidebar.Item>
         </>
       )}
 
-      {/* 마이페이지 */}
-      <Sidebar.Item
-        href={PRIVATE.MYPAGE}
-        matchPath={PRIVATE.MYPAGE}
-      >
-        <User2Icon className="shrink-0" />
-        <Sidebar.Text>마이페이지</Sidebar.Text>
-      </Sidebar.Item>
+      {role === 'ROLE_TEACHER' && (
+        <Sidebar.Item
+          href={PRIVATE.DASHBOARD.TEACHER_MY}
+          matchPath={PRIVATE.DASHBOARD.TEACHER_MY}
+        >
+          <User2Icon className="shrink-0" />
+          <Sidebar.Text>마이페이지</Sidebar.Text>
+        </Sidebar.Item>
+      )}
+
+      {role !== 'ROLE_TEACHER' && (
+        <Sidebar.Item
+          href={PRIVATE.MYPAGE}
+          matchPath={PRIVATE.MYPAGE}
+        >
+          <User2Icon className="shrink-0" />
+          <Sidebar.Text>마이페이지</Sidebar.Text>
+        </Sidebar.Item>
+      )}
 
       {/* 자녀 학습 (학부모 전용 — 자녀 목록·학습 리포트) */}
       {role === 'ROLE_PARENT' && (
@@ -127,6 +150,18 @@ export const DashboardSidebar = () => {
           </Sidebar.Header>
 
           <Sidebar.List>
+            <li>
+              <Sidebar.Item
+                href={PRIVATE.ADMIN.MEMBERS.LIST}
+                matchPath={PRIVATE.ADMIN.MEMBERS.LIST}
+                className="h-12 items-center justify-start gap-[2px]"
+              >
+                <Users size={20} />
+                <Sidebar.Text className="font-body2-normal">
+                  회원 관리
+                </Sidebar.Text>
+              </Sidebar.Item>
+            </li>
             <li>
               <Sidebar.Item
                 href={PRIVATE.ADMIN.COLUMN.LIST}

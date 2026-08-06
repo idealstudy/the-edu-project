@@ -1,113 +1,195 @@
-
 'use client';
 
 import Link from 'next/link';
 
-import { useAssignedExamsQuery } from '@/features/exam/hooks/use-exam-query';
+import { useStudentDashboardReportQuery } from '@/features/dashboard/hooks/use-student-dashboard-query';
+import {
+  useAssignedExamsQuery,
+  useExamAnalysisQuery,
+} from '@/features/exam/hooks/use-exam-query';
 import { Skeleton } from '@/shared/components/loading';
 import { Button } from '@/shared/components/ui';
-import { PRIVATE } from '@/shared/constants';
+import { PRIVATE, PUBLIC } from '@/shared/constants';
 import { cn } from '@/shared/lib';
-import { ClipboardCheck } from 'lucide-react';
 
 type Props = { className?: string };
 
-/**
- * 응시장 카드 — MVP-G v3 학생 대시보드 ① 블록. 레이아웃(뼈대)만 v3를 따르고,
- * 실측 없는 등급·D-day 숫자는 렌더하지 않는다(회장 지시 2026-07-23).
- */
 export const ExamHallCard = ({ className }: Props) => {
-  const examsQuery = useAssignedExamsQuery();
+  const exams = useAssignedExamsQuery();
+  const analyzedExam = exams.data?.find((exam) => exam.status === 'ANALYZED');
+  const analysis = useExamAnalysisQuery(analyzedExam?.attemptId ?? 0, {
+    enabled: Boolean(analyzedExam),
+  });
+  const report = useStudentDashboardReportQuery({
+    enabled: !analyzedExam,
+  });
+  const pendingExam = exams.data?.find((exam) => exam.status !== 'ANALYZED');
+  const reference = !analyzedExam ? report.data?.referenceExpectedGrade : null;
 
-  if (examsQuery.isPending) {
-    return <Skeleton.Block className="h-52 w-full" />;
-  }
-
-  const exam = examsQuery.data?.[0];
-  if (!exam) {
-    return (
-      <section
-        className={cn(
-          'bg-gray-white border-gray-4 flex flex-col rounded-2xl border p-6',
-          className
-        )}
-      >
-        <h3 className="font-body1-heading text-gray-12">응시장</h3>
-        <div className="border-gray-2 bg-gray-1 mt-4 flex flex-col items-center gap-1 rounded-xl border py-8 text-center">
-          <ClipboardCheck
-            size={28}
-            className="text-gray-6"
-            aria-hidden
-          />
-          <p className="font-body2-heading text-gray-10">
-            선생님이 첫 시험을 열면 채워집니다
-          </p>
-          <p className="font-caption-normal text-gray-8">
-            기다리는 동안 지금까지 쌓은 단권화 책을 둘러볼 수 있어요
-          </p>
-          <Button
-            asChild
-            size="small"
-            variant="outlined"
-            className="mt-3"
-          >
-            <Link href={PRIVATE.DASHBOARD.UNIT_NOTES}>단권화 책 구경</Link>
-          </Button>
-        </div>
-      </section>
-    );
+  if (
+    exams.isPending ||
+    (Boolean(analyzedExam) && analysis.isPending) ||
+    (!analyzedExam && report.isPending)
+  ) {
+    return <Skeleton.Block className="h-64 w-full" />;
   }
 
   return (
     <section
       className={cn(
-        'bg-gray-white border-gray-4 flex flex-col rounded-2xl border p-6',
+        'rounded-2xl border border-[#e4e4e7] bg-white p-6',
         className
       )}
+      data-testid="expected-grade-card"
     >
-      <p className="font-body2-normal text-gray-8">{exam.title}</p>
-
-      {exam.status !== 'ANALYZED' ? (
-        <div className="mt-4 flex flex-col gap-2 text-center">
-          <p className="font-body1-heading text-gray-12">
-            문항별 답과 소요 시간을 기록하면 바로 분석해요
+      {analysis.data ? (
+        <>
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="text-sm font-extrabold text-[#27272a]">
+              내 위치 ·{' '}
+              {analysis.data.gradeBasis === 'MEASURED' ? '실측' : '예측'}
+            </h3>
+            <span className="rounded-full bg-[#fff0e2] px-2.5 py-1 text-[11px] font-extrabold text-[#9a460d]">
+              {analysis.data.gradeBasis === 'MEASURED'
+                ? '기준표 반영'
+                : 'AI 예측'}
+            </span>
+            {analysis.data.gradeBasis === 'PREDICTED' && (
+              <span className="rounded-full border border-[#d4d4d8] px-2.5 py-1 text-[11px] font-bold text-[#52525b]">
+                실측 아님
+              </span>
+            )}
+          </div>
+          <p className="mt-3 text-4xl font-black tracking-tight text-[#27272a]">
+            {analysis.data.predictedGradeLow}~{analysis.data.predictedGradeHigh}
+            등급
           </p>
-          <Button
-            asChild
-            className="mt-2"
+          {analysis.data.standardScore !== null && (
+            <p className="mt-1 text-sm font-bold text-[#52525b] tabular-nums">
+              표준점수 {analysis.data.standardScore}
+            </p>
+          )}
+          <div className="mt-4 divide-y divide-[#ececef] rounded-lg border border-[#ececef] px-4">
+            {analysis.data.evidence.map((item) => (
+              <p
+                key={item.source}
+                className="py-3 text-xs leading-5 text-[#52525b]"
+              >
+                {item.label}
+              </p>
+            ))}
+          </div>
+          <p className="mt-3 text-[11px] leading-5 text-[#71717a]">
+            {analysis.data.dataNotice}
+          </p>
+        </>
+      ) : reference ? (
+        <div data-testid="expected-grade-reference">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="text-sm font-extrabold text-[#27272a]">
+              내 위치 · 참고
+            </h3>
+            <span className="rounded-full bg-[#fff0e2] px-2.5 py-1 text-[11px] font-extrabold text-[#9a460d]">
+              시험 아님
+            </span>
+            <span className="rounded-full border border-[#d4d4d8] px-2.5 py-1 text-[11px] font-bold text-[#52525b]">
+              {reference.gradedQuestionCount}문항 기준
+            </span>
+          </div>
+          <p className="mt-3 text-4xl font-black tracking-tight text-[#27272a]">
+            {reference.predictedGradeLow}~{reference.predictedGradeHigh}등급
+          </p>
+          <div
+            className="mt-4 divide-y divide-[#ececef] rounded-lg border border-[#ececef] px-4"
+            data-testid="expected-grade-reference-evidence"
           >
-            <Link
-              href={PRIVATE.DASHBOARD.EXAM_ATTEMPT(exam.attemptId)}
-              data-testid="exam-start-button"
-            >
-              시험 응시하기
-            </Link>
-          </Button>
+            {reference.evidence.map((item) => (
+              <p
+                key={item.source}
+                className="py-3 text-xs leading-5 text-[#52525b]"
+              >
+                {item.label}
+              </p>
+            ))}
+          </div>
+          <p className="mt-3 text-[11px] leading-5 text-[#71717a]">
+            {reference.dataNotice}
+          </p>
         </div>
       ) : (
-        <div className="mt-3.5 flex flex-wrap items-baseline gap-3">
-          <span className="font-body1-heading text-gray-12">
-            지금 이대로면
-          </span>
-          <span className="text-orange-7 font-headline1-heading tabular-nums">
-            {exam.predictedGradeLow}~{exam.predictedGradeHigh}
-            <span className="font-body1-heading">등급 예상</span>
-          </span>
-          <Button
-            asChild
-            size="small"
-            variant="outlined"
-          >
-            <Link href={PRIVATE.DASHBOARD.EXAM_ATTEMPT(exam.attemptId)}>
-              근거 보기
+        <div data-testid="expected-grade-none">
+          <h3 className="text-sm font-extrabold text-[#27272a]">내 위치</h3>
+          <p className="mt-3 text-xl font-extrabold text-[#27272a]">
+            아직 등급을 계산할 자료가 없어요
+          </p>
+          <p className="mt-2 text-xs leading-6 text-[#71717a]">
+            추측으로 숫자를 만들지 않습니다. 아래 두 가지 중 하나만 하면 이
+            자리에 내 위치가 들어옵니다.
+          </p>
+          <div className="mt-4 space-y-2">
+            <Link
+              href={PUBLIC.OPEN_CHALLENGE.LIST}
+              className="flex items-center gap-3 rounded-lg border border-[#e4e4e7] p-3 text-xs font-bold text-[#27272a]"
+            >
+              <span className="flex-1">
+                문제를 풀어 내 위치 만들기
+                <small className="mt-1 block font-normal text-[#71717a]">
+                  채점된 풀이가 쌓이면 참고 범위가 열려요
+                </small>
+              </span>
+              <span className="text-[#ef6c00]">시작하기</span>
             </Link>
-          </Button>
+            <Link
+              href={PRIVATE.DASHBOARD.EXAM_HALL}
+              className="flex items-center gap-3 rounded-lg border border-[#e4e4e7] p-3 text-xs font-bold text-[#27272a]"
+            >
+              <span className="flex-1">
+                공개 응시장에서 모의고사 응시
+                <small className="mt-1 block font-normal text-[#71717a]">
+                  시험을 채점하면 시험 근거 범위가 열려요
+                </small>
+              </span>
+              <span className="text-[#ef6c00]">보러 가기</span>
+            </Link>
+          </div>
         </div>
       )}
 
-      <p className="font-caption-normal text-gray-7 mt-2.5">
-        * 예상 등급은 단정값이 아닌 범위이며, 데이터 출처를 함께 표시합니다.
-      </p>
+      <Link
+        href={PRIVATE.DASHBOARD.EXAM_HALL}
+        className="mt-5 flex items-center gap-3 rounded-lg border border-[#f0a36a] bg-[#fff7f0] p-4 text-xs font-bold text-[#8f3f08]"
+      >
+        <span className="flex-1">
+          응시장 열기
+          {pendingExam ? (
+            <small className="mt-1 block font-normal text-[#71717a]">
+              배정된 시험 · {pendingExam.title}
+            </small>
+          ) : (
+            <small className="mt-1 block font-normal text-[#71717a]">
+              지금 볼 수 있는 시험을 확인합니다
+            </small>
+          )}
+        </span>
+        {pendingExam && (
+          <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-[#ef6c00] px-2 text-white">
+            새 시험
+          </span>
+        )}
+        <span>›</span>
+      </Link>
+      {analyzedExam && (
+        <Button
+          asChild
+          size="small"
+          variant="outlined"
+          className="mt-3 w-full"
+        >
+          <Link href={PRIVATE.DASHBOARD.EXAM_ATTEMPT(analyzedExam.attemptId)}>
+            시험 분석 보기
+          </Link>
+        </Button>
+      )}
     </section>
   );
 };

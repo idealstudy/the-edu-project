@@ -45,7 +45,11 @@ type DashboardRole = 'ROLE_TEACHER' | 'ROLE_STUDENT' | 'ROLE_PARENT';
 const DASHBOARD = {
   INDEX: '/dashboard',
   TEACHER: '/dashboard/teacher',
+  TEACHER_MY: '/dashboard/teacher/my',
+  TEACHER_EXAMS: '/dashboard/teacher/exams',
   STUDENT: '/dashboard/student',
+  STUDENT_RESULTS: '/dashboard/student/results',
+  STUDENT_LOOK_BACK: '/dashboard/student/look-back',
   PARENT: '/dashboard/parent',
   INQUIRY: '/dashboard/inquiry',
   QNA: '/dashboard/qna',
@@ -54,6 +58,7 @@ const DASHBOARD = {
   UNIT_NOTES: '/dashboard/student/unit-notes',
   UNIT_NOTE_ROOM: (id: number) => `/dashboard/student/unit-notes/${id}`,
   EXAM_ATTEMPT: (id: number) => `/dashboard/student/exams/${id}`,
+  EXAM_HALL: '/dashboard/student/exam-hall',
 
   /** 사용자 역할에 맞는 실제 대시보드 경로를 반환합니다. */
   byRole: (role: DashboardRole): string => {
@@ -78,6 +83,7 @@ const SETTINGS = '/settings';
  * ────────────────────────────────────────────────────*/
 const ROOM = {
   DETAIL: (id: number) => `/study-rooms/${id}/note`,
+  MANAGE: (id: number) => `/study-rooms/${id}/manage`,
   CREATE: '/study-rooms/new',
   EDIT: (id: number) => `/study-rooms/${id}/edit`,
 } as const;
@@ -259,6 +265,13 @@ const PARENT = {
  * ADMIN
  * ────────────────────────────────────────────────────*/
 const ADMIN = {
+  MEMBERS: {
+    LIST: '/admin/members',
+    DETAIL: (id: number) => `/admin/members/${id}`,
+  },
+  STUDY_ROOMS: '/admin/study-rooms',
+  PUBLIC_EXAMS: '/admin/public-exams',
+  CONSULTATIONS: '/admin/consultations',
   COLUMN: {
     LIST: '/admin/column',
     DETAIL: (id: number) => `/admin/column/${id}`,
@@ -268,6 +281,7 @@ const ADMIN = {
     NEW: '/admin/open-challenge/new',
     EDIT: (id: string | number) => `/admin/open-challenge/${id}/edit`,
   },
+  QUESTION_BANK: '/admin/question-bank',
 } as const;
 
 /* ─────────────────────────────────────────────────────

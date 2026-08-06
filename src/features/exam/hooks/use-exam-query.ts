@@ -1,4 +1,5 @@
 import { examKeys, repository } from '@/entities/exam';
+import type { QuestionBankParams } from '@/entities/exam';
 import { useQuery } from '@tanstack/react-query';
 
 export const useAssignedExamsQuery = () =>
@@ -37,6 +38,30 @@ export const useTeacherExamPinsQuery = () =>
   useQuery({
     queryKey: examKeys.teacherPins(),
     queryFn: repository.getTeacherPins,
+  });
+
+export const useQuestionBankQuery = (params: QuestionBankParams) =>
+  useQuery({
+    queryKey: examKeys.questionBank(params),
+    queryFn: () => repository.getQuestionBank(params),
+  });
+
+export const useExamHallQuery = () =>
+  useQuery({
+    queryKey: examKeys.hall(),
+    queryFn: repository.getExamHall,
+  });
+
+export const useAdminQuestionBankQuery = (params: QuestionBankParams) =>
+  useQuery({
+    queryKey: examKeys.adminQuestionBank(params),
+    queryFn: () => repository.getAdminQuestionBank(params),
+  });
+
+export const useAdminExamsQuery = () =>
+  useQuery({
+    queryKey: examKeys.adminExams(),
+    queryFn: repository.getAdminExams,
   });
 
 export const useParentGradeSummaryQuery = (

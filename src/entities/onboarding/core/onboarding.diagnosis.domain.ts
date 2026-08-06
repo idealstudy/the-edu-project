@@ -8,7 +8,11 @@ const GradeSchema = z.enum(['HIGH_1', 'HIGH_2', 'HIGH_3', 'N_RETAKE']);
 /* ─────────────────────────────────────────────────────
  * 수학 선택과목 Domain (공통·수Ⅰ·수Ⅱ는 기본 포함, 1개 선택)
  * ────────────────────────────────────────────────────*/
-const ElectiveSchema = z.enum(['CALCULUS', 'STATISTICS', 'GEOMETRY']);
+const ElectiveSchema = z.enum([
+  'CALCULUS_2',
+  'PROBABILITY_STATISTICS',
+  'GEOMETRY',
+]);
 
 /* ─────────────────────────────────────────────────────
  * 본인 등급 Domain — 1~9 또는 "잘 모름"(비공개, 추천 정확도용)

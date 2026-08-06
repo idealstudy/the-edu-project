@@ -2,9 +2,23 @@ import { MemberDTO } from '@/entities/member';
 import { api } from '@/shared/api';
 import { CommonResponse } from '@/types/http';
 import axios from 'axios';
+import { z } from 'zod';
 
 import { factory } from '../core/member.factory';
 import { adapters } from './member.adapters';
+import { dto } from './member.dto.schema';
+import { AdminMemberRevokePayloadSchema } from './member.dto.schema';
+
+export type AdminMemberListParams = {
+  role: 'STUDENT' | 'TEACHER' | 'PARENT';
+  keyword?: string;
+  includeQaAccount: boolean;
+  page: number;
+  size: number;
+};
+
+export type AdminMemberList = ReturnType<typeof dto.adminList.parse>;
+export type AdminMemberDetail = ReturnType<typeof dto.adminDetail.parse>;
 
 /* ─────────────────────────────────────────────────────
  * [Read] 현재 로그인된 사용자 정보를 BFF를 통해 조회
@@ -45,6 +59,42 @@ const withdraw = async (): Promise<void> => {
   await api.private.delete('/members');
 };
 
+const getAdminMembers = async (
+  params: AdminMemberListParams
+): Promise<AdminMemberList> => {
+  const response = await api.private.get('/admin/members', { params });
+  return dto.adminListResponse.parse(response).data;
+};
+
+const getAdminMember = async (memberId: number): Promise<AdminMemberDetail> => {
+  const validatedMemberId = z.number().int().positive().parse(memberId);
+  const response = await api.private.get(`/admin/members/${validatedMemberId}`);
+  return dto.adminDetailResponse.parse(response).data;
+};
+
+const revokeAdminMember = async (
+  memberId: number,
+  input: { reason: string }
+): Promise<void> => {
+  const validatedMemberId = z.number().int().positive().parse(memberId);
+  const payload = AdminMemberRevokePayloadSchema.parse(input);
+  await api.private.post(`/admin/members/${validatedMemberId}/revoke`, payload);
+};
+
+const restoreAdminMember = async (memberId: number): Promise<void> => {
+  const validatedMemberId = z.number().int().positive().parse(memberId);
+  await api.private.post(`/admin/members/${validatedMemberId}/restore`);
+};
+
+const impersonate = async (memberId: number): Promise<void> => {
+  const validatedMemberId = z.number().int().positive().parse(memberId);
+  await api.private.post(`/admin/auth/impersonate/${validatedMemberId}`);
+};
+
+const exitImpersonation = async (): Promise<void> => {
+  await api.private.post('/admin/auth/impersonate/exit');
+};
+
 /* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
@@ -53,5 +103,13 @@ export const repository = {
     getMember: getCurrentMember,
     logout: logout,
     withdraw,
+  },
+  admin: {
+    getMembers: getAdminMembers,
+    getMember: getAdminMember,
+    revoke: revokeAdminMember,
+    restore: restoreAdminMember,
+    impersonate,
+    exitImpersonation,
   },
 };

@@ -1,7 +1,21 @@
 // student dashboard (API route fixtures; authentication guard renders guest-safe shell)
+import type { AssignedExam, ExamAnalysis } from '@/entities/exam';
+import type { StudentDashboardReportDTO } from '@/entities/student';
+import type {
+  DailyProblemQueue,
+  WrongAnswerItem,
+} from '@/entities/wrong-answer';
 import { type Page, expect, test } from '@playwright/test';
 
 import { okBody } from './helpers/api-mock';
+import { mockMemberInfo, setAuthCookie } from './helpers/auth-mock';
+
+const STUDENT_MEMBER = {
+  id: 7,
+  email: 'mvp-g-student@test.com',
+  name: 'MVP-G 학생',
+  role: 'ROLE_STUDENT',
+};
 
 const WRONG_ANSWER_ITEMS = [
   {
@@ -23,6 +37,9 @@ const WRONG_ANSWER_ITEMS = [
     wrongAgainCount: 0,
     nextReviewAt: null,
     graduatedAt: null,
+    teacherComment: null,
+    commentedByTeacherId: null,
+    commentedAt: null,
     difficulty: 'HIGHEST',
     nationalWrongRate: 89,
     title: '역수형 점화식',
@@ -45,6 +62,9 @@ const WRONG_ANSWER_ITEMS = [
     wrongAgainCount: 0,
     nextReviewAt: null,
     graduatedAt: null,
+    teacherComment: null,
+    commentedByTeacherId: null,
+    commentedAt: null,
     difficulty: 'MIDDLE',
     nationalWrongRate: 46,
     title: '로그 방정식',
@@ -67,13 +87,16 @@ const WRONG_ANSWER_ITEMS = [
     wrongAgainCount: 0,
     nextReviewAt: null,
     graduatedAt: '2026-07-29T12:00:00',
+    teacherComment: null,
+    commentedByTeacherId: null,
+    commentedAt: null,
     difficulty: null,
     nationalWrongRate: null,
     title: '졸업한 문제',
     questionText: '목록에 보이면 안 되는 문제',
     questionImageUrl: null,
   },
-];
+] satisfies WrongAnswerItem[];
 
 const DAILY_PROBLEMS = {
   queueDate: '2026-07-30',
@@ -91,6 +114,8 @@ const DAILY_PROBLEMS = {
       stampsFilled: 1,
       stampsTotal: 5,
       solvedStatus: 'PENDING',
+      kind: 'WRONG_ANSWER',
+      badge: '선생님 출제',
     },
     {
       position: 2,
@@ -103,6 +128,8 @@ const DAILY_PROBLEMS = {
       stampsFilled: 2,
       stampsTotal: 5,
       solvedStatus: 'PENDING',
+      kind: 'WRONG_ANSWER',
+      badge: '추천',
     },
     {
       position: 3,
@@ -115,9 +142,12 @@ const DAILY_PROBLEMS = {
       stampsFilled: 0,
       stampsTotal: 5,
       solvedStatus: 'PENDING',
+      kind: 'RECOMMENDED',
+      badge: '추천',
     },
   ],
-};
+  handoff: { returnUrl: '/dashboard/student', origin: 'DAILY_PROBLEM' },
+} satisfies DailyProblemQueue;
 
 const ASSIGNED_EXAMS = [
   {
@@ -133,7 +163,7 @@ const ASSIGNED_EXAMS = [
     predictedGradeLow: 2,
     predictedGradeHigh: 3,
   },
-];
+] satisfies AssignedExam[];
 
 const EXAM_ANALYSIS = {
   attemptId: 901,
@@ -147,6 +177,7 @@ const EXAM_ANALYSIS = {
     { treeNodeId: 12, name: '수열의 합', wrongCount: 1 },
     { treeNodeId: 13, name: '수학적 귀납법', wrongCount: 0 },
   ],
+  teacherPins: [],
   evidence: [
     { source: 'EXAM_SCORE', label: '시험 정답률 80%', value: 80 },
     {
@@ -165,9 +196,63 @@ const EXAM_ANALYSIS = {
   referenceOnly: true,
   realDataFollowUpRequired: false,
   dataNotice: '내신 시험 분석은 AI 추정이며 참고용입니다.',
-};
+  gradeBasis: 'PREDICTED',
+  standardScore: null,
+  confidence: '낮음',
+  adjustmentReason: '기존 규칙 기준선을 유지했습니다.',
+  totalQuestions: 10,
+  answerResults: Array.from({ length: 10 }, (_, index) => ({
+    questionNo: index + 1,
+    correct: index < 8,
+  })),
+} satisfies ExamAnalysis;
 
-const setupDashboardApi = async (page: Page) => {
+const EMPTY_DASHBOARD_REPORT = {
+  studyRoomCount: 0,
+  questionCount: 0,
+  answerCount: 0,
+  submittedHomeworkCount: 0,
+  referenceExpectedGrade: null,
+} satisfies StudentDashboardReportDTO;
+
+const REFERENCE_DASHBOARD_REPORT = {
+  ...EMPTY_DASHBOARD_REPORT,
+  referenceExpectedGrade: {
+    predictedGradeLow: 3,
+    predictedGradeHigh: 4,
+    gradedQuestionCount: 23,
+    evidence: [
+      {
+        source: 'GRADED_SOLUTIONS',
+        label: '푼 문항 정답률 78%',
+        value: 78,
+      },
+      {
+        source: 'WRONG_ANSWER_REVIEW',
+        label: '오답 회독 진행도 64%',
+        value: 64,
+      },
+      {
+        source: 'WEAKNESS_TREE',
+        label: '약점트리 평균 숙련도 71점',
+        value: 71,
+      },
+    ],
+    gradeBasis: 'REFERENCE',
+    dataNotice: '시험 결과가 아닌 채점된 풀이 기록으로 계산한 참고 범위입니다.',
+  },
+} satisfies StudentDashboardReportDTO;
+
+const setupDashboardApi = async (
+  page: Page,
+  options: {
+    assignedExams?: AssignedExam[];
+    report?: StudentDashboardReportDTO;
+  } = {}
+) => {
+  const assignedExams = options.assignedExams ?? ASSIGNED_EXAMS;
+  const report = options.report ?? EMPTY_DASHBOARD_REPORT;
+  await setAuthCookie(page);
   await page.route('**/api/v1/**', async (route) => {
     await route.fulfill({
       status: 200,
@@ -175,6 +260,7 @@ const setupDashboardApi = async (page: Page) => {
       body: okBody({}),
     });
   });
+  await mockMemberInfo(page, STUDENT_MEMBER);
   await page.route('**/api/v1/student/daily-problems**', async (route) => {
     await route.fulfill({
       status: 200,
@@ -196,12 +282,60 @@ const setupDashboardApi = async (page: Page) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: okBody(ASSIGNED_EXAMS),
+      body: okBody(assignedExams),
+    });
+  });
+  await page.route('**/api/v1/student/dashboard/report**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: okBody(report),
     });
   });
 };
 
 test.describe('MVP-G 학생 대시보드 코어', () => {
+  test('시험이 없고 채점 풀이가 충분하면 시험 아닌 참고 등급을 실제 화면에 표시한다', async ({
+    page,
+  }) => {
+    await setupDashboardApi(page, {
+      assignedExams: [],
+      report: REFERENCE_DASHBOARD_REPORT,
+    });
+
+    await page.goto('/dashboard/student');
+
+    const reference = page.getByTestId('expected-grade-reference');
+    await expect(reference).toBeVisible();
+    await expect(reference).toContainText('내 위치 · 참고');
+    await expect(reference).toContainText('시험 아님');
+    await expect(reference).toContainText('23문항 기준');
+    await expect(reference).toContainText('3~4등급');
+    await expect(
+      reference.getByTestId('expected-grade-reference-evidence').locator('p')
+    ).toHaveCount(3);
+    await reference.screenshot({
+      path: '/tmp/mvp-g-stage5-s-grade-reference.png',
+    });
+  });
+
+  test('근거가 없으면 실제 화면의 내 위치 영역에 숫자를 표시하지 않는다', async ({
+    page,
+  }) => {
+    await setupDashboardApi(page, {
+      assignedExams: [],
+      report: EMPTY_DASHBOARD_REPORT,
+    });
+
+    await page.goto('/dashboard/student');
+
+    const none = page.getByTestId('expected-grade-none');
+    await expect(none).toBeVisible();
+    await expect(none).toContainText('아직 등급을 계산할 자료가 없어요');
+    await expect(none).not.toContainText(/[0-9]/);
+    await none.screenshot({ path: '/tmp/mvp-g-stage5-s-grade-none.png' });
+  });
+
   test('오늘의 문제 3장과 졸업 제외 오답 창고를 렌더한다', async ({ page }) => {
     await setupDashboardApi(page);
 
@@ -322,9 +456,13 @@ test.describe('MVP-G 학생 대시보드 코어', () => {
       '2~3등급'
     );
     await expect(page.getByText('내신 · AI 추정 참고용')).toBeVisible();
-    await expect(page.getByText('이 추정이 나온 곳')).toBeVisible();
-    await expect(page.getByText(/수열 · 오답 2/)).toBeVisible();
-    await expect(page.getByText(/수학적 귀납법 · 숙련도 보완/)).toBeVisible();
+    await expect(page.getByText('무엇을 보고 예측했나요')).toBeVisible();
+    await expect(page.getByText('수열', { exact: true })).toBeVisible();
+    await expect(page.getByText('2문항 오답', { exact: true })).toBeVisible();
+    await expect(
+      page.getByText('수학적 귀납법', { exact: true })
+    ).toBeVisible();
+    await expect(page.getByText('0문항 오답', { exact: true })).toBeVisible();
     await expect(
       page.getByText('내신 시험 분석은 AI 추정이며 참고용입니다.')
     ).toBeVisible();

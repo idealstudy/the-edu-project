@@ -8,6 +8,20 @@
 
 export type ApiErrorType = 'FIELD' | 'CONTEXT' | 'AUTH' | 'UNKNOWN';
 
+export function classifyAdminMemberError(code?: string): ApiErrorType {
+  switch (code) {
+    case 'MEMBER_NOT_EXIST':
+    case 'IMPERSONATE_SESSION_NOT_FOUND':
+      return 'CONTEXT';
+    case 'ACCESS_DENIED':
+    case 'INVALID_TOKEN':
+    case 'EXPIRED_TOKEN':
+      return 'AUTH';
+    default:
+      return 'UNKNOWN';
+  }
+}
+
 // qna 관련 에러
 export function classifyQnaError(code?: string): ApiErrorType {
   switch (code) {

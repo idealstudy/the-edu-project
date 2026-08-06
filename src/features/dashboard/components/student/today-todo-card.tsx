@@ -39,6 +39,7 @@ const STATUS_LABEL: Record<TodoItem['status'], string> = {
   TODO: '할 일',
   DONE: '완료',
   SKIPPED: '못함',
+  NOT_DONE: '못했어요',
 };
 
 const formatMonthDay = (date: string) => {
@@ -155,7 +156,10 @@ export const TodayTodoCard = ({ className }: Props) => {
     updateTodo.mutate(
       {
         id: item.id,
-        input: { status: 'SKIPPED', skipReason: trimmedReason },
+        input:
+          item.assignerRole === 'TEACHER'
+            ? { status: 'NOT_DONE', notDoneReason: trimmedReason }
+            : { status: 'SKIPPED', skipReason: trimmedReason },
       },
       {
         onSuccess: () => {
@@ -246,8 +250,8 @@ export const TodayTodoCard = ({ className }: Props) => {
             오늘 배정된 할 일이 아직 없어요
           </p>
           <p className="font-caption-normal text-gray-8 mt-1 leading-relaxed">
-            선생님이 할 일을 배정하거나 시험·오픈챌린지 공급원이 연결되면
-            여기 쌓여요.
+            선생님이 할 일을 배정하거나 시험·오픈챌린지 공급원이 연결되면 여기
+            쌓여요.
           </p>
           <Button
             className="mt-4"
@@ -279,7 +283,8 @@ export const TodayTodoCard = ({ className }: Props) => {
                       'mt-0.5 flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-md border-2',
                       item.status === 'DONE'
                         ? 'bg-orange-7 border-orange-7 text-white'
-                        : item.status === 'SKIPPED'
+                        : item.status === 'SKIPPED' ||
+                            item.status === 'NOT_DONE'
                           ? 'border-gray-5 bg-gray-2 text-gray-8'
                           : 'border-gray-4 hover:border-orange-7'
                     )}
@@ -294,7 +299,8 @@ export const TodayTodoCard = ({ className }: Props) => {
                         aria-hidden
                       />
                     )}
-                    {item.status === 'SKIPPED' && (
+                    {(item.status === 'SKIPPED' ||
+                      item.status === 'NOT_DONE') && (
                       <CircleX
                         size={15}
                         aria-hidden
@@ -330,6 +336,11 @@ export const TodayTodoCard = ({ className }: Props) => {
                     {item.status === 'SKIPPED' && item.skipReason && (
                       <p className="bg-gray-1 text-gray-9 font-caption-normal mt-2 rounded-lg px-3 py-2">
                         못한 이유: {item.skipReason}
+                      </p>
+                    )}
+                    {item.status === 'NOT_DONE' && item.notDoneReason && (
+                      <p className="bg-gray-1 text-gray-9 font-caption-normal mt-2 rounded-lg px-3 py-2">
+                        못한 이유: {item.notDoneReason}
                       </p>
                     )}
                   </div>
@@ -388,8 +399,8 @@ export const TodayTodoCard = ({ className }: Props) => {
       )}
 
       <p className="border-gray-3 bg-gray-1 font-caption-normal text-gray-8 mt-4 rounded-xl border p-3 leading-relaxed">
-        완료 포인트는 공급원별 저장값으로 적립됩니다. 선생님 15P · 응시장 20P
-        · 오픈챌린지 5P · 학생 직접 입력 0P가 기본값입니다.
+        완료 포인트는 공급원별 저장값으로 적립됩니다. 선생님 15P · 응시장 20P ·
+        오픈챌린지 5P · 학생 직접 입력 0P가 기본값입니다.
       </p>
 
       {formError && (

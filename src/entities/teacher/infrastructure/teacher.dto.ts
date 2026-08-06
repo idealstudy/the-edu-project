@@ -131,6 +131,23 @@ const TeacherDashboardStudyRoomListDtoSchema = z.array(
   z.object({
     id: z.number(),
     name: z.string(),
+    studentName: z.string().nullable().optional().default(null),
+    state: z.string().nullable().optional().default(null),
+    todoCount: z.number().optional().default(0),
+    todoBreakdown: z
+      .object({
+        commentNeeded: z.number(),
+        todoApproval: z.number(),
+        notDoneReason: z.number(),
+        unreadSubmission: z.number(),
+      })
+      .optional()
+      .default({
+        commentNeeded: 0,
+        todoApproval: 0,
+        notDoneReason: 0,
+        unreadSubmission: 0,
+      }),
   })
 );
 

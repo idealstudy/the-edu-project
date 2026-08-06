@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { serverEnv } from '@/shared/constants/api';
 import { applySetCookies, extractErrorMessage, safeJson } from '@/shared/lib';
+import { applyAdminReturnCookieForBff } from '@/shared/lib/bff/utils.admin-cookies';
 
 if (!serverEnv.backendApiUrl) throw new Error('BASE_URL is not defined');
 
@@ -24,5 +25,6 @@ export async function POST(request: NextRequest) {
 
   const response = NextResponse.json({ ok: true }, { status: 200 });
   applySetCookies(loginResponse, response);
+  applyAdminReturnCookieForBff(loginResponse, response);
   return response;
 }

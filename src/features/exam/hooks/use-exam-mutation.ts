@@ -1,6 +1,7 @@
 import {
   type AssignExamPayload,
   type CreateExamPayload,
+  type GradeCutoffPayload,
   type SubmitExamPayload,
   examKeys,
   repository,
@@ -75,6 +76,17 @@ export const useCreateExamPin = () => {
     }) => repository.createPin(attemptId, input),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: examKeys.teacherPins() });
+    },
+  });
+};
+
+export const useUpsertGradeCutoff = (examId: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: GradeCutoffPayload) =>
+      repository.upsertGradeCutoff(examId, input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: examKeys.all });
     },
   });
 };

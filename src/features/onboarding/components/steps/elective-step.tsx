@@ -23,7 +23,7 @@ export const ElectiveStep = ({ value, onChange }: ElectiveStepProps) => (
           수학 <em>선택과목</em>은요?
         </>
       }
-      sub="공통수학·수학Ⅰ·Ⅱ는 기본으로 포함돼요."
+      sub="공통수학1·2, 대수, 미적분Ⅰ은 기본으로 포함돼요."
     />
     <div
       role="radiogroup"
@@ -31,7 +31,7 @@ export const ElectiveStep = ({ value, onChange }: ElectiveStepProps) => (
       className="flex flex-col gap-2.5"
     >
       <SelectCard
-        label="공통 · 수Ⅰ · 수Ⅱ"
+        label="공통수학1·2 · 대수 · 미적분Ⅰ"
         meta="기본 포함 (변경 불가)"
         selected={false}
         disabled

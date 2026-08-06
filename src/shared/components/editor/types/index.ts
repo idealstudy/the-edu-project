@@ -144,6 +144,7 @@ export type MediaUploadResult = {
 
 /** useImageUpload 훅 옵션 */
 export type UseImageUploadOptions = {
+  presignPath?: '/common/media/presign-batch' | '/admin/media/presign-batch';
   onSuccess?: (result: MediaUploadResult) => void;
   onError?: (error: Error) => void;
 };
