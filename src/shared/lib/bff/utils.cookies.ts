@@ -65,8 +65,24 @@ const sanitizeCookieForLocalhost = (cookie: string) => {
   return sanitized;
 };
 
+// 백엔드는 refresh-token 을 Path=/api/auth/refresh 로 발급한다. 그런데 브라우저가
+// 실제로 부르는 곳은 BFF 의 /api/v1/auth/refresh 다. 경로가 어긋나면 브라우저는
+// 그 쿠키를 아예 보내지 않으므로 세션 갱신이 항상 실패하고, 접근 토큰이 만료되는
+// 순간 사용자가 로그아웃된다(2026-08-07 브라우저 검사에서 관측).
+// admin-return 을 /api/admin -> /api/v1/admin 으로 고쳐 주던 것과 같은 처리다.
+export const BFF_REFRESH_PATH = '/api/v1/auth/refresh';
+
+const adaptCookiePathForBff = (cookie: string) =>
+  cookie.replace(
+    /Path=\/api\/auth\/refresh(?=;|$)/i,
+    `Path=${BFF_REFRESH_PATH}`
+  );
+
 export const applySetCookies = (source: Response, target: NextResponse) => {
   collectSetCookies(source).forEach((cookie) => {
-    target.headers.append('Set-Cookie', sanitizeCookieForLocalhost(cookie));
+    target.headers.append(
+      'Set-Cookie',
+      adaptCookiePathForBff(sanitizeCookieForLocalhost(cookie))
+    );
   });
 };
