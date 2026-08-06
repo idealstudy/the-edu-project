@@ -51,4 +51,5 @@ export type {
   AdminMemberListItem,
   AdminMemberRole,
   AdminMemberDetail,
+  UserBasicInfo,
 } from './types';
