@@ -1,7 +1,7 @@
 import { type TreeSubjectGroup } from '@/entities/tree';
 import { cn } from '@/shared/lib';
 
-const SUBJECT_LABEL: Record<TreeSubjectGroup['subject'], string> = {
+const SUBJECT_LABEL: Partial<Record<TreeSubjectGroup['subject'], string>> = {
   MIDDLE_MATH: '중학',
   COMMON_MATH_1: '공통수학1',
   COMMON_MATH_2: '공통수학2',
@@ -65,7 +65,7 @@ export const SubjectTabs = ({ groups, value, onChange }: SubjectTabsProps) => {
               : 'text-text-sub1 bg-white'
           )}
         >
-          {SUBJECT_LABEL[group.subject]}
+          {SUBJECT_LABEL[group.subject] ?? group.subject}
         </button>
       ))}
     </div>

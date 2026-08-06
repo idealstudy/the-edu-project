@@ -11,26 +11,11 @@ const NullableIdSchema = z
   .transform((v) => (v === null || v === undefined ? null : String(v)));
 
 const TreeSubjectDtoSchema = z
-  .union([
-    z.enum([
-      'MIDDLE_MATH',
-      'COMMON_MATH_1',
-      'COMMON_MATH_2',
-      'ALGEBRA',
-      'CALCULUS_1',
-      'CALCULUS_2',
-      'MATH_1',
-      'MATH_2',
-      'CALCULUS',
-      'PROBABILITY_STATISTICS',
-      'GEOMETRY',
-    ]),
-    z.enum(['MATH', 'KOREAN', 'ENGLISH', 'SCIENCE']),
-    z.enum(['math', 'korean', 'english', 'science']),
-    z.string(),
-  ])
+  .string()
+  .trim()
+  .min(1)
   .optional()
-  .default('math');
+  .default('OTHER');
 
 /* ─────────────────────────────────────────────────────
  * 약점 트리 노드 DTO (백엔드 TreeNodeResponse)

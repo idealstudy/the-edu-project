@@ -8,7 +8,7 @@ import { Check } from 'lucide-react';
 
 import { QuestionHeader } from '../question-header';
 
-const SUBJECT_LABEL: Record<TreeSubjectGroup['subject'], string> = {
+const SUBJECT_LABEL: Partial<Record<TreeSubjectGroup['subject'], string>> = {
   MIDDLE_MATH: '중학 수학',
   COMMON_MATH_1: '공통수학Ⅰ',
   COMMON_MATH_2: '공통수학Ⅱ',
@@ -78,7 +78,7 @@ export const WeakUnitsStep = ({
                     : 'border-line-line1 text-text-sub2 bg-white'
                 )}
               >
-                {SUBJECT_LABEL[g.subject]}
+                {SUBJECT_LABEL[g.subject] ?? g.subject}
               </button>
             );
           })}

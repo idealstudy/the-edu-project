@@ -69,12 +69,13 @@ const consultationCases = z.object({
 });
 
 const summary = z.object({
+  totalMemberCount: z.number().int().nonnegative(),
   newMemberCount: z.number().int().nonnegative(),
   consultationCount: z.number().int().nonnegative(),
   averageFirstResponseMinutes: z.number().int().nonnegative().nullable(),
   activeStudyRoomCount: z.number().int().nonnegative(),
   challengeCount: z.number().int().nonnegative(),
-  mostCommonConsultationCategory: z.string(),
+  mostCommonConsultationCategory: z.string().nullable(),
 });
 
 export const adminOperationsSchema = {

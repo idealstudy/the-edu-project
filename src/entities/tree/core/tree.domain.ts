@@ -3,20 +3,7 @@ import { z } from 'zod';
 /* ─────────────────────────────────────────────────────
  * 약점 트리 과목 Domain
  * ────────────────────────────────────────────────────*/
-const TreeSubjectSchema = z.enum([
-  'MIDDLE_MATH',
-  'COMMON_MATH_1',
-  'COMMON_MATH_2',
-  'ALGEBRA',
-  'CALCULUS_1',
-  'CALCULUS_2',
-  'MATH_1',
-  'MATH_2',
-  'CALCULUS',
-  'PROBABILITY_STATISTICS',
-  'GEOMETRY',
-  'OTHER',
-]);
+const TreeSubjectSchema = z.string().trim().min(1);
 
 /* ─────────────────────────────────────────────────────
  * 정복도 강도 4단계 Domain

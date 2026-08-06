@@ -31,6 +31,7 @@ vi.mock('@/features/admin-operations/hooks/use-admin-operations', () => ({
   useUpdateAdminConsultation: () => ({ mutate: vi.fn(), isPending: false }),
   useAdminSummary: () => ({
     data: {
+      totalMemberCount: 34,
       newMemberCount: 6,
       consultationCount: 5,
       averageFirstResponseMinutes: 252,

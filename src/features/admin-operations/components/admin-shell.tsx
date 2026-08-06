@@ -7,6 +7,9 @@ import { usePathname } from 'next/navigation';
 
 import { PRIVATE } from '@/shared/constants/route';
 import { cn } from '@/shared/lib';
+import { useMemberStore } from '@/store';
+
+import { useAdminSummary } from '../hooks/use-admin-operations';
 
 const menu = [
   ['●', '회원 관리', PRIVATE.ADMIN.MEMBERS.LIST],
@@ -18,6 +21,11 @@ const menu = [
 
 export const AdminShell = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
+  const member = useMemberStore((state) => state.member);
+  const summary = useAdminSummary();
+  const profileDetail = [member?.name, member?.email]
+    .filter(Boolean)
+    .join(' · ');
 
   return (
     <div
@@ -53,13 +61,15 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
       <div className="min-w-0 flex-1">
         <header className="flex min-h-[66px] items-center gap-2 border-b border-[#e4e4e7] bg-white px-4 md:px-[22px]">
           <span className="grid size-8 place-items-center rounded-full bg-[#f4f4f5] text-xs font-extrabold text-[#3f3f46]">
-            관
+            {member?.name?.slice(0, 1) ?? ''}
           </span>
           <div className="text-[13.5px] font-extrabold text-[#27272a]">
             관리자
-            <small className="block text-[10.5px] font-semibold text-[#71717a]">
-              조성진 · admin@d-edu.site
-            </small>
+            {profileDetail ? (
+              <small className="block text-[10.5px] font-semibold text-[#71717a]">
+                {profileDetail}
+              </small>
+            ) : null}
           </div>
           <div className="ml-auto flex gap-3 text-right md:gap-4">
             <div>
@@ -67,7 +77,9 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
                 전체 회원
               </div>
               <div className="text-sm font-extrabold text-[#27272a] tabular-nums">
-                34명
+                {summary.data
+                  ? `${summary.data.totalMemberCount.toLocaleString()}명`
+                  : ''}
               </div>
             </div>
             <div>
@@ -75,7 +87,9 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
                 최근 7일 가입
               </div>
               <div className="text-sm font-extrabold text-[#27272a] tabular-nums">
-                6명
+                {summary.data
+                  ? `${summary.data.newMemberCount.toLocaleString()}명`
+                  : ''}
               </div>
             </div>
           </div>

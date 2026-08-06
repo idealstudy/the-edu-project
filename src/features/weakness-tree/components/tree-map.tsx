@@ -4,7 +4,7 @@ import { type TreeNodeView, type TreeSubjectGroup } from '@/entities/tree';
 
 import { TreeNodeButton } from './tree-node-button';
 
-const SUBJECT_LABEL: Record<TreeSubjectGroup['subject'], string> = {
+const SUBJECT_LABEL: Partial<Record<TreeSubjectGroup['subject'], string>> = {
   MIDDLE_MATH: '중학',
   COMMON_MATH_1: '공통수학1',
   COMMON_MATH_2: '공통수학2',
@@ -36,7 +36,7 @@ export const TreeMap = ({ groups, onSelectNode }: TreeMapProps) => (
         className="flex flex-col gap-3"
       >
         <h2 className="font-body1-heading text-text-main flex items-baseline gap-2">
-          {SUBJECT_LABEL[group.subject]}
+          {SUBJECT_LABEL[group.subject] ?? group.subject}
           <span className="font-caption-normal text-text-sub2 tabular-nums">
             {group.nodes.length}단원
           </span>

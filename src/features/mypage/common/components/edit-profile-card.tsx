@@ -44,6 +44,11 @@ interface EditProfileCardProps {
   setIsEditMode: Dispatch<SetStateAction<boolean>>;
 }
 
+export const getProfileImagePresignPath = (role: UserBasicInfo['role']) =>
+  role === 'ROLE_ADMIN'
+    ? '/admin/media/presign-batch'
+    : '/common/media/presign-batch';
+
 export default function EditProfileCard({
   basicInfo,
   setIsEditMode,
@@ -57,7 +62,9 @@ export default function EditProfileCard({
 
   const { data: profileImageData } = useProfileImage();
   const { mutateAsync: updateImage } = useUpdateProfileImage();
-  const { uploadAsync, isUploading } = useImageUpload();
+  const { uploadAsync, isUploading } = useImageUpload({
+    presignPath: getProfileImagePresignPath(basicInfo.role),
+  });
   const profileImage = useEditProfileImage({
     serverImageUrl: profileImageData?.imageUrl,
   });
@@ -174,24 +181,26 @@ export default function EditProfileCard({
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-8"
       >
-        <div>
-          <Form.Item error={!!errors.name}>
-            <Form.Label>
-              이름
-              <RequiredMark />
-            </Form.Label>
+        {basicInfo.role !== 'ROLE_ADMIN' && (
+          <div>
+            <Form.Item error={!!errors.name}>
+              <Form.Label>
+                이름
+                <RequiredMark />
+              </Form.Label>
 
-            <Form.Control>
-              <Input
-                {...register('name')}
-                placeholder="이름을 입력해 주세요."
-              />
-            </Form.Control>
-            {errors.name?.message && (
-              <Form.ErrorMessage>{errors.name.message}</Form.ErrorMessage>
-            )}
-          </Form.Item>
-        </div>
+              <Form.Control>
+                <Input
+                  {...register('name')}
+                  placeholder="이름을 입력해 주세요."
+                />
+              </Form.Control>
+              {errors.name?.message && (
+                <Form.ErrorMessage>{errors.name.message}</Form.ErrorMessage>
+              )}
+            </Form.Item>
+          </div>
+        )}
 
         <EditProfileImageField
           fileInputRef={profileImage.fileInputRef}
@@ -202,30 +211,32 @@ export default function EditProfileCard({
           profileImageUrl={profileImage.profileImageUrl}
         />
 
-        <Form.Item error={!!errors.isProfilePublic}>
-          <Form.Label>
-            공개 범위
-            <RequiredMark />
-          </Form.Label>
+        {basicInfo.role !== 'ROLE_ADMIN' && (
+          <Form.Item error={!!errors.isProfilePublic}>
+            <Form.Label>
+              공개 범위
+              <RequiredMark />
+            </Form.Label>
 
-          <Controller
-            name="isProfilePublic"
-            control={control}
-            render={({ field }) => (
-              <Select
-                value={field.value ? 'public' : 'private'}
-                onValueChange={(v) => field.onChange(v === 'public')}
-              >
-                <Select.Trigger />
+            <Controller
+              name="isProfilePublic"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value ? 'public' : 'private'}
+                  onValueChange={(v) => field.onChange(v === 'public')}
+                >
+                  <Select.Trigger />
 
-                <Select.Content>
-                  <Select.Option value="public">공개</Select.Option>
-                  <Select.Option value="private">비공개</Select.Option>
-                </Select.Content>
-              </Select>
-            )}
-          />
-        </Form.Item>
+                  <Select.Content>
+                    <Select.Option value="public">공개</Select.Option>
+                    <Select.Option value="private">비공개</Select.Option>
+                  </Select.Content>
+                </Select>
+              )}
+            />
+          </Form.Item>
+        )}
 
         {basicInfo.role === 'ROLE_TEACHER' && (
           <Form.Item error={!!errors.simpleIntroduction}>

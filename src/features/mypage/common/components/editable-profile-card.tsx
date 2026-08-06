@@ -2,12 +2,13 @@
 
 import React, { useState } from 'react';
 
-import { Role } from '@/entities/member';
+import { Role, type UserBasicInfo } from '@/entities/member';
 import { useMemberInfo } from '@/features/member/hooks/use-queries';
 import EditProfileCard from '@/features/mypage/common/components/edit-profile-card';
 import { useStudentBasicInfo } from '@/features/mypage/common/hooks/student/use-basic-info';
 import { useTeacherBasicInfo } from '@/features/mypage/common/hooks/teacher/use-basic-info';
 import { useTeacherReport } from '@/features/mypage/common/hooks/teacher/use-report';
+import { useProfileImage } from '@/features/profile-image/hooks/use-profile-image';
 import ProfileCard from '@/features/profile/components/profile-card/profile-card';
 import { Pen } from 'lucide-react';
 
@@ -27,46 +28,66 @@ export default function EditableProfileCard({ role }: { role: Role }) {
   const parentBasicInfoQuery = useParentBasicInfo({
     enabled: role === 'ROLE_PARENT',
   });
+  const profileImageQuery = useProfileImage({
+    enabled: role === 'ROLE_ADMIN',
+  });
 
   const teacherReportQuery = useTeacherReport({
     enabled: role === 'ROLE_TEACHER',
   });
 
-  let basicInfoQuery;
+  let basicInfo: UserBasicInfo | undefined;
+  let isBasicInfoLoading = false;
   switch (role) {
     case 'ROLE_TEACHER':
-      basicInfoQuery = teacherBasicInfoQuery;
+      basicInfo = teacherBasicInfoQuery.data;
+      isBasicInfoLoading = teacherBasicInfoQuery.isLoading;
       break;
     case 'ROLE_STUDENT':
-      basicInfoQuery = studentBasicInfoQuery;
+      basicInfo = studentBasicInfoQuery.data;
+      isBasicInfoLoading = studentBasicInfoQuery.isLoading;
       break;
     case 'ROLE_PARENT':
-      basicInfoQuery = parentBasicInfoQuery;
+      basicInfo = parentBasicInfoQuery.data;
+      isBasicInfoLoading = parentBasicInfoQuery.isLoading;
+      break;
+    case 'ROLE_ADMIN':
+      isBasicInfoLoading = profileImageQuery.isLoading;
+      if (member) {
+        basicInfo = {
+          role: 'ROLE_ADMIN',
+          name: member.name ?? member.email,
+          email: member.email,
+          isProfilePublic: false,
+          profilePublicKorean: '비공개',
+          profileImageUrl: profileImageQuery.data?.imageUrl ?? '',
+        };
+      }
       break;
   }
 
   if (
-    basicInfoQuery?.isLoading ||
+    isBasicInfoLoading ||
     (role === 'ROLE_TEACHER' && teacherReportQuery.isLoading)
   ) {
     return <div className="text-center">로딩중...</div>;
   }
 
-  if (!basicInfoQuery?.data || !memberId) {
+  if (!basicInfo || !memberId) {
     return <div className="text-center">프로필 정보를 불러올 수 없습니다.</div>;
   }
 
   if (isEditMode)
     return (
       <EditProfileCard
-        basicInfo={basicInfoQuery.data}
+        basicInfo={basicInfo}
         setIsEditMode={setIsEditMode}
       />
     );
 
   return (
     <ProfileCard
-      basicInfo={basicInfoQuery.data}
+      basicInfo={basicInfo}
       teacherReport={teacherReportQuery.data}
       memberId={memberId}
       action={

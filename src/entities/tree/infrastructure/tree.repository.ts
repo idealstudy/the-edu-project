@@ -30,33 +30,16 @@ const SUBJECT_ORDER: TreeSubject[] = [
   'OTHER',
 ];
 
-const toSubject = (subject: string): TreeSubject => {
-  switch (subject.toUpperCase()) {
-    case 'MIDDLE_MATH':
-      return 'MIDDLE_MATH';
-    case 'COMMON_MATH_1':
-      return 'COMMON_MATH_1';
-    case 'COMMON_MATH_2':
-      return 'COMMON_MATH_2';
-    case 'ALGEBRA':
-      return 'ALGEBRA';
-    case 'CALCULUS_1':
-      return 'CALCULUS_1';
-    case 'CALCULUS_2':
-      return 'CALCULUS_2';
-    case 'MATH_1':
-      return 'MATH_1';
-    case 'MATH_2':
-      return 'MATH_2';
-    case 'CALCULUS':
-      return 'CALCULUS';
-    case 'PROBABILITY_STATISTICS':
-      return 'PROBABILITY_STATISTICS';
-    case 'GEOMETRY':
-      return 'GEOMETRY';
-    default:
-      return 'OTHER';
+const KNOWN_SUBJECTS = new Set(SUBJECT_ORDER);
+
+export const normalizeTreeSubject = (subject: string): TreeSubject => {
+  const normalized = subject.toUpperCase();
+  if (KNOWN_SUBJECTS.has(normalized)) {
+    return normalized;
   }
+
+  console.error('[tree] 알 수 없는 과목 코드를 받았습니다.', { subject });
+  return subject;
 };
 
 const toDifficulty = (difficulty: string): NodeChallenge['difficulty'] => {
@@ -86,7 +69,7 @@ const toNodeView = (raw: unknown): TreeNodeView => {
   const node = dto.node.parse(raw);
   const parsed = domain.node.parse({
     ...node,
-    subject: toSubject(node.subject),
+    subject: normalizeTreeSubject(node.subject),
   });
 
   return {
@@ -114,11 +97,22 @@ const summarize = (nodes: TreeNodeView[]): TreeMastery => {
   return { total, mastered, inProgress, weak, untested, averageScore };
 };
 
-const groupBySubject = (nodes: TreeNodeView[]): TreeSubjectGroup[] => {
-  const groups = SUBJECT_ORDER.map((subject) => ({
-    subject,
-    nodes: nodes.filter((n) => n.subject === subject),
-  })).filter((group) => group.nodes.length > 0);
+export const groupTreeNodesBySubject = (
+  nodes: TreeNodeView[]
+): TreeSubjectGroup[] => {
+  const unknownSubjects = nodes
+    .map((node) => node.subject)
+    .filter((subject) => !KNOWN_SUBJECTS.has(subject));
+  const orderedSubjects = [
+    ...SUBJECT_ORDER,
+    ...Array.from(new Set(unknownSubjects)),
+  ];
+  const groups = orderedSubjects
+    .map((subject) => ({
+      subject,
+      nodes: nodes.filter((n) => n.subject === subject),
+    }))
+    .filter((group) => group.nodes.length > 0);
 
   return groups;
 };
@@ -128,7 +122,7 @@ const toNodeChallenge = (raw: unknown): NodeChallenge => {
 
   return {
     challengeId: parsed.challengeId,
-    subject: toSubject(parsed.subject),
+    subject: normalizeTreeSubject(parsed.subject),
     difficulty: toDifficulty(parsed.difficulty),
     wrongAnswerRate: parsed.wrongAnswerRate ?? 0,
     sourceText: parsed.sourceText,
@@ -153,7 +147,7 @@ const getMyTree = async (): Promise<TreeView> => {
     .sort((a, b) => b.masteryScore - a.masteryScore);
 
   return {
-    groups: groupBySubject(nodes),
+    groups: groupTreeNodesBySubject(nodes),
     mastery: summarize(nodes),
   };
 };
