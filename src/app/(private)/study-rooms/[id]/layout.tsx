@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 
 import { useParams, usePathname, useRouter } from 'next/navigation';
 
+import { TeacherDashboardHeader } from '@/features/dashboard/components/header/teacher-header';
 import { StudyNoteTab } from '@/features/study-notes/components/study-note-tab';
 import { StudyNoteTabShell } from '@/features/study-notes/components/study-note-tab-shell';
 import { StudyNoteGroupContext } from '@/features/study-notes/contexts/study-note-group.context';
@@ -70,34 +71,39 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
     <StudyNoteGroupContext.Provider
       value={{ selectedGroupId, setSelectedGroupId }}
     >
-      <ColumnLayout>
-        <ColumnLayout.Left>
-          <StudyroomSidebar
-            studyRoomId={studyRoomId}
-            segment={segment}
-            selectedGroupId={selectedGroupId}
-            onSelectGroup={setSelectedGroupId}
-          />
-        </ColumnLayout.Left>
-        <ColumnLayout.Right className="desktop:max-w-[740px] desktop:px-8 flex h-[400px] flex-col gap-3 rounded-[12px]">
-          <div>
-            <StudyNoteTab
-              mode={role}
+      <div data-study-room-shell>
+        {role === 'ROLE_TEACHER' && (
+          <TeacherDashboardHeader subtitle="수업 상세 · 학생 화면 관리" />
+        )}
+        <ColumnLayout className="items-start gap-5 md:flex-row md:px-4 md:py-4">
+          <ColumnLayout.Left className="md:sticky md:top-4 md:w-[360px]">
+            <StudyroomSidebar
               studyRoomId={studyRoomId}
-              path={segment!}
+              segment={segment}
+              selectedGroupId={selectedGroupId}
+              onSelectGroup={setSelectedGroupId}
             />
-            <div className="border-line-line1 flex flex-col gap-9 rounded-tr-[12px] rounded-b-[12px] border bg-white p-8">
-              <StudyNoteTabShell
+          </ColumnLayout.Left>
+          <ColumnLayout.Right className="flex h-auto min-w-0 flex-1 flex-col gap-3 rounded-[12px] md:max-w-none md:px-0">
+            <div>
+              <StudyNoteTab
                 mode={role}
-                path={segment!}
                 studyRoomId={studyRoomId}
+                path={segment!}
               />
-              {!isNote && children}
+              <div className="border-line-line1 flex flex-col gap-9 rounded-tr-[12px] rounded-b-[12px] border bg-white p-8">
+                <StudyNoteTabShell
+                  mode={role}
+                  path={segment!}
+                  studyRoomId={studyRoomId}
+                />
+                {!isNote && children}
+              </div>
             </div>
-          </div>
-          {isNote && children}
-        </ColumnLayout.Right>
-      </ColumnLayout>
+            {isNote && children}
+          </ColumnLayout.Right>
+        </ColumnLayout>
+      </div>
     </StudyNoteGroupContext.Provider>
   );
 };

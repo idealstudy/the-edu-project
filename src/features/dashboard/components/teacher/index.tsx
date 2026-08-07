@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 
+import { TeacherDashboardHeader } from '@/features/dashboard/components/header/teacher-header';
+
 import { useTeacherDashboardStudyRoomListQuery } from '../../hooks/use-teacher-dashboard-query';
 
 const DashboardTeacher = ({
@@ -15,12 +17,7 @@ const DashboardTeacher = ({
 
   return (
     <div className="min-h-screen w-full bg-[#f6f7f9]">
-      <header className="border-b border-[#e3e5e8] bg-white px-8 py-4">
-        <h1 className="text-lg font-extrabold">내 수업</h1>
-        <p className="text-xs text-[#747980]">
-          {initialMemberName.trim() || '선생님'} 선생님 · 손볼 것 많은 순
-        </p>
-      </header>
+      <TeacherDashboardHeader initialMemberName={initialMemberName} />
       <main className="mx-auto w-full max-w-[1120px] px-6 py-6">
         <div className="mb-4 flex items-center gap-2">
           <h2 className="text-base font-extrabold">학생별 수업</h2>
@@ -64,7 +61,7 @@ const DashboardTeacher = ({
           </section>
         ) : (
           <div
-            className="grid gap-3"
+            className="grid gap-3 md:grid-cols-2"
             data-testid="teacher-rooms-list"
           >
             {rooms.map((room) => (

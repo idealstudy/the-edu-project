@@ -2,17 +2,17 @@
 
 import Link from 'next/link';
 
+import { TeacherDashboardHeader } from '@/features/dashboard/components/header/teacher-header';
 import { PRIVATE } from '@/shared/constants';
 
 export const TeacherMyPage = ({ memberName }: { memberName: string }) => (
   <div className="min-h-screen w-full bg-[#f6f7f9]">
-    <header className="border-b border-[#e3e5e8] bg-white px-8 py-4">
-      <h1 className="text-lg font-extrabold">마이페이지</h1>
-    </header>
+    <TeacherDashboardHeader initialMemberName={memberName} />
     <main
       className="mx-auto grid w-full max-w-[1120px] gap-4 px-6 py-6 lg:grid-cols-2"
       data-testid="teacher-my-page"
     >
+      <h1 className="col-span-full text-[19px] font-extrabold">마이페이지</h1>
       <div className="space-y-4">
         <section className="rounded-xl border border-[#e3e5e8] bg-white p-5">
           <div className="mb-4 flex items-center">

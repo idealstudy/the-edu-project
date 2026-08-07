@@ -11,7 +11,6 @@ import {
 } from '@/features/study-rooms/hooks';
 import { useUpdateEnrollmentStatus } from '@/features/study-rooms/hooks/use-update-enrollment-status';
 import { useUpdateThumbnail } from '@/features/study-rooms/hooks/use-update-thumbnail';
-import { ColumnLayout } from '@/layout/column-layout';
 import {
   InputDialog,
   StudyroomConfirmDialog,
@@ -187,7 +186,7 @@ export const StudyroomSidebar = ({
           />
         )}
 
-      <ColumnLayout.Left className="border-line-line1 flex h-fit flex-col gap-5 rounded-xl border bg-white px-8 py-8">
+      <section className="border-line-line1 flex h-fit w-full flex-col gap-5 rounded-xl border bg-white px-8 py-8">
         <StudyroomSidebarHeader
           dispatch={dispatch}
           studyRoomId={studyRoomId}
@@ -282,7 +281,7 @@ export const StudyroomSidebar = ({
             handleSelectGroupId={onSelectGroup}
           />
         )}
-      </ColumnLayout.Left>
+      </section>
     </>
   );
 };
