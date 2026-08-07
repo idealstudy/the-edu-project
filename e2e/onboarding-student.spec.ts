@@ -105,8 +105,9 @@ test.describe('학생 v22 대시보드 계약', () => {
   test('돌아보기는 오늘 할 일과 회고 카드에서 직접 연다', async ({ page }) => {
     await page.goto(PRIVATE.DASHBOARD.STUDENT);
 
-    await expect(page.getByTestId('student-agenda-flow-card')).toBeVisible();
-    await expect(page.getByRole('link', { name: /돌아보기/ })).toHaveAttribute(
+    const agenda = page.getByTestId('student-agenda-flow-card');
+    await expect(agenda).toBeVisible();
+    await expect(agenda.getByRole('link', { name: /돌아보기/ })).toHaveAttribute(
       'href',
       PRIVATE.DASHBOARD.STUDENT_LOOK_BACK
     );

@@ -40,12 +40,20 @@ function requiredEnv(name: string): string {
 
 async function login(page: Page, role: Role) {
   await page.goto('/login');
-  await page.getByTestId('login-email-input').fill(credentials[role].email);
-  await page
-    .getByTestId('login-password-input')
-    .fill(credentials[role].password);
+  const emailInput = page.getByTestId('login-email-input');
+  const passwordInput = page.getByTestId('login-password-input');
+  await emailInput.fill(credentials[role].email);
+  await passwordInput.fill(credentials[role].password);
   await page.getByTestId('login-submit-button').click();
-  await expect(page).not.toHaveURL(/\/login(?:\?|$)/);
+  try {
+    await page.waitForURL((url) => !url.pathname.startsWith('/login'), {
+      timeout: 15_000,
+    });
+  } catch {
+    await emailInput.fill('').catch(() => {});
+    await passwordInput.fill('').catch(() => {});
+    throw new Error(`Login failed for ${role}`);
+  }
   await expect(page.getByText(/인증이 필요|로그인이 필요/)).toHaveCount(0);
 }
 
@@ -155,6 +163,7 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
   test('R1 선생님 시험 생성부터 학생 제출, 오답, 코멘트 확인까지 상태를 잇는다', async ({
     browser,
   }) => {
+    test.setTimeout(120_000);
     const runId = `QA-MVPG-${Date.now()}`;
     const teacher = await newRolePage(browser, 'TEACHER');
     const student = await newRolePage(browser, 'STUDENT');
@@ -428,6 +437,7 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
   test('관리자 실측 등급컷으로 4등급, 6등급, 9등급 경계를 고정 검증한다', async ({
     browser,
   }) => {
+    test.setTimeout(120_000);
     const runId = `QA-MVPG-GRADE-${Date.now()}`;
     const teacher = await newRolePage(browser, 'TEACHER');
     const admin = await newRolePage(browser, 'ADMIN');

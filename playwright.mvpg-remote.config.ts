@@ -19,9 +19,9 @@ export default defineConfig({
   outputDir: 'test-results/mvp-g-v2/artifacts',
   use: {
     baseURL: process.env.E2E_BASE_URL ?? 'https://dev.d-edu.site',
-    trace: 'retain-on-failure',
+    trace: 'off',
     screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
+    video: 'off',
     ...devices['Desktop Chrome'],
   },
 });

@@ -107,7 +107,7 @@ async function seedTeacherInbox(teacher, student, roomId) {
   return { status: submitted.status === 200 ? 'PASS' : 'FAIL', examId: created.data.examId, attemptId: attempt.attemptId, submitStatus: submitted.status };
 }
 
-async function verifyTeacherDirectComment(page) {
+async function verifyTeacherDirectComment(page, studentPage) {
   const inboxResponse = await jsonData(page, '/api/v1/teacher/inbox');
   const inbox = inboxResponse.data ?? {};
   const apiItemCount = Number(inbox.recentExamCount ?? 0)
@@ -124,6 +124,12 @@ async function verifyTeacherDirectComment(page) {
       ? { status: 'FAIL', reason: `처리함 API ${apiItemCount}건이나 대시보드 직접 쓰기 DOM 0` }
       : { status: 'UNVERIFIED', reason: '처리함 오답 fixture 없음' };
   }
+  const itemTestId = await direct
+    .locator('xpath=ancestor::li[1]')
+    .locator('[data-testid^="teacher-inbox-quick-comment-"]')
+    .first()
+    .getAttribute('data-testid');
+  const wrongAnswerId = itemTestId?.replace('teacher-inbox-quick-comment-', '');
   await direct.click();
   const input = fresh.locator('input[placeholder="학생에게 남길 코멘트를 입력하세요"]').first();
   const comment = `QA5 직접 코멘트 ${Date.now()}`;
@@ -132,7 +138,30 @@ async function verifyTeacherDirectComment(page) {
   await fresh.getByText(`저장됨 · ${comment}`).waitFor({ state: 'visible', timeout: 15000 });
   await fresh.screenshot({ path: path.join(SCREEN_DIR, 'critical-teacher-direct-comment.png'), fullPage: false });
   await fresh.close();
-  return { status: 'PASS', observed: '자유 입력 저장 후 같은 문자열 표시' };
+  if (!wrongAnswerId) {
+    return { status: 'FAIL', reason: '직접 쓰기 대상 오답 ID를 DOM에서 식별하지 못함' };
+  }
+  await studentPage.goto(`${WEB_BASE}/dashboard/student/wrong-answers`);
+  await settle(studentPage);
+  const card = studentPage.getByTestId(`wrong-answer-card-${wrongAnswerId}`);
+  if (!(await card.isVisible().catch(() => false))) {
+    return {
+      status: 'FAIL',
+      reason: `직접 쓰기 대상 오답 ${wrongAnswerId}가 현재 학생 목록에 없음`,
+      wrongAnswerId,
+    };
+  }
+  await studentPage.getByTestId(`wrong-answer-review-${wrongAnswerId}`).click();
+  await studentPage.getByTestId('wrong-answer-teacher-comment').waitFor({ state: 'visible', timeout: 15000 });
+  const studentCommentVisible = await studentPage.getByText(comment, { exact: true }).isVisible();
+  await studentPage.screenshot({ path: path.join(SCREEN_DIR, 'critical-student-teacher-comment.png'), fullPage: false });
+  return {
+    status: studentCommentVisible ? 'PASS' : 'FAIL',
+    observed: studentCommentVisible
+      ? '직접 쓰기 저장 문자열이 같은 학생의 오답 상세에 표시'
+      : '학생 오답 상세에 저장 문자열이 표시되지 않음',
+    wrongAnswerId,
+  };
 }
 
 async function verifyStudentTodo(page) {
@@ -176,7 +205,7 @@ async function main() {
     if (!roomId) throw new Error('Teacher room fixture missing');
     const learningLinks = await verifyLearningLinks(teacher, roomId);
     const inboxFixture = await seedTeacherInbox(teacher, student, roomId);
-    const directComment = await verifyTeacherDirectComment(teacher);
+    const directComment = await verifyTeacherDirectComment(teacher, student);
     const studentTodo = await verifyStudentTodo(student);
     const logout = await verifyLogout(student);
     const result = { generatedAt: new Date().toISOString(), roomId, learningLinks, inboxFixture, directComment, studentTodo, logout };

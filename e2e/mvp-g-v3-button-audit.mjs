@@ -144,6 +144,12 @@ async function auditRoute(page, context, role, route) {
       rows.push(row);
       continue;
     }
+    if (/로그아웃/.test(label)) {
+      row.outcome = 'DEFERRED_LOGOUT';
+      row.detail = '역할별 나머지 버튼 감사 뒤 전용 로그아웃 경로에서 실행';
+      rows.push(row);
+      continue;
+    }
     if (destructivePattern.test(label)) {
       row.outcome = 'SKIP_DESTRUCTIVE';
       row.detail = '전용 복구 계정 없는 파괴 동작';

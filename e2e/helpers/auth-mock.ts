@@ -9,7 +9,6 @@ export async function setAuthCookie(page: Page) {
       name: 'Authorization',
       value: 'test-token',
       url: baseURL,
-      path: '/',
     },
   ]);
 }

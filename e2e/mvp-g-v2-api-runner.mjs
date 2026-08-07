@@ -6,7 +6,7 @@ const API_BASE = process.env.E2E_API_BASE_URL ?? 'https://apidev.d-edu.site';
 const WEB_BASE = process.env.E2E_BASE_URL ?? 'https://dev.d-edu.site';
 const EVIDENCE_PATH =
   process.env.MVPG_API_EVIDENCE_PATH ?? '/tmp/mvpg-v30-api-evidence.json';
-const runId = `QA-MVPG-V30-${Date.now()}`;
+const runId = `QA-MVPG-V30-${Date.now()}-${process.pid}`;
 const evidence = [];
 const checks = [];
 const cookies = new Map();
