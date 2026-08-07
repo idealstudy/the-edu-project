@@ -1,4 +1,5 @@
 import { ExamAttemptClient } from '@/features/exam/components/exam-attempt-client';
+import StudentDashboardHeader from '@/features/dashboard/components/header/student-header';
 import { assertDashboardRole } from '@/shared/lib/assert-dashboard-role';
 
 export default async function StudentExamAttemptPage({
@@ -6,13 +7,17 @@ export default async function StudentExamAttemptPage({
 }: {
   params: Promise<{ attemptId: string }>;
 }) {
-  await assertDashboardRole('ROLE_STUDENT');
+  const { initialMemberName } = await assertDashboardRole('ROLE_STUDENT');
   const { attemptId } = await params;
   return (
-    <main className="bg-system-background min-h-screen px-4 py-8 md:px-10">
-      <div className="mx-auto max-w-4xl">
+    <div className="min-h-screen bg-[#fcfbfa]">
+      <StudentDashboardHeader
+        initialMemberName={initialMemberName}
+        title="시험 응시"
+      />
+      <main className="p-4">
         <ExamAttemptClient attemptId={Number(attemptId)} />
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }

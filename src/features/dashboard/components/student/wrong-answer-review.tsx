@@ -27,6 +27,7 @@ import {
 import { useReviewWrongAnswer } from '../../hooks/use-review-wrong-answer';
 import { useWrongAnswersQuery } from '../../hooks/use-wrong-answer-query';
 import { ReviewStamps } from './review-stamps';
+import StudentDashboardHeader from '../header/student-header';
 
 type WrongAnswerReviewProps = {
   wrongAnswerId: number;
@@ -157,6 +158,7 @@ const ReviewResult = ({
 );
 
 const ReviewForm = ({ wrongAnswer }: ReviewFormProps) => {
+  const [solveOpen, setSolveOpen] = useState(false);
   const [usedHint, setUsedHint] = useState(false);
   const [usedAi, setUsedAi] = useState(false);
   const [submittedVerdict, setSubmittedVerdict] = useState<boolean | null>(
@@ -268,94 +270,123 @@ const ReviewForm = ({ wrongAnswer }: ReviewFormProps) => {
         </section>
       )}
 
-      <div className="mt-6">
-        <h2 className="font-body1-heading text-gray-12">도움 사용 기록</h2>
+      <section className="border-gray-3 mt-5 rounded-xl border p-5">
+        <h2 className="font-body1-heading text-gray-12">내 풀이</h2>
         <p className="font-caption-normal text-gray-8 mt-1">
-          도움을 받아도 회독은 똑같이 인정돼요. 기록은 약점 진단에만 쓰입니다.
+          이전 풀이를 확인한 뒤 오늘 회독 풀이를 시작합니다.
         </p>
-        <Checkbox.Group className="tablet:grid-cols-2 mt-3 grid gap-2">
-          <Checkbox.Label className="border-gray-3 rounded-lg border p-3.5">
-            <Checkbox
-              checked={usedHint}
-              onCheckedChange={(checked) => setUsedHint(checked === true)}
-              data-testid="wrong-answer-used-hint"
-            />
-            <Lightbulb
-              size={18}
-              className="text-orange-7"
-              aria-hidden
-            />
-            <span className="font-body2-heading text-gray-11">힌트 사용</span>
-          </Checkbox.Label>
-          <Checkbox.Label className="border-gray-3 rounded-lg border p-3.5">
-            <Checkbox
-              checked={usedAi}
-              onCheckedChange={(checked) => setUsedAi(checked === true)}
-              data-testid="wrong-answer-used-ai"
-            />
-            <Bot
-              size={18}
-              className="text-orange-7"
-              aria-hidden
-            />
-            <span className="font-body2-heading text-gray-11">
-              AI 도움 사용
-            </span>
-          </Checkbox.Label>
-        </Checkbox.Group>
-      </div>
-
-      {!reviewDue && (
-        <div className="border-orange-3 bg-orange-1 mt-5 flex gap-2 rounded-lg border p-4">
-          <Clock3
-            size={18}
-            className="text-orange-9 mt-0.5"
-            aria-hidden
-          />
-          <p className="font-body2-normal text-orange-10">
-            복습 간격이 아직 남았어요.{' '}
-            {formatNextReview(wrongAnswer.nextReviewAt)}
-          </p>
+        <div className="border-gray-3 bg-gray-1 mt-3 rounded-lg border p-4 text-xs leading-6 text-gray-8">
+          문제 본문과 지난 풀이를 다시 보고, 맞고 틀림과 관계없이 오늘 회독
+          1회를 남깁니다.
         </div>
-      )}
+        {!solveOpen && (
+          <Button
+            className="mt-3 w-full"
+            onClick={() => setSolveOpen(true)}
+            data-testid="wrong-answer-open-solver"
+          >
+            {wrongAnswer.reviewCount + 1}회독 풀이 쓰기
+          </Button>
+        )}
+      </section>
 
-      {submissionError && (
-        <div
-          className="border-system-warning bg-system-warning-alt mt-5 rounded-lg border px-4 py-3"
-          role="alert"
-          data-testid="wrong-answer-review-error"
-        >
-          <p className="font-body2-heading text-gray-12">{submissionError}</p>
-        </div>
-      )}
+      {solveOpen && (
+        <>
+          <div className="mt-6">
+            <h2 className="font-body1-heading text-gray-12">도움 사용 기록</h2>
+            <p className="font-caption-normal text-gray-8 mt-1">
+              도움을 받아도 회독은 똑같이 인정돼요. 기록은 약점 진단에만
+              쓰입니다.
+            </p>
+            <Checkbox.Group className="tablet:grid-cols-2 mt-3 grid gap-2">
+              <Checkbox.Label className="border-gray-3 rounded-lg border p-3.5">
+                <Checkbox
+                  checked={usedHint}
+                  onCheckedChange={(checked) => setUsedHint(checked === true)}
+                  data-testid="wrong-answer-used-hint"
+                />
+                <Lightbulb
+                  size={18}
+                  className="text-orange-7"
+                  aria-hidden
+                />
+                <span className="font-body2-heading text-gray-11">
+                  힌트 사용
+                </span>
+              </Checkbox.Label>
+              <Checkbox.Label className="border-gray-3 rounded-lg border p-3.5">
+                <Checkbox
+                  checked={usedAi}
+                  onCheckedChange={(checked) => setUsedAi(checked === true)}
+                  data-testid="wrong-answer-used-ai"
+                />
+                <Bot
+                  size={18}
+                  className="text-orange-7"
+                  aria-hidden
+                />
+                <span className="font-body2-heading text-gray-11">
+                  AI 도움 사용
+                </span>
+              </Checkbox.Label>
+            </Checkbox.Group>
+          </div>
 
-      <div className="tablet:grid-cols-2 mt-6 grid gap-2">
-        <Button
-          size="medium"
-          variant="secondary"
-          disabled={!reviewDue || reviewMutation.isPending}
-          onClick={() => submitReview(false)}
-          data-testid="wrong-answer-submit-incorrect"
-        >
-          <XCircle
-            size={18}
-            aria-hidden
-          />
-          틀렸어요
-        </Button>
-        <Button
-          size="medium"
-          disabled={!reviewDue || reviewMutation.isPending}
-          onClick={() => submitReview(true)}
-          data-testid="wrong-answer-submit-correct"
-        >
-          <CheckCircle2
-            size={18}
-            aria-hidden
-          />
-          맞았어요
-        </Button>
-      </div>
+          {!reviewDue && (
+            <div className="border-orange-3 bg-orange-1 mt-5 flex gap-2 rounded-lg border p-4">
+              <Clock3
+                size={18}
+                className="text-orange-9 mt-0.5"
+                aria-hidden
+              />
+              <p className="font-body2-normal text-orange-10">
+                복습 간격이 아직 남았어요.{' '}
+                {formatNextReview(wrongAnswer.nextReviewAt)}
+              </p>
+            </div>
+          )}
+
+          {submissionError && (
+            <div
+              className="border-system-warning bg-system-warning-alt mt-5 rounded-lg border px-4 py-3"
+              role="alert"
+              data-testid="wrong-answer-review-error"
+            >
+              <p className="font-body2-heading text-gray-12">
+                {submissionError}
+              </p>
+            </div>
+          )}
+
+          <div className="tablet:grid-cols-2 mt-6 grid gap-2">
+            <Button
+              size="medium"
+              variant="secondary"
+              disabled={!reviewDue || reviewMutation.isPending}
+              onClick={() => submitReview(false)}
+              data-testid="wrong-answer-submit-incorrect"
+            >
+              <XCircle
+                size={18}
+                aria-hidden
+              />
+              틀렸어요
+            </Button>
+            <Button
+              size="medium"
+              disabled={!reviewDue || reviewMutation.isPending}
+              onClick={() => submitReview(true)}
+              data-testid="wrong-answer-submit-correct"
+            >
+              <CheckCircle2
+                size={18}
+                aria-hidden
+              />
+              맞았어요
+            </Button>
+          </div>
+        </>
+      )}
     </section>
   );
 };
@@ -366,8 +397,9 @@ export const WrongAnswerReview = ({
   const wrongAnswersQuery = useWrongAnswersQuery();
 
   return (
-    <main className="bg-system-background tablet:px-10 tablet:py-12 min-h-screen px-4 py-8">
-      <div className="mx-auto w-full max-w-[900px]">
+    <div className="min-h-screen bg-[#fcfbfa]">
+      <StudentDashboardHeader title="오답 회독" />
+      <main className="w-full p-4">
         <Button
           asChild
           size="xsmall"
@@ -442,7 +474,7 @@ export const WrongAnswerReview = ({
               return <ReviewForm wrongAnswer={wrongAnswer} />;
             })()}
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 };

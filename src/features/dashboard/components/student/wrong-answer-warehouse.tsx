@@ -16,6 +16,7 @@ import {
 
 import { useWrongAnswersQuery } from '../../hooks/use-wrong-answer-query';
 import { ReviewStamps } from './review-stamps';
+import StudentDashboardHeader from '../header/student-header';
 
 const SOURCE_LABEL: Record<WrongAnswerItem['sourceType'], string> = {
   EXAM: '시험 오답',
@@ -117,8 +118,9 @@ export const WrongAnswerWarehouse = () => {
   const wrongAnswersQuery = useWrongAnswersQuery();
 
   return (
-    <main className="bg-system-background tablet:px-10 tablet:py-12 min-h-screen px-4 py-8">
-      <div className="mx-auto w-full max-w-[960px]">
+    <div className="min-h-screen bg-[#fcfbfa]">
+      <StudentDashboardHeader title="오답 회독" />
+      <main className="w-full p-4">
         <Button
           asChild
           size="xsmall"
@@ -218,7 +220,7 @@ export const WrongAnswerWarehouse = () => {
               );
             })()}
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 };
