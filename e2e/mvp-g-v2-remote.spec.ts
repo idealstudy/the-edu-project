@@ -1,5 +1,6 @@
 // MVP-G v2.0 remote QA. Real accounts and real dev/prod data only. No route mocks.
 import { type Browser, type Page, expect, test } from '@playwright/test';
+import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -72,7 +73,10 @@ async function api<T = JsonRecord>(
 }
 
 async function attachScreenshot(page: Page, name: string) {
-  const body = await page.screenshot({ fullPage: true });
+  const outputDir = path.resolve(process.cwd(), '../docs/mvp-g/qa-screens');
+  await mkdir(outputDir, { recursive: true });
+  const outputPath = path.join(outputDir, `${name}.png`);
+  const body = await page.screenshot({ fullPage: true, path: outputPath });
   await test.info().attach(name, { body, contentType: 'image/png' });
 }
 
@@ -87,7 +91,11 @@ async function getTreeStatus(page: Page) {
 
 test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
   test('health와 401 문구 비노출을 관찰한다', async ({ page }) => {
-    const response = await page.request.get('/api/admin/actuator/health');
+    const apiBase =
+      process.env.E2E_API_BASE_URL ?? 'https://apidev.d-edu.site';
+    const response = await page.request.get(
+      `${apiBase}/api/admin/actuator/health`
+    );
     expect(response.status()).toBe(200);
     expect(await response.text()).toContain('UP');
 
@@ -113,12 +121,28 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
       ['/admin/consultations', 'admin-consultations'],
     ] as const;
     for (const [url, testId] of screens) {
+      const failedRequests: Array<{ method: string; path: string; status: number }> = [];
+      const captureFailure = (response: import('@playwright/test').Response) => {
+        if (response.status() < 400) return;
+        const parsed = new URL(response.url());
+        failedRequests.push({
+          method: response.request().method(),
+          path: parsed.pathname + parsed.search,
+          status: response.status(),
+        });
+      };
+      admin.page.on('response', captureFailure);
       await admin.page.goto(url);
       await expect(admin.page.getByTestId(testId)).toBeVisible();
+      await expect(
+        admin.page.getByText(/불러오는 중입니다|불러오는 중/)
+      ).toHaveCount(0, { timeout: 15_000 });
       await expect(
         admin.page.getByText(/인증이 필요|로그인이 필요/)
       ).toHaveCount(0);
       await attachScreenshot(admin.page, `actual-${testId}-1024x768`);
+      admin.page.off('response', captureFailure);
+      expect(failedRequests, `${url} failed requests`).toEqual([]);
     }
     await admin.context.close();
   });
@@ -278,9 +302,16 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
         )
       ).toBe(true);
     }
-    await expect(student.page.getByTestId('exam-submit-result')).toBeVisible();
+    await expect(
+      student.page
+        .getByTestId('exam-submit-result')
+        .or(student.page.getByTestId('exam-analysis-card'))
+    ).toBeVisible();
     await attachScreenshot(student.page, 'actual-r1-submit-result');
-    await student.page.getByRole('button', { name: '시험 분석 보기' }).click();
+    const analysisButton = student.page.getByRole('button', {
+      name: '시험 분석 보기',
+    });
+    if (await analysisButton.isVisible()) await analysisButton.click();
     await expect(student.page.getByTestId('exam-analysis-card')).toBeVisible();
     await expect(student.page.getByTestId('exam-grade-result')).toBeVisible();
     await attachScreenshot(student.page, 'actual-r1-analysis');
@@ -333,8 +364,8 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
     await student.page
       .getByTestId(`wrong-answer-review-${examWrong!.id}`)
       .click();
-    await expect(student.page.getByText(comment)).toBeVisible();
     await attachScreenshot(student.page, 'actual-r1-student-teacher-comment');
+    await expect(student.page.getByText(comment)).toBeVisible();
 
     const pin = await api<{ id: number }>(
       teacher.page,

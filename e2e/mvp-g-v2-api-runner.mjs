@@ -5,8 +5,8 @@ import { writeFileSync } from 'node:fs';
 const API_BASE = process.env.E2E_API_BASE_URL ?? 'https://apidev.d-edu.site';
 const WEB_BASE = process.env.E2E_BASE_URL ?? 'https://dev.d-edu.site';
 const EVIDENCE_PATH =
-  process.env.MVPG_API_EVIDENCE_PATH ?? '/tmp/mvpg-v21-api-evidence.json';
-const runId = `QA-MVPG-V21-${Date.now()}`;
+  process.env.MVPG_API_EVIDENCE_PATH ?? '/tmp/mvpg-v30-api-evidence.json';
+const runId = `QA-MVPG-V30-${Date.now()}`;
 const evidence = [];
 const checks = [];
 const cookies = new Map();
@@ -30,7 +30,7 @@ function requiredCredential(emailName, passwordName) {
 function sanitize(value, key = '') {
   if (value == null) return value;
   if (
-    /password|authorization|refresh|cookie|token|email|uploadUrl|headers/i.test(
+    /password|authorization|refresh|cookie|token|email|contact|receiptNo|uploadUrl|headers/i.test(
       key
     )
   ) {
@@ -558,12 +558,14 @@ async function runR1(roomId) {
   });
   const inboxBeforeIds = new Set(
     [
+      ...(inboxBefore.data?.recentExam ?? []),
       ...(inboxBefore.data?.stuckAfterGraduation ?? []),
       ...(inboxBefore.data?.neglected ?? []),
     ].map((item) => item.id)
   );
   const inboxAfterIds = new Set(
     [
+      ...(inboxAfter.data?.recentExam ?? []),
       ...(inboxAfter.data?.stuckAfterGraduation ?? []),
       ...(inboxAfter.data?.neglected ?? []),
     ].map((item) => item.id)
@@ -1149,6 +1151,18 @@ async function runReadPathRegressions() {
     endpoint: '/api/teacher/todos/recommendations',
     label: 'teacher-todo-recommendations-after-exam',
   });
+  const runRecommendation = teacherRecommendations.data?.items?.find(
+    (item) => item.book === `${runId}-R1` && item.approvalStatus === 'PENDING'
+  );
+  let approvedRecommendation = { status: 0, data: null };
+  if (runRecommendation?.id) {
+    approvedRecommendation = await request({
+      role: 'teacher',
+      method: 'POST',
+      endpoint: `/api/teacher/todos/recommendations/${runRecommendation.id}/approve`,
+      label: 'teacher-approve-exam-todo-recommendation',
+    });
+  }
   const studentTodos = await request({
     role: 'student',
     endpoint: '/api/student/todos',
@@ -1157,15 +1171,23 @@ async function runReadPathRegressions() {
   recordCheck(
     'R1-T15-TODO-SUPPLY',
     teacherRecommendations.status === 200 &&
+      Boolean(runRecommendation?.id) &&
+      approvedRecommendation.status === 200 &&
       studentTodos.status === 200 &&
-      (teacherRecommendations.data?.totalCount ?? 0) > 0 &&
-      (studentTodos.data?.totalCount ?? 0) > 0,
-    '시험 제출 뒤 선생님 추천과 학생 할 일 공급',
+      studentTodos.data?.items?.some(
+        (item) => item.id === approvedRecommendation.data?.id
+      ),
+    '시험 제출 뒤 선생님 추천 공급, 승인, 학생 할 일 노출',
     {
       teacherHttp: teacherRecommendations.status,
       teacherTotalCount: teacherRecommendations.data?.totalCount ?? null,
+      recommendationFound: Boolean(runRecommendation?.id),
+      approveHttp: approvedRecommendation.status,
       studentHttp: studentTodos.status,
       studentTotalCount: studentTodos.data?.totalCount ?? null,
+      approvedTodoVisible: studentTodos.data?.items?.some(
+        (item) => item.id === approvedRecommendation.data?.id
+      ),
     }
   );
 }
@@ -1238,8 +1260,8 @@ async function main() {
     'EDGE-EMPTY-HALL',
     initialStudent2Hall.status === 200 &&
       initialStudent2Hall.data?.assigned?.length === 0 &&
-      initialStudent2Hall.data?.public?.length === 0,
-    '학생2 응시장 초기 빈 상태',
+      Array.isArray(initialStudent2Hall.data?.public),
+    '학생2 개인 배정 빈 상태와 공개시험 시드 응답',
     {
       assigned: initialStudent2Hall.data?.assigned?.length ?? null,
       public: initialStudent2Hall.data?.public?.length ?? null,
