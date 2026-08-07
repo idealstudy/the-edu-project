@@ -226,7 +226,7 @@ export const AdminMemberList = () => {
       {!!query.data?.content.length && (
         <>
           <div className="overflow-x-auto rounded-xl border border-[#e4e4e7] bg-white px-2 py-1.5">
-            <table className="w-full min-w-[900px] border-collapse text-left text-xs">
+            <table className="w-full min-w-[760px] border-collapse text-left text-xs">
               <thead>
                 <tr className="text-[10.5px] text-[#71717a]">
                   {[

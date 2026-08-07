@@ -29,7 +29,7 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
 
   return (
     <div
-      className="desktop:-ml-sidebar-width flex min-h-[calc(100dvh-60px)] bg-[#f7f7f8]"
+      className="flex min-h-dvh bg-[#f7f7f8] md:-ml-[186px]"
       data-admin-shell
     >
       <aside className="hidden w-[186px] shrink-0 border-r border-[#e4e4e7] bg-white px-3 py-4 md:block">
