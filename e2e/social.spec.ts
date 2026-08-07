@@ -15,6 +15,11 @@ const hasFixture = Boolean(
   process.env.E2E_STUDENT_EMAIL && S2_EMAIL && S2_PHONE
 );
 
+const toDomesticPhone = (phone: string) => {
+  const digits = phone.replace(/[^0-9]/g, '');
+  return digits.startsWith('82') ? `0${digits.slice(2)}` : digits;
+};
+
 async function login(page: Page, email: string, password: string) {
   await page.goto('/login');
   await page.getByTestId('login-email-input').fill(email);
@@ -40,8 +45,12 @@ test.describe('소셜 — 전화번호 친구추가', () => {
     await page.goto(PRIVATE.FRIENDS.INDEX);
 
     // "전화번호로 친구를 추가" 입력(앞 0 보존 — String e2e)
-    await page.getByLabel('친구 요청 대상 전화번호').fill(S2_PHONE!);
-    await page.getByRole('button', { name: '요청' }).click();
+    await page
+      .getByLabel('친구 요청 대상 전화번호')
+      .fill(toDomesticPhone(S2_PHONE!));
+    const requestButton = page.getByRole('button', { name: '요청' });
+    await expect(requestButton).toBeEnabled();
+    await requestButton.click();
 
     // 성공 토스트 또는 요청 반영 (FRIENDSHIP_ADDRESSEE_NOT_FOUND 가 아니어야 함)
     await expect(

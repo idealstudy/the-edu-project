@@ -187,11 +187,17 @@ test.describe('MVP-G 단권화', () => {
     await setupUnitNoteApi(page);
 
     await page.goto('/dashboard/student/unit-notes');
-    await expect(page.getByTestId('unit-note-subject-tabs')).toBeVisible();
-    await expect(page.getByTestId('unit-note-root-10')).toContainText('수열');
-    await page.getByTestId('unit-note-root-10').click();
+    const openRoom = page.getByRole('link', { name: '이어서 정리하기' });
+    await expect(openRoom).toHaveAttribute(
+      'href',
+      '/dashboard/student/unit-notes/10'
+    );
+    await openRoom.click();
 
-    await expect(page.getByText('나의 수열 단권화')).toBeVisible();
+    await expect(page).toHaveURL(/\/dashboard\/student\/unit-notes\/10$/);
+    await expect(
+      page.getByRole('heading', { name: '수열', exact: true })
+    ).toBeVisible();
     await expect(page.getByTestId('unit-note-concept-row-14')).toContainText(
       '수학적 귀납법'
     );

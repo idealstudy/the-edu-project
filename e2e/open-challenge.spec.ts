@@ -108,7 +108,6 @@ test.describe('로그인 redirect 보존', () => {
 });
 
 // ─── 풀이 제출 → 결과 → 학습 허브 ───
-// 시드된 오픈챌린지가 있어야 의미가 있으므로, 카드가 없으면 스킵한다.
 test.describe('오픈챌린지 풀이 → 결과', () => {
   test.setTimeout(60_000);
 
@@ -117,12 +116,10 @@ test.describe('오픈챌린지 풀이 → 결과', () => {
   }) => {
     await loginAsStudent(page);
 
-    // '/' 가 오픈챌린지 리스트로 승격됨.
-    await page.goto(PUBLIC.OPEN_CHALLENGE.LIST);
+    await page.goto(PUBLIC.CHALLENGES.LIST);
 
     const firstCard = page.getByTestId('open-challenge-card').first();
-    const hasChallenge = (await firstCard.count()) > 0;
-    test.skip(!hasChallenge, '시드된 오픈챌린지가 없어 스킵합니다.');
+    await expect(firstCard).toBeVisible();
 
     await firstCard.click();
     await page.waitForURL(/\/open-challenge\/[^/]+$/);
@@ -148,7 +145,6 @@ test.describe('오픈챌린지 풀이 → 결과', () => {
 });
 
 // ─── AI 코치 — 손글씨 풀이 캡처(§ai-coach-improvement-plan Phase 1b A-1/A-2) ───
-// 시드된 오픈챌린지가 있어야 의미가 있으므로, 카드가 없으면 스킵한다.
 test.describe('AI 코치 — 손글씨 풀이 캡처', () => {
   test.setTimeout(60_000);
 
@@ -156,11 +152,10 @@ test.describe('AI 코치 — 손글씨 풀이 캡처', () => {
     page,
   }) => {
     await loginAsStudent(page);
-    await page.goto(PUBLIC.OPEN_CHALLENGE.LIST);
+    await page.goto(PUBLIC.CHALLENGES.LIST);
 
     const firstCard = page.getByTestId('open-challenge-card').first();
-    const hasChallenge = (await firstCard.count()) > 0;
-    test.skip(!hasChallenge, '시드된 오픈챌린지가 없어 스킵합니다.');
+    await expect(firstCard).toBeVisible();
 
     await firstCard.click();
     await page.waitForURL(/\/open-challenge\/[^/]+$/);
@@ -227,11 +222,10 @@ test.describe('AI 코치 — 손글씨 풀이 캡처', () => {
     page,
   }) => {
     await loginAsStudent(page);
-    await page.goto(PUBLIC.OPEN_CHALLENGE.LIST);
+    await page.goto(PUBLIC.CHALLENGES.LIST);
 
     const firstCard = page.getByTestId('open-challenge-card').first();
-    const hasChallenge = (await firstCard.count()) > 0;
-    test.skip(!hasChallenge, '시드된 오픈챌린지가 없어 스킵합니다.');
+    await expect(firstCard).toBeVisible();
 
     await firstCard.click();
     await page.waitForURL(/\/open-challenge\/[^/]+$/);
