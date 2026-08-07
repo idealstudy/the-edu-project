@@ -1,4 +1,5 @@
 import { TodayTodoCard } from '@/features/dashboard/components/student/today-todo-card';
+import DashboardTeacher from '@/features/dashboard/components/teacher';
 import { LearningInboxCard } from '@/features/dashboard/components/teacher/learning-inbox-card';
 import { LearningManagementTab } from '@/features/study-notes/components/learning-management-tab';
 import { render, screen } from '@testing-library/react';
@@ -13,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   createTodo: vi.fn(),
   saveComment: vi.fn(),
   studentTodos: vi.fn(),
+  teacherRooms: vi.fn(),
   teacherInbox: vi.fn(),
   teacherRecommendations: vi.fn(),
   updateTodo: vi.fn(),
@@ -35,6 +37,14 @@ vi.mock('@/features/dashboard/hooks/use-wrong-answer-query', () => ({
     mutate: mocks.saveComment,
   }),
   useTeacherWrongAnswerInboxQuery: mocks.teacherInbox,
+}));
+
+vi.mock('@/features/dashboard/hooks/use-teacher-dashboard-query', () => ({
+  useTeacherDashboardStudyRoomListQuery: mocks.teacherRooms,
+}));
+
+vi.mock('@/features/dashboard/components/header/teacher-header', () => ({
+  TeacherDashboardHeader: () => <header>선생님 대시보드</header>,
 }));
 
 const EMPTY_TODOS = {
@@ -99,6 +109,57 @@ describe('MVP-G 죽은 버튼 회귀', () => {
       data: EMPTY_TODOS,
       isPending: false,
     });
+    mocks.teacherRooms.mockReturnValue({
+      data: [
+        {
+          id: 41,
+          name: '김서준 수업',
+          studentName: '김서준',
+          state: 'ACTIVE',
+          todoCount: 1,
+          todoBreakdown: {
+            commentNeeded: 1,
+            todoApproval: 0,
+            notDoneReason: 0,
+            unreadSubmission: 0,
+          },
+        },
+      ],
+      isPending: false,
+    });
+  });
+
+  it('선생님 대시보드가 처리함과 기존 수업 목록을 함께 렌더한다', () => {
+    mocks.teacherInbox.mockReturnValue({
+      data: {
+        recentExamCount: 1,
+        recentExam: [
+          {
+            id: 7,
+            studentId: 9,
+            title: '수열 12번',
+            status: 'ACTIVE',
+            reviewCount: 1,
+            wrongAgainCount: 0,
+            hintFreeSolveCount: 0,
+            teacherComment: null,
+          },
+        ],
+        neglectedCount: 0,
+        neglected: [],
+        stuckAfterGraduationCount: 0,
+        stuckAfterGraduation: [],
+        neglectedThresholdDays: 3,
+      },
+      isPending: false,
+    });
+
+    render(<DashboardTeacher initialMemberName="한지원" />);
+
+    expect(screen.getByTestId('teacher-learning-inbox')).toBeVisible();
+    expect(screen.getByRole('button', { name: '직접 쓰기' })).toBeVisible();
+    expect(screen.getByTestId('teacher-rooms-list')).toBeVisible();
+    expect(screen.getByText(/김서준 수업/)).toBeVisible();
   });
 
   it('학습 관리의 7개 진입점을 현재 스터디룸 기준 실라우트에 연결한다', () => {

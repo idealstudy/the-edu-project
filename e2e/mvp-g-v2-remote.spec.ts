@@ -224,9 +224,23 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
     await expect(student.page.getByTestId('exam-take-screen')).toBeVisible();
     const attemptId = Number(student.page.url().match(/\/exams\/(\d+)/)?.[1]);
     expect(attemptId).toBeGreaterThan(0);
+    const attemptSheet = await api<{ title: string; totalQuestions: number }>(
+      student.page,
+      'GET',
+      `/api/v1/student/exams/${attemptId}`
+    );
+    expect(attemptSheet.title).toBe(runId);
     const wrongBefore = await api<{
-      content?: Array<{ id: number; sourceType: string }>;
-      items?: Array<{ id: number; sourceType: string }>;
+      content?: Array<{
+        id: number;
+        sourceType: string;
+        questionSnapshot: Record<string, unknown> | null;
+      }>;
+      items?: Array<{
+        id: number;
+        sourceType: string;
+        questionSnapshot: Record<string, unknown> | null;
+      }>;
     }>(student.page, 'GET', '/api/v1/student/wrong-answers?page=0&size=100');
     const wrongBeforeIds = new Set(
       (wrongBefore.content ?? wrongBefore.items ?? []).map((item) => item.id)
@@ -272,6 +286,7 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
       }>;
     };
     const submittedAnalysis = submitBody.data ?? submitBody;
+    const ownRunAttemptCount = (submittedAnalysis.answerResults ?? []).length;
     const submittedWrongCount = (submittedAnalysis.answerResults ?? []).filter(
       (answer) => !answer.correct
     ).length;
@@ -286,7 +301,9 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
           (treeBefore.get(nodeId)?.attemptCount ?? 0)),
       0
     );
-    expect(attemptDelta).toBe(selectedQuestionCount);
+    expect(attemptSheet.totalQuestions).toBe(selectedQuestionCount);
+    expect(ownRunAttemptCount).toBe(selectedQuestionCount);
+    expect(attemptDelta).toBeGreaterThanOrEqual(ownRunAttemptCount);
     expect(
       testedNodeIds.some(
         (nodeId) =>
@@ -317,12 +334,23 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
     await attachScreenshot(student.page, 'actual-r1-analysis');
 
     const wrongAnswers = await api<{
-      content?: Array<{ id: number; sourceType: string }>;
-      items?: Array<{ id: number; sourceType: string }>;
+      content?: Array<{
+        id: number;
+        sourceType: string;
+        questionSnapshot: Record<string, unknown> | null;
+      }>;
+      items?: Array<{
+        id: number;
+        sourceType: string;
+        questionSnapshot: Record<string, unknown> | null;
+      }>;
     }>(student.page, 'GET', '/api/v1/student/wrong-answers?page=0&size=100');
     const wrongItems = wrongAnswers.content ?? wrongAnswers.items ?? [];
     const newExamWrongItems = wrongItems.filter(
-      (item) => item.sourceType === 'EXAM' && !wrongBeforeIds.has(item.id)
+      (item) =>
+        item.sourceType === 'EXAM' &&
+        item.questionSnapshot?.sourceText === runId &&
+        !wrongBeforeIds.has(item.id)
     );
     expect(newExamWrongItems).toHaveLength(submittedWrongCount);
 

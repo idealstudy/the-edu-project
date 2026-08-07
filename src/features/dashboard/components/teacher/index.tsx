@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { TeacherDashboardHeader } from '@/features/dashboard/components/header/teacher-header';
 
 import { useTeacherDashboardStudyRoomListQuery } from '../../hooks/use-teacher-dashboard-query';
+import { LearningInboxCard } from './learning-inbox-card';
 
 const DashboardTeacher = ({
   initialMemberName,
@@ -19,6 +20,9 @@ const DashboardTeacher = ({
     <div className="min-h-screen w-full bg-[#f6f7f9]">
       <TeacherDashboardHeader initialMemberName={initialMemberName} />
       <main className="mx-auto w-full max-w-[1120px] px-6 py-6">
+        <div className="mb-4">
+          <LearningInboxCard />
+        </div>
         <div className="mb-4 flex items-center gap-2">
           <h2 className="text-base font-extrabold">학생별 수업</h2>
           <span className="text-xs text-[#747980]">
