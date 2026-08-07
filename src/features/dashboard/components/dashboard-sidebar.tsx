@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
+import { useStudentDashboardStudyRoomListQuery } from '@/features/dashboard/hooks/use-student-dashboard-query';
 import { ListIcon } from '@/shared/components/icons';
 import { Sidebar } from '@/shared/components/sidebar';
 import { PRIVATE } from '@/shared/constants/route';
@@ -9,6 +10,7 @@ import { trackGnbLogoutClick } from '@/shared/lib/analytics';
 import {
   ChartNoAxesCombined,
   ClipboardListIcon,
+  Diamond,
   GraduationCap,
   Handshake,
   History,
@@ -22,6 +24,10 @@ import {
 export const DashboardSidebar = () => {
   const { role } = useRole();
   const { logout } = useAuth();
+  const studentRooms = useStudentDashboardStudyRoomListQuery({
+    enabled: role === 'ROLE_STUDENT',
+  });
+  const primaryRoom = studentRooms.data?.[0];
 
   const handleLogout = () => {
     logout();
@@ -30,12 +36,17 @@ export const DashboardSidebar = () => {
 
   return (
     <Sidebar>
+      <div className="px-2 pt-1 pb-3 text-sm font-extrabold tracking-[-0.045em] text-orange-9">
+        D-EDU
+        <small className="mt-0.5 block text-[9.5px] font-semibold tracking-normal text-gray-8">
+          {role === 'ROLE_TEACHER' ? '선생님' : '내 학습'}
+        </small>
+      </div>
       {/* 학생 전용: 내 학습 / 친구 / 약점 트리 (2.0 학생 중심 코어) — 선생님·학부모 화면 아님 */}
       {role === 'ROLE_STUDENT' && (
         <>
           <Sidebar.Item
             href={PRIVATE.DASHBOARD.STUDENT}
-            matchPath={PRIVATE.DASHBOARD.STUDENT}
           >
             <GraduationCap
               size={20}
@@ -66,6 +77,52 @@ export const DashboardSidebar = () => {
             <Sidebar.Text>돌아보기</Sidebar.Text>
           </Sidebar.Item>
 
+          {primaryRoom && (
+            <>
+              <div className="px-2 pt-4 pb-1 text-[10px] font-extrabold text-gray-8">
+                소속
+              </div>
+              <Sidebar.Item
+                href={PRIVATE.ROOM.DETAIL(primaryRoom.id)}
+                matchPath={`/study-rooms/${primaryRoom.id}`}
+              >
+                <ClipboardListIcon
+                  size={20}
+                  className="shrink-0"
+                />
+                <Sidebar.Text className="truncate">
+                  {primaryRoom.name}
+                </Sidebar.Text>
+              </Sidebar.Item>
+            </>
+          )}
+
+          <div className="px-2 pt-4 pb-1 text-[10px] font-extrabold text-gray-8">
+            더 보기
+          </div>
+
+          <Sidebar.Item
+            href={PRIVATE.DASHBOARD.WRONG_ANSWERS}
+            matchPath={PRIVATE.DASHBOARD.WRONG_ANSWERS}
+          >
+            <History
+              size={20}
+              className="shrink-0"
+            />
+            <Sidebar.Text>오답 회독</Sidebar.Text>
+          </Sidebar.Item>
+
+          <Sidebar.Item
+            href={PRIVATE.DASHBOARD.EXAM_HALL}
+            matchPath={PRIVATE.DASHBOARD.EXAM_HALL}
+          >
+            <Diamond
+              size={20}
+              className="shrink-0"
+            />
+            <Sidebar.Text>응시장</Sidebar.Text>
+          </Sidebar.Item>
+
           <Sidebar.Item
             href={PRIVATE.FRIENDS.INDEX}
             matchPath={PRIVATE.FRIENDS.INDEX}
@@ -78,14 +135,14 @@ export const DashboardSidebar = () => {
           </Sidebar.Item>
 
           <Sidebar.Item
-            href={PRIVATE.TREE.INDEX}
-            matchPath={PRIVATE.TREE.INDEX}
+            href={PRIVATE.POINTS.INDEX}
+            matchPath={PRIVATE.POINTS.INDEX}
           >
-            <Sprout
+            <Diamond
               size={20}
               className="shrink-0"
             />
-            <Sidebar.Text>약점 트리</Sidebar.Text>
+            <Sidebar.Text>포인트</Sidebar.Text>
           </Sidebar.Item>
         </>
       )}
@@ -124,6 +181,24 @@ export const DashboardSidebar = () => {
           <User2Icon className="shrink-0" />
           <Sidebar.Text>마이페이지</Sidebar.Text>
         </Sidebar.Item>
+      )}
+
+      {role === 'ROLE_STUDENT' && (
+        <>
+          <div className="px-2 pt-4 pb-1 text-[10px] font-extrabold text-gray-8">
+            오픈챌린지에서 열립니다
+          </div>
+          <Sidebar.Item
+            href={PRIVATE.TREE.INDEX}
+            matchPath={PRIVATE.TREE.INDEX}
+          >
+            <Sprout
+              size={20}
+              className="shrink-0"
+            />
+            <Sidebar.Text>약점 나무 ↗</Sidebar.Text>
+          </Sidebar.Item>
+        </>
       )}
 
       {/* 자녀 학습 (학부모 전용 — 자녀 목록·학습 리포트) */}

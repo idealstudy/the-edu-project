@@ -52,11 +52,11 @@ const SidebarRoot = ({ children }: { children: ReactNode }) => {
     <div
       data-dashboard-sidebar
       className={cn(
-        'top-header-height fixed left-0 z-50 hidden h-[calc(100dvh-var(--spacing-header-height))] flex-col py-3',
-        'desktop:flex'
+        'fixed top-0 left-0 z-40 hidden h-dvh flex-col',
+        'md:flex'
       )}
     >
-      <aside className="bg-system-background-alt w-sidebar-width relative flex-1 flex-col overflow-hidden rounded-r-[12px] border-y border-r border-[#D9D9D9] p-3">
+      <aside className="relative flex w-[186px] flex-1 flex-col overflow-hidden border-r border-[#e0e0e0] bg-white p-3">
         {children}
       </aside>
     </div>
@@ -95,7 +95,7 @@ const SidebarItem = ({
       href={href}
       prefetch={prefetch}
       className={cn(
-        'flex min-h-[58px] items-center gap-2 rounded-lg px-5 font-bold',
+        'flex min-h-11 items-center gap-2 rounded-lg px-2.5 text-[12.5px] font-semibold',
         isActive
           ? 'text-key-color-primary bg-[#FFF4F1]'
           : 'hover:bg-gray-scale-gray-5',
