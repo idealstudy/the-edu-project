@@ -1,11 +1,8 @@
 import { PRIVATE } from '@/shared/constants';
-import type { Page } from '@playwright/test';
-import { expect, test } from '@playwright/test';
+import { type Page, expect, test } from '@playwright/test';
 
-import { mockGet, okBody, pageBody, setupCatchAll } from './helpers/api-mock';
+import { okBody, setupCatchAll } from './helpers/api-mock';
 import { mockMemberInfo, setAuthCookie } from './helpers/auth-mock';
-
-// ─── 상수 ────────────────────────────────────────────────────────────────────
 
 const STUDENT_MEMBER = {
   id: 2,
@@ -14,143 +11,104 @@ const STUDENT_MEMBER = {
   role: 'ROLE_STUDENT',
 };
 
-const STUDENT_ROOM = { id: 1, name: '참여한 스터디룸' };
+const EMPTY_UNIT_NOTE_LIBRARY = { totalPages: 0, nodes: [], detail: null };
 
-// ─── 픽스처 데이터 ───────────────────────────────────────────────────────────
+async function routeGet(page: Page, url: string, data: unknown) {
+  await page.route(url, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: okBody(data),
+    })
+  );
+}
 
-const NOTE = {
-  id: 1,
-  title: '수업노트 1',
-  studyRoomId: 1,
-  studyRoomName: STUDENT_ROOM.name,
-  contentPreview: '수업노트 내용',
-};
-
-const QNA = {
-  id: 1,
-  studyRoomId: 1,
-  studyRoomName: STUDENT_ROOM.name,
-  title: '질문 1',
-  contentPreview: '질문 내용',
-  regDate: '2026-01-01',
-};
-
-// ─── Mock 헬퍼 ───────────────────────────────────────────────────────────────
-
-async function setStudent(page: Page) {
+async function setupStudentDashboard(page: Page) {
+  await setupCatchAll(page);
   await setAuthCookie(page);
   await mockMemberInfo(page, STUDENT_MEMBER);
-}
-
-async function mockStudentStudyRooms(page: Page, rooms: object[]) {
-  await mockGet(
+  await routeGet(page, '**/api/v1/student/exams', []);
+  await routeGet(page, '**/api/v1/student/dashboard/report**', {
+    studyRoomCount: 0,
+    questionCount: 0,
+    answerCount: 0,
+    submittedHomeworkCount: 0,
+    referenceExpectedGrade: null,
+  });
+  await routeGet(
     page,
-    '**/api/v1/student/dashboard/study-rooms**',
-    okBody(rooms)
+    '**/api/v1/student/unit-notes**',
+    EMPTY_UNIT_NOTE_LIBRARY
   );
+  await routeGet(page, '**/api/v1/student/daily-problems**', {
+    queueDate: '2026-08-07',
+    backlogCount: 0,
+    onboarding: true,
+    items: [],
+    handoff: { returnUrl: '/dashboard/student', origin: 'DAILY_PROBLEM' },
+  });
+  await routeGet(page, '**/api/v1/student/wrong-answers**', {
+    totalCount: 0,
+    items: [],
+  });
 }
 
-async function mockStudentNotes(page: Page, notes: object[]) {
-  await mockGet(
-    page,
-    '**/api/v1/student/dashboard/teaching-notes**',
-    pageBody(notes)
-  );
-}
-
-async function mockStudentQnA(page: Page, qnas: object[]) {
-  await mockGet(page, '**/api/v1/student/dashboard/qna**', pageBody(qnas));
-}
-
-async function mockAllEmpty(page: Page) {
-  await mockStudentStudyRooms(page, []);
-  await mockStudentNotes(page, []);
-  await mockStudentQnA(page, []);
-}
-
-// ─── 학생 온보딩 테스트 ──────────────────────────────────────────────────────
-
-test.describe('학생 온보딩', () => {
+test.describe('학생 v22 대시보드 계약', () => {
   test.beforeEach(async ({ page }) => {
-    await setupCatchAll(page);
-    await setStudent(page);
+    await setupStudentDashboard(page);
   });
 
-  test('초기 상태: 스터디룸이 없을 때 초대 안내 타이틀이 보이고 닫기 버튼이 없다', async ({
+  test('첫 화면은 과거 온보딩 대신 지금 내 상태와 오늘 할 것을 보인다', async ({
     page,
   }) => {
-    await mockAllEmpty(page);
-
     await page.goto(PRIVATE.DASHBOARD.STUDENT);
-    await page.waitForSelector('[data-testid="student-onboarding"]');
 
-    await expect(page.getByText('선생님으로부터 초대를 받아')).toBeVisible();
-    await expect(page.getByRole('button', { name: '닫기' })).not.toBeVisible();
+    await expect(page.getByText('지금 내 상태')).toBeVisible();
+    await expect(page.getByText('오늘 할 것')).toBeVisible();
+    await expect(page.getByTestId('student-onboarding')).toHaveCount(0);
   });
 
-  test('스터디룸 참여 후: 타이틀이 변경되고 닫기 버튼이 표시된다', async ({
+  test('근거가 없으면 등급 숫자를 만들지 않고 응시장 행동을 보인다', async ({
     page,
   }) => {
-    await mockStudentStudyRooms(page, [STUDENT_ROOM]);
-    await mockStudentNotes(page, []);
-    await mockStudentQnA(page, []);
-
     await page.goto(PRIVATE.DASHBOARD.STUDENT);
-    await page.waitForSelector('[data-testid="student-onboarding"]');
 
+    const position = page.getByTestId('expected-grade-none');
+    await expect(position).toContainText('아직 등급을 계산할 자료가 없어요');
     await expect(
-      page.getByText('이제 디에듀의 다양한 기능을 이용해보세요!')
-    ).toBeVisible();
-    await expect(
-      page.getByTestId('onboarding-선생님 초대 받기-completed')
-    ).toBeVisible();
-    await expect(
-      page.getByTestId('onboarding-수업노트 확인하기-incompleted')
-    ).toBeVisible();
-    await expect(page.getByText('과제 제출하기')).not.toBeVisible();
-    await expect(page.getByRole('tab', { name: '과제' })).not.toBeVisible();
-    await expect(page.getByRole('button', { name: '닫기' })).toBeVisible();
+      page.getByRole('link', { name: /응시장 열기/ })
+    ).toHaveAttribute('href', PRIVATE.DASHBOARD.EXAM_HALL);
   });
 
-  test('노트가 있을 때: 노트 step 표시', async ({ page }) => {
-    await mockStudentStudyRooms(page, [STUDENT_ROOM]);
-    await mockStudentNotes(page, [NOTE]);
-    await mockStudentQnA(page, []);
-
-    await page.goto(PRIVATE.DASHBOARD.STUDENT);
-    await page.waitForSelector('[data-testid="student-onboarding"]');
-
-    await expect(
-      page.getByText('이제 디에듀의 다양한 기능을 이용해보세요!')
-    ).toBeVisible();
-    await expect(
-      page.getByTestId('onboarding-선생님 초대 받기-completed')
-    ).toBeVisible();
-    await expect(
-      page.getByTestId('onboarding-수업노트 확인하기-completed')
-    ).toBeVisible();
-    await expect(page.getByRole('button', { name: '닫기' })).toBeVisible();
-  });
-
-  test('모든 단계 완료 시: 온보딩 컴포넌트가 표시되지 않는다', async ({
+  test('시험과 수업 데이터가 없어도 오늘의 문제 빈 상태를 보인다', async ({
     page,
   }) => {
-    await mockStudentStudyRooms(page, [STUDENT_ROOM]);
-    await mockStudentNotes(page, [NOTE]);
-    await mockStudentQnA(page, [QNA]);
-
     await page.goto(PRIVATE.DASHBOARD.STUDENT);
 
-    await expect(page.getByText('수업노트 1')).toBeVisible();
-    await expect(page.getByText('질문 1')).toBeVisible();
-
-    await expect(page.getByTestId('student-onboarding')).toBeHidden();
+    await expect(page.getByTestId('daily-problems-empty')).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: '단권화 책 구경' })
+    ).toHaveAttribute('href', PRIVATE.DASHBOARD.UNIT_NOTES);
   });
 
-  test('과제 URL 직접 접근 시 수업노트로 이동한다', async ({ page }) => {
-    await page.goto(PRIVATE.HOMEWORK.LIST(STUDENT_ROOM.id));
+  test('단권화 진입은 과거 수업노트 온보딩과 무관하게 항상 보인다', async ({
+    page,
+  }) => {
+    await page.goto(PRIVATE.DASHBOARD.STUDENT);
 
-    await page.waitForURL(PRIVATE.NOTE.LIST(STUDENT_ROOM.id));
-    await expect(page).toHaveURL(PRIVATE.NOTE.LIST(STUDENT_ROOM.id));
+    await expect(page.getByTestId('unit-note-entry-card')).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: '단권화 열기' })
+    ).toHaveAttribute('href', PRIVATE.DASHBOARD.UNIT_NOTES);
+  });
+
+  test('돌아보기는 오늘 할 일과 회고 카드에서 직접 연다', async ({ page }) => {
+    await page.goto(PRIVATE.DASHBOARD.STUDENT);
+
+    await expect(page.getByTestId('student-agenda-flow-card')).toBeVisible();
+    await expect(page.getByRole('link', { name: /돌아보기/ })).toHaveAttribute(
+      'href',
+      PRIVATE.DASHBOARD.STUDENT_LOOK_BACK
+    );
   });
 });

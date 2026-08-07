@@ -1,16 +1,8 @@
-import {
-  type TeacherOnboardingDTO,
-  type TeacherOnboardingStepType,
-  TeacherOnboardingStepTypes,
-} from '@/entities/onboarding/types';
 import { PRIVATE } from '@/shared/constants';
-import type { Page } from '@playwright/test';
-import { expect, test } from '@playwright/test';
+import { type Page, expect, test } from '@playwright/test';
 
 import { okBody, setupCatchAll } from './helpers/api-mock';
 import { mockMemberInfo, setAuthCookie } from './helpers/auth-mock';
-
-// ─── Mock 데이터 ──────────────────────────────────────────────────────────────
 
 const TEACHER_MEMBER = {
   id: 1,
@@ -19,595 +11,188 @@ const TEACHER_MEMBER = {
   role: 'ROLE_TEACHER',
 };
 
-// 온보딩 데이터 생성 함수
-const makeTeacherOnboarding: (
-  nextStep: TeacherOnboardingStepType | null
-) => TeacherOnboardingDTO = (nextStep: TeacherOnboardingStepType | null) => {
-  const nextStepIdx = nextStep
-    ? TeacherOnboardingStepTypes.findIndex((step) => nextStep === step)
-    : TeacherOnboardingStepTypes.length; // nextStep이 null이면 모든 단계 완료로 간주
-  const completedSteps = TeacherOnboardingStepTypes.slice(0, nextStepIdx).map(
-    (step, index) => ({
-      stepName: step,
-      description: `Step ${index + 1} 설명입니다.`,
-      order: index + 1,
+const EMPTY_INBOX = {
+  recentExamCount: 0,
+  recentExam: [],
+  stuckAfterGraduationCount: 0,
+  stuckAfterGraduation: [],
+  neglectedCount: 0,
+  neglected: [],
+  neglectedThresholdDays: 3,
+};
+
+const EMPTY_RECOMMENDATIONS = {
+  weekOf: '2026-08-03',
+  weekEnd: '2026-08-09',
+  totalCount: 0,
+  doneCount: 0,
+  skippedCount: 0,
+  items: [],
+};
+
+const room = (id: number, studentName: string, todoCount: number) => ({
+  id,
+  name: `${studentName} 수업`,
+  studentName,
+  state: 'ACTIVE',
+  todoCount,
+  todoBreakdown: {
+    commentNeeded: todoCount,
+    todoApproval: 0,
+    notDoneReason: 0,
+    unreadSubmission: 0,
+  },
+});
+
+async function routeGet(page: Page, url: string, data: unknown) {
+  await page.route(url, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: okBody(data),
     })
   );
-  return {
-    completedSteps,
-    nextStep,
-    totalSteps: TeacherOnboardingStepTypes.length,
-    currentProgress: completedSteps.length,
-  };
-};
-
-const EMPTY_PAGEABLE = {
-  pageNumber: 0,
-  size: 20,
-  totalElements: 0,
-  totalPages: 0,
-  content: [],
-};
-
-const TEACHER_STUDY_ROOM = { id: 1, name: '테스트 스터디룸' };
-
-// ─── Mock 헬퍼 함수 ──────────────────────────────────────────────────────────
-
-async function mockTeacherOnboardingGet(
-  page: Page,
-  nextStep: TeacherOnboardingStepType | null
-) {
-  await page.route('**/api/v1/teacher/onboarding', async (route) => {
-    if (route.request().method() === 'GET') {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          status: 200,
-          message: 'ok',
-          data: makeTeacherOnboarding(nextStep),
-        }),
-      });
-    } else {
-      // POST - 기본 성공 응답
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: '{}',
-      });
-    }
-  });
 }
 
-async function setTeacher(page: Page) {
+async function setupTeacherDashboard(page: Page) {
+  await setupCatchAll(page);
   await setAuthCookie(page);
   await mockMemberInfo(page, TEACHER_MEMBER);
+  await routeGet(page, '**/api/v1/teacher/dashboard/study-rooms', []);
+  await routeGet(page, '**/api/v1/teacher/inbox', EMPTY_INBOX);
+  await routeGet(
+    page,
+    '**/api/v1/teacher/todos/recommendations',
+    EMPTY_RECOMMENDATIONS
+  );
 }
 
-// ─── 강사 온보딩 ──────────────────────────────────────────────────────────────
-
-test.describe('강사 온보딩', () => {
+test.describe('선생님 v22 대시보드 계약', () => {
   test.beforeEach(async ({ page }) => {
-    await setupCatchAll(page);
-    await page.route('**/api/v1/teacher/study-rooms', async (route) =>
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: okBody([]),
-      })
+    await setupTeacherDashboard(page);
+  });
+
+  test('수업 0개는 첫 스터디룸과 학생 초대 코드 행동을 보인다', async ({
+    page,
+  }) => {
+    await page.goto(PRIVATE.DASHBOARD.TEACHER);
+
+    const empty = page.getByTestId('teacher-rooms-empty');
+    await expect(empty).toContainText('아직 스터디룸이 하나도 없어요');
+    await expect(
+      empty.getByRole('link', { name: '첫 스터디룸 만들기' })
+    ).toHaveAttribute('href', PRIVATE.ROOM.CREATE);
+    await expect(
+      empty.getByRole('link', { name: '학생 초대 코드 보기' })
+    ).toHaveAttribute('href', PRIVATE.DASHBOARD.TEACHER_MY);
+  });
+
+  test('수업이 있으면 학생 카드와 손볼 것 수를 보인다', async ({ page }) => {
+    await routeGet(page, '**/api/v1/teacher/dashboard/study-rooms', [
+      room(11, '김서준', 4),
+    ]);
+
+    await page.goto(PRIVATE.DASHBOARD.TEACHER);
+
+    const rooms = page.getByTestId('teacher-rooms-list');
+    await expect(rooms).toContainText('김서준');
+    await expect(rooms).toContainText('손볼 것 4건');
+  });
+
+  test('수업 카드는 손볼 것 많은 순으로 정렬한다', async ({ page }) => {
+    await routeGet(page, '**/api/v1/teacher/dashboard/study-rooms', [
+      room(12, '박하윤', 1),
+      room(11, '김서준', 4),
+    ]);
+
+    await page.goto(PRIVATE.DASHBOARD.TEACHER);
+
+    const cards = page.getByTestId('teacher-rooms-list').locator('a');
+    await expect(cards.nth(0)).toContainText('김서준');
+    await expect(cards.nth(1)).toContainText('박하윤');
+  });
+
+  test('상단 수업 만들기는 실제 생성 경로로 간다', async ({ page }) => {
+    await page.goto(PRIVATE.DASHBOARD.TEACHER);
+
+    await expect(
+      page.getByRole('link', { name: '수업 만들기' })
+    ).toHaveAttribute('href', PRIVATE.ROOM.CREATE);
+  });
+
+  test('마이페이지는 초대 코드와 사용 시간을 보인다', async ({ page }) => {
+    await page.goto(PRIVATE.DASHBOARD.TEACHER_MY);
+
+    await expect(page.getByTestId('teacher-my-page')).toBeVisible();
+    await expect(page.getByText('학생 초대 코드')).toBeVisible();
+    await expect(page.getByText('이번 주 사용 시간')).toBeVisible();
+  });
+
+  test('과거 온보딩 컴포넌트를 다시 노출하지 않는다', async ({ page }) => {
+    await page.goto(PRIVATE.DASHBOARD.TEACHER);
+
+    await expect(page.getByTestId('teacher-onboarding')).toHaveCount(0);
+    await expect(page.getByText('학생별 수업')).toBeVisible();
+  });
+
+  test('처리할 항목이 없으면 처리함 0 상태를 보인다', async ({ page }) => {
+    await page.goto(PRIVATE.DASHBOARD.TEACHER);
+
+    await expect(page.getByRole('heading', { name: '처리함' })).toBeVisible();
+    await expect(
+      page.getByText('지금 확인할 방치 오답이나 5회독 실패 신호가 없어요.')
+    ).toBeVisible();
+  });
+
+  test('시험 오답이 있으면 처리함에 직접 쓰기를 보인다', async ({ page }) => {
+    await routeGet(page, '**/api/v1/teacher/inbox', {
+      ...EMPTY_INBOX,
+      recentExamCount: 1,
+      recentExam: [
+        {
+          id: 71,
+          studentId: 2,
+          sourceType: 'EXAM',
+          challengeId: null,
+          challengeAttemptId: null,
+          examAnswerId: 91,
+          questionSnapshot: { sourceText: 'v22 시험' },
+          treeNodeId: 14,
+          status: 'ACTIVE',
+          reviewCount: 1,
+          hintFreeSolveCount: 0,
+          lastReviewCorrect: false,
+          wrongAgainCount: 0,
+          nextReviewAt: null,
+          graduatedAt: null,
+          teacherComment: null,
+          commentedByTeacherId: null,
+          commentedAt: null,
+          difficulty: null,
+          nationalWrongRate: null,
+          title: '수열 12번',
+          questionText: '수열의 합을 구하세요.',
+          questionImageUrl: null,
+        },
+      ],
+    });
+
+    await page.goto(PRIVATE.DASHBOARD.TEACHER);
+
+    await expect(page.getByTestId('teacher-learning-inbox')).toBeVisible();
+    await expect(page.getByRole('button', { name: '직접 쓰기' })).toBeVisible();
+  });
+
+  test('수업 카드는 기존 스터디룸 노트 경로를 유지한다', async ({ page }) => {
+    await routeGet(page, '**/api/v1/teacher/dashboard/study-rooms', [
+      room(11, '김서준', 4),
+    ]);
+
+    await page.goto(PRIVATE.DASHBOARD.TEACHER);
+
+    await expect(page.getByRole('link', { name: /김서준/ })).toHaveAttribute(
+      'href',
+      '/study-rooms/11/note'
     );
-    await setTeacher(page);
-  });
-  test.describe('온보딩 UI 상태', () => {
-    test('초기 상태: 스터디룸 생성 안내 타이틀이 보이고 닫기 버튼이 없다', async ({
-      page,
-    }) => {
-      await mockTeacherOnboardingGet(page, 'CREATE_STUDY_ROOM');
-
-      await page.goto(PRIVATE.DASHBOARD.TEACHER);
-
-      // 온보딩 컴포넌트 표시 확인
-      await page.waitForSelector('[data-testid="teacher-onboarding"]');
-      await expect(page.getByTestId('teacher-onboarding')).toBeVisible();
-
-      await expect(
-        page.getByText('먼저 나만의 스터디룸을 생성하고')
-      ).toBeVisible();
-      await expect(page.getByText(' 학생을 초대해주세요')).toBeVisible();
-
-      // 스터디룸 생성이 off 상태
-      await expect(
-        page.getByTestId('onboarding-스터디룸 생성-incompleted')
-      ).toBeVisible();
-
-      // 학생 초대가 off 상태
-      await expect(
-        page.getByTestId('onboarding-학생 초대-incompleted')
-      ).toBeVisible();
-
-      // 닫기 버튼(tablet 이상)은 보이지 않아야 한다
-      await expect(
-        page.getByRole('button', { name: '닫기' })
-      ).not.toBeVisible();
-    });
-
-    test('스터디룸 생성 완료 후: 스터디룸 생성이 completed 상태가 된다', async ({
-      page,
-    }) => {
-      await mockTeacherOnboardingGet(page, 'INVITE_STUDENT');
-
-      await page.goto(PRIVATE.DASHBOARD.TEACHER);
-
-      // 온보딩 컴포넌트 표시 확인
-      await page.waitForSelector('[data-testid="teacher-onboarding"]');
-      await expect(page.getByTestId('teacher-onboarding')).toBeVisible();
-
-      await expect(
-        page.getByText('먼저 나만의 스터디룸을 생성하고')
-      ).toBeVisible();
-      await expect(page.getByText(' 학생을 초대해주세요')).toBeVisible();
-
-      // 스터디룸 생성이 off 상태
-      await expect(
-        page.getByTestId('onboarding-스터디룸 생성-completed')
-      ).toBeVisible();
-
-      // 학생 초대가 off 상태
-      await expect(
-        page.getByTestId('onboarding-학생 초대-incompleted')
-      ).toBeVisible();
-
-      // 닫기 버튼(tablet 이상)은 보이지 않아야 한다
-      await expect(
-        page.getByRole('button', { name: '닫기' })
-      ).not.toBeVisible();
-    });
-
-    test('학생 초대 완료 후: 타이틀이 변경되고 닫기 버튼이 표시된다', async ({
-      page,
-    }) => {
-      await mockTeacherOnboardingGet(page, 'CREATE_CLASS_NOTE');
-
-      await page.goto(PRIVATE.DASHBOARD.TEACHER);
-
-      // 온보딩 컴포넌트 표시 확인
-      await page.waitForSelector('[data-testid="teacher-onboarding"]');
-      await expect(page.getByTestId('teacher-onboarding')).toBeVisible();
-
-      await expect(
-        page.getByText('이제 디에듀의 다양한 기능을 이용해보세요!')
-      ).toBeVisible();
-
-      // 닫기 버튼이 표시되어야 한다
-      await expect(page.getByRole('button', { name: '닫기' })).toBeVisible();
-    });
-
-    test('모든 단계 완료 시: 온보딩 컴포넌트가 표시되지 않는다', async ({
-      page,
-    }) => {
-      await mockTeacherOnboardingGet(
-        page,
-        null // isCompleted = true
-      );
-
-      await setTeacher(page);
-
-      await page.goto(PRIVATE.DASHBOARD.TEACHER);
-
-      // 온보딩 컴포넌트 표시 확인
-      await expect(page.getByTestId('teacher-onboarding')).not.toBeVisible();
-    });
-
-    test('닫기 버튼 클릭 시: 온보딩이 화면에서 사라진다', async ({ page }) => {
-      // viewport를 tablet 이상으로 설정하여 닫기 버튼을 표시
-      await page.setViewportSize({ width: 1280, height: 800 });
-
-      await mockTeacherOnboardingGet(page, 'CREATE_CLASS_NOTE');
-
-      await page.goto(PRIVATE.DASHBOARD.TEACHER);
-
-      // 온보딩 컴포넌트 표시 확인
-      await page.waitForSelector('[data-testid="teacher-onboarding"]');
-      await expect(page.getByTestId('teacher-onboarding')).toBeVisible();
-
-      await page.getByRole('button', { name: '닫기' }).click();
-
-      await expect(page.getByTestId('teacher-onboarding')).not.toBeVisible();
-    });
-  });
-
-  test.describe('온보딩 POST 요청', () => {
-    test('스터디룸 생성 완료 시 CREATE_STUDY_ROOM stepType으로 POST 요청을 보낸다', async ({
-      page,
-    }) => {
-      let onboardingPostBody: object | null = null;
-
-      // 온보딩 nextStep이 CREATE_STUDY_ROOM인 상태
-      await page.route('**/api/v1/teacher/onboarding', async (route) => {
-        if (route.request().method() === 'GET') {
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-              status: 200,
-              message: 'ok',
-              data: makeTeacherOnboarding('CREATE_STUDY_ROOM'),
-            }),
-          });
-        } else {
-          // POST 요청 캡처
-          onboardingPostBody = route.request().postDataJSON() as object;
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: '{}',
-          });
-        }
-      });
-
-      // 스터디룸 목록 + 생성 API mock
-      await page.route('**/api/v1/teacher/study-rooms', async (route) => {
-        if (route.request().method() === 'POST') {
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-              status: 200,
-              message: 'ok',
-              data: { id: 1, name: '새 스터디룸' },
-            }),
-          });
-        } else {
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ status: 200, message: 'ok', data: [] }),
-          });
-        }
-      });
-
-      // 스터디룸 생성 후 이동 페이지 mock
-      await page.route('**/api/v1/teacher/study-rooms/**', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ status: 200, message: 'ok', data: {} }),
-        });
-      });
-
-      await page.goto(PRIVATE.ROOM.CREATE);
-
-      // Step 1: 이름과 설명 입력
-      await page
-        .getByPlaceholder('스터디룸 이름을 입력해주세요')
-        .fill('테스트 스터디룸');
-      await page
-        .getByPlaceholder(/내신 성적 향상/)
-        .fill('테스트 스터디룸 소개입니다.');
-
-      // Step 1 → Step 2: "다음" 클릭
-      await page.getByRole('button', { name: '다음' }).click();
-
-      // Step 2: 필수 라디오 선택 (각 항목을 고유 텍스트로 클릭)
-      await page.getByText('온라인').click(); // modality
-      await page.getByText('1:1 수업 (과외, 멘토링)').click(); // classForm
-      await page.getByText('수학').click(); // subjectType
-
-      // schoolInfo: "기타" 선택 → grade 입력 불필요
-      await page.getByText('학교를 선택하세요').click();
-      await page.getByRole('option', { name: '기타' }).click();
-
-      // "완료" 클릭
-      await page.getByRole('button', { name: '완료' }).click();
-
-      // onboarding POST 요청 검증
-      await expect
-        .poll(() => onboardingPostBody, { timeout: 5000 })
-        .toEqual({ stepType: 'CREATE_STUDY_ROOM' });
-    });
-
-    test('수업노트 저장 완료 시 CREATE_CLASS_NOTE stepType으로 POST 요청을 보낸다', async ({
-      page,
-    }) => {
-      let onboardingPostBody: object | null = null;
-
-      await page.route('**/api/v1/teacher/onboarding', async (route) => {
-        if (route.request().method() === 'GET') {
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-              status: 200,
-              message: 'ok',
-              data: makeTeacherOnboarding('CREATE_CLASS_NOTE'),
-            }),
-          });
-        } else {
-          onboardingPostBody = route.request().postDataJSON() as object;
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: '{}',
-          });
-        }
-      });
-
-      // 수업노트 관련 API mock
-      await page.route('**/api/v1/teacher/study-rooms', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            status: 200,
-            message: 'ok',
-            data: [TEACHER_STUDY_ROOM],
-          }),
-        });
-      });
-
-      await page.route('**/api/v1/teacher/study-rooms/1/**', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            status: 200,
-            message: 'ok',
-            data: {
-              members: [],
-              content: [],
-              totalElements: 0,
-              pageNumber: 0,
-              size: 0,
-              totalPages: 0,
-            },
-          }),
-        });
-      });
-
-      // 수업노트 저장 API mock
-      await page.route('**/api/v1/teacher/teaching-notes', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: '{}',
-        });
-      });
-
-      await setTeacher(page);
-
-      await page.goto(PRIVATE.NOTE.CREATE(1));
-
-      // 제목 입력
-      await page
-        .getByPlaceholder('수업 노트의 제목을 입력해주세요.')
-        .fill('테스트 수업 노트');
-
-      // 내용 입력 (Tiptap editor)
-      const editor = page.locator('[contenteditable="true"]').first();
-      await editor.click();
-      await page.keyboard.type('테스트 수업 내용입니다.');
-
-      // 공개 범위 선택 (Select 컴포넌트 트리거 → 옵션 클릭)
-      await page.getByText('범위를 선택하세요').click();
-      await page.getByRole('option', { name: '전체 공개' }).click();
-
-      // 저장하기 클릭
-      await page.getByRole('button', { name: '저장하기' }).click();
-
-      await expect
-        .poll(() => onboardingPostBody, { timeout: 5000 })
-        .toEqual({ stepType: 'CREATE_CLASS_NOTE' });
-    });
-
-    test('과제 저장 완료 시 ASSIGN_ASSIGNMENT stepType으로 POST 요청을 보낸다', async ({
-      page,
-    }) => {
-      let onboardingPostBody: object | null = null;
-
-      await page.route('**/api/v1/teacher/onboarding', async (route) => {
-        if (route.request().method() === 'GET') {
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-              status: 200,
-              message: 'ok',
-              data: makeTeacherOnboarding('ASSIGN_ASSIGNMENT'),
-            }),
-          });
-        } else {
-          onboardingPostBody = route.request().postDataJSON() as object;
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: '{}',
-          });
-        }
-      });
-
-      // 과제 관련 API mock
-      await page.route('**/api/v1/teacher/study-rooms/1/**', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            status: 200,
-            message: 'ok',
-            data: {
-              members: [],
-              content: [],
-              totalElements: 0,
-              pageNumber: 0,
-              size: 0,
-              totalPages: 0,
-            },
-          }),
-        });
-      });
-
-      // 과제 생성 API mock
-      await page.route(
-        '**/api/v1/teacher/study-rooms/1/homeworks',
-        async (route) => {
-          if (route.request().method() === 'POST') {
-            await route.fulfill({
-              status: 200,
-              contentType: 'application/json',
-              body: JSON.stringify({
-                status: 200,
-                message: 'ok',
-                data: { id: 1 },
-              }),
-            });
-          } else {
-            await route.fulfill({
-              status: 200,
-              contentType: 'application/json',
-              body: JSON.stringify({
-                status: 200,
-                message: 'ok',
-                data: EMPTY_PAGEABLE,
-              }),
-            });
-          }
-        }
-      );
-
-      await setTeacher(page);
-
-      await page.goto(PRIVATE.HOMEWORK.CREATE(1));
-
-      // 제목 입력
-      await page
-        .getByPlaceholder('과제의 제목을 입력해주세요.')
-        .fill('테스트 과제');
-
-      // 내용 입력 (Tiptap editor)
-      const editor = page.locator('[contenteditable="true"]').first();
-      await editor.click();
-      await page.keyboard.type('테스트 과제 내용입니다.');
-
-      // 마감 기한 입력 (미래 날짜)
-      const futureDate = new Date();
-      futureDate.setFullYear(futureDate.getFullYear() + 1);
-      const deadlineValue = futureDate.toISOString().slice(0, 16); // 'YYYY-MM-DDTHH:MM'
-      await page.locator('input[type="datetime-local"]').fill(deadlineValue);
-
-      // 저장하기 클릭
-      await page.getByRole('button', { name: '저장하기' }).click();
-
-      await expect
-        .poll(() => onboardingPostBody, { timeout: 5000 })
-        .toEqual({ stepType: 'ASSIGN_ASSIGNMENT' });
-    });
-
-    test('피드백 작성 완료 시 GIVE_FEEDBACK stepType으로 POST 요청을 보낸다', async ({
-      page,
-    }) => {
-      let onboardingPostBody: object | null = null;
-
-      await page.route('**/api/v1/teacher/onboarding', async (route) => {
-        if (route.request().method() === 'GET') {
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-              status: 200,
-              message: 'ok',
-              data: makeTeacherOnboarding('GIVE_FEEDBACK'),
-            }),
-          });
-        } else {
-          onboardingPostBody = route.request().postDataJSON() as object;
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: '{}',
-          });
-        }
-      });
-
-      // 과제 상세 조회 API mock (학생 제출물 포함)
-      await page.route(
-        '**/api/v1/teacher/study-rooms/1/homeworks/1',
-        async (route) => {
-          if (route.request().method() === 'GET') {
-            await route.fulfill({
-              status: 200,
-              contentType: 'application/json',
-              body: JSON.stringify({
-                status: 200,
-                message: 'ok',
-                data: {
-                  homework: {
-                    id: 1,
-                    teacherName: '테스트선생님',
-                    title: '테스트 과제',
-                    content: '{}',
-                    deadline: '2026-12-31T23:59:59',
-                    modifiedAt: '2026-01-01T00:00:00',
-                    reminderOffsets: [],
-                    teachingNoteInfoList: [],
-                  },
-                  homeworkStudents: [
-                    {
-                      id: 1,
-                      studentName: '테스트학생',
-                      readAt: null,
-                      studentId: 2,
-                      status: 'SUBMIT',
-                      submission: {
-                        content: '{}',
-                        resolvedContent: null,
-                        modifiedSubmissionAt: '2026-01-02T12:00:00',
-                      },
-                      feedback: null,
-                    },
-                  ],
-                },
-              }),
-            });
-          } else {
-            await route.continue();
-          }
-        }
-      );
-
-      // 피드백 POST API mock
-      await page.route(
-        '**/api/v1/teacher/study-rooms/1/homework-students/1/feedback',
-        async (route) => {
-          if (route.request().method() === 'POST') {
-            await route.fulfill({
-              status: 200,
-              contentType: 'application/json',
-              body: '{}',
-            });
-          } else {
-            await route.continue();
-          }
-        }
-      );
-
-      await setTeacher(page);
-
-      await page.goto(PRIVATE.HOMEWORK.DETAIL(1, 1));
-
-      // 케밥 메뉴 클릭 → "피드백 하기" 클릭
-      await page.getByAltText('study-notes').click();
-      await page.getByText('피드백 하기').click();
-
-      // 피드백 내용 입력 (Tiptap editor)
-      const feedbackEditor = page.locator('[contenteditable="true"]').first();
-      await feedbackEditor.click();
-      await page.keyboard.type('테스트 피드백 내용입니다.');
-
-      // 작성하기 클릭
-      await page.getByRole('button', { name: '작성하기' }).click();
-
-      await expect
-        .poll(() => onboardingPostBody, { timeout: 5000 })
-        .toEqual({ stepType: 'GIVE_FEEDBACK' });
-    });
   });
 });
