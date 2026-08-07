@@ -6,10 +6,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import {
-  type UnitNoteNode,
   type UnitNotePage,
   repository,
 } from '@/entities/unit-note';
+import StudentDashboardHeader from '@/features/dashboard/components/header/student-header';
 import { Skeleton } from '@/shared/components/loading';
 import { Button } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants/route';
@@ -20,11 +20,9 @@ import {
   BookOpen,
   Eye,
   EyeOff,
-  FileImage,
   FileText,
   GraduationCap,
   ImageOff,
-  PenLine,
   Pin,
   RefreshCw,
   Scissors,
@@ -48,14 +46,17 @@ type UnitNoteRoomProps = {
 
 type PagePreviewProps = {
   page: UnitNotePage;
+  compact?: boolean;
 };
 
-const PagePreview = ({ page }: PagePreviewProps) => {
+const PagePreview = ({ page, compact = false }: PagePreviewProps) => {
   const [failed, setFailed] = useState(false);
   const isImage = page.mimeType?.startsWith('image/');
   if (isImage && page.viewUrl && !failed) {
     return (
-      <div className="relative h-44 w-full overflow-hidden rounded-lg">
+      <div
+        className={`relative w-full overflow-hidden rounded-lg ${compact ? 'h-20' : 'h-44'}`}
+      >
         <Image
           fill
           unoptimized
@@ -69,7 +70,9 @@ const PagePreview = ({ page }: PagePreviewProps) => {
   }
   const Icon = page.mimeType === 'application/pdf' ? FileText : ImageOff;
   return (
-    <div className="bg-gray-1 text-gray-7 flex h-44 w-full flex-col items-center justify-center rounded-lg px-3 text-center">
+    <div
+      className={`bg-gray-1 text-gray-7 flex w-full flex-col items-center justify-center rounded-lg px-3 text-center ${compact ? 'h-20' : 'h-44'}`}
+    >
       <Icon size={30} />
       <span className="font-caption-heading mt-2 line-clamp-2">
         {page.fileName}
@@ -77,53 +80,6 @@ const PagePreview = ({ page }: PagePreviewProps) => {
       <span className="font-caption-normal mt-1">파일 미리보기</span>
     </div>
   );
-};
-
-const ConceptCover = ({ concept }: { concept: UnitNoteNode }) => {
-  const [failed, setFailed] = useState(false);
-  const cover = concept.coverPage;
-  const canPreview =
-    cover?.mimeType?.startsWith('image/') && cover.viewUrl && !failed;
-
-  if (canPreview) {
-    return (
-      <Image
-        fill
-        unoptimized
-        src={cover!.viewUrl!}
-        alt={`${concept.displayName} 표지`}
-        className="object-cover"
-        onError={() => setFailed(true)}
-      />
-    );
-  }
-
-  const Icon =
-    cover?.mimeType === 'application/pdf'
-      ? FileText
-      : cover?.source === 'PEN'
-        ? PenLine
-        : cover
-          ? FileImage
-          : BookOpen;
-  return (
-    <div className="bg-gray-1 text-gray-6 flex size-full flex-col items-center justify-center">
-      <Icon size={28} />
-      <span className="font-caption-normal mt-2 line-clamp-1 max-w-full px-2">
-        {cover?.fileName ?? '첫 페이지를 만들어 보세요'}
-      </span>
-    </div>
-  );
-};
-
-const aggregateLevel = (
-  root: UnitNoteNode,
-  concepts: UnitNoteNode[]
-): UnitNoteNode['leafLevel'] => {
-  const nodes = [root, ...concepts];
-  if (nodes.some((node) => node.leafLevel === 'DEEP')) return 'DEEP';
-  if (nodes.some((node) => node.leafLevel === 'LIT')) return 'LIT';
-  return 'GRAY';
 };
 
 export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
@@ -213,38 +169,27 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
     (total, concept) => total + concept.pageCount,
     0
   );
-  const branchPenPages = concepts.reduce(
-    (total, concept) => total + concept.penPageCount,
-    0
-  );
-  const branchUploadPages = concepts.reduce(
-    (total, concept) => total + concept.uploadPageCount,
-    0
-  );
   const branchProblems = concepts.reduce(
     (total, concept) => total + concept.relatedProblemCount,
     0
   );
 
   return (
-    <main className="bg-system-background min-h-screen px-4 py-6 md:px-8">
-      <div className="mx-auto w-full max-w-[1120px]">
+    <div className="min-h-screen bg-[#fcfbfa]">
+      <StudentDashboardHeader title="단권화 노트" />
+      <main className="w-full p-4">
         <Link
           href={PRIVATE.DASHBOARD.UNIT_NOTES}
-          className="font-label-heading text-gray-8 hover:text-orange-9 inline-flex min-h-11 items-center gap-2"
+          className="font-label-heading text-gray-8 hover:text-orange-9 inline-flex min-h-8 items-center gap-2"
         >
           <ArrowLeft size={18} />
           전체 단권화
         </Link>
 
-        <header className="border-gray-3 bg-gray-white mt-2 rounded-xl border p-5 md:p-7">
-          <div className="flex items-start gap-4">
-            <UnitNoteLeaf
-              level={aggregateLevel(root, concepts)}
-              className="mt-1 size-12"
-            />
-            <div>
-              <p className="font-caption-heading text-gray-7">
+        <header className="border-gray-3 bg-gray-white mt-2 rounded-xl border p-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="min-w-[200px] flex-1">
+              <p className="font-caption-heading text-gray-8">
                 {(
                   {
                     MATH_1: '대수',
@@ -260,72 +205,36 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                     GEOMETRY: '기하',
                   } as Record<string, string>
                 )[root.subject] ?? root.subject}{' '}
-                · 내가 만드는 책
+                · 단권화 노트
               </p>
-              <h1 className="font-title-heading text-gray-12 mt-1">
-                나의 {root.displayName} 단권화
+              <h1 className="text-gray-12 mt-1 text-lg font-extrabold">
+                {root.displayName}
               </h1>
-              <p className="font-body2-normal text-gray-8 mt-2">
-                선생님 판서 + 내 노트 + 관련 문제가 소단원별 지층으로 계속
-                쌓여요.
+              <p className="text-gray-8 mt-1 text-xs">
+                선생님 판서 · 내 필기 · 올린 파일을 한 단원에 모읍니다
               </p>
             </div>
-          </div>
-          <div className="border-orange-3 bg-orange-1 mt-5 rounded-lg border px-4 py-3">
-            <p className="font-body1-heading text-gray-12">
-              이 책, 지금 {branchPages}페이지
-            </p>
-            <p className="font-caption-normal text-gray-8 mt-1">
-              펜 {branchPenPages}장 · 굿노트/PDF {branchUploadPages}장 · 소단원{' '}
-              {concepts.length}개 · 관련 문제 {branchProblems}개
-            </p>
+            <div className="border-orange-3 bg-orange-1 min-w-[250px] rounded-lg border px-4 py-3">
+              <p className="text-gray-12 text-sm font-extrabold">
+                이 단원 숙련도 · {root.masteryScore}%
+              </p>
+              <div className="bg-gray-2 mt-2 h-2 overflow-hidden rounded-full">
+                <i
+                  className="bg-orange-7 block h-full"
+                  style={{ width: `${root.masteryScore}%` }}
+                />
+              </div>
+              <p className="text-gray-8 mt-2 text-[11px]">
+                문제 {branchProblems}개 · 노트 {branchPages}장
+              </p>
+            </div>
           </div>
         </header>
 
-        <section className="border-gray-3 bg-gray-white mt-5 rounded-xl border p-4 md:p-6">
-          <div className="flex items-center gap-2">
-            <BookOpen
-              size={22}
-              className="text-orange-7"
-            />
-            <div>
-              <h2 className="font-headline2-heading text-gray-12">내 책장</h2>
-              <p className="font-caption-normal text-gray-8">
-                낱장이 서가에 꽂히듯 소단원 두께를 한눈에 봐요.
-              </p>
-            </div>
-          </div>
-          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {concepts.map((concept) => (
-              <button
-                key={concept.nodeId}
-                type="button"
-                className={`min-h-40 cursor-pointer rounded-xl border p-3 text-left ${
-                  activeNodeId === concept.nodeId
-                    ? 'border-orange-7 bg-orange-1'
-                    : 'border-gray-3 hover:bg-gray-1'
-                }`}
-                onClick={() => setSelectedNodeId(concept.nodeId)}
-                data-testid={`unit-note-concept-card-${concept.nodeId}`}
-              >
-                <div className="bg-gray-white border-gray-2 relative h-20 overflow-hidden rounded-lg border">
-                  <ConceptCover concept={concept} />
-                </div>
-                <p className="font-label-heading text-gray-12 mt-3 truncate">
-                  {concept.displayName}
-                </p>
-                <p className="font-caption-normal text-gray-7 mt-1">
-                  {concept.pageCount}장
-                </p>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        <section className="border-gray-3 bg-gray-white mt-5 rounded-xl border p-4 md:p-6">
-          <h2 className="font-headline2-heading text-gray-12">소단원 목차</h2>
+        <section className="border-gray-3 bg-gray-white mt-3 rounded-xl border p-4">
+          <h2 className="text-gray-12 text-base font-extrabold">단원 목록</h2>
           <p className="font-caption-normal text-gray-8 mt-1">
-            날짜가 아니라 교과 개념으로 찾고, 날짜는 각 블록 안에 남겨요.
+            접힌 단원 행을 누르면 그 단원의 노트가 아래에 뜹니다.
           </p>
           <div className="mt-4 flex flex-col">
             {concepts.map((concept) => (
@@ -362,7 +271,55 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
           </div>
         </section>
 
-        <div className="mt-5 grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
+        <section className="border-gray-3 bg-gray-white mt-3 rounded-xl border p-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-gray-12 text-base font-extrabold">
+              {activeConcept.displayName} · 내 정리
+            </h2>
+            <span className="text-gray-8 text-xs">
+              내 필기 {activeConcept.penPageCount}장 · 올린 파일{' '}
+              {activeConcept.uploadPageCount}장 · 선생님 판서{' '}
+              {activeConcept.teachingNoteCount}장
+            </span>
+          </div>
+          {detailQuery.isPending ? (
+            <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-4">
+              <Skeleton.Block className="h-28 w-full" />
+              <Skeleton.Block className="h-28 w-full" />
+            </div>
+          ) : visiblePages.length === 0 ? (
+            <div className="border-gray-3 text-gray-8 mt-3 flex min-h-24 items-center justify-center rounded-lg border border-dashed text-xs font-bold">
+              아직 이 단원에 노트가 없어요. 아래에서 첫 장을 만드세요.
+            </div>
+          ) : (
+            <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-4">
+              {visiblePages.slice(0, 4).map((page) => (
+                <article
+                  key={page.pageId}
+                  className={`rounded-lg border p-2 ${page.source === 'TEACHER' ? 'border-orange-7 bg-orange-1' : 'border-gray-3'}`}
+                >
+                  <PagePreview
+                    page={page}
+                    compact
+                  />
+                  <p className="text-gray-11 mt-2 truncate text-[11px] font-bold">
+                    {page.fileName}
+                  </p>
+                  <p className="text-gray-7 mt-0.5 text-[10px]">
+                    {page.position}장 ·{' '}
+                    {page.source === 'PEN'
+                      ? '내 필기'
+                      : page.source === 'TEACHER'
+                        ? '선생님 판서'
+                        : '올린 파일'}
+                  </p>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <div className="mt-3 grid items-start gap-3 xl:grid-cols-[minmax(0,1fr)_380px]">
           <UnitNoteEditor
             key={activeConcept.nodeId}
             nodeId={activeConcept.nodeId}
@@ -631,8 +588,8 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
             </details>
           )}
         </section>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 };
 

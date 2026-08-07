@@ -206,10 +206,10 @@ export const UnitNoteEditor = ({
         </p>
       </div>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+      <div className="mt-4 flex flex-wrap gap-2">
         <button
           type="button"
-          className={`min-h-20 cursor-pointer rounded-xl border p-4 text-left ${
+          className={`min-h-11 cursor-pointer rounded-full border px-4 text-xs font-bold ${
             mode === 'PEN'
               ? 'border-orange-7 bg-orange-1'
               : 'border-gray-3 hover:bg-gray-1'
@@ -218,20 +218,17 @@ export const UnitNoteEditor = ({
           onClick={() => setMode('PEN')}
           data-testid="unit-note-mode-pen"
         >
-          <span className="font-body1-heading text-gray-12 flex items-center gap-2">
+          <span className="text-gray-12 flex items-center gap-2">
             <PenLine
               size={20}
               className="text-orange-7"
             />
             펜으로 쓰기
           </span>
-          <span className="font-caption-normal text-gray-8 mt-1 block">
-            앱 안에서 바로 필기 · 태블릿+펜슬
-          </span>
         </button>
         <button
           type="button"
-          className={`min-h-20 cursor-pointer rounded-xl border p-4 text-left ${
+          className={`min-h-11 cursor-pointer rounded-full border px-4 text-xs font-bold ${
             mode === 'UPLOAD'
               ? 'border-orange-7 bg-orange-1'
               : 'border-gray-3 hover:bg-gray-1'
@@ -240,15 +237,12 @@ export const UnitNoteEditor = ({
           onClick={() => setMode('UPLOAD')}
           data-testid="unit-note-mode-upload"
         >
-          <span className="font-body1-heading text-gray-12 flex items-center gap-2">
+          <span className="text-gray-12 flex items-center gap-2">
             <Paperclip
               size={20}
               className="text-orange-7"
             />
-            이미지·PDF 올리기
-          </span>
-          <span className="font-caption-normal text-gray-8 mt-1 block">
-            굿노트·노타빌리티 필기, 종이 사진
+            파일 올리기
           </span>
         </button>
       </div>
@@ -257,7 +251,7 @@ export const UnitNoteEditor = ({
         <div className="mt-5">
           <SolutionDrawingPad
             key={nodeId}
-            height={420}
+            height={280}
             persistKey={`unit-note:${nodeId}`}
             onStrokesChange={setStrokes}
           />
@@ -285,7 +279,7 @@ export const UnitNoteEditor = ({
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/jpeg,image/png,application/pdf"
+            accept="image/jpeg,image/png,image/heic,image/heif,application/pdf"
             multiple
             className="sr-only"
             onChange={(event) => void handleFiles(event)}
@@ -302,11 +296,11 @@ export const UnitNoteEditor = ({
               className="text-orange-7"
             />
             <span className="font-body1-heading text-gray-12 mt-3">
-              필기 이미지나 PDF를 올려 주세요
+              여기로 끌어다 놓거나 눌러서 고르세요
             </span>
             <span className="font-caption-normal text-gray-8 mt-2 leading-relaxed">
-              여러 장을 한 번에 선택할 수 있어요. PDF는 브라우저에서 낱장으로
-              분리해 각 장을 독립 업로드합니다.
+              굿노트·삼성노트에서 내보낸 PDF, 사진 JPG, PNG, HEIC를 여러 장
+              한 번에 올릴 수 있어요. PDF는 낱장으로 나눠 저장합니다.
             </span>
           </button>
 
