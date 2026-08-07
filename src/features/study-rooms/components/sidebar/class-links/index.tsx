@@ -117,7 +117,9 @@ export const StudyRoomClassLinks = ({
         </p>
         {canManage && (
           <button
+            type="button"
             className="hover:bg-gray-scale-gray-1 flex h-9 w-9 cursor-pointer items-center justify-center rounded-[8px]"
+            aria-label="수업 바로가기 링크 추가"
             onClick={() =>
               dispatch({
                 type: 'OPEN',

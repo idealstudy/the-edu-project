@@ -241,6 +241,7 @@ export const AdminQuestionBank = () => {
                 <Select.Trigger
                   className="mt-3 w-full"
                   data-testid="grade-cutoff-exam"
+                  aria-label="등급 기준표 시험 선택"
                 >
                   시험 선택
                 </Select.Trigger>

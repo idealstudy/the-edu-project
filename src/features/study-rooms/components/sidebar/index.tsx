@@ -239,6 +239,7 @@ export const StudyroomSidebar = ({
                 checked={invitation?.enabled}
                 onCheckedChange={toggleInvitation}
                 disabled={isInvitationLoading || isInvitationPending}
+                aria-label="초대 링크 활성화"
               />
               <div className="flex flex-1 flex-col gap-0.5">
                 <div className="text-gray-10 flex items-center gap-1">

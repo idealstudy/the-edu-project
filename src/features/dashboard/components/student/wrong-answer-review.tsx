@@ -54,6 +54,17 @@ const formatNextReview = (dateTime: string | null) => {
   }).format(new Date(dateTime))}에 다시 만나요.`;
 };
 
+const formatTeacherCommentedAt = (dateTime: string | null) => {
+  if (!dateTime) return null;
+
+  return new Intl.DateTimeFormat('ko-KR', {
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(new Date(dateTime));
+};
+
 const isReviewDue = (dateTime: string | null) =>
   !dateTime || new Date(dateTime).getTime() <= Date.now();
 
@@ -231,6 +242,30 @@ const ReviewForm = ({ wrongAnswer }: ReviewFormProps) => {
             저장된 문제 본문이 없어요
           </p>
         </div>
+      )}
+
+      {wrongAnswer.teacherComment && (
+        <section
+          className="border-orange-3 bg-orange-1 mt-5 rounded-xl border p-5"
+          data-testid="wrong-answer-teacher-comment"
+        >
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="font-body1-heading text-gray-12">
+              선생님 코멘트
+            </h2>
+            {wrongAnswer.commentedAt && (
+              <time
+                className="font-caption-normal text-gray-8"
+                dateTime={wrongAnswer.commentedAt}
+              >
+                {formatTeacherCommentedAt(wrongAnswer.commentedAt)}
+              </time>
+            )}
+          </div>
+          <p className="font-body2-normal text-gray-12 mt-3 leading-relaxed whitespace-pre-wrap">
+            {wrongAnswer.teacherComment}
+          </p>
+        </section>
       )}
 
       <div className="mt-6">

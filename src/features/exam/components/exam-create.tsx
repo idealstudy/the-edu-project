@@ -292,6 +292,7 @@ export const ExamCreate = ({
               <Select.Trigger
                 className="min-h-14 w-full bg-white text-left"
                 data-testid="teacher-exam-room"
+                aria-label="시험을 배정할 수업"
               >
                 {selectedRoom?.name ?? '수업 고르기'}
               </Select.Trigger>

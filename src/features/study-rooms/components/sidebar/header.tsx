@@ -56,6 +56,7 @@ export const StudyroomSidebarHeader = ({
             <DropdownMenu.Trigger
               className="flex cursor-pointer items-center justify-center"
               data-testid="study-room-kebab-button"
+              aria-label="스터디룸 메뉴"
             >
               <Image
                 src="/studyroom/ic-kebab.png"
