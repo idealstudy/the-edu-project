@@ -15,6 +15,7 @@ import { PRIVATE } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import { handleApiError } from '@/shared/lib/errors/error-handler';
 import { classifyExamError } from '@/shared/lib/errors/errors';
+import { getApiError } from '@/shared/lib/get-api-error';
 
 type ExamAttemptClientProps = { attemptId: number };
 
@@ -45,6 +46,7 @@ export const ExamAttemptClient = ({ attemptId }: ExamAttemptClientProps) => {
   }, [analyzed, analysis.data]);
 
   const sheet = attempt.data;
+  const attemptError = getApiError(attempt.error);
   const submittedAnalysis = submit.data;
   const result = submittedAnalysis ?? analysis.data;
   const answeredCount = useMemo(
@@ -60,6 +62,28 @@ export const ExamAttemptClient = ({ attemptId }: ExamAttemptClientProps) => {
     );
   }
   if (!sheet) {
+    if (attemptError?.code === 'EXAM_ATTEMPT_EXPIRED') {
+      return (
+        <section
+          className="mx-auto my-20 max-w-md rounded-xl border border-[#e4e4e7] bg-white p-8 text-center"
+          data-testid="exam-attempt-expired"
+        >
+          <h1 className="text-lg font-extrabold text-[#27272a]">
+            응시 기간이 끝난 시험이에요
+          </h1>
+          <p className="mt-2 text-sm leading-6 text-[#71717a]">
+            시험지는 더 이상 열 수 없습니다. 응시장에서 다른 시험을
+            확인해주세요.
+          </p>
+          <Button
+            asChild
+            className="mt-5"
+          >
+            <Link href={PRIVATE.DASHBOARD.EXAM_HALL}>시험 목록으로</Link>
+          </Button>
+        </section>
+      );
+    }
     return (
       <p className="py-20 text-center text-sm text-[#9f2f26]">
         시험을 불러오지 못했습니다.

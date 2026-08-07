@@ -375,6 +375,7 @@ export function classifyExamError(code?: string): ApiErrorType {
     case 'EXAM_NOT_FOUND':
     case 'EXAM_ASSIGNMENT_NOT_FOUND':
     case 'EXAM_ATTEMPT_NOT_FOUND':
+    case 'EXAM_ATTEMPT_EXPIRED':
       return 'CONTEXT';
 
     case 'MEDIA_NOT_OWNED':
