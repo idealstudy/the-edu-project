@@ -1,7 +1,7 @@
 import { PRIVATE } from '@/shared/constants';
 import { expect, test } from '@playwright/test';
 
-import { loginAsTeacher } from './helpers/auth';
+import { findOwnedStudyRoomId, loginAsTeacher } from './helpers/auth';
 
 // teacher account
 // NOTE: test.describe.serial을 사용해 생성 → 수정 → 삭제 순서로 실행합니다.
@@ -9,13 +9,14 @@ import { loginAsTeacher } from './helpers/auth';
 test.describe.serial('스터디노트 CRUD', () => {
   test.setTimeout(60_000);
 
-  const studyRoomId = Number(process.env.E2E_TEST_STUDY_ROOM_ID);
+  let studyRoomId: number;
 
   let noteTitle: string;
   let noteId: number;
 
   test.beforeEach(async ({ page }) => {
     await loginAsTeacher(page);
+    studyRoomId = await findOwnedStudyRoomId(page);
   });
 
   /* ─────────────────────────────────────────────────────

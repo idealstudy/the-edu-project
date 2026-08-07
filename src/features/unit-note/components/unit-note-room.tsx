@@ -82,6 +82,7 @@ const PagePreview = ({ page, compact = false }: PagePreviewProps) => {
 export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
   const libraryQuery = useUnitNoteLibraryQuery();
   const [selectedNodeId, setSelectedNodeId] = useState<number | null>(null);
+  const [editorMode, setEditorMode] = useState<'PEN' | 'UPLOAD' | null>(null);
 
   const root = libraryQuery.data?.nodes.find(
     (node) => node.nodeId === rootNodeId
@@ -298,185 +299,227 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
           </div>
         </header>
 
-        <section className="border-gray-3 bg-gray-white mt-3 rounded-xl border p-4">
-          <h2 className="text-gray-12 text-base font-extrabold">단원 목록</h2>
-          <p className="font-caption-normal text-gray-8 mt-1">
-            접힌 단원 행을 누르면 그 단원의 노트가 아래에 뜹니다.
-          </p>
-          <div className="mt-4 flex flex-col">
-            {concepts.map((concept) => (
-              <button
-                key={concept.nodeId}
-                type="button"
-                className={`border-gray-2 grid h-[46px] cursor-pointer grid-cols-[28px_minmax(0,1fr)_72px_44px] items-center gap-2 border-b text-left last:border-b-0 ${
-                  activeNodeId === concept.nodeId ? 'bg-orange-1' : ''
-                }`}
-                onClick={() => setSelectedNodeId(concept.nodeId)}
-                data-testid={`unit-note-concept-row-${concept.nodeId}`}
-              >
-                <UnitNoteLeaf
-                  level={concept.leafLevel}
-                  className="size-5"
-                />
-                <span className="min-w-0">
-                  <span className="font-body2-heading text-gray-12 block truncate">
-                    {concept.displayName}
-                  </span>
-                  <span className="font-caption-normal text-gray-7 block truncate">
-                    펜 {concept.penPageCount} · 업로드 {concept.uploadPageCount}{' '}
-                    · 선생님 {concept.teachingNoteCount}
-                  </span>
-                </span>
-                <span className="font-label-heading text-orange-9 text-right">
-                  {concept.pageCount === 0 ? '페이지 만들기' : '열기'}
-                </span>
-                <span className="font-caption-heading border-gray-3 bg-gray-white text-gray-8 flex h-8 w-11 items-center justify-center rounded-full border text-center">
-                  {concept.pageCount}장
-                </span>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        <section className="border-gray-3 bg-gray-white mt-3 rounded-xl border p-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <h2 className="text-gray-12 text-base font-extrabold">
-              {activeConcept.displayName} · 내 정리
-            </h2>
-            <span className="text-gray-8 text-xs">
-              내 필기 {activeConcept.penPageCount}장 · 올린 파일{' '}
-              {activeConcept.uploadPageCount}장 · 선생님 판서{' '}
-              {activeConcept.teachingNoteCount}장
-            </span>
-          </div>
-          {detailQuery.isPending ? (
-            <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-4">
-              <Skeleton.Block className="h-28 w-full" />
-              <Skeleton.Block className="h-28 w-full" />
-            </div>
-          ) : visiblePages.length === 0 ? (
-            <div className="border-gray-3 text-gray-8 mt-3 flex min-h-24 items-center justify-center rounded-lg border border-dashed text-xs font-bold">
-              아직 이 단원에 노트가 없어요. 아래에서 첫 장을 만드세요.
-            </div>
-          ) : (
-            <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-4">
-              {visiblePages.slice(0, 4).map((page) => (
-                <article
-                  key={page.pageId}
-                  className={`rounded-lg border p-2 ${page.source === 'TEACHER' ? 'border-orange-7 bg-orange-1' : 'border-gray-3'}`}
+        {editorMode === null && (
+          <section className="border-gray-3 bg-gray-white mt-3 rounded-xl border p-4">
+            <h2 className="text-gray-12 text-base font-extrabold">단원 목록</h2>
+            <p className="font-caption-normal text-gray-8 mt-1">
+              접힌 단원 행을 누르면 그 단원의 노트가 아래에 뜹니다.
+            </p>
+            <div className="mt-4 flex flex-col">
+              {concepts.map((concept) => (
+                <button
+                  key={concept.nodeId}
+                  type="button"
+                  className={`border-gray-2 grid h-[46px] cursor-pointer grid-cols-[28px_minmax(0,1fr)_72px_44px] items-center gap-2 border-b text-left last:border-b-0 ${
+                    activeNodeId === concept.nodeId ? 'bg-orange-1' : ''
+                  }`}
+                  onClick={() => setSelectedNodeId(concept.nodeId)}
+                  data-testid={`unit-note-concept-row-${concept.nodeId}`}
                 >
-                  <PagePreview
-                    page={page}
-                    compact
+                  <UnitNoteLeaf
+                    level={concept.leafLevel}
+                    className="size-5"
                   />
-                  <p className="text-gray-11 mt-2 truncate text-[11px] font-bold">
-                    {page.fileName}
-                  </p>
-                  <p className="text-gray-7 mt-0.5 text-[10px]">
-                    {page.position}장 ·{' '}
-                    {page.source === 'PEN'
-                      ? '내 필기'
-                      : page.source === 'TEACHER'
-                        ? '선생님 판서'
-                        : '올린 파일'}
-                  </p>
-                </article>
+                  <span className="min-w-0">
+                    <span className="font-body2-heading text-gray-12 block truncate">
+                      {concept.displayName}
+                    </span>
+                    <span className="font-caption-normal text-gray-7 block truncate">
+                      펜 {concept.penPageCount} · 업로드{' '}
+                      {concept.uploadPageCount} · 선생님{' '}
+                      {concept.teachingNoteCount}
+                    </span>
+                  </span>
+                  <span className="font-label-heading text-orange-9 text-right">
+                    {concept.pageCount === 0 ? '페이지 만들기' : '열기'}
+                  </span>
+                  <span className="font-caption-heading border-gray-3 bg-gray-white text-gray-8 flex h-8 w-11 items-center justify-center rounded-full border text-center">
+                    {concept.pageCount}장
+                  </span>
+                </button>
               ))}
             </div>
-          )}
-        </section>
+            <div className="mt-4 flex flex-wrap justify-end gap-2">
+              <button
+                type="button"
+                className="border-gray-3 min-h-11 rounded-lg border px-4 text-xs font-extrabold"
+                onClick={() => setEditorMode('UPLOAD')}
+                data-testid="unit-note-open-upload"
+              >
+                파일 올리기
+              </button>
+              <button
+                type="button"
+                className="bg-orange-9 border-orange-10 min-h-11 rounded-lg border px-4 text-xs font-extrabold text-white"
+                onClick={() => setEditorMode('PEN')}
+                data-testid="unit-note-open-pen"
+              >
+                {activeConcept.pageCount === 0 ? '펜으로 시작' : '이어 쓰기'}
+              </button>
+            </div>
+          </section>
+        )}
 
-        <div className="mt-3 grid items-start gap-3 xl:grid-cols-[minmax(0,1fr)_380px]">
-          <UnitNoteEditor
-            key={activeConcept.nodeId}
-            nodeId={activeConcept.nodeId}
-            displayName={activeConcept.displayName}
-            nextPageNumber={activeConcept.pageCount + 1}
-          />
-
-          <aside className="flex flex-col gap-5">
-            <section className="border-gray-3 bg-gray-white rounded-xl border p-4">
-              <div className="flex items-center gap-2">
-                <Pin
-                  size={20}
-                  className="text-orange-7"
-                />
-                <h2 className="font-body1-heading text-gray-12">선생님 판서</h2>
-                <span className="font-caption-heading bg-orange-1 text-orange-10 ml-auto rounded-full px-2.5 py-1">
-                  {detail?.teachingLayers.length ?? 0}층
-                </span>
+        {editorMode === null && (
+          <section className="border-gray-3 bg-gray-white mt-3 rounded-xl border p-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="text-gray-12 text-base font-extrabold">
+                {activeConcept.displayName} · 내 정리
+              </h2>
+              <span className="text-gray-8 text-xs">
+                내 필기 {activeConcept.penPageCount}장 · 올린 파일{' '}
+                {activeConcept.uploadPageCount}장 · 선생님 판서{' '}
+                {activeConcept.teachingNoteCount}장
+              </span>
+            </div>
+            {detailQuery.isPending ? (
+              <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-4">
+                <Skeleton.Block className="h-28 w-full" />
+                <Skeleton.Block className="h-28 w-full" />
               </div>
-              {detailQuery.isPending ? (
-                <Skeleton.Block className="mt-3 h-24 w-full" />
-              ) : (detail?.teachingLayers.length ?? 0) === 0 ? (
-                <p className="font-caption-normal text-gray-7 mt-3">
-                  이 소단원에 연결된 판서가 아직 없어요.
-                </p>
-              ) : (
-                <div className="mt-3 flex flex-col gap-2">
-                  {detail?.teachingLayers.map((layer) => (
-                    <details
-                      key={layer.teachingNoteId}
-                      className="border-gray-3 rounded-lg border p-3"
-                    >
-                      <summary className="font-label-heading text-gray-11 cursor-pointer">
-                        {layer.title}
-                      </summary>
-                      <p className="font-caption-normal text-gray-8 mt-2 leading-relaxed">
-                        {layer.summary}
-                      </p>
-                      <button
-                        type="button"
-                        className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-lg border border-[#e1aa8d] px-3 text-xs font-bold text-[#9a441f] disabled:opacity-50"
-                        disabled={snippingId !== null}
-                        onClick={() => void appendTeachingSnip(layer)}
-                      >
-                        <Scissors size={16} />
-                        {snippingId === layer.teachingNoteId
-                          ? '조각 붙이는 중'
-                          : '판서 조각을 내 노트에 붙이기'}
-                      </button>
-                    </details>
-                  ))}
-                </div>
-              )}
-            </section>
-
-            <section className="border-gray-3 bg-gray-white rounded-xl border p-4">
-              <div className="flex items-center gap-2">
-                <GraduationCap
-                  size={20}
-                  className="text-orange-7"
-                />
-                <h2 className="font-body1-heading text-gray-12">관련 문제</h2>
+            ) : visiblePages.length === 0 ? (
+              <div className="border-gray-3 text-gray-8 mt-3 flex min-h-24 items-center justify-center rounded-lg border border-dashed text-xs font-bold">
+                아직 이 단원에 노트가 없어요. 아래에서 첫 장을 만드세요.
               </div>
-              {(detail?.relatedProblems.length ?? 0) === 0 ? (
-                <p className="font-caption-normal text-gray-7 mt-3">
-                  이 소단원과 연결된 오답이 아직 없어요.
-                </p>
-              ) : (
-                <div className="mt-3 flex flex-col gap-2">
-                  {detail?.relatedProblems.map((problem) => (
-                    <Link
-                      key={problem.wrongAnswerId}
-                      href={PRIVATE.DASHBOARD.WRONG_ANSWER_REVIEW(
-                        problem.wrongAnswerId
-                      )}
-                      className="border-gray-3 hover:border-orange-5 rounded-lg border p-3"
-                    >
-                      <p className="font-label-heading text-gray-11">
-                        {problem.title}
-                      </p>
-                      <p className="font-caption-normal text-gray-7 mt-1 line-clamp-2">
-                        {problem.sourceText} · {problem.reviewCount}회독째
-                      </p>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </section>
-          </aside>
-        </div>
+            ) : (
+              <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-4">
+                {visiblePages.slice(0, 4).map((page) => (
+                  <article
+                    key={page.pageId}
+                    className={`rounded-lg border p-2 ${page.source === 'TEACHER' ? 'border-orange-7 bg-orange-1' : 'border-gray-3'}`}
+                  >
+                    <PagePreview
+                      page={page}
+                      compact
+                    />
+                    <p className="text-gray-11 mt-2 truncate text-[11px] font-bold">
+                      {page.fileName}
+                    </p>
+                    <p className="text-gray-7 mt-0.5 text-[10px]">
+                      {page.position}장 ·{' '}
+                      {page.source === 'PEN'
+                        ? '내 필기'
+                        : page.source === 'TEACHER'
+                          ? '선생님 판서'
+                          : '올린 파일'}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {editorMode !== null && (
+          <div className="mt-3">
+            <button
+              type="button"
+              className="border-gray-3 text-gray-9 mb-3 min-h-10 rounded-lg border px-3 text-xs font-bold"
+              onClick={() => setEditorMode(null)}
+            >
+              단원 목록으로
+            </button>
+            <div
+              className="grid items-start gap-3 md:grid-cols-[minmax(0,1fr)_300px]"
+              data-testid="unit-note-editor-first-view"
+            >
+              <UnitNoteEditor
+                key={activeConcept.nodeId}
+                nodeId={activeConcept.nodeId}
+                displayName={activeConcept.displayName}
+                nextPageNumber={activeConcept.pageCount + 1}
+                initialMode={editorMode}
+              />
+
+              <aside className="flex flex-col gap-5">
+                <section className="border-gray-3 bg-gray-white rounded-xl border p-4">
+                  <div className="flex items-center gap-2">
+                    <Pin
+                      size={20}
+                      className="text-orange-7"
+                    />
+                    <h2 className="font-body1-heading text-gray-12">
+                      선생님 판서
+                    </h2>
+                    <span className="font-caption-heading bg-orange-1 text-orange-10 ml-auto rounded-full px-2.5 py-1">
+                      {detail?.teachingLayers.length ?? 0}층
+                    </span>
+                  </div>
+                  {detailQuery.isPending ? (
+                    <Skeleton.Block className="mt-3 h-24 w-full" />
+                  ) : (detail?.teachingLayers.length ?? 0) === 0 ? (
+                    <p className="font-caption-normal text-gray-7 mt-3">
+                      이 소단원에 연결된 판서가 아직 없어요.
+                    </p>
+                  ) : (
+                    <div className="mt-3 flex flex-col gap-2">
+                      {detail?.teachingLayers.map((layer) => (
+                        <details
+                          key={layer.teachingNoteId}
+                          className="border-gray-3 rounded-lg border p-3"
+                        >
+                          <summary className="font-label-heading text-gray-11 cursor-pointer">
+                            {layer.title}
+                          </summary>
+                          <p className="font-caption-normal text-gray-8 mt-2 leading-relaxed">
+                            {layer.summary}
+                          </p>
+                          <button
+                            type="button"
+                            className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-lg border border-[#e1aa8d] px-3 text-xs font-bold text-[#9a441f] disabled:opacity-50"
+                            disabled={snippingId !== null}
+                            onClick={() => void appendTeachingSnip(layer)}
+                          >
+                            <Scissors size={16} />
+                            {snippingId === layer.teachingNoteId
+                              ? '조각 붙이는 중'
+                              : '판서 조각을 내 노트에 붙이기'}
+                          </button>
+                        </details>
+                      ))}
+                    </div>
+                  )}
+                </section>
+
+                <section className="border-gray-3 bg-gray-white rounded-xl border p-4">
+                  <div className="flex items-center gap-2">
+                    <GraduationCap
+                      size={20}
+                      className="text-orange-7"
+                    />
+                    <h2 className="font-body1-heading text-gray-12">
+                      관련 문제
+                    </h2>
+                  </div>
+                  {(detail?.relatedProblems.length ?? 0) === 0 ? (
+                    <p className="font-caption-normal text-gray-7 mt-3">
+                      이 소단원과 연결된 오답이 아직 없어요.
+                    </p>
+                  ) : (
+                    <div className="mt-3 flex flex-col gap-2">
+                      {detail?.relatedProblems.map((problem) => (
+                        <Link
+                          key={problem.wrongAnswerId}
+                          href={PRIVATE.DASHBOARD.WRONG_ANSWER_REVIEW(
+                            problem.wrongAnswerId
+                          )}
+                          className="border-gray-3 hover:border-orange-5 rounded-lg border p-3"
+                        >
+                          <p className="font-label-heading text-gray-11">
+                            {problem.title}
+                          </p>
+                          <p className="font-caption-normal text-gray-7 mt-1 line-clamp-2">
+                            {problem.sourceText} · {problem.reviewCount}회독째
+                          </p>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </section>
+              </aside>
+            </div>
+          </div>
+        )}
 
         <section className="border-gray-3 bg-gray-white mt-5 rounded-xl border p-4 md:p-6">
           <h2 className="font-headline2-heading text-gray-12">

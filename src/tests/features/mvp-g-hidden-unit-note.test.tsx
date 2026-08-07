@@ -73,6 +73,18 @@ vi.mock('@/features/unit-note/components/unit-note-leaf', () => ({
 }));
 
 describe('MVP-G 숨긴 선생님 단권화 페이지', () => {
+  test('편집 행동을 누르면 단원 목록 대신 편집 도구가 첫 작업 영역에 온다', () => {
+    renderWithProviders(<UnitNoteRoom rootNodeId={10} />);
+
+    fireEvent.click(screen.getByTestId('unit-note-open-pen'));
+
+    const firstView = screen.getByTestId('unit-note-editor-first-view');
+    expect(firstView).toHaveTextContent('편집기');
+    expect(firstView).toHaveTextContent('선생님 판서');
+    expect(screen.queryByText('단원 목록')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '단원 목록으로' })).toBeEnabled();
+  });
+
   test('기본 접힘으로 표시하고 다시 꺼내기를 요청한다', () => {
     renderWithProviders(<UnitNoteRoom rootNodeId={10} />);
 

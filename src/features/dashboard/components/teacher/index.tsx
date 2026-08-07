@@ -20,20 +20,19 @@ const DashboardTeacher = ({
     <div className="min-h-screen w-full bg-[#f6f7f9]">
       <TeacherDashboardHeader initialMemberName={initialMemberName} />
       <main className="mx-auto w-full max-w-[1120px] px-6 py-6">
-        <div className="mb-4">
-          <LearningInboxCard />
-        </div>
         <div className="mb-4 flex items-center gap-2">
           <h2 className="text-base font-extrabold">학생별 수업</h2>
           <span className="text-xs text-[#747980]">
             카드에서 손볼 것과 도착지를 바로 확인합니다
           </span>
-          <Link
-            href="/study-rooms/new"
-            className="ml-auto rounded-md bg-[#222] px-3 py-2 text-xs font-bold text-white"
-          >
-            수업 만들기
-          </Link>
+          {rooms.length > 0 && (
+            <Link
+              href="/study-rooms/new"
+              className="ml-auto rounded-md bg-[#222] px-3 py-2 text-xs font-bold text-white"
+            >
+              수업 만들기
+            </Link>
+          )}
         </div>
         {isPending ? (
           <div className="rounded-xl border bg-white p-10 text-center text-sm">
@@ -111,6 +110,14 @@ const DashboardTeacher = ({
                 </div>
               </Link>
             ))}
+          </div>
+        )}
+        {rooms.length > 0 && (
+          <div
+            className="mt-4"
+            data-testid="teacher-learning-inbox-after-rooms"
+          >
+            <LearningInboxCard />
           </div>
         )}
       </main>

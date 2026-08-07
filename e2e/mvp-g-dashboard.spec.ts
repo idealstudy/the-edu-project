@@ -389,6 +389,7 @@ test.describe('MVP-G 학생 대시보드 코어', () => {
     );
 
     await page.goto('/dashboard/student/wrong-answers/101');
+    await page.getByTestId('wrong-answer-open-solver').click();
     await page.getByTestId('wrong-answer-used-hint').click();
     await page.getByTestId('wrong-answer-submit-incorrect').click();
 
@@ -416,6 +417,7 @@ test.describe('MVP-G 학생 대시보드 코어', () => {
     );
 
     await page.goto('/dashboard/student/wrong-answers/101');
+    await page.getByTestId('wrong-answer-open-solver').click();
     await page.getByTestId('wrong-answer-submit-correct').click();
 
     await expect(page.getByTestId('wrong-answer-review-error')).toContainText(

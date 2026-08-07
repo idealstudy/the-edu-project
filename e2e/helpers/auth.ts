@@ -16,6 +16,20 @@ export async function loginAsTeacher(page: Page) {
   await expect(page).toHaveURL(PRIVATE.DASHBOARD.TEACHER);
 }
 
+export async function findOwnedStudyRoomId(page: Page): Promise<number> {
+  await page.goto(PRIVATE.DASHBOARD.TEACHER);
+  const roomLink = page
+    .locator('a[href^="/study-rooms/"][href$="/note"]')
+    .first();
+  await expect(roomLink).toBeVisible();
+  const href = await roomLink.getAttribute('href');
+  const studyRoomId = Number(href?.match(/^\/study-rooms\/(\d+)\/note$/)?.[1]);
+  if (!Number.isSafeInteger(studyRoomId) || studyRoomId <= 0) {
+    throw new Error('로그인한 선생님의 소유 스터디룸을 찾지 못했습니다.');
+  }
+  return studyRoomId;
+}
+
 export async function loginAsStudent(page: Page) {
   await page.goto('/login');
   await page

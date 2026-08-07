@@ -37,6 +37,9 @@ test.describe('소셜 - 전화번호 친구추가', () => {
     page,
   }) => {
     await login(page, STUDENT_EMAIL, STUDENT_PASSWORD);
+    await page.addInitScript(() => {
+      window.localStorage.setItem('dedu:friends-tutorial-seen', '1');
+    });
     await page.goto(PRIVATE.FRIENDS.INDEX);
 
     // "전화번호로 친구를 추가" 입력(앞 0 보존 - String e2e)

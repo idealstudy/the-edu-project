@@ -158,8 +158,31 @@ describe('MVP-G 죽은 버튼 회귀', () => {
 
     expect(screen.getByTestId('teacher-learning-inbox')).toBeVisible();
     expect(screen.getByRole('button', { name: '직접 쓰기' })).toBeVisible();
-    expect(screen.getByTestId('teacher-rooms-list')).toBeVisible();
+    const roomList = screen.getByTestId('teacher-rooms-list');
+    const inbox = screen.getByTestId('teacher-learning-inbox-after-rooms');
+    expect(roomList).toBeVisible();
+    expect(
+      roomList.compareDocumentPosition(inbox) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
     expect(screen.getByText(/김서준 수업/)).toBeVisible();
+  });
+
+  it('수업 0 빈 상태는 승인된 두 복구 행동만 첫 화면에 둔다', () => {
+    mocks.teacherRooms.mockReturnValue({ data: [], isPending: false });
+
+    render(<DashboardTeacher initialMemberName="한지원" />);
+
+    expect(screen.getByTestId('teacher-rooms-empty')).toBeVisible();
+    expect(
+      screen.getByRole('link', { name: '첫 스터디룸 만들기' })
+    ).toBeVisible();
+    expect(
+      screen.getByRole('link', { name: '학생 초대 코드 보기' })
+    ).toBeVisible();
+    expect(
+      screen.queryByTestId('teacher-learning-inbox-after-rooms')
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: '수업 만들기' })).toBeNull();
   });
 
   it('학습 관리의 7개 진입점을 현재 스터디룸 기준 실라우트에 연결한다', () => {

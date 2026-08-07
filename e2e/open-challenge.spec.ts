@@ -115,14 +115,8 @@ test.describe('오픈챌린지 풀이 → 결과', () => {
     page,
   }) => {
     await loginAsStudent(page);
-
-    await page.goto(PUBLIC.CHALLENGES.LIST);
-
-    const firstCard = page.getByTestId('open-challenge-card').first();
-    await expect(firstCard).toBeVisible();
-
-    await firstCard.click();
-    await page.waitForURL(/\/open-challenge\/[^/]+$/);
+    await page.goto(PUBLIC.CHALLENGES.DETAIL(4000));
+    await expect(page.getByTestId('challenge-submit-button')).toBeVisible();
 
     // 첫 번째 선택지 선택 후 제출 (정답 여부와 무관하게 결과 화면 이동).
     await page.getByTestId('choice-option-0').click();
@@ -152,13 +146,8 @@ test.describe('AI 코치 — 손글씨 풀이 캡처', () => {
     page,
   }) => {
     await loginAsStudent(page);
-    await page.goto(PUBLIC.CHALLENGES.LIST);
-
-    const firstCard = page.getByTestId('open-challenge-card').first();
-    await expect(firstCard).toBeVisible();
-
-    await firstCard.click();
-    await page.waitForURL(/\/open-challenge\/[^/]+$/);
+    await page.goto(PUBLIC.CHALLENGES.DETAIL(4000));
+    await expect(page.getByTestId('solution-drawing-surface')).toBeVisible();
 
     // presign-batch → S3 PUT 은 실제로 통과시키되(passthrough), PUT 바디(PNG)만 가로채 관찰한다.
     let uploadedPngBuffer: Buffer | null = null;
@@ -222,13 +211,8 @@ test.describe('AI 코치 — 손글씨 풀이 캡처', () => {
     page,
   }) => {
     await loginAsStudent(page);
-    await page.goto(PUBLIC.CHALLENGES.LIST);
-
-    const firstCard = page.getByTestId('open-challenge-card').first();
-    await expect(firstCard).toBeVisible();
-
-    await firstCard.click();
-    await page.waitForURL(/\/open-challenge\/[^/]+$/);
+    await page.goto(PUBLIC.CHALLENGES.DETAIL(4000));
+    await expect(page.getByTestId('solution-drawing-surface')).toBeVisible();
 
     // presign 단계를 강제 실패시켜 업로드 실패를 재현(S3까지 갈 필요 없음).
     await page.route('**/api/v1/common/media/presign-batch', (route) =>

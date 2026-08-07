@@ -113,6 +113,9 @@ test.describe('선생님 v22 대시보드 계약', () => {
   });
 
   test('상단 수업 만들기는 실제 생성 경로로 간다', async ({ page }) => {
+    await routeGet(page, '**/api/v1/teacher/dashboard/study-rooms', [
+      room(11, '김서준', 4),
+    ]);
     await page.goto(PRIVATE.DASHBOARD.TEACHER);
 
     await expect(
@@ -136,6 +139,9 @@ test.describe('선생님 v22 대시보드 계약', () => {
   });
 
   test('처리할 항목이 없으면 처리함 0 상태를 보인다', async ({ page }) => {
+    await routeGet(page, '**/api/v1/teacher/dashboard/study-rooms', [
+      room(11, '김서준', 0),
+    ]);
     await page.goto(PRIVATE.DASHBOARD.TEACHER);
 
     await expect(page.getByRole('heading', { name: '처리함' })).toBeVisible();
@@ -145,6 +151,9 @@ test.describe('선생님 v22 대시보드 계약', () => {
   });
 
   test('시험 오답이 있으면 처리함에 직접 쓰기를 보인다', async ({ page }) => {
+    await routeGet(page, '**/api/v1/teacher/dashboard/study-rooms', [
+      room(11, '김서준', 1),
+    ]);
     await routeGet(page, '**/api/v1/teacher/inbox', {
       ...EMPTY_INBOX,
       recentExamCount: 1,

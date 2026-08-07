@@ -25,6 +25,7 @@ type UnitNoteEditorProps = {
   nodeId: number;
   displayName: string;
   nextPageNumber: number;
+  initialMode?: 'PEN' | 'UPLOAD';
 };
 
 type UploadRow = {
@@ -72,8 +73,9 @@ export const UnitNoteEditor = ({
   nodeId,
   displayName,
   nextPageNumber,
+  initialMode = 'PEN',
 }: UnitNoteEditorProps) => {
-  const [mode, setMode] = useState<'PEN' | 'UPLOAD'>('PEN');
+  const [mode, setMode] = useState<'PEN' | 'UPLOAD'>(initialMode);
   const [strokes, setStrokes] = useState<Stroke[]>([]);
   const [uploadRows, setUploadRows] = useState<UploadRow[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -299,8 +301,8 @@ export const UnitNoteEditor = ({
               여기로 끌어다 놓거나 눌러서 고르세요
             </span>
             <span className="font-caption-normal text-gray-8 mt-2 leading-relaxed">
-              굿노트·삼성노트에서 내보낸 PDF, 사진 JPG, PNG, HEIC를 여러 장
-              한 번에 올릴 수 있어요. PDF는 낱장으로 나눠 저장합니다.
+              굿노트·삼성노트에서 내보낸 PDF, 사진 JPG, PNG, HEIC를 여러 장 한
+              번에 올릴 수 있어요. PDF는 낱장으로 나눠 저장합니다.
             </span>
           </button>
 

@@ -69,7 +69,9 @@ test.describe('MVP-G 3단계 1024×768 첫 화면', () => {
     await expect(
       page.getByRole('heading', { name: '내 학습 지도' })
     ).toBeVisible();
-    await expect(page.getByText('오픈챌린지')).toBeVisible();
+    await expect(
+      page.getByTestId('learning-map').getByText('오픈챌린지').first()
+    ).toBeVisible();
     await expect(page.getByRole('button', { name: /필기|업로드/ })).toHaveCount(
       0
     );
@@ -155,9 +157,25 @@ test.describe('MVP-G 3단계 1024×768 첫 화면', () => {
       })
     );
     await page.goto('/dashboard/teacher');
-    await expect(page.getByTestId('teacher-rooms-list')).toBeVisible();
+    const roomList = page.getByTestId('teacher-rooms-list');
+    const inbox = page.getByTestId('teacher-learning-inbox-after-rooms');
+    await expect(roomList).toBeVisible();
     await expect(page.getByText('피드백 달 것').first()).toBeVisible();
     await expect(page.getByText('미확인 제출').first()).toBeVisible();
+    await expect
+      .poll(async () =>
+        roomList.evaluate(
+          (element, inboxElement) => {
+            if (!(inboxElement instanceof Node)) return false;
+            return Boolean(
+              element.compareDocumentPosition(inboxElement) &
+                Node.DOCUMENT_POSITION_FOLLOWING
+            );
+          },
+          await inbox.elementHandle()
+        )
+      )
+      .toBe(true);
     await page.screenshot({
       path: 'test-results/mvp-g-stage3/t-rooms-ok-1024x768.png',
       fullPage: true,
@@ -176,13 +194,20 @@ test.describe('MVP-G 3단계 1024×768 첫 화면', () => {
       })
     );
     await page.goto('/dashboard/teacher');
-    await expect(page.getByTestId('teacher-rooms-empty')).toBeVisible();
+    const emptyState = page.getByTestId('teacher-rooms-empty');
+    await expect(emptyState).toBeVisible();
     await expect(
       page.getByRole('link', { name: '첫 스터디룸 만들기' })
     ).toBeVisible();
     await expect(
       page.getByRole('link', { name: '학생 초대 코드 보기' })
     ).toBeVisible();
+    await expect(
+      page.getByTestId('teacher-learning-inbox-after-rooms')
+    ).toHaveCount(0);
+    await expect(page.getByRole('link', { name: '수업 만들기' })).toHaveCount(
+      0
+    );
   });
 
   test('선생님 마이페이지는 두 번째 전역 화면이다', async ({ page }) => {
