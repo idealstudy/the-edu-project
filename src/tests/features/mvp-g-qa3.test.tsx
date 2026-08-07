@@ -1,4 +1,5 @@
 import { WrongAnswerReview } from '@/features/dashboard/components/student/wrong-answer-review';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -58,7 +59,15 @@ describe('MVP-G QA 3차 회귀', () => {
       isSuccess: true,
     });
 
-    render(<WrongAnswerReview wrongAnswerId={2909} />);
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <WrongAnswerReview wrongAnswerId={2909} />
+      </QueryClientProvider>
+    );
 
     const comment = screen.getByTestId('wrong-answer-teacher-comment');
     expect(comment).toBeVisible();
