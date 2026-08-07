@@ -9,6 +9,9 @@ import { applySetCookies } from '@/shared/lib';
 const SESSION_COOKIES = [
   { name: 'Authorization', path: '/' },
   { name: 'refresh', path: '/' },
+  // 로그인 시 BFF 가 Path 를 /api/v1/auth/refresh 로 바꿔 심으므로 그 경로로 만료시킨다.
+  // 예전 경로로 심긴 쿠키가 남아 있을 수 있어 둘 다 만료시킨다.
+  { name: 'refresh-token', path: '/api/v1/auth/refresh' },
   { name: 'refresh-token', path: '/api/auth/refresh' },
   { name: 'sid', path: '/' },
 ] as const;
