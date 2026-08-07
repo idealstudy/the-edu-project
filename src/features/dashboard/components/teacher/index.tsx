@@ -48,8 +48,8 @@ const DashboardTeacher = ({
               아직 스터디룸이 하나도 없어요
             </h2>
             <p className="mt-2 text-sm text-[#747980]">
-              학생 한 명당 스터디룸 하나가 기본입니다. 먼저 만들어 두고
-              학생을 부를 수도 있습니다.
+              학생 한 명당 스터디룸 하나가 기본입니다. 먼저 만들어 두고 학생을
+              부를 수도 있습니다.
             </p>
             <div className="mt-5 flex justify-center gap-2">
               <Link

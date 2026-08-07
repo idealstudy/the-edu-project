@@ -115,9 +115,7 @@ describe('MVP-G v22 상태 계약', () => {
     expect(screen.getByTestId('unit-note-detail-error')).toBeVisible();
     expect(screen.getByTestId('unit-note-editor-locked')).toBeVisible();
     expect(screen.queryByTestId('unit-note-editor')).not.toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: '다시 불러오기' })
-    ).toBeVisible();
+    expect(screen.getByRole('button', { name: '다시 불러오기' })).toBeVisible();
     expect(
       screen.getByRole('link', { name: '이 단원 문제부터 풀기' })
     ).toHaveAttribute('href', '/tree');

@@ -15,8 +15,8 @@ import {
 } from 'lucide-react';
 
 import { useWrongAnswersQuery } from '../../hooks/use-wrong-answer-query';
-import { ReviewStamps } from './review-stamps';
 import StudentDashboardHeader from '../header/student-header';
+import { ReviewStamps } from './review-stamps';
 
 const SOURCE_LABEL: Record<WrongAnswerItem['sourceType'], string> = {
   EXAM: '시험 오답',

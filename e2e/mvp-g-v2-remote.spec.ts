@@ -91,8 +91,7 @@ async function getTreeStatus(page: Page) {
 
 test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
   test('health와 401 문구 비노출을 관찰한다', async ({ page }) => {
-    const apiBase =
-      process.env.E2E_API_BASE_URL ?? 'https://apidev.d-edu.site';
+    const apiBase = process.env.E2E_API_BASE_URL ?? 'https://apidev.d-edu.site';
     const response = await page.request.get(
       `${apiBase}/api/admin/actuator/health`
     );
@@ -121,8 +120,14 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
       ['/admin/consultations', 'admin-consultations'],
     ] as const;
     for (const [url, testId] of screens) {
-      const failedRequests: Array<{ method: string; path: string; status: number }> = [];
-      const captureFailure = (response: import('@playwright/test').Response) => {
+      const failedRequests: Array<{
+        method: string;
+        path: string;
+        status: number;
+      }> = [];
+      const captureFailure = (
+        response: import('@playwright/test').Response
+      ) => {
         if (response.status() < 400) return;
         const parsed = new URL(response.url());
         failedRequests.push({

@@ -143,8 +143,7 @@ export const LookBackPage = () => {
             ) : records.length === 0 ? (
               <div className="rounded-lg bg-[#fafafa] p-8 text-center text-sm text-[#747980]">
                 <p>
-                  아직 돌아볼 기록이 없어요. 빈 날을 채우라고 재촉하지
-                  않습니다.
+                  아직 돌아볼 기록이 없어요. 빈 날을 채우라고 재촉하지 않습니다.
                 </p>
                 <Link
                   href={PRIVATE.DASHBOARD.STUDENT}

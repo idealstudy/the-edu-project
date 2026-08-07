@@ -5,10 +5,7 @@ import { useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import {
-  type UnitNotePage,
-  repository,
-} from '@/entities/unit-note';
+import { type UnitNotePage, repository } from '@/entities/unit-note';
 import StudentDashboardHeader from '@/features/dashboard/components/header/student-header';
 import { Skeleton } from '@/shared/components/loading';
 import { Button } from '@/shared/components/ui';
@@ -180,8 +177,8 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
               필기를 불러오지 못했어요
             </h1>
             <p className="font-body2-normal text-red-9 mt-2 leading-relaxed">
-              저장된 필기는 서버에 그대로 있습니다. 지금 화면에만 안 뜬
-              상태라 새로 쓰면 덮어쓸 위험이 있어 펜을 잠갔습니다.
+              저장된 필기는 서버에 그대로 있습니다. 지금 화면에만 안 뜬 상태라
+              새로 쓰면 덮어쓸 위험이 있어 펜을 잠갔습니다.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <Button
@@ -210,8 +207,8 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
               className="border-gray-3 bg-gray-1 text-gray-7 mt-3 flex min-h-48 items-center justify-center rounded-lg border border-dashed px-4 text-center text-xs font-bold"
               data-testid="unit-note-editor-locked"
             >
-              필기를 불러온 뒤에 쓸 수 있어요. 다시 불러오기를 누르면
-              입력할 수 있습니다.
+              필기를 불러온 뒤에 쓸 수 있어요. 다시 불러오기를 누르면 입력할 수
+              있습니다.
             </div>
           </section>
 
