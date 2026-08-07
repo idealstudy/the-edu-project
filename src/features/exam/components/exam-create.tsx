@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import type { QuestionBankItem, QuestionBankParams } from '@/entities/exam';
 import { SUBJECT_TO_KOREAN } from '@/entities/study-room-preview';
@@ -42,6 +42,7 @@ export const ExamCreate = ({
   const [startedAt] = useState(() => Date.now());
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [message, setMessage] = useState<string | null>(null);
+  const pdfMethodRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!studyRoomId && roomsQuery.data?.[0]) {
@@ -148,7 +149,12 @@ export const ExamCreate = ({
             정답과 단원이 따라옵니다 · 2~3분
           </p>
         </div>
-        <div className="rounded-lg border border-[#e4e4e7] p-3">
+        <div
+          ref={pdfMethodRef}
+          tabIndex={-1}
+          data-testid="teacher-exam-pdf-method"
+          className="rounded-lg border border-[#e4e4e7] p-3 focus:border-[#ef6c00] focus:ring-2 focus:ring-[#f8c79e] focus:outline-none"
+        >
           <p className="text-sm font-extrabold text-[#3f3f46]">
             게시된 시험 복제
           </p>
@@ -252,6 +258,13 @@ export const ExamCreate = ({
             selected={selected}
             onToggle={toggleQuestion}
             onClearDifficulty={() => setDifficulty(undefined)}
+            onChoosePdfPath={() => {
+              pdfMethodRef.current?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+              });
+              pdfMethodRef.current?.focus();
+            }}
           />
         </div>
 

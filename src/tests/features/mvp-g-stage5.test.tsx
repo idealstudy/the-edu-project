@@ -2,6 +2,7 @@ import { payload } from '@/entities/exam';
 import { ExamHallCard } from '@/features/dashboard/components/student/exam-hall-card';
 import { ExamCreate } from '@/features/exam/components/exam-create';
 import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
@@ -136,5 +137,23 @@ describe('MVP-G 5단계 회장 결정 보정', () => {
     });
     expect(parsed.subject).toBe('ENGLISH');
     expect(parsed).not.toHaveProperty('grade');
+  });
+
+  it('빈 문제은행에서 PDF 직접 올리기를 누르면 PDF 경로 카드로 이동한다', async () => {
+    const user = userEvent.setup();
+    Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
+      configurable: true,
+      value: vi.fn(),
+    });
+    mocks.questionBank.mockReturnValue({
+      data: { content: [], totalElements: 0, page: 0, size: 20 },
+      isPending: false,
+      isError: false,
+    });
+
+    render(<ExamCreate />);
+    await user.click(screen.getByRole('button', { name: 'PDF로 직접 올리기' }));
+
+    expect(screen.getByTestId('teacher-exam-pdf-method')).toHaveFocus();
   });
 });

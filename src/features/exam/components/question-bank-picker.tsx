@@ -11,6 +11,7 @@ type QuestionBankPickerProps = {
   selected: QuestionBankItem[];
   onToggle: (question: QuestionBankItem) => void;
   onClearDifficulty: () => void;
+  onChoosePdfPath: () => void;
 };
 
 export const QuestionBankPicker = ({
@@ -20,6 +21,7 @@ export const QuestionBankPicker = ({
   selected,
   onToggle,
   onClearDifficulty,
+  onChoosePdfPath,
 }: QuestionBankPickerProps) => {
   const selectedIds = selected.map((item) => item.challengeId);
   const query = useQuestionBankQuery({
@@ -75,6 +77,13 @@ export const QuestionBankPicker = ({
           onClick={onClearDifficulty}
         >
           난이도 조건 빼고 다시 찾기
+        </button>
+        <button
+          type="button"
+          className="mt-3 block w-full cursor-pointer text-xs font-bold text-[#52525b] underline underline-offset-4"
+          onClick={onChoosePdfPath}
+        >
+          PDF로 직접 올리기
         </button>
       </div>
     );

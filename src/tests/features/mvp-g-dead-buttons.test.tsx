@@ -17,6 +17,7 @@ const mocks = vi.hoisted(() => ({
   teacherRooms: vi.fn(),
   teacherInbox: vi.fn(),
   teacherRecommendations: vi.fn(),
+  changeRoomStatus: vi.fn(),
   updateTodo: vi.fn(),
 }));
 
@@ -41,6 +42,14 @@ vi.mock('@/features/dashboard/hooks/use-wrong-answer-query', () => ({
 
 vi.mock('@/features/dashboard/hooks/use-teacher-dashboard-query', () => ({
   useTeacherDashboardStudyRoomListQuery: mocks.teacherRooms,
+}));
+
+vi.mock('@/features/dashboard/hooks/use-change-study-room-status', () => ({
+  useChangeStudyRoomStatus: () => ({
+    isError: false,
+    isPending: false,
+    mutate: mocks.changeRoomStatus,
+  }),
 }));
 
 vi.mock('@/features/dashboard/components/header/teacher-header', () => ({
@@ -116,6 +125,7 @@ describe('MVP-G 죽은 버튼 회귀', () => {
           name: '김서준 수업',
           studentName: '김서준',
           state: 'ACTIVE',
+          enrollmentStatus: 'OPERATING',
           todoCount: 1,
           todoBreakdown: {
             commentNeeded: 1,
@@ -183,6 +193,53 @@ describe('MVP-G 죽은 버튼 회귀', () => {
       screen.queryByTestId('teacher-learning-inbox-after-rooms')
     ).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: '수업 만들기' })).toBeNull();
+  });
+
+  it('수업 종료 버튼은 CLOSED 저장을 호출한다', async () => {
+    const user = userEvent.setup();
+    render(<DashboardTeacher initialMemberName="한지원" />);
+
+    await user.click(
+      screen.getByRole('button', { name: '김서준 스터디룸 더 보기' })
+    );
+    await user.click(screen.getByRole('button', { name: '이 수업 종료하기' }));
+
+    expect(mocks.changeRoomStatus).toHaveBeenCalledWith(
+      { studyRoomId: 41, status: 'CLOSED' },
+      expect.objectContaining({ onSuccess: expect.any(Function) })
+    );
+  });
+
+  it('종료된 수업은 접힌 목록에서 OPERATING으로 재개한다', async () => {
+    const user = userEvent.setup();
+    mocks.teacherRooms.mockReturnValue({
+      data: [
+        {
+          id: 41,
+          name: '김서준 수업',
+          studentName: '김서준',
+          state: 'ACTIVE',
+          enrollmentStatus: 'CLOSED',
+          todoCount: 0,
+          todoBreakdown: {
+            commentNeeded: 0,
+            todoApproval: 0,
+            notDoneReason: 0,
+            unreadSubmission: 0,
+          },
+        },
+      ],
+      isPending: false,
+    });
+
+    render(<DashboardTeacher initialMemberName="한지원" />);
+    await user.click(screen.getByRole('button', { name: '종료된 것 보기' }));
+    await user.click(screen.getByRole('button', { name: '재개하기' }));
+
+    expect(mocks.changeRoomStatus).toHaveBeenCalledWith(
+      { studyRoomId: 41, status: 'OPERATING' },
+      expect.objectContaining({ onSuccess: expect.any(Function) })
+    );
   });
 
   it('학습 관리의 7개 진입점을 현재 스터디룸 기준 실라우트에 연결한다', () => {

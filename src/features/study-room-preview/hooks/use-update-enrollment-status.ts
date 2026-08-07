@@ -2,13 +2,14 @@ import { revalidateStudyRoomList } from '@/app/(home)/list/study-rooms/actions';
 import { studyRoomRepository } from '@/entities/study-room';
 import { studyRoomsQueryKey } from '@/entities/study-room';
 import { previewKeys } from '@/entities/study-room-preview';
+import { teacherKeys } from '@/entities/teacher/infrastructure/teacher.keys';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const useUpdateEnrollmentStatus = (studyRoomId: number) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (status: 'OPEN' | 'OPERATING') =>
+    mutationFn: (status: 'OPEN' | 'OPERATING' | 'CLOSED') =>
       studyRoomRepository.teacher.updateEnrollmentStatus(studyRoomId, status),
     onSuccess: () => {
       revalidateStudyRoomList();
@@ -17,6 +18,9 @@ export const useUpdateEnrollmentStatus = (studyRoomId: number) => {
       });
       queryClient.invalidateQueries({
         queryKey: previewKeys.main(studyRoomId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: teacherKeys.dashboard.studyRoomList(),
       });
     },
   });

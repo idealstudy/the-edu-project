@@ -75,7 +75,7 @@ export const studyRoomRepository = {
 
     updateEnrollmentStatus: async (
       studyRoomId: number,
-      status: 'OPEN' | 'OPERATING'
+      status: 'OPEN' | 'OPERATING' | 'CLOSED'
     ) => {
       const response = await api.private.patch(
         `/teacher/study-rooms/${studyRoomId}/enrollment-status`,

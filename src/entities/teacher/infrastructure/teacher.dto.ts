@@ -133,6 +133,11 @@ const TeacherDashboardStudyRoomListDtoSchema = z.array(
     name: z.string(),
     studentName: z.string().nullable().optional().default(null),
     state: z.string().nullable().optional().default(null),
+    enrollmentStatus: z
+      .enum(['OPEN', 'OPERATING', 'CLOSED'])
+      .nullable()
+      .optional()
+      .default(null),
     todoCount: z.number().optional().default(0),
     todoBreakdown: z
       .object({
