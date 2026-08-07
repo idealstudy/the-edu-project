@@ -3,16 +3,20 @@
 import { useStudentGrowthQuery } from '@/features/dashboard/hooks/use-growth-query';
 import { useWrongAnswersQuery } from '@/features/dashboard/hooks/use-wrong-answer-query';
 import { useMyPointWalletQuery } from '@/features/point/hooks/use-point';
+import { useMemberStore } from '@/store';
 
 const StudentDashboardHeader = ({
   initialMemberName,
+  title = '내 학습',
 }: {
-  initialMemberName: string;
+  initialMemberName?: string;
+  title?: string;
 }) => {
+  const storedMemberName = useMemberStore((state) => state.member?.name);
   const growthQuery = useStudentGrowthQuery();
   const pointQuery = useMyPointWalletQuery();
   const wrongAnswersQuery = useWrongAnswersQuery();
-  const memberName = initialMemberName.trim() || '학생';
+  const memberName = initialMemberName?.trim() || storedMemberName || '학생';
   const chips = [
     ['내 오답', `${wrongAnswersQuery.data?.totalCount ?? '-'}개`],
     ['연속', `${growthQuery.data?.streakDays ?? '-'}일`],
@@ -21,10 +25,12 @@ const StudentDashboardHeader = ({
   ] as const;
 
   return (
-    <header className="border-gray-3 bg-gray-white sticky top-0 z-20 border-b px-5 py-3 md:px-8">
-      <div className="mx-auto flex w-full max-w-[1120px] flex-wrap items-center justify-between gap-3">
+    <header className="border-gray-3 bg-gray-white sticky top-0 z-20 border-b px-4 py-3 md:px-[22px]">
+      <div className="flex w-full flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-gray-12 text-lg font-extrabold">내 학습</h1>
+          <h1 className="text-gray-12 text-[13.5px] font-extrabold">
+            {title}
+          </h1>
           <p className="text-gray-7 text-xs">{memberName} · 고2 수학</p>
         </div>
         <div className="flex flex-wrap items-center justify-end gap-1.5">

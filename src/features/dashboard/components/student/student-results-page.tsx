@@ -7,6 +7,8 @@ import { useMyPointWalletQuery } from '@/features/point/hooks/use-point';
 import { useMyTreeQuery } from '@/features/weakness-tree/hooks/use-tree';
 import { PRIVATE } from '@/shared/constants/route';
 
+import StudentDashboardHeader from '../header/student-header';
+
 const SUBJECT_LABEL: Record<string, string> = {
   ALGEBRA: '대수',
   CALCULUS_1: '미적분Ⅰ',
@@ -31,11 +33,9 @@ export const StudentResultsPage = () => {
     nodes.length === 0 || nodes.every((node) => node.masteryScore === 0);
 
   return (
-    <div className="min-h-screen bg-[#f6f7f9]">
-      <header className="sticky top-0 z-20 border-b border-[#e5e7eb] bg-white px-8 py-4">
-        <h1 className="text-lg font-extrabold text-[#17191c]">내 성과</h1>
-      </header>
-      <main className="mx-auto flex w-full max-w-[1120px] flex-col gap-4 px-6 py-6">
+    <div className="min-h-screen bg-[#fcfbfa]">
+      <StudentDashboardHeader title="내 성과" />
+      <main className="flex w-full flex-col gap-4 p-4">
         <section
           className="rounded-xl border border-[#e3e5e8] bg-white p-5"
           data-testid="learning-map"

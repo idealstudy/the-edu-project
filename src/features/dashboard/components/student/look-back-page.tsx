@@ -4,37 +4,68 @@ import { useState } from 'react';
 
 import { useLookBackQuery } from '@/features/dashboard/hooks/use-look-back-query';
 
+import StudentDashboardHeader from '../header/student-header';
+
 const WEEK_DAYS = ['월', '화', '수', '목', '금', '토', '일'];
 
 export const LookBackPage = () => {
   const [period, setPeriod] = useState<'WEEK' | 'MONTH'>('WEEK');
-  const lookBackQuery = useLookBackQuery(period);
+  const [offset, setOffset] = useState(0);
+  const lookBackQuery = useLookBackQuery(period, offset);
   const records = lookBackQuery.data?.retrospects ?? [];
   const calendar = lookBackQuery.data?.calendar ?? [];
   const coachMessage = lookBackQuery.data?.coachMessage ?? null;
 
   return (
-    <div className="min-h-screen bg-[#f6f7f9]">
-      <header className="sticky top-0 z-20 border-b border-[#e5e7eb] bg-white px-8 py-4">
-        <h1 className="text-lg font-extrabold">돌아보기</h1>
-      </header>
-      <main className="mx-auto w-full max-w-[1120px] px-6 py-6">
+    <div className="min-h-screen bg-[#fcfbfa]">
+      <StudentDashboardHeader title="돌아보기" />
+      <main className="w-full p-4">
         <p className="mb-4 text-xs text-[#747980]">
           내 학습 › <b className="text-[#202226]">돌아보기</b>
         </p>
-        <div className="mb-4 flex items-center gap-3 rounded-lg border border-[#e3e5e8] bg-white p-2">
+        <div className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-[#e3e5e8] bg-white p-2">
           <div className="flex w-60 rounded-md bg-[#f0f1f3] p-1">
             {(['WEEK', 'MONTH'] as const).map((item) => (
               <button
                 key={item}
-                onClick={() => setPeriod(item)}
-                className={`flex-1 rounded px-3 py-1.5 text-xs font-bold ${period === item ? 'bg-white shadow-sm' : ''}`}
+                type="button"
+                onClick={() => {
+                  setPeriod(item);
+                  setOffset(0);
+                }}
+                className={`flex-1 cursor-pointer rounded px-3 py-1.5 text-xs font-bold ${period === item ? 'bg-white shadow-sm' : ''}`}
               >
                 {item === 'WEEK' ? '주간' : '월간'}
               </button>
             ))}
           </div>
-          <b className="text-sm">현재 {period === 'WEEK' ? '주' : '달'} 기록</b>
+          <button
+            type="button"
+            onClick={() => setOffset((current) => current + 1)}
+            className="min-h-11 cursor-pointer rounded-lg border border-[#e3e5e8] px-3 text-xs font-bold"
+          >
+            ‹ 지난 {period === 'WEEK' ? '주' : '달'}
+          </button>
+          <b className="text-sm">
+            {offset === 0
+              ? `현재 ${period === 'WEEK' ? '주' : '달'} 기록`
+              : `${offset}${period === 'WEEK' ? '주' : '달'} 전 기록`}
+          </b>
+          <button
+            type="button"
+            disabled={offset === 0}
+            onClick={() => setOffset((current) => Math.max(0, current - 1))}
+            className="min-h-11 cursor-pointer rounded-lg border border-[#e3e5e8] px-3 text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            다음 {period === 'WEEK' ? '주' : '달'} ›
+          </button>
+          <button
+            type="button"
+            onClick={() => setOffset(0)}
+            className="ml-auto min-h-11 cursor-pointer rounded-lg border border-[#e3e5e8] px-3 text-xs font-bold"
+          >
+            오늘로
+          </button>
         </div>
 
         <div className="grid gap-4 lg:grid-cols-2">
