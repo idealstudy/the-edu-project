@@ -2,15 +2,19 @@
 
 import { FormEvent, useState } from 'react';
 
+import Link from 'next/link';
+
 import type { TodoItem } from '@/entities/todo';
 import { Skeleton } from '@/shared/components/loading';
 import { Button, Input, showBottomToast } from '@/shared/components/ui';
+import { PRIVATE } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import { handleApiError } from '@/shared/lib/errors/error-handler';
 import { classifyTodoError } from '@/shared/lib/errors/errors';
 import { Check, CircleX, ListChecks, RefreshCw } from 'lucide-react';
 
 import {
+  useCreateTodo,
   useStudentTodosQuery,
   useUpdateTodo,
 } from '../../hooks/use-todo-query';
@@ -20,6 +24,9 @@ type Props = {
 };
 
 type TodoSupply = 'TEACHER' | 'EXAM_HALL' | 'OPEN_CHALLENGE' | 'STUDENT';
+type TodoPreset = Pick<TodoItem, 'subject' | 'book'>;
+
+const MAX_DAILY_TODOS = 20;
 
 const SUPPLY_LABEL: Record<TodoSupply, string> = {
   TEACHER: '선생님',
@@ -76,7 +83,14 @@ const TodoCardLoading = ({ className }: Props) => (
 
 export const TodayTodoCard = ({ className }: Props) => {
   const todosQuery = useStudentTodosQuery();
+  const createTodo = useCreateTodo();
   const updateTodo = useUpdateTodo();
+  const [isAdding, setIsAdding] = useState(false);
+  const [newTodoTitle, setNewTodoTitle] = useState('');
+  const [newTodoPreset, setNewTodoPreset] = useState<TodoPreset>({
+    subject: null,
+    book: null,
+  });
   const [skipTodoId, setSkipTodoId] = useState<number | null>(null);
   const [skipReason, setSkipReason] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
@@ -127,6 +141,17 @@ export const TodayTodoCard = ({ className }: Props) => {
     (sum, item) => sum + item.rewardPoints,
     0
   );
+  const recentPresets = items.reduce<TodoPreset[]>((presets, item) => {
+    if (!item.subject && !item.book) return presets;
+    if (
+      presets.some(
+        (preset) => preset.subject === item.subject && preset.book === item.book
+      )
+    ) {
+      return presets;
+    }
+    return [...presets, { subject: item.subject, book: item.book }].slice(0, 5);
+  }, []);
   const handleMutationError = (error: unknown) => {
     handleApiError(error, classifyTodoError, {
       onField: setFormError,
@@ -140,6 +165,32 @@ export const TodayTodoCard = ({ className }: Props) => {
       { id: item.id, input: { status: 'DONE' } },
       {
         onSuccess: () => showBottomToast('완료로 기록했어요.'),
+        onError: handleMutationError,
+      }
+    );
+  };
+  const handleCreate = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const title = newTodoTitle.trim();
+    if (!title) {
+      setFormError('할 일을 입력해주세요.');
+      return;
+    }
+
+    setFormError(null);
+    createTodo.mutate(
+      {
+        title,
+        subject: newTodoPreset.subject,
+        book: newTodoPreset.book,
+      },
+      {
+        onSuccess: () => {
+          setNewTodoTitle('');
+          setNewTodoPreset({ subject: null, book: null });
+          setIsAdding(false);
+          showBottomToast('오늘 할 일에 추가했어요.');
+        },
         onError: handleMutationError,
       }
     );
@@ -196,9 +247,20 @@ export const TodayTodoCard = ({ className }: Props) => {
             선생님·응시장·오픈챌린지가 채워주고, 학생은 실행에 집중해요.
           </p>
         </div>
-        <span className="bg-orange-1 border-orange-3 text-orange-10 rounded-full border px-3 py-1.5 text-xs font-bold">
-          {summary.totalCount - summary.doneCount - summary.skippedCount}개 남음
-        </span>
+        <div className="flex items-center gap-2">
+          <Button
+            size="xsmall"
+            variant="outlined"
+            onClick={() => setIsAdding((current) => !current)}
+            data-testid="student-todo-add-toggle"
+          >
+            + 추가
+          </Button>
+          <span className="bg-orange-1 border-orange-3 text-orange-10 rounded-full border px-3 py-1.5 text-xs font-bold">
+            {summary.totalCount - summary.doneCount - summary.skippedCount}개
+            남음
+          </span>
+        </div>
       </div>
 
       <div
@@ -218,6 +280,71 @@ export const TodayTodoCard = ({ className }: Props) => {
           </span>
         ))}
       </div>
+
+      {isAdding && (
+        <form
+          className="border-orange-3 bg-orange-1 mt-4 rounded-xl border p-3"
+          onSubmit={handleCreate}
+          data-testid="student-todo-add-form"
+        >
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Input
+              value={newTodoTitle}
+              onChange={(event) => setNewTodoTitle(event.target.value)}
+              maxLength={120}
+              placeholder="오늘 할 일을 한 줄로 적어주세요"
+              aria-label="새 할 일"
+              className="h-10 flex-1 bg-white px-3"
+              autoFocus
+            />
+            <Button
+              type="submit"
+              size="xsmall"
+              disabled={
+                createTodo.isPending || newTodoTitle.trim().length === 0
+              }
+            >
+              {createTodo.isPending ? '추가 중' : '추가하기'}
+            </Button>
+          </div>
+          {recentPresets.length > 0 && (
+            <div
+              className="mt-2 flex flex-wrap gap-1.5"
+              aria-label="최근 과목과 교재"
+            >
+              {recentPresets.map((preset) => {
+                const label = [preset.subject, preset.book]
+                  .filter(Boolean)
+                  .join(' · ');
+                const isSelected =
+                  newTodoPreset.subject === preset.subject &&
+                  newTodoPreset.book === preset.book;
+
+                return (
+                  <button
+                    key={label}
+                    type="button"
+                    className={cn(
+                      'cursor-pointer rounded-full border px-2.5 py-1 text-[11px] font-bold',
+                      isSelected
+                        ? 'border-orange-7 bg-orange-7 text-white'
+                        : 'border-orange-3 text-orange-10 bg-white'
+                    )}
+                    aria-pressed={isSelected}
+                    onClick={() => setNewTodoPreset(preset)}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          <p className="font-caption-normal text-gray-7 mt-2">
+            학생이 직접 적은 할 일은 완료해도 포인트가 붙지 않습니다. 하루 최대
+            {MAX_DAILY_TODOS}개까지 등록할 수 있어요.
+          </p>
+        </form>
+      )}
 
       <div className="bg-gray-2 mt-4 h-2 w-full overflow-hidden rounded-full">
         <div
@@ -254,10 +381,12 @@ export const TodayTodoCard = ({ className }: Props) => {
             쌓여요.
           </p>
           <Button
+            asChild
             className="mt-4"
-            disabled
           >
-            기출 1세트 풀고 오늘 할 일 채우기 (+20P)
+            <Link href={PRIVATE.DASHBOARD.EXAM_HALL}>
+              기출 1세트 풀고 오늘 할 일 채우기 (+20P)
+            </Link>
           </Button>
         </div>
       ) : (

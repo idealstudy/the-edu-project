@@ -34,16 +34,7 @@ export const LookBackPage = () => {
               </button>
             ))}
           </div>
-          <button className="rounded-md border px-2 py-1 text-xs">
-            ‹ 지난 {period === 'WEEK' ? '주' : '달'}
-          </button>
-          <b className="text-sm">{period === 'WEEK' ? '이번 주' : '이번 달'}</b>
-          <button className="rounded-md border px-2 py-1 text-xs">
-            다음 {period === 'WEEK' ? '주' : '달'} ›
-          </button>
-          <button className="ml-auto rounded-md border px-2 py-1 text-xs">
-            오늘로
-          </button>
+          <b className="text-sm">현재 {period === 'WEEK' ? '주' : '달'} 기록</b>
         </div>
 
         <div className="grid gap-4 lg:grid-cols-2">

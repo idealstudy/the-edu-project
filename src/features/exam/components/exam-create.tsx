@@ -15,14 +15,20 @@ import { cn } from '@/shared/lib';
 import { QuestionBankPicker } from './question-bank-picker';
 import { TreeNodePicker } from './tree-node-picker';
 
-type ExamCreateProps = { className?: string };
+type ExamCreateProps = {
+  className?: string;
+  initialStudyRoomId?: number;
+};
 type QuestionBankSubject = NonNullable<QuestionBankParams['subject']>;
 
 const SUBJECT_OPTIONS = Object.entries(SUBJECT_TO_KOREAN) as Array<
   [QuestionBankSubject, string]
 >;
 
-export const ExamCreate = ({ className }: ExamCreateProps) => {
+export const ExamCreate = ({
+  className,
+  initialStudyRoomId,
+}: ExamCreateProps) => {
   const roomsQuery = useTeacherDashboardStudyRoomListQuery();
   const createExam = useCreateExam();
   const assignExam = useAssignExam();
@@ -39,9 +45,12 @@ export const ExamCreate = ({ className }: ExamCreateProps) => {
 
   useEffect(() => {
     if (!studyRoomId && roomsQuery.data?.[0]) {
-      setStudyRoomId(roomsQuery.data[0].id);
+      const requestedRoom = roomsQuery.data.find(
+        (room) => room.id === initialStudyRoomId
+      );
+      setStudyRoomId(requestedRoom?.id ?? roomsQuery.data[0].id);
     }
-  }, [roomsQuery.data, studyRoomId]);
+  }, [initialStudyRoomId, roomsQuery.data, studyRoomId]);
 
   useEffect(() => {
     const timerId = window.setInterval(() => {

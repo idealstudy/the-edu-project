@@ -1,5 +1,9 @@
 'use client';
 
+import Link from 'next/link';
+
+import { PRIVATE } from '@/shared/constants';
+
 export const TeacherMyPage = ({ memberName }: { memberName: string }) => (
   <div className="min-h-screen w-full bg-[#f6f7f9]">
     <header className="border-b border-[#e3e5e8] bg-white px-8 py-4">
@@ -13,9 +17,12 @@ export const TeacherMyPage = ({ memberName }: { memberName: string }) => (
         <section className="rounded-xl border border-[#e3e5e8] bg-white p-5">
           <div className="mb-4 flex items-center">
             <h2 className="font-extrabold">내 정보</h2>
-            <button className="ml-auto rounded-md border px-2 py-1 text-xs font-bold">
+            <Link
+              href={`${PRIVATE.MYPAGE}?tab=profile`}
+              className="ml-auto rounded-md border px-2 py-1 text-xs font-bold"
+            >
               수정
-            </button>
+            </Link>
           </div>
           <dl className="grid grid-cols-[80px_1fr] gap-y-3 text-sm">
             <dt className="text-[#747980]">이름</dt>
@@ -33,17 +40,15 @@ export const TeacherMyPage = ({ memberName }: { memberName: string }) => (
               학생이 이 코드를 넣으면 스터디룸이 자동으로 생깁니다
             </p>
           </div>
-          <div className="rounded-lg border border-dashed border-[#e1aa8d] p-4 text-center text-xl font-extrabold tracking-[.12em] text-[#9a441f]">
-            초대 코드 발행
+          <div className="rounded-lg border border-dashed border-[#e1aa8d] p-4 text-center text-xs font-bold text-[#9a441f]">
+            스터디룸을 고르면 해당 수업의 학생 초대 링크를 발행할 수 있습니다
           </div>
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <button className="rounded-md border py-2 text-xs font-bold">
-              코드 복사
-            </button>
-            <button className="rounded-md border py-2 text-xs font-bold">
-              링크로 보내기
-            </button>
-          </div>
+          <Link
+            href={PRIVATE.DASHBOARD.TEACHER}
+            className="mt-3 block rounded-md border py-2 text-center text-xs font-bold"
+          >
+            내 수업에서 학생 초대하기
+          </Link>
         </section>
       </div>
       <div className="space-y-4">
@@ -102,10 +107,12 @@ const Setting = ({
       <b className="block text-sm">{label}</b>
       <small className="text-[#747980]">{detail}</small>
     </div>
-    <button
+    <Link
+      href={PRIVATE.SETTINGS}
       className={`ml-auto rounded-md border px-2 py-1 text-xs font-bold ${enabled ? 'border-[#e1aa8d] text-[#9a441f]' : ''}`}
+      aria-label={`${label} 알림 설정 열기`}
     >
       {enabled ? '켜짐' : '꺼짐'}
-    </button>
+    </Link>
   </div>
 );

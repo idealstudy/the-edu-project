@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 
 import type { WrongAnswerItem } from '@/entities/wrong-answer';
 import {
@@ -12,7 +12,7 @@ import {
   useTeacherWrongAnswerInboxQuery,
 } from '@/features/dashboard/hooks/use-wrong-answer-query';
 import { Skeleton } from '@/shared/components/loading';
-import { Button } from '@/shared/components/ui';
+import { Button, Input } from '@/shared/components/ui';
 import { cn } from '@/shared/lib';
 import { AlertTriangle, Check, Clock3, Inbox } from 'lucide-react';
 
@@ -26,70 +26,119 @@ const QUICK_COMMENTS: QuickComment[] = [
 const InboxItem = ({
   item,
   selectedComment,
-  onSelectComment,
+  onSaveComment,
   isSaving,
 }: {
   item: WrongAnswerItem;
-  selectedComment?: QuickComment;
-  onSelectComment: (comment: QuickComment) => void;
+  selectedComment?: string;
+  onSaveComment: (comment: string, onSuccess?: () => void) => void;
   isSaving: boolean;
-}) => (
-  <li className="border-gray-2 border-b py-4 last:border-b-0">
-    <p className="font-body2-heading text-gray-11">
-      학생 {item.studentId} · {item.title ?? `오답 ${item.id}`}
-    </p>
-    <p className="font-caption-normal text-gray-7 mt-1">
-      {item.status === 'GRADUATED'
-        ? `5회독 뒤에도 다시 틀림 · 힌트 없이 ${item.hintFreeSolveCount}회 해결`
-        : `${item.reviewCount}회독 진행 · 다시 틀림 ${item.wrongAgainCount}회`}
-    </p>
-    <div
-      className="mt-3 flex flex-wrap gap-1.5"
-      aria-label={`${item.title ?? `오답 ${item.id}`} 빠른 코멘트`}
-    >
-      {QUICK_COMMENTS.map((comment) => {
-        const isSelected = selectedComment === comment;
-        return (
-          <button
-            key={comment}
-            type="button"
-            className={cn(
-              'border-orange-3 hover:border-orange-7 cursor-pointer rounded-full border px-3 py-1.5 text-xs font-bold transition-colors',
-              isSelected
-                ? 'bg-orange-7 text-white'
-                : 'bg-gray-white text-orange-9'
-            )}
-            aria-pressed={isSelected}
-            disabled={isSaving}
-            onClick={() => onSelectComment(comment)}
-            data-testid={`teacher-inbox-quick-comment-${item.id}`}
-          >
-            {isSelected && (
-              <Check
-                size={13}
-                className="mr-1 inline"
-                aria-hidden
-              />
-            )}
-            {comment}
-          </button>
-        );
-      })}
-      <Button
-        size="xsmall"
-        variant="outlined"
-        disabled
+}) => {
+  const [isWriting, setIsWriting] = useState(false);
+  const [customComment, setCustomComment] = useState('');
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const comment = customComment.trim();
+    if (!comment) return;
+
+    onSaveComment(comment, () => {
+      setCustomComment('');
+      setIsWriting(false);
+    });
+  };
+
+  return (
+    <li className="border-gray-2 border-b py-4 last:border-b-0">
+      <p className="font-body2-heading text-gray-11">
+        학생 {item.studentId} · {item.title ?? `오답 ${item.id}`}
+      </p>
+      <p className="font-caption-normal text-gray-7 mt-1">
+        {item.status === 'GRADUATED'
+          ? `5회독 뒤에도 다시 틀림 · 힌트 없이 ${item.hintFreeSolveCount}회 해결`
+          : `${item.reviewCount}회독 진행 · 다시 틀림 ${item.wrongAgainCount}회`}
+      </p>
+      <div
+        className="mt-3 flex flex-wrap gap-1.5"
+        aria-label={`${item.title ?? `오답 ${item.id}`} 빠른 코멘트`}
       >
-        직접 쓰기
-      </Button>
-    </div>
-    <p className="font-caption-normal text-gray-7 mt-2 leading-relaxed">
-      {item.teacherComment
-        ? `저장됨 · ${item.teacherComment}`
-        : '칩을 누르면 학생 오답에 선생님 코멘트로 바로 저장됩니다.'}
-    </p>
-  </li>
-);
+        {QUICK_COMMENTS.map((comment) => {
+          const isSelected = selectedComment === comment;
+          return (
+            <button
+              key={comment}
+              type="button"
+              className={cn(
+                'border-orange-3 hover:border-orange-7 cursor-pointer rounded-full border px-3 py-1.5 text-xs font-bold transition-colors',
+                isSelected
+                  ? 'bg-orange-7 text-white'
+                  : 'bg-gray-white text-orange-9'
+              )}
+              aria-pressed={isSelected}
+              disabled={isSaving}
+              onClick={() => onSaveComment(comment)}
+              data-testid={`teacher-inbox-quick-comment-${item.id}`}
+            >
+              {isSelected && (
+                <Check
+                  size={13}
+                  className="mr-1 inline"
+                  aria-hidden
+                />
+              )}
+              {comment}
+            </button>
+          );
+        })}
+        <Button
+          size="xsmall"
+          variant="outlined"
+          onClick={() => setIsWriting(true)}
+        >
+          직접 쓰기
+        </Button>
+      </div>
+      {isWriting && (
+        <form
+          className="mt-3 flex gap-2"
+          onSubmit={handleSubmit}
+        >
+          <Input
+            value={customComment}
+            onChange={(event) => setCustomComment(event.target.value)}
+            maxLength={500}
+            placeholder="학생에게 남길 코멘트를 입력하세요"
+            aria-label={`${item.title ?? `오답 ${item.id}`} 자유 코멘트`}
+            autoFocus
+          />
+          <Button
+            type="submit"
+            size="xsmall"
+            disabled={isSaving || customComment.trim().length === 0}
+          >
+            저장
+          </Button>
+          <Button
+            type="button"
+            size="xsmall"
+            variant="outlined"
+            onClick={() => {
+              setCustomComment('');
+              setIsWriting(false);
+            }}
+          >
+            취소
+          </Button>
+        </form>
+      )}
+      <p className="font-caption-normal text-gray-7 mt-2 leading-relaxed">
+        {item.teacherComment
+          ? `저장됨 · ${item.teacherComment}`
+          : '칩을 누르면 학생 오답에 선생님 코멘트로 바로 저장됩니다.'}
+      </p>
+    </li>
+  );
+};
 
 export const LearningInboxCard = () => {
   const inboxQuery = useTeacherWrongAnswerInboxQuery();
@@ -97,7 +146,7 @@ export const LearningInboxCard = () => {
   const saveComment = useSaveTeacherWrongAnswerComment();
   const approveTodo = useApproveTodoRecommendation();
   const [selectedComments, setSelectedComments] = useState<
-    Record<number, QuickComment>
+    Record<number, string>
   >({});
 
   if (inboxQuery.isPending || recommendationsQuery.isPending)
@@ -214,15 +263,17 @@ export const LearningInboxCard = () => {
             item={item}
             selectedComment={selectedComments[item.id]}
             isSaving={saveComment.isPending}
-            onSelectComment={(comment) => {
+            onSaveComment={(comment, onSuccess) => {
               saveComment.mutate(
                 { id: item.id, comment },
                 {
-                  onSuccess: () =>
+                  onSuccess: () => {
                     setSelectedComments((current) => ({
                       ...current,
                       [item.id]: comment,
-                    })),
+                    }));
+                    onSuccess?.();
+                  },
                 }
               );
             }}
@@ -251,13 +302,6 @@ export const LearningInboxCard = () => {
             }}
           >
             이대로 꽂기
-          </Button>
-          <Button
-            size="xsmall"
-            variant="outlined"
-            disabled
-          >
-            고쳐서
           </Button>
         </div>
         <p className="font-caption-normal text-gray-7 mt-2">

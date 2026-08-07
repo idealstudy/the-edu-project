@@ -104,12 +104,9 @@ const WrongAnswerCard = ({ item }: { item: WrongAnswerItem }) => {
             </Link>
           </Button>
         ) : (
-          <Button
-            size="xsmall"
-            disabled
-          >
+          <span className="border-gray-4 bg-gray-1 text-gray-7 rounded-lg border px-3 py-2 text-xs font-bold">
             복습 간격 대기 중
-          </Button>
+          </span>
         )}
       </div>
     </article>
