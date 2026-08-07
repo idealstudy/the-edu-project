@@ -62,3 +62,4 @@ CLAUDE.md
 !/public/mock-problems/ebsi/
 /public/mock-solutions/*
 !/public/mock-solutions/ebsi/
+/e2e/.auth/

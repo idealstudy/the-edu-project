@@ -1,0 +1,688 @@
+import { type Page, expect, test } from '@playwright/test';
+
+import {
+  BACKEND_ORIGIN,
+  authedDevContext,
+  expectApi,
+  loadMvpEFixture,
+  loginWithCredentials,
+  newDevContext,
+  requiredEnv,
+  solve,
+  solveShortAnswer,
+  stableAttemptLearningState,
+  stableMastery,
+  unwrap,
+} from './helpers/mvp-e-devremote';
+
+// 이 spec 의 page 픽스처만 저장된 학생1 세션으로 시작한다(로그인 반복 제거).
+// 비로그인 전제 시나리오는 각 테스트가 newDevContext 로 빈 세션 컨텍스트를 연다.
+test.use({ storageState: 'e2e/.auth/student1.state.json' });
+
+// student accounts against https://dev.d-edu.site (no route mocks)
+const TAG = '@mvp-e-v1.1-devremote';
+
+type PairInvite = {
+  shareToken: string;
+  challengeId: number;
+  inviterId: number;
+  inviteeId: number | null;
+  status: 'OPEN' | 'ACCEPTED' | 'COMPLETED';
+};
+
+async function memberId(page: Page): Promise<number> {
+  const member = unwrap<{ id?: number; memberId?: number }>(
+    await expectApi(
+      await page.request.get('/api/v1/member/info'),
+      [200],
+      '재대결 격리 회원 정보'
+    )
+  );
+  const id = Number(member.id ?? member.memberId);
+  expect(id, '재대결 격리 회원 ID').toBeGreaterThan(0);
+  return id;
+}
+
+async function pairPendingInvites(
+  page: Page,
+  firstMemberId: number,
+  secondMemberId: number
+): Promise<PairInvite[]> {
+  const invites = unwrap<PairInvite[]>(
+    await expectApi(
+      await page.request.get('/api/v1/common/challenge-invites/me'),
+      [200],
+      '재대결 격리 도전장 목록'
+    )
+  );
+  return invites.filter(
+    (invite) =>
+      ['OPEN', 'ACCEPTED'].includes(invite.status) &&
+      ((invite.inviterId === firstMemberId &&
+        invite.inviteeId === secondMemberId) ||
+        (invite.inviterId === secondMemberId &&
+          invite.inviteeId === firstMemberId))
+  );
+}
+
+async function solveChallengeByApi(page: Page, challengeId: number) {
+  const challenge = unwrap<{ choices: string[] }>(
+    await expectApi(
+      await page.request.get(`/api/v1/public/challenges/${challengeId}`),
+      [200],
+      `재대결 격리 공개 문제 ${challengeId}`
+    )
+  );
+  expect(challenge.choices.length, '재대결 격리 객관식 선택지').toBeGreaterThan(
+    0
+  );
+  const attempt = unwrap<{ attemptId: number | string }>(
+    await expectApi(
+      await page.request.post('/api/v1/common/challenge-attempts', {
+        data: { challengeId },
+      }),
+      [200, 201],
+      `재대결 격리 풀이 시작 ${challengeId}`
+    )
+  );
+  await expectApi(
+    await page.request.patch(
+      `/api/v1/common/challenge-attempts/${attempt.attemptId}/answer`,
+      { data: { selectedAnswer: String(challenge.choices[0]) } }
+    ),
+    [200],
+    `재대결 격리 답안 제출 ${challengeId}`
+  );
+}
+
+async function isSupportedInvite(page: Page, invite: PairInvite) {
+  const challenge = unwrap<{ choices: string[] }>(
+    await expectApi(
+      await page.request.get(`/api/v1/public/challenges/${invite.challengeId}`),
+      [200],
+      `재대결 격리 지원 여부 ${invite.challengeId}`
+    )
+  );
+  return challenge.choices.length > 0;
+}
+
+async function completePairInvite(
+  firstPage: Page,
+  secondPage: Page,
+  firstMemberId: number,
+  invite: PairInvite
+) {
+  if (invite.status === 'OPEN') {
+    const inviteePage =
+      invite.inviteeId === firstMemberId ? firstPage : secondPage;
+    await expectApi(
+      await inviteePage.request.post(
+        `/api/v1/common/challenge-invites/${invite.shareToken}/accept`
+      ),
+      [200],
+      `재대결 격리 도전장 수락 ${invite.challengeId}`
+    );
+  }
+  await solveChallengeByApi(firstPage, invite.challengeId);
+  await solveChallengeByApi(secondPage, invite.challengeId);
+  await expectApi(
+    await firstPage.request.get(
+      `/api/v1/common/challenge-invites/${invite.shareToken}/result`
+    ),
+    [200],
+    `재대결 격리 도전장 완료 ${invite.challengeId}`
+  );
+}
+
+async function supportedPairPendingInvites(
+  page: Page,
+  firstMemberId: number,
+  secondMemberId: number
+) {
+  const pending = await pairPendingInvites(page, firstMemberId, secondMemberId);
+  const supported = await Promise.all(
+    pending.map(async (invite) => ({
+      invite,
+      supported: await isSupportedInvite(page, invite),
+    }))
+  );
+  return supported
+    .filter(({ supported: isSupported }) => isSupported)
+    .map(({ invite }) => invite);
+}
+
+async function drainPairPendingInvites(
+  firstPage: Page,
+  secondPage: Page,
+  firstMemberId: number,
+  secondMemberId: number
+) {
+  const pending = await pairPendingInvites(
+    firstPage,
+    firstMemberId,
+    secondMemberId
+  );
+  for (const invite of pending) {
+    // 과거 서버가 생성한 선택지 없는 재대결은 제품 UI/API로 완료할 수 없다.
+    // 지원 가능한 객관식 pending만 완주하며, 서버 수정은 이 legacy 건을 상한에서 제외한다.
+    if (await isSupportedInvite(firstPage, invite)) {
+      await completePairInvite(firstPage, secondPage, firstMemberId, invite);
+    }
+  }
+  expect(
+    await supportedPairPendingInvites(firstPage, firstMemberId, secondMemberId),
+    '재대결 격리 후 두 계정 사이 지원 가능한 대기 도전장'
+  ).toHaveLength(0);
+}
+
+async function prepareTwoPendingInvites(
+  firstPage: Page,
+  secondPage: Page,
+  sourceTokens: string[]
+): Promise<PairInvite[]> {
+  const prepared: PairInvite[] = [];
+  for (const sourceToken of sourceTokens) {
+    const source = unwrap<{ challengeId: number }>(
+      await expectApi(
+        await firstPage.request.get(
+          `/api/v1/public/challenge-invites/${sourceToken}`
+        ),
+        [200],
+        '재대결 상한 준비 원본 도전장'
+      )
+    );
+    const created = unwrap<{ shareToken: string }>(
+      await expectApi(
+        await firstPage.request.post('/api/v1/common/challenge-invites', {
+          data: { challengeId: source.challengeId },
+        }),
+        [200, 201],
+        `재대결 상한 준비 ${source.challengeId}`
+      )
+    );
+    await expectApi(
+      await secondPage.request.post(
+        `/api/v1/common/challenge-invites/${created.shareToken}/accept`
+      ),
+      [200],
+      `재대결 상한 준비 수락 ${source.challengeId}`
+    );
+    prepared.push({
+      shareToken: created.shareToken,
+      challengeId: source.challengeId,
+      inviterId: 0,
+      inviteeId: null,
+      status: 'ACCEPTED',
+    });
+  }
+  return prepared;
+}
+
+async function registerFreshRematchStudent(page: Page, index: 1 | 2) {
+  const now = Date.now();
+  const suffix = `${now}${index}`.slice(-8);
+  const accountEmail = requiredEnv('E2E_STUDENT_EMAIL');
+  const domain =
+    process.env.E2E_SIGNUP_EMAIL_DOMAIN?.trim() || accountEmail.split('@')[1];
+  expect(domain, '재대결 격리 가입 이메일 도메인').toBeTruthy();
+  const email = `qa-rematch-${now}-${index}@${domain}`;
+  const password =
+    process.env.E2E_SIGNUP_PASSWORD?.trim() ||
+    requiredEnv('E2E_STUDENT_PASSWORD');
+  await expectApi(
+    await page.request.post(`${BACKEND_ORIGIN}/auth/sign-up`, {
+      data: {
+        email,
+        password,
+        phoneNumber: `010${suffix}`,
+        agreeServiceTerms: true,
+        agreePrivacyTerms: true,
+        agreeAgeCheck: true,
+        agreeMarketing: false,
+        name: `QA재대결${suffix.slice(-4)}`,
+        role: 'ROLE_STUDENT',
+      },
+    }),
+    [201],
+    `재대결 격리 학생${index} 가입`
+  );
+  await loginWithCredentials(page, email, password);
+}
+
+async function buildCompletedPairInvite(
+  firstPage: Page,
+  secondPage: Page,
+  sourceToken: string
+) {
+  const source = unwrap<{ challengeId: number }>(
+    await expectApi(
+      await firstPage.request.get(
+        `/api/v1/public/challenge-invites/${sourceToken}`
+      ),
+      [200],
+      '재대결 격리 원본 문제 조회'
+    )
+  );
+  const created = unwrap<{ shareToken: string }>(
+    await expectApi(
+      await firstPage.request.post('/api/v1/common/challenge-invites', {
+        data: { challengeId: source.challengeId },
+      }),
+      [200, 201],
+      `재대결 격리 원본 생성 ${source.challengeId}`
+    )
+  );
+  await expectApi(
+    await secondPage.request.post(
+      `/api/v1/common/challenge-invites/${created.shareToken}/accept`
+    ),
+    [200],
+    `재대결 격리 원본 수락 ${source.challengeId}`
+  );
+  await solveChallengeByApi(firstPage, source.challengeId);
+  await solveChallengeByApi(secondPage, source.challengeId);
+  await expectApi(
+    await firstPage.request.get(
+      `/api/v1/common/challenge-invites/${created.shareToken}/result`
+    ),
+    [200],
+    `재대결 격리 원본 완료 ${source.challengeId}`
+  );
+  return {
+    shareToken: created.shareToken,
+    originalChallengeId: source.challengeId,
+  };
+}
+
+test.describe(`${TAG} dev 실환경 릴리즈 관문`, () => {
+  test('guest-session BFF 경로가 배포돼 있다', async ({ request }) => {
+    const fixture = loadMvpEFixture();
+    const response = await request.post('/api/v1/public/guest-sessions', {
+      data: {
+        challengeId: fixture.guest.challengeId,
+        shareToken: fixture.guest.inviteToken,
+      },
+    });
+    await expectApi(response, [200, 201], 'POST /api/v1/public/guest-sessions');
+    const setCookies = response
+      .headersArray()
+      .filter(({ name }) => name.toLowerCase() === 'set-cookie')
+      .map(({ value }) => value)
+      .join('; ');
+    expect(setCookies).toContain('guest_token=');
+    expect(setCookies).toContain('guest_proof=');
+  });
+
+  test('손풀이 공유 → 타계정 이름 노출 → 본인 내리기 → 상대 소실, 학습 기록 불변', async ({
+    browser,
+  }) => {
+    const fixture = loadMvpEFixture();
+    const author = await authedDevContext(browser, '');
+    const viewer = await authedDevContext(browser, '2');
+    const authorPage = await author.newPage();
+    const viewerPage = await viewer.newPage();
+    try {
+      const member = unwrap<{ name?: string; nickname?: string }>(
+        await expectApi(
+          await authorPage.request.get('/api/v1/member/info'),
+          [200],
+          '작성자 회원 정보'
+        )
+      );
+      const authorName = (member.nickname || member.name || '').trim();
+      expect(authorName, '작성자 이름은 실제 회원 정보에 있어야 한다').not.toBe(
+        ''
+      );
+      await solve(authorPage, fixture.share.challengeId, 0, true);
+      await expect(
+        authorPage.getByRole('img', { name: '내가 작성한 손글씨 풀이' })
+      ).toBeVisible();
+      await solve(viewerPage, fixture.share.challengeId, 1);
+      await expect(
+        viewerPage.getByText(authorName, { exact: true })
+      ).toBeVisible();
+      await expect(
+        viewerPage.getByRole('img', { name: `${authorName}님의 손글씨 풀이` })
+      ).toBeVisible();
+
+      const reviews = unwrap<{
+        content: Array<{
+          id?: number | string;
+          reviewId?: number | string;
+          authorNickname: string;
+          isMine: boolean;
+        }>;
+      }>(
+        await expectApi(
+          await viewerPage.request.get(
+            `/api/v1/common/challenges/${fixture.share.challengeId}/reviews?sort=LATEST`
+          ),
+          [200],
+          '타계정 공개 풀이 목록'
+        )
+      );
+      const authoredReview = reviews.content.find(
+        (review) => review.authorNickname === authorName
+      );
+      expect(
+        authoredReview,
+        '공개 풀이에 작성자 이름이 있어야 한다'
+      ).toBeTruthy();
+      expect(authoredReview?.isMine).toBe(false);
+      const authoredReviewId = authoredReview?.id ?? authoredReview?.reviewId;
+      expect(authoredReviewId, '공개 풀이 식별자가 있어야 한다').toBeTruthy();
+      const forbiddenDelete = await expectApi(
+        await viewerPage.request.delete(
+          `/api/v1/common/challenge-reviews/${authoredReviewId}`
+        ),
+        [403],
+        '타계정 풀이 내리기 권한'
+      );
+      expect(JSON.stringify(forbiddenDelete)).toContain(
+        'CHALLENGE_REVIEW_NOT_OWNED'
+      );
+
+      const attemptBefore = await expectApi(
+        await authorPage.request.get(
+          `/api/v1/common/me/challenges/${fixture.share.challengeId}`
+        ),
+        [200],
+        '내 시도 삭제 전'
+      );
+      const masteryBefore = await expectApi(
+        await authorPage.request.get('/api/v1/common/tree'),
+        [200],
+        '정복 지도 삭제 전'
+      );
+      await authorPage.reload();
+      await authorPage.getByRole('button', { name: '내 풀이 메뉴' }).click();
+      await expect(authorPage.getByText('이 풀이를 내릴까요?')).toBeVisible();
+      await authorPage
+        .getByRole('button', { name: '내리기', exact: true })
+        .click();
+      await viewerPage.reload();
+      await expect(
+        viewerPage.getByText(authorName, { exact: true })
+      ).toHaveCount(0);
+      const attemptAfter = await expectApi(
+        await authorPage.request.get(
+          `/api/v1/common/me/challenges/${fixture.share.challengeId}`
+        ),
+        [200],
+        '내 시도 삭제 후'
+      );
+      const masteryAfter = await expectApi(
+        await authorPage.request.get('/api/v1/common/tree'),
+        [200],
+        '정복 지도 삭제 후'
+      );
+      expect(stableAttemptLearningState(attemptAfter)).toEqual(
+        stableAttemptLearningState(attemptBefore)
+      );
+      expect(stableMastery(masteryAfter)).toEqual(stableMastery(masteryBefore));
+    } finally {
+      await author.close();
+      await viewer.close();
+    }
+  });
+
+  test('비회원 도전장 → 즉시 채점 → 실제 가입 → 기록 claim', async ({
+    browser,
+  }) => {
+    const fixture = loadMvpEFixture();
+    const context = await newDevContext(browser);
+    const page = await context.newPage();
+    const now = Date.now();
+    const suffix = `${now}`.slice(-8);
+    const studentEmail = requiredEnv('E2E_STUDENT_EMAIL');
+    const signupDomain =
+      process.env.E2E_SIGNUP_EMAIL_DOMAIN?.trim() || studentEmail.split('@')[1];
+    expect(
+      signupDomain,
+      'QA 학생 계정 이메일 도메인이 있어야 한다'
+    ).toBeTruthy();
+    const email = `qa-mvpe-${now}@${signupDomain}`;
+    const password =
+      process.env.E2E_SIGNUP_PASSWORD?.trim() ||
+      requiredEnv('E2E_STUDENT_PASSWORD');
+    try {
+      await page.goto(`/invite/challenge/${fixture.guest.inviteToken}`);
+      await expect(page.getByText(/님이 도전장을 보냈어요/)).toBeVisible();
+      await page
+        .getByRole('button', { name: '가입 없이 지금 풀어보기' })
+        .click();
+      await page.waitForURL(
+        new RegExp(`/open-challenge/${fixture.guest.challengeId}`)
+      );
+      await page.getByTestId('choice-option-0').click();
+      const gradeResponse = page.waitForResponse(
+        (r) =>
+          /\/api\/v1\/public\/challenges\/\d+\/(?:guest-grade|grade)(?:\?|$)/.test(
+            r.url()
+          ) && r.request().method() === 'POST'
+      );
+      await page.getByTestId('challenge-submit-button').click();
+      expect((await gradeResponse).status()).toBe(200);
+      await expect(page.getByTestId('signup-sheet')).toBeVisible();
+      await page.getByTestId('signup-sheet-cta').click({ noWaitAfter: true });
+      await expect(page).toHaveURL(/\/register\?redirect=/, {
+        timeout: 15_000,
+      });
+
+      await expectApi(
+        // 가입은 화면과 동일하게 백엔드 공개 API 로 직접 보낸다.
+        // BFF 경유(/api/v1/auth/sign-up)는 미들웨어 인증 가드에 걸려 /login 으로
+        // 307 되므로 실제 사용자 경로가 아니다(2026-08-07 dev 실측).
+        // 화면 구현: features/auth/services/api.ts 의 api.public.post('/auth/sign-up').
+        await page.request.post(`${BACKEND_ORIGIN}/auth/sign-up`, {
+          data: {
+            email,
+            password,
+            phoneNumber: `010${suffix}`,
+            agreeServiceTerms: true,
+            agreePrivacyTerms: true,
+            agreeAgeCheck: true,
+            agreeMarketing: false,
+            name: `QA승계${suffix.slice(-4)}`,
+            role: 'ROLE_STUDENT',
+          },
+        }),
+        [201],
+        '게스트 승계용 실제 가입'
+      );
+
+      const redirect = new URL(page.url()).searchParams.get('redirect');
+      expect(redirect).toContain('guestSession=1');
+      const claimResponse = page.waitForResponse((response) =>
+        response.url().includes('/common/guest-sessions/claim')
+      );
+      await loginWithCredentials(
+        page,
+        email,
+        password,
+        /\/open-challenge\//,
+        `/login?redirect=${encodeURIComponent(redirect!)}`
+      );
+      expect((await claimResponse).status()).toBe(200);
+      await expect(
+        page.getByText('방금 푼 기록을 내 계정으로 옮겼어요.')
+      ).toBeVisible();
+    } finally {
+      await context.close();
+    }
+  });
+
+  for (const outcome of [
+    'WIN',
+    'LOSE',
+    'BOTH_CORRECT',
+    'BOTH_WRONG',
+  ] as const) {
+    test(`대결 결과 ${outcome}를 서버와 화면이 동일하게 표시한다`, async ({
+      page,
+    }) => {
+      const item = loadMvpEFixture().outcomes[outcome];
+      const response = await page.request.get(
+        `/api/v1/common/challenge-invites/${item.shareToken}/result`
+      );
+      const body = unwrap<{ outcome: string }>(
+        await expectApi(response, [200], `${outcome} 결과 API`)
+      );
+      expect(body.outcome).toBe(outcome);
+      await page.goto(`/friends/${item.friendId}`);
+      const row = page
+        .getByText(item.challengeTitle, { exact: false })
+        .first()
+        .locator('..')
+        .locator('..');
+      await row.getByRole('button', { name: '결과 보기' }).click();
+      // 화면 문구 정본 = challenge-result-dialog.tsx 의 OUTCOME_COPY.
+      // 이전 값('내가 이겼어요'·'아쉽게 졌어요')은 실제 화면에 없는 문구였다(2026-08-07 dev 실측).
+      const expected = {
+        WIN: '이겼어요',
+        LOSE: '졌어요. 어디서 갈렸는지 보고 가요',
+        BOTH_CORRECT: '둘 다 맞혔어요',
+        BOTH_WRONG: '둘 다 걸렸어요',
+      }[outcome];
+      await expect(page.getByText(expected, { exact: false })).toBeVisible();
+    });
+  }
+
+  test('다시 붙기 성공·대기 3건 상한·후보 없음', async ({ browser }) => {
+    const fixture = loadMvpEFixture();
+    const first = await newDevContext(browser);
+    const second = await newDevContext(browser);
+    const firstPage = await first.newPage();
+    const secondPage = await second.newPage();
+    let firstMemberId = 0;
+    let secondMemberId = 0;
+    try {
+      // 매 실행마다 새 학생 2명을 사용자 가입 경로로 준비한다. 이전 실행이 만든
+      // OPEN/ACCEPTED·완료 이력·숙련도에 의존하지 않는 완전 격리 fixture다.
+      await registerFreshRematchStudent(firstPage, 1);
+      await registerFreshRematchStudent(secondPage, 2);
+      firstMemberId = await memberId(firstPage);
+      secondMemberId = await memberId(secondPage);
+
+      expect(
+        await pairPendingInvites(firstPage, firstMemberId, secondMemberId),
+        '신규 재대결 계정의 초기 대기 도전장'
+      ).toHaveLength(0);
+      const noCandidate = await buildCompletedPairInvite(
+        firstPage,
+        secondPage,
+        fixture.rematch.noCandidate.shareToken
+      );
+      const eligible = await buildCompletedPairInvite(
+        firstPage,
+        secondPage,
+        fixture.rematch.eligible.shareToken
+      );
+      await prepareTwoPendingInvites(firstPage, secondPage, [
+        fixture.outcomes.WIN.shareToken,
+        fixture.outcomes.LOSE.shareToken,
+      ]);
+      expect(
+        await supportedPairPendingInvites(
+          firstPage,
+          firstMemberId,
+          secondMemberId
+        ),
+        '재대결 실행 전 지원 가능한 대기 도전장 2건'
+      ).toHaveLength(2);
+
+      // noCandidate(생성 없음) → eligible(3번째 생성) → limit 순서다.
+      for (const [kind, expectedCode] of [
+        ['noCandidate', 'REMATCH_NO_CANDIDATE'],
+        ['eligible', null],
+        ['limit', 'INVITE_LIMIT_EXCEEDED'],
+      ] as const) {
+        if (kind === 'noCandidate') {
+          // buildCompletedPairInvite에서 COMPLETED 전이와 result 200을 확인했다.
+        }
+        const sourceToken =
+          kind === 'eligible' ? eligible.shareToken : noCandidate.shareToken;
+        const response = await firstPage.request.post(
+          `/api/v1/common/challenge-invites/${sourceToken}/rematch`
+        );
+        const body = await expectApi(
+          response,
+          expectedCode ? [409] : [200, 201],
+          `rematch ${kind}`
+        );
+        if (expectedCode) {
+          expect(JSON.stringify(body)).toContain(expectedCode);
+        } else {
+          const rematch = unwrap<{
+            challengeId: number;
+            unitName: string;
+            rematchOfShareToken: string;
+          }>(body);
+          expect(rematch.challengeId).not.toBe(eligible.originalChallengeId);
+          expect(rematch.unitName).toBe(
+            fixture.rematch.eligible.expectedUnitName
+          );
+          expect(rematch.rematchOfShareToken).toBe(eligible.shareToken);
+        }
+      }
+    } finally {
+      if (firstMemberId > 0 && secondMemberId > 0) {
+        await drainPairPendingInvites(
+          firstPage,
+          secondPage,
+          firstMemberId,
+          secondMemberId
+        );
+      }
+      await first.close();
+      await second.close();
+    }
+  });
+
+  test('친구 아닌 사용자의 정복 지도는 API 403, 화면 잠금', async ({
+    page,
+  }) => {
+    const strangerId = loadMvpEFixture().strangerMemberId;
+    const body = await expectApi(
+      await page.request.get(`/api/v1/common/friends/${strangerId}/mastery`),
+      [403],
+      '비친구 정복 지도'
+    );
+    expect(JSON.stringify(body)).toContain('FRIENDSHIP_REQUIRED');
+    await page.goto(`/friends/${strangerId}`);
+    await expect(page.getByText(/친구가 되면.*정복/)).toBeVisible();
+  });
+
+  // 회장 지시(2026-08-07): 단답형(주관식) EBSi 문제는 답 입력칸 + 서버 채점이 필요.
+  // V43 시드의 SHORT_ANSWER 문항(challengeId=4066, 정답='42')으로 실제 dev 환경에서
+  // 입력칸 렌더 → 정답 제출 → 정오 반영까지 확인한다. 배포 전에는 통과 불가(dev 실환경 대상).
+  test('단답형(주관식) 문제는 답 입력칸으로 풀고 서버 채점이 반영된다', async ({
+    page,
+  }) => {
+    const shortAnswerChallengeId = 4066;
+    const correctAnswer = '42';
+
+    await solveShortAnswer(page, shortAnswerChallengeId, correctAnswer);
+
+    await expect(page.getByText(/정답|맞았|오답|틀렸/)).toBeVisible();
+
+    const myDetail = unwrap<{
+      attempts?: Array<{
+        status: string;
+        isCorrect: boolean | null;
+        selectedAnswer: string | null;
+      }>;
+    }>(
+      await expectApi(
+        await page.request.get(
+          `/api/v1/common/me/challenges/${shortAnswerChallengeId}`
+        ),
+        [200],
+        '단답형 내 응시 기록'
+      )
+    );
+    const latest = (myDetail.attempts ?? []).at(-1);
+    expect(latest?.selectedAnswer).toBe(correctAnswer);
+    expect(latest?.isCorrect).toBe(true);
+  });
+});

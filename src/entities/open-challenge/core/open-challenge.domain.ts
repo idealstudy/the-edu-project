@@ -45,6 +45,9 @@ const ChallengeDetailSchema = z.object({
   questionText: z.string(),
   questionImageUrl: z.string().nullable(),
   choices: z.array(z.string()),
+  answerType: z
+    .enum(['MULTIPLE_CHOICE', 'SHORT_ANSWER'])
+    .default('MULTIPLE_CHOICE'),
   passRate: z.number().nullable(),
   wrongAnswerRate: z.number(),
   participantCount: z.number(),

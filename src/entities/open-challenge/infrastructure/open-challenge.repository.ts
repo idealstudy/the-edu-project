@@ -167,6 +167,8 @@ const toDetail = (raw: unknown): ChallengeDetail => {
     questionText: parsed.questionText,
     questionImageUrl: parsed.questionImageUrl,
     choices: parsed.choices,
+    answerType:
+      parsed.type === 'SHORT_ANSWER' ? 'SHORT_ANSWER' : 'MULTIPLE_CHOICE',
     passRate: parsed.passRate,
     wrongAnswerRate: parsed.wrongAnswerRate,
     participantCount: parsed.participantCount,

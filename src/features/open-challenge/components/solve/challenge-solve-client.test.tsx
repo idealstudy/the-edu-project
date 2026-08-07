@@ -148,6 +148,50 @@ describe('ChallengeSolveClient (오픈챌린지 풀이 화면 가드)', () => {
     ).not.toBeInTheDocument();
   });
 
+  test('단답형(answerType=SHORT_ANSWER)은 choices가 비어있어도 미지원 안내 대신 답 입력칸을 보여준다', () => {
+    vi.mocked(useOpenChallengeDetailQuery).mockReturnValue({
+      data: { ...baseChallenge, choices: [], answerType: 'SHORT_ANSWER' },
+      isLoading: false,
+      isError: false,
+    } as never);
+
+    renderWithProviders(
+      <ChallengeSolveClient
+        challengeId={CHALLENGE_ID}
+        isLoggedIn={false}
+      />
+    );
+
+    expect(screen.getByTestId('short-answer-input')).toBeInTheDocument();
+    expect(
+      screen.queryByText('아직 지원하지 않는 문제 유형이에요.')
+    ).not.toBeInTheDocument();
+    expect(screen.getByTestId('challenge-submit-button')).toBeInTheDocument();
+  });
+
+  test('단답형 제출 버튼은 빈 값일 때 비활성, 값을 입력하면 활성화된다', async () => {
+    const user = userEvent.setup();
+    vi.mocked(useOpenChallengeDetailQuery).mockReturnValue({
+      data: { ...baseChallenge, choices: [], answerType: 'SHORT_ANSWER' },
+      isLoading: false,
+      isError: false,
+    } as never);
+
+    renderWithProviders(
+      <ChallengeSolveClient
+        challengeId={CHALLENGE_ID}
+        isLoggedIn={false}
+      />
+    );
+
+    const submitButton = screen.getByTestId('challenge-submit-button');
+    expect(submitButton).toBeDisabled();
+
+    await user.type(screen.getByTestId('short-answer-input'), '42');
+
+    expect(submitButton).not.toBeDisabled();
+  });
+
   test('존재하지 않는 challengeId(404)는 에러 안내와 목록 CTA를 보여준다', () => {
     vi.mocked(useOpenChallengeDetailQuery).mockReturnValue({
       data: undefined,
