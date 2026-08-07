@@ -213,7 +213,7 @@ async function auditLogout(page) {
   await page.goto(`${WEB_BASE}/dashboard/student`, { waitUntil: 'domcontentloaded' });
   await settle(page);
   const menu = page.getByRole('button', { name: '햄버거 메뉴' });
-  await menu.click();
+  if (await menu.isVisible().catch(() => false)) await menu.click();
   const logout = page.getByRole('button', { name: /로그아웃/ });
   if (!(await logout.isVisible().catch(() => false))) {
     return { role: 'STUDENT', route: '/dashboard/student', button: '로그아웃', outcome: 'NOT_FOUND', detail: '메뉴 안에서 버튼 미발견' };
