@@ -199,8 +199,18 @@ export const WrongAnswerWarehouse = () => {
                       지금 복습할 오답이 없어요
                     </h2>
                     <p className="font-body2-normal text-gray-8 mt-1">
-                      새로 틀린 문제는 자동으로 이 창고에 들어옵니다.
+                      여기는 틀린 문제가 쌓이는 곳입니다. 지금은 오늘의 문제부터
+                      시작하면 됩니다.
                     </p>
+                    <Button
+                      asChild
+                      size="small"
+                      className="mt-5"
+                    >
+                      <Link href={PRIVATE.DASHBOARD.STUDENT}>
+                        오늘의 문제 풀러 가기
+                      </Link>
+                    </Button>
                   </section>
                 );
               }

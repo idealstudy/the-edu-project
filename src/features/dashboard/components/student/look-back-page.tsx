@@ -2,7 +2,10 @@
 
 import { useState } from 'react';
 
+import Link from 'next/link';
+
 import { useLookBackQuery } from '@/features/dashboard/hooks/use-look-back-query';
+import { PRIVATE } from '@/shared/constants';
 
 import StudentDashboardHeader from '../header/student-header';
 
@@ -138,9 +141,18 @@ export const LookBackPage = () => {
                 회고를 불러오지 못했어요.
               </p>
             ) : records.length === 0 ? (
-              <p className="rounded-lg bg-[#fafafa] p-8 text-center text-sm text-[#747980]">
-                아직 돌아볼 기록이 없어요. 빈 날을 채우라고 재촉하지 않습니다.
-              </p>
+              <div className="rounded-lg bg-[#fafafa] p-8 text-center text-sm text-[#747980]">
+                <p>
+                  아직 돌아볼 기록이 없어요. 빈 날을 채우라고 재촉하지
+                  않습니다.
+                </p>
+                <Link
+                  href={PRIVATE.DASHBOARD.STUDENT}
+                  className="mt-4 inline-flex min-h-11 items-center rounded-lg bg-[#f26a2e] px-4 font-bold text-white"
+                >
+                  오늘 할 일 적으러 가기
+                </Link>
+              </div>
             ) : (
               records.map((record) => (
                 <article

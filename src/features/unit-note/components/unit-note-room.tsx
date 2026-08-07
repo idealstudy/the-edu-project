@@ -158,6 +158,76 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
     );
   }
 
+  if (detailQuery.isError) {
+    return (
+      <div className="min-h-screen bg-[#fcfbfa]">
+        <StudentDashboardHeader title="단권화 노트" />
+        <main className="w-full p-4">
+          <Link
+            href={PRIVATE.DASHBOARD.UNIT_NOTES}
+            className="font-label-heading text-gray-8 hover:text-orange-9 inline-flex min-h-8 items-center gap-2"
+          >
+            <ArrowLeft size={18} />
+            전체 단권화
+          </Link>
+
+          <section
+            className="border-red-3 bg-red-1 mt-3 rounded-xl border p-5"
+            role="alert"
+            data-testid="unit-note-detail-error"
+          >
+            <h1 className="font-headline2-heading text-red-10">
+              필기를 불러오지 못했어요
+            </h1>
+            <p className="font-body2-normal text-red-9 mt-2 leading-relaxed">
+              저장된 필기는 서버에 그대로 있습니다. 지금 화면에만 안 뜬
+              상태라 새로 쓰면 덮어쓸 위험이 있어 펜을 잠갔습니다.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={() => void detailQuery.refetch()}
+              >
+                다시 불러오기
+              </Button>
+              <Button
+                asChild
+                size="small"
+                variant="outlined"
+              >
+                <Link href={PRIVATE.TREE.INDEX}>이 단원 문제부터 풀기</Link>
+              </Button>
+            </div>
+          </section>
+
+          <section className="border-gray-3 bg-gray-white mt-3 rounded-xl border p-4">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-gray-12 text-base font-extrabold">내 정리</h2>
+              <span className="text-gray-8 text-xs">입력 잠김</span>
+            </div>
+            <div
+              className="border-gray-3 bg-gray-1 text-gray-7 mt-3 flex min-h-48 items-center justify-center rounded-lg border border-dashed px-4 text-center text-xs font-bold"
+              data-testid="unit-note-editor-locked"
+            >
+              필기를 불러온 뒤에 쓸 수 있어요. 다시 불러오기를 누르면
+              입력할 수 있습니다.
+            </div>
+          </section>
+
+          <section className="border-orange-3 bg-orange-1 mt-3 rounded-xl border p-4">
+            <p className="text-gray-12 text-sm font-extrabold">
+              이 단원 숙련도, 이 값은 정상입니다
+            </p>
+            <p className="text-gray-12 mt-2 text-2xl font-extrabold tabular-nums">
+              {root.masteryScore}%
+            </p>
+          </section>
+        </main>
+      </div>
+    );
+  }
+
   const detail = detailQuery.data?.detail;
   const visiblePages =
     detail?.pages.filter((page) => !page.hiddenByStudent) ?? [];
