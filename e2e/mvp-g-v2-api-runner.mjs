@@ -431,10 +431,15 @@ async function runR1(roomId) {
   recordCheck(
     'R1-T7-SHEET',
     sheet.status === 200 &&
+      sheet.data?.title === examTitle &&
       sheet.data?.questions?.length === 10 &&
       !leakedAnswer,
     '응시 문항 10개와 정답 비노출',
-    { questionCount: sheet.data?.questions?.length ?? 0, leakedAnswer }
+    {
+      runIdMatched: sheet.data?.title === examTitle,
+      questionCount: sheet.data?.questions?.length ?? 0,
+      leakedAnswer,
+    }
   );
 
   const probedAnswers = [];
@@ -458,6 +463,7 @@ async function runR1(roomId) {
   const wrongCount = (submitted.data?.answerResults ?? []).filter(
     (item) => !item.correct
   ).length;
+  const ownRunAttemptCount = submitted.data?.answerResults?.length ?? 0;
   recordCheck(
     'R1-T7',
     submitted.status === 200 &&
@@ -508,9 +514,17 @@ async function runR1(roomId) {
   );
   recordCheck(
     'R1-T8',
-    attemptDelta === 10 && masteryChanged,
-    '제출 전후 약점 트리 시도 수와 숙련도 실변화',
-    { attemptDelta, masteryChanged }
+    sheet.data?.title === examTitle &&
+      ownRunAttemptCount === 10 &&
+      attemptDelta >= ownRunAttemptCount &&
+      masteryChanged,
+    '자기 runId 제출 10문항과 약점 트리 숙련도 실변화',
+    {
+      runIdMatched: sheet.data?.title === examTitle,
+      ownRunAttemptCount,
+      globalAttemptDelta: attemptDelta,
+      masteryChanged,
+    }
   );
 
   const wrongAfter = await request({
@@ -519,13 +533,20 @@ async function runR1(roomId) {
     label: 'r1-wrong-answers-after',
   });
   const newExamWrongs = (wrongAfter.data?.items ?? []).filter(
-    (item) => item.sourceType === 'EXAM' && !wrongBeforeIds.has(item.id)
+    (item) =>
+      item.sourceType === 'EXAM' &&
+      item.questionSnapshot?.sourceText === examTitle &&
+      !wrongBeforeIds.has(item.id)
   );
   recordCheck(
     'R1-T10',
     wrongAfter.status === 200 && newExamWrongs.length === wrongCount,
     '틀린 문항 수와 신규 시험 오답 수 일치',
-    { wrongCount, newExamWrongCount: newExamWrongs.length }
+    {
+      runId: examTitle,
+      wrongCount,
+      newExamWrongCount: newExamWrongs.length,
+    }
   );
 
   const tomorrow = new Date(Date.now() + 86_400_000).toISOString().slice(0, 10);

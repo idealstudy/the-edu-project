@@ -3,11 +3,12 @@ import type { Page } from '@playwright/test';
 import { okBody } from './api-mock';
 
 export async function setAuthCookie(page: Page) {
+  const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
   await page.context().addCookies([
     {
       name: 'Authorization',
       value: 'test-token',
-      domain: 'localhost',
+      url: baseURL,
       path: '/',
     },
   ]);
