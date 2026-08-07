@@ -30,7 +30,10 @@ export default async function DashboardLayout({
 
   return (
     <SessionGuard>
-      <main className="desktop:pl-sidebar-width flex flex-col bg-[#F9F9F9]">
+      <main
+        className="flex flex-col bg-[#fcfbfa] md:pl-[186px]"
+        data-private-app-shell
+      >
         <DashboardSidebar />
         <ImpersonationBanner
           active={isImpersonating}

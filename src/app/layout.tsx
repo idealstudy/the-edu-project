@@ -87,7 +87,12 @@ export default function RootLayout({
         )}
         <GlobalProvider>
           <Header />
-          <div className="mt-header-height flex flex-col">{children}</div>
+          <div
+            className="mt-header-height flex flex-col"
+            data-root-content
+          >
+            {children}
+          </div>
         </GlobalProvider>
       </body>
     </html>
