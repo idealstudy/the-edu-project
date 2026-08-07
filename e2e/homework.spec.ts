@@ -1,6 +1,7 @@
 import { Page, expect, test } from '@playwright/test';
 
 import {
+  findJoinedStudyRoomId,
   findOwnedStudyRoomId,
   loginAsStudent,
   loginAsTeacher,
@@ -125,8 +126,7 @@ test.describe('과제 - 학생', () => {
   test('과제 URL 직접 접근 시 수업노트로 이동한다', async ({ page }) => {
     await loginAsStudent(page);
 
-    const studyRoomId = Number(process.env.E2E_TEST_STUDY_ROOM_ID);
-    expect(Number.isSafeInteger(studyRoomId) && studyRoomId > 0).toBe(true);
+    const studyRoomId = await findJoinedStudyRoomId(page);
 
     await page.goto(`/study-rooms/${studyRoomId}/homework`);
     await page.waitForURL(`/study-rooms/${studyRoomId}/note`);

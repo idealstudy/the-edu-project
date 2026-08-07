@@ -3,8 +3,10 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const base = process.env.E2E_BASE_URL ?? 'https://dev.d-edu.site';
-const out = '/tmp/mvpg-v60-A-followup.json';
-const screens = path.resolve(process.cwd(), '../docs/mvp-g/qa-screens-v6');
+const out = process.env.E2E_RESULT_PATH ?? '/tmp/mvpg-v60-A-followup.json';
+const screens = process.env.E2E_SCREEN_DIR
+  ? path.resolve(process.env.E2E_SCREEN_DIR)
+  : path.resolve(process.cwd(), '../docs/mvp-g/qa-screens-v6');
 
 const credential = (name) => {
   const email = process.env[`${name}_EMAIL`];

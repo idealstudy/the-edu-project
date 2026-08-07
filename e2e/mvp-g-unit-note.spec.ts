@@ -201,6 +201,7 @@ test.describe('MVP-G 단권화', () => {
     await expect(page.getByTestId('unit-note-concept-row-14')).toContainText(
       '수학적 귀납법'
     );
+    await page.getByTestId('unit-note-open-pen').click();
     await expect(page.getByText('수학적 귀납법 판서 1')).toBeVisible();
     await expect(page.getByText('6월 모평 28번 · 점화식')).toBeVisible();
     await expect(page.getByTestId('unit-note-page-grid')).toBeVisible();
@@ -231,7 +232,7 @@ test.describe('MVP-G 단권화', () => {
     });
 
     await page.goto('/dashboard/student/unit-notes/10');
-    await page.getByTestId('unit-note-mode-upload').click();
+    await page.getByTestId('unit-note-open-upload').click();
     await page.getByTestId('unit-note-file-input').setInputFiles({
       name: '귀납법-추가.png',
       mimeType: 'image/png',

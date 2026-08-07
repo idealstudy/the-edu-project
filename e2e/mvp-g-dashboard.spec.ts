@@ -430,7 +430,7 @@ test.describe('MVP-G 학생 대시보드 코어', () => {
     page,
   }) => {
     await setupDashboardApi(page);
-    await page.route('**/api/v1/student/exams/901', async (route) => {
+    await page.route('**/api/v1/student/exams/901**', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -439,32 +439,41 @@ test.describe('MVP-G 학생 대시보드 코어', () => {
           title: '수학Ⅰ 수열 진단시험',
           examType: 'SCHOOL',
           totalQuestions: 10,
-          questions: [],
+          questions: [
+            {
+              questionNo: 1,
+              prompt: '수열 진단 문항',
+              treeNodeId: 401,
+            },
+          ],
           status: 'ANALYZED',
         }),
       });
     });
-    await page.route('**/api/v1/student/exams/901/analysis', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: okBody(EXAM_ANALYSIS),
-      });
-    });
+    await page.route(
+      '**/api/v1/student/exams/901/analysis**',
+      async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: okBody(EXAM_ANALYSIS),
+        });
+      }
+    );
 
     await page.goto('/dashboard/student/exams/901');
 
     await expect(page.getByTestId('exam-analysis-card')).toContainText(
       '2~3등급'
     );
-    await expect(page.getByText('내신 · AI 추정 참고용')).toBeVisible();
+    await expect(page.getByText('AI 예측', { exact: true })).toBeVisible();
+    await expect(page.getByText('실측 아님', { exact: true })).toBeVisible();
     await expect(page.getByText('무엇을 보고 예측했나요')).toBeVisible();
-    await expect(page.getByText('수열', { exact: true })).toBeVisible();
-    await expect(page.getByText('2문항 오답', { exact: true })).toBeVisible();
-    await expect(
-      page.getByText('수학적 귀납법', { exact: true })
-    ).toBeVisible();
-    await expect(page.getByText('0문항 오답', { exact: true })).toBeVisible();
+    const analysisCard = page.getByTestId('exam-analysis-card');
+    await expect(analysisCard).toContainText('수열');
+    await expect(analysisCard).toContainText('2문항 오답');
+    await expect(analysisCard).toContainText('수학적 귀납법');
+    await expect(analysisCard).toContainText('0문항 오답');
     await expect(
       page.getByText('내신 시험 분석은 AI 추정이며 참고용입니다.')
     ).toBeVisible();

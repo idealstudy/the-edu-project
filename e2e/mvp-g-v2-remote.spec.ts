@@ -97,6 +97,35 @@ async function getTreeStatus(page: Page) {
   return new Map(tree.nodes.map((node) => [node.nodeId, node]));
 }
 
+async function probeChallengeAnswer(page: Page, challengeId: number) {
+  const detail = await api<{ choices: string[] }>(
+    page,
+    'GET',
+    `/api/v1/public/challenges/${challengeId}`
+  );
+  for (const choice of detail.choices) {
+    const graded = await api<{ correct: boolean }>(
+      page,
+      'POST',
+      `/api/v1/public/challenges/${challengeId}/grade`,
+      {
+        selectedAnswer: choice,
+        timeSpentSeconds: 1,
+        drawingImageMediaId: null,
+      }
+    );
+    if (graded.correct) {
+      return {
+        correct: choice,
+        wrong: detail.choices.find((candidate) => candidate !== choice),
+      };
+    }
+  }
+  throw new Error(
+    `문항 ${challengeId}의 정답을 공개 채점 API로 확인하지 못했습니다.`
+  );
+}
+
 test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
   test('health와 401 문구 비노출을 관찰한다', async ({ page }) => {
     const apiBase = process.env.E2E_API_BASE_URL ?? 'https://apidev.d-edu.site';
@@ -260,15 +289,38 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
       (wrongBefore.content ?? wrongBefore.items ?? []).map((item) => item.id)
     );
 
+    const correctQuestionIndex = bank.content.findIndex(
+      (question) =>
+        question.treeNodeId !== null &&
+        (treeBefore.get(question.treeNodeId)?.masteryScore ?? 0) < 100
+    );
+    expect(correctQuestionIndex).toBeGreaterThanOrEqual(0);
+    const wrongQuestionIndex = correctQuestionIndex === 0 ? 1 : 0;
+    const correctQuestionAnswer = await probeChallengeAnswer(
+      student.page,
+      bank.content[correctQuestionIndex]!.challengeId
+    );
+    const wrongQuestionAnswer = await probeChallengeAnswer(
+      student.page,
+      bank.content[wrongQuestionIndex]!.challengeId
+    );
+    expect(wrongQuestionAnswer.wrong).toBeTruthy();
+
     await student.page.getByTestId('exam-palette-toggle').click();
     await expect(student.page.getByTestId('exam-palette-toggle')).toHaveText(
       '›'
     );
     await student.page.getByTestId('exam-palette-toggle').click();
     for (let index = 0; index < 10; index += 1) {
+      const selectedAnswer =
+        index === correctQuestionIndex
+          ? correctQuestionAnswer.correct
+          : index === wrongQuestionIndex
+            ? wrongQuestionAnswer.wrong!
+            : '1';
       await student.page
         .getByTestId('exam-answer-box')
-        .getByRole('button', { name: '1' })
+        .getByRole('button', { name: selectedAnswer, exact: true })
         .click();
       if (index < 9) {
         await student.page.getByRole('button', { name: '다음 문항 ›' }).click();

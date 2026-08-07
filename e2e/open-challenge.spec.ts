@@ -12,7 +12,10 @@ import { loginAsStudent } from './helpers/auth';
  *    "나중에 할게요"로 건너뛴다(이미 설정을 저장해둔 계정이면 안 뜬다).
  * ────────────────────────────────────────────────────*/
 async function drawDiagonalStroke(page: Page, canvas: Locator) {
-  const box = await canvas.boundingBox();
+  const drawingCanvas = canvas.locator('canvas');
+  await expect(drawingCanvas).toBeVisible();
+  await drawingCanvas.scrollIntoViewIfNeeded();
+  const box = await drawingCanvas.boundingBox();
   if (!box) throw new Error('드로잉 캔버스 영역을 찾지 못했습니다.');
 
   const startX = box.x + box.width * 0.15;
@@ -128,7 +131,12 @@ test.describe('오픈챌린지 풀이 → 결과', () => {
     // 보상 영역이 결과 화면에서 닫힌다(정답/오답 무관하게 노출).
     // 풀이 완료 후 "포인트·약점 나무가 자랐다 / 약점으로 표시됐다"를 보여줘야 한다.
     await expect(page.getByTestId('challenge-reward')).toBeVisible();
-    await expect(page.getByRole('link', { name: /약점 나무/ })).toBeVisible();
+    await expect(
+      page.getByRole('link', {
+        name: '약점 나무에서 채우기 →',
+        exact: true,
+      })
+    ).toBeVisible();
 
     // 게이미피케이션 지표 페이지가 풀이 후에도 정상 렌더되는지 스모크.
     await page.goto(PRIVATE.LEARNING.INDEX);

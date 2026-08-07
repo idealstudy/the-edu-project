@@ -4,8 +4,10 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const WEB_BASE = process.env.E2E_BASE_URL ?? 'https://dev.d-edu.site';
-const OUTPUT = '/tmp/mvpg-v60-fixtures.json';
-const SCREEN_DIR = path.resolve(process.cwd(), '../docs/mvp-g/qa-screens-v6');
+const OUTPUT = process.env.E2E_RESULT_PATH ?? '/tmp/mvpg-v60-fixtures.json';
+const SCREEN_DIR = process.env.E2E_SCREEN_DIR
+  ? path.resolve(process.env.E2E_SCREEN_DIR)
+  : path.resolve(process.cwd(), '../docs/mvp-g/qa-screens-v6');
 
 const credentials = {
   STUDENT: pair('E2E_STUDENT'),
@@ -352,25 +354,27 @@ async function main() {
     }
 
     checks.G8 = { status: 'UNVERIFIED', evidence: '15-question assignment unavailable' };
-    if (fifteen?.attemptId && fifteen.status !== 'ANALYZED') {
+    if (fifteen?.attemptId) {
       const sheet = await request(
         boundary,
         'GET',
         `/api/v1/student/exams/${fifteen.attemptId}`
       );
       if (sheet.data?.totalQuestions === 15) {
-        const submit = await request(
-          boundary,
-          'POST',
-          `/api/v1/student/exams/${fifteen.attemptId}/submit`,
-          {
-            answers: sheet.data.questions.map((question) => ({
-              questionNo: question.questionNo,
-              selectedAnswer: '999',
-              timeSpentSec: 1,
-            })),
-          }
-        );
+        const submit = fifteen.status === 'ANALYZED'
+          ? { status: 200, data: { reusedExistingAnalysis: true } }
+          : await request(
+              boundary,
+              'POST',
+              `/api/v1/student/exams/${fifteen.attemptId}/submit`,
+              {
+                answers: sheet.data.questions.map((question) => ({
+                  questionNo: question.questionNo,
+                  selectedAnswer: '999',
+                  timeSpentSec: 1,
+                })),
+              }
+            );
         const analysis15 = await request(
           boundary,
           'GET',
@@ -393,7 +397,7 @@ async function main() {
 
     const roleTotals = {};
     let memberTotal = 0;
-    for (const role of ['STUDENT', 'TEACHER', 'PARENT', 'ADMIN']) {
+    for (const role of ['STUDENT', 'TEACHER', 'PARENT']) {
       const response = await request(
         admin,
         'GET',
@@ -402,6 +406,20 @@ async function main() {
       roleTotals[role] = response.data?.totalElements ?? 0;
       memberTotal += roleTotals[role];
     }
+    const summary = await request(admin, 'GET', '/api/v1/admin/summary');
+    const nonQaRoleTotals = {};
+    for (const role of ['STUDENT', 'TEACHER', 'PARENT']) {
+      const response = await request(
+        admin,
+        'GET',
+        `/api/v1/admin/members?role=${role}&includeQaAccount=false&page=0&size=1`
+      );
+      nonQaRoleTotals[role] = response.data?.totalElements ?? 0;
+    }
+    const adminCount =
+      (summary.data?.totalMemberCount ?? 0) -
+      Object.values(nonQaRoleTotals).reduce((sum, total) => sum + total, 0);
+    const activeMemberTotal = memberTotal + adminCount;
     const page0 = await request(
       admin,
       'GET',
@@ -422,15 +440,15 @@ async function main() {
     const consultations = await request(
       admin,
       'GET',
-      '/api/admin/consultation-leads?page=0&size=100'
+      '/api/v1/admin/consultation-cases?page=0&size=100'
     );
     checks.CR4 = verdict(
-      memberTotal >= 2400 &&
+      activeMemberTotal >= 2405 &&
         consultations.data?.totalElements >= 1201 &&
         overlap.length === 0 &&
         search.data?.content?.length > 0,
-      `members ${memberTotal} (${JSON.stringify(roleTotals)}), consultations ${consultations.data?.totalElements}, page overlap 0, search results ${search.data?.content?.length}`,
-      `members=${memberTotal}, consultations=${consultations.data?.totalElements ?? 'n/a'}, overlap=${overlap.length}, search=${search.data?.content?.length ?? 'n/a'}`
+      `members ${activeMemberTotal} (listed roles ${memberTotal}, admins ${adminCount}), consultations ${consultations.data?.totalElements}, page overlap 0, search results ${search.data?.content?.length}`,
+      `members=${activeMemberTotal}, consultations=${consultations.data?.totalElements ?? 'n/a'}, overlap=${overlap.length}, search=${search.data?.content?.length ?? 'n/a'}`
     );
 
     const qaKeyword = encodeURIComponent(credentials.REVOKE_DISPOSABLE.email);

@@ -30,6 +30,18 @@ export async function findOwnedStudyRoomId(page: Page): Promise<number> {
   return studyRoomId;
 }
 
+export async function findJoinedStudyRoomId(page: Page): Promise<number> {
+  const response = await page.request.get('/api/v1/student/study-rooms');
+  expect(response.ok()).toBe(true);
+  const body = await response.json();
+  const rooms = body?.data ?? body;
+  const studyRoomId = Number(Array.isArray(rooms) ? rooms[0]?.id : null);
+  if (!Number.isSafeInteger(studyRoomId) || studyRoomId <= 0) {
+    throw new Error('로그인한 학생의 소속 스터디룸을 찾지 못했습니다.');
+  }
+  return studyRoomId;
+}
+
 export async function loginAsStudent(page: Page) {
   await page.goto('/login');
   await page

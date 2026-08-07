@@ -3,9 +3,6 @@ import { chromium } from '@playwright/test';
 import { createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import dotenv from 'dotenv';
-
-dotenv.config({ path: '.env.local' });
 
 const WEB_BASE = process.env.E2E_BASE_URL ?? 'https://dev.d-edu.site';
 const OUTPUT =
@@ -27,32 +24,41 @@ function required(emailName, passwordName) {
 }
 
 function slug(value) {
-  return value
-    .replace(/^\/+/, '')
-    .replace(/[^a-zA-Z0-9가-힣]+/g, '-')
-    .replace(/^-|-$/g, '') || 'home';
+  return (
+    value
+      .replace(/^\/+/, '')
+      .replace(/[^a-zA-Z0-9가-힣]+/g, '-')
+      .replace(/^-|-$/g, '') || 'home'
+  );
 }
 
 async function settle(page, timeout = 800) {
   await page.waitForLoadState('domcontentloaded').catch(() => {});
   await page.waitForLoadState('networkidle', { timeout }).catch(() => {});
-  await page.locator('body').evaluate(
-    () =>
-      new Promise((resolve) =>
-        requestAnimationFrame(() => requestAnimationFrame(resolve))
-      )
-  );
+  await page
+    .locator('body')
+    .evaluate(
+      () =>
+        new Promise((resolve) =>
+          requestAnimationFrame(() => requestAnimationFrame(resolve))
+        )
+    );
 }
 
 async function bodyHash(page) {
-  const text = await page.locator('body').innerText().catch(() => '');
+  const text = await page
+    .locator('body')
+    .innerText()
+    .catch(() => '');
   return createHash('sha256').update(text).digest('hex').slice(0, 16);
 }
 
 async function login(page, role) {
   await page.goto(`${WEB_BASE}/login`, { waitUntil: 'domcontentloaded' });
   await page.getByTestId('login-email-input').fill(credentials[role].email);
-  await page.getByTestId('login-password-input').fill(credentials[role].password);
+  await page
+    .getByTestId('login-password-input')
+    .fill(credentials[role].password);
   await page.getByTestId('login-submit-button').click();
   await page.waitForURL((url) => !url.pathname.startsWith('/login'), {
     timeout: 20_000,
@@ -111,25 +117,30 @@ async function auditRoute(page, context, role, route) {
   );
   await page.screenshot({ path: screenPath, fullPage: true });
 
-  const descriptors = await page.locator('button:visible').evaluateAll((buttons) =>
-    buttons.map((button, index) => ({
-      index,
-      label:
-        button.innerText.trim() ||
-        button.getAttribute('aria-label') ||
-        button.getAttribute('title') ||
-        button.getAttribute('data-testid') ||
-        `button-${index + 1}`,
-      disabled: button.disabled || button.getAttribute('aria-disabled') === 'true',
-    }))
-  );
+  const descriptors = await page
+    .locator('button:visible')
+    .evaluateAll((buttons) =>
+      buttons.map((button, index) => ({
+        index,
+        label:
+          button.innerText.trim() ||
+          button.getAttribute('aria-label') ||
+          button.getAttribute('title') ||
+          button.getAttribute('data-testid') ||
+          `button-${index + 1}`,
+        disabled:
+          button.disabled || button.getAttribute('aria-disabled') === 'true',
+      }))
+    );
 
   const rows = [];
   for (const descriptor of descriptors) {
     await page.goto(`${WEB_BASE}${route}`, { waitUntil: 'domcontentloaded' });
     await settle(page);
     const button = page.locator('button:visible').nth(descriptor.index);
-    const label = (await button.innerText().catch(() => descriptor.label)).trim() || descriptor.label;
+    const label =
+      (await button.innerText().catch(() => descriptor.label)).trim() ||
+      descriptor.label;
     const row = {
       role,
       route,
@@ -164,7 +175,10 @@ async function auditRoute(page, context, role, route) {
     let fileChooserSeen = false;
     let popupSeen = false;
     const onResponse = (response) => {
-      if (response.request().resourceType() === 'fetch' || response.request().resourceType() === 'xhr') {
+      if (
+        response.request().resourceType() === 'fetch' ||
+        response.request().resourceType() === 'xhr'
+      ) {
         network.push({
           method: response.request().method(),
           path: new URL(response.url()).pathname,
@@ -192,7 +206,8 @@ async function auditRoute(page, context, role, route) {
       const afterUrl = page.url();
       const afterHash = await bodyHash(page);
       const effects = [];
-      if (afterUrl !== beforeUrl) effects.push(`NAVIGATED:${new URL(afterUrl).pathname}`);
+      if (afterUrl !== beforeUrl)
+        effects.push(`NAVIGATED:${new URL(afterUrl).pathname}`);
       if (afterHash !== beforeHash) effects.push('DOM_CHANGED');
       if (network.length) effects.push(`NETWORK:${network.length}`);
       if (dialogSeen) effects.push('DIALOG');
@@ -203,7 +218,9 @@ async function auditRoute(page, context, role, route) {
       row.network = network.slice(0, 10);
     } catch (error) {
       row.outcome = 'CLICK_ERROR';
-      row.detail = String(error.message ?? error).split('\n')[0].slice(0, 240);
+      row.detail = String(error.message ?? error)
+        .split('\n')[0]
+        .slice(0, 240);
     } finally {
       page.off('response', onResponse);
       page.off('dialog', onDialog);
@@ -216,20 +233,30 @@ async function auditRoute(page, context, role, route) {
 }
 
 async function auditLogout(page) {
-  await page.goto(`${WEB_BASE}/dashboard/student`, { waitUntil: 'domcontentloaded' });
+  await page.goto(`${WEB_BASE}/dashboard/student`, {
+    waitUntil: 'domcontentloaded',
+  });
   await settle(page);
   const menu = page.getByRole('button', { name: '햄버거 메뉴' });
   if (await menu.isVisible().catch(() => false)) await menu.click();
   const logout = page.getByRole('button', { name: /로그아웃/ });
   if (!(await logout.isVisible().catch(() => false))) {
-    return { role: 'STUDENT', route: '/dashboard/student', button: '로그아웃', outcome: 'NOT_FOUND', detail: '메뉴 안에서 버튼 미발견' };
+    return {
+      role: 'STUDENT',
+      route: '/dashboard/student',
+      button: '로그아웃',
+      outcome: 'NOT_FOUND',
+      detail: '메뉴 안에서 버튼 미발견',
+    };
   }
   await logout.click();
   await page.waitForURL(
     (url) => url.pathname === '/' || url.pathname.startsWith('/login'),
     { timeout: 15_000 }
   );
-  await page.goto(`${WEB_BASE}/dashboard/student`, { waitUntil: 'domcontentloaded' });
+  await page.goto(`${WEB_BASE}/dashboard/student`, {
+    waitUntil: 'domcontentloaded',
+  });
   const protectedPath = new URL(page.url()).pathname;
   return {
     role: 'STUDENT',
@@ -247,11 +274,14 @@ async function main() {
   let logout = null;
   try {
     for (const role of ['STUDENT', 'TEACHER', 'ADMIN']) {
-      const context = await browser.newContext({ viewport: { width: 1024, height: 768 } });
+      const context = await browser.newContext({
+        viewport: { width: 1024, height: 768 },
+      });
       const page = await context.newPage();
       await login(page, role);
       const routes = await routeList(page, role);
-      for (const route of routes) results.push(await auditRoute(page, context, role, route));
+      for (const route of routes)
+        results.push(await auditRoute(page, context, role, route));
       if (role === 'STUDENT') logout = await auditLogout(page);
       await context.close();
     }
@@ -274,12 +304,25 @@ async function main() {
     logout,
     results,
   };
-  await writeFile(OUTPUT, `${JSON.stringify(output, null, 2)}\n`, { mode: 0o600 });
-  console.log(JSON.stringify({ output: OUTPUT, routeCount: results.length, buttonCount: rows.length, summary, logout }));
-  if ((summary.NO_EFFECT ?? 0) > 0 || (summary.CLICK_ERROR ?? 0) > 0) process.exitCode = 1;
+  await writeFile(OUTPUT, `${JSON.stringify(output, null, 2)}\n`, {
+    mode: 0o600,
+  });
+  console.log(
+    JSON.stringify({
+      output: OUTPUT,
+      routeCount: results.length,
+      buttonCount: rows.length,
+      summary,
+      logout,
+    })
+  );
+  if ((summary.NO_EFFECT ?? 0) > 0 || (summary.CLICK_ERROR ?? 0) > 0)
+    process.exitCode = 1;
 }
 
 main().catch((error) => {
-  console.error(JSON.stringify({ fatal: String(error.message ?? error).slice(0, 240) }));
+  console.error(
+    JSON.stringify({ fatal: String(error.message ?? error).slice(0, 240) })
+  );
   process.exitCode = 1;
 });
