@@ -39,7 +39,7 @@ test.describe.serial('스터디노트 CRUD', () => {
     await expect(page.getByTestId('note-submit-button')).toBeEnabled();
     await page.getByTestId('note-submit-button').click();
 
-    await page.waitForURL(PRIVATE.NOTE.LIST(studyRoomId));
+    await page.waitForURL(`**${PRIVATE.NOTE.LIST(studyRoomId)}`);
 
     const newNoteLink = page
       .getByTestId('note-list-item')
@@ -62,7 +62,7 @@ test.describe.serial('스터디노트 CRUD', () => {
     await page.getByTestId('note-menu-button').click();
     await page.getByTestId('note-edit-menu-item').click();
 
-    await page.waitForURL(PRIVATE.NOTE.EDIT(studyRoomId, noteId));
+    await page.waitForURL(`**${PRIVATE.NOTE.EDIT(studyRoomId, noteId)}`);
 
     await expect(page.getByTestId('note-title-input')).not.toHaveValue('', {
       timeout: 10_000,
@@ -75,7 +75,7 @@ test.describe.serial('스터디노트 CRUD', () => {
     await expect(page.getByTestId('note-submit-button')).toBeEnabled();
     await page.getByTestId('note-submit-button').click();
 
-    await page.waitForURL(PRIVATE.NOTE.DETAIL(studyRoomId, noteId));
+    await page.waitForURL(`**${PRIVATE.NOTE.DETAIL(studyRoomId, noteId)}`);
     await expect(page).toHaveURL(PRIVATE.NOTE.DETAIL(studyRoomId, noteId));
   });
 
@@ -98,7 +98,7 @@ test.describe.serial('스터디노트 CRUD', () => {
     ).toBeVisible();
     await page.getByTestId('studyroom-delete-success-button').click();
 
-    await page.waitForURL(PRIVATE.NOTE.LIST(studyRoomId));
+    await page.waitForURL(`**${PRIVATE.NOTE.LIST(studyRoomId)}`);
     await expect(page).toHaveURL(PRIVATE.NOTE.LIST(studyRoomId));
   });
 });

@@ -5,6 +5,7 @@ import {
   resolveDashboardFromRedirect,
   resolveLoginDestination,
   resolveOAuthFrom,
+  resolveSessionLoginDestination,
   sanitizeRedirect,
 } from './redirect';
 
@@ -108,6 +109,50 @@ describe('resolveOAuthFrom', () => {
 
   test('둘 다 없으면 null', () => {
     expect(resolveOAuthFrom({ from: null, redirect: null })).toBeNull();
+  });
+});
+
+describe('resolveSessionLoginDestination', () => {
+  test('로그인 URL의 내부 redirect를 세션 갱신 경로에서도 우선한다', () => {
+    expect(
+      resolveSessionLoginDestination({
+        role: 'ROLE_STUDENT',
+        token: null,
+        redirect: '/points',
+        from: null,
+      })
+    ).toBe('/points');
+  });
+
+  test('외부 redirect는 차단하고 역할별 내부 기본 경로로 이동한다', () => {
+    expect(
+      resolveSessionLoginDestination({
+        role: 'ROLE_STUDENT',
+        token: null,
+        redirect: 'https://evil.example.com',
+        from: null,
+      })
+    ).toBe('/learning');
+  });
+
+  test('기존 from 내부 경로와 초대 token 우선순위를 보존한다', () => {
+    expect(
+      resolveSessionLoginDestination({
+        role: 'ROLE_TEACHER',
+        token: null,
+        redirect: null,
+        from: '/study-rooms/477',
+      })
+    ).toBe('/study-rooms/477');
+
+    expect(
+      resolveSessionLoginDestination({
+        role: 'ROLE_MEMBER',
+        token: 'invite-token',
+        redirect: '/points',
+        from: null,
+      })
+    ).toBe('/dashboard?token=invite-token');
   });
 });
 

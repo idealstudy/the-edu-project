@@ -43,6 +43,33 @@ export const resolveLoginDestination = ({
 };
 
 /**
+ * 세션 조회가 로그인 성공을 먼저 감지했을 때의 이동 경로를 계산한다.
+ * 로그인 mutation과 세션 provider가 서로 다른 목적지로 이동시키지 않도록
+ * redirect/from 처리와 역할별 기본 경로를 한 규칙으로 맞춘다.
+ */
+export const resolveSessionLoginDestination = ({
+  role,
+  token,
+  redirect,
+  from,
+}: {
+  role: 'ROLE_MEMBER' | string | null | undefined;
+  token?: string | null;
+  redirect?: string | null;
+  from?: string | null;
+}): string => {
+  if (token) {
+    return `/dashboard?token=${encodeURIComponent(token)}`;
+  }
+
+  return resolveLoginDestination({
+    role,
+    redirectTo: redirect ?? from,
+    roleDest: role === 'ROLE_STUDENT' ? '/learning' : '/dashboard',
+  });
+};
+
+/**
  * 회원가입 완료 후 로그인 페이지로 넘어갈 때 붙일 쿼리스트링을 만든다.
  * token(스터디룸 초대)·from·redirect(도전장 등 복귀 경로)를 있는 것만 담는다.
  */

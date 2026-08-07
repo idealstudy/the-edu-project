@@ -32,13 +32,14 @@ async function createHomeworkAsTeacher(page: Page) {
 
   await page.getByTestId('homework-title-input').fill(homeworkTitle);
   await page.getByTestId('homework-student-tag-input').click();
-  await page
-    .getByTestId('homework-student-tag-input-search')
-    .fill(process.env.E2E_TEST_STUDENT_NAME!);
-  await page
+  const seededStudentOption = page
     .getByTestId('homework-student-tag-input-option')
-    .filter({ hasText: process.env.E2E_TEST_STUDENT_NAME! })
-    .click();
+    .first();
+  await expect(seededStudentOption).toBeVisible({ timeout: 10_000 });
+  await seededStudentOption.click();
+  await expect(
+    page.getByTestId('homework-student-tag-input-selected-item')
+  ).toBeVisible();
 
   await page.getByTestId('homework-deadline-input').fill('2026-12-31T23:59');
   await contentEditor.click();
