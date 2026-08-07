@@ -164,7 +164,7 @@ test.describe('MVP-G 3단계 1024×768 첫 화면', () => {
     });
   });
 
-  test('선생님 내 수업 0개는 초대와 만들기 두 행동을 보인다', async ({
+  test('선생님 내 수업 0개는 첫 스터디룸과 초대 코드 행동을 보인다', async ({
     page,
   }) => {
     await baseApi(page, TEACHER);
@@ -177,9 +177,11 @@ test.describe('MVP-G 3단계 1024×768 첫 화면', () => {
     );
     await page.goto('/dashboard/teacher');
     await expect(page.getByTestId('teacher-rooms-empty')).toBeVisible();
-    await expect(page.getByRole('link', { name: '학생 초대' })).toBeVisible();
     await expect(
-      page.getByRole('link', { name: '수업 만들기' }).first()
+      page.getByRole('link', { name: '첫 스터디룸 만들기' })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: '학생 초대 코드 보기' })
     ).toBeVisible();
   });
 

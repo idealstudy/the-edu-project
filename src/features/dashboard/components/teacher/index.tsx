@@ -44,22 +44,25 @@ const DashboardTeacher = ({
             className="rounded-xl border border-[#e3e5e8] bg-white p-12 text-center"
             data-testid="teacher-rooms-empty"
           >
-            <h2 className="text-lg font-extrabold">아직 수업이 없어요</h2>
+            <h2 className="text-lg font-extrabold">
+              아직 스터디룸이 하나도 없어요
+            </h2>
             <p className="mt-2 text-sm text-[#747980]">
-              학생을 초대하거나 새 수업을 만들어 시작하세요.
+              학생 한 명당 스터디룸 하나가 기본입니다. 먼저 만들어 두고
+              학생을 부를 수도 있습니다.
             </p>
             <div className="mt-5 flex justify-center gap-2">
               <Link
                 href="/study-rooms/new"
                 className="rounded-md bg-[#222] px-4 py-2 text-sm font-bold text-white"
               >
-                학생 초대
+                첫 스터디룸 만들기
               </Link>
               <Link
-                href="/study-rooms/new"
+                href="/dashboard/teacher/my"
                 className="rounded-md border px-4 py-2 text-sm font-bold"
               >
-                수업 만들기
+                학생 초대 코드 보기
               </Link>
             </div>
           </section>
