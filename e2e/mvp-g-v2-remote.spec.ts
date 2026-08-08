@@ -4,6 +4,8 @@ import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import { envValue, skipWithoutEnv } from './helpers/env-guard';
+
 type Role = 'STUDENT' | 'STUDENT2' | 'TEACHER' | 'ADMIN';
 type JsonRecord = Record<string, unknown>;
 type TreeNodeStatus = {
@@ -13,30 +15,38 @@ type TreeNodeStatus = {
   correctCount: number;
 };
 
+const REQUIRED_ENV = [
+  'E2E_STUDENT_EMAIL',
+  'E2E_STUDENT_PASSWORD',
+  'E2E_STUDENT2_EMAIL',
+  'E2E_STUDENT2_PASSWORD',
+  'E2E_TEACHER_EMAIL',
+  'E2E_TEACHER_PASSWORD',
+  'E2E_ADMIN_EMAIL',
+  'E2E_ADMIN_PASSWORD',
+] as const;
+
+// 계정이 없으면 이 스펙만 skip 된다(나머지 스위트는 정상 실행).
+skipWithoutEnv(REQUIRED_ENV);
+
 const credentials: Record<Role, { email: string; password: string }> = {
   STUDENT: {
-    email: requiredEnv('E2E_STUDENT_EMAIL'),
-    password: requiredEnv('E2E_STUDENT_PASSWORD'),
+    email: envValue('E2E_STUDENT_EMAIL'),
+    password: envValue('E2E_STUDENT_PASSWORD'),
   },
   STUDENT2: {
-    email: requiredEnv('E2E_STUDENT2_EMAIL'),
-    password: requiredEnv('E2E_STUDENT2_PASSWORD'),
+    email: envValue('E2E_STUDENT2_EMAIL'),
+    password: envValue('E2E_STUDENT2_PASSWORD'),
   },
   TEACHER: {
-    email: requiredEnv('E2E_TEACHER_EMAIL'),
-    password: requiredEnv('E2E_TEACHER_PASSWORD'),
+    email: envValue('E2E_TEACHER_EMAIL'),
+    password: envValue('E2E_TEACHER_PASSWORD'),
   },
   ADMIN: {
-    email: requiredEnv('E2E_ADMIN_EMAIL'),
-    password: requiredEnv('E2E_ADMIN_PASSWORD'),
+    email: envValue('E2E_ADMIN_EMAIL'),
+    password: envValue('E2E_ADMIN_PASSWORD'),
   },
 };
-
-function requiredEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) throw new Error(`Required secret ${name} is not configured`);
-  return value;
-}
 
 async function login(page: Page, role: Role) {
   await page.goto('/login');

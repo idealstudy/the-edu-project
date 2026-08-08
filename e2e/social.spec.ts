@@ -1,6 +1,8 @@
 import { PRIVATE } from '@/shared/constants';
 import { type Page, expect, test } from '@playwright/test';
 
+import { envValue, skipWithoutEnv } from './helpers/env-guard';
+
 /* ─────────────────────────────────────────────────────
  * 소셜(친구·도전장) E2E - 2계정 플로우.
  *  두 번째 학생 fixture(E2E_STUDENT2_*)가 있어야 의미가 있으므로,
@@ -9,15 +11,18 @@ import { type Page, expect, test } from '@playwright/test';
  *  (전화번호로 친구추가 매칭은 상대 계정에 phone_number 가 세팅돼 있어야 함)
  * ────────────────────────────────────────────────────*/
 
-const requiredEnv = (name: string) => {
-  const value = process.env[name];
-  if (!value) throw new Error(`Required secret ${name} is not configured`);
-  return value;
-};
+const REQUIRED_ENV = [
+  'E2E_STUDENT_EMAIL',
+  'E2E_STUDENT_PASSWORD',
+  'E2E_STUDENT2_PHONE',
+] as const;
 
-const STUDENT_EMAIL = requiredEnv('E2E_STUDENT_EMAIL');
-const STUDENT_PASSWORD = requiredEnv('E2E_STUDENT_PASSWORD');
-const S2_PHONE = requiredEnv('E2E_STUDENT2_PHONE');
+// 계정이 없으면 이 스펙만 skip 된다(나머지 스위트는 정상 실행).
+skipWithoutEnv(REQUIRED_ENV);
+
+const STUDENT_EMAIL = envValue('E2E_STUDENT_EMAIL');
+const STUDENT_PASSWORD = envValue('E2E_STUDENT_PASSWORD');
+const S2_PHONE = envValue('E2E_STUDENT2_PHONE');
 
 const toDomesticPhone = (phone: string) => {
   const digits = phone.replace(/[^0-9]/g, '');
