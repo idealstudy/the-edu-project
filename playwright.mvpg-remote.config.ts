@@ -1,7 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
-import dotenv from 'dotenv';
+import { loadE2eSecrets } from './e2e/helpers/load-e2e-secrets';
 
-dotenv.config({ path: '.env.local' });
+// .env.local 만 읽으면 계정 변수가 없을 때 전 항목이 조용히 skip 된다.
+loadE2eSecrets();
 
 export default defineConfig({
   testDir: './e2e',

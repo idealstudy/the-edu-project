@@ -1,8 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
-import dotenv from 'dotenv';
+import { loadE2eSecrets } from './e2e/helpers/load-e2e-secrets';
 
-// 기존 devremote 실행(MVP-G 등)이 .env.local 을 쓰므로 그대로 유지한다.
-dotenv.config({ path: '.env.local' });
+// .env.local 을 먼저 읽고(기존 devremote 실행 호환), 없는 계정 변수는 .local-secrets/*.env 로 채운다.
+// .env.local 만 읽으면 계정 변수가 없을 때 전 항목이 조용히 skip 된다.
+loadE2eSecrets();
 
 process.env.BACKEND_API_URL ??= 'https://apidev.d-edu.site/api';
 process.env.NEXT_PUBLIC_BACKEND_API_URL ??= 'https://apidev.d-edu.site/api';
