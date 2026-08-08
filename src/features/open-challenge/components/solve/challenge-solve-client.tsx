@@ -43,6 +43,7 @@ import { AiCoachPanel } from './ai-coach-panel';
 import { ChallengeHistoryDialog } from './challenge-history-dialog';
 import { ChallengeSolveSkeleton } from './challenge-solve-skeleton';
 import { ChoiceList } from './choice-list';
+import { ShortAnswerInput } from './short-answer-input';
 
 type ChallengeSolveClientProps = {
   challengeId: string;
@@ -419,8 +420,11 @@ export const ChallengeSolveClient = ({
     );
   }
 
-  // 아직 지원하지 않는 문제 유형(선택지 없음, 예: 주관식) — 직링크 진입 시 dead-end 방지.
-  if (challenge.choices.length === 0) {
+  // 단답형(주관식)은 choices 가 비어있는 게 정상이다 — answerType 으로 구분한다.
+  const isShortAnswer = challenge.answerType === 'SHORT_ANSWER';
+
+  // 아직 지원하지 않는 문제 유형(선택지도 없고 단답형도 아님) — 직링크 진입 시 dead-end 방지.
+  if (challenge.choices.length === 0 && !isShortAnswer) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-4 text-center">
         <p className="font-body1-heading text-text-main">
@@ -661,11 +665,18 @@ export const ChallengeSolveClient = ({
                 AI 힌트
               </Button>
             </div>
-            <ChoiceList
-              choices={challenge.choices}
-              selected={selectedAnswer}
-              onSelect={handleAnswerSelect}
-            />
+            {isShortAnswer ? (
+              <ShortAnswerInput
+                value={selectedAnswer ?? ''}
+                onChange={handleAnswerSelect}
+              />
+            ) : (
+              <ChoiceList
+                choices={challenge.choices}
+                selected={selectedAnswer}
+                onSelect={handleAnswerSelect}
+              />
+            )}
             {submitError && (
               <p className="text-system-warning text-sm font-semibold">
                 {submitError}
