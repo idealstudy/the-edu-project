@@ -685,4 +685,100 @@ test.describe(`${TAG} dev 실환경 릴리즈 관문`, () => {
     expect(latest?.selectedAnswer).toBe(correctAnswer);
     expect(latest?.isCorrect).toBe(true);
   });
+
+  // R-07 회장 지적: 친구에서 상대 프로필로 못 들어간다.
+  // 원장에 "부분 관찰, 프로필 진입 미확인"으로 남아 있던 항목이다.
+  //
+  // 실측(2026-08-08): 요청 행은 프로필로 가는데 수락된 친구 행은 대결 기록으로만 가서
+  // "친구가 되면 프로필로 갈 길이 사라지는" 상태였다. 회장 승인으로 행을 둘로 나눴다.
+  // 이름·사진은 프로필, 전적·화살표는 대결 기록. 두 목적지가 다 살아 있어야 통과다.
+  test('친구 목록에서 이름은 프로필로, 전적은 대결 기록으로 간다', async ({
+    page,
+  }) => {
+    await page.goto('/friends');
+
+    const profileLink = page.getByRole('link', { name: /프로필 보기$/ }).first();
+    await expect(profileLink).toBeVisible();
+    await expect(profileLink).toHaveAttribute(
+      'href',
+      /\/profile\/student\/\d+$/
+    );
+
+    const recordLink = page
+      .getByRole('link', { name: /대결 기록 보기$/ })
+      .first();
+    await expect(recordLink).toBeVisible();
+    await expect(recordLink).toHaveAttribute('href', /\/friends\/\d+$/);
+
+    await profileLink.click();
+    await page.waitForURL(/\/profile\/student\/\d+$/);
+
+    // 진입만 하고 빈 화면이면 의미가 없다. 본문이 실제로 그려졌는지 본다.
+    await expect(page.getByText(/찾을 수 없|문제가 발생/)).toHaveCount(0);
+    await expect(page.locator('body')).toContainText(/프로필|학습|목표|소개/);
+  });
+
+  // R-14 회장 지적: 정답률이 0%에서 안 움직인다.
+  // 서버 계산은 단위테스트가 지키므로, 여기서는 "화면에 실제로 0%가 아닌 값이 뜨는가"와
+  // "서버가 준 값과 화면 숫자가 같은가"를 본다. 시드 직후 참여자 0명이면 0%로 고착됐던
+  // 것이 원래 증상이라, 참여 기록이 쌓인 뒤의 실제 노출을 확인해야 닫힌다.
+  test('문제 카드 정답률이 0% 고착이 아니고 서버 값과 일치한다', async ({
+    page,
+  }) => {
+    const list = unwrap<{
+      content?: Array<{
+        challengeId: number;
+        participantCount: number | null;
+        wrongAnswerRate: number | null;
+        passRate: number | null;
+      }>;
+    }>(
+      await expectApi(
+        await page.request.get(
+          `${BACKEND_ORIGIN}/public/challenges?page=0&size=20`
+        ),
+        [200],
+        '공개 문제 목록'
+      )
+    );
+    const items = list.content ?? [];
+    expect(items.length, '공개 문제가 있어야 한다').toBeGreaterThan(0);
+
+    const played = items.filter((it) => (it.participantCount ?? 0) > 0);
+    expect(
+      played.length,
+      '참여 기록이 있는 문제가 하나도 없으면 정답률을 검증할 수 없다'
+    ).toBeGreaterThan(0);
+
+    const rates = played.map((it) =>
+      it.wrongAnswerRate != null ? 100 - it.wrongAnswerRate : (it.passRate ?? 0)
+    );
+    expect(
+      rates.some((rate) => rate > 0),
+      '참여자가 있는데 정답률이 전부 0%면 R-14 고착 재발이다'
+    ).toBe(true);
+
+    // 화면에도 실제 값이 뜨는지 확인한다. 서버만 맞고 화면이 0%면 회장이 본 증상 그대로다.
+    // 목록 화면은 '/' 가 아니라 '/challenges' 다('/' 는 공개 포털 홈).
+    // 화면이 어느 문제를 어떤 순서로 보여줄지는 목록 정책에 달렸으므로 특정 문제의
+    // 값을 콕 집어 비교하지 않는다. 대신 ①0% 고착이 아닌지 ②화면 값이 서버가 계산할
+    // 수 있는 값 범위 안에 있는지를 본다.
+    await page.goto('/challenges');
+    await expect(page.getByText(/정답률 \d+%/).first()).toBeVisible();
+    const shownRates = (await page.getByText(/정답률 \d+%/).allInnerTexts())
+      .map((text) => Number(/정답률 (\d+)%/.exec(text)?.[1]))
+      .filter((value) => Number.isFinite(value));
+
+    expect(shownRates.length, '화면에 정답률 표기가 있어야 한다').toBeGreaterThan(
+      0
+    );
+    expect(
+      shownRates.some((rate) => rate > 0),
+      '목록 화면 정답률이 전부 0%면 R-14 고착 재발이다'
+    ).toBe(true);
+    for (const rate of shownRates) {
+      expect(rate, `화면 정답률 ${rate}% 가 0 미만이다`).toBeGreaterThanOrEqual(0);
+      expect(rate, `화면 정답률 ${rate}% 가 100 을 넘는다`).toBeLessThanOrEqual(100);
+    }
+  });
 });

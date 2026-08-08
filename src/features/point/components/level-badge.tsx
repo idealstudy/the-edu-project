@@ -48,7 +48,7 @@ export const LevelBadge = ({
             레벨 · 성장 지표
           </span>
           <span className="font-body1-heading text-text-main tabular-nums">
-            {isLoading ? 'Lv.—' : `Lv.${level}`}
+            {isLoading ? 'Lv.-' : `Lv.${level}`}
           </span>
         </div>
       </div>
@@ -65,7 +65,7 @@ export const LevelBadge = ({
             다음 레벨까지
           </span>
           <span className="font-caption-heading text-text-sub1 tabular-nums">
-            {isLoading ? '— XP' : `${expToNextLevel.toLocaleString('ko-KR')} XP`}
+            {isLoading ? '- XP' : `${expToNextLevel.toLocaleString('ko-KR')} XP`}
           </span>
         </div>
       </div>

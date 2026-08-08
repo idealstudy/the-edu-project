@@ -217,7 +217,7 @@ export const ChallengeCard = ({
           <p className="text-orange-7 flex items-center gap-1 text-sm font-semibold">
             <Flame size={14} />
             {challenge.passRate !== null
-              ? `통과율 ${challenge.passRate}% — 10명 중 ${correctCountOutOf10}명만 맞혔어요`
+              ? `통과율 ${challenge.passRate}% (10명 중 ${correctCountOutOf10}명만 맞혔어요)`
               : '집계 중'}
           </p>
           <h3 className="text-text-main mt-1 line-clamp-2">

@@ -63,7 +63,7 @@ const LeafRow = ({
         />
       </div>
       <span className="font-caption-heading text-text-sub1 w-10 shrink-0 text-right tabular-nums">
-        {untested ? '—' : `${node.masteryScore}%`}
+        {untested ? '-' : `${node.masteryScore}%`}
       </span>
       {actionLabel ? (
         <button
@@ -184,7 +184,7 @@ export const RidgeDrilldown = ({
                         />
                       </span>
                       <span className="font-caption-heading text-text-sub1 w-10 shrink-0 text-right tabular-nums">
-                        {midUntested ? '—' : `${mid.masteryScore}%`}
+                        {midUntested ? '-' : `${mid.masteryScore}%`}
                       </span>
                     </span>
                   </Accordion.Trigger>

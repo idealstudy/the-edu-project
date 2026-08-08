@@ -225,7 +225,7 @@ function TodayChallenge() {
               </div>
               <div className="mt-5 grid grid-cols-3 gap-3">
                 <Metric
-                  value={`${challenge.passRate ?? '—'}%`}
+                  value={`${challenge.passRate ?? '-'}%`}
                   label="통과율"
                 />
                 <Metric

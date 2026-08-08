@@ -26,12 +26,12 @@ export const TreeHero = ({ mastery, valley }: TreeHeroProps) => {
             낮다. 안 메우면 시험장에서 그대로 흔들린다.
           </>
         ) : (
-          <>능선이 고르게 채워졌다 — 지금 페이스를 유지해.</>
+          <>능선이 고르게 채워졌다. 지금 페이스를 유지해.</>
         )}
       </h1>
       <p className="mt-3 max-w-[46ch] text-[14px] text-[#cfc9c6]">
         옅은 봉우리는 해설 없이는 못 푸는 단원, 비어 있는 봉우리는 아직 안
-        풀어본 구멍이다. 코치한테 물어보는 건 괜찮아 — 해설만 참으면 자력으로
+        풀어본 구멍이다. 코치한테 물어보는 건 괜찮아. 해설만 참으면 자력으로
         쳐준다.
       </p>
       <p className="mt-5 flex items-center gap-2 text-[13px] font-semibold text-[#a59f9c]">

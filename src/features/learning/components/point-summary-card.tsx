@@ -51,7 +51,7 @@ export const PointSummaryCard = () => {
           </p>
         ) : (
           <p className="font-title-heading text-text-main tabular-nums">
-            {isLoading ? '—' : balance.toLocaleString('ko-KR')}
+            {isLoading ? '-' : balance.toLocaleString('ko-KR')}
             <span className="font-headline1-heading text-orange-7 ml-1">P</span>
           </p>
         )}

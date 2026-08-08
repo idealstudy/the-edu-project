@@ -85,7 +85,7 @@ export const ResultCrossCheck = ({
                   color="var(--system-warning)"
                 />
               )}
-              {selectedAnswer ?? '—'}
+              {selectedAnswer ?? '-'}
             </span>
           </div>
           <div className="border-line-line2 flex flex-col items-center gap-1.5 border-l text-center">

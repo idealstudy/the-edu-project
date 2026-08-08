@@ -208,34 +208,51 @@ const FriendIdentityLink = ({
   </Link>
 );
 
+/**
+ * 수락된 친구 행.
+ *
+ * 목적지가 둘이라 링크를 두 개로 나눈다(링크 안에 링크를 넣을 수 없다).
+ *  - 이름·사진: 상대 프로필(회장 R-07 요청). 친구가 되기 전에는 요청 행에서
+ *    프로필로 갈 수 있는데 친구가 되고 나면 갈 길이 사라졌던 것을 여기서 연다.
+ *  - 전적·화살표 영역: 그 친구와의 대결 기록(기존 동선 유지).
+ */
 const AcceptedFriendRow = (identity: OtherIdentity) => {
   const { data: summary } = useFriendSummaryQuery(identity.memberId);
   const record = summary?.record;
+  const displayName = identity.name ?? '이름 미설정 회원';
 
   return (
-    <Link
-      href={PRIVATE.FRIENDS.DETAIL(identity.memberId)}
-      aria-label={`${identity.name ?? '이름 미설정 회원'}님과의 대결 기록 보기`}
-      className="focus-visible:ring-key-color-primary flex min-w-0 flex-1 items-center gap-3 rounded-lg focus-visible:ring-2 focus-visible:outline-none"
-    >
-      <FriendIdentity {...identity} />
-      <span className="ml-auto hidden shrink-0 text-right sm:block">
-        <span className="text-text-main block text-xs font-bold">
-          {record
-            ? `${record.win}승 ${record.lose}패 ${record.draw}무`
-            : '대결 기록 불러오는 중'}
-        </span>
-        {record && record.myTurn > 0 && (
-          <span className="text-orange-10 text-[11px] font-bold">
-            내 차례 {record.myTurn}건
+    <div className="flex min-w-0 flex-1 items-center gap-3">
+      <Link
+        href={PUBLIC.PROFILE.STUDENT(identity.memberId)}
+        aria-label={`${displayName} 프로필 보기`}
+        className="focus-visible:ring-key-color-primary min-w-0 rounded-lg focus-visible:ring-2 focus-visible:outline-none"
+      >
+        <FriendIdentity {...identity} />
+      </Link>
+      <Link
+        href={PRIVATE.FRIENDS.DETAIL(identity.memberId)}
+        aria-label={`${displayName}님과의 대결 기록 보기`}
+        className="focus-visible:ring-key-color-primary ml-auto flex shrink-0 items-center gap-3 rounded-lg focus-visible:ring-2 focus-visible:outline-none"
+      >
+        <span className="hidden shrink-0 text-right sm:block">
+          <span className="text-text-main block text-xs font-bold">
+            {record
+              ? `${record.win}승 ${record.lose}패 ${record.draw}무`
+              : '대결 기록 불러오는 중'}
           </span>
-        )}
-      </span>
-      <ChevronRight
-        className="text-text-sub2 shrink-0"
-        size={18}
-      />
-    </Link>
+          {record && record.myTurn > 0 && (
+            <span className="text-orange-10 text-[11px] font-bold">
+              내 차례 {record.myTurn}건
+            </span>
+          )}
+        </span>
+        <ChevronRight
+          className="text-text-sub2 shrink-0"
+          size={18}
+        />
+      </Link>
+    </div>
   );
 };
 
