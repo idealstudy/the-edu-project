@@ -2,8 +2,11 @@
 
 import { useMemo, useState } from 'react';
 
+import Link from 'next/link';
+
 import { type AdminConsultationCase } from '@/entities/admin-operations';
 import { SearchInput, Textarea } from '@/shared/components/ui';
+import { PRIVATE } from '@/shared/constants/route';
 import { cn } from '@/shared/lib';
 
 import {
@@ -311,13 +314,34 @@ export const AdminConsultations = () => {
                 <br />
                 {selectedCase.senderContact ?? '연락처 미등록'}
               </div>
-              <button
-                type="button"
-                disabled
-                className="mt-3 min-h-11 w-full rounded-lg border border-[#e4e4e7] text-xs font-extrabold disabled:text-[#a1a1aa]"
-              >
-                회원 상세 열기
-              </button>
+              {/*
+                승인 디자인 v22 `aConsultOk` 4198: navigate /admin/members/{memberId}.
+                접수 연락처로 회원을 찾은 경우에만 열 수 있다.
+                못 찾으면 H3 대로 이유를 화면에 적는다(조건 없는 영구 비활성 금지).
+              */}
+              {selectedCase.senderMemberId ? (
+                <Link
+                  href={PRIVATE.ADMIN.MEMBERS.DETAIL(selectedCase.senderMemberId)}
+                  className="mt-3 flex min-h-11 w-full items-center justify-center rounded-lg border border-[#e4e4e7] text-xs font-extrabold"
+                  data-testid="admin-consultation-open-member"
+                >
+                  회원 상세 열기
+                </Link>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    disabled
+                    className="mt-3 min-h-11 w-full rounded-lg border border-[#e4e4e7] text-xs font-extrabold disabled:text-[#a1a1aa]"
+                  >
+                    회원 상세 열기
+                  </button>
+                  <p className="mt-2 text-[11.5px] text-[#71717a]">
+                    접수 연락처로 회원 계정을 찾지 못했습니다. 비회원 문의이거나
+                    가입 연락처가 다른 경우입니다.
+                  </p>
+                </>
+              )}
             </section>
           </div>
         </div>

@@ -25,9 +25,118 @@ import {
 } from 'lucide-react';
 
 import { useReviewWrongAnswer } from '../../hooks/use-review-wrong-answer';
-import { useWrongAnswersQuery } from '../../hooks/use-wrong-answer-query';
+import {
+  useAskTeacherOnWrongAnswer,
+  useWrongAnswersQuery,
+} from '../../hooks/use-wrong-answer-query';
 import { ReviewStamps } from './review-stamps';
 import StudentDashboardHeader from '../header/student-header';
+
+/**
+ * 승인 디자인 v22 `sReviewOk` 3219 `질문 남기기`.
+ * 선생님 코멘트가 마음에 걸리면 학생이 되받아친다. 되물으면 선생님 처리 목록에 다시 올라간다.
+ */
+const TeacherCommentQuestion = ({
+  wrongAnswer,
+}: {
+  wrongAnswer: WrongAnswerItem;
+}) => {
+  const [isWriting, setIsWriting] = useState(false);
+  const [question, setQuestion] = useState('');
+  const askTeacher = useAskTeacherOnWrongAnswer();
+
+  if (wrongAnswer.studentQuestion && !isWriting) {
+    return (
+      <div
+        className="border-orange-3 bg-gray-white mt-3 rounded-lg border p-3"
+        data-testid="wrong-answer-student-question"
+      >
+        <p className="font-caption-normal text-gray-8">
+          선생님께 남긴 질문
+        </p>
+        <p className="font-body2-normal text-gray-12 mt-1 whitespace-pre-wrap">
+          {wrongAnswer.studentQuestion}
+        </p>
+        <Button
+          size="xsmall"
+          variant="outlined"
+          className="mt-2"
+          onClick={() => {
+            setQuestion(wrongAnswer.studentQuestion ?? '');
+            setIsWriting(true);
+          }}
+        >
+          질문 고치기
+        </Button>
+      </div>
+    );
+  }
+
+  if (!isWriting) {
+    return (
+      <Button
+        size="xsmall"
+        variant="outlined"
+        className="mt-3"
+        onClick={() => setIsWriting(true)}
+        data-testid="wrong-answer-ask-teacher"
+      >
+        질문 남기기
+      </Button>
+    );
+  }
+
+  return (
+    <form
+      className="mt-3 flex flex-col gap-2"
+      onSubmit={(event) => {
+        event.preventDefault();
+        const trimmed = question.trim();
+        if (!trimmed) return;
+        askTeacher.mutate(
+          { id: wrongAnswer.id, question: trimmed },
+          {
+            onSuccess: () => {
+              setIsWriting(false);
+              setQuestion('');
+            },
+          }
+        );
+      }}
+    >
+      <textarea
+        value={question}
+        onChange={(event) => setQuestion(event.target.value)}
+        maxLength={500}
+        rows={3}
+        autoFocus
+        aria-label="선생님께 남길 질문"
+        placeholder="어디가 이해되지 않는지 그대로 적어도 됩니다"
+        className="border-gray-3 w-full rounded-lg border p-3 text-sm"
+      />
+      <div className="flex gap-2">
+        <Button
+          type="submit"
+          size="xsmall"
+          disabled={askTeacher.isPending || question.trim().length === 0}
+        >
+          보내기
+        </Button>
+        <Button
+          type="button"
+          size="xsmall"
+          variant="outlined"
+          onClick={() => {
+            setIsWriting(false);
+            setQuestion('');
+          }}
+        >
+          취소
+        </Button>
+      </div>
+    </form>
+  );
+};
 
 type WrongAnswerReviewProps = {
   wrongAnswerId: number;
@@ -267,6 +376,8 @@ const ReviewForm = ({ wrongAnswer }: ReviewFormProps) => {
           <p className="font-body2-normal text-gray-12 mt-3 leading-relaxed whitespace-pre-wrap">
             {wrongAnswer.teacherComment}
           </p>
+          {/* 승인 디자인 v22 `sReviewOk` 3219 `질문 남기기` */}
+          <TeacherCommentQuestion wrongAnswer={wrongAnswer} />
         </section>
       )}
 

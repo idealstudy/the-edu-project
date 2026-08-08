@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import Link from 'next/link';
 
 import type { UnitNoteNode } from '@/entities/unit-note';
@@ -69,9 +71,15 @@ const summarizeSubject = (
 
 export const UnitNoteLibrary = () => {
   const libraryQuery = useUnitNoteLibraryQuery();
+  // 승인 디자인 v22 `sNoteSubjects` 2661: `최근 정리 순`(기본) / `약한 순`
+  const [sort, setSort] = useState<'RECENT' | 'WEAK'>('RECENT');
   const nodes = libraryQuery.data?.nodes ?? [];
   const subjects = SUBJECT_GROUPS.map((subject) =>
     summarizeSubject(subject, nodes)
+  ).sort((a, b) =>
+    sort === 'WEAK'
+      ? a.problemPercent - b.problemPercent
+      : b.pageCount - a.pageCount
   );
 
   return (
@@ -88,8 +96,33 @@ export const UnitNoteLibrary = () => {
               단권화 노트
             </h1>
             <span className="text-gray-8 text-xs">
-              배우는 순서 · 최근에 정리한 과목부터
+              {sort === 'RECENT'
+                ? '최근에 정리한 과목부터'
+                : '숙련도가 낮은 과목부터'}
             </span>
+            <div className="ml-auto flex gap-1.5">
+              {(
+                [
+                  ['RECENT', '최근 정리 순'],
+                  ['WEAK', '약한 순'],
+                ] as const
+              ).map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  aria-pressed={sort === value}
+                  onClick={() => setSort(value)}
+                  data-testid={`unit-note-sort-${value.toLowerCase()}`}
+                  className={`min-h-9 cursor-pointer rounded-lg border px-3 text-xs font-bold ${
+                    sort === value
+                      ? 'border-orange-7 bg-orange-1 text-orange-10'
+                      : 'border-gray-3 text-gray-9'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {libraryQuery.isPending ? (

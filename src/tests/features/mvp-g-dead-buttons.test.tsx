@@ -56,6 +56,32 @@ vi.mock('@/features/dashboard/components/header/teacher-header', () => ({
   TeacherDashboardHeader: () => <header>선생님 대시보드</header>,
 }));
 
+/** v22 학습 관리 처리 행 계약. 이 테스트는 진입점 링크만 보므로 처리 행은 비워 둔다. */
+vi.mock('@/features/study-notes/hooks/use-learning-management', () => {
+  const idleMutation = () => ({ mutate: vi.fn(), isPending: false });
+  return {
+    useLearningManagementQuery: () => ({
+      data: {
+        pendingCount: 0,
+        noteRows: [],
+        todoRows: [],
+        feedbackRows: [],
+      },
+      isPending: false,
+      isError: false,
+    }),
+    useLearningManagementActions: () => ({
+      deferTodo: idleMutation(),
+      acknowledgeTodo: idleMutation(),
+      approveRecommendation: idleMutation(),
+      rejectRecommendation: idleMutation(),
+      acknowledgeWrongAnswer: idleMutation(),
+      acknowledgeAllWrongAnswers: idleMutation(),
+      saveComment: idleMutation(),
+    }),
+  };
+});
+
 const EMPTY_TODOS = {
   weekOf: '2026-08-03',
   weekEnd: '2026-08-09',

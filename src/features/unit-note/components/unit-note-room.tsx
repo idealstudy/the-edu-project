@@ -83,6 +83,8 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
   const libraryQuery = useUnitNoteLibraryQuery();
   const [selectedNodeId, setSelectedNodeId] = useState<number | null>(null);
   const [editorMode, setEditorMode] = useState<'PEN' | 'UPLOAD' | null>(null);
+  // 승인 디자인 v22 `sNoteUnits` 2717: `최근 정리 순`(기본) / `약한 순`
+  const [unitSort, setUnitSort] = useState<'RECENT' | 'WEAK'>('RECENT');
 
   const root = libraryQuery.data?.nodes.find(
     (node) => node.nodeId === rootNodeId
@@ -93,6 +95,25 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
     const children = nodes.filter((node) => node.parentId === root.nodeId);
     return children.length > 0 ? children : [root];
   }, [libraryQuery.data?.nodes, root]);
+  const sortedConcepts = useMemo(
+    () =>
+      [...concepts].sort((left, right) =>
+        unitSort === 'WEAK'
+          ? left.masteryScore - right.masteryScore
+          : right.pageCount - left.pageCount
+      ),
+    [concepts, unitSort]
+  );
+  /** v22 `sNoteUnits` 2733: 숙련도가 가장 낮은 단원 (없으면 null) */
+  const weakestConcept = useMemo(
+    () =>
+      concepts.length === 0
+        ? null
+        : [...concepts].sort(
+            (left, right) => left.masteryScore - right.masteryScore
+          )[0],
+    [concepts]
+  );
   const defaultConcept = useMemo(
     () =>
       [...concepts].sort((left, right) => right.pageCount - left.pageCount)[0],
@@ -295,18 +316,65 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
               <p className="text-gray-8 mt-2 text-[11px]">
                 문제 {branchProblems}개 · 노트 {branchPages}장
               </p>
+              {/* 승인 디자인 v22 `sNoteUnits` 2733 `가장 약한 단원 먼저 정리하기` */}
+              {weakestConcept && (
+                <button
+                  type="button"
+                  data-testid="unit-note-open-weakest"
+                  onClick={() => {
+                    setUnitSort('WEAK');
+                    setSelectedNodeId(weakestConcept.nodeId);
+                  }}
+                  className="border-orange-7 text-orange-10 mt-3 flex min-h-9 w-full cursor-pointer items-center justify-between rounded-lg border bg-white px-3 text-xs font-bold"
+                >
+                  <span>
+                    가장 약한 단원 먼저 정리하기 ·{' '}
+                    {weakestConcept.displayName || weakestConcept.unit}
+                  </span>
+                  <span aria-hidden>›</span>
+                </button>
+              )}
             </div>
           </div>
         </header>
 
         {editorMode === null && (
           <section className="border-gray-3 bg-gray-white mt-3 rounded-xl border p-4">
-            <h2 className="text-gray-12 text-base font-extrabold">단원 목록</h2>
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="text-gray-12 text-base font-extrabold">
+                단원 목록
+              </h2>
+              <div className="ml-auto flex gap-1.5">
+                {(
+                  [
+                    ['RECENT', '최근 정리 순'],
+                    ['WEAK', '약한 순'],
+                  ] as const
+                ).map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    aria-pressed={unitSort === value}
+                    onClick={() => setUnitSort(value)}
+                    data-testid={`unit-note-unit-sort-${value.toLowerCase()}`}
+                    className={`min-h-9 cursor-pointer rounded-lg border px-3 text-xs font-bold ${
+                      unitSort === value
+                        ? 'border-orange-7 bg-orange-1 text-orange-10'
+                        : 'border-gray-3 text-gray-9'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
             <p className="font-caption-normal text-gray-8 mt-1">
-              접힌 단원 행을 누르면 그 단원의 노트가 아래에 뜹니다.
+              {unitSort === 'RECENT'
+                ? '노트가 많은 단원이 위입니다. 행을 누르면 그 단원 노트가 아래에 뜹니다.'
+                : '숙련도가 낮은 단원이 위입니다. 여기부터 정리하면 됩니다.'}
             </p>
             <div className="mt-4 flex flex-col">
-              {concepts.map((concept) => (
+              {sortedConcepts.map((concept) => (
                 <button
                   key={concept.nodeId}
                   type="button"

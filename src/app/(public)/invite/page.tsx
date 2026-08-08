@@ -30,11 +30,11 @@ export default function InvitePage() {
   const inviteToken = searchParams.get('token');
   const { data, isLoading, error } = useInvitation(inviteToken);
 
-  useEffect(() => {
-    if (!inviteToken) {
-      router.replace('/');
-    }
-  }, [inviteToken, router]);
+  /**
+   * 선생님 마이페이지의 `코드 복사`(v22 3708)로 받은 코드를 학생이 직접 넣는 자리.
+   * 링크 없이 코드만 받은 학생에게 들어올 경로가 없으면 그 복사 버튼이 죽은 버튼이 된다.
+   */
+  const [typedCode, setTypedCode] = useState('');
 
   useEffect(() => {
     if (!error) return;
@@ -47,7 +47,39 @@ export default function InvitePage() {
   }, [error, router]);
 
   if (!inviteToken) {
-    return null;
+    return (
+      <main className="bg-gray-white mx-auto flex h-[calc(100vh-var(--spacing-header-height))] w-full items-center justify-center px-6">
+        <form
+          className="w-full max-w-[420px] rounded-xl border border-[#e3e5e8] bg-white p-6"
+          data-testid="invite-code-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            const code = typedCode.trim();
+            if (!code) return;
+            router.push(`/invite?token=${encodeURIComponent(code)}`);
+          }}
+        >
+          <h1 className="text-lg font-extrabold">초대 코드 넣기</h1>
+          <p className="mt-2 text-xs text-[#747980]">
+            선생님께 받은 초대 코드를 붙여넣으면 수업으로 들어갑니다.
+          </p>
+          <input
+            value={typedCode}
+            onChange={(event) => setTypedCode(event.target.value)}
+            aria-label="초대 코드"
+            placeholder="초대 코드"
+            className="mt-4 min-h-11 w-full rounded-lg border border-[#e3e5e8] px-3 text-sm"
+          />
+          <button
+            type="submit"
+            disabled={typedCode.trim().length === 0}
+            className="mt-3 min-h-11 w-full cursor-pointer rounded-lg bg-[#f26a2e] text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            들어가기
+          </button>
+        </form>
+      </main>
+    );
   }
 
   return (

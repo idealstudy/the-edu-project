@@ -9,6 +9,11 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('@/features/dashboard/hooks/use-wrong-answer-query', () => ({
   useWrongAnswersQuery: mocks.wrongAnswers,
+  // v22 `sReviewOk` 3219 `질문 남기기` 훅이 같은 모듈에서 온다.
+  useAskTeacherOnWrongAnswer: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+  }),
 }));
 
 vi.mock('@/features/dashboard/hooks/use-review-wrong-answer', () => ({

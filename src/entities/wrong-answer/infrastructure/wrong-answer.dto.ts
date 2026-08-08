@@ -35,6 +35,9 @@ const dailyProblemQueue = z.object({
 const wrongAnswerItem = z.object({
   id: z.number().int().positive(),
   studentId: z.number().int().positive(),
+  studentName: z.string().nullish(),
+  studentQuestion: z.string().nullish(),
+  studentQuestionAt: z.string().nullish(),
   sourceType: z.enum(['EXAM', 'TEACHER', 'SELF_REVIEW']),
   challengeId: z.number().int().positive().nullable(),
   challengeAttemptId: z.number().int().positive().nullable(),

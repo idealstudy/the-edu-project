@@ -64,8 +64,12 @@ export const StudyroomSidebar = ({
 
   const { mutate: deleteStudyRoom } = useDeleteStudyRoom();
   const { mutate: updateRoomName } = useUpdateStudyRoomTitle();
-  const { data: invitation, isLoading: isInvitationLoading } =
-    useInvitationQuery(studyRoomId, { enabled: role === 'ROLE_TEACHER' });
+  const {
+    data: invitation,
+    isLoading: isInvitationLoading,
+    isError: isInvitationError,
+    refetch: refetchInvitation,
+  } = useInvitationQuery(studyRoomId, { enabled: role === 'ROLE_TEACHER' });
   const { mutate: toggleInvitation, isPending: isInvitationPending } =
     useToggleInvitation(studyRoomId);
   const { mutate: updateEnrollmentStatus } =
@@ -233,11 +237,40 @@ export const StudyroomSidebar = ({
               imgUrl="/studynotes/invite_student.svg"
               disabled={!invitation?.enabled}
             />
+            {/*
+              H3: 조건 없는 영구 비활성 금지. 못 누르는 이유를 화면에 적는다.
+              QA 8차 C조는 이 두 조작이 "조건 없는 비활성"으로 보인다고 판정했는데,
+              실제 원인은 초대 링크 조회가 아직 안 끝났거나 실패했을 때 아무 설명 없이
+              꺼진 채로 남는 것이었다. 이유와 회복 경로를 함께 붙였다.
+            */}
+            {!invitation?.enabled && (
+              <p
+                className="text-gray-7 font-caption-normal"
+                data-testid="study-room-invite-disabled-reason"
+              >
+                {isInvitationError ? (
+                  <>
+                    초대 링크 정보를 불러오지 못했습니다.{' '}
+                    <button
+                      type="button"
+                      className="text-orange-9 cursor-pointer font-bold underline"
+                      onClick={() => refetchInvitation()}
+                    >
+                      다시 불러오기
+                    </button>
+                  </>
+                ) : isInvitationLoading ? (
+                  '초대 링크 상태를 불러오는 중입니다.'
+                ) : (
+                  '초대 링크가 꺼져 있어 지금은 복사할 수 없습니다. 아래 스위치를 켜면 바로 복사됩니다.'
+                )}
+              </p>
+            )}
             <div className="flex gap-2">
               <Toggle
-                checked={invitation?.enabled}
+                checked={invitation?.enabled ?? false}
                 onCheckedChange={toggleInvitation}
-                disabled={isInvitationLoading || isInvitationPending}
+                disabled={isInvitationPending || (isInvitationLoading && !invitation)}
                 aria-label="초대 링크 활성화"
               />
               <div className="flex flex-1 flex-col gap-0.5">

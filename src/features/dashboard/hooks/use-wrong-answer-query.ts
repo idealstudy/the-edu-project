@@ -13,6 +13,18 @@ export const useWrongAnswersQuery = (nodeId?: number) =>
     queryFn: () => repository.getWrongAnswers(nodeId),
   });
 
+/** v22 `sReviewOk` 3219 `질문 남기기` */
+export const useAskTeacherOnWrongAnswer = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, question }: { id: number; question: string }) =>
+      repository.askTeacher(id, question),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: wrongAnswerKeys.all });
+    },
+  });
+};
+
 export const useTeacherWrongAnswerInboxQuery = () =>
   useQuery({
     queryKey: wrongAnswerKeys.teacherInbox(),

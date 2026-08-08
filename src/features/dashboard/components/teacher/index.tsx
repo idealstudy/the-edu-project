@@ -5,10 +5,83 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 import { TeacherDashboardHeader } from '@/features/dashboard/components/header/teacher-header';
+import { useTeacherStudyRoomDetailQuery } from '@/features/study-rooms/hooks';
+import { useUpdateStudyRoomTitle } from '@/features/study-rooms/components/sidebar/services/query';
+import { PRIVATE } from '@/shared/constants';
 
 import { useChangeStudyRoomStatus } from '../../hooks/use-change-study-room-status';
 import { useTeacherDashboardStudyRoomListQuery } from '../../hooks/use-teacher-dashboard-query';
 import { LearningInboxCard } from './learning-inbox-card';
+
+/**
+ * 승인 디자인 v22 `roomCard` 3324 `스터디룸 이름 수정`.
+ * 이름 변경 API 는 스터디룸 전체를 다시 보내는 PUT 이라, 열릴 때 상세를 먼저 읽고 이름만 바꿔 보낸다.
+ */
+const RoomRenameDialog = ({
+  studyRoomId,
+  currentName,
+  onClose,
+}: {
+  studyRoomId: number;
+  currentName: string;
+  onClose: () => void;
+}) => {
+  const [name, setName] = useState(currentName);
+  const detailQuery = useTeacherStudyRoomDetailQuery(studyRoomId, {
+    enabled: true,
+  });
+  const rename = useUpdateStudyRoomTitle();
+  const detail = detailQuery.data;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
+      <form
+        className="w-full max-w-sm rounded-xl bg-white p-5"
+        data-testid="study-room-rename-dialog"
+        onSubmit={(event) => {
+          event.preventDefault();
+          const trimmed = name.trim();
+          if (!trimmed || !detail) return;
+          rename.mutate(
+            { studyRoomId, name: trimmed, others: detail },
+            { onSuccess: onClose }
+          );
+        }}
+      >
+        <h3 className="text-sm font-extrabold">스터디룸 이름 수정</h3>
+        <input
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          maxLength={40}
+          autoFocus
+          aria-label="스터디룸 이름"
+          className="mt-3 w-full rounded-lg border border-[#e3e5e8] px-3 py-2 text-sm"
+        />
+        {!detail && (
+          <p className="mt-2 text-[11px] text-[#747980]">
+            수업 정보를 불러오는 중입니다.
+          </p>
+        )}
+        <div className="mt-4 flex justify-end gap-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-md border px-3 py-2 text-xs font-bold"
+          >
+            취소
+          </button>
+          <button
+            type="submit"
+            disabled={!detail || rename.isPending || name.trim().length === 0}
+            className="rounded-md bg-[#222] px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
+          >
+            저장
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
 
 const DashboardTeacher = ({
   initialMemberName,
@@ -28,6 +101,8 @@ const DashboardTeacher = ({
   );
   const [openMenuRoomId, setOpenMenuRoomId] = useState<number | null>(null);
   const [showClosedRooms, setShowClosedRooms] = useState(false);
+  // 승인 디자인 v22 `roomCard` 3324 `스터디룸 이름 수정`
+  const [renamingRoomId, setRenamingRoomId] = useState<number | null>(null);
   const statusMutation = useChangeStudyRoomStatus();
 
   const changeRoomStatus = (
@@ -135,15 +210,47 @@ const DashboardTeacher = ({
                   </div>
                   {openMenuRoomId === room.id && (
                     <div className="absolute top-12 right-4 z-10 rounded-lg border bg-white p-1 shadow-lg">
+                      {/* 승인 디자인 v22 `roomCard` 3323~3325: 메뉴 4개 */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setRenamingRoomId(room.id);
+                          setOpenMenuRoomId(null);
+                        }}
+                        className="block w-full rounded px-3 py-2 text-left text-xs font-bold hover:bg-[#f6f7f9]"
+                      >
+                        스터디룸 이름 수정
+                      </button>
+                      <Link
+                        href={PRIVATE.ROOM.MEMBERS(room.id)}
+                        onClick={() => setOpenMenuRoomId(null)}
+                        className="block w-full rounded px-3 py-2 text-left text-xs font-bold hover:bg-[#f6f7f9]"
+                      >
+                        학생 초대
+                      </Link>
+                      <Link
+                        href={PRIVATE.NOTE.CREATE(room.id)}
+                        onClick={() => setOpenMenuRoomId(null)}
+                        className="block w-full rounded px-3 py-2 text-left text-xs font-bold hover:bg-[#f6f7f9]"
+                      >
+                        기록 일지 쓰기
+                      </Link>
                       <button
                         type="button"
                         disabled={statusMutation.isPending}
                         onClick={() => changeRoomStatus(room.id, 'CLOSED')}
-                        className="rounded px-3 py-2 text-xs font-bold text-[#b43b30] hover:bg-[#fff3f1] disabled:opacity-50"
+                        className="block w-full rounded px-3 py-2 text-left text-xs font-bold text-[#b43b30] hover:bg-[#fff3f1] disabled:opacity-50"
                       >
                         이 수업 종료하기
                       </button>
                     </div>
+                  )}
+                  {renamingRoomId === room.id && (
+                    <RoomRenameDialog
+                      studyRoomId={room.id}
+                      currentName={room.name}
+                      onClose={() => setRenamingRoomId(null)}
+                    />
                   )}
                   <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 rounded-lg bg-[#fafafa] px-3 py-2 text-[11px] text-[#60646b]">
                     <span>

@@ -25,6 +25,13 @@ const SUBJECT_OPTIONS = Object.entries(SUBJECT_TO_KOREAN) as Array<
 
 export const AdminQuestionBank = () => {
   const [subject, setSubject] = useState<QuestionBankSubject>('MATH');
+  /**
+   * 승인 디자인 v22 `aBankOk` 4083 `검수 시작`.
+   * v22 는 "공개하기 전에 정답과 단원을 사람이 확인합니다"라고 검수의 뜻을 적어 두었다.
+   * 그래서 검수 대기 = 정답이 없거나 단원이 안 붙은 문항으로 본다.
+   */
+  const [reviewOnly, setReviewOnly] = useState(false);
+  const [openedQuestionId, setOpenedQuestionId] = useState<number | null>(null);
   const questionBank = useAdminQuestionBankQuery({
     subject,
     treeNodeIds: [],
@@ -92,7 +99,11 @@ export const AdminQuestionBank = () => {
     );
   };
 
-  const content = questionBank.data?.content ?? [];
+  const allContent = questionBank.data?.content ?? [];
+  const needsReview = (question: (typeof allContent)[number]) =>
+    !question.hasCorrectAnswer || question.treeNodeId === null;
+  const pendingCount = allContent.filter(needsReview).length;
+  const content = reviewOnly ? allContent.filter(needsReview) : allContent;
 
   return (
     <div
@@ -121,7 +132,7 @@ export const AdminQuestionBank = () => {
               <h2 className="text-sm font-extrabold text-[#27272a]">문항</h2>
               <span className="text-xs text-[#71717a]">
                 {questionBank.data?.totalElements ?? 0}개 · 검수 완료{' '}
-                {questionBank.data?.totalElements ?? 0}
+                {allContent.length - pendingCount} · 검수 대기 {pendingCount}
               </span>
             </div>
             <div className="mb-3 flex flex-wrap gap-2 text-xs font-bold text-[#52525b]">
@@ -149,9 +160,19 @@ export const AdminQuestionBank = () => {
                   ))}
                 </Select.Content>
               </Select>
-              <span className="rounded-md border border-[#e4e4e7] px-3 py-2">
-                검수 상태 전체
-              </span>
+              <button
+                type="button"
+                aria-pressed={reviewOnly}
+                onClick={() => setReviewOnly((current) => !current)}
+                data-testid="admin-question-bank-review-filter"
+                className={`cursor-pointer rounded-md border px-3 py-2 ${
+                  reviewOnly
+                    ? 'border-[#f0a36a] bg-[#fff7f0] text-[#9a441f]'
+                    : 'border-[#e4e4e7]'
+                }`}
+              >
+                검수 상태 {reviewOnly ? '검수 대기' : '전체'}
+              </button>
             </div>
 
             {questionBank.isPending ? (
@@ -190,22 +211,87 @@ export const AdminQuestionBank = () => {
                     </small>
                   </span>
                   <span className="flex items-center gap-2">
-                    <span className="rounded-full bg-[#effaf1] px-2 py-1 text-[11px] font-bold text-[#237a3d]">
-                      공개
-                    </span>
+                    {needsReview(question) ? (
+                      <span className="rounded-full bg-[#fff7ed] px-2 py-1 text-[11px] font-bold text-[#c2410c]">
+                        검수 대기
+                      </span>
+                    ) : (
+                      <span className="rounded-full bg-[#effaf1] px-2 py-1 text-[11px] font-bold text-[#237a3d]">
+                        공개
+                      </span>
+                    )}
                     <Button
                       size="xsmall"
                       variant="outlined"
+                      onClick={() =>
+                        setOpenedQuestionId((current) =>
+                          current === question.challengeId
+                            ? null
+                            : question.challengeId
+                        )
+                      }
                     >
-                      보기
+                      {openedQuestionId === question.challengeId
+                        ? '닫기'
+                        : '보기'}
                     </Button>
                   </span>
+                  {openedQuestionId === question.challengeId && (
+                    <div
+                      className="col-span-3 rounded-lg border border-[#e4e4e7] bg-[#fafafa] p-3 text-xs leading-6 text-[#3f3f46]"
+                      data-testid={`admin-question-bank-detail-${question.challengeId}`}
+                    >
+                      <p>{question.questionText ?? '지문이 등록되지 않았습니다.'}</p>
+                      <p className="mt-2 text-[11px] text-[#71717a]">
+                        정답 {question.hasCorrectAnswer ? '등록됨' : '없음'} ·
+                        단원 {question.treeNodePath || '미지정'} · 난이도{' '}
+                        {question.difficulty}
+                      </p>
+                      {question.questionImageUrl && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={question.questionImageUrl}
+                          alt={`문항 ${question.challengeId} 이미지`}
+                          className="mt-2 max-w-full rounded-md"
+                        />
+                      )}
+                    </div>
+                  )}
                 </div>
               ))
             )}
           </section>
 
           <aside>
+            {/* v22 `aBankOk` 4082 검수 대기 카드 + `검수 시작` */}
+            <section className="mb-4 rounded-xl border border-[#e4e4e7] bg-white p-4">
+              <h2 className="text-sm font-extrabold text-[#27272a]">
+                검수 대기 {pendingCount}개
+              </h2>
+              <p className="mt-3 text-xs leading-6 text-[#71717a]">
+                공개하기 전에 정답과 단원을 사람이 확인합니다. 검수 안 된 문항은
+                선생님 시험 열기 목록에 뜨지 않습니다.
+              </p>
+              <Button
+                size="small"
+                className="mt-3 w-full"
+                disabled={pendingCount === 0}
+                data-testid="admin-question-bank-start-review"
+                onClick={() => {
+                  setReviewOnly(true);
+                  const first = allContent.find(needsReview);
+                  setOpenedQuestionId(first ? first.challengeId : null);
+                }}
+              >
+                검수 시작
+              </Button>
+              {pendingCount === 0 && (
+                <p className="mt-2 text-[11px] text-[#71717a]">
+                  이 과목에 검수 대기 문항이 없습니다.
+                </p>
+              )}
+            </section>
+
             <section className="rounded-xl border border-[#e4e4e7] bg-white p-4">
               <h2 className="text-sm font-extrabold text-[#27272a]">
                 일괄 올리기

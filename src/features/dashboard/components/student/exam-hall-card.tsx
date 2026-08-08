@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import Link from 'next/link';
 
 import { useStudentDashboardReportQuery } from '@/features/dashboard/hooks/use-student-dashboard-query';
@@ -15,6 +17,8 @@ import { cn } from '@/shared/lib';
 type Props = { className?: string };
 
 export const ExamHallCard = ({ className }: Props) => {
+  // 승인 디자인 v22 `locMeasured` 1754 `등급이 어떻게 나왔나요`
+  const [isBasisOpen, setIsBasisOpen] = useState(false);
   const exams = useAssignedExamsQuery();
   const analyzedExam = exams.data?.find((exam) => exam.status === 'ANALYZED');
   const analysis = useExamAnalysisQuery(analyzedExam?.attemptId ?? 0, {
@@ -59,7 +63,43 @@ export const ExamHallCard = ({ className }: Props) => {
                 실측 아님
               </span>
             )}
+            <button
+              type="button"
+              aria-expanded={isBasisOpen}
+              onClick={() => setIsBasisOpen((current) => !current)}
+              data-testid="expected-grade-basis-toggle"
+              className="ml-auto min-h-9 cursor-pointer rounded-lg border border-[#e4e4e7] px-3 text-[11px] font-bold text-[#52525b]"
+            >
+              등급이 어떻게 나왔나요
+            </button>
           </div>
+          {isBasisOpen && (
+            <div
+              className="mt-3 rounded-lg border border-[#ececef] bg-[#fafafa] p-4 text-[11.5px] leading-6 text-[#52525b]"
+              data-testid="expected-grade-basis"
+            >
+              <p>
+                지금 이 등급은{' '}
+                <b>
+                  {analysis.data.gradeBasis === 'MEASURED'
+                    ? '채점이 끝난 시험 결과(실측)'
+                    : '아직 시험 없이 푼 문항 기록(예측)'}
+                </b>
+                를 근거로 나왔습니다.
+              </p>
+              <p className="mt-2">
+                등급은 <b>범위</b>로만 씁니다. 문항 수가 단일 등급을 보증할 만큼
+                많지 않기 때문입니다. 근거가 없으면 숫자를 쓰지 않고 다음에 할
+                일을 대신 보여줍니다.
+              </p>
+              <ul className="mt-2 list-disc pl-4">
+                {analysis.data.evidence.map((item) => (
+                  <li key={`basis-${item.source}`}>{item.label}</li>
+                ))}
+              </ul>
+              <p className="mt-2">{analysis.data.dataNotice}</p>
+            </div>
+          )}
           <p className="mt-3 text-4xl font-black tracking-tight text-[#27272a]">
             {analysis.data.predictedGradeLow}~{analysis.data.predictedGradeHigh}
             등급

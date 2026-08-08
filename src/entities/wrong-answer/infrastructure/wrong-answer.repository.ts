@@ -44,6 +44,15 @@ const reviewWrongAnswer = async (
   return unwrapEnvelope(response, dto.reviewResult);
 };
 
+/** 승인 디자인 v22 `sReviewOk` 3219 `질문 남기기` — 학생이 선생님 코멘트에 되묻는다. */
+const askTeacher = async (id: number, question: string) => {
+  const response = await api.private.post(
+    `/student/wrong-answers/${id}/questions`,
+    { question }
+  );
+  return unwrapEnvelope(response, dto.wrongAnswerItem);
+};
+
 const getTeacherInbox = async () => {
   const response = await api.private.get('/teacher/inbox');
   return unwrapEnvelope(response, dto.teacherInbox);
@@ -62,6 +71,7 @@ export const repository = {
   getDailyProblems,
   getWrongAnswers,
   reviewWrongAnswer,
+  askTeacher,
   getTeacherInbox,
   saveTeacherComment,
 };

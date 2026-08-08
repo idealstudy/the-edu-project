@@ -1,9 +1,163 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 import Link from 'next/link';
 
 import { TeacherDashboardHeader } from '@/features/dashboard/components/header/teacher-header';
+import { useTeacherDashboardStudyRoomListQuery } from '@/features/dashboard/hooks/use-teacher-dashboard-query';
+import { useInvitationQuery } from '@/features/study-rooms/hooks/use-invitation-query';
+import { useToggleInvitation } from '@/features/study-rooms/hooks/use-toggle-invitation';
+import { showBottomToast } from '@/shared/components/ui/bottom-toast';
 import { PRIVATE } from '@/shared/constants';
+
+/**
+ * 승인 디자인 v22 `tMyOk` 3706~3709 `학생 초대 코드` 카드 + `코드 복사`·`링크로 보내기`.
+ *
+ * v22 는 선생님 1인당 코드 한 개를 그리지만, 서버의 초대 계약은 스터디룸마다
+ * 초대 링크를 발행하는 구조다(`GET/PUT /api/teacher/study-rooms/{id}/invitation`).
+ * 학생이 실제로 들어오는 경로(`/invite?token=...`)도 그 계약 위에 이미 서 있다.
+ * 그래서 코드는 수업을 고른 뒤 그 수업의 초대 토큰으로 발행한다.
+ * 두 버튼은 모두 진짜 동작한다: 복사는 클립보드, 보내기는 공유 시트(없으면 클립보드).
+ */
+const TeacherInviteCodeCard = () => {
+  const rooms = useTeacherDashboardStudyRoomListQuery();
+  const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
+  const roomList = rooms.data ?? [];
+  const activeRoomId = selectedRoomId ?? roomList[0]?.id ?? null;
+
+  useEffect(() => {
+    const firstRoom = roomList[0];
+    if (selectedRoomId === null && firstRoom) {
+      setSelectedRoomId(firstRoom.id);
+    }
+  }, [roomList, selectedRoomId]);
+
+  const invitation = useInvitationQuery(activeRoomId ?? 0, {
+    enabled: activeRoomId !== null,
+  });
+  const toggleInvitation = useToggleInvitation(activeRoomId ?? 0);
+
+  const token = invitation.data?.enabled ? invitation.data.token : null;
+  const inviteLink = token
+    ? `${typeof window !== 'undefined' ? window.location.origin : ''}/invite?token=${token}`
+    : null;
+
+  const copyCode = async () => {
+    if (!token) return;
+    await navigator.clipboard.writeText(token);
+    showBottomToast('초대 코드를 복사했어요. 학생에게 전달해 주세요');
+  };
+
+  const shareLink = async () => {
+    if (!inviteLink) return;
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({ title: '디에듀 학생 초대', url: inviteLink });
+        return;
+      } catch {
+        // 공유 시트를 닫은 경우까지 오류로 다루지 않고 복사로 넘어간다.
+      }
+    }
+    await navigator.clipboard.writeText(inviteLink);
+    showBottomToast('초대 링크를 복사했어요. 메시지로 보내면 됩니다');
+  };
+
+  return (
+    <section
+      className="rounded-xl border border-[#e3e5e8] bg-white p-5"
+      data-testid="teacher-invite-code-card"
+    >
+      <div className="mb-3">
+        <h2 className="font-extrabold">학생 초대 코드</h2>
+        <p className="text-xs text-[#747980]">
+          학생이 이 코드를 넣으면 고른 수업에 바로 들어옵니다
+        </p>
+      </div>
+
+      {roomList.length > 1 && (
+        <label className="mb-3 block text-xs font-bold text-[#747980]">
+          코드를 발행할 수업
+          <select
+            value={activeRoomId ?? ''}
+            onChange={(event) => setSelectedRoomId(Number(event.target.value))}
+            data-testid="teacher-invite-code-room"
+            className="mt-1 min-h-11 w-full rounded-lg border border-[#e3e5e8] px-3 text-sm font-bold text-[#27272a]"
+          >
+            {roomList.map((room) => (
+              <option
+                key={room.id}
+                value={room.id}
+              >
+                {room.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+
+      {roomList.length === 0 ? (
+        <>
+          <div className="rounded-lg border border-dashed border-[#e1aa8d] p-4 text-center text-xs font-bold text-[#9a441f]">
+            수업이 아직 없어서 코드를 만들 수 없습니다
+          </div>
+          <Link
+            href={PRIVATE.DASHBOARD.TEACHER}
+            className="mt-3 block rounded-md border py-2 text-center text-xs font-bold"
+          >
+            수업 만들러 가기
+          </Link>
+        </>
+      ) : (
+        <>
+          <div
+            className="rounded-lg border border-dashed border-[#e1aa8d] p-4 text-center text-sm font-extrabold tracking-widest break-all text-[#9a441f]"
+            data-testid="teacher-invite-code-value"
+          >
+            {invitation.isPending
+              ? '코드를 불러오는 중입니다'
+              : (token ?? '이 수업의 초대 코드가 꺼져 있습니다')}
+          </div>
+          <div className="mt-3 flex gap-2">
+            <button
+              type="button"
+              onClick={copyCode}
+              disabled={!token}
+              data-testid="teacher-invite-code-copy"
+              className="min-h-11 flex-1 cursor-pointer rounded-md border text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              코드 복사
+            </button>
+            <button
+              type="button"
+              onClick={shareLink}
+              disabled={!inviteLink}
+              data-testid="teacher-invite-code-share"
+              className="min-h-11 flex-1 cursor-pointer rounded-md border text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              링크로 보내기
+            </button>
+          </div>
+          <p className="mt-2 text-[11px] text-[#747980]">
+            학생은 초대 코드 넣기 화면(/invite)에 이 코드를 붙여넣거나, 보낸
+            링크를 눌러 들어옵니다.
+          </p>
+          {!token && !invitation.isPending && (
+            <button
+              type="button"
+              onClick={() => toggleInvitation.mutate(true)}
+              disabled={toggleInvitation.isPending}
+              data-testid="teacher-invite-code-enable"
+              className="mt-2 min-h-11 w-full cursor-pointer rounded-md border border-[#e1aa8d] text-xs font-bold text-[#9a441f]"
+            >
+              {toggleInvitation.isPending ? '켜는 중' : '초대 코드 켜기'}
+            </button>
+          )}
+        </>
+      )}
+    </section>
+  );
+};
 
 export const TeacherMyPage = ({ memberName }: { memberName: string }) => (
   <div className="min-h-screen w-full bg-[#f6f7f9]">
@@ -33,23 +187,7 @@ export const TeacherMyPage = ({ memberName }: { memberName: string }) => (
             <dd className="font-bold">중3 ~ 고3</dd>
           </dl>
         </section>
-        <section className="rounded-xl border border-[#e3e5e8] bg-white p-5">
-          <div className="mb-3">
-            <h2 className="font-extrabold">학생 초대 코드</h2>
-            <p className="text-xs text-[#747980]">
-              학생이 이 코드를 넣으면 스터디룸이 자동으로 생깁니다
-            </p>
-          </div>
-          <div className="rounded-lg border border-dashed border-[#e1aa8d] p-4 text-center text-xs font-bold text-[#9a441f]">
-            스터디룸을 고르면 해당 수업의 학생 초대 링크를 발행할 수 있습니다
-          </div>
-          <Link
-            href={PRIVATE.DASHBOARD.TEACHER}
-            className="mt-3 block rounded-md border py-2 text-center text-xs font-bold"
-          >
-            내 수업에서 학생 초대하기
-          </Link>
-        </section>
+        <TeacherInviteCodeCard />
       </div>
       <div className="space-y-4">
         <section className="rounded-xl border border-[#e3e5e8] bg-white p-5">

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import Image from 'next/image';
+import Link from 'next/link';
 
 import {
   type MyChallengeDetail,
@@ -11,6 +12,7 @@ import {
 import { useMyOpenChallengeDetail } from '@/features/mypage/open-challenge/hooks/use-my-open-challenges';
 import { MiniSpinner } from '@/shared/components/loading';
 import { Dialog, StatusBadge } from '@/shared/components/ui';
+import { PUBLIC } from '@/shared/constants';
 import { extractText, formatDateDot } from '@/shared/lib';
 import { Bot } from 'lucide-react';
 
@@ -100,6 +102,14 @@ export const MyOpenChallengeDetailDialog = ({
   const completedAttempts =
     data?.attempts.filter((attempt) => attempt.status === 'COMPLETED') ?? [];
   const reviews = data?.reviews ?? [];
+  /**
+   * 진행 중인 시도가 있으면 읽기 전용으로 닫지 않고 풀이 화면으로 돌려보낸다.
+   * 서버는 이미 진행 중인 attempt 를 그대로 재사용하므로 같은 시도로 이어진다.
+   */
+  const activeAttempt = data?.attempts.find(
+    (attempt) =>
+      attempt.status === 'IN_PROGRESS' || attempt.status === 'AI_COACHING'
+  );
 
   const toggleReview = (reviewId: string) => {
     setExpandedReviewIds((previousIds) => {
@@ -140,6 +150,22 @@ export const MyOpenChallengeDetailDialog = ({
 
           {data && (
             <div className="flex flex-col gap-5">
+              {activeAttempt && (
+                <section
+                  className="border-key-color-primary bg-orange-1 flex flex-wrap items-center gap-3 rounded-xl border p-4"
+                  data-testid="my-challenge-resume"
+                >
+                  <p className="font-body2-heading text-text-main min-w-[180px] flex-1">
+                    아직 제출하지 않은 풀이가 있어요. 이어서 풀 수 있습니다.
+                  </p>
+                  <Link
+                    href={PUBLIC.OPEN_CHALLENGE.DETAIL(challengeId)}
+                    className="bg-key-color-primary font-label-heading flex h-11 items-center rounded-[8px] px-5 text-white"
+                  >
+                    이어 풀기
+                  </Link>
+                </section>
+              )}
               <section className="border-line-line1 rounded-xl border bg-white p-4">
                 <div className="mb-3 flex flex-wrap items-center gap-2">
                   <StatusBadge

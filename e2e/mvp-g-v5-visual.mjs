@@ -6,7 +6,15 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const WEB_BASE = process.env.E2E_BASE_URL ?? 'https://dev.d-edu.site';
-const SCREEN_DIR = path.resolve(process.cwd(), '../docs/mvp-g/qa-screens-v6');
+const VIEWPORT = {
+  width: Number(process.env.MVPG_VIEWPORT_WIDTH ?? 1024),
+  height: Number(process.env.MVPG_VIEWPORT_HEIGHT ?? 768),
+};
+const VIEWPORT_SUFFIX = `${VIEWPORT.width}x${VIEWPORT.height}`;
+const SCREEN_DIR = path.resolve(
+  process.cwd(),
+  process.env.MVPG_SCREEN_DIR ?? '../docs/mvp-g/qa-screens-v6'
+);
 const OUTPUT =
   process.env.MVPG_V5_VISUAL_EVIDENCE ?? '/tmp/mvpg-v60-visual.json';
 
@@ -75,7 +83,7 @@ async function capture(page, name, note, action) {
       .split('\n')[0]
       .slice(0, 300);
   }
-  const file = `${name}-1024x768.png`;
+  const file = `${name}-${VIEWPORT_SUFFIX}.png`;
   await page.screenshot({ path: path.join(SCREEN_DIR, file), fullPage: false });
   const authTextCount = await page
     .getByText(/401 인증 필요|인증이 필요|로그인이 필요/)
@@ -157,7 +165,7 @@ async function seedScanExam(teacher, roomId) {
 
 async function prototypeCaptures(browser) {
   const page = await browser.newPage({
-    viewport: { width: 1024, height: 768 },
+    viewport: VIEWPORT,
   });
   const prototypePath = path.resolve(
     process.cwd(),
@@ -203,7 +211,7 @@ async function prototypeCaptures(browser) {
       render();
     }, screenState);
     await settle(page);
-    const file = `prototype-${id}-1024x768.png`;
+    const file = `prototype-${id}-${VIEWPORT_SUFFIX}.png`;
     await page.screenshot({
       path: path.join(SCREEN_DIR, file),
       fullPage: false,
@@ -227,7 +235,7 @@ async function actualCaptures(browser) {
     'TEACHER_EMPTY',
   ]) {
     contexts[role] = await browser.newContext({
-      viewport: { width: 1024, height: 768 },
+      viewport: VIEWPORT,
     });
     pages[role] = await contexts[role].newPage();
     await login(pages[role], role);
@@ -549,7 +557,7 @@ async function main() {
     const actual = await actualCaptures(browser);
     const summary = {
       generatedAt: new Date().toISOString(),
-      viewport: '1024x768',
+      viewport: VIEWPORT_SUFFIX,
       prototypeCount: prototype.length,
       actualCount: actual.rows.length,
       authenticatedActualCount: actual.rows.filter(

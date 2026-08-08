@@ -11,6 +11,14 @@ const evidence = [];
 const checks = [];
 const cookies = new Map();
 
+function dateInKst(offsetDays = 0) {
+  const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  return new Date(Date.now() + KST_OFFSET_MS + offsetDays * DAY_MS)
+    .toISOString()
+    .slice(0, 10);
+}
+
 const credentials = {
   student: requiredCredential('E2E_STUDENT_EMAIL', 'E2E_STUDENT_PASSWORD'),
   student2: requiredCredential('E2E_STUDENT2_EMAIL', 'E2E_STUDENT2_PASSWORD'),
@@ -448,9 +456,25 @@ async function runR1(roomId) {
       await findCorrectAnswer(bankItems[index].challengeId, index)
     );
   }
+  const correctIndexes = new Set(
+    bankItems
+      .map((item, index) => ({
+        index,
+        canChangeMastery:
+          (treeBeforeMap.get(item.treeNodeId)?.masteryScore ?? 100) < 100,
+      }))
+      .sort(
+        (left, right) =>
+          Number(right.canChangeMastery) - Number(left.canChangeMastery) ||
+          left.index - right.index
+      )
+      .slice(0, 5)
+      .map((item) => item.index)
+  );
   const answers = probedAnswers.map((correctAnswer, index) => ({
     questionNo: index + 1,
-    selectedAnswer: index < 5 && correctAnswer ? correctAnswer : '999',
+    selectedAnswer:
+      correctIndexes.has(index) && correctAnswer ? correctAnswer : '999',
     timeSpentSec: 1,
   }));
   const submitted = await request({
@@ -549,7 +573,7 @@ async function runR1(roomId) {
     }
   );
 
-  const tomorrow = new Date(Date.now() + 86_400_000).toISOString().slice(0, 10);
+  const tomorrow = dateInKst(1);
   const daily = await request({
     role: 'student',
     endpoint: `/api/student/daily-problems?date=${tomorrow}`,

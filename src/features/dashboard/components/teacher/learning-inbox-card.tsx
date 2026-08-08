@@ -51,7 +51,8 @@ const InboxItem = ({
   return (
     <li className="border-gray-2 border-b py-4 last:border-b-0">
       <p className="font-body2-heading text-gray-11">
-        학생 {item.studentId} · {item.title ?? `오답 ${item.id}`}
+        {item.studentName ?? `학생 ${item.studentId}`} ·{' '}
+        {item.title ?? `오답 ${item.id}`}
       </p>
       <p className="font-caption-normal text-gray-7 mt-1">
         {item.status === 'GRADUATED'

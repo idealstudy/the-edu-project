@@ -173,6 +173,10 @@ test.describe('AI 코치 — 손글씨 풀이 캡처', () => {
       const contentType = request.headers()['content-type'] ?? '';
       if (request.method() === 'PUT' && contentType.includes('image/png')) {
         uploadedPngBuffer = request.postDataBuffer();
+        if (process.env.E2E_LOCAL_UPLOAD_STUB === '1') {
+          await route.fulfill({ status: 200, body: '' });
+          return;
+        }
       }
       await route.continue();
     });

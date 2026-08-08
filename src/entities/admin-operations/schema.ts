@@ -55,6 +55,7 @@ const consultationCase = z.object({
   senderName: z.string(),
   senderRole: z.string(),
   senderContact: z.string().nullable(),
+  senderMemberId: z.number().int().positive().nullish(),
   receivedAt: z.string().nullable(),
   assigneeName: z.string().nullable(),
   answer: z.string().nullable(),

@@ -90,6 +90,13 @@ const ItemStatusBadge = ({ item }: { item: MyChallengeListItem }) => {
   );
 };
 
+/**
+ * 진행 중인 시도 = 이어 풀 수 있는 문제.
+ * "풀이를 이어서 진행해요"라고 안내만 하고 경로가 없던 결함(QA8 B)을 이 판정으로 닫는다.
+ */
+const isResumable = (item: MyChallengeListItem) =>
+  item.status === 'IN_PROGRESS' || item.status === 'AI_COACHING';
+
 const buildSubtitle = (item: MyChallengeListItem) => {
   if (item.status === 'COMPLETED' && item.completedAt) {
     return `${item.sourceText} · 마지막 제출 ${getRelativeTimeString(item.completedAt)}`;
@@ -252,43 +259,57 @@ export const MyProblemsSection = () => {
         <>
           <div className="flex flex-col">
             {items.map((item) => (
-              <ListItem.Button
-                key={item.challengeId}
-                id={Number(item.challengeId)}
-                title={item.questionText}
-                subtitle={buildSubtitle(item)}
-                rightTitle={<ItemStatusBadge item={item} />}
-                tag={
-                  <StatusBadge
-                    label={DIFFICULTY_LABEL[item.difficulty]}
-                    variant="default"
-                  />
-                }
-                onClick={() => setSelected(item)}
-                dropdown={
-                  <DropdownMenu>
-                    <DropdownMenu.Trigger asChild>
-                      <Image
-                        src="/studynotes/gray-kebab.svg"
-                        width={24}
-                        height={24}
-                        alt="더보기"
-                        className="hover:bg-gray-scale-gray-5 cursor-pointer rounded"
-                      />
-                    </DropdownMenu.Trigger>
-                    <DropdownMenu.Content className="w-[132px] justify-center">
-                      <DropdownMenu.Item asChild>
-                        <Link
-                          href={PUBLIC.OPEN_CHALLENGE.DETAIL(item.challengeId)}
-                          className="justify-center border-none focus:ring-0 focus:outline-none"
-                        >
-                          문제 보러가기
-                        </Link>
-                      </DropdownMenu.Item>
-                    </DropdownMenu.Content>
-                  </DropdownMenu>
-                }
-              />
+              <div key={item.challengeId}>
+                <ListItem.Button
+                  id={Number(item.challengeId)}
+                  title={item.questionText}
+                  subtitle={buildSubtitle(item)}
+                  rightTitle={<ItemStatusBadge item={item} />}
+                  tag={
+                    <StatusBadge
+                      label={DIFFICULTY_LABEL[item.difficulty]}
+                      variant="default"
+                    />
+                  }
+                  onClick={() => setSelected(item)}
+                  dropdown={
+                    <DropdownMenu>
+                      <DropdownMenu.Trigger asChild>
+                        <Image
+                          src="/studynotes/gray-kebab.svg"
+                          width={24}
+                          height={24}
+                          alt="더보기"
+                          className="hover:bg-gray-scale-gray-5 cursor-pointer rounded"
+                        />
+                      </DropdownMenu.Trigger>
+                      <DropdownMenu.Content className="w-[132px] justify-center">
+                        <DropdownMenu.Item asChild>
+                          <Link
+                            href={PUBLIC.OPEN_CHALLENGE.DETAIL(
+                              item.challengeId
+                            )}
+                            className="justify-center border-none focus:ring-0 focus:outline-none"
+                          >
+                            문제 보러가기
+                          </Link>
+                        </DropdownMenu.Item>
+                      </DropdownMenu.Content>
+                    </DropdownMenu>
+                  }
+                />
+                {isResumable(item) && (
+                  <div className="mb-2 flex justify-end">
+                    <Link
+                      href={PUBLIC.OPEN_CHALLENGE.DETAIL(item.challengeId)}
+                      data-testid={`my-problem-resume-${item.challengeId}`}
+                      className="bg-key-color-primary font-label-heading flex h-11 items-center rounded-[8px] px-5 text-white"
+                    >
+                      이어 풀기
+                    </Link>
+                  </div>
+                )}
+              </div>
             ))}
           </div>
 

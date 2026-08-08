@@ -5,19 +5,88 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 import { useLookBackQuery } from '@/features/dashboard/hooks/use-look-back-query';
+import { useUnitNoteLibraryQuery } from '@/features/unit-note/hooks/use-unit-note-query';
 import { PRIVATE } from '@/shared/constants';
 
 import StudentDashboardHeader from '../header/student-header';
 
 const WEEK_DAYS = ['월', '화', '수', '목', '금', '토', '일'];
 
+const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000;
+
+/** 그 날짜가 속한 주의 월요일 */
+const mondayOf = (isoDate: string) => {
+  const date = new Date(`${isoDate}T00:00:00`);
+  const weekday = (date.getDay() + 6) % 7;
+  date.setDate(date.getDate() - weekday);
+  date.setHours(0, 0, 0, 0);
+  return date;
+};
+
+/**
+ * 승인 디자인 v22 `sLookMonth` 2513: 월간의 <주별 완료> 행.
+ * 서버 월간 응답은 그 달의 날짜 배열을 주므로 주 단위로 접어서 만든다.
+ */
+const weeklyRollup = (
+  calendar: { date: string; todoDone: number; todoTotal: number }[]
+) => {
+  const buckets = new Map<
+    string,
+    { label: string; done: number; total: number; monday: Date }
+  >();
+  calendar.forEach((day) => {
+    const monday = mondayOf(day.date);
+    const key = monday.toISOString().slice(0, 10);
+    const bucket = buckets.get(key) ?? {
+      label: `${monday.getMonth() + 1}월 ${Math.ceil((monday.getDate() + 6) / 7)}주`,
+      done: 0,
+      total: 0,
+      monday,
+    };
+    bucket.done += day.todoDone;
+    bucket.total += day.todoTotal;
+    buckets.set(key, bucket);
+  });
+  return [...buckets.values()];
+};
+
+/** 지금 주 기준으로 그 주가 몇 주 전인지. 돌아보기 주간 offset 과 같은 뜻이다. */
+const weekOffsetFrom = (monday: Date) => {
+  const thisMonday = mondayOf(new Date().toISOString().slice(0, 10));
+  return Math.max(
+    0,
+    Math.round((thisMonday.getTime() - monday.getTime()) / MS_PER_WEEK)
+  );
+};
+
 export const LookBackPage = () => {
   const [period, setPeriod] = useState<'WEEK' | 'MONTH'>('WEEK');
   const [offset, setOffset] = useState(0);
+  // v22 `sLookWeek` 2483 `회고 있는 날만` 필터
+  const [onlyWithRetrospect, setOnlyWithRetrospect] = useState(false);
   const lookBackQuery = useLookBackQuery(period, offset);
-  const records = lookBackQuery.data?.retrospects ?? [];
-  const calendar = lookBackQuery.data?.calendar ?? [];
+  const unitNoteQuery = useUnitNoteLibraryQuery();
+  const allRecords = lookBackQuery.data?.retrospects ?? [];
+  const allCalendar = lookBackQuery.data?.calendar ?? [];
   const coachMessage = lookBackQuery.data?.coachMessage ?? null;
+
+  const hasContent = (record: (typeof allRecords)[number]) =>
+    Boolean(record.learned || record.reflected || record.tomorrow);
+  const records = onlyWithRetrospect ? allRecords.filter(hasContent) : allRecords;
+  const calendar = onlyWithRetrospect
+    ? allCalendar.filter((day) => day.hasRetrospect)
+    : allCalendar;
+
+  const weeks = period === 'MONTH' ? weeklyRollup(allCalendar) : [];
+  // v22 `sLookMonth` 2528 `이 달 정리한 단원` — 노트가 실제로 있는 단원만
+  const touchedUnits = (unitNoteQuery.data?.nodes ?? [])
+    .filter((node) => node.pageCount > 0)
+    .slice(0, 6);
+
+  const openWeek = (monday: Date) => {
+    setPeriod('WEEK');
+    setOffset(weekOffsetFrom(monday));
+  };
 
   return (
     <div className="min-h-screen bg-[#fcfbfa]">
@@ -84,6 +153,16 @@ export const LookBackPage = () => {
                     AI가 씀
                   </span>
                 )}
+                {/* v22 `coachMsg` 2456 `다시 받기` — 코치 메시지를 서버에 다시 요청한다. */}
+                <button
+                  type="button"
+                  onClick={() => lookBackQuery.refetch()}
+                  disabled={lookBackQuery.isFetching}
+                  data-testid="look-back-coach-refresh"
+                  className="ml-auto min-h-9 cursor-pointer rounded-lg border border-[#e3e5e8] px-3 text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {lookBackQuery.isFetching ? '받는 중' : '다시 받기'}
+                </button>
               </div>
               <div className="flex gap-3">
                 <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#fff1df]">
@@ -124,8 +203,76 @@ export const LookBackPage = () => {
               <p className="mt-3 text-[11px] leading-5 text-[#747980]">
                 칸 안 숫자는 완료 / 전체입니다. 오른쪽 아래 점은 그날 회고가
                 있다는 뜻입니다.
+                {onlyWithRetrospect && ' 지금은 회고가 있는 날만 보고 있습니다.'}
               </p>
             </section>
+
+            {/* v22 `sLookMonth` 2513 주별 완료 + `그 주 보기` */}
+            {period === 'MONTH' && weeks.length > 0 && (
+              <section
+                className="rounded-xl border border-[#e3e5e8] bg-white p-5"
+                data-testid="look-back-weekly-rollup"
+              >
+                <h2 className="mb-3 font-extrabold">주별 완료</h2>
+                {weeks.map((week) => (
+                  <div
+                    key={week.monday.toISOString()}
+                    className="flex items-center gap-3 border-t border-[#eee] py-3 first:border-t-0"
+                  >
+                    <b className="min-w-20 text-sm">{week.label}</b>
+                    <span className="h-1.5 flex-1 rounded-full bg-[#f0f1f3]">
+                      <i
+                        className="block h-1.5 rounded-full bg-[#f26a2e]"
+                        style={{
+                          width: `${week.total === 0 ? 0 : Math.round((week.done / week.total) * 100)}%`,
+                        }}
+                      />
+                    </span>
+                    <span className="text-xs">
+                      {week.done} / {week.total}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => openWeek(week.monday)}
+                      className="min-h-9 cursor-pointer rounded-lg border border-[#e3e5e8] px-3 text-xs font-bold"
+                    >
+                      그 주 보기
+                    </button>
+                  </div>
+                ))}
+              </section>
+            )}
+
+            {/* v22 `sLookMonth` 2528 이 달 정리한 단원 + `노트 열기` */}
+            {period === 'MONTH' && touchedUnits.length > 0 && (
+              <section
+                className="rounded-xl border border-[#e3e5e8] bg-white p-5"
+                data-testid="look-back-touched-units"
+              >
+                <h2 className="mb-3 font-extrabold">정리한 단원</h2>
+                {touchedUnits.map((node) => (
+                  <div
+                    key={node.nodeId}
+                    className="flex items-center gap-3 border-t border-[#eee] py-3 first:border-t-0"
+                  >
+                    <span className="min-w-0 flex-1">
+                      <b className="block truncate text-sm">
+                        {node.displayName || node.unit}
+                      </b>
+                      <small className="text-xs text-[#747980]">
+                        노트 {node.pageCount}장
+                      </small>
+                    </span>
+                    <Link
+                      href={PRIVATE.DASHBOARD.UNIT_NOTE_ROOM(node.nodeId)}
+                      className="min-h-9 rounded-lg border border-[#e3e5e8] px-3 text-xs leading-9 font-bold"
+                    >
+                      노트 열기
+                    </Link>
+                  </div>
+                ))}
+              </section>
+            )}
           </div>
           <section className="rounded-xl border border-[#e3e5e8] bg-white p-5">
             <div className="mb-3 flex items-center gap-2">
@@ -135,6 +282,20 @@ export const LookBackPage = () => {
               <span className="text-xs text-[#747980]">
                 내가 쓴 문장 그대로
               </span>
+              {/* v22 `sLookWeek` 2483 `회고 있는 날만` */}
+              <button
+                type="button"
+                aria-pressed={onlyWithRetrospect}
+                onClick={() => setOnlyWithRetrospect((current) => !current)}
+                data-testid="look-back-only-retrospect"
+                className={`ml-auto min-h-9 cursor-pointer rounded-lg border px-3 text-xs font-bold ${
+                  onlyWithRetrospect
+                    ? 'border-[#f26a2e] bg-[#fff3ec] text-[#9a441f]'
+                    : 'border-[#e3e5e8]'
+                }`}
+              >
+                회고 있는 날만
+              </button>
             </div>
             {lookBackQuery.isError ? (
               <p className="rounded-lg bg-[#fff7f4] p-6 text-center text-sm">
