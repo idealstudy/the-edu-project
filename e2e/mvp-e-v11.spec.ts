@@ -697,6 +697,24 @@ test.describe(`${TAG} dev 실환경 릴리즈 관문`, () => {
   }) => {
     await page.goto('/friends');
 
+    // 첫 진입이면 친구 사용법 안내창이 자동으로 뜬다(localStorage 플래그, 검사는 매번 새 브라우저라
+    // 항상 뜬다). 안내창이 열려 있는 동안 뒤쪽 본문은 화면낭독기 기준으로 가려지므로,
+    // 실제 사용자처럼 먼저 닫아야 친구 목록에 접근할 수 있다.
+    // goto 는 클라이언트에서 안내창이 뜨기 전에 끝나므로, 뜰 때까지 잠깐 기다렸다가 닫는다.
+    const tutorial = page.getByRole('dialog');
+    const appeared = await tutorial
+      .waitFor({ state: 'visible', timeout: 8_000 })
+      .then(() => true)
+      .catch(() => false);
+    if (appeared) {
+      const nextButton = tutorial.getByRole('button', { name: /다음|시작하기/ });
+      for (let step = 0; step < 6; step += 1) {
+        if (!(await nextButton.isVisible().catch(() => false))) break;
+        await nextButton.click();
+      }
+      await expect(tutorial).toBeHidden();
+    }
+
     const profileLink = page.getByRole('link', { name: /프로필 보기$/ }).first();
     await expect(profileLink).toBeVisible();
     await expect(profileLink).toHaveAttribute(
