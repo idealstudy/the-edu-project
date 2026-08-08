@@ -159,6 +159,8 @@ describe('ChallengeResultDialog', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('(2,2)를 빠뜨렸어요.')).toBeInTheDocument();
     expect(screen.getByText('상대가 풀이를 내렸어요')).toBeInTheDocument();
-    expect(screen.getByText('이 유형 3문제 더 풀기')).toBeInTheDocument();
+    // 회장 확정(2026-08-09): 내가 틀린 대결의 주 동작은 "같은 문제를 혼자 다시 푸는 것"이다.
+    // 예전에는 유형이 같은 다른 문제로 보냈는데, 그러면 틀린 그 문제는 영영 안 풀게 된다.
+    expect(screen.getByText('이 문제 다시 풀기')).toBeInTheDocument();
   });
 });

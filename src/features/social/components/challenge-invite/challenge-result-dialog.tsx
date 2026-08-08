@@ -252,15 +252,24 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
         />
       </div>
 
+      {/*
+        회장 확정(2026-08-09): 이미 대결한 문제는 친구와 다시 붙는 게 아니라
+        **본인이 오답으로 혼자 다시 푸는 것**이다. 그래서 내가 틀린 경우의 주 동작은
+        같은 문제로 돌아가는 것이고, 시도는 그 문제의 기존 기록에 회차로 쌓인다.
+        새 문제로 다시 겨루는 기능(rematch)은 남기되, "다시 붙기"라는 이름이 같은 문제를
+        다시 푸는 것으로 읽혀 오해를 낳았으므로 하는 일 그대로 이름을 붙였다.
+      */}
       <Dialog.Footer className="mt-6 flex w-full flex-col gap-2 sm:flex-row">
-        {outcome === 'LOSE' || outcome === 'BOTH_WRONG' ? (
+        {result.myCorrect === false ? (
           <Button
             variant="primary"
             size="large"
             className="flex-1"
             asChild
           >
-            <Link href={PUBLIC.OPEN_CHALLENGE.LIST}>이 유형 3문제 더 풀기</Link>
+            <Link href={PUBLIC.OPEN_CHALLENGE.DETAIL(result.challengeId)}>
+              이 문제 다시 풀기
+            </Link>
           </Button>
         ) : (
           <Button
@@ -270,10 +279,10 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
             disabled={rematch.isPending}
             onClick={() => rematch.mutate(result.shareToken)}
           >
-            {rematch.isPending ? '문제 고르는 중…' : '다시 붙기'}
+            {rematch.isPending ? '문제 고르는 중…' : '새 문제로 겨루기'}
           </Button>
         )}
-        {outcome === 'LOSE' || outcome === 'BOTH_WRONG' ? (
+        {result.myCorrect === false ? (
           <Button
             variant="outlined"
             size="large"
@@ -281,7 +290,7 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
             disabled={rematch.isPending}
             onClick={() => rematch.mutate(result.shareToken)}
           >
-            다시 붙기
+            {rematch.isPending ? '문제 고르는 중…' : '새 문제로 겨루기'}
           </Button>
         ) : (
           <Button
