@@ -98,7 +98,7 @@ export const SignupSheet = ({
               )}
               {isCorrect
                 ? '방금 문제, 맞혔어요!'
-                : '아쉽게 틀렸어요 — 가입하면 왜 틀렸는지 알려드려요'}
+                : '아쉽게 틀렸어요. 가입하면 왜 틀렸는지 알려드려요'}
             </p>
           )}
           <Dialog.Title className="text-text-main text-lg font-bold">

@@ -185,7 +185,7 @@ export const ChallengeReward = ({
         </span>
         <div className="flex min-w-0 flex-col gap-0.5">
           <h2 className="font-body1-heading text-text-main">
-            여기가 네 약점이야 — 방금 그게 진단이야.
+            여기가 네 약점이야. 방금 그게 진단이야.
           </h2>
           <p className="font-caption-normal text-text-sub2">
             약점 나무에서 이 부분을 채우면 실력이 자랍니다.

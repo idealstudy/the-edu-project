@@ -1111,7 +1111,7 @@ export function DrawingPanel({
         {saveStatus === 'error' && (
           <span
             className="text-[10px] font-medium text-red-500"
-            title="IndexedDB 저장 실패 — 2초 후 자동 재시도"
+            title="저장 실패. 2초 후 자동 재시도"
           >
             저장 실패
           </span>
