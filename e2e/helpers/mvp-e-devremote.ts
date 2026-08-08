@@ -255,6 +255,17 @@ export async function expectApi(
   label: string
 ) {
   const body = await response.text();
+
+  // dev 오리진이 잠깐 죽으면(502/503/504) 화면이 비로그인으로 그려져 인증 결함처럼
+  // 보인다. 실제로 2026-08-08 실행에서 그 오독이 났다. 서버가 없어서 못 한 것과
+  // 제품이 틀린 것을 섞지 않도록, 게이트웨이 계열 응답은 환경 오류로 분리해 끊는다.
+  if (!statuses.includes(response.status()) && response.status() >= 502) {
+    throw new Error(
+      `[환경 오류] ${label}: dev 서버가 HTTP ${response.status()} 를 반환했습니다. ` +
+        '제품 결함이 아니라 서버가 응답하지 않는 상태이니, 서버 상태를 확인한 뒤 다시 실행하세요.'
+    );
+  }
+
   expect(
     statuses,
     `${label}: HTTP ${response.status()} ${body.slice(0, 500)}`

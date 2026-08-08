@@ -12,6 +12,9 @@ import { loginAsStudent } from './helpers/auth';
  *    "나중에 할게요"로 건너뛴다(이미 설정을 저장해둔 계정이면 안 뜬다).
  * ────────────────────────────────────────────────────*/
 async function drawDiagonalStroke(page: Page, canvas: Locator) {
+  // 풀이 공간은 문제 카드·선택지 아래라 기본 뷰포트에서 화면 밖에 있을 수 있다.
+  // toBeVisible 은 뷰포트 안인지 검사하지 않으므로, 스크롤 없이 절대좌표로 마우스를
+  // 쏘면 획이 캔버스에 닿지 않고 조용히 무시된다. 반드시 먼저 뷰포트로 끌어온다.
   const drawingCanvas = canvas.locator('canvas');
   await expect(drawingCanvas).toBeVisible();
   await drawingCanvas.scrollIntoViewIfNeeded();
@@ -30,6 +33,12 @@ async function drawDiagonalStroke(page: Page, canvas: Locator) {
   });
   await page.mouse.move(endX, endY, { steps: 5 });
   await page.mouse.up();
+
+  // 획이 실제로 기록됐는지 여기서 확인한다. 이 단언이 없으면 획이 안 들어간 채로
+  // 뒤 단계가 진행돼, 원인이 "이미지가 안 실렸다"로 잘못 보고된다.
+  await expect(
+    canvas.getByText('펜슬로 풀이를 적어보세요')
+  ).toBeHidden();
 }
 
 function readPngSize(buffer: Buffer): { width: number; height: number } {
@@ -131,11 +140,11 @@ test.describe('오픈챌린지 풀이 → 결과', () => {
     // 보상 영역이 결과 화면에서 닫힌다(정답/오답 무관하게 노출).
     // 풀이 완료 후 "포인트·약점 나무가 자랐다 / 약점으로 표시됐다"를 보여줘야 한다.
     await expect(page.getByTestId('challenge-reward')).toBeVisible();
+    // 사이드바에도 같은 이름의 약점 나무 링크가 있으므로 보상 영역 안으로 범위를 좁힌다.
+    // 문구를 정확히 지정하지 않는 이유: 정답이면 "내 약점 나무 보기", 오답이면
+    // "약점 나무에서 채우기"로 갈리는데 이 검사는 정답 여부를 고정하지 않는다.
     await expect(
-      page.getByRole('link', {
-        name: '약점 나무에서 채우기 →',
-        exact: true,
-      })
+      page.getByTestId('challenge-reward').getByRole('link', { name: /약점 나무/ })
     ).toBeVisible();
 
     // 게이미피케이션 지표 페이지가 풀이 후에도 정상 렌더되는지 스모크.
@@ -186,10 +195,18 @@ test.describe('AI 코치 — 손글씨 풀이 캡처', () => {
 
     const surface = page.getByTestId('solution-drawing-surface');
     await expect(surface).toBeVisible();
-    const surfaceBox = await surface.boundingBox();
-    if (!surfaceBox) throw new Error('드로잉 캔버스 영역을 찾지 못했습니다.');
 
     await drawDiagonalStroke(page, surface);
+
+    // 캔버스 폭은 세션이 확인된 뒤 사이드바가 붙으면서 300ms 에 걸쳐 줄어든다.
+    // 내보낸 이미지는 획을 그은 그 순간의 폭으로 만들어지므로, 비교 기준도
+    // 그리기 이전이 아니라 그리기 직후의 값이어야 한다. 그리기 전 값과 비교하면
+    // 화면이 아직 넓던 시점의 숫자와 견주게 돼 제품이 멀쩡해도 어긋난다.
+    // 테두리 2px 이 낀 boundingBox 대신 안쪽 크기를 쓴다.
+    const surfaceBox = await surface.evaluate((element) => ({
+      width: element.clientWidth,
+      height: element.clientHeight,
+    }));
 
     await startAiCoach(page);
     await page.getByTestId('ai-coach-message-input').fill('이 문제 힌트 줘');
