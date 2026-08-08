@@ -545,6 +545,29 @@ test.describe(`${TAG} dev 실환경 릴리즈 관문`, () => {
         BOTH_WRONG: '둘 다 걸렸어요',
       }[outcome];
       await expect(page.getByText(expected, { exact: false })).toBeVisible();
+
+      // 회장 확정(2026-08-09): 이미 대결한 문제는 친구와 다시 붙는 게 아니라
+      // 본인이 오답으로 혼자 다시 푼다. 그래서 내가 틀린 대결이면 그 문제로 돌아가는
+      // 버튼이 주 동작이어야 한다. 예전에는 두 버튼이 모두 새 문제로 새 대결을 만들어,
+      // 정작 틀린 그 문제로 돌아갈 길이 화면에 없었다(R-05).
+      const iWasWrong = outcome === 'LOSE' || outcome === 'BOTH_WRONG';
+      if (iWasWrong) {
+        const retryLink = page.getByRole('link', { name: '이 문제 다시 풀기' });
+        await expect(retryLink).toBeVisible();
+        await expect(retryLink).toHaveAttribute(
+          'href',
+          new RegExp(`/open-challenge/\\d+$`)
+        );
+      } else {
+        // 내가 맞힌 대결은 새 문제로 겨루는 것이 주 동작이다. 이름도 하는 일 그대로여야
+        // 한다. 옛 이름 '다시 붙기'는 같은 문제 재풀이로 읽혀 오해를 낳았다.
+        await expect(
+          page.getByRole('button', { name: '새 문제로 겨루기' })
+        ).toBeVisible();
+        await expect(
+          page.getByRole('button', { name: '다시 붙기', exact: true })
+        ).toHaveCount(0);
+      }
     });
   }
 
