@@ -48,6 +48,31 @@ function readPngSize(buffer: Buffer): { width: number; height: number } {
   };
 }
 
+/**
+ * 이 파일의 AI 코치 검사는 attempt 를 IN_PROGRESS → AI_COACHING 으로 전이시키고
+ * 끝낸다(정상 종료·제출 없음). 실서버가 회원+챌린지당 "진행 중" attempt 를
+ * 하나만 인정하고 이어 주기 때문에(ChallengeAttemptService.create), 세션을
+ * 정리하지 않으면 다음 실행(또는 dev 를 공유하는 다른 QA 실행)이 같은
+ * attempt 를 재사용하다 CHALLENGE_ATTEMPT_NOT_IN_PROGRESS(409) 로 막힌다.
+ * (실측: 2026-08-09 dev 에서 challengeId=4000 계정에 stale AI_COACHING
+ * attempt 8개가 누적돼 이 파일의 두 검사가 전부 실패했다.) 매 검사 뒤
+ * 남은 활성 attempt 를 명시적으로 중단시켜 다음 실행이 깨끗하게 시작하게 한다.
+ */
+async function abandonActiveAttempt(page: Page, challengeId: number) {
+  const res = await page.request.get(
+    `/api/v1/common/challenges/${challengeId}/my-active-attempt`
+  );
+  if (res.status() !== 200) return;
+  const body = await res.json().catch(() => null);
+  const attemptId = body?.data?.attemptId;
+  if (!attemptId) return;
+  await page
+    .request.patch(`/api/v1/common/challenge-attempts/${attemptId}/abandon`)
+    .catch(() => {
+      // 정리 실패가 검사 결과를 가리지 않게 한다 — 다음 실행에서 다시 시도된다.
+    });
+}
+
 type AiCoachMessagesRequestBody = {
   studentSolutionImageMediaId?: string;
 };
@@ -158,6 +183,10 @@ test.describe('오픈챌린지 풀이 → 결과', () => {
 // ─── AI 코치 — 손글씨 풀이 캡처(§ai-coach-improvement-plan Phase 1b A-1/A-2) ───
 test.describe('AI 코치 — 손글씨 풀이 캡처', () => {
   test.setTimeout(60_000);
+
+  test.afterEach(async ({ page }) => {
+    await abandonActiveAttempt(page, 4000);
+  });
 
   test('드로잉 후 메시지를 보내면 studentSolutionImageMediaId가 실리고, 업로드 이미지 종횡비가 캔버스 실측과 일치한다', async ({
     page,
