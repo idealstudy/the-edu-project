@@ -21,6 +21,13 @@ export const SUBJECT_TO_KOREAN = {
   OTHER: '기타',
 } as const;
 
+/**
+ * 서버가 준 과목 코드를 한국어로 바꾼다.
+ * 아직 매핑에 없는 코드가 오면 원래 값을 그대로 돌려준다.
+ */
+export const subjectToKorean = (subject: string): string =>
+  (SUBJECT_TO_KOREAN as Record<string, string>)[subject] ?? subject;
+
 export const SCHOOL_LEVEL_TO_KOREAN = {
   ELEMENTARY: '초등학생',
   MIDDLE: '중학생',

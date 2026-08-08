@@ -6,7 +6,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useParams, useSearchParams } from 'next/navigation';
 
 import type { StudentNoteDetail } from '@/entities/student-study-note';
-import { SUBJECT_TO_KOREAN } from '@/features/dashboard/components/timer/constants';
+import { subjectToKorean } from '@/entities/study-room-preview';
 import BackLink from '@/features/dashboard/studynote/components/back-link';
 import {
   StudentStudyNoteFields,
@@ -205,9 +205,7 @@ const StudentStudyNoteDetailPage = () => {
                 <span>과목</span>
               </div>
               <p className="font-body2-normal text-text-main">
-                {data.subject
-                  ? (SUBJECT_TO_KOREAN[data.subject] ?? data.subject)
-                  : ''}
+                {data.subject ? subjectToKorean(data.subject) : ''}
               </p>
             </div>
 

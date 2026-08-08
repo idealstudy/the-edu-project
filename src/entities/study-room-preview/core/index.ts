@@ -1,1 +1,1 @@
-export { domain, SUBJECT_TO_KOREAN } from './preview.domain';
+export { domain, SUBJECT_TO_KOREAN, subjectToKorean } from './preview.domain';

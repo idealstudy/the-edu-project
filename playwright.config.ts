@@ -6,6 +6,21 @@ loadE2eSecrets();
 const e2eBaseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 const useRemoteWeb = Boolean(process.env.E2E_BASE_URL);
 
+// mvp-e v1.1 스펙은 playwright.devremote.config.ts 의 session 준비 단계(로그인 상태 파일 생성)와
+// 전용 fixture 환경변수를 전제로 한다. 기본 설정으로 딸려 들어오면 준비 단계가 없어 전건 실패한다.
+const DEVREMOTE_ONLY_SPECS = /mvp-e-v11\.spec\.ts/;
+
+// 실제 서버 로그인을 수행해 QA 계정 세션을 점유하는 스펙 목록(파일 단위 실행 순서가 곧 배열 순서).
+const SHARED_ACCOUNT_SPECS = [
+  /login\.spec\.ts/,
+  /open-challenge\.spec\.ts/,
+  /social\.spec\.ts/,
+  /mvp-g-v8-fixture-controls\.spec\.ts/,
+  /mvp-g-v2-remote\.spec\.ts/,
+  /mvp-g-qa8-roundtrip\.spec\.ts/,
+  /mvp-g-qa8-performance\.spec\.ts/,
+];
+
 // import path from 'path';
 // dotenv.config({ path: path.resolve(__dirname, '.env') });
 
@@ -36,9 +51,22 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
+      // 실제 서버 로그인을 쓰지 않는 스펙. 계정을 공유하지 않으므로 병렬로 안전하다.
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      testIgnore: [DEVREMOTE_ONLY_SPECS, ...SHARED_ACCOUNT_SPECS],
     },
+    // 아래는 같은 QA 계정으로 실제 서버 로그인을 하는 스펙들이다.
+    // 백엔드가 회원 1명당 refresh token 을 1개만 보관하기 때문에(RefreshTokenRepositoryImpl),
+    // 같은 계정으로 두 스펙이 동시에 로그인하면 먼저 로그인한 쪽 세션이 무효가 된다.
+    // 그래서 파일 사이 순서를 dependencies 로 강제하고 파일 안에서도 직렬로 돌린다.
+    ...SHARED_ACCOUNT_SPECS.map((testMatch, index) => ({
+      name: `shared-account-${index + 1}`,
+      use: { ...devices['Desktop Chrome'] },
+      testMatch,
+      fullyParallel: false,
+      dependencies: index === 0 ? [] : [`shared-account-${index}`],
+    })),
 
     // {
     //   name: 'webkit',

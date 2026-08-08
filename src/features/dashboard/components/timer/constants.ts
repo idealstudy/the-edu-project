@@ -1,13 +1,6 @@
 export const nowKST = () =>
   new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString();
 
-export const SUBJECT_TO_KOREAN: Record<string, string> = {
-  KOREAN: '국어',
-  ENGLISH: '영어',
-  MATH: '수학',
-  OTHER: '기타',
-};
-
 export const formatMinSec = (seconds: number): string => {
   if (seconds >= 3600) {
     const hr = Math.floor(seconds / 3600);
