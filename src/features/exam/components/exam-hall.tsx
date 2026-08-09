@@ -58,9 +58,8 @@ export const ExamHall = () => {
   const publicExams = hall.data?.public ?? [];
 
   return (
-    /* v22 §1.3 카드 간 간격 12px(--gap-block). TODO(토큰): --gap-block 토큰 도입 시 교체 */
     <div
-      className="mx-auto flex max-w-[980px] flex-col gap-3"
+      className="mx-auto flex max-w-[980px] flex-col gap-block-gap"
       data-testid="student-exam-hall"
     >
       {assigned.length > 0 && (

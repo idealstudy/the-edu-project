@@ -67,8 +67,7 @@ export const StudentResultsPage = () => {
   ).length;
 
   return (
-    /* v22 §1.3: 구획 패딩 16px · 카드 간 간격 12px. TODO(토큰): --gap-section/--gap-block */
-    <main className="flex w-full flex-col gap-3 p-4">
+    <main className="flex w-full flex-col gap-block-gap p-section-gap">
       <section
         className="border-gray-3 bg-gray-white rounded-xl border p-4"
         data-testid="learning-map"
