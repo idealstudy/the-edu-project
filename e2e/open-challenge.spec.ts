@@ -411,9 +411,22 @@ test.describe('AI 코치 — 이어하기', () => {
     await page.goto(PUBLIC.CHALLENGES.DETAIL(RESUME_CHALLENGE_ID));
     await startAiCoach(page);
 
+    // 화면에 말풍선이 뜨는 것만 보고 넘어가면 안 된다. 그건 서버 응답 전에 먼저
+    // 그려지는 것이라, 저장이 끝나기 전에 화면을 떠나면 남을 대화가 없다.
+    // 실제로 전체 스위트를 이어 돌릴 때 그 경합으로 실패했다(2026-08-09 실측).
+    // 서버가 저장을 마쳤다는 응답을 받은 뒤에 떠난다.
+    const messageSaved = page.waitForResponse(
+      (response) =>
+        response.url().includes('/ai-coaching-sessions/') &&
+        response.url().endsWith('/messages') &&
+        response.request().method() === 'POST' &&
+        response.status() < 400,
+      { timeout: 60_000 }
+    );
     await page.getByTestId('ai-coach-message-input').fill(mark);
     await page.getByTestId('ai-coach-send-button').click();
     await expect(page.getByText(mark)).toBeVisible({ timeout: 30_000 });
+    await messageSaved;
 
     // 화면을 떠났다가 같은 문제로 돌아온다.
     await page.goto(PUBLIC.CHALLENGES.LIST);
