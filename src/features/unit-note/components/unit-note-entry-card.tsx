@@ -42,6 +42,8 @@ export const UnitNoteEntryCard = () => {
       subject,
       label: subjectLabels[subject] ?? subject,
       unitCount: subjectNodes.length,
+      // 정리 기록 유무는 단원 개수가 아니라 실제로 쓴 노트 쪽수로 판정한다.
+      noteCount: totalPages,
       solvedPercent,
       notedPercent,
       totalPercent: Math.min(100, solvedPercent + notedPercent),
@@ -101,10 +103,17 @@ export const UnitNoteEntryCard = () => {
                 <p className="text-gray-12 text-sm font-extrabold">
                   {subject.label}
                 </p>
+                {/*
+                  정리 기록은 노트 쪽수로 판정한다. 단원 트리만 있고 쪽수가 0 이면
+                  정리한 적이 없는 것인데 예전에는 "마지막 정리 기록 있음"으로 나와
+                  진행률 0% 와 어긋났다(fix-report-v8-2 곁다리 관찰).
+                */}
                 <p className="text-gray-7 mt-0.5 text-[11px]">
-                  {subject.unitCount > 0
-                    ? `${subject.unitCount}단원 · 마지막 정리 기록 있음`
-                    : '아직 시작 전'}
+                  {subject.unitCount === 0
+                    ? '아직 시작 전'
+                    : subject.noteCount > 0
+                      ? `${subject.unitCount}단원 · 정리한 노트 ${subject.noteCount}쪽`
+                      : `${subject.unitCount}단원 · 아직 정리한 노트 없음`}
                 </p>
               </div>
               <div className="flex items-center gap-2">

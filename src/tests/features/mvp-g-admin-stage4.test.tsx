@@ -231,6 +231,7 @@ describe('MVP-G 관리자 4단계 프로토타입 상태', () => {
         ],
         totalElements: 1,
         statusCounts: { RECEIVED: 1, IN_PROGRESS: 2, ANSWERED: 2 },
+        delayedCount: 1,
       },
       isPending: false,
       isError: false,
@@ -244,12 +245,77 @@ describe('MVP-G 관리자 4단계 프로토타입 상태', () => {
     ).toBeInTheDocument();
     view.unmount();
     mocks.consultations.mockReturnValue({
-      data: { content: [], totalElements: 0, statusCounts: {} },
+      data: {
+        content: [],
+        totalElements: 0,
+        statusCounts: {},
+        delayedCount: 0,
+      },
       isPending: false,
       isError: false,
     });
     renderWithProviders(<AdminConsultations />);
     expect(screen.getByText('받은 문의가 없어요')).toBeInTheDocument();
     expect(screen.getByText('평균 첫 응답')).toBeInTheDocument();
+  });
+
+  /*
+   * 지연을 정렬에서 뺀 대신 지연 칩으로 모아 보게 했다(fix-report-v8-3 A).
+   * 칩이 눌리면 실제로 조회 조건이 바뀌어야 한다. 눌러도 아무 일 없는 버튼을 막는 검사다.
+   */
+  test('지연 칩은 건수를 보여주고 누르면 지연만 보기 조건으로 다시 조회한다', () => {
+    mocks.consultations.mockReturnValue({
+      data: {
+        content: [
+          {
+            caseId: 9,
+            status: 'RECEIVED',
+            title: '이틀째 답이 없어요',
+            message: '지난주에 보낸 문의가 그대로입니다',
+            senderName: '한지우',
+            senderRole: 'TEACHER',
+            senderContact: 'jiwoo@example.com',
+            receivedAt: '2026-08-01T09:00:00',
+            assigneeName: null,
+            answer: null,
+            answeredAt: null,
+            delayed: true,
+          },
+        ],
+        totalElements: 1,
+        statusCounts: { RECEIVED: 4, IN_PROGRESS: 2, ANSWERED: 2 },
+        delayedCount: 3,
+      },
+      isPending: false,
+      isError: false,
+    });
+    renderWithProviders(<AdminConsultations />);
+
+    const chip = screen.getByTestId('admin-consultations-delayed-chip');
+    expect(chip).toHaveTextContent('지연');
+    expect(chip).toHaveTextContent('3');
+    expect(chip).toHaveAttribute('aria-pressed', 'false');
+    // 안 눌린 상태라도 남은 지연이 있으면 경고색으로 눈에 걸려야 한다.
+    expect(chip.className).toContain('text-[#b91c1c]');
+    // 칩 문구가 좁은 폭에서 "지 / 연" 으로 쪼개지지 않는다.
+    expect(chip.className).toContain('whitespace-nowrap');
+    // 지연 건에는 표에도 표시가 붙는다.
+    expect(
+      screen.getByTestId('admin-consultation-delayed-badge')
+    ).toBeInTheDocument();
+    // 안내 문구가 구현과 맞아야 한다. 지연 우선 정렬은 이미 폐기됐다.
+    const note = screen.getByTestId('admin-consultations-delay-note');
+    expect(note).not.toHaveTextContent('맨 위로');
+    expect(note).toHaveTextContent('접수 → 처리 중 → 답변 완료');
+
+    const before = mocks.consultations.mock.calls.length;
+    fireEvent.click(chip);
+
+    expect(mocks.consultations.mock.calls.length).toBeGreaterThan(before);
+    const lastParams = mocks.consultations.mock.calls.at(-1)?.[0];
+    expect(lastParams).toMatchObject({ status: 'RECEIVED', delayedOnly: true });
+    expect(
+      screen.getByTestId('admin-consultations-delayed-chip')
+    ).toHaveAttribute('aria-pressed', 'true');
   });
 });

@@ -44,6 +44,7 @@ const getStudyRooms = async (params: {
 const getConsultations = async (params: {
   status?: 'RECEIVED' | 'IN_PROGRESS' | 'ANSWERED';
   keyword?: string;
+  delayedOnly?: boolean;
   page: number;
   size: number;
 }): Promise<AdminConsultationList> => {

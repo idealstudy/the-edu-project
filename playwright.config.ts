@@ -19,6 +19,7 @@ const SHARED_ACCOUNT_SPECS = [
   /mvp-g-v2-remote\.spec\.ts/,
   /mvp-g-qa8-roundtrip\.spec\.ts/,
   /mvp-g-qa8-performance\.spec\.ts/,
+  /mvp-g-v8-3-delayed-filter\.spec\.ts/,
 ];
 
 // import path from 'path';

@@ -67,6 +67,8 @@ const consultationCases = z.object({
   content: z.array(consultationCase),
   totalElements: z.number().int().nonnegative(),
   statusCounts: z.record(z.string(), z.number().int().nonnegative()),
+  // 지연 건수. 받은 지 24시간이 지난 접수 건 수이며 지연 칩에 그대로 표시한다.
+  delayedCount: z.number().int().nonnegative(),
 });
 
 const summary = z.object({

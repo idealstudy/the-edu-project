@@ -20,6 +20,14 @@ const states = [
   ['IN_PROGRESS', '처리 중'],
   ['ANSWERED', '답변 완료'],
 ] as const;
+/**
+ * 지연 = 받은 지 24시간이 지났는데 아직 접수 상태로 남은 문의.
+ * 지연은 정렬 순위에서 뺐기 때문에(옛 지연 건이 앞을 점거해 신규 문의가 뒤로 밀리던 결함),
+ * 몰아 보는 통로를 이 칩으로 둔다. 서버가 `delayedOnly` 로 DB 에서 걸러 준다.
+ * 승인 디자인 v22 `aConsultOk` 4165~4168 에는 상태 칩 3개만 있어, 같은 형태로 하나 더 만들었다.
+ */
+const DELAYED = 'DELAYED';
+type ConsultationFilter = (typeof states)[number][0] | typeof DELAYED;
 const badge = {
   RECEIVED: 'bg-[#fff7ed] text-[#c2410c]',
   IN_PROGRESS: 'bg-[#eff6ff] text-[#1d4ed8]',
@@ -42,15 +50,20 @@ const date = (value: string | null) =>
     : '기록 없음';
 
 export const AdminConsultations = () => {
-  const [status, setStatus] = useState<
-    (typeof states)[number][0] | undefined
-  >();
+  const [status, setStatus] = useState<ConsultationFilter | undefined>();
   const [searchValue, setSearchValue] = useState('');
   const [keyword, setKeyword] = useState('');
   const [selected, setSelected] = useState<AdminConsultationCase | null>(null);
   const [answer, setAnswer] = useState('');
   const params = useMemo(
-    () => ({ status, keyword: keyword || undefined, page: 0, size: 20 }),
+    () => ({
+      // 지연 칩은 접수 상태 안에서 24시간을 넘긴 건만 본다. 걸러내기는 서버가 한다.
+      status: status === DELAYED ? ('RECEIVED' as const) : status,
+      delayedOnly: status === DELAYED || undefined,
+      keyword: keyword || undefined,
+      page: 0,
+      size: 20,
+    }),
     [keyword, status]
   );
   const query = useAdminConsultations(params);
@@ -92,8 +105,13 @@ export const AdminConsultations = () => {
           <button
             key={value}
             type="button"
+            data-testid={`admin-consultations-chip-${value}`}
+            aria-pressed={
+              (status === undefined && value === 'RECEIVED') || status === value
+            }
             className={cn(
-              'flex min-h-[42px] items-center gap-2 rounded-lg border px-3 text-xs font-bold',
+              // 좁은 폭에서 "답변 / 완료" 처럼 칩 안 문구가 쪼개지지 않게 한다.
+              'flex min-h-[42px] shrink-0 items-center gap-2 rounded-lg border px-3 text-xs font-bold whitespace-nowrap',
               (status === undefined && value === 'RECEIVED') || status === value
                 ? 'border-[#c2410c] bg-[#fff7ed] text-[#9a3412]'
                 : 'border-[#e4e4e7] bg-white text-[#3f3f46]'
@@ -109,6 +127,29 @@ export const AdminConsultations = () => {
             </b>
           </button>
         ))}
+        <button
+          type="button"
+          data-testid="admin-consultations-delayed-chip"
+          aria-pressed={status === DELAYED}
+          className={cn(
+            // 배지 안에서 "지 / 연" 으로 쪼개지던 것을 막는다.
+            'flex min-h-[42px] shrink-0 items-center gap-2 rounded-lg border px-3 text-xs font-bold whitespace-nowrap',
+            status === DELAYED
+              ? 'border-[#b91c1c] bg-[#fef2f2] text-[#991b1b]'
+              : // 안 눌린 상태라도 지연이 남아 있으면 눈에 걸리게 둔다.
+                // 다른 칩과 같은 회색이면 1200건이 쌓여도 그냥 지나친다.
+                (query.data?.delayedCount ?? 0) > 0
+                ? 'border-[#fca5a5] bg-white text-[#b91c1c]'
+                : 'border-[#e4e4e7] bg-white text-[#3f3f46]'
+          )}
+          onClick={() => {
+            setStatus(DELAYED);
+            setSelected(null);
+          }}
+        >
+          지연{' '}
+          <b className="tabular-nums">{query.data?.delayedCount ?? 0}</b>
+        </button>
         <SearchInput
           className="min-w-[180px] flex-1 bg-white"
           value={searchValue}
@@ -127,7 +168,30 @@ export const AdminConsultations = () => {
           문의와 상담 목록을 불러오지 못했어요.
         </section>
       )}
-      {query.data && query.data.content.length === 0 && (
+      {query.data && query.data.content.length === 0 && status === DELAYED && (
+        <section
+          className="rounded-[10px] border border-dashed border-[#e4e4e7] bg-white px-6 py-[38px] text-center"
+          data-testid="admin-consultations-delayed-empty"
+        >
+          <h2 className="text-[15px] font-extrabold">
+            24시간을 넘긴 문의가 없어요
+          </h2>
+          <p className="mt-2 text-[12.5px] leading-7 text-[#52525b]">
+            받은 문의에 모두 하루 안에 손을 댔습니다.
+          </p>
+          <button
+            type="button"
+            className="mt-4 min-h-[46px] rounded-lg border border-[#9a3412] bg-[#c2410c] px-5 text-[13px] font-extrabold text-white"
+            onClick={() => {
+              setStatus('RECEIVED');
+              setSelected(null);
+            }}
+          >
+            접수 {query.data.statusCounts.RECEIVED ?? 0}건 보기
+          </button>
+        </section>
+      )}
+      {query.data && query.data.content.length === 0 && status !== DELAYED && (
         <>
           <section
             className="rounded-[10px] border border-dashed border-[#e4e4e7] bg-white px-6 py-[38px] text-center"
@@ -197,15 +261,24 @@ export const AdminConsultations = () => {
                       key={item.caseId}
                       className="hover:bg-[#fff7ed]"
                     >
-                      <td className="border-b border-[#f4f4f5] px-2.5 py-3">
+                      <td className="border-b border-[#f4f4f5] px-2.5 py-3 whitespace-nowrap">
                         <span
                           className={cn(
-                            'rounded-full px-2 py-1 text-[10.5px] font-extrabold',
+                            'inline-block rounded-full px-2 py-1 text-[10.5px] font-extrabold whitespace-nowrap',
                             badge[item.status]
                           )}
                         >
                           {states.find(([value]) => value === item.status)?.[1]}
                         </span>
+                        {/* 지연은 정렬이 아니라 이 표시와 지연 칩으로 드러낸다. */}
+                        {item.delayed && (
+                          <span
+                            data-testid="admin-consultation-delayed-badge"
+                            className="ml-1 inline-block rounded-full bg-[#fef2f2] px-2 py-1 text-[10.5px] font-extrabold whitespace-nowrap text-[#991b1b]"
+                          >
+                            지연
+                          </span>
+                        )}
                       </td>
                       <td className="border-b border-[#f4f4f5] px-2.5 py-3">
                         <b className="block">{item.title}</b>
@@ -245,9 +318,25 @@ export const AdminConsultations = () => {
                 </tbody>
               </table>
             </div>
-            <p className="mt-3 text-xs text-[#71717a]">
-              받은 지 <b className="text-[#27272a]">24시간</b>이 지나도 접수
-              상태인 문의는 목록 맨 위로 올라옵니다.
+            {/*
+              문구 정본 = 구현. 승인 디자인 v22 4185 는 "목록 맨 위로 올라옵니다"라고 적었지만
+              그 화면은 전체 5건 전제였다. 실제 1200여 건 환경에서 지연 우선 정렬은
+              신규 문의를 마지막 페이지로 밀어냈다(fix-report-v8-2 A-2).
+              지금 목록은 처리 상태 순이고 지연은 표시와 지연 칩으로 드러낸다.
+            */}
+            <p
+              className="mt-3 text-xs text-[#71717a]"
+              data-testid="admin-consultations-delay-note"
+            >
+              목록은 <b className="text-[#27272a]">접수 → 처리 중 → 답변 완료</b>{' '}
+              순서로, 같은 상태 안에서는 최근에 받은 것부터 보여줍니다. 받은 지{' '}
+              <b className="text-[#27272a]">24시간</b>이 지나도 접수 상태인
+              문의는 <b className="text-[#27272a]">지연</b>으로 표시하고, 위
+              지연 칩을 누르면 그것만 모아 볼 수 있습니다. 지금 지연은{' '}
+              <b className="text-[#27272a] tabular-nums">
+                {query.data.delayedCount}건
+              </b>
+              입니다.
             </p>
           </div>
           <div>

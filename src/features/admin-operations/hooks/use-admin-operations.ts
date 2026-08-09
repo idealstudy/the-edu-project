@@ -52,6 +52,8 @@ export const useAdminStudyRooms = (params: StudyRoomListParams) =>
 export type ConsultationListParams = {
   status?: 'RECEIVED' | 'IN_PROGRESS' | 'ANSWERED';
   keyword?: string;
+  /** 지연(받은 지 24시간이 지난 접수) 건만 보기. 서버가 DB 질의로 걸러 준다. */
+  delayedOnly?: boolean;
   page: number;
   size: number;
 };
