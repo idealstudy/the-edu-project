@@ -25,7 +25,7 @@ const PaginationItem = ({ page, ...props }: PaginationItem) => {
   return (
     <button
       className={cn(
-        'bg-gray-scale-white text-text-sub1 hover:bg-background-gray flex size-[28px] cursor-pointer items-center justify-center rounded-[4px]',
+        'bg-gray-scale-white text-text-sub1 hover:bg-background-gray flex size-[28px] shrink-0 cursor-pointer items-center justify-center rounded-[4px]',
         isActive && 'text-key-color-primary bg-background-orange font-medium'
       )}
       aria-label="페이지 이동"
@@ -116,8 +116,16 @@ const Pagination = ({
 
   return (
     <PaginationContext.Provider value={value}>
+      {/*
+        페이지 수가 많으면 버튼 줄이 좁은 화면 폭을 넘는다(390px 관리자 회원 관리에서 실측 405px).
+        넓은 내용은 자기 상자 안에서만 스크롤하고 페이지 몸통은 밀리지 않아야 하므로
+        여기서 가로 스크롤을 가둔다. 버튼은 shrink-0 으로 눌려 찌그러지지 않게 둔다.
+      */}
       <nav
-        className={cn('text-sub flex items-center gap-2', className)}
+        className={cn(
+          'text-sub flex max-w-full items-center gap-2 overflow-x-auto',
+          className
+        )}
         {...props}
       >
         <Navigation
@@ -134,7 +142,7 @@ const Pagination = ({
         >
           <ChevronLeftIcon />
         </Navigation>
-        <div className="bg-background flex items-center gap-1 p-1">
+        <div className="bg-background flex shrink-0 items-center gap-1 p-1">
           {renderPages()}
         </div>
         <Navigation
@@ -162,7 +170,7 @@ const Navigation = ({ className, children, ...props }: NavigationProps) => {
   return (
     <button
       className={cn(
-        'text-text-sub1 hover:bg-background-gray flex size-[28px] cursor-pointer items-center justify-center rounded-[4px]',
+        'text-text-sub1 hover:bg-background-gray flex size-[28px] shrink-0 cursor-pointer items-center justify-center rounded-[4px]',
         'disabled:text-text-inactive disabled:pointer-events-none',
         className
       )}

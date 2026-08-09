@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+
 import { loadE2eSecrets } from './e2e/helpers/load-e2e-secrets';
 
 loadE2eSecrets();
@@ -21,6 +22,11 @@ const SHARED_ACCOUNT_SPECS = [
   /mvp-g-qa8-performance\.spec\.ts/,
   /mvp-g-v8-3-delayed-filter\.spec\.ts/,
 ];
+
+// 폭별 전수 점검(v8-4)은 세 역할 계정을 모두 쓰고 실행 시간이 길다.
+// 다른 스펙과 계정을 다투지 않게 별도 프로젝트로 떼어 두고, 기본 실행에서는 뺀다.
+// 실행: --project=widths-v8-4 --workers=1
+const WIDTHS_SPEC = /mvp-g-v8-4-widths\.spec\.ts/;
 
 // import path from 'path';
 // dotenv.config({ path: path.resolve(__dirname, '.env') });
@@ -55,7 +61,13 @@ export default defineConfig({
       // 실제 서버 로그인을 쓰지 않는 스펙. 계정을 공유하지 않으므로 병렬로 안전하다.
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
-      testIgnore: [DEVREMOTE_ONLY_SPECS, ...SHARED_ACCOUNT_SPECS],
+      testIgnore: [DEVREMOTE_ONLY_SPECS, WIDTHS_SPEC, ...SHARED_ACCOUNT_SPECS],
+    },
+    {
+      name: 'widths-v8-4',
+      use: { ...devices['Desktop Chrome'] },
+      testMatch: WIDTHS_SPEC,
+      fullyParallel: false,
     },
     // 아래는 같은 QA 계정으로 실제 서버 로그인을 하는 스펙들이다.
     // 백엔드가 회원 1명당 refresh token 을 1개만 보관하기 때문에(RefreshTokenRepositoryImpl),

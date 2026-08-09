@@ -49,6 +49,22 @@ const date = (value: string | null) =>
       }).format(new Date(value))
     : '기록 없음';
 
+/**
+ * 태블릿 1024(승인 디자인 v22 108~110 의 기본 프레임)에서 목록 칸은 500px 남짓이다.
+ * 거기에 "8월 7일 오후 06:35" 를 그대로 넣으면 한 글자씩 세로로 쪼개져 읽을 수 없었다.
+ * 좁은 폭에서는 날짜를 짧게 적고, 넓은 폭에서만 v22 가 그린 긴 표기를 쓴다.
+ */
+const shortDate = (value: string | null) =>
+  value
+    ? new Intl.DateTimeFormat('ko-KR', {
+        month: 'numeric',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      }).format(new Date(value))
+    : '기록 없음';
+
 export const AdminConsultations = () => {
   const [status, setStatus] = useState<ConsultationFilter | undefined>();
   const [searchValue, setSearchValue] = useState('');
@@ -147,8 +163,7 @@ export const AdminConsultations = () => {
             setSelected(null);
           }}
         >
-          지연{' '}
-          <b className="tabular-nums">{query.data?.delayedCount ?? 0}</b>
+          지연 <b className="tabular-nums">{query.data?.delayedCount ?? 0}</b>
         </button>
         <SearchInput
           className="min-w-[180px] flex-1 bg-white"
@@ -237,22 +252,58 @@ export const AdminConsultations = () => {
         </>
       )}
       {!!query.data?.content.length && selectedCase && (
-        <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.28fr)_minmax(0,1fr)]">
-          <div>
+        /*
+          승인 디자인 v22 695~699 `.split` 그대로: 좌우 1.28 대 1, 모바일은 1단.
+          `min-w-0` 은 v22 696 `.split>div{min-width:0}` 에 대응한다. 이게 없으면
+          칸이 표의 최소폭(720px)만큼 벌어져 페이지 몸통이 통째로 좌우로 밀렸다
+          (390px 실측 scrollWidth 752).
+        */
+        <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)] xl:grid-cols-[minmax(0,1.28fr)_minmax(0,1fr)]">
+          <div className="min-w-0">
             <div className="overflow-x-auto rounded-xl border border-[#e4e4e7] bg-white px-2 py-1.5">
-              <table className="w-full min-w-[720px] border-collapse text-left text-xs">
+              {/*
+                v22 321~322 는 표 최소폭을 모바일(`.f.m`)에만 걸었다. 태블릿 1024 는
+                v22 108~110 의 기본 프레임이라 표가 칸 안에 접혀 들어가야 하고,
+                최소폭을 걸면 문의 제목이 오른쪽 답변 칸 뒤로 잘려 안 보였다.
+              */}
+              {/*
+                좁은 폭에서는 칸 너비를 못 박는다(`table-fixed`). 자동 배분에 맡기면
+                제목의 최대폭이 다른 칸을 밀어내 맨 오른쪽 "답변 쓰기" 버튼이
+                카드 밖으로 잘려 누를 수 없었다. 넓은 폭(1280 이상)에서는
+                v22 가 그린 자동 배분을 그대로 쓴다.
+              */}
+              <table className="w-full min-w-[560px] table-fixed border-collapse text-left text-xs lg:min-w-0 xl:table-auto">
                 <thead>
+                  {/*
+                    v22 4171 은 여섯 칸(상태·문의·보낸 사람·받은 시각·담당·동작)을 그렸고
+                    그 그림의 데이터는 다섯 줄에 제목도 짧았다. 실제 dev 데이터는 400건에
+                    한 문장짜리 제목이라, 태블릿 목록 칸에 여섯 칸을 다 세우면 글자가
+                    한 자씩 세로로 쪼개지고 맨 오른쪽 동작 버튼이 화면 밖으로 밀렸다.
+                    그래서 넓은 화면(1280 이상)에서만 여섯 칸을 그대로 쓰고,
+                    좁은 화면에서는 보낸 사람과 담당을 문의 칸 아래 줄로 접는다.
+                    지우는 것이 아니라 자리를 옮기는 것이라 정보는 그대로 남는다.
+                  */}
                   <tr className="text-[10.5px] text-[#71717a]">
-                    {['상태', '문의', '보낸 사람', '받은 시각', '담당', ''].map(
-                      (label, index) => (
-                        <th
-                          key={`${label}-${index}`}
-                          className="border-b border-[#e4e4e7] px-2.5 py-2 font-extrabold"
-                        >
-                          {label}
-                        </th>
-                      )
-                    )}
+                    {(
+                      [
+                        ['상태', 'w-[104px] xl:w-auto'],
+                        ['문의', ''],
+                        ['보낸 사람', 'hidden xl:table-cell'],
+                        ['받은 시각', 'w-[84px] xl:w-auto'],
+                        ['담당', 'hidden xl:table-cell'],
+                        ['', 'w-[96px] xl:w-auto'],
+                      ] as const
+                    ).map(([label, extra], index) => (
+                      <th
+                        key={`${label}-${index}`}
+                        className={cn(
+                          'border-b border-[#e4e4e7] px-2.5 py-2 font-extrabold',
+                          extra
+                        )}
+                      >
+                        {label}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
@@ -261,7 +312,7 @@ export const AdminConsultations = () => {
                       key={item.caseId}
                       className="hover:bg-[#fff7ed]"
                     >
-                      <td className="border-b border-[#f4f4f5] px-2.5 py-3 whitespace-nowrap">
+                      <td className="border-b border-[#f4f4f5] px-2.5 py-3 whitespace-normal xl:whitespace-nowrap">
                         <span
                           className={cn(
                             'inline-block rounded-full px-2 py-1 text-[10.5px] font-extrabold whitespace-nowrap',
@@ -282,25 +333,36 @@ export const AdminConsultations = () => {
                       </td>
                       <td className="border-b border-[#f4f4f5] px-2.5 py-3">
                         <b className="block">{item.title}</b>
-                        <span className="mt-0.5 block max-w-[260px] truncate text-[11px] text-[#71717a]">
+                        <span className="mt-0.5 block truncate text-[11px] text-[#71717a] xl:max-w-[260px]">
                           {item.message}
                         </span>
+                        {/* 좁은 폭에서 접어 넣은 보낸 사람·담당. 넓은 폭에서는 제 칸으로 돌아간다. */}
+                        <span className="mt-1 block text-[11px] text-[#52525b] xl:hidden">
+                          {item.senderName} (
+                          {roleLabel[item.senderRole] ?? item.senderRole}) ·
+                          담당 {item.assigneeName ?? '아직 없음'}
+                        </span>
                       </td>
-                      <td className="border-b border-[#f4f4f5] px-2.5 py-3 text-[11px] text-[#52525b]">
+                      <td className="hidden border-b border-[#f4f4f5] px-2.5 py-3 text-[11px] text-[#52525b] xl:table-cell">
                         {item.senderName} (
                         {roleLabel[item.senderRole] ?? item.senderRole})
                       </td>
-                      <td className="border-b border-[#f4f4f5] px-2.5 py-3 text-[11px] text-[#52525b] tabular-nums">
-                        {date(item.receivedAt)}
+                      <td className="border-b border-[#f4f4f5] px-2.5 py-3 text-[11px] whitespace-nowrap text-[#52525b] tabular-nums">
+                        <span className="xl:hidden">
+                          {shortDate(item.receivedAt)}
+                        </span>
+                        <span className="hidden xl:inline">
+                          {date(item.receivedAt)}
+                        </span>
                       </td>
-                      <td className="border-b border-[#f4f4f5] px-2.5 py-3 text-[11px] text-[#52525b]">
+                      <td className="hidden border-b border-[#f4f4f5] px-2.5 py-3 text-[11px] text-[#52525b] xl:table-cell">
                         {item.assigneeName ?? '아직 없음'}
                       </td>
                       <td className="border-b border-[#f4f4f5] px-2.5 py-3">
                         <button
                           type="button"
                           className={cn(
-                            'min-h-11 rounded-lg border px-3 text-xs font-extrabold',
+                            'min-h-11 rounded-lg border px-3 text-xs font-extrabold whitespace-nowrap',
                             item.status === 'RECEIVED'
                               ? 'border-[#9a3412] bg-[#c2410c] text-white'
                               : 'border-[#e4e4e7]'
@@ -328,7 +390,8 @@ export const AdminConsultations = () => {
               className="mt-3 text-xs text-[#71717a]"
               data-testid="admin-consultations-delay-note"
             >
-              목록은 <b className="text-[#27272a]">접수 → 처리 중 → 답변 완료</b>{' '}
+              목록은{' '}
+              <b className="text-[#27272a]">접수 → 처리 중 → 답변 완료</b>{' '}
               순서로, 같은 상태 안에서는 최근에 받은 것부터 보여줍니다. 받은 지{' '}
               <b className="text-[#27272a]">24시간</b>이 지나도 접수 상태인
               문의는 <b className="text-[#27272a]">지연</b>으로 표시하고, 위
@@ -339,11 +402,12 @@ export const AdminConsultations = () => {
               입니다.
             </p>
           </div>
-          <div>
+          <div className="min-w-0">
             <section className="mb-3 rounded-xl border border-[#e4e4e7] bg-white p-4">
-              <div className="mb-3 flex items-baseline justify-between">
-                <h2 className="text-sm font-extrabold">답변 쓰기</h2>
-                <span className="text-xs text-[#71717a]">
+              <div className="mb-3 flex items-baseline justify-between gap-2">
+                <h2 className="shrink-0 text-sm font-extrabold">답변 쓰기</h2>
+                {/* 제목이 길면 이 줄이 칸을 밀어냈다. 넘치는 부분만 줄임표로 접는다. */}
+                <span className="min-w-0 truncate text-xs text-[#71717a]">
                   {selectedCase.senderName} · {selectedCase.title}
                 </span>
               </div>
@@ -370,7 +434,9 @@ export const AdminConsultations = () => {
               <div className="mt-3 flex flex-wrap gap-2">
                 <button
                   type="button"
-                  className="min-h-11 flex-1 rounded-lg border border-[#9a3412] bg-[#c2410c] px-3 text-xs font-extrabold text-white disabled:opacity-50"
+                  // "답변 보내고 완료 처 / 리" 로 쪼개지던 것을 막는다.
+                  // 한 줄에 안 들어가면 두 번째 버튼이 아래 줄로 내려간다.
+                  className="min-h-11 flex-1 rounded-lg border border-[#9a3412] bg-[#c2410c] px-3 text-xs font-extrabold whitespace-nowrap text-white disabled:opacity-50"
                   disabled={!answer.trim() || update.isPending}
                   onClick={() => updateCase('ANSWERED')}
                 >
@@ -378,7 +444,7 @@ export const AdminConsultations = () => {
                 </button>
                 <button
                   type="button"
-                  className="min-h-11 rounded-lg border border-[#e4e4e7] px-3 text-xs font-extrabold"
+                  className="min-h-11 rounded-lg border border-[#e4e4e7] px-3 text-xs font-extrabold whitespace-nowrap"
                   disabled={update.isPending}
                   onClick={() => updateCase('IN_PROGRESS')}
                 >
@@ -410,7 +476,9 @@ export const AdminConsultations = () => {
               */}
               {selectedCase.senderMemberId ? (
                 <Link
-                  href={PRIVATE.ADMIN.MEMBERS.DETAIL(selectedCase.senderMemberId)}
+                  href={PRIVATE.ADMIN.MEMBERS.DETAIL(
+                    selectedCase.senderMemberId
+                  )}
                   className="mt-3 flex min-h-11 w-full items-center justify-center rounded-lg border border-[#e4e4e7] text-xs font-extrabold"
                   data-testid="admin-consultation-open-member"
                 >
