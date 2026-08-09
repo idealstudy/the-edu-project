@@ -4,7 +4,10 @@ import { useEffect, useRef, useState } from 'react';
 
 import Link from 'next/link';
 
-import { type AiCoachingPreference } from '@/entities/open-challenge';
+import {
+  type AiCoachingPreference,
+  repository,
+} from '@/entities/open-challenge';
 import { useSolutionViewCostQuery } from '@/features/point/hooks/use-point';
 import { type Stroke, useDrawingUpload } from '@/shared/components/drawing';
 import { Button, Dialog } from '@/shared/components/ui';
@@ -485,9 +488,37 @@ export const AiCoachPanel = ({
 
       setSessionId(session.sessionId);
       onSessionChange?.(session.sessionId);
-      setMessages([
-        createAiMessage(openingMessage ?? getIntroMessage(nextSettings)),
-      ]);
+
+      // 코치를 켠 채 나갔다가 돌아온 경우, 서버는 하던 대화를 그대로 돌려준다.
+      // 그때 첫 인사만 그리면 학생 눈에는 대화가 사라진 것처럼 보이므로 지난 대화를
+      // 불러와 이어 그린다. 불러오기에 실패해도 대화는 시작할 수 있어야 하니
+      // 실패하면 인사말로 시작한다.
+      let restored: AiCoachMessage[] = [];
+      try {
+        const history = await repository.getAiCoachingMessages(
+          String(session.sessionId)
+        );
+        restored = history
+          .filter((item) => item.role === 'ASSISTANT' || item.role === 'STUDENT')
+          .map((item, index) => ({
+            id: `history-${session.sessionId}-${index}`,
+            role: item.role === 'ASSISTANT' ? ('ai' as const) : ('user' as const),
+            content: item.content,
+            timestamp: getTimestamp(),
+            step:
+              item.role === 'ASSISTANT'
+                ? toProgressStep(item.progressionStep ?? undefined)
+                : undefined,
+          }));
+      } catch {
+        restored = [];
+      }
+
+      setMessages(
+        restored.length > 0
+          ? restored
+          : [createAiMessage(openingMessage ?? getIntroMessage(nextSettings))]
+      );
       setStatus('WAITING_ANSWER');
       setIsSettingsOpen(false);
     } catch {

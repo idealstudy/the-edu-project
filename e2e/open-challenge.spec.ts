@@ -2,6 +2,7 @@ import { PRIVATE, PUBLIC } from '@/shared/constants';
 import { type Locator, type Page, expect, test } from '@playwright/test';
 
 import { loginAsStudent } from './helpers/auth';
+import { BACKEND_ORIGIN } from './helpers/mvp-e-devremote';
 
 /* ─────────────────────────────────────────────────────
  * AI 코치 손글씨 캡처 헬퍼
@@ -77,16 +78,76 @@ type AiCoachMessagesRequestBody = {
   studentSolutionImageMediaId?: string;
 };
 
+/**
+ * AI 코치 검사 전용 문제 번호.
+ *
+ * 같은 파일의 제출 검사가 4000번을 완료 상태로 만들어, 뒤따르는 코치 검사가
+ * 항상 실패했다(2026-08-09 실측). 번호를 갈라 그 간섭을 없앤다.
+ */
+const COACH_CHALLENGE_ID = 4001;
+
+/**
+ * 코치를 시작할 수 있는 새 시도를 만들어 둔다.
+ *
+ * 서버는 코치 세션을 **진행 중인 시도에서만** 연다. 한 번 코치를 켜면 그 시도는
+ * 코칭 상태로 넘어가고, 그 뒤로는 같은 시도에서 다시 못 연다
+ * (409 CHALLENGE_ATTEMPT_NOT_IN_PROGRESS). 즉 문제 번호를 바꾸는 것만으로는
+ * 한 번 돌고 나면 또 막힌다. 매 실행마다 새 시도를 만들어야 반복 실행이 성립한다.
+ */
+async function ensureFreshAttempt(page: Page, challengeId: number) {
+  type AttemptCreated = { attemptId: number; status: string };
+  const createAttempt = async (): Promise<AttemptCreated> => {
+    const response = await page.request.post(
+      `${BACKEND_ORIGIN}/common/challenge-attempts`,
+      { data: { challengeId } }
+    );
+    expect(
+      response.status(),
+      `코치 검사용 시도 생성 실패: HTTP ${response.status()}`
+    ).toBeLessThan(300);
+    const body = (await response.json()) as { data?: AttemptCreated };
+    return body.data as AttemptCreated;
+  };
+
+  let attempt = await createAttempt();
+  if (attempt.status === 'IN_PROGRESS') return;
+
+  // 코칭 중으로 남은 시도가 있으면 제출해 닫는다. 안 닫으면 "이어 풀기" 규칙이 그
+  // 시도를 계속 돌려주고, 코치 세션은 진행 중 시도만 받으므로 영원히 못 연다.
+  const submitted = await page.request.post(
+    `${BACKEND_ORIGIN}/common/challenge-attempts/${attempt.attemptId}/submit`,
+    { data: { selectedAnswer: '1' } }
+  );
+  expect(
+    submitted.status(),
+    `코칭 중 시도 정리 실패: HTTP ${submitted.status()}`
+  ).toBeLessThan(300);
+
+  attempt = await createAttempt();
+  expect(
+    attempt.status,
+    '정리 후에도 새 시도가 진행 중 상태가 아니다'
+  ).toBe('IN_PROGRESS');
+}
+
 async function startAiCoach(page: Page) {
   await page.getByTestId('ai-coach-start-button').click();
+
+  // 맞춤 설정 창이 뜨면 건너뛴다. 이미 설정을 저장해둔 계정이면 창 없이 바로 시작한다.
+  // 대기 시간을 3초로 두면 전체 스위트를 이어 돌릴 때 창이 뜨기 전에 포기하고,
+  // 그 뒤 입력창을 못 찾아 "코치가 안 열린다"로 잘못 보고된다(2026-08-09 실측).
+  // 창이 떴는지 여부 자체를 넉넉히 기다린 뒤에 판단한다.
   const skipSettingsButton = page.getByTestId('ai-coach-settings-skip-button');
-  try {
-    await skipSettingsButton.waitFor({ state: 'visible', timeout: 3_000 });
+  const messageInput = page.getByTestId('ai-coach-message-input');
+  await Promise.race([
+    skipSettingsButton.waitFor({ state: 'visible', timeout: 20_000 }),
+    messageInput.waitFor({ state: 'visible', timeout: 20_000 }),
+  ]).catch(() => undefined);
+  if (await skipSettingsButton.isVisible().catch(() => false)) {
     await skipSettingsButton.click();
-  } catch {
-    // 이미 저장된 맞춤 설정이 있어 다이얼로그 없이 바로 시작한 경우.
   }
-  await expect(page.getByTestId('ai-coach-message-input')).toBeVisible();
+
+  await expect(messageInput).toBeVisible({ timeout: 20_000 });
 }
 
 /* ─────────────────────────────────────────────────────
@@ -192,7 +253,8 @@ test.describe('AI 코치 — 손글씨 풀이 캡처', () => {
     page,
   }) => {
     await loginAsStudent(page);
-    await page.goto(PUBLIC.CHALLENGES.DETAIL(4000));
+    await ensureFreshAttempt(page, COACH_CHALLENGE_ID);
+    await page.goto(PUBLIC.CHALLENGES.DETAIL(COACH_CHALLENGE_ID));
     await expect(page.getByTestId('solution-drawing-surface')).toBeVisible();
 
     // presign-batch → S3 PUT 은 실제로 통과시키되(passthrough), PUT 바디(PNG)만 가로채 관찰한다.
@@ -269,7 +331,8 @@ test.describe('AI 코치 — 손글씨 풀이 캡처', () => {
     page,
   }) => {
     await loginAsStudent(page);
-    await page.goto(PUBLIC.CHALLENGES.DETAIL(4000));
+    await ensureFreshAttempt(page, COACH_CHALLENGE_ID);
+    await page.goto(PUBLIC.CHALLENGES.DETAIL(COACH_CHALLENGE_ID));
     await expect(page.getByTestId('solution-drawing-surface')).toBeVisible();
 
     // presign 단계를 강제 실패시켜 업로드 실패를 재현(S3까지 갈 필요 없음).
