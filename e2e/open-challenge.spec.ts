@@ -86,6 +86,9 @@ type AiCoachMessagesRequestBody = {
  */
 const COACH_CHALLENGE_ID = 4001;
 
+/** 이어하기 검사 전용 문제 번호. 손글씨 검사와 시도 상태가 얽히지 않게 따로 쓴다. */
+const RESUME_CHALLENGE_ID = 4002;
+
 /**
  * 코치를 시작할 수 있는 새 시도를 만들어 둔다.
  *
@@ -386,5 +389,40 @@ test.describe('AI 코치 — 손글씨 풀이 캡처', () => {
       .poll(() => messagesRequest.body, { timeout: 15_000 })
       .not.toBeNull();
     expect(messagesRequest.body?.studentSolutionImageMediaId).toBeUndefined();
+  });
+});
+
+// ─── 코치 이어하기 (회장 지시 2026-08-09) ───
+// "코치 켰다가 나가면 채팅 이어서 해야지 않겠어?"
+//
+// 이전에는 코치를 한 번 켜면 그 시도가 코칭 상태로 남고, 시도 생성이 "이어 풀기"라
+// 같은 시도를 계속 돌려주는 바람에 코치가 영구히 409 로 거절당했다. 오답을 다시 풀
+// 때야말로 코치가 필요한데 바로 그때 막히던 구조다. 그 회귀를 여기서 지킨다.
+test.describe('AI 코치 — 이어하기', () => {
+  test.setTimeout(90_000);
+
+  test('코치를 켜고 나갔다 돌아와도 하던 대화가 그대로 이어진다', async ({
+    page,
+  }) => {
+    const mark = `이어하기 검증 ${Date.now()}`;
+
+    await loginAsStudent(page);
+    await ensureFreshAttempt(page, RESUME_CHALLENGE_ID);
+    await page.goto(PUBLIC.CHALLENGES.DETAIL(RESUME_CHALLENGE_ID));
+    await startAiCoach(page);
+
+    await page.getByTestId('ai-coach-message-input').fill(mark);
+    await page.getByTestId('ai-coach-send-button').click();
+    await expect(page.getByText(mark)).toBeVisible({ timeout: 30_000 });
+
+    // 화면을 떠났다가 같은 문제로 돌아온다.
+    await page.goto(PUBLIC.CHALLENGES.LIST);
+    await page.goto(PUBLIC.CHALLENGES.DETAIL(RESUME_CHALLENGE_ID));
+
+    // 코치가 다시 열려야 하고(예전에는 여기서 막혔다),
+    await startAiCoach(page);
+    // 내가 아까 쓴 말이 그대로 남아 있어야 한다. 마지막 코치 한 마디만 뜨면
+    // 학생 눈에는 대화가 사라진 것이라 "이어하기"가 아니다.
+    await expect(page.getByText(mark)).toBeVisible({ timeout: 20_000 });
   });
 });
