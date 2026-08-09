@@ -4,35 +4,38 @@
 
 :root {
   /* ========================================
-    디에듀 2.0 디자인 시스템
+    디에듀 2.0 색 스케일 (레거시 별칭 — 3.0 을 가리킨다)
+    정본은 아래 3.0 스케일(gray-1~12 / orange-1~12).
+    지우면 기존 화면이 깨지므로 값 대신 별칭으로만 남긴다.
+    상세: mvp-front/docs/design-system.md
     ======================================== */
-  --gray-scale-black: #000000;
-  --gray-scale-gray-1: #f5f5f5;
-  --gray-scale-gray-5: #e9e9e9;
-  --gray-scale-gray-10: #e0e0e0;
-  --gray-scale-gray-20: #c8c8c8;
-  --gray-scale-gray-30: #bcbcbc;
-  --gray-scale-gray-40: #adadad;
-  --gray-scale-gray-50: #999999;
-  --gray-scale-gray-60: #7c7c7c;
-  --gray-scale-gray-70: #666666;
-  --gray-scale-gray-80: #4e4e4e;
-  --gray-scale-gray-90: #333333;
-  --gray-scale-gray-95: #1a1a1a;
-  --gray-scale-white: #ffffff;
+  --gray-scale-black: var(--gray-black);
+  --gray-scale-gray-1: var(--gray-1);
+  --gray-scale-gray-5: var(--gray-2);
+  --gray-scale-gray-10: var(--gray-3);
+  --gray-scale-gray-20: var(--gray-4);
+  --gray-scale-gray-30: var(--gray-5);
+  --gray-scale-gray-40: var(--gray-6);
+  --gray-scale-gray-50: var(--gray-7);
+  --gray-scale-gray-60: var(--gray-8);
+  --gray-scale-gray-70: var(--gray-9);
+  --gray-scale-gray-80: var(--gray-10); /* 구 #4e4e4e → #4f4f4f */
+  --gray-scale-gray-90: var(--gray-11);
+  --gray-scale-gray-95: var(--gray-12);
+  --gray-scale-white: var(--gray-white);
 
-  --orange-scale-orange-1: #fff4f1;
-  --orange-scale-orange-10: #ffd6cc;
-  --orange-scale-orange-20: #ffbaa9;
-  --orange-scale-orange-30: #ff957b;
-  --orange-scale-orange-40: #ff724e;
-  --orange-scale-orange-5: #ffe7e2;
-  --orange-scale-orange-50: #ff4805;
-  --orange-scale-orange-60: #e83600;
-  --orange-scale-orange-70: #d03800;
-  --orange-scale-orange-80: #b93100;
-  --orange-scale-orange-90: #9a2900;
-  --orange-scale-orange-95: #561700;
+  --orange-scale-orange-1: var(--orange-1);
+  --orange-scale-orange-5: var(--orange-2);
+  --orange-scale-orange-10: var(--orange-3); /* 구 #ffd6cc → #ffd6cb */
+  --orange-scale-orange-20: var(--orange-4);
+  --orange-scale-orange-30: var(--orange-5);
+  --orange-scale-orange-40: var(--orange-6); /* 구 #ff724e → #ff714e */
+  --orange-scale-orange-50: var(--orange-7);
+  --orange-scale-orange-60: var(--orange-8);
+  --orange-scale-orange-70: var(--orange-9); /* 구 #d03800 → #d13800 */
+  --orange-scale-orange-80: var(--orange-10);
+  --orange-scale-orange-90: var(--orange-11); /* 구 #9a2900 → #9b2900 */
+  --orange-scale-orange-95: var(--orange-12);
 
   --system-background: #fcfbfa;
   --system-dim: #0000004d;
@@ -391,6 +394,42 @@ body {
   --spacing-header-height: 60px;
   --spacing-sidebar-width: 260px;
   --spacing-grid-margin: 20px;
+
+  /* ========================================
+    간격 스케일 (승인 프로토타입 v22 실측)
+    근거: docs/mvp-g/design-spec-v22.md §1.3
+    ======================================== */
+  --spacing-card-pad: 16px; /* 카드 안쪽 여백 */
+  --spacing-card-pad-mobile: 14px; /* 휴대폰 390 */
+  --spacing-block-gap: 12px; /* 카드 사이 간격 */
+  --spacing-section-gap: 16px; /* 구획(본문 영역) 여백 */
+  --spacing-section-gap-mobile: 14px;
+  --spacing-row-gap: 7px; /* 목록 행 사이 간격 */
+
+  /* 최소 크기 (터치 타깃·부품 높이) */
+  --spacing-touch-min: 44px; /* 터치 타깃 최소 */
+  --spacing-control-sm: 44px; /* 작은 버튼·선택 칩 최소 높이 */
+  --spacing-control-lg: 50px; /* 큰 버튼(bigcta) 최소 높이 */
+  --spacing-chip-min: 32px; /* 앱바 칩 최소 높이 */
+  --spacing-badge-min: 22px; /* 배지 최소 높이 */
+  --spacing-row-min: 58px; /* 목록 행 최소 높이 */
+
+  /* ========================================
+    모서리 (v22 §1.3 · §3.3)
+    ======================================== */
+  --radius-button: 8px; /* 버튼·입력 */
+  --radius-input: 8px;
+  --radius-row: 9px; /* 목록 행 */
+  --radius-card: 12px; /* 카드 */
+  --radius-checkbox: 5px;
+  --radius-focus: 6px; /* 포커스 링 */
+  --radius-pill: 999px; /* 칩·배지·게이지 트랙 */
+
+  /* ========================================
+    그림자 (장식 그림자 금지. 아래 둘만 허용)
+    ======================================== */
+  --shadow-cta: 0 4px 0 var(--orange-10); /* 큰 버튼 */
+  --shadow-popover: 0 6px 18px rgb(26 26 26 / 0.13); /* 팝오버 */
 
   /* 브레이크포인트 */
   --breakpoint-tablet: 768px;

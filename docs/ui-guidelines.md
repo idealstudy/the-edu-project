@@ -4,6 +4,9 @@ AI 에이전트 및 개발자가 새 코드를 작성할 때 따라야 할 UI �
 
 > **범위**: 새 코드에만 적용됩니다. 기존 코드는 건드리지 않으며, 버그 수정 시에는 주변 코드의 컨벤션을 따릅니다.
 
+> **디자인 시스템 정본은 여기가 아닙니다.** 색·타이포·간격·모서리·그림자·공용 부품 규격은 `docs/design-system.md` 를 봅니다.
+> 이 문서는 그 시스템을 코드로 옮길 때의 **코딩 규칙**만 다룹니다. 아래 §7 은 정본의 요약이며, 값이 다르면 정본이 맞습니다.
+
 ---
 
 ## 1. `page.tsx`는 최대한 얇게
@@ -100,12 +103,26 @@ src/features/open-challenge/mock/
 | `MiniSpinner`    | 인라인 로딩 스피너        |
 
 ```tsx
-// Bad — 직접 구현
+// Bad — 직접 구현. 색·모서리·여백·높이가 전부 시스템 밖으로 샙니다.
+// (bg-orange-7 은 흰 글자 대비 3.4:1 로 접근성 미달이고, rounded 는 토큰이 아니며,
+//  py-2 로는 터치 타깃 44px 을 못 채웁니다.)
 <button className="rounded bg-orange-7 px-4 py-2 text-white">제출</button>
 
-// Good
+// Good — 공용 부품
 import { Button } from '@/shared/components/ui';
-<Button>제출</Button>
+<Button>제출</Button>;
+```
+
+공용 부품에 없는 형태가 정말 필요하면 원시 `<button>` 을 새로 쓰지 말고 **부품에 variant 를 추가**합니다. 그래도 직접 만들어야 하면 토큰으로만 조립합니다.
+
+```tsx
+// 부득이하게 직접 만들 때 (토큰만 사용)
+<button
+  type="button"
+  className="min-h-touch-min rounded-button bg-orange-9 px-card-pad cursor-pointer text-white"
+>
+  제출
+</button>
 ```
 
 ### 페이지네이션 규칙
@@ -157,19 +174,37 @@ import { Flame } from 'lucide-react';
 | ⚠     | `AlertTriangle`  |
 | ★      | `Star`           |
 
-## 7. 색상은 3.0 디자인 시스템 우선
+## 7. 색상 토큰
 
-3.0 토큰(`orange-1`~`orange-12`, `gray-1`~`gray-12`)을 우선 사용하고, 없을 경우에만 2.0 시맨틱 토큰을 사용합니다.
+정본: `docs/design-system.md §1~§2`. 요약하면 이렇습니다.
 
-| 용도             | 3.0 토큰 (우선)   | 2.0 토큰 (대체)              |
-| ---------------- | ----------------- | ---------------------------- |
-| 주요 색상 배경   | `bg-orange-7`     | `bg-key-color-primary`       |
-| 주요 색상 텍스트 | `text-orange-7`   | `text-key-color-primary`     |
-| 연한 주황 배경   | `bg-orange-1`     | `bg-background-orange`       |
-| 보조 텍스트      | `text-gray-8`     | `text-gray-scale-gray-60`    |
-| 비활성 텍스트    | `text-gray-6`     | `text-gray-scale-gray-40`    |
-| 아이콘 배경      | `bg-gray-1`       | `bg-gray-scale-gray-5`       |
-| hover 배경       | `hover:bg-gray-1` | `hover:bg-gray-scale-gray-1` |
+- **원시 색 스케일은 `orange-1`~`orange-12`, `gray-1`~`gray-12` 만 씁니다.**
+- `gray-scale-gray-*` · `orange-scale-orange-*` 는 위 스케일을 가리키는 **레거시 별칭**입니다. 남아 있는 코드를 안 깨뜨리려고 둔 것이므로 새 코드에 쓰지 않습니다.
+- `text-text-main`, `border-line-line1`, `bg-background-gray` 같은 **시맨틱 토큰은 계속 씁니다.** 원시 스케일보다 의미가 분명하면 이쪽이 낫습니다.
+- 성공·경고는 `text-system-success` / `text-system-warning` 입니다. `--color-success` · `--color-warning` 이라는 이름은 존재하지 않습니다.
+
+| 용도             | 쓸 것             | 쓰지 말 것 (레거시 별칭)                |
+| ---------------- | ----------------- | --------------------------------------- |
+| 주요 색상 배경   | `bg-orange-7`     | `bg-orange-scale-orange-50`             |
+| 채워진 버튼 배경 | `bg-orange-9`     | `bg-orange-7` (흰 글자 대비 3.4:1 미달) |
+| 연한 주황 배경   | `bg-orange-1`     | `bg-orange-scale-orange-1`              |
+| 보조 텍스트      | `text-gray-8`     | `text-gray-scale-gray-60`               |
+| 캡션(14px 미만)  | `text-gray-9`     | `text-gray-8` (대비 4.17:1 미달)        |
+| 비활성 텍스트    | `text-gray-6`     | `text-gray-scale-gray-40`               |
+| 아이콘 배경      | `bg-gray-1`       | `bg-gray-scale-gray-5`                  |
+| hover 배경       | `hover:bg-gray-1` | `hover:bg-gray-scale-gray-1`            |
+
+### 간격·모서리·그림자도 토큰으로
+
+임의 px 대신 `p-card-pad`(16px) · `gap-block-gap`(12px) · `rounded-card`(12px) · `rounded-button`(8px) · `rounded-pill` · `shadow-cta` · `min-h-touch-min`(44px) 을 씁니다. 목록은 `docs/design-system.md §4~§5`.
+
+```tsx
+// Bad — 임의 수치
+<div className="rounded-[12px] p-4 shadow-md">
+
+// Good — 토큰
+<div className="rounded-card p-card-pad">
+```
 
 ## 8. 버튼에 `cursor-pointer` 적용
 

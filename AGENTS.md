@@ -10,14 +10,18 @@ Read this file first before touching any code.
 Read the following files **in order** before writing any code.
 All files are located in the `docs/` folder.
 
-| Order | File                            | What it covers                                            |
-| ----- | ------------------------------- | --------------------------------------------------------- |
-| 1     | `docs/architecture.md`          | FSD architecture, layer structure, data flow, API clients |
-| 2     | `docs/entities.md`              | Entities structure                                        |
-| 3     | `docs/features.md`              | Features structure, notes on existing legacy code         |
-| 4     | `docs/error-handling.md`        | Error handling layers, ApiErrorType, usage examples       |
-| 5     | `docs/e2e.md`                   | Playwright setup, rules, and key flows for E2E testing    |
-| 6     | `docs/ui-guidelines.md`         | UI coding rules: components, icons, tokens, a11y, responsive, loading patterns |
+| Order | File                     | What it covers                                                                                 |
+| ----- | ------------------------ | ---------------------------------------------------------------------------------------------- |
+| 1     | `docs/architecture.md`   | FSD architecture, layer structure, data flow, API clients                                      |
+| 2     | `docs/entities.md`       | Entities structure                                                                             |
+| 3     | `docs/features.md`       | Features structure, notes on existing legacy code                                              |
+| 4     | `docs/error-handling.md` | Error handling layers, ApiErrorType, usage examples                                            |
+| 5     | `docs/e2e.md`            | Playwright setup, rules, and key flows for E2E testing                                         |
+| 6     | `docs/design-system.md`  | **디자인 시스템 정본.** 색·타이포·간격·모서리·그림자 토큰, 공용 부품 규격, 반응형 기준, 안티룰 |
+| 7     | `docs/ui-guidelines.md`  | UI coding rules: components, icons, tokens, a11y, responsive, loading patterns                 |
+
+> 화면을 만들거나 고칠 때는 6번이 필수다. 색·간격·모서리는 전부 토큰이 있고, 임의 hex 와 임의 px 은 위반이다.
+> 옛 문서 `docs/design-system-2.0.md` 는 `docs/design-system.md` 로 통합됐다. 정본이 아니다.
 
 ---
 
@@ -106,7 +110,8 @@ IF the task involves writing or modifying E2E tests:
 → Read `docs/e2e.md`
 
 IF you are writing new UI components or pages:
-→ Read `docs/ui-guidelines.md`
+→ Read `docs/design-system.md` (토큰·부품 규격)
+→ Read `docs/ui-guidelines.md` (코딩 규칙)
 
 IF you are unfamiliar with the codebase or the task spans multiple areas:
 → Read all files in order (see Required Reading above)
@@ -117,15 +122,15 @@ IF you are unfamiliar with the codebase or the task spans multiple areas:
 
 For repetitive tasks, read the corresponding skill file and follow its steps exactly.
 
-| Task                                                                | Skill                                   |
-| ------------------------------------------------------------------- | --------------------------------------- |
-| Create full CRUD for a new domain (DTO → keys → repository → types) | `.ai/skills/create-crud-flow.md`        |
-| Create a POST / PUT / PATCH / DELETE mutation hook                  | `.ai/skills/create-post-mutation.md`    |
-| Create a form + mutation flow (RHF + useMutation, error handling)   | `.ai/skills/create-form-mutation.md`    |
-| Create a GET query hook (useQuery, queryKey, repository, enabled)   | `.ai/skills/create-query-hook.md`       |
-| Add error handling to a mutation `onError`                          | `.ai/skills/handle-api-error.md`        |
-| Create a modal (open state, confirm/cancel, ESC/backdrop, loading)  | `.ai/skills/create-modal.md`            |
-| Create an editor feature (TextEditor/TextViewer, content save/view) | `.ai/skills/create-editor-feature.md`   |
+| Task                                                                | Skill                                 |
+| ------------------------------------------------------------------- | ------------------------------------- |
+| Create full CRUD for a new domain (DTO → keys → repository → types) | `.ai/skills/create-crud-flow.md`      |
+| Create a POST / PUT / PATCH / DELETE mutation hook                  | `.ai/skills/create-post-mutation.md`  |
+| Create a form + mutation flow (RHF + useMutation, error handling)   | `.ai/skills/create-form-mutation.md`  |
+| Create a GET query hook (useQuery, queryKey, repository, enabled)   | `.ai/skills/create-query-hook.md`     |
+| Add error handling to a mutation `onError`                          | `.ai/skills/handle-api-error.md`      |
+| Create a modal (open state, confirm/cancel, ESC/backdrop, loading)  | `.ai/skills/create-modal.md`          |
+| Create an editor feature (TextEditor/TextViewer, content save/view) | `.ai/skills/create-editor-feature.md` |
 
 Workflows (orchestrate multiple skills in sequence):
 
@@ -164,9 +169,10 @@ IF creating a mutation hook:
 → Read `.ai/skills/create-post-mutation.md`
 → `onSuccess` must call `invalidateQueries`
 → Error handling location depends on usage:
-   - form mutation: no hook `onError`; handle in component `mutate(data, { onError })`
-     → Read `.ai/skills/create-form-mutation.md`
-   - non-form mutation: hook `onError` must call `handleApiError`
+
+- form mutation: no hook `onError`; handle in component `mutate(data, { onError })`
+  → Read `.ai/skills/create-form-mutation.md`
+- non-form mutation: hook `onError` must call `handleApiError`
 
 IF adding error handling:
 → Read `.ai/skills/handle-api-error.md`
