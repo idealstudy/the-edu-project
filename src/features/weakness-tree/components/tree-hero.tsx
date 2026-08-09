@@ -1,4 +1,5 @@
 import { type TreeMastery } from '@/entities/tree';
+
 import { type RidgeNode } from '../lib/ridge';
 
 type TreeHeroProps = {
@@ -36,12 +37,12 @@ export const TreeHero = ({ mastery, valley }: TreeHeroProps) => {
       </p>
       <p className="mt-5 flex items-center gap-2 text-[13px] font-semibold text-[#a59f9c]">
         평균 정복도{' '}
-        <b className="tabular-nums text-white">{mastery.averageScore}%</b>
+        <b className="text-white tabular-nums">{mastery.averageScore}%</b>
         {valley && (
           <>
             <span className="text-[#6f6864]">·</span>
             가장 낮은 봉우리{' '}
-            <b className="tabular-nums text-[#ff9a9a]">
+            <b className="text-[#ff9a9a] tabular-nums">
               {valley.displayName} {valley.masteryScore}%
             </b>
           </>

@@ -3,25 +3,11 @@
 import { useMemo, useState } from 'react';
 
 import type { TreeNodeView, TreeSubjectGroup } from '@/entities/tree';
+import { subjectLabel } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import { Check } from 'lucide-react';
 
 import { QuestionHeader } from '../question-header';
-
-const SUBJECT_LABEL: Partial<Record<TreeSubjectGroup['subject'], string>> = {
-  MIDDLE_MATH: '중학 수학',
-  COMMON_MATH_1: '공통수학Ⅰ',
-  COMMON_MATH_2: '공통수학Ⅱ',
-  ALGEBRA: '대수',
-  CALCULUS_1: '미적분Ⅰ',
-  CALCULUS_2: '미적분Ⅱ',
-  MATH_1: '대수',
-  MATH_2: '미적분Ⅰ',
-  CALCULUS: '미적분Ⅱ',
-  PROBABILITY_STATISTICS: '확률과 통계',
-  GEOMETRY: '기하',
-  OTHER: '기타',
-};
 
 /* ─────────────────────────────────────────────────────
  * STEP 4 · 약점 대단원 — 복수 선택 칩카드
@@ -78,7 +64,7 @@ export const WeakUnitsStep = ({
                     : 'border-line-line1 text-text-sub2 bg-white'
                 )}
               >
-                {SUBJECT_LABEL[g.subject] ?? g.subject}
+                {subjectLabel(g.subject)}
               </button>
             );
           })}

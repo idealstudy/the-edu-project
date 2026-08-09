@@ -30,7 +30,6 @@ import {
   useWrongAnswersQuery,
 } from '../../hooks/use-wrong-answer-query';
 import { ReviewStamps } from './review-stamps';
-import StudentDashboardHeader from '../header/student-header';
 
 /**
  * 승인 디자인 v22 `sReviewOk` 3219 `질문 남기기`.
@@ -51,9 +50,7 @@ const TeacherCommentQuestion = ({
         className="border-orange-3 bg-gray-white mt-3 rounded-lg border p-3"
         data-testid="wrong-answer-student-question"
       >
-        <p className="font-caption-normal text-gray-8">
-          선생님께 남긴 질문
-        </p>
+        <p className="font-caption-normal text-gray-8">선생님께 남긴 질문</p>
         <p className="font-body2-normal text-gray-12 mt-1 whitespace-pre-wrap">
           {wrongAnswer.studentQuestion}
         </p>
@@ -361,9 +358,7 @@ const ReviewForm = ({ wrongAnswer }: ReviewFormProps) => {
           data-testid="wrong-answer-teacher-comment"
         >
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h2 className="font-body1-heading text-gray-12">
-              선생님 코멘트
-            </h2>
+            <h2 className="font-body1-heading text-gray-12">선생님 코멘트</h2>
             {wrongAnswer.commentedAt && (
               <time
                 className="font-caption-normal text-gray-8"
@@ -386,7 +381,7 @@ const ReviewForm = ({ wrongAnswer }: ReviewFormProps) => {
         <p className="font-caption-normal text-gray-8 mt-1">
           이전 풀이를 확인한 뒤 오늘 회독 풀이를 시작합니다.
         </p>
-        <div className="border-gray-3 bg-gray-1 mt-3 rounded-lg border p-4 text-xs leading-6 text-gray-8">
+        <div className="border-gray-3 bg-gray-1 text-gray-8 mt-3 rounded-lg border p-4 text-xs leading-6">
           문제 본문과 지난 풀이를 다시 보고, 맞고 틀림과 관계없이 오늘 회독
           1회를 남깁니다.
         </div>
@@ -509,7 +504,6 @@ export const WrongAnswerReview = ({
 
   return (
     <div className="min-h-screen bg-[#fcfbfa]">
-      <StudentDashboardHeader title="오답 회독" />
       <main className="w-full p-4">
         <Button
           asChild

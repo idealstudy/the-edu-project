@@ -61,6 +61,7 @@ const DASHBOARD = {
   UNIT_NOTE_ROOM: (id: number) => `/dashboard/student/unit-notes/${id}`,
   EXAM_ATTEMPT: (id: number) => `/dashboard/student/exams/${id}`,
   EXAM_HALL: '/dashboard/student/exam-hall',
+  CONNECTIONS: '/dashboard/connections',
 
   /** 사용자 역할에 맞는 실제 대시보드 경로를 반환합니다. */
   byRole: (role: DashboardRole): string => {

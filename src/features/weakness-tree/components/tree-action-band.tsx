@@ -1,3 +1,5 @@
+import { Button } from '@/shared/components/ui';
+
 import { type RidgeNode } from '../lib/ridge';
 
 type TreeActionBandProps = {
@@ -17,20 +19,21 @@ export const TreeActionBand = ({ valley, onAction }: TreeActionBandProps) => {
     <div className="bg-orange-1 border-orange-3 flex flex-col items-stretch gap-3.5 rounded-[14px] border px-5 py-4.5 sm:flex-row sm:items-center">
       <p className="text-orange-12 flex-1 text-[13px] leading-[1.5] font-semibold">
         <span className="text-system-warning mr-1 font-bold">⚠</span>
-        가장 깊은 협곡은 <b className="text-key-color-primary">{valley.displayName}</b>{' '}
-        · 자력{' '}
+        가장 깊은 협곡은{' '}
+        <b className="text-key-color-primary">{valley.displayName}</b> · 자력{' '}
         <b className="text-key-color-primary tabular-nums">
           {valley.masteryScore}%
         </b>
         . 여기부터 메우면 능선이 이어진다.
       </p>
-      <button
-        type="button"
+      {/* v22 §3.3 큰 버튼 `.bigcta`: 그림자 0 4px 0 orange-10 */}
+      <Button
+        size="small"
         onClick={() => onAction(valley)}
-        className="bg-key-color-primary font-body2-heading flex h-12 shrink-0 items-center justify-center rounded-[10px] px-5 text-white shadow-[0_4px_0_var(--orange-10)] active:translate-y-[2px] active:shadow-[0_1px_0_var(--orange-10)]"
+        className="shrink-0 shadow-[0_4px_0_var(--orange-10)] active:translate-y-[2px] active:shadow-[0_1px_0_var(--orange-10)]"
       >
         가장 약한 곳부터 메우기
-      </button>
+      </Button>
     </div>
   );
 };

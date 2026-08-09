@@ -5,15 +5,16 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 
 import { type TreeNodeView } from '@/entities/tree';
+import { Button } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
 import { Sprout, TriangleAlert } from 'lucide-react';
 
 import { useMyTreeQuery } from '../hooks/use-tree';
-import { buildRidge, findValley, type RidgeNode } from '../lib/ridge';
+import { type RidgeNode, buildRidge, findValley } from '../lib/ridge';
 import { NodeChallengeDialog } from './node-challenge-dialog';
 import { RidgeDrilldown } from './ridge-drilldown';
 import { RidgeMap } from './ridge-map';
-import { ALL_TAB, SubjectTabs, type SubjectTabValue } from './subject-tabs';
+import { ALL_TAB, type SubjectTabValue, SubjectTabs } from './subject-tabs';
 import { TreeActionBand } from './tree-action-band';
 import { TreeHero } from './tree-hero';
 import { TreeLegend } from './tree-legend';
@@ -64,13 +65,13 @@ export const WeaknessTreeClient = () => {
         <p className="font-body1-heading text-text-main">
           트리를 불러오지 못했어요.
         </p>
-        <button
-          type="button"
+        <Button
+          size="xsmall"
+          className="mt-1"
           onClick={() => refetch()}
-          className="bg-key-color-primary font-label-heading mt-1 flex h-11 items-center rounded-[8px] px-5 text-white"
         >
           다시 시도
-        </button>
+        </Button>
       </div>
     );
   }

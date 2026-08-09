@@ -6,9 +6,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { type UnitNotePage, repository } from '@/entities/unit-note';
-import StudentDashboardHeader from '@/features/dashboard/components/header/student-header';
 import { Skeleton } from '@/shared/components/loading';
 import { Button } from '@/shared/components/ui';
+import { subjectLabel } from '@/shared/constants';
 import { PRIVATE } from '@/shared/constants/route';
 import {
   ArrowDown,
@@ -119,6 +119,15 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
       [...concepts].sort((left, right) => right.pageCount - left.pageCount)[0],
     [concepts]
   );
+  /** v22 `sNoteUnits` :2726 `최근에 쓴 정리` 3행 — 노트가 많은 단원 순 */
+  const recentConcepts = useMemo(
+    () =>
+      [...concepts]
+        .filter((concept) => concept.pageCount > 0)
+        .sort((left, right) => right.pageCount - left.pageCount)
+        .slice(0, 3),
+    [concepts]
+  );
   const activeNodeId = selectedNodeId ?? defaultConcept?.nodeId ?? 0;
   const activeConcept =
     concepts.find((node) => node.nodeId === activeNodeId) ?? defaultConcept;
@@ -180,7 +189,6 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
   if (detailQuery.isError) {
     return (
       <div className="min-h-screen bg-[#fcfbfa]">
-        <StudentDashboardHeader title="단권화 노트" />
         <main className="w-full p-4">
           <Link
             href={PRIVATE.DASHBOARD.UNIT_NOTES}
@@ -265,7 +273,6 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
 
   return (
     <div className="min-h-screen bg-[#fcfbfa]">
-      <StudentDashboardHeader title="단권화 노트" />
       <main className="w-full p-4">
         <Link
           href={PRIVATE.DASHBOARD.UNIT_NOTES}
@@ -279,22 +286,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
           <div className="flex flex-wrap items-center gap-3">
             <div className="min-w-[200px] flex-1">
               <p className="font-caption-heading text-gray-8">
-                {(
-                  {
-                    MATH_1: '대수',
-                    ALGEBRA: '대수',
-                    MATH_2: '미적분Ⅰ',
-                    CALCULUS_1: '미적분Ⅰ',
-                    CALCULUS: '미적분Ⅱ',
-                    CALCULUS_2: '미적분Ⅱ',
-                    PROBABILITY_STATISTICS: '확률과 통계',
-                    COMMON_MATH_1: '공통수학1',
-                    COMMON_MATH_2: '공통수학2',
-                    MIDDLE_MATH: '중학 수학',
-                    GEOMETRY: '기하',
-                  } as Record<string, string>
-                )[root.subject] ?? root.subject}{' '}
-                · 단권화 노트
+                {subjectLabel(root.subject)} · 단권화 노트
               </p>
               <h1 className="text-gray-12 mt-1 text-lg font-extrabold">
                 {root.displayName}
@@ -303,129 +295,199 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                 선생님 판서 · 내 필기 · 올린 파일을 한 단원에 모읍니다
               </p>
             </div>
-            <div className="border-orange-3 bg-orange-1 min-w-[250px] rounded-lg border px-4 py-3">
-              <p className="text-gray-12 text-sm font-extrabold">
-                이 단원 숙련도 · {root.masteryScore}%
-              </p>
-              <div className="bg-gray-2 mt-2 h-2 overflow-hidden rounded-full">
-                <i
-                  className="bg-orange-7 block h-full"
-                  style={{ width: `${root.masteryScore}%` }}
-                />
-              </div>
-              <p className="text-gray-8 mt-2 text-[11px]">
-                문제 {branchProblems}개 · 노트 {branchPages}장
-              </p>
-              {/* 승인 디자인 v22 `sNoteUnits` 2733 `가장 약한 단원 먼저 정리하기` */}
-              {weakestConcept && (
-                <button
-                  type="button"
-                  data-testid="unit-note-open-weakest"
-                  onClick={() => {
-                    setUnitSort('WEAK');
-                    setSelectedNodeId(weakestConcept.nodeId);
-                  }}
-                  className="border-orange-7 text-orange-10 mt-3 flex min-h-9 w-full cursor-pointer items-center justify-between rounded-lg border bg-white px-3 text-xs font-bold"
-                >
-                  <span>
-                    가장 약한 단원 먼저 정리하기 ·{' '}
-                    {weakestConcept.displayName || weakestConcept.unit}
-                  </span>
-                  <span aria-hidden>›</span>
-                </button>
-              )}
-            </div>
           </div>
         </header>
 
+        {/*
+          v22 §3.2 2단 배치 `.split`(:695): minmax(0,1.28fr) : minmax(0,1fr), 열 간격 16px.
+          좌 = 단원 목록, 우 = 과목 숙련도 + 최근에 쓴 정리 (v22 `sNoteUnits` :2714-2743).
+        */}
         {editorMode === null && (
-          <section className="border-gray-3 bg-gray-white mt-3 rounded-xl border p-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-gray-12 text-base font-extrabold">
-                단원 목록
-              </h2>
-              <div className="ml-auto flex gap-1.5">
-                {(
-                  [
-                    ['RECENT', '최근 정리 순'],
-                    ['WEAK', '약한 순'],
-                  ] as const
-                ).map(([value, label]) => (
+          <div
+            className="mt-3 grid grid-cols-1 items-start gap-4 md:grid-cols-[minmax(0,1.28fr)_minmax(0,1fr)]"
+            data-testid="unit-note-units-split"
+          >
+            <section className="border-gray-3 bg-gray-white rounded-xl border p-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-gray-12 text-base font-extrabold">
+                  단원 목록
+                </h2>
+                <div className="ml-auto flex gap-1.5">
+                  {(
+                    [
+                      ['RECENT', '최근 정리 순'],
+                      ['WEAK', '약한 순'],
+                    ] as const
+                  ).map(([value, label]) => (
+                    <Button
+                      key={value}
+                      size="xsmall"
+                      variant={unitSort === value ? 'secondary' : 'outlined'}
+                      aria-pressed={unitSort === value}
+                      onClick={() => setUnitSort(value)}
+                      data-testid={`unit-note-unit-sort-${value.toLowerCase()}`}
+                    >
+                      {label}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+              <p className="font-caption-normal text-gray-8 mt-1">
+                {unitSort === 'RECENT'
+                  ? '노트가 많은 단원이 위입니다. 행을 누르면 그 단원 노트가 아래에 뜹니다.'
+                  : '숙련도가 낮은 단원이 위입니다. 여기부터 정리하면 됩니다.'}
+              </p>
+              <div className="mt-4 flex flex-col">
+                {sortedConcepts.map((concept) => (
                   <button
-                    key={value}
+                    key={concept.nodeId}
                     type="button"
-                    aria-pressed={unitSort === value}
-                    onClick={() => setUnitSort(value)}
-                    data-testid={`unit-note-unit-sort-${value.toLowerCase()}`}
-                    className={`min-h-9 cursor-pointer rounded-lg border px-3 text-xs font-bold ${
-                      unitSort === value
-                        ? 'border-orange-7 bg-orange-1 text-orange-10'
-                        : 'border-gray-3 text-gray-9'
+                    className={`border-gray-2 grid h-[46px] cursor-pointer grid-cols-[28px_minmax(0,1fr)_72px_44px] items-center gap-2 border-b text-left last:border-b-0 ${
+                      activeNodeId === concept.nodeId ? 'bg-orange-1' : ''
                     }`}
+                    onClick={() => setSelectedNodeId(concept.nodeId)}
+                    data-testid={`unit-note-concept-row-${concept.nodeId}`}
                   >
-                    {label}
+                    <UnitNoteLeaf
+                      level={concept.leafLevel}
+                      className="size-5"
+                    />
+                    <span className="min-w-0">
+                      <span className="font-body2-heading text-gray-12 block truncate">
+                        {concept.displayName}
+                      </span>
+                      <span className="font-caption-normal text-gray-7 block truncate">
+                        펜 {concept.penPageCount} · 업로드{' '}
+                        {concept.uploadPageCount} · 선생님{' '}
+                        {concept.teachingNoteCount}
+                      </span>
+                    </span>
+                    <span className="font-label-heading text-orange-9 text-right">
+                      {concept.pageCount === 0 ? '페이지 만들기' : '열기'}
+                    </span>
+                    <span className="font-caption-heading border-gray-3 bg-gray-white text-gray-8 flex h-8 w-11 items-center justify-center rounded-full border text-center">
+                      {concept.pageCount}장
+                    </span>
                   </button>
                 ))}
               </div>
-            </div>
-            <p className="font-caption-normal text-gray-8 mt-1">
-              {unitSort === 'RECENT'
-                ? '노트가 많은 단원이 위입니다. 행을 누르면 그 단원 노트가 아래에 뜹니다.'
-                : '숙련도가 낮은 단원이 위입니다. 여기부터 정리하면 됩니다.'}
-            </p>
-            <div className="mt-4 flex flex-col">
-              {sortedConcepts.map((concept) => (
-                <button
-                  key={concept.nodeId}
-                  type="button"
-                  className={`border-gray-2 grid h-[46px] cursor-pointer grid-cols-[28px_minmax(0,1fr)_72px_44px] items-center gap-2 border-b text-left last:border-b-0 ${
-                    activeNodeId === concept.nodeId ? 'bg-orange-1' : ''
-                  }`}
-                  onClick={() => setSelectedNodeId(concept.nodeId)}
-                  data-testid={`unit-note-concept-row-${concept.nodeId}`}
+              <div className="mt-4 flex flex-wrap justify-end gap-2">
+                <Button
+                  size="xsmall"
+                  variant="outlined"
+                  onClick={() => setEditorMode('UPLOAD')}
+                  data-testid="unit-note-open-upload"
                 >
-                  <UnitNoteLeaf
-                    level={concept.leafLevel}
-                    className="size-5"
+                  파일 올리기
+                </Button>
+                <Button
+                  size="xsmall"
+                  onClick={() => setEditorMode('PEN')}
+                  data-testid="unit-note-open-pen"
+                >
+                  {activeConcept.pageCount === 0 ? '펜으로 시작' : '이어 쓰기'}
+                </Button>
+              </div>
+            </section>
+
+            {/* 우측 열: 과목 숙련도 + 최근에 쓴 정리 (v22 :2725-2742) */}
+            <div className="flex flex-col gap-3">
+              <section
+                className="border-orange-3 bg-orange-1 rounded-xl border p-4"
+                data-testid="unit-note-subject-mastery"
+              >
+                <p className="text-gray-9 text-[11px] font-bold">
+                  {subjectLabel(root.subject)} 전체 숙련도
+                </p>
+                <p className="text-gray-12 mt-1 text-2xl font-extrabold tabular-nums">
+                  {root.masteryScore}%
+                </p>
+                {/* v22 §3.4 큰 두 색 게이지 `.mst2` 높이 10px */}
+                <div className="bg-gray-2 mt-2 h-2.5 overflow-hidden rounded-full">
+                  <i
+                    className="bg-orange-7 block h-full"
+                    style={{ width: `${root.masteryScore}%` }}
                   />
-                  <span className="min-w-0">
-                    <span className="font-body2-heading text-gray-12 block truncate">
-                      {concept.displayName}
+                </div>
+                <p className="text-gray-9 mt-2 text-[11px]">
+                  문제 {branchProblems}개 · 노트 {branchPages}장
+                </p>
+                {/* v22 `sNoteUnits` :2733 `가장 약한 단원 먼저 정리하기` */}
+                {weakestConcept && (
+                  <Button
+                    size="xsmall"
+                    variant="outlined"
+                    data-testid="unit-note-open-weakest"
+                    className="border-orange-7 text-orange-10 mt-3 w-full justify-between"
+                    onClick={() => {
+                      setUnitSort('WEAK');
+                      setSelectedNodeId(weakestConcept.nodeId);
+                    }}
+                  >
+                    <span className="truncate">
+                      가장 약한 단원 먼저 ·{' '}
+                      {weakestConcept.displayName || weakestConcept.unit}
                     </span>
-                    <span className="font-caption-normal text-gray-7 block truncate">
-                      펜 {concept.penPageCount} · 업로드{' '}
-                      {concept.uploadPageCount} · 선생님{' '}
-                      {concept.teachingNoteCount}
-                    </span>
-                  </span>
-                  <span className="font-label-heading text-orange-9 text-right">
-                    {concept.pageCount === 0 ? '페이지 만들기' : '열기'}
-                  </span>
-                  <span className="font-caption-heading border-gray-3 bg-gray-white text-gray-8 flex h-8 w-11 items-center justify-center rounded-full border text-center">
-                    {concept.pageCount}장
-                  </span>
-                </button>
-              ))}
-            </div>
-            <div className="mt-4 flex flex-wrap justify-end gap-2">
-              <button
-                type="button"
-                className="border-gray-3 min-h-11 rounded-lg border px-4 text-xs font-extrabold"
-                onClick={() => setEditorMode('UPLOAD')}
-                data-testid="unit-note-open-upload"
+                    <span aria-hidden>›</span>
+                  </Button>
+                )}
+              </section>
+
+              <section
+                className="border-gray-3 bg-gray-white rounded-xl border p-4"
+                data-testid="unit-note-recent-card"
               >
-                파일 올리기
-              </button>
-              <button
-                type="button"
-                className="bg-orange-9 border-orange-10 min-h-11 rounded-lg border px-4 text-xs font-extrabold text-white"
-                onClick={() => setEditorMode('PEN')}
-                data-testid="unit-note-open-pen"
-              >
-                {activeConcept.pageCount === 0 ? '펜으로 시작' : '이어 쓰기'}
-              </button>
+                <div className="flex flex-wrap items-baseline gap-2">
+                  <h2 className="text-gray-12 text-base font-extrabold">
+                    최근에 쓴 정리
+                  </h2>
+                  <span className="text-gray-9 text-xs">
+                    단원을 거치지 않고 바로 이어 쓰는 자리
+                  </span>
+                </div>
+                {recentConcepts.length === 0 ? (
+                  <p className="text-gray-9 mt-3 text-xs">
+                    아직 이 과목에 쓴 정리가 없어요.
+                  </p>
+                ) : (
+                  <div className="mt-3 flex flex-col gap-[7px]">
+                    {recentConcepts.map((concept) => (
+                      <div
+                        key={concept.nodeId}
+                        className={`border-gray-3 flex min-h-[58px] items-center gap-2 rounded-lg border px-3 ${
+                          concept.nodeId === activeNodeId ? 'bg-orange-1' : ''
+                        }`}
+                      >
+                        <span className="min-w-0 flex-1">
+                          <b className="text-gray-12 block truncate text-[13px]">
+                            {concept.displayName}
+                          </b>
+                          <small className="text-gray-9 block truncate text-[11px]">
+                            노트 {concept.pageCount}장 · 숙련도{' '}
+                            {concept.masteryScore}%
+                          </small>
+                        </span>
+                        <Button
+                          size="xsmall"
+                          variant={
+                            concept.nodeId === activeNodeId
+                              ? 'primary'
+                              : 'outlined'
+                          }
+                          data-testid={`unit-note-recent-open-${concept.nodeId}`}
+                          onClick={() => setSelectedNodeId(concept.nodeId)}
+                        >
+                          {concept.nodeId === activeNodeId
+                            ? '이어 쓰기'
+                            : '열기'}
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
             </div>
-          </section>
+          </div>
         )}
 
         {editorMode === null && (
@@ -534,7 +596,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                           </p>
                           <button
                             type="button"
-                            className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-lg border border-[#e1aa8d] px-3 text-xs font-bold text-[#9a441f] disabled:opacity-50"
+                            className="border-orange-4 text-orange-10 mt-3 inline-flex min-h-11 items-center gap-2 rounded-lg border px-3 text-xs font-bold disabled:opacity-50"
                             disabled={snippingId !== null}
                             onClick={() => void appendTeachingSnip(layer)}
                           >
@@ -622,7 +684,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
               {visiblePages.map((page, index, pages) => (
                 <article
                   key={page.pageId}
-                  className={`rounded-xl border p-3 ${page.source === 'TEACHER' ? 'border-[#f26a2e] bg-[#fffaf7]' : 'border-gray-3'}`}
+                  className={`rounded-xl border p-3 ${page.source === 'TEACHER' ? 'border-orange-7 bg-orange-1' : 'border-gray-3'}`}
                   data-testid={`unit-note-page-${page.pageId}`}
                 >
                   <PagePreview page={page} />
@@ -648,7 +710,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                   </div>
                   {page.source === 'TEACHER' ? (
                     <div className="mt-3 flex items-center gap-2">
-                      <span className="rounded-full bg-[#ffe6d7] px-2 py-1 text-[10px] font-bold text-[#9a441f]">
+                      <span className="bg-orange-2 text-orange-10 rounded-full px-2 py-1 text-[10px] font-bold">
                         선생님
                       </span>
                       <button
@@ -728,7 +790,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                 {hiddenTeacherPages.map((page) => (
                   <article
                     key={page.pageId}
-                    className="rounded-xl border border-[#f26a2e] bg-[#fffaf7] p-3 opacity-60"
+                    className="border-orange-7 bg-orange-1 rounded-xl border p-3 opacity-60"
                     data-testid={`unit-note-page-${page.pageId}`}
                   >
                     <PagePreview page={page} />
@@ -743,7 +805,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                       </div>
                     </div>
                     <div className="mt-3 flex items-center gap-2">
-                      <span className="rounded-full bg-[#ffe6d7] px-2 py-1 text-[10px] font-bold text-[#9a441f]">
+                      <span className="bg-orange-2 text-orange-10 rounded-full px-2 py-1 text-[10px] font-bold">
                         선생님
                       </span>
                       <button

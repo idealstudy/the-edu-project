@@ -243,7 +243,8 @@ export const TodayProblemsSection = () => {
         </h2>
         <p className="font-body2-normal text-gray-8 mt-2 leading-relaxed">
           오늘의 문제는 시험 오답과 수업에서 만들어져요.
-          <br />선생님이 첫 시험을 열면 채워집니다.
+          <br />
+          선생님이 첫 시험을 열면 채워집니다.
         </p>
         <Button
           asChild

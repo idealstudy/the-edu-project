@@ -1,7 +1,7 @@
 'use client';
 
 import { type TreeNodeView } from '@/entities/tree';
-import { Accordion } from '@/shared/components/ui';
+import { Accordion, Button } from '@/shared/components/ui';
 import { cn } from '@/shared/lib';
 import { AlertTriangle, X } from 'lucide-react';
 
@@ -66,18 +66,14 @@ const LeafRow = ({
         {untested ? '-' : `${node.masteryScore}%`}
       </span>
       {actionLabel ? (
-        <button
-          type="button"
+        <Button
+          size="xsmall"
+          variant={node.intensity === 'weak' ? 'primary' : 'outlined'}
+          className="shrink-0 whitespace-nowrap"
           onClick={() => onOpen(node)}
-          className={cn(
-            'font-caption-heading shrink-0 rounded-[8px] px-3 py-2 whitespace-nowrap',
-            node.intensity === 'weak'
-              ? 'bg-key-color-primary text-white'
-              : 'border-line-line1 text-text-sub1 border bg-white'
-          )}
         >
           {actionLabel}
-        </button>
+        </Button>
       ) : (
         <span className="font-caption-heading bg-key-color-primary shrink-0 rounded-full px-3 py-1.5 text-white">
           🚩 정복
@@ -126,25 +122,26 @@ export const RidgeDrilldown = ({
           <p className="font-caption-heading text-orange-10">
             정복 능선 · 세부 트리
           </p>
-          <h3 className="font-headline2-heading text-text-main mt-0.5 flex items-baseline gap-2 flex-wrap">
+          <h3 className="font-headline2-heading text-text-main mt-0.5 flex flex-wrap items-baseline gap-2">
             {peak.displayName}
             <span className="font-body2-heading text-key-color-primary tabular-nums">
               {overviewText}
             </span>
           </h3>
         </div>
-        <button
-          type="button"
-          onClick={onClose}
+        <Button
+          size="xsmall"
+          variant="outlined"
           aria-label="세부 트리 닫기"
-          className="border-line-line1 text-text-sub1 flex h-10 shrink-0 items-center gap-1 rounded-full border bg-white px-3.5"
+          className="shrink-0 gap-1 rounded-full"
+          onClick={onClose}
         >
           <X
             size={14}
             aria-hidden
           />
           닫기
-        </button>
+        </Button>
       </div>
 
       <div className="px-4 py-2 md:px-5">

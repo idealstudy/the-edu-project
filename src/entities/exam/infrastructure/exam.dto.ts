@@ -184,6 +184,14 @@ const examHall = z.object({
   ),
 });
 
+/** 공개 시험 응시 시작 응답 (POST /student/exam-hall/{examId}/attempts) */
+const publicExamAttempt = z.object({
+  attemptId: z.number().int().positive(),
+  examId: z.number().int().positive(),
+  title: z.string(),
+  alreadyStarted: z.boolean(),
+});
+
 const gradeCutoff = z.object({
   examId: z.number().int().positive(),
   source: z.string().min(1),
@@ -233,6 +241,7 @@ export const dto = {
   questionBank,
   questionBankItem,
   examHall,
+  publicExamAttempt,
   gradeCutoff,
 };
 

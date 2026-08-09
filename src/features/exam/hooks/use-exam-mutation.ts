@@ -90,3 +90,14 @@ export const useUpsertGradeCutoff = (examId: number) => {
     },
   });
 };
+
+/** 공개 시험 응시 시작 — 응시 생성 후 attemptId 반환 */
+export const useStartPublicExamAttempt = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (examId: number) => repository.startPublicExamAttempt(examId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: examKeys.all });
+    },
+  });
+};

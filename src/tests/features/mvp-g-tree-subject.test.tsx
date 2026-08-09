@@ -17,7 +17,12 @@ describe('MVP-G 알 수 없는 트리 과목', () => {
     );
   });
 
-  test('화면의 과목 제목에 원래 값을 그대로 표시한다', () => {
+  /*
+   * 계약 변경(2026-08-10): 회장 지적 5번 "MIDDLE_MATH·COMMON_MATH_1 이 영어로 나온다".
+   * 데이터 계층은 원래 값을 그대로 보존하고 Sentry 로 남기되(위 테스트),
+   * 화면에는 raw enum 을 노출하지 않고 `기타`로 접는다.
+   */
+  test('화면의 과목 제목에는 raw enum 대신 기타를 쓴다', () => {
     renderWithProviders(
       <TreeMap
         groups={[
@@ -30,8 +35,7 @@ describe('MVP-G 알 수 없는 트리 과목', () => {
       />
     );
 
-    expect(
-      screen.getByRole('heading', { name: /AI_MATH/ })
-    ).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /기타/ })).toBeInTheDocument();
+    expect(screen.queryByText(/AI_MATH/)).not.toBeInTheDocument();
   });
 });

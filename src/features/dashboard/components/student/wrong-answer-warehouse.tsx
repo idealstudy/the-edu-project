@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 
 import { useWrongAnswersQuery } from '../../hooks/use-wrong-answer-query';
-import StudentDashboardHeader from '../header/student-header';
 import { ReviewStamps } from './review-stamps';
 
 const SOURCE_LABEL: Record<WrongAnswerItem['sourceType'], string> = {
@@ -119,7 +118,6 @@ export const WrongAnswerWarehouse = () => {
 
   return (
     <div className="min-h-screen bg-[#fcfbfa]">
-      <StudentDashboardHeader title="오답 회독" />
       <main className="w-full p-4">
         <Button
           asChild

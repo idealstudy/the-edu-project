@@ -1,20 +1,6 @@
 import { type TreeSubjectGroup } from '@/entities/tree';
+import { subjectLabel } from '@/shared/constants';
 import { cn } from '@/shared/lib';
-
-const SUBJECT_LABEL: Partial<Record<TreeSubjectGroup['subject'], string>> = {
-  MIDDLE_MATH: '중학',
-  COMMON_MATH_1: '공통수학1',
-  COMMON_MATH_2: '공통수학2',
-  ALGEBRA: '대수',
-  CALCULUS_1: '미적분Ⅰ',
-  CALCULUS_2: '미적분Ⅱ',
-  MATH_1: '대수',
-  MATH_2: '미적분Ⅰ',
-  CALCULUS: '미적분Ⅱ',
-  PROBABILITY_STATISTICS: '확률과 통계',
-  GEOMETRY: '기하',
-  OTHER: '기타',
-};
 
 export const ALL_TAB = 'ALL' as const;
 export type SubjectTabValue = TreeSubjectGroup['subject'] | typeof ALL_TAB;
@@ -65,7 +51,7 @@ export const SubjectTabs = ({ groups, value, onChange }: SubjectTabsProps) => {
               : 'text-text-sub1 bg-white'
           )}
         >
-          {SUBJECT_LABEL[group.subject] ?? group.subject}
+          {subjectLabel(group.subject)}
         </button>
       ))}
     </div>

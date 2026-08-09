@@ -2,23 +2,18 @@ import { useEffect, useMemo, useState } from 'react';
 
 import Link from 'next/link';
 
-import { UnitNoteEntryCard } from '@/features/unit-note/components/unit-note-entry-card';
 import { useAssignedExamsQuery } from '@/features/exam/hooks/use-exam-query';
+import { UnitNoteEntryCard } from '@/features/unit-note/components/unit-note-entry-card';
 import { PRIVATE } from '@/shared/constants/route';
 import { useMemberStore } from '@/store';
 
 import { useReceivedConnectionList } from '../../connect/hooks/use-connection';
-import StudentDashboardHeader from '../header/student-header';
 import { AgendaFlowCard } from './agenda-flow-card';
 import { ConfirmParentRequestDialog } from './confirm-dialog';
 import { ExamHallCard } from './exam-hall-card';
 import { TodayProblemsSection } from './today-problems-section';
 
-const DashboardStudent = ({
-  initialMemberName,
-}: {
-  initialMemberName: string;
-}) => {
+const DashboardStudent = () => {
   const memberEmail = useMemberStore((s) => s.member?.email);
   const [isParentRequestDialogOpen, setIsParentRequestDialogOpen] =
     useState(false);
@@ -51,17 +46,21 @@ const DashboardStudent = ({
 
   return (
     <div className="flex w-full flex-col">
-      <StudentDashboardHeader initialMemberName={initialMemberName} />
-      <main className="relative flex w-full flex-col px-4 py-4 md:px-4">
-        <div className="mb-1 flex items-baseline gap-2">
-          <h2 className="text-gray-12 text-sm font-extrabold">지금 내 상태</h2>
-          <p className="text-gray-7 text-xs">어디에 있고 무엇을 정리해 뒀나</p>
+      {/*
+        v22 §1.3: 구획 패딩 16px(--gap-section) · 카드 간 간격 12px(--gap-block).
+        TODO(토큰): --gap-section / --gap-block 토큰이 들어오면 p-4 / gap-3 을 교체한다.
+      */}
+      <main className="relative flex w-full flex-col gap-3 p-4">
+        {/* v22 §4 구획 머리줄(:1194-1198): 하단 2px 선, 구획 제목이 카드 제목보다 크다 */}
+        <div className="border-gray-12 flex items-baseline gap-2 border-b-2 pb-2">
+          <h2 className="text-gray-12 text-lg font-extrabold">지금 내 상태</h2>
+          <p className="text-gray-9 text-xs">어디에 있고 무엇을 정리해 뒀나</p>
         </div>
         <ExamHallCard />
         <UnitNoteEntryCard />
-        <div className="mt-3 flex items-baseline gap-2">
-          <h2 className="text-gray-12 text-sm font-extrabold">오늘 할 것</h2>
-          <p className="text-gray-7 text-xs">오늘 안에 닫는 일</p>
+        <div className="border-gray-4 mt-1 flex items-baseline gap-2 border-b-2 pb-2">
+          <h2 className="text-gray-12 text-lg font-extrabold">오늘 할 것</h2>
+          <p className="text-gray-9 text-xs">오늘 안에 닫는 일</p>
         </div>
         <TodayProblemsSection />
         <AgendaFlowCard />
@@ -77,9 +76,7 @@ const DashboardStudent = ({
                 </p>
               </div>
               <Link
-                href={PRIVATE.DASHBOARD.EXAM_ATTEMPT(
-                  inProgressExam.attemptId
-                )}
+                href={PRIVATE.DASHBOARD.EXAM_ATTEMPT(inProgressExam.attemptId)}
                 className="bg-orange-9 border-orange-10 inline-flex min-h-11 items-center justify-center rounded-lg border px-4 text-xs font-extrabold text-white"
               >
                 이어 풀기

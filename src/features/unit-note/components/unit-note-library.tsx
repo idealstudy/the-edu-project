@@ -5,7 +5,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 import type { UnitNoteNode } from '@/entities/unit-note';
-import StudentDashboardHeader from '@/features/dashboard/components/header/student-header';
 import { Skeleton } from '@/shared/components/loading';
 import { Button } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants/route';
@@ -84,7 +83,6 @@ export const UnitNoteLibrary = () => {
 
   return (
     <div className="min-h-screen bg-[#fcfbfa]">
-      <StudentDashboardHeader title="단권화 노트" />
       <main className="w-full p-4">
         <p className="text-gray-8 mb-3 text-xs">
           내 학습 › <b className="text-gray-12">단권화 노트</b>
@@ -107,20 +105,16 @@ export const UnitNoteLibrary = () => {
                   ['WEAK', '약한 순'],
                 ] as const
               ).map(([value, label]) => (
-                <button
+                <Button
                   key={value}
-                  type="button"
+                  size="xsmall"
+                  variant={sort === value ? 'secondary' : 'outlined'}
                   aria-pressed={sort === value}
                   onClick={() => setSort(value)}
                   data-testid={`unit-note-sort-${value.toLowerCase()}`}
-                  className={`min-h-9 cursor-pointer rounded-lg border px-3 text-xs font-bold ${
-                    sort === value
-                      ? 'border-orange-7 bg-orange-1 text-orange-10'
-                      : 'border-gray-3 text-gray-9'
-                  }`}
                 >
                   {label}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
@@ -153,7 +147,7 @@ export const UnitNoteLibrary = () => {
               </Button>
             </div>
           ) : (
-            <div className="mt-4 divide-y divide-[#e0e0e0]">
+            <div className="divide-gray-3 mt-4 divide-y">
               {subjects.map((subject, index) => {
                 const totalPercent = Math.min(
                   100,
@@ -162,7 +156,7 @@ export const UnitNoteLibrary = () => {
                 return (
                   <div
                     key={subject.key}
-                    className={`grid min-h-[58px] items-center gap-3 py-2 md:grid-cols-[minmax(190px,1fr)_minmax(250px,1.2fr)_112px] ${index === 0 ? 'bg-orange-1 px-2' : 'px-2'}`}
+                    className={`grid min-h-[58px] items-center gap-3 py-2 md:grid-cols-[minmax(190px,1fr)_minmax(250px,1.2fr)_150px] ${index === 0 ? 'bg-orange-1 px-2' : 'px-2'}`}
                   >
                     <div className="min-w-0">
                       <p className="text-gray-12 text-sm font-extrabold">
@@ -194,22 +188,33 @@ export const UnitNoteLibrary = () => {
                       </b>
                     </div>
                     {subject.root ? (
-                      <Link
-                        href={PRIVATE.DASHBOARD.UNIT_NOTE_ROOM(
-                          subject.root.nodeId
-                        )}
-                        className={`inline-flex min-h-11 items-center justify-center gap-1 rounded-lg border px-3 text-xs font-extrabold ${index === 0 ? 'border-orange-10 bg-orange-9 text-white' : 'border-gray-4 text-gray-10'}`}
+                      <Button
+                        asChild
+                        size="xsmall"
+                        variant={index === 0 ? 'primary' : 'outlined'}
+                        className="w-full gap-1"
                       >
-                        {index === 0 ? '이어서 정리하기' : '열기'}
-                        <ChevronRight
-                          size={15}
-                          aria-hidden
-                        />
-                      </Link>
+                        <Link
+                          href={PRIVATE.DASHBOARD.UNIT_NOTE_ROOM(
+                            subject.root.nodeId
+                          )}
+                        >
+                          {index === 0 ? '이어서 정리하기' : '열기'}
+                          <ChevronRight
+                            size={15}
+                            aria-hidden
+                          />
+                        </Link>
+                      </Button>
                     ) : (
-                      <span className="border-gray-3 text-gray-6 inline-flex min-h-11 items-center justify-center rounded-lg border text-xs font-bold">
+                      <Button
+                        size="xsmall"
+                        variant="outlined"
+                        disabled
+                        className="w-full"
+                      >
                         준비 중
-                      </span>
+                      </Button>
                     )}
                   </div>
                 );
@@ -229,8 +234,8 @@ export const UnitNoteLibrary = () => {
             </span>
           </div>
           <p className="text-gray-8 mt-2 text-[11px] leading-5">
-            태블릿에서 쓴 굿노트 파일을 올려도 한 장으로 셉니다. 노트 안
-            문제를 풀면 진한 색이, 개념을 정리하면 옅은 색이 늘어납니다.
+            태블릿에서 쓴 굿노트 파일을 올려도 한 장으로 셉니다. 노트 안 문제를
+            풀면 진한 색이, 개념을 정리하면 옅은 색이 늘어납니다.
           </p>
         </section>
 

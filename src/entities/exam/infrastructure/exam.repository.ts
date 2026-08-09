@@ -160,6 +160,17 @@ const getExamHall = async () => {
   return unwrapEnvelope(response, dto.examHall);
 };
 
+/**
+ * 공개 시험 응시 시작.
+ * 공개 시험은 attemptId 가 미리 없으므로 서버가 배정과 응시를 만들어 돌려준다.
+ */
+const startPublicExamAttempt = async (examId: number) => {
+  const response = await api.private.post(
+    `/student/exam-hall/${examId}/attempts`
+  );
+  return unwrapEnvelope(response, dto.publicExamAttempt);
+};
+
 const upsertGradeCutoff = async (examId: number, input: GradeCutoffPayload) => {
   const validated = payload.gradeCutoff.parse(input);
   const response = await api.private.put(
@@ -186,5 +197,6 @@ export const repository = {
   getAdminQuestionBank,
   getAdminExams,
   getExamHall,
+  startPublicExamAttempt,
   upsertGradeCutoff,
 };

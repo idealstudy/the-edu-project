@@ -1,23 +1,9 @@
 'use client';
 
 import { type TreeNodeView, type TreeSubjectGroup } from '@/entities/tree';
+import { subjectLabel } from '@/shared/constants';
 
 import { TreeNodeButton } from './tree-node-button';
-
-const SUBJECT_LABEL: Partial<Record<TreeSubjectGroup['subject'], string>> = {
-  MIDDLE_MATH: '중학',
-  COMMON_MATH_1: '공통수학1',
-  COMMON_MATH_2: '공통수학2',
-  ALGEBRA: '대수',
-  CALCULUS_1: '미적분Ⅰ',
-  CALCULUS_2: '미적분Ⅱ',
-  MATH_1: '대수',
-  MATH_2: '미적분Ⅰ',
-  CALCULUS: '미적분Ⅱ',
-  PROBABILITY_STATISTICS: '확률과 통계',
-  GEOMETRY: '기하',
-  OTHER: '기타',
-};
 
 type TreeMapProps = {
   groups: TreeSubjectGroup[];
@@ -36,7 +22,7 @@ export const TreeMap = ({ groups, onSelectNode }: TreeMapProps) => (
         className="flex flex-col gap-3"
       >
         <h2 className="font-body1-heading text-text-main flex items-baseline gap-2">
-          {SUBJECT_LABEL[group.subject] ?? group.subject}
+          {subjectLabel(group.subject)}
           <span className="font-caption-normal text-text-sub2 tabular-nums">
             {group.nodes.length}단원
           </span>

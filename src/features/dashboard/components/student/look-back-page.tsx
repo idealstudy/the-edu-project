@@ -8,8 +8,6 @@ import { useLookBackQuery } from '@/features/dashboard/hooks/use-look-back-query
 import { useUnitNoteLibraryQuery } from '@/features/unit-note/hooks/use-unit-note-query';
 import { PRIVATE } from '@/shared/constants';
 
-import StudentDashboardHeader from '../header/student-header';
-
 const WEEK_DAYS = ['월', '화', '수', '목', '금', '토', '일'];
 
 const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000;
@@ -72,7 +70,9 @@ export const LookBackPage = () => {
 
   const hasContent = (record: (typeof allRecords)[number]) =>
     Boolean(record.learned || record.reflected || record.tomorrow);
-  const records = onlyWithRetrospect ? allRecords.filter(hasContent) : allRecords;
+  const records = onlyWithRetrospect
+    ? allRecords.filter(hasContent)
+    : allRecords;
   const calendar = onlyWithRetrospect
     ? allCalendar.filter((day) => day.hasRetrospect)
     : allCalendar;
@@ -90,7 +90,6 @@ export const LookBackPage = () => {
 
   return (
     <div className="min-h-screen bg-[#fcfbfa]">
-      <StudentDashboardHeader title="돌아보기" />
       <main className="w-full p-4">
         <p className="mb-4 text-xs text-[#747980]">
           내 학습 › <b className="text-[#202226]">돌아보기</b>
@@ -203,7 +202,8 @@ export const LookBackPage = () => {
               <p className="mt-3 text-[11px] leading-5 text-[#747980]">
                 칸 안 숫자는 완료 / 전체입니다. 오른쪽 아래 점은 그날 회고가
                 있다는 뜻입니다.
-                {onlyWithRetrospect && ' 지금은 회고가 있는 날만 보고 있습니다.'}
+                {onlyWithRetrospect &&
+                  ' 지금은 회고가 있는 날만 보고 있습니다.'}
               </p>
             </section>
 
