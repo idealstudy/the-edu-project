@@ -568,7 +568,7 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
         'PUT',
         `/api/v1/admin/exams/${created.examId}/grade-cutoff`,
         {
-          source: `${runId} deterministic cutoff`,
+          source: '최근 모의고사',  // 화면에 그대로 노출되는 값이다. 검사 식별자를 넣으면 회장 화면에 보인다(2026-08-10)
           fullScore: 100,
           mean: null,
           stdDev: null,

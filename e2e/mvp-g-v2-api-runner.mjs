@@ -789,7 +789,7 @@ async function runGradeBoundaries(roomId) {
       endpoint: `/api/admin/exams/${examId}/grade-cutoff`,
       label: `grade-${boundary.grade}-cutoff`,
       body: {
-        source: `${runId} deterministic cutoff`,
+        source: '최근 모의고사',  // 화면에 그대로 노출되는 값이다. 검사 식별자를 넣으면 회장 화면에 보인다(2026-08-10)
         fullScore: 100,
         mean: null,
         stdDev: null,
