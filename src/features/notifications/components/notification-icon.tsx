@@ -32,7 +32,7 @@ export default function NotificationIcon({
       {hasNotifications && (
         <path
           d="M17.5 11C19.9853 11 22 8.98528 22 6.5C22 4.01472 19.9853 2 17.5 2C15.0147 2 13 4.01472 13 6.5C13 8.98528 15.0147 11 17.5 11Z"
-          fill="#FF4805"
+          fill="var(--orange-7)"
         />
       )}
     </svg>

@@ -57,7 +57,7 @@ export const useStudentNoteDetail = (studyNoteId: number) => {
 };
 
 /* ─────────────────────────────────────────────────────
- * 학습 일지 작성 (타이머 없이)
+ * 학습 일지 작성
  * ────────────────────────────────────────────────────*/
 export const useStudentNoteCreate = () => {
   const queryClient = useQueryClient();

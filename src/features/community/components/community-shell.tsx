@@ -61,13 +61,13 @@ export default function CommunityShell({
                 className={cn(
                   'relative cursor-pointer px-4 pb-4 text-lg leading-[135%] transition-all lg:text-2xl',
                   isColumn
-                    ? 'font-[700] text-[#1A1A1A]'
-                    : 'font-[400] text-[#AAAAAA]'
+                    ? 'text-gray-12 font-[700]'
+                    : 'text-gray-6 font-[400]'
                 )}
               >
                 칼럼 게시판
                 {isColumn && (
-                  <div className="absolute bottom-0 left-0 h-1 w-full bg-[#FF5C35]" />
+                  <div className="bg-orange-7 absolute bottom-0 left-0 h-1 w-full" />
                 )}
               </div>
             </Link>

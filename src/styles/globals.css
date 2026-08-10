@@ -7,7 +7,7 @@
     디에듀 2.0 색 스케일 (레거시 별칭 — 3.0 을 가리킨다)
     정본은 아래 3.0 스케일(gray-1~12 / orange-1~12).
     지우면 기존 화면이 깨지므로 값 대신 별칭으로만 남긴다.
-    상세: mvp-front/docs/design-system.md
+    상세: mvp-front/docs/DESIGN.md
     ======================================== */
   --gray-scale-black: var(--gray-black);
   --gray-scale-gray-1: var(--gray-1);
@@ -43,8 +43,10 @@
   --system-safe-alt: #eaffbd;
   --system-success: #34c759;
   --system-success-alt: #dcf9e3;
+  --system-success-text: #1f6b2c;
   --system-warning: #ff4040;
   --system-warning-alt: #ffd9d9;
+  --system-warning-text: #c0281c;
   --surface-coach-paper: #fffdf6;
   --surface-coach-solution: #fffdf3;
   --line-coach-paper: rgb(255 92 53 / 0.08);
@@ -86,7 +88,7 @@
   /* ========================================
     약점 트리 강도 4단계 (B+A 시그니처 — 오렌지 농도 한 축)
     미진단 → 약점 → 진행 → 정복. 파랑/빨강 안 씀.
-    사용자 확정 (design-system-2.0.md §2)
+    사용자 확정 (DESIGN.md §2)
     ======================================== */
   --tree-untested: #f0efec; /* 미진단 (회색) */
   --tree-weak: #ffd0c0; /* 약점 (옅은 오렌지) */
@@ -312,14 +314,15 @@ body {
   --color-orange-scale-orange-95: var(--orange-scale-orange-95);
 
   --color-system-background: var(--system-background);
-  --color-system-background-alt: var(--system-background-alt);
   --color-system-dim: var(--system-dim);
   --color-system-safe: var(--system-safe);
   --color-system-safe-alt: var(--system-safe-alt);
   --color-system-success: var(--system-success);
   --color-system-success-alt: var(--system-success-alt);
+  --color-system-success-text: var(--system-success-text);
   --color-system-warning: var(--system-warning);
   --color-system-warning-alt: var(--system-warning-alt);
+  --color-system-warning-text: var(--system-warning-text);
   --color-surface-coach-paper: var(--surface-coach-paper);
   --color-surface-coach-solution: var(--surface-coach-solution);
 
@@ -431,7 +434,9 @@ body {
   --spacing-control-md: 56px; /* 기존 medium 제어 */
   --spacing-control-xl: 64px; /* 기존 large 제어 */
   --spacing-button-compact-x: 13px;
+  --spacing-button-default-x: 20px;
   --spacing-button-wide-x: 26px;
+  --spacing-button-chip-x: 14px;
   --spacing-empty-cta: 46px;
   --spacing-flat-row: 66px;
   --spacing-page-max: 1180px;

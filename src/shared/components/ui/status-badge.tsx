@@ -5,8 +5,8 @@ type Variant = 'default' | 'primary' | 'success' | 'warning';
 const BADGE_STYLE: Record<Variant, string> = {
   default: 'bg-gray-1',
   primary: 'bg-orange-1 text-key-color-primary',
-  success: 'bg-system-success-alt text-system-success',
-  warning: 'bg-system-warning-alt text-system-warning',
+  success: 'bg-system-success-alt text-system-success-text',
+  warning: 'bg-system-warning-alt text-system-warning-text',
 };
 
 export const StatusBadge = ({

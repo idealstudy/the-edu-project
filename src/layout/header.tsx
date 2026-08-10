@@ -63,7 +63,7 @@ export const Header = () => {
 
   return (
     <header
-      className="h-header-height fixed top-0 right-0 left-0 z-50 flex items-center border-b border-gray-200 bg-[#1A1A1A] px-8"
+      className="h-header-height bg-gray-12 fixed top-0 right-0 left-0 z-50 flex items-center border-b border-gray-200 px-8"
       data-global-header
     >
       <div className="mx-auto flex w-full items-center justify-between">
@@ -192,7 +192,7 @@ export const Header = () => {
             </DropdownMenu>
 
             {session?.role && (
-              <div className="desktop:flex hidden items-center rounded-[40px] border px-2 py-[2px] text-[12px] font-[400px] text-[#ffffff]">
+              <div className="text-gray-white desktop:flex hidden items-center rounded-[40px] border px-2 py-[2px] text-[12px] font-[400px]">
                 {ROLE_META_MAP[session.role]?.label}
               </div>
             )}

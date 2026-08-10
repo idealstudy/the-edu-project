@@ -43,13 +43,14 @@ const buttonVariants = cva(
         large:
           'h-control-xl px-button-wide-x font-headline2-heading disabled:font-headline2-normal',
         medium:
-          'h-control-md px-5 font-body2-heading disabled:font-body2-normal',
-        small: 'h-12 px-5 font-body2-heading disabled:font-body2-normal',
+          'h-control-md px-button-default-x font-body2-heading disabled:font-body2-normal',
+        small:
+          'h-control-sm px-button-compact-x font-body2-heading disabled:font-body2-normal',
         xsmall:
-          'h-control-xs px-4 font-body2-heading disabled:font-body2-normal',
-        cta: 'min-h-control-lg px-5 font-label-heading shadow-cta active:shadow-none',
+          'h-control-xs px-button-compact-x font-body2-heading disabled:font-body2-normal',
+        cta: 'min-h-control-lg px-button-default-x font-label-heading shadow-cta active:shadow-none',
         compact: 'min-h-control-sm px-button-compact-x font-caption-heading',
-        chip: 'min-h-control-sm rounded-pill px-card-pad font-caption-heading',
+        chip: 'min-h-control-sm rounded-pill px-button-chip-x font-caption-heading',
         icon: 'size-touch-min p-0',
         none: '',
       },

@@ -34,6 +34,15 @@ describe('디자인 시스템 공용 부품', () => {
     expect(onClick).not.toHaveBeenCalled();
   });
 
+  test('Button small 크기는 승인된 44px 제어·13px 패딩 토큰을 쓴다', () => {
+    render(<Button size="small">검수 시작</Button>);
+
+    expect(screen.getByRole('button', { name: '검수 시작' })).toHaveClass(
+      'h-control-sm',
+      'px-button-compact-x'
+    );
+  });
+
   test('Card와 StatChip은 텍스트·숫자 넘침 방어 계약을 가진다', () => {
     render(
       <Card>

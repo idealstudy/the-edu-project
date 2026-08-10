@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import Link from 'next/link';
 
@@ -25,7 +25,7 @@ import { PRIVATE } from '@/shared/constants';
 const TeacherInviteCodeCard = () => {
   const rooms = useTeacherDashboardStudyRoomListQuery();
   const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
-  const roomList = rooms.data ?? [];
+  const roomList = useMemo(() => rooms.data ?? [], [rooms.data]);
   const activeRoomId = selectedRoomId ?? roomList[0]?.id ?? null;
 
   useEffect(() => {

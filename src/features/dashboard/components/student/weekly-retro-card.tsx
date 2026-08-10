@@ -176,7 +176,7 @@ export const WeeklyRetroCard = ({ className }: Props) => {
             오늘 회고
           </h3>
           <p className="font-caption-normal text-gray-8 mt-1">
-            {formatMonthDay(today.date)} · 기록하면 온도나무가 회복돼요
+            {formatMonthDay(today.date)} · 한 줄이면 충분해요
           </p>
         </div>
         <label className="flex cursor-pointer items-center gap-2">
@@ -281,7 +281,7 @@ export const WeeklyRetroCard = ({ className }: Props) => {
           disabled={saveRetrospect.isPending}
           data-testid="student-retrospect-save"
         >
-          {today.written ? '오늘 회고 수정하기' : '저장하고 나무 데우기'}
+          {today.written ? '오늘 회고 수정하기' : '오늘 회고 저장하기'}
         </Button>
         <p className="font-caption-normal text-gray-8 mt-3 text-center">
           이 회고는 나와 선생님이 봐요 · 부모님께는 공유되지 않아요.

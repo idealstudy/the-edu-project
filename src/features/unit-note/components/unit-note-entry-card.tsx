@@ -93,7 +93,7 @@ export const UnitNoteEntryCard = () => {
           </button>
         </div>
       ) : (
-        <div className="mt-4 divide-y divide-[#e0e0e0]">
+        <div className="divide-gray-3 mt-4 divide-y">
           {normalizedSubjects.map((subject, index) => (
             <div
               key={subject.subject}

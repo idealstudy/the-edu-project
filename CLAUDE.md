@@ -20,7 +20,7 @@ Next.js 15 / React 19 / App Router / Tailwind v4 / FSD.
 | 3    | `docs/features.md`          | features 구조, 레거시 코드 주의점               |
 | 4    | `docs/error-handling.md`    | 에러 계층, ApiErrorType                         |
 | 5    | `docs/e2e.md`               | Playwright 셋업과 핵심 플로우                   |
-| 6    | **`docs/design-system.md`** | **디자인 시스템 정본.** 화면 작업이면 필독      |
+| 6    | **`docs/DESIGN.md`** | **디자인 시스템 정본.** 화면 작업이면 필독      |
 | 7    | `docs/ui-guidelines.md`     | UI 코딩 규칙 (컴포넌트·아이콘·a11y·반응형·로딩) |
 
 작업 유형별 최소 조합:
@@ -35,7 +35,7 @@ Next.js 15 / React 19 / App Router / Tailwind v4 / FSD.
 
 ## 2. 디자인 시스템 (필독)
 
-정본은 **`docs/design-system.md`** 하나다. 코드 정본은 `src/styles/globals.css` 의 CSS 변수와 `@theme` 블록이다.
+정본은 **`docs/DESIGN.md`** 하나다. 코드 정본은 `src/styles/globals.css` 의 CSS 변수와 `@theme` 블록이다.
 
 지켜야 할 최소선:
 
@@ -54,7 +54,7 @@ Next.js 15 / React 19 / App Router / Tailwind v4 / FSD.
 루트 `../CLAUDE.md §0` 을 그대로 따른다. 요약:
 
 1. 기능을 만들거나 고치면 **E2E 를 통과시킨 뒤** 보고한다. 추측으로 "됐다"고 하지 않는다.
-2. 그다음 관련 문서(`docs/`, `wiki/`)에 반영한다. 디자인 토큰을 추가·변경했으면 `docs/design-system.md` 를 **같은 커밋에서** 고친다.
+2. 그다음 관련 문서(`docs/`, `wiki/`)에 반영한다. 디자인 토큰을 추가·변경했으면 `docs/DESIGN.md` 를 **같은 커밋에서** 고친다.
 3. 진행 내용을 `../wiki/ops/session-state.md` 에 남겨 다음 세션이 이어받게 한다.
 
 검증 명령:

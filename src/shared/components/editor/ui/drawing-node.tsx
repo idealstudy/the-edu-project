@@ -153,7 +153,7 @@ function NoteLines() {
             y1={`${y}%`}
             x2="100"
             y2={`${y}%`}
-            stroke="#e9e9e9"
+            stroke="var(--gray-2)"
             strokeWidth="0.3"
             vectorEffect="non-scaling-stroke"
           />
@@ -170,7 +170,7 @@ function EditNoteIcon() {
       height="28"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#f97316"
+      stroke="var(--orange-7)"
       strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -188,7 +188,7 @@ function CloseIcon() {
       height="12"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#666"
+      stroke="var(--gray-9)"
       strokeWidth="2.5"
       strokeLinecap="round"
       strokeLinejoin="round"

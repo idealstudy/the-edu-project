@@ -60,20 +60,20 @@ const getActions = (studyRoomId: number) =>
   ] as const;
 
 const rowClass =
-  'flex flex-wrap items-center gap-3 border-t border-[#eceef0] py-3 first:border-t-0';
+  'border-gray-2 flex flex-wrap items-center gap-3 border-t py-3 first:border-t-0';
 const tinyButton =
-  'cursor-pointer rounded-md border border-[#d8dbde] px-3 py-1.5 text-xs font-bold text-[#3f4348] transition-colors hover:border-[#b9bec3] disabled:cursor-not-allowed disabled:opacity-50';
+  'border-gray-3 text-gray-11 hover:border-gray-5 cursor-pointer rounded-md border px-3 py-1.5 text-xs font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-50';
 const tinyButtonPrimary =
-  'cursor-pointer rounded-md border border-[#e1aa8d] bg-[#fff3ec] px-3 py-1.5 text-xs font-bold text-[#9a441f] transition-colors hover:bg-[#ffe7d8] disabled:cursor-not-allowed disabled:opacity-50';
+  'border-orange-4 bg-orange-1 text-orange-11 hover:bg-orange-2 cursor-pointer rounded-md border px-3 py-1.5 text-xs font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-50';
 
 const pill = (label: string, tone: 'done' | 'plain' | 'hidden') => (
   <span
     className={
       tone === 'done'
-        ? 'text-ui-choice rounded-full bg-[#e8f4ec] px-2.5 py-1 font-bold text-[#25693f]'
+        ? 'text-ui-choice bg-system-success-alt text-system-success-text rounded-full px-2.5 py-1 font-bold'
         : tone === 'hidden'
-          ? 'text-ui-choice rounded-full bg-[#f1f2f4] px-2.5 py-1 font-bold text-[#6b7076]'
-          : 'text-ui-choice rounded-full bg-[#f6f7f8] px-2.5 py-1 font-bold text-[#4a4f55]'
+          ? 'text-ui-choice bg-gray-2 text-gray-9 rounded-full px-2.5 py-1 font-bold'
+          : 'text-ui-choice bg-gray-1 text-gray-10 rounded-full px-2.5 py-1 font-bold'
     }
   >
     {label}
@@ -81,9 +81,7 @@ const pill = (label: string, tone: 'done' | 'plain' | 'hidden') => (
 );
 
 const emptyLine = (text: string) => (
-  <p className="border-t border-[#eceef0] pt-3 text-xs text-[#8a8f96]">
-    {text}
-  </p>
+  <p className="border-gray-2 text-gray-9 border-t pt-3 text-xs">{text}</p>
 );
 
 /** v22 §3 행: 코멘트 쓰기 / 코멘트 고치기 / 확인함 */
@@ -114,7 +112,7 @@ const FeedbackRowView = ({
           {row.studentName ?? `학생 ${row.studentId}`} ·{' '}
           {row.title ?? `오답 ${row.wrongAnswerId}`}
         </b>
-        <small className="text-xs text-[#747980]">
+        <small className="text-gray-9 text-xs">
           {row.studentQuestion
             ? `학생이 되물었습니다 · ${row.studentQuestion}`
             : row.teacherComment
@@ -138,7 +136,7 @@ const FeedbackRowView = ({
             maxLength={500}
             autoFocus
             aria-label="오답 코멘트"
-            className="min-w-0 flex-1 rounded-md border border-[#d8dbde] px-3 py-1.5 text-xs"
+            className="border-gray-3 min-w-0 flex-1 rounded-md border px-3 py-1.5 text-xs"
             placeholder="학생 오답 회독에 그대로 뜨는 문장입니다"
           />
           <button
@@ -209,7 +207,7 @@ const TodoRowView = ({
       <b className="block truncate text-sm">
         {row.studentName ?? `학생 ${row.studentId}`} · {row.title}
       </b>
-      <small className="text-xs text-[#747980]">
+      <small className="text-gray-9 text-xs">
         {row.kind === 'NOT_DONE'
           ? (row.notDoneReason ?? '사유 없이 못했다고 남겼습니다')
           : `${row.source === 'EXAM_HALL' ? '응시장' : '오픈챌린지'} 제안 · 승인해야 학생에게 갑니다`}
@@ -282,13 +280,13 @@ export const LearningManagementTab = ({ studyRoomId }: Props) => {
       className="space-y-4"
       data-testid="learning-management-tab"
     >
-      <section className="rounded-xl border border-[#e3e5e8] bg-white p-5">
+      <section className="border-gray-3 rounded-xl border bg-white p-5">
         <h1 className="text-xl leading-7 font-extrabold">
           학생의 학습에
           <br />
           무엇을 넣어줄까요
         </h1>
-        <p className="mt-3 text-xs leading-5 text-[#666b72]">
+        <p className="text-gray-9 mt-3 text-xs leading-5">
           이 탭은 학생을 지켜보는 곳이 아니라 <b>학생 화면에 넣어주는 곳</b>
           입니다. 각 행위가 도착하는 화면을 함께 표시합니다.
         </p>
@@ -298,7 +296,7 @@ export const LearningManagementTab = ({ studyRoomId }: Props) => {
             className="rounded-lg border p-3 text-left text-xs font-extrabold"
           >
             ＋ 개념 노트
-            <small className="mt-1 block font-normal text-[#747980]">
+            <small className="text-gray-9 mt-1 block font-normal">
               단권화에 넣기
             </small>
           </Link>
@@ -307,7 +305,7 @@ export const LearningManagementTab = ({ studyRoomId }: Props) => {
             className="rounded-lg border p-3 text-left text-xs font-extrabold"
           >
             ＋ 할 일
-            <small className="mt-1 block font-normal text-[#747980]">
+            <small className="text-gray-9 mt-1 block font-normal">
               오늘 할 일에 꽂기
             </small>
           </Link>
@@ -316,13 +314,13 @@ export const LearningManagementTab = ({ studyRoomId }: Props) => {
             className="rounded-lg border p-3 text-left text-xs font-extrabold"
           >
             ＋ 피드백
-            <small className="mt-1 block font-normal text-[#747980]">
+            <small className="text-gray-9 mt-1 block font-normal">
               오답에 코멘트
             </small>
           </Link>
         </div>
         <p
-          className="mt-3 text-xs font-bold text-[#9a441f]"
+          className="text-orange-11 mt-3 text-xs font-bold"
           data-testid="learning-management-pending-count"
         >
           지금 손볼 것 {data?.pendingCount ?? 0}건
@@ -332,17 +330,17 @@ export const LearningManagementTab = ({ studyRoomId }: Props) => {
       {actions.map((action) => (
         <section
           key={action.number}
-          className="rounded-xl border border-[#e3e5e8] bg-white p-5"
+          className="border-gray-3 rounded-xl border bg-white p-5"
         >
           <div className="grid grid-cols-[36px_1fr_auto] gap-3">
-            <span className="flex size-9 items-center justify-center rounded-full bg-[#fff0e7] text-sm font-extrabold text-[#a4481e]">
+            <span className="bg-orange-1 text-orange-11 flex size-9 items-center justify-center rounded-full text-sm font-extrabold">
               {action.number}
             </span>
             <div>
               <h2 className="text-sm font-extrabold">{action.title}</h2>
-              <p className="text-xs text-[#747980]">{action.subtitle}</p>
-              <p className="text-ui-choice mt-3 rounded-md bg-[#faf6f2] px-3 py-2">
-                <b className="mr-2 text-[#a4481e]">학생 화면 도착지</b>
+              <p className="text-gray-9 text-xs">{action.subtitle}</p>
+              <p className="text-ui-choice bg-orange-1 mt-3 rounded-md px-3 py-2">
+                <b className="text-orange-11 mr-2">학생 화면 도착지</b>
                 {action.destination}
               </p>
             </div>
@@ -360,7 +358,7 @@ export const LearningManagementTab = ({ studyRoomId }: Props) => {
               )}
               <Link
                 href={action.href}
-                className="h-fit rounded-md border border-[#e1aa8d] px-3 py-2 text-xs font-bold text-[#9a441f]"
+                className="border-orange-4 text-orange-11 h-fit rounded-md border px-3 py-2 text-xs font-bold"
               >
                 {action.button}
               </Link>
@@ -385,7 +383,7 @@ export const LearningManagementTab = ({ studyRoomId }: Props) => {
                         {row.studentName ?? `학생 ${row.studentId}`} ·{' '}
                         {row.title}
                       </b>
-                      <small className="text-xs text-[#747980]">
+                      <small className="text-gray-9 text-xs">
                         {row.unitLabel ?? '단원 미지정'}
                         {row.state === 'HIDDEN'
                           ? ' · 학생이 숨김. 지워진 것은 아니고 학생 목록에서만 빠져 있습니다'

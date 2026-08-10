@@ -41,7 +41,6 @@ export default function RootLayout({
     >
       <body className="bg-gray-1 antialiased">
         {/* 승인 디자인의 앱 글꼴. CDN이 실패하면 로컬 Pretendard로 즉시 폴백한다. */}
-        {/* eslint-disable-next-line @next/next/no-page-custom-font -- 승인 디자인과 동일한 전역 variable font stylesheet */}
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css"

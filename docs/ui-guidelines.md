@@ -4,7 +4,7 @@ AI 에이전트 및 개발자가 새 코드를 작성할 때 따라야 할 UI �
 
 > **범위**: 새 코드에만 적용됩니다. 기존 코드는 건드리지 않으며, 버그 수정 시에는 주변 코드의 컨벤션을 따릅니다.
 
-> **디자인 시스템 정본은 여기가 아닙니다.** 색·타이포·간격·모서리·그림자·공용 부품 규격은 `docs/design-system.md` 를 봅니다.
+> **디자인 시스템 정본은 여기가 아닙니다.** 색·타이포·간격·모서리·그림자·공용 부품 규격은 `docs/DESIGN.md` 를 봅니다.
 > 이 문서는 그 시스템을 코드로 옮길 때의 **코딩 규칙**만 다룹니다. 아래 §7 은 정본의 요약이며, 값이 다르면 정본이 맞습니다.
 
 ---
@@ -176,7 +176,7 @@ import { Flame } from 'lucide-react';
 
 ## 7. 색상 토큰
 
-정본: `docs/design-system.md §1~§2`. 요약하면 이렇습니다.
+정본: `docs/DESIGN.md §1~§2`. 요약하면 이렇습니다.
 
 - **원시 색 스케일은 `orange-1`~`orange-12`, `gray-1`~`gray-12` 만 씁니다.**
 - `gray-scale-gray-*` · `orange-scale-orange-*` 는 위 스케일을 가리키는 **레거시 별칭**입니다. 남아 있는 코드를 안 깨뜨리려고 둔 것이므로 새 코드에 쓰지 않습니다.
@@ -196,7 +196,7 @@ import { Flame } from 'lucide-react';
 
 ### 간격·모서리·그림자도 토큰으로
 
-임의 px 대신 `p-card-pad`(16px) · `gap-block-gap`(12px) · `rounded-card`(12px) · `rounded-button`(8px) · `rounded-pill` · `shadow-cta` · `min-h-touch-min`(44px) 을 씁니다. 목록은 `docs/design-system.md §4~§5`.
+임의 px 대신 `p-card-pad`(16px) · `gap-block-gap`(12px) · `rounded-card`(12px) · `rounded-button`(8px) · `rounded-pill` · `shadow-cta` · `min-h-touch-min`(44px) 을 씁니다. 목록은 `docs/DESIGN.md §4~§5`.
 
 ```tsx
 // Bad — 임의 수치

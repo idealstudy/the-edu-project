@@ -107,13 +107,13 @@ export const AdminQuestionBank = () => {
 
   return (
     <div
-      className="bg-[#f7f7f8] p-4 md:p-8"
+      className="bg-gray-1 p-4 md:p-8"
       data-testid="admin-question-bank"
     >
       <div className="mx-auto max-w-295">
         <div className="mb-4 flex flex-wrap items-center gap-2">
-          <h1 className="text-xl font-extrabold text-[#27272a]">문제은행</h1>
-          <span className="text-xs text-[#71717a]">
+          <h1 className="text-gray-12 text-xl font-extrabold">문제은행</h1>
+          <span className="text-gray-9 text-xs">
             선생님 시험 열기가 여기 데이터를 그대로 먹습니다.
           </span>
           <Button
@@ -125,15 +125,15 @@ export const AdminQuestionBank = () => {
         </div>
 
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
-          <section className="rounded-xl border border-[#e4e4e7] bg-white p-4">
+          <section className="border-gray-3 rounded-xl border bg-white p-4">
             <div className="mb-3 flex items-baseline justify-between gap-2">
-              <h2 className="text-sm font-extrabold text-[#27272a]">문항</h2>
-              <span className="text-xs text-[#71717a]">
+              <h2 className="text-gray-12 text-sm font-extrabold">문항</h2>
+              <span className="text-gray-9 text-xs">
                 {questionBank.data?.totalElements ?? 0}개 · 검수 완료{' '}
                 {allContent.length - pendingCount} · 검수 대기 {pendingCount}
               </span>
             </div>
-            <div className="mb-3 flex flex-wrap gap-2 text-xs font-bold text-[#52525b]">
+            <div className="text-gray-10 mb-3 flex flex-wrap gap-2 text-xs font-bold">
               <Select
                 value={subject}
                 onValueChange={(value) =>
@@ -141,7 +141,7 @@ export const AdminQuestionBank = () => {
                 }
               >
                 <Select.Trigger
-                  className="h-9 w-28 border-[#f0a36a] bg-[#fff7f0] text-xs"
+                  className="border-orange-4 bg-orange-1 h-9 w-28 text-xs"
                   data-testid="admin-question-bank-subject-filter"
                   aria-label="과목 필터"
                 >
@@ -165,8 +165,8 @@ export const AdminQuestionBank = () => {
                 data-testid="admin-question-bank-review-filter"
                 className={`cursor-pointer rounded-md border px-3 py-2 ${
                   reviewOnly
-                    ? 'border-[#f0a36a] bg-[#fff7f0] text-[#9a441f]'
-                    : 'border-[#e4e4e7]'
+                    ? 'border-orange-4 bg-orange-1 text-orange-11'
+                    : 'border-gray-3'
                 }`}
               >
                 검수 상태 {reviewOnly ? '검수 대기' : '전체'}
@@ -174,15 +174,15 @@ export const AdminQuestionBank = () => {
             </div>
 
             {questionBank.isPending ? (
-              <p className="py-12 text-center text-xs text-[#71717a]">
+              <p className="text-gray-9 py-12 text-center text-xs">
                 문항을 불러오는 중입니다
               </p>
             ) : content.length === 0 ? (
-              <div className="rounded-lg border border-[#e4e4e7] bg-[#fafafa] px-6 py-12 text-center">
-                <h3 className="text-sm font-extrabold text-[#27272a]">
+              <div className="border-gray-3 bg-gray-1 rounded-lg border px-6 py-12 text-center">
+                <h3 className="text-gray-12 text-sm font-extrabold">
                   이 단원에는 아직 문항이 없어요
                 </h3>
-                <p className="mt-2 text-xs leading-6 text-[#71717a]">
+                <p className="text-gray-9 mt-2 text-xs leading-6">
                   선생님이 이 단원으로 시험을 열 수 없는 상태이니, 여기가 비면
                   그쪽도 막힙니다.
                 </p>
@@ -197,24 +197,24 @@ export const AdminQuestionBank = () => {
               content.map((question) => (
                 <div
                   key={question.challengeId}
-                  className="grid grid-cols-[52px_1fr_auto] items-center gap-3 border-b border-[#ececef] py-3 last:border-b-0"
+                  className="border-gray-2 grid grid-cols-[52px_1fr_auto] items-center gap-3 border-b py-3 last:border-b-0"
                 >
-                  <span className="text-center text-xs font-extrabold text-[#52525b] tabular-nums">
+                  <span className="text-gray-10 text-center text-xs font-extrabold tabular-nums">
                     {question.challengeId}
                   </span>
-                  <span className="text-coach min-w-0 leading-5 font-semibold text-[#27272a]">
+                  <span className="text-coach text-gray-12 min-w-0 leading-5 font-semibold">
                     {question.questionText ?? question.title}
-                    <small className="text-ui-choice mt-1 block truncate font-normal text-[#71717a]">
+                    <small className="text-ui-choice text-gray-9 mt-1 block truncate font-normal">
                       {question.treeNodePath} · {question.sourceText}
                     </small>
                   </span>
                   <span className="flex items-center gap-2">
                     {needsReview(question) ? (
-                      <span className="text-ui-choice rounded-full bg-[#fff7ed] px-2 py-1 font-bold text-[#c2410c]">
+                      <span className="text-ui-choice bg-system-warning-alt text-system-warning-text rounded-full px-2 py-1 font-bold">
                         검수 대기
                       </span>
                     ) : (
-                      <span className="text-ui-choice rounded-full bg-[#effaf1] px-2 py-1 font-bold text-[#237a3d]">
+                      <span className="text-ui-choice bg-system-success-alt text-system-success-text rounded-full px-2 py-1 font-bold">
                         공개
                       </span>
                     )}
@@ -236,13 +236,13 @@ export const AdminQuestionBank = () => {
                   </span>
                   {openedQuestionId === question.challengeId && (
                     <div
-                      className="col-span-3 rounded-lg border border-[#e4e4e7] bg-[#fafafa] p-3 text-xs leading-6 text-[#3f3f46]"
+                      className="border-gray-3 bg-gray-1 text-gray-11 col-span-3 rounded-lg border p-3 text-xs leading-6"
                       data-testid={`admin-question-bank-detail-${question.challengeId}`}
                     >
                       <p>
                         {question.questionText ?? '지문이 등록되지 않았습니다.'}
                       </p>
-                      <p className="text-ui-choice mt-2 text-[#71717a]">
+                      <p className="text-ui-choice text-gray-9 mt-2">
                         정답 {question.hasCorrectAnswer ? '등록됨' : '없음'} ·
                         단원 {question.treeNodePath || '미지정'} · 난이도{' '}
                         {question.difficulty}
@@ -264,11 +264,11 @@ export const AdminQuestionBank = () => {
 
           <aside>
             {/* v22 `aBankOk` 4082 검수 대기 카드 + `검수 시작` */}
-            <section className="mb-4 rounded-xl border border-[#e4e4e7] bg-white p-4">
-              <h2 className="text-sm font-extrabold text-[#27272a]">
+            <section className="border-gray-3 mb-4 rounded-xl border bg-white p-4">
+              <h2 className="text-gray-12 text-sm font-extrabold">
                 검수 대기 {pendingCount}개
               </h2>
-              <p className="mt-3 text-xs leading-6 text-[#71717a]">
+              <p className="text-gray-9 mt-3 text-xs leading-6">
                 공개하기 전에 정답과 단원을 사람이 확인합니다. 검수 안 된 문항은
                 선생님 시험 열기 목록에 뜨지 않습니다.
               </p>
@@ -286,22 +286,22 @@ export const AdminQuestionBank = () => {
                 검수 시작
               </Button>
               {pendingCount === 0 && (
-                <p className="text-ui-choice mt-2 text-[#71717a]">
+                <p className="text-ui-choice text-gray-9 mt-2">
                   이 과목에 검수 대기 문항이 없습니다.
                 </p>
               )}
             </section>
 
-            <section className="rounded-xl border border-[#e4e4e7] bg-white p-4">
-              <h2 className="text-sm font-extrabold text-[#27272a]">
+            <section className="border-gray-3 rounded-xl border bg-white p-4">
+              <h2 className="text-gray-12 text-sm font-extrabold">
                 일괄 올리기
               </h2>
-              <p className="mt-3 text-xs leading-6 text-[#71717a]">
+              <p className="text-gray-9 mt-3 text-xs leading-6">
                 단원은 <b>이름으로 맞춥니다.</b> 못 찾은 이름은 올리기 전에
                 목록으로 보여주고 사람이 지정합니다. 이미 있는 문항은
                 건너뜁니다.
               </p>
-              <div className="text-ui-choice mt-3 rounded-lg border border-[#e4e4e7] bg-[#fafafa] p-3 leading-5 text-[#52525b]">
+              <div className="text-ui-choice border-gray-3 bg-gray-1 text-gray-10 mt-3 rounded-lg border p-3 leading-5">
                 <b>마지막 올리기</b>
                 <br />
                 6월 학력평가 30문항 · 신규 30 · 건너뜀 0 · 단원 미매칭 0
@@ -309,13 +309,13 @@ export const AdminQuestionBank = () => {
             </section>
 
             <form
-              className="mt-4 rounded-xl border border-[#e4e4e7] bg-white p-4"
+              className="border-gray-3 mt-4 rounded-xl border bg-white p-4"
               onSubmit={handleSubmit(onSubmit)}
             >
-              <h2 className="text-sm font-extrabold text-[#27272a]">
+              <h2 className="text-gray-12 text-sm font-extrabold">
                 등급 기준표 등록
               </h2>
-              <p className="text-ui-choice mt-1 leading-5 text-[#71717a]">
+              <p className="text-ui-choice text-gray-9 mt-1 leading-5">
                 기준표가 붙으면 학생에게 실측 등급과 표준점수가 표시됩니다.
               </p>
               <Select
@@ -347,7 +347,7 @@ export const AdminQuestionBank = () => {
                 placeholder="출처: EBSi 2027 6월 모의평가"
                 {...register('source')}
               />
-              <p className="text-ui-choice mt-3 leading-5 font-bold text-[#52525b]">
+              <p className="text-ui-choice text-gray-10 mt-3 leading-5 font-bold">
                 1등급부터 8등급까지 원점수 하한
               </p>
               <div className="mt-2 grid grid-cols-2 gap-2">
@@ -374,7 +374,7 @@ export const AdminQuestionBank = () => {
                 errors.examId?.message ||
                 errors.source?.message) && (
                 <p
-                  className="mt-2 text-xs font-bold text-[#a33a30]"
+                  className="text-system-warning-text mt-2 text-xs font-bold"
                   role="alert"
                 >
                   {errors.root?.message ??
@@ -384,7 +384,7 @@ export const AdminQuestionBank = () => {
               )}
               {cutoffMutation.isSuccess && (
                 <p
-                  className="mt-2 text-xs font-bold text-[#237a3d]"
+                  className="text-system-success-text mt-2 text-xs font-bold"
                   role="status"
                 >
                   등급 기준표를 등록했습니다.

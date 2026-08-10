@@ -50,7 +50,7 @@ export default function InvitePage() {
     return (
       <main className="bg-gray-white mx-auto flex h-[calc(100vh-var(--spacing-header-height))] w-full items-center justify-center px-6">
         <form
-          className="w-full max-w-[420px] rounded-xl border border-[#e3e5e8] bg-white p-6"
+          className="border-gray-3 w-full max-w-[420px] rounded-xl border bg-white p-6"
           data-testid="invite-code-form"
           onSubmit={(event) => {
             event.preventDefault();
@@ -60,7 +60,7 @@ export default function InvitePage() {
           }}
         >
           <h1 className="text-lg font-extrabold">초대 코드 넣기</h1>
-          <p className="mt-2 text-xs text-[#747980]">
+          <p className="text-gray-9 mt-2 text-xs">
             선생님께 받은 초대 코드를 붙여넣으면 수업으로 들어갑니다.
           </p>
           <input
@@ -68,7 +68,7 @@ export default function InvitePage() {
             onChange={(event) => setTypedCode(event.target.value)}
             aria-label="초대 코드"
             placeholder="초대 코드"
-            className="mt-4 min-h-11 w-full rounded-lg border border-[#e3e5e8] px-3 text-sm"
+            className="border-gray-3 mt-4 min-h-11 w-full rounded-lg border px-3 text-sm"
           />
           <button
             type="submit"

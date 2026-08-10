@@ -51,12 +51,9 @@ const SidebarRoot = ({ children }: { children: ReactNode }) => {
   return (
     <div
       data-dashboard-sidebar
-      className={cn(
-        'fixed top-0 left-0 z-40 hidden h-dvh flex-col',
-        'md:flex'
-      )}
+      className={cn('fixed top-0 left-0 z-40 hidden h-dvh flex-col', 'md:flex')}
     >
-      <aside className="relative flex w-[186px] flex-1 flex-col overflow-hidden border-r border-[#e0e0e0] bg-white p-3">
+      <aside className="border-gray-3 relative flex w-[186px] flex-1 flex-col overflow-hidden border-r bg-white p-3">
         {children}
       </aside>
     </div>
@@ -97,7 +94,7 @@ const SidebarItem = ({
       className={cn(
         'flex min-h-11 items-center gap-2 rounded-lg px-2.5 text-[12.5px] font-semibold',
         isActive
-          ? 'text-key-color-primary bg-[#FFF4F1]'
+          ? 'text-key-color-primary bg-orange-1'
           : 'hover:bg-gray-scale-gray-5',
         isCreatePage && 'h-9 w-9 justify-center gap-0 bg-transparent px-0',
         className

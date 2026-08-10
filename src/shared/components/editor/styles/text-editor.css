@@ -17,7 +17,7 @@
 /* Placeholder */
 .notion-editor-content p.is-editor-empty:first-child::before,
 .notion-editor-content .is-empty::before {
-  color: var(--gray-scale-gray-40, #9ca3af);
+  color: var(--gray-6);
   content: attr(data-placeholder);
   float: left;
   height: 0;
@@ -227,7 +227,7 @@
   width: 1rem;
   height: 1rem;
   border-radius: 0.25rem;
-  border: 2px solid var(--gray-scale-gray-40, #9ca3af);
+  border: 2px solid var(--gray-6);
   cursor: pointer;
   accent-color: var(--key-color-primary, #ff6b35);
 }
@@ -255,7 +255,7 @@
 .notion-editor[data-dark-mode='true']
   .notion-editor-content
   .notion-blockquote {
-  color: var(--gray-scale-gray-40, #9ca3af);
+  color: var(--gray-6);
 }
 
 /* Code Block */

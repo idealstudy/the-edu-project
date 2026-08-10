@@ -1,0 +1,575 @@
+# 디에듀 디자인 시스템 (정본)
+
+> 이 문서가 프론트엔드 디자인 시스템의 **유일한 정본**이다.
+> 코드 정본은 `src/styles/globals.css`(CSS 변수 + Tailwind v4 `@theme`)이고, 이 문서는 그 값의 뜻과 쓰는 법을 적는다.
+> 값이 서로 다르면 `globals.css` 가 이긴다. 발견 즉시 이 문서를 고친다.
+
+| 항목        | 값                                                                                                                                                        |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 버전        | v1.2.1                                                                                                                                                    |
+| 갱신        | 2026-08-11                                                                                                                                                |
+| 코드 정본   | `mvp-front/src/styles/globals.css`                                                                                                                        |
+| 통합한 문서 | `docs/design-system-2.0.md`(2.0 톤·컴포넌트) · `docs/ui-guidelines.md §7`(색 우선순위) · `docs/mvp-g/design-spec-v22.md §1·§3`(승인 프로토타입 실측 규격) |
+| 관련        | `docs/ui-guidelines.md`(UI 코딩 규칙, 이 문서와 역할이 다름) · `wiki/5-hubs/hub-design/design-system.md`(디자인 조직 관점 요약)                           |
+| 코드 갭     | `docs/mvp-g/design-system-conformance-gap.md`(문서↔코드↔프로토타입 3자 불일치 + 코드 수정 작업지시)                                                     |
+
+> **v1.2.0 정합 감사 (2026-08-11).** globals.css 810줄과 `src/` 실사용을 전수 대조해 문서를 코드 현행에 맞췄다. 바뀐 것: ①시스템 색에 `--system-safe`·`--system-dim`·`--surface-coach-*` 추가 §2.5 ②2.0 시맨틱 색 토큰(`--color-text-*`·`--color-line-*`·`--color-background-*`·`--color-key-color-*`)을 §2.6으로 명시(전엔 §1이 존재만 언급) ③간격 토큰 전량 수록 §4.2(전엔 약 20개만) ④모서리에 `--radius-control-compact`·`--radius-section` 추가 ⑤레이아웃 컴포넌트 import 경로 `@/layout` 명시 ⑥feature 컴포넌트 목록을 코드 실재와 대조해 정정 §6.5. 미해소 불일치는 갭 문서로 이관.
+
+**왜 파일 이름에 버전을 안 붙였나.** 기존에 `design-system-2.0.md` 가 정본이었는데 `ui-guidelines.md` 가 "3.0 우선"을 선언하면서 존재하지 않는 3.0 문서를 가리켰다. 파일 이름에 세대를 박으면 세대가 오를 때마다 정본이 갈라진다. 이제 파일은 하나로 고정하고, 세대 차이는 문서 **안**의 절로 다룬다.
+
+---
+
+## 목차
+
+- [1. 세대 정리 (2.0 대 3.0)](#1-세대-정리-20-대-30)
+- [2. 색](#2-색)
+- [3. 타이포](#3-타이포)
+- [4. 간격](#4-간격)
+- [5. 모서리와 그림자](#5-모서리와-그림자)
+- [6. 공용 부품 규격](#6-공용-부품-규격)
+- [7. 반응형](#7-반응형)
+- [8. 톤과 안티룰](#8-톤과-안티룰)
+- [9. 토큰을 새로 만들 때](#9-토큰을-새로-만들-때)
+
+---
+
+## 1. 세대 정리 (2.0 대 3.0)
+
+색 스케일이 두 벌 있었다. 이제 관계를 이렇게 고정한다.
+
+| 구분            | 이름                                                                    | 지위                                                        |
+| --------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------- |
+| 3.0 원시 스케일 | `--gray-1`~`--gray-12`, `--orange-1`~`--orange-12`                      | **정본.** 새 코드는 이것만 쓴다                             |
+| 2.0 원시 스케일 | `--gray-scale-gray-*`, `--orange-scale-orange-*`                        | **레거시 별칭.** 3.0 값을 가리키는 껍데기. 새로 쓰지 않는다 |
+| 2.0 시맨틱 토큰 | `--color-text-main`, `--color-line-line1`, `--color-background-gray` 등 | **유지.** 3.0 에 대응이 없는 의미 계층이라 계속 쓴다        |
+| 시스템 색       | `--system-success`, `--system-warning`, `--system-background` 등        | **유지**                                                    |
+
+3.0 을 정본으로 고른 이유는 취향이 아니라 실사용량이다. `src/` 안 사용 횟수를 세면 `gray-N` 1161회 대 `gray-scale-gray-N` 207회, `orange-N` 550회 대 `orange-scale-orange-N` 74회다. 승인 프로토타입 v22 의 색 규격도 3.0 값과 일치한다.
+
+**두 스케일의 값이 미묘하게 달랐던 쌍** (전부 3.0 값으로 통일했다. 육안 구분이 불가능한 1 단위 차이라 화면 변화 없음):
+
+| 2.0 이름                   | 구 값     | 3.0 이름      | 채택 값   |
+| -------------------------- | --------- | ------------- | --------- |
+| `--gray-scale-gray-80`     | `#4e4e4e` | `--gray-10`   | `#4f4f4f` |
+| `--orange-scale-orange-10` | `#ffd6cc` | `--orange-3`  | `#ffd6cb` |
+| `--orange-scale-orange-40` | `#ff724e` | `--orange-6`  | `#ff714e` |
+| `--orange-scale-orange-70` | `#d03800` | `--orange-9`  | `#d13800` |
+| `--orange-scale-orange-90` | `#9a2900` | `--orange-11` | `#9b2900` |
+
+2.0 이름은 **지우지 않았다.** 207회 + 74회가 아직 코드에 살아 있어서 지우면 화면이 깨진다. 정본을 가리키는 별칭으로만 남겼다.
+
+### 이름이 틀린 채 문서에 돌던 토큰
+
+구 `design-system-2.0.md` 는 성공색을 `--color-success`, 경고색을 `--color-warning` 으로 적었는데 **코드에 그런 이름은 없다.** 실제 이름은 아래와 같다.
+
+| 문서에 있던 잘못된 이름 | 실제 이름                                           |
+| ----------------------- | --------------------------------------------------- |
+| `--color-success`       | `--system-success` (유틸리티 `text-system-success`) |
+| `--color-warning`       | `--system-warning` (유틸리티 `text-system-warning`) |
+
+---
+
+## 2. 색
+
+브랜드색은 **오렌지 하나**다. 파랑, 네이비, 임의 그라데이션은 금지다.
+
+### 2.1 스케일
+
+| 스케일 | 값                                                                                                                                                                                                           |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 오렌지 | `1 #fff4f1` · `2 #ffe7e2` · `3 #ffd6cb` · `4 #ffbaa9` · `5 #ff957b` · `6 #ff714e` · `7 #ff4805` · `8 #e83600` · `9 #d13800` · `10 #b93100` · `11 #9b2900` · `12 #561700`                                     |
+| 회색   | `white #ffffff` · `1 #f5f5f5` · `2 #e9e9e9` · `3 #e0e0e0` · `4 #c8c8c8` · `5 #bcbcbc` · `6 #adadad` · `7 #999999` · `8 #7c7c7c` · `9 #666666` · `10 #4f4f4f` · `11 #333333` · `12 #1a1a1a` · `black #000000` |
+
+### 2.2 역할별 쓰임 (대비 기준 포함)
+
+| 용도                                   | 토큰                                                                                                | 근거                                                                 |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Primary (비텍스트: 게이지·막대·아이콘) | `orange-7`                                                                                          | 브랜드 키컬러                                                        |
+| 채워진 버튼 배경 (흰 글자)             | `orange-9`, 테두리 `orange-10`                                                                      | `orange-7` 은 흰 글자 대비 3.4:1 이라 **금지**. `orange-9` 는 4.91:1 |
+| 옅은 배경                              | `orange-1`                                                                                          |                                                                      |
+| 본문 글자                              | `gray-12`                                                                                           |                                                                      |
+| 14px 미만 캡션 글자                    | `gray-9` (5.74:1)                                                                                   | `gray-8` 은 4.17:1 이라 **금지**                                     |
+| 선                                     | `gray-3`                                                                                            | 카드 테두리                                                          |
+| 페이지 배경                            | `--system-background` `#fcfbfa`                                                                     |                                                                      |
+| 성공·완료                              | `--system-success` `#34c759` / `--system-success-alt` `#dcf9e3` / `--system-success-text` `#1f6b2c` | 완료 칩은 `-alt` 배경 + `-text` 글자                                 |
+| 경고·오답                              | `--system-warning` `#ff4040` / `--system-warning-alt` `#ffd9d9` / `--system-warning-text` `#c0281c` | 경고 칩은 `-alt` 배경 + `-text` 글자                                 |
+| 포커스 링                              | `orange-7` 2px, offset 2px, radius `--radius-focus`                                                 | `@utility focus-ring`                                                |
+
+### 2.3 약점 트리 4단계 (시그니처)
+
+정복도를 오렌지 농도 한 축으로 표현한다. 파랑·빨강을 쓰지 않는다.
+
+| 단계   | 토큰              | 값        |
+| ------ | ----------------- | --------- |
+| 미진단 | `--tree-untested` | `#f0efec` |
+| 약점   | `--tree-weak`     | `#ffd0c0` |
+| 진행   | `--tree-progress` | `#ff7a4d` |
+| 정복   | `--tree-mastered` | `#ff4805` |
+
+- 노드마다 정복도 % 를 항상 표시한다. 자력 정답 기준.
+- 모의고사 자기신고분은 색 단계는 같게 두고 작은 "모의" 태그로 구분한다. 빗금은 폐기했다.
+- 반복 막힘은 `⚠` 마커로만 표시하고 노드 색은 바꾸지 않는다.
+
+### 2.4 허용된 시스템 밖 색 (예외 목록)
+
+"키컬러 밖 색 0개"가 합격선이지만 아래 둘은 승인된 예외다. 이 목록에 없는 하드코딩 색은 위반이다.
+
+| 자리                    | 값                                                  | 사유                                   |
+| ----------------------- | --------------------------------------------------- | -------------------------------------- |
+| 스터디룸 수업 링크 카드 | 배경 `#E9F5FF` · 글자 `#0b62b8`                     | 기존 구현 계승분. 정리 대상            |
+| 손글씨 잉크             | `#1a3fa0`                                           | 필기 표현 전용                         |
+| 필기 펜 팔레트          | 에디터 툴바 펜 색(`#FF4040`·`#FFA425`·`#EE38FF` 등) | 사용자가 고르는 잉크색. 시맨틱 색 아님 |
+
+### 2.5 시스템 색 (전체)
+
+`--system-*`·`--surface-*`는 상태·표면 전용 색이다. globals.css `:root`가 정본.
+
+| 토큰                       | 값                         | 쓰임                         |
+| -------------------------- | -------------------------- | ---------------------------- |
+| `--system-background`      | `#fcfbfa`                  | 페이지 배경                  |
+| `--system-background-alt`  | `= gray-white`             | 카드·표면 배경(body 기본)    |
+| `--system-dim`             | `#0000004d`                | 딤 오버레이(모달 뒤)         |
+| `--system-safe`            | `#aad800` / `-alt #eaffbd` | 안전·연두 상태(라임)         |
+| `--system-success`         | `#34c759` / `-alt #dcf9e3` | 성공·완료                    |
+| `--system-success-text`    | `#1f6b2c`                  | 성공·완료 상태의 짙은 글자   |
+| `--system-warning`         | `#ff4040` / `-alt #ffd9d9` | 경고·오답                    |
+| `--system-warning-text`    | `#c0281c`                  | 경고·오답 상태의 짙은 글자   |
+| `--surface-coach-paper`    | `#fffdf6`                  | 코치 말풍선 종이 표면        |
+| `--surface-coach-solution` | `#fffdf3`                  | 코치 풀이 표면               |
+| `--line-coach-paper`       | `rgb(255 92 53 / 0.08)`    | 코치 종이 왼쪽 오렌지 여백선 |
+
+### 2.6 2.0 시맨틱 색 토큰 (의미 계층 — 유지)
+
+3.0 원시 스케일 위에 얹힌 **의미 이름** 층이다. 코드 850+회 사용 중이라 유지한다. 새 코드는 의미가 분명하면 이쪽(예: `text-text-main`)을, 아니면 원시 스케일(`text-gray-12`)을 쓴다. 값은 원시 스케일을 가리키는 별칭이다.
+
+| 토큰                          | 가리키는 값  | 쓰임             |
+| ----------------------------- | ------------ | ---------------- |
+| `--color-text-main`           | `gray-12`    | 본문 글자        |
+| `--color-text-sub1`           | `gray-10`    | 보조 글자 1      |
+| `--color-text-sub2`           | `gray-8`     | 보조 글자 2      |
+| `--color-text-inactive`       | `gray-5`     | 비활성 글자      |
+| `--color-text-reversed-main`  | `gray-white` | 어두운 배경 글자 |
+| `--color-line-line1`          | `gray-3`     | 옅은 선          |
+| `--color-line-line2`          | `gray-5`     | 중간 선          |
+| `--color-line-line3`          | `gray-black` | 강조 선          |
+| `--color-background-gray`     | `gray-1`     | 회색 면          |
+| `--color-background-orange`   | `orange-1`   | 옅은 오렌지 면   |
+| `--color-background-inactive` | `gray-3`     | 비활성 면        |
+| `--color-key-color-primary`   | `orange-7`   | 키컬러(비텍스트) |
+| `--color-key-color-secondary` | `orange-3`   | 키컬러 보조      |
+| `--color-key-color-tertiary`  | `orange-12`  | 키컬러 강조      |
+| `--color-ring`                | `orange-7`   | 포커스 링        |
+
+---
+
+## 3. 타이포
+
+Wanted Sans Variable을 본문 1순위로 쓰고, 로컬 Pretendard를 대체 글꼴로 둔다. CDN이 차단되거나 오프라인이어도 Pretendard로 같은 굵기 계층을 유지한다. **임의 px 금지.** 아래 `@utility` 스케일로만 쓴다.
+
+| 유틸                                | 크기 / 굵기   | 용도        |
+| ----------------------------------- | ------------- | ----------- |
+| `font-display-1` / `font-display-2` | 56 · 40 / 700 | 랜딩 히어로 |
+| `font-title-heading`                | 32 / 700      | 화면 타이틀 |
+| `font-headline1-heading`            | 24 / 700      | 섹션 헤딩   |
+| `font-headline2-heading`            | 20 / 600      | 하위 섹션   |
+| `font-body1-heading`                | 18 / 600      | 카드 제목   |
+| `font-body2-heading`                | 16 / 600      | 본문 강조   |
+| `font-label-heading`                | 14 / 600      | 라벨·버튼   |
+| `font-caption-heading`              | 12 / 500      | 캡션·메타   |
+
+v22가 부품 단위로 고정한 예외 글자 크기는 `text-ui-compact` 10.5px(배지·관리자 표 머리), `text-ui-choice` 11.5px(선택 칩), `text-coach` 13.5px(코치 말풍선) 세 개뿐이다. 일반 본문에 새 크기를 만들지 않는다.
+
+추가 규칙 (승인 프로토타입 v22 §1.2):
+
+- 자간: 제목 `-0.03em`, 본문 `-0.015em`, 캡션 `0`. 큰 숫자는 `-0.04em`~`-0.05em`.
+- 행간: 제목 1.25, 본문 1.35.
+- 숫자(퍼센트·점수·건수)는 전부 `tabular-nums`.
+- 한국어 제목은 `word-break: keep-all`. 단어 중간에서 끊지 않는다.
+- 문제 본문은 `ui-serif, Georgia, serif` 로 본문 산세리프와 구분한다.
+- 학생 손풀이 미리보기처럼 실제 필기를 재현하는 영역만 `Nanum Pen Script` 22px / 행간 28px를 쓸 수 있다. 코치 말풍선에는 적용하지 않는다.
+
+### 3.1 텍스트 안전 유틸리티
+
+| 유틸                | 계약                                                    | 쓰는 곳                |
+| ------------------- | ------------------------------------------------------- | ---------------------- |
+| `text-heading-wrap` | 한국어 단어를 보존하되 긴 단어는 컨테이너 안에서 줄바꿈 | 제목                   |
+| `text-single-line`  | 1줄 말줄임, `min-width:0` 포함                          | 목록 제목·앱바 이름    |
+| `text-two-lines`    | 2줄 말줄임 + 긴 단어 줄바꿈                             | 카드 설명              |
+| `text-three-lines`  | 3줄 말줄임 + 긴 단어 줄바꿈                             | 긴 요약                |
+| `text-break-safe`   | URL·긴 영문을 컨테이너 안에서 강제 줄바꿈               | 사용자 입력·API 메시지 |
+| `numeric-tabular`   | `font-variant-numeric: tabular-nums`                    | 점수·퍼센트·건수·시간  |
+
+코치 말풍선은 전용 손글씨를 쓰지 않는다. 앱 본문을 상속하고 종이색, 줄노트 배경, 왼쪽 오렌지 여백선만 남긴다. 수식은 KaTeX 글꼴 예외를 유지한다. 학생이 직접 쓴 손풀이 캔버스는 이 규칙의 대상이 아니다.
+
+---
+
+## 4. 간격
+
+`@theme` 의 `--spacing-*` 로 노출돼 있어 Tailwind 유틸리티로 바로 쓴다 (`p-card-pad`, `gap-block-gap`, `min-h-touch-min` 등).
+
+| 토큰                           | 값    | 뜻                          | 유틸 예             |
+| ------------------------------ | ----- | --------------------------- | ------------------- |
+| `--spacing-card-pad`           | 16px  | 카드 안쪽 여백              | `p-card-pad`        |
+| `--spacing-card-pad-mobile`    | 14px  | 휴대폰 390 카드 안쪽 여백   | `p-card-pad-mobile` |
+| `--spacing-block-gap`          | 12px  | 카드 사이 간격              | `gap-block-gap`     |
+| `--spacing-section-gap`        | 16px  | 구획(본문 영역) 여백        | `p-section-gap`     |
+| `--spacing-section-gap-mobile` | 14px  | 휴대폰 구획 여백            |                     |
+| `--spacing-row-gap`            | 7px   | 목록 행 사이 간격           | `gap-row-gap`       |
+| `--spacing-inline-gap-xs`      | 5px   | 페이지네이션·문항 격자      | `gap-inline-gap-xs` |
+| `--spacing-inline-gap`         | 6px   | 행 안의 액션 두 개          | `gap-inline-gap`    |
+| `--spacing-content-gap`        | 8px   | 타일·콘텐츠 묶음            | `gap-content-gap`   |
+| `--spacing-grid-gap`           | 11px  | 문제·수업 카드 격자         | `gap-grid-gap`      |
+| `--spacing-column-gap`         | 16px  | 2단 배치 열 간격            | `gap-column-gap`    |
+| `--spacing-room-gap`           | 20px  | 스터디룸 좌우 영역          | `gap-room-gap`      |
+| `--spacing-exam-layout-gap`    | 13px  | 시험 응시·열기 2단 간격     |                     |
+| `--spacing-exam-rail`          | 248px | 시험 응시 펼친 레일         |                     |
+| `--spacing-exam-rail-folded`   | 56px  | 시험 응시 접힌 레일         |                     |
+| `--spacing-exam-wizard-aside`  | 300px | 선생님 시험 열기 보조열     |                     |
+| `--spacing-empty-pad-x`        | 22px  | 빈 상태 가로 여백           | `px-empty-pad-x`    |
+| `--spacing-empty-pad-y`        | 38px  | 빈 상태 세로 여백           | `py-empty-pad-y`    |
+| `--spacing-touch-min`          | 44px  | 터치 타깃 최소              | `min-h-touch-min`   |
+| `--spacing-control-sm`         | 44px  | 작은 버튼·선택 칩 최소 높이 |                     |
+| `--spacing-control-lg`         | 50px  | 큰 CTA 최소 높이            |                     |
+| `--spacing-chip-min`           | 32px  | 앱바 칩 최소 높이           |                     |
+| `--spacing-badge-min`          | 22px  | 배지 최소 높이              |                     |
+| `--spacing-row-min`            | 58px  | 목록 행 최소 높이           |                     |
+
+셸·부품 치수 토큰(위 표에 없던 나머지 전량). 화면이 이 값을 raw px로 다시 쓰지 않는다.
+
+| 토큰                               | 값             | 뜻                                |
+| ---------------------------------- | -------------- | --------------------------------- |
+| `--spacing-header-height`          | 60px           | 전역 헤더 높이                    |
+| `--spacing-sidebar-width`          | 260px          | 사이드바 폭                       |
+| `--spacing-grid-margin`            | 20px           | 그리드 좌우 여백                  |
+| `--spacing-appbar-pad-x/y`         | 22 / 13px      | 앱바 안쪽 여백                    |
+| `--spacing-sidebar-pad-x/y`        | 12 / 16px      | 사이드바 안쪽 여백                |
+| `--spacing-room-page-pad`          | 32px           | 스터디룸 페이지 여백              |
+| `--spacing-room-page-pad-mobile`   | 24px           | 스터디룸 휴대폰 여백              |
+| `--spacing-control-xs/md/xl`       | 40 / 56 / 64px | 제어 높이(구 xsmall/medium/large) |
+| `--spacing-button-compact-x`       | 13px           | 작은 버튼 좌우 패딩               |
+| `--spacing-button-default-x`       | 20px           | 기본·CTA 버튼 좌우 패딩           |
+| `--spacing-button-wide-x`          | 26px           | 넓은 버튼 좌우 패딩               |
+| `--spacing-button-chip-x`          | 14px           | 선택 칩 좌우 패딩                 |
+| `--spacing-empty-cta`              | 46px           | 빈 상태 CTA 높이                  |
+| `--spacing-flat-row`               | 66px           | 납작 행 높이                      |
+| `--spacing-page-max`               | 1180px         | 페이지 최대 폭                    |
+| `--spacing-content-max`            | 1100px         | 콘텐츠 최대 폭                    |
+| `--spacing-room-aside`             | 360px          | 스터디룸 좌측 폭                  |
+| `--spacing-room-content-max`       | 740px          | 스터디룸 우측 최대 폭             |
+| `--spacing-answer-box-min`         | 84px           | 답안 입력 최소 높이               |
+| `--spacing-level-bar`              | 9px            | 레벨 막대 높이                    |
+| `--spacing-tree-progress-max`      | 220px          | 트리 진행바 최대 폭               |
+| `--spacing-tree-tile-min`          | 74px           | 트리 타일 최소 크기               |
+| `--spacing-dialog-sm`              | 400px          | 작은 다이얼로그 폭                |
+| `--spacing-dialog-viewport-offset` | 4rem           | 다이얼로그 뷰포트 여백            |
+| `--spacing-tag-menu`               | 300px          | 태그 메뉴 폭                      |
+| `--spacing-tag-item`               | 120px          | 태그 항목 폭                      |
+| `--spacing-tag-pad-y`              | 10.5px         | 태그 세로 패딩                    |
+| `--spacing-popover-min`            | 280px          | 팝오버 최소 폭                    |
+| `--spacing-pagination-control`     | 28px           | 페이지네이션 버튼                 |
+| `--spacing-prompt-space`           | 25px           | 프롬프트 간격                     |
+| `--spacing-prompt-close-top`       | 27px           | 프롬프트 닫기 top                 |
+| `--spacing-prompt-close-right`     | 18px           | 프롬프트 닫기 right               |
+
+화면 골격에는 `section-gap` 16px, 휴대폰 14px, 최대 폭 1180px, 2단 열 간격 16px를 쓴다. 스터디룸 계승 골격에는 페이지 여백 32px, 휴대폰 24px, 좌측 360px, 우측 최대 740px, 열 간격 20px를 쓴다. 이 값은 `PageLayout`, `SplitLayout`, `ColumnLayout`이 소유하고 화면이 다시 적지 않는다.
+
+**터치 타깃 44px 규칙**: 보이는 크기는 작게 두더라도 `:after` 로 히트박스만 44px 로 넓힌다. 아이콘 버튼을 크게 그려서 맞추지 않는다.
+
+---
+
+## 5. 모서리와 그림자
+
+| 토큰                                 | 값    | 쓰는 곳              | 유틸             |
+| ------------------------------------ | ----- | -------------------- | ---------------- |
+| `--radius-button` / `--radius-input` | 8px   | 버튼·입력            | `rounded-button` |
+| `--radius-row`                       | 9px   | 목록 행              | `rounded-row`    |
+| `--radius-card`                      | 12px  | 카드                 | `rounded-card`   |
+| `--radius-checkbox`                  | 5px   | 체크박스             |                  |
+| `--radius-focus`                     | 6px   | 포커스 링            |                  |
+| `--radius-control-compact`           | 4px   | 작은 제어(코드칩 등) |                  |
+| `--radius-section`                   | 16px  | 큰 구획 블록         |                  |
+| `--radius-pill`                      | 999px | 칩·배지·게이지 트랙  | `rounded-pill`   |
+
+체크박스처럼 1.5px 테두리가 필요한 v22 부품은 `--border-width-precision`과 `border-precision`을 쓴다. 일반 카드 테두리는 기존 1px `border`를 유지한다.
+
+그림자는 **아래 둘만** 허용한다. 장식 그림자는 금지다. 카드에는 그림자를 넣지 않는다 (테두리 `1px solid gray-3` 으로 구분).
+
+| 토큰               | 값                                | 쓰는 곳                     |
+| ------------------ | --------------------------------- | --------------------------- |
+| `--shadow-cta`     | `0 4px 0 var(--orange-10)`        | 큰 오렌지 CTA (눌리는 느낌) |
+| `--shadow-popover` | `0 6px 18px rgb(26 26 26 / 0.13)` | 팝오버·드롭다운             |
+
+전환은 `.16s ease-out` 으로 **배경·테두리·글자색만** 준다. `prefers-reduced-motion` 을 존중한다.
+
+---
+
+## 6. 공용 부품 규격
+
+승인 프로토타입 v22 에서 실측한 규격이다 (`docs/mvp-g/design-spec-v22.md §3`). 이 규격 밖의 부품을 새로 그리지 않는다. 색·radius·글자 크기는 전부 §2~§5 토큰을 참조하고, 아래 표의 값은 그 토큰이 실제로 만들어내는 결과다.
+
+### 6.1 버튼·칩·배지
+
+| 부품      | 최소 높이 | 패딩          | 모서리 | 글자                                |
+| --------- | --------- | ------------- | ------ | ----------------------------------- |
+| 작은 버튼 | 44px      | `0 13px`      | 8px    | 12px / 700                          |
+| 큰 CTA    | 50px      | `0 20px`      | 8px    | 14.5px / 800, 그림자 `--shadow-cta` |
+| 배지      | 22px      | `0 10px`      | 999px  | 10.5px / 800                        |
+| 앱바 칩   | 32px      | `6px 11px`    | 999px  | 12px / 600                          |
+| 선택 칩   | 44px      | `0 14px`      | 999px  | 11.5px / 700                        |
+| 알약 필터 | 38px      | `0 15px`      | 999px  |                                     |
+| 세그먼트  | 40~44px   | 트랙 패딩 4px |        | 선택된 칸만 흰 배경                 |
+
+**버튼 안 텍스트 정렬**: `inline-flex` + `align-items:center` + `justify-content:center` + `line-height:1`. 상하 패딩만으로 중심을 잡지 않는다.
+
+### 6.2 목록 행
+
+| 항목                      | 값                                                    |
+| ------------------------- | ----------------------------------------------------- |
+| 구조                      | `[지표(고정폭)] [본문(늘어남)] [액션(고정폭)]`        |
+| 최소 높이 / 패딩 / 모서리 | 58px / `11px 12px` / 9px                              |
+| 행 간격                   | 7px                                                   |
+| 게이지 트랙 폭            | 96px (휴대폰 56px, 2단 열 안 72px)                    |
+| 퍼센트 칸 폭              | 44px 우측 정렬 + tabular-nums (휴대폰 40px)           |
+| 액션 칸 폭                | 128px, 2버튼 172px (휴대폰 96px)                      |
+| 액션 버튼                 | `width:100%` → 같은 목록 안 버튼 왼쪽 좌표가 일치한다 |
+| 체크박스                  | 20px 사각, radius 5px, 테두리 1.5px                   |
+
+### 6.3 게이지
+
+| 부품                                                       | 높이                |
+| ---------------------------------------------------------- | ------------------- |
+| 두 색 게이지(문제 푼 것 `orange-7` + 개념 정리 `orange-4`) | 8px                 |
+| 큰 두 색 게이지                                            | 10px                |
+| 레벨 막대                                                  | 9px (최소 폭 130px) |
+| 얇은 게이지                                                | 7px                 |
+| 이어 풀기 막대                                             | 6px                 |
+
+트랙 모서리는 전부 `--radius-pill`.
+
+### 6.4 카드와 빈 상태
+
+- 카드: `bg-white` + `border 1px gray-3` + radius 12px + 안쪽 여백 16px. 그림자 없음.
+- 빈 상태: 점선 테두리, 패딩 `38px 22px`, CTA 최소 높이 46px.
+- 오류 상태: 테두리 `#f0c4c0`, 배경 `#fff0f0`, 재시도 버튼 최소 높이 44px.
+- **빈 카드 금지**: 그날 내용이 없는 블록은 자리를 비우지 않고 아예 렌더하지 않는다. 빈 게이지와 회색 자리표시는 거짓 약속이다.
+
+데이터 양 계약:
+
+- 0건: `EmptyState`가 안내와 다음 행동을 함께 제공한다. 행동이 없으면 해당 구획 자체를 렌더하지 않는다.
+- 소량: `ListRow`·`DataList` 기본 흐름을 쓴다.
+- 대량: `DataList`의 명시적 `maxVisibleItems`와 펼치기·접기, 또는 `Pagination`을 사용한다. 무한 격자나 무제한 높이 확장은 금지다.
+
+### 6.5 재사용 컴포넌트
+
+`@/shared/components/ui` 의 공용 부품을 먼저 찾는다. 실재 파일 35종: `button` · `card` · `checkbox` · `input` · `text-field` · `textarea` · `select` · `radio-group` · `radio-card` · `toggle` · `search-input` · `tag-input` · `form` · `required-mark` · `data-list` · `list-item` · `pagination` · `accordion` · `dialog` · `popover` · `dropdown-menu` · `prompt` · `bottom-toast` · `stat-chip` · `status-badge` · `empty-state` · `preparing` · `confetti` · `icon` · `media-frame` · `profile-avatar` · `back-button` · `scroll-to-top-button` · `studyroom-status-toggle`. 사용 규칙은 `docs/ui-guidelines.md §5`.
+
+feature 단위 컴포넌트(코드 실재 기준, `@/features/<도메인>` 아래):
+
+| 문서상 이름    | 코드 실재                                                         |
+| -------------- | ----------------------------------------------------------------- |
+| 약점 트리      | ✅ `features/*/tree`(TreeMap은 개념명, 파일은 트리 컴포넌트군)    |
+| AI 코치        | ✅ 존재하나 이름은 `CoachChat` 아님(ai-coach 계열). 갭 K-1        |
+| 펜슬 풀이      | ✅ `shared/components/drawing`(DrawingCanvas 개념)                |
+| 레벨 배지      | ✅ `features/point/components/level-badge.tsx`(`LevelBadge`)      |
+| 연속·동기 헤더 | ✅ `open-challenge/.../motive-header.tsx`(StreakBanner는 개념명)  |
+| 온보딩 스텝    | ✅ `app/(private)/onboarding`(전용 컴포넌트 아닌 페이지 내부)     |
+| 포인트 원장    | ⚠️ `PointLedger`라는 컴포넌트 없음(포인트 도메인 내 산재). 갭 K-1 |
+| 풀이 공유 목록 | ⚠️ `SolutionShareList` 없음. 갭 K-1                               |
+
+> 문서상 이름(`CoachChat`·`PointLedger`·`SolutionShareList`)은 코드에 그대로 존재하지 않는다. 개념명으로만 두고, 실제 조립 지점은 갭 문서 §K에 매핑한다.
+
+### 6.6 레이아웃 컴포넌트
+
+| 부품               | 소유하는 규격                                                              |
+| ------------------ | -------------------------------------------------------------------------- |
+| `PageLayout`       | 페이지 여백 16px, 최대 폭 1180px 또는 콘텐츠 최대 폭 1100px                |
+| `SplitLayout`      | 일반 2단 `1.28fr : 1fr`, 할 일·회고 `1.34fr : 1fr`, 구 상세 `1.35fr : 1fr` |
+| `ColumnLayout`     | 스터디룸 여백 24/32px, 좌측 360px, 우측 최대 740px, 열 간격 20px           |
+| `CollectionLayout` | 0건 `EmptyState`, 과다 항목 명시적 접기·펼치기                             |
+| `ExamTakeLayout`   | 응시 레일 248px, 접힘 56px, 문제 영역 `minmax(0,1fr)`, 간격 13px           |
+| `ExamWizardLayout` | 선생님 시험 열기 `minmax(0,1fr) : 300px`, 간격 13px                        |
+
+이 부품들은 `@/layout` 에 있다(`src/layout/`: `page-layout.tsx` · `split-layout.tsx` · `column-layout.tsx` · `collection-layout.tsx` · `exam-layout.tsx`, 배럴 `index.ts`). `@/shared/components/ui` 가 아니다. 3역할 hub(학생·선생님·관리자)는 이 부품 위에 셸(`app-shell` · `sidebar` · admin-shell)을 얹어 구성한다. 역할별 셸 분기는 globals.css의 `[data-admin-shell]` · `[data-study-room-shell]` · `[data-private-app-shell]` 속성 선택자가 소유한다(사이드바 표시·헤더 숨김·패딩).
+
+레이아웃 부품의 자식은 항상 `min-width:0`을 상속한다. 따라서 긴 텍스트와 이미지가 열 너비를 밀어내지 않는다. 화면은 이 비율과 최대 폭을 임의 class로 다시 선언하지 않는다.
+
+---
+
+## 7. 반응형
+
+**태블릿 퍼스트**다. mobile-first 가 아니다. 1순위 기기가 태블릿 + 펜슬이기 때문이다.
+
+| 순서              | 폭                                         | 기준                                                |
+| ----------------- | ------------------------------------------ | --------------------------------------------------- |
+| ① 태블릿 (베이스) | 1024 × 768 가로                            | 모든 화면의 기본 레이아웃을 여기서 확정한다         |
+| ② 데스크톱        | 1280 × 800 (`--breakpoint-desktop` 1200)   | 태블릿 레이아웃을 넓히고 사이드바 + 컨테이너 센터링 |
+| ③ 휴대폰          | 390 × 844 (`--breakpoint-tablet` 768 미만) | 단일 컬럼 스택. 하단 탭 5칸(최소 높이 52px)         |
+
+접힘선은 **768px** 다. 화면 위 두 칸은 접힘선 안에 넣고, 다음 구획 머리글은 일부러 살짝 걸쳐 스크롤 단서를 남긴다.
+
+---
+
+## 8. 톤과 안티룰
+
+**한 줄**: "제대로 풀면 내 지도가 오렌지로 채워진다." 모든 결정이 이걸 섬긴다.
+
+톤은 B+A 블렌드다. B 골격(연속·포인트·레벨·큰 CTA·채워지는 트리)에 A 톤(여백, 타입 스케일 준수, 이모지 절제, 공부 앱의 진중함)을 얹는다. 숫자는 정직하게 보여준다(오답률·자력정답률·통과율).
+
+하지 말 것:
+
+- 시스템에 없는 색. 트리도 오렌지 강도 한 축만.
+- 타이포 임의 px. 스케일 유틸만.
+- 이모지 남발. 기능적으로 필요한 1~2개만.
+- 근거 없는 격려 카피. 숫자와 함께 쓴다.
+- 과한 그림자·네온·셀레브레이션.
+- em dash(`—`) 를 UI 문구에 넣는 것.
+- 또래 비교, 연속 일수 리셋 강조, 잠금·해금 게이트. 셋 다 벤치마크 조사로 명시 거부됐다 (`docs/mvp-g/design-spec-v22.md §5.1`).
+
+---
+
+## 9. 토큰을 새로 만들 때
+
+1. 먼저 기존 토큰으로 되는지 본다. 대부분 된다.
+2. 안 되면 이 문서와 `globals.css` 를 **같은 커밋에서** 함께 고친다.
+3. 이름은 기존 관례를 따른다. 색은 `--color-*`, 간격은 `--spacing-*`, 모서리는 `--radius-*`, 그림자는 `--shadow-*` 네임스페이스에 넣어야 Tailwind 유틸리티로 나온다.
+4. 새 세대 이름(`4.0` 같은 것)을 만들지 않는다. 세대가 갈리면 정본도 갈린다.
+5. 컴포넌트 안에 raw hex 나 임의 px 을 넣지 않는다. 그게 필요하면 토큰이 빠진 것이므로 여기에 추가한다.
+
+---
+
+## 부록 A. 2.0 리디자인 결정 배경 (구 design-system-2.0.md 병합, 이력 보존)
+
+> 디에듀 2.0 학생 중심 리디자인의 디자인 소스 오브 트루스. 기존 `src/styles/globals.css` + `ui-guidelines.md` 위에 얹는다 (0부터 X). 비주얼 레퍼런스: `~/.gstack/projects/d-edu/designs/directions-20260611/board.html`. 방향 락: design-shotgun → **B+A 블렌드**.
+
+## 0. 한 줄 (memorable thing)
+
+**"제대로 풀면 내 지도가 오렌지로 채워진다."** — 노력이 눈에 보이는 것. Thesis("많이가 아니라 제대로 풀어야 오른다")의 시각화. 모든 결정은 이걸 섬긴다.
+
+## 1. 톤 = B+A 블렌드
+
+- **B 골격(동기부여)**: 연속(streak)·포인트·레벨, "바로 시작" 히어로 CTA, 채울수록 진해지는 약점 트리, 코치 칩.
+- **A 톤(절제)**: 여백, 타입 스케일 준수, 이모지 절제, "공부 앱"의 진중함. 게임기처럼 보이지 않게.
+- **C에서(정직)**: 오답률·자력정답률 등 숫자를 보여 신뢰. "막연한 격려" 금지.
+- 타깃: 고등 3~5등급, 태블릿+펜슬. **동기부여 강하게(듀오링고처럼)** — 홈에 큰 스트릭·레벨·셀레브레이션. 단 오렌지·Pretendard 시스템 안에서, 유치하지 않게(여전히 공부 앱). [사용자 확정: 동기 강하게]
+
+## 2. 색 (시스템 토큰만 — 새 팔레트 금지)
+
+브랜드색은 **오렌지 하나**. 파랑·네이비·임의색 금지.
+| 역할 | 토큰 | 값 |
+|---|---|---|
+| Primary | `--orange-7` | #ff4805 |
+| Primary 진함 | `--orange-10` / `--orange-12` | #b93100 / #561700 |
+| Primary 옅음(배경) | `--orange-1` | #fff4f1 |
+| 텍스트 메인 | `--gray-scale-gray-95` | #1a1a1a |
+| 라인 | `--gray-scale-gray-10` | #e0e0e0 |
+| 배경 | (시스템) | #fcfbfa |
+| 성공 | `--color-success` | #34c759 |
+| 경고/막힘 마커 | `--color-warning` | #ff4040 |
+
+### 약점 트리 = 오렌지 강도 한 축 (시그니처)
+
+정복도를 **오렌지 농도**로 표현. 파랑/빨강 안 씀.
+**4단계로 단순화 [사용자 확정]** (한눈에 구분):
+
+```
+미진단(회색 #f0efec) → 약점(옅은 오렌지 #ffd0c0) → 진행(중간 #ff7a4d) → 정복(진한 #ff4805)
+```
+
+- **% 항상 표시**(노드마다 정복도 숫자). 자력 정답 기반.
+- 모의고사 자기신고분은 색 단계는 같되 작은 **"모의" 태그**로 구분(빗금 폐기 — 노이즈).
+- 반복 막힘 = **⚠ 마커**(warning #ff4040), 노드 색은 안 바꿈.
+- "채운다 = 오렌지가 뜨거워진다" = memorable thing과 직결.
+
+## 3. 타이포 (globals.css @utility 그대로)
+
+Pretendard. line-height 135% 기준.
+| 유틸 | 크기/굵기 | 용도 |
+|---|---|---|
+| `font-display-1/2` | 56·40 / 700 | 랜딩 히어로 |
+| `font-title-heading` | 32 / 700 | 화면 타이틀 |
+| `font-headline1-heading` | 24 / 700 | 섹션 헤딩 |
+| `font-body1-heading` | 18 / 600 | 카드 제목 |
+| `font-body2-heading` | 16 / 600 | 본문 강조 |
+| `font-label-heading` | 14 / 600 | 라벨·버튼 |
+| `font-caption-heading` | 12 / 500 | 캡션·메타 |
+
+> 임의 px 금지. 위 스케일로만.
+
+## 4. 형태
+
+- radius: 버튼/인풋 **8px**, 카드 **12px**, (B 모티프 카드 14~16px), 칩/뱃지 **999px**.
+- 카드: `bg-white` + `border 1px #e0e0e0` + radius 12. 그림자 절제(A 톤).
+- B 액센트 버튼: 큰 오렌지 CTA에 `box-shadow 0 5px 0 var(--orange-10)`(눌리는 느낌) — 주요 CTA 한정.
+
+## 5. 컴포넌트
+
+### 재사용 (shared/components/ui 28개)
+
+Button(primary=orange-7) · Input · TextField · Textarea · Select · Checkbox · RadioGroup/RadioCard(답 선택·온보딩) · Dialog(코치 설정·해설 경고) · Accordion · DropdownMenu · Pagination · StatusBadge(상태 pill) · ListItem · Icon(lucide) · ProfileAvatar · Skeleton/MiniSpinner · BackButton.
+
+### 신규 (feature 단위, 오픈챌린지 패턴 복제)
+
+| 컴포넌트              | 역할         | 핵심                                                                                                                                                           |
+| --------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **TreeMap**           | 약점 트리    | 단원 노드 그리드, 오렌지 강도 fill, ⚠ 마커, 탭→단원 문제. 범례(정복/약점/미진단/막힘)                                                                         |
+| **CoachChat**         | AI 코치 패널 | 메시지 스트림 + 고정 칩 4개(시작을 못하겠어요/개념 다시/이거 맞아요?/다음 뭐 해요?) + 텍스트 입력. 헤더 카피 "답은 알려주지 않아요. 한 걸음씩 같이." 음성 없음 |
+| **DrawingCanvas**     | 펜슬 풀이    | 펜/지우개/색/페이지, 이미지 스냅샷 저장. 풀이공유 첨부                                                                                                         |
+| **StreakBanner**      | 연속         | 🔥 절제 사용, streak일수·복귀 앵커                                                                                                                             |
+| **PointLedger**       | 포인트 지갑  | 잔액 + 적립/차감 타임라인(+10/+5/+100/−30). 레벨(성장지표)과 시각 분리                                                                                         |
+| **LevelBadge**        | 레벨         | Lv.N + 경험치 게이지. 포인트와 다른 축임을 형태로 구분                                                                                                         |
+| **OnboardingStepper** | 온보딩       | 학년·과목·등급·약점단원 → 1문제 → 트리 공개. 모의고사 진단=선택 스텝                                                                                           |
+| **SolutionShareList** | 풀이공유     | 다른 학생 손글씨(드로잉)+텍스트, 추천순, 컨닝가드(내 COMPLETED 후 열람)                                                                                        |
+
+## 6. 핵심 패턴
+
+- **상단 동기 헤더**(로그인 후): streak · 포인트 · 레벨 한 줄. 과하지 않게(A 절제).
+- **"바로 시작" CTA**: 홈/리스트 최상단에 추천 1문제 큰 오렌지 버튼("오늘의 문제 시작").
+- **트리 반영 위젯**(결과 화면): 방금 푼 문제가 트리 노드를 진하게 만드는 미니 애니메이션 + 포인트 토스트.
+- **코치 칩 바**: 문제 상세 우측(태블릿) / 하단 시트(폰). 정답 미제공 톤.
+- **숫자 정직**: 오답률·자력정답률·통과율을 카드 메타로 노출(C 차용).
+
+## 7. 8화면 적용 메모
+
+1. **랜딩**(`/`): display 히어로 + Thesis 카피 + "문제 풀어보기" CTA. 1.0 섹션(수업/학생관리) 제거. 트리 미리보기로 시그니처 노출.
+2. **온보딩**(`/onboarding`): OnboardingStepper. 입력 → 1문제 → 트리 공개. 모의고사 진단 선택.
+3. **오픈챌린지 리스트**(`/open-challenge`): 추천 1문제 강조 + 필터/정렬 리스트. 카드에 오답률·통과율.
+4. **문제 상세**(`/open-challenge/[id]`): 좌 문제+DrawingCanvas, 우 CoachChat. "정답 해설" 버튼(차감·트리제외 경고 Dialog).
+5. **AI 코치 챗봇**: CoachChat(상세 내 패널, 별도 라우트 아님).
+6. **결과**(`/open-challenge/[id]/result`): 정오답+통과율+트리 반영 위젯+포인트 토스트+풀이공유 진입.
+7. **약점 트리**(`/tree`): TreeMap 과목별 대단원. "약점" 단정 대신 "더 풀어볼까?" 톤.
+8. **풀이공유**(`/open-challenge/[id]/solutions`): SolutionShareList, 컨닝가드.
+9. **포인트 지갑**(`/points`): PointLedger + LevelBadge(축 분리).
+
+## 7.5 반응형 우선순위 — 태블릿 퍼스트 (중요)
+
+설계 기준 순서: **① 태블릿(베이스) → ② 웹/데스크톱 → ③ 모바일(마지막).** 1순위 기기가 태블릿+펜슬이라 mobile-first가 아니라 **tablet-first**로 짠다.
+
+- **① 태블릿(베이스, ~768–1024)**: 모든 화면의 기본 레이아웃을 여기서 확정. **가로 태블릿+펜슬이 히어로 케이스.** 문제 상세=2단(좌 문제+드로잉 캔버스 / 우 코치)이 기본형. 리스트·트리·결과·온보딩도 태블릿 폭(여백·2열 그리드)에 맞춰 디자인. 펜슬 타깃 ≥44px.
+- **② 웹/데스크톱(≥1200)**: 태블릿 레이아웃을 넓히고 좌측 사이드바 네비 + 컨테이너 max-width 센터링. 트리/리스트는 더 넓은 그리드.
+- **③ 모바일(<768, 마지막)**: 단일 컬럼 스택. 드로잉 캔버스 풀폭, 코치는 하단 시트(bottom sheet), 동기 헤더 압축. 깨지지 않게 graceful 다운.
+- CSS: base = 태블릿 스타일, `@media (min-width:1200px)` 데스크톱, `@media (max-width:767px)` 모바일. (기존 globals.css 브레이크포인트 768/1200 재사용)
+- 목업 보완: 1차 목업은 폰 프레임 위주였음 → **빌드 시 태블릿 베이스로 재구성**(특히 트리·리스트·결과·온보딩의 2열/와이드).
+
+## 7.6 빌드 전 확정한 개선점 (1차 목업 검수 결과)
+
+1. **일관성 셸**: 공통 상단 동기 헤더(streak·포인트·레벨) + 하단 탭/사이드바 + 카드 패딩·버튼 규격 단일화. 9화면이 한 앱처럼.
+2. **수식 렌더**: KaTeX(또는 MathJax)로 수식 렌더 — 평문 금지(수학 앱 필수).
+3. **상태 전부**: 빈(신규=전부 회색 트리)·로딩(코치/리스트 스켈레톤)·에러·0건(공유/포인트) 상태 정의. 해피패스만 금지.
+4. **태블릿 퍼스트**: §7.5대로.
+5. **트리 가독성**: 오렌지 5단계 대비 강화(작은 노드도 구분), 자력/모의 구분은 빗금 대신 작은 "모의" 태그.
+6. **동기 vs 진중함**: streak·포인트가 실제 문제 위에서 과하게 떠들지 않게(A 절제). "정답 해설" 버튼은 코치보다 덜 눈에 띄게(코치 사용 유도).
+
+### 7.6.1 design-review 추가 (목업 게이트 결과 — AI slop A−/design B+)
+
+7. **트리 4단계 [확정]**: 미진단/약점/진행/정복 4단계 + % 항상 노출. 자력/모의는 "모의" 태그(빗금 폐기). 작은 노드에서도 한눈에 구분.
+8. **터치 타깃 ≥44px**: 필터 칩·트리 노드·코치 칩 전부 펜슬/터치 기준 충족.
+9. **모션 목적성**: 결과 화면 **트리-채움 셀레브레이션**(memorable moment) 1개 + 코치 메시지 등장. `prefers-reduced-motion` 존중, `transform/opacity`만 애니.
+10. **타이포 폴리시**: 숫자(오답률·통과율·포인트) `tabular-nums`, 헤딩 `text-wrap:balance`, 둥근따옴표·`…`.
+
+## 8. 안티-룰 (하지 말 것)
+
+- 시스템에 없는 색(파랑·네이비·임의 그라데이션) 금지. 트리도 오렌지 강도만.
+- 타입 임의 px 금지 — 스케일 유틸만.
+- 이모지 남발 금지(A 톤). 🔥 streak 등 기능적 1~2개만.
+- "막연한 격려" 카피 금지 — 숫자/근거와 함께.
+- 게임기처럼 과한 그림자·네온·셀레브레이션 금지(진중함 유지).

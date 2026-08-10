@@ -488,7 +488,7 @@ function WarningIcon() {
       height="20"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#f97316"
+      stroke="var(--orange-7)"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"

@@ -130,187 +130,185 @@ export default function ListLayoutClient({
   return (
     // 로그인 시 사이드바 셸은 상위 (home)/layout.tsx 의 AppShell 이 담당한다.
     <main className="min-h-screen w-full">
-        <div className="mb-4 min-h-screen w-full bg-white">
-          <div className="bg-system-background w-full">
-            <div className="mx-auto max-w-[1440px] px-4 pt-8 md:px-8 lg:px-20">
-              {!isAuthenticated && <BackLink />}
+      <div className="mb-4 min-h-screen w-full bg-white">
+        <div className="bg-system-background w-full">
+          <div className="mx-auto max-w-[1440px] px-4 pt-8 md:px-8 lg:px-20">
+            {!isAuthenticated && <BackLink />}
 
-              <div className="mt-4 mb-10">
-                <h1 className="font-title-heading text-2xl leading-[135%] tracking-tight lg:text-3xl">
-                  디에듀와 함께하는 선생님과 스터디룸을 만나보세요
-                </h1>
-              </div>
-
-              {/* 탭 메뉴 */}
-              <div className="relative flex gap-6 lg:gap-10">
-                <Link
-                  href={`/list/teachers?sort=${sortBy}`}
-                  replace
-                >
-                  <div
-                    className={cn(
-                      'relative cursor-pointer px-4 pb-4 text-lg leading-[135%] transition-all lg:text-[24px]',
-                      isTeachers
-                        ? 'font-[700] text-[#1A1A1A]'
-                        : 'font-[400] text-[#AAAAAA]'
-                    )}
-                  >
-                    선생님 프로필
-                    {isTeachers && (
-                      <div className="absolute bottom-0 left-0 h-[4px] w-full bg-[#FF5C35]" />
-                    )}
-                  </div>
-                </Link>
-                <Link
-                  href={`/list/study-rooms?sort=${sortBy}`}
-                  replace
-                >
-                  <div
-                    className={cn(
-                      'relative cursor-pointer px-4 pb-4 text-lg leading-[135%] transition-all lg:text-[24px]',
-                      isStudyRooms
-                        ? 'font-[700] text-[#1A1A1A]'
-                        : 'font-[400] text-[#AAAAAA]'
-                    )}
-                  >
-                    스터디룸
-                    {isStudyRooms && (
-                      <div className="absolute bottom-0 left-0 h-[4px] w-full bg-[#FF5C35]" />
-                    )}
-                  </div>
-                </Link>
-              </div>
+            <div className="mt-4 mb-10">
+              <h1 className="font-title-heading text-2xl leading-[135%] tracking-tight lg:text-3xl">
+                디에듀와 함께하는 선생님과 스터디룸을 만나보세요
+              </h1>
             </div>
-          </div>
 
-          {/* 하단 리스트 및 필터 영역 */}
-          <div className="w-full bg-white">
-            <div className="mx-auto max-w-[1440px] px-4 py-8 md:px-8 lg:px-20">
-              {/* 정렬 필터 */}
-              <div className="mb-6 flex items-center justify-between gap-2">
-                {/* 왼쪽: 스터디룸 전용 필터 */}
-                <div className="flex gap-2">
-                  {isStudyRooms && (
-                    <>
-                      <Select
-                        value={enrollmentStatus}
-                        onValueChange={(v) =>
-                          updateFilter('enrollmentStatus', v)
-                        }
-                      >
-                        <Select.Trigger
-                          className={cn(
-                            SELECT_STYLES.trigger,
-                            enrollmentStatus &&
-                              enrollmentStatus !== 'ALL' &&
-                              'border-orange-4 text-text-main border-[1.5px]'
-                          )}
-                          placeholder="모집 여부"
-                        />
-                        <Select.Content>
-                          {ENROLLMENT_STATUS_OPTIONS.map((o) => (
-                            <Select.Option
-                              key={o.value}
-                              value={o.value}
-                              className={SELECT_STYLES.option}
-                            >
-                              {o.label}
-                            </Select.Option>
-                          ))}
-                        </Select.Content>
-                      </Select>
-
-                      <Select
-                        value={classForm}
-                        onValueChange={(v) => updateFilter('classForm', v)}
-                      >
-                        <Select.Trigger
-                          className={cn(
-                            SELECT_STYLES.trigger,
-                            classForm &&
-                              classForm !== 'ALL' &&
-                              'border-orange-4 text-text-main border-[1.5px]'
-                          )}
-                          placeholder="수업 형태"
-                        />
-                        <Select.Content>
-                          {CLASS_FORM_OPTIONS.map((o) => (
-                            <Select.Option
-                              key={o.value}
-                              value={o.value}
-                              className={SELECT_STYLES.option}
-                            >
-                              {o.label}
-                            </Select.Option>
-                          ))}
-                        </Select.Content>
-                      </Select>
-
-                      <Select
-                        value={subjectType}
-                        onValueChange={(v) => updateFilter('subjectType', v)}
-                      >
-                        <Select.Trigger
-                          className={cn(
-                            SELECT_STYLES.trigger,
-                            subjectType &&
-                              subjectType !== 'ALL' &&
-                              'border-orange-4 text-text-main border-[1.5px]'
-                          )}
-                          placeholder="과목"
-                        />
-                        <Select.Content>
-                          {SUBJECT_OPTIONS.map((o) => (
-                            <Select.Option
-                              key={o.value}
-                              value={o.value}
-                              className={SELECT_STYLES.option}
-                            >
-                              {o.label}
-                            </Select.Option>
-                          ))}
-                        </Select.Content>
-                      </Select>
-                    </>
+            {/* 탭 메뉴 */}
+            <div className="relative flex gap-6 lg:gap-10">
+              <Link
+                href={`/list/teachers?sort=${sortBy}`}
+                replace
+              >
+                <div
+                  className={cn(
+                    'relative cursor-pointer px-4 pb-4 text-lg leading-[135%] transition-all lg:text-[24px]',
+                    isTeachers
+                      ? 'text-gray-12 font-[700]'
+                      : 'text-gray-6 font-[400]'
+                  )}
+                >
+                  선생님 프로필
+                  {isTeachers && (
+                    <div className="bg-orange-7 absolute bottom-0 left-0 h-[4px] w-full" />
                   )}
                 </div>
-
-                {/* 오른쪽: 정렬 */}
-                <Select
-                  value={sortBy}
-                  onValueChange={(v) => updateFilter('sort', v)}
+              </Link>
+              <Link
+                href={`/list/study-rooms?sort=${sortBy}`}
+                replace
+              >
+                <div
+                  className={cn(
+                    'relative cursor-pointer px-4 pb-4 text-lg leading-[135%] transition-all lg:text-[24px]',
+                    isStudyRooms
+                      ? 'text-gray-12 font-[700]'
+                      : 'text-gray-6 font-[400]'
+                  )}
                 >
-                  <Select.Trigger
-                    className={SELECT_STYLES.trigger}
-                    placeholder="최신순"
-                  />
-                  <Select.Content>
-                    {SORT_OPTIONS.map((o) => (
-                      <Select.Option
-                        key={o.value}
-                        value={o.value}
-                        className={SELECT_STYLES.option}
-                      >
-                        {o.label}
-                      </Select.Option>
-                    ))}
-                  </Select.Content>
-                </Select>
-              </div>
-              <div className="relative">
-                <div className={isPending ? 'opacity-0' : 'opacity-100'}>
-                  {children}
+                  스터디룸
+                  {isStudyRooms && (
+                    <div className="bg-orange-7 absolute bottom-0 left-0 h-[4px] w-full" />
+                  )}
                 </div>
-                {isPending && (
-                  <div className="absolute inset-0 bg-white/70 backdrop-blur-[1px]">
-                    {isTeachers ? <TeachersListSkeleton /> : null}
-                    {isStudyRooms ? <StudyRoomsListSkeleton /> : null}
-                  </div>
-                )}
-              </div>
+              </Link>
             </div>
           </div>
         </div>
+
+        {/* 하단 리스트 및 필터 영역 */}
+        <div className="w-full bg-white">
+          <div className="mx-auto max-w-[1440px] px-4 py-8 md:px-8 lg:px-20">
+            {/* 정렬 필터 */}
+            <div className="mb-6 flex items-center justify-between gap-2">
+              {/* 왼쪽: 스터디룸 전용 필터 */}
+              <div className="flex gap-2">
+                {isStudyRooms && (
+                  <>
+                    <Select
+                      value={enrollmentStatus}
+                      onValueChange={(v) => updateFilter('enrollmentStatus', v)}
+                    >
+                      <Select.Trigger
+                        className={cn(
+                          SELECT_STYLES.trigger,
+                          enrollmentStatus &&
+                            enrollmentStatus !== 'ALL' &&
+                            'border-orange-4 text-text-main border-[1.5px]'
+                        )}
+                        placeholder="모집 여부"
+                      />
+                      <Select.Content>
+                        {ENROLLMENT_STATUS_OPTIONS.map((o) => (
+                          <Select.Option
+                            key={o.value}
+                            value={o.value}
+                            className={SELECT_STYLES.option}
+                          >
+                            {o.label}
+                          </Select.Option>
+                        ))}
+                      </Select.Content>
+                    </Select>
+
+                    <Select
+                      value={classForm}
+                      onValueChange={(v) => updateFilter('classForm', v)}
+                    >
+                      <Select.Trigger
+                        className={cn(
+                          SELECT_STYLES.trigger,
+                          classForm &&
+                            classForm !== 'ALL' &&
+                            'border-orange-4 text-text-main border-[1.5px]'
+                        )}
+                        placeholder="수업 형태"
+                      />
+                      <Select.Content>
+                        {CLASS_FORM_OPTIONS.map((o) => (
+                          <Select.Option
+                            key={o.value}
+                            value={o.value}
+                            className={SELECT_STYLES.option}
+                          >
+                            {o.label}
+                          </Select.Option>
+                        ))}
+                      </Select.Content>
+                    </Select>
+
+                    <Select
+                      value={subjectType}
+                      onValueChange={(v) => updateFilter('subjectType', v)}
+                    >
+                      <Select.Trigger
+                        className={cn(
+                          SELECT_STYLES.trigger,
+                          subjectType &&
+                            subjectType !== 'ALL' &&
+                            'border-orange-4 text-text-main border-[1.5px]'
+                        )}
+                        placeholder="과목"
+                      />
+                      <Select.Content>
+                        {SUBJECT_OPTIONS.map((o) => (
+                          <Select.Option
+                            key={o.value}
+                            value={o.value}
+                            className={SELECT_STYLES.option}
+                          >
+                            {o.label}
+                          </Select.Option>
+                        ))}
+                      </Select.Content>
+                    </Select>
+                  </>
+                )}
+              </div>
+
+              {/* 오른쪽: 정렬 */}
+              <Select
+                value={sortBy}
+                onValueChange={(v) => updateFilter('sort', v)}
+              >
+                <Select.Trigger
+                  className={SELECT_STYLES.trigger}
+                  placeholder="최신순"
+                />
+                <Select.Content>
+                  {SORT_OPTIONS.map((o) => (
+                    <Select.Option
+                      key={o.value}
+                      value={o.value}
+                      className={SELECT_STYLES.option}
+                    >
+                      {o.label}
+                    </Select.Option>
+                  ))}
+                </Select.Content>
+              </Select>
+            </div>
+            <div className="relative">
+              <div className={isPending ? 'opacity-0' : 'opacity-100'}>
+                {children}
+              </div>
+              {isPending && (
+                <div className="absolute inset-0 bg-white/70 backdrop-blur-[1px]">
+                  {isTeachers ? <TeachersListSkeleton /> : null}
+                  {isStudyRooms ? <StudyRoomsListSkeleton /> : null}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
   );
 }

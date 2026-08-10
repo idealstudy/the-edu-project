@@ -1192,7 +1192,7 @@ function EmptyPencilIcon() {
       height="32"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#d1d5db"
+      stroke="var(--gray-4)"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -1210,7 +1210,7 @@ function PanelPenIcon({ active }: { active: boolean }) {
       height="16"
       viewBox="0 0 24 24"
       fill="none"
-      stroke={active ? '#f97316' : '#9ca3af'}
+      stroke={active ? 'var(--orange-7)' : 'var(--gray-6)'}
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -1228,7 +1228,7 @@ function PanelEraserIcon({ active }: { active: boolean }) {
       height="16"
       viewBox="0 0 24 24"
       fill="none"
-      stroke={active ? '#f97316' : '#9ca3af'}
+      stroke={active ? 'var(--orange-7)' : 'var(--gray-6)'}
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"

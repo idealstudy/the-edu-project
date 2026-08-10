@@ -14,14 +14,14 @@ const MIRROR_QUESTIONS = [
 
 export default function CoursesPage() {
   return (
-    <div className="min-h-screen w-full bg-[#F9F9F9]">
+    <div className="bg-gray-1 min-h-screen w-full">
       {/* 히어로 — 코스 존재 이유(왜 인강이 아니라 이 코스인지) */}
-      <section className="relative -mx-0 overflow-hidden bg-[#17130f] px-4 py-12 text-white sm:px-8 lg:px-12">
+      <section className="bg-gray-12 relative -mx-0 overflow-hidden px-4 py-12 text-white sm:px-8 lg:px-12">
         <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-3">
           <span className="font-caption-heading text-orange-200">
             수학 매3제 · 관리형 코스
           </span>
-          <h1 className="font-title-heading text-balance text-3xl text-white sm:text-4xl">
+          <h1 className="font-title-heading text-3xl text-balance text-white sm:text-4xl">
             1번을 공부해도, 제대로.
           </h1>
           <p className="font-body1-normal max-w-xl text-white/80">
@@ -33,7 +33,7 @@ export default function CoursesPage() {
       <div className="mx-auto w-full max-w-[1200px] px-4 pb-16 md:px-8 lg:px-12">
         {/* 거울 훅 — 결제 전 자기점검 3문 */}
         <section
-          className="relative mt-6 overflow-hidden rounded-[20px] bg-[#17130f] p-6 text-white sm:p-8"
+          className="bg-gray-12 relative mt-6 overflow-hidden rounded-[20px] p-6 text-white sm:p-8"
           aria-labelledby="mirror-heading"
         >
           <span className="font-caption-heading text-orange-200">
@@ -59,7 +59,9 @@ export default function CoursesPage() {
             ))}
           </ul>
           <p className="font-body1-heading mt-5 border-t border-white/15 pt-4 text-white">
-            공부를 안 한 게 아니다. <span className="text-orange-200">‘내 것으로’ 만드는 공부</span>를 안 한 거다.
+            공부를 안 한 게 아니다.{' '}
+            <span className="text-orange-200">‘내 것으로’ 만드는 공부</span>를
+            안 한 거다.
           </p>
         </section>
 
@@ -83,9 +85,14 @@ export default function CoursesPage() {
         <CourseListClient />
 
         <div className="border-line-line2 mt-8 flex items-center justify-center gap-2 rounded-[12px] border border-dashed bg-white p-4 text-center">
-          <ShieldCheck size={16} className="text-key-color-primary shrink-0" aria-hidden="true" />
+          <ShieldCheck
+            size={16}
+            className="text-key-color-primary shrink-0"
+            aria-hidden="true"
+          />
           <span className="font-caption-normal text-text-sub1">
-            관리형 등급 향상 인증 시 전액 환급 — 조건은 각 코스 상세에서 결제 전 확인할 수 있어요.
+            관리형 등급 향상 인증 시 전액 환급 — 조건은 각 코스 상세에서 결제 전
+            확인할 수 있어요.
           </span>
         </div>
       </div>
@@ -96,6 +103,8 @@ export default function CoursesPage() {
 const ProofStat = ({ label }: { label: string }) => (
   <div className="flex flex-col items-center gap-1 px-4 py-5 text-center">
     <span className="font-caption-heading text-text-sub2">{label}</span>
-    <span className="font-caption-normal text-text-sub2">실측 데이터 준비 중</span>
+    <span className="font-caption-normal text-text-sub2">
+      실측 데이터 준비 중
+    </span>
   </div>
 );

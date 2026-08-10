@@ -159,7 +159,7 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
   return (
     <div className="pb-24 lg:pb-0">
       <section
-        className="lg:rounded-section relative -mx-4 overflow-hidden bg-[#17130f] px-4 py-14 text-white sm:-mx-6 sm:px-6 lg:mx-0 lg:px-10"
+        className="bg-gray-12 lg:rounded-section relative -mx-4 overflow-hidden px-4 py-14 text-white sm:-mx-6 sm:px-6 lg:mx-0 lg:px-10"
         aria-labelledby="course-title"
       >
         <div
@@ -168,7 +168,7 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
           aria-hidden="true"
         />
         <div
-          className="absolute inset-0 bg-gradient-to-t from-[#17130f] via-[#17130f]/70 to-[#17130f]/20"
+          className="from-gray-12 via-gray-12/70 to-gray-12/20 absolute inset-0 bg-gradient-to-t"
           aria-hidden="true"
         />
         <div className="relative flex max-w-3xl flex-col gap-4">
@@ -256,7 +256,7 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
                 </article>
               ))}
             </div>
-            <div className="rounded-card mt-4 bg-[#17130f] p-5 text-white">
+            <div className="rounded-card bg-gray-12 mt-4 p-5 text-white">
               <span className="font-caption-heading text-orange-200">
                 셋의 원인은 하나입니다
               </span>
@@ -277,7 +277,7 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
             >
               새 문제집 대신, 핵심 문제를 될 때까지
             </h2>
-            <div className="rounded-card mt-5 grid overflow-hidden border border-[#e7ddd7] md:grid-cols-2">
+            <div className="rounded-card border-gray-3 mt-5 grid overflow-hidden border md:grid-cols-2">
               <ComparisonColumn
                 title="그냥 인강"
                 muted
@@ -296,7 +296,7 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
                 ]}
               />
             </div>
-            <ol className="rounded-card mt-5 flex flex-col divide-y divide-[#e7ddd7] border border-[#e7ddd7] bg-white px-5">
+            <ol className="rounded-card divide-gray-3 border-gray-3 mt-5 flex flex-col divide-y border bg-white px-5">
               <MethodStep
                 number="01"
                 title="개념을 내 말로 정리하고 제출"
@@ -370,7 +370,7 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
           </section>
 
           <section
-            className="rounded-section bg-[#17130f] p-6 text-white"
+            className="rounded-section bg-gray-12 p-6 text-white"
             aria-labelledby="refund-heading"
           >
             <div className="flex items-start gap-3">
@@ -417,7 +417,7 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
               {FAQS.map((faq) => (
                 <details
                   key={faq.question}
-                  className="group border-b border-[#e7ddd7] last:border-b-0"
+                  className="border-gray-3 group border-b last:border-b-0"
                 >
                   <summary className="font-body2-heading text-text-main flex cursor-pointer list-none items-center justify-between gap-4 p-5">
                     {faq.question}

@@ -11,8 +11,10 @@ type StatChipProps = React.ComponentPropsWithRef<'div'> & {
 const TONE_CLASS: Record<NonNullable<StatChipProps['tone']>, string> = {
   neutral: 'border-line-line1 bg-white text-text-main',
   brand: 'border-orange-3 bg-orange-1 text-orange-11',
-  success: 'border-system-success bg-system-success-alt text-system-success',
-  warning: 'border-system-warning bg-system-warning-alt text-system-warning',
+  success:
+    'border-system-success bg-system-success-alt text-system-success-text',
+  warning:
+    'border-system-warning bg-system-warning-alt text-system-warning-text',
 };
 
 export const StatChip = ({
