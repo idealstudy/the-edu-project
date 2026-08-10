@@ -186,7 +186,7 @@ Wanted Sans Variable을 본문 1순위로 쓰고, 로컬 Pretendard를 대체 �
 
 셸 치수는 기존 토큰을 그대로 쓴다: `--spacing-header-height` 60px, `--spacing-sidebar-width` 260px, `--spacing-grid-margin` 20px.
 
-화면 골격에는 `section-gap` 16px, 휴대폰 14px, 최대 폭 1180px, 2단 열 간격 16px를 쓴다. 스터디룸 계승 골격에는 페이지 여백 32px, 휴대폰 24px, 좌측 360px, 우측 최대 740px, 열 간격 20px를 쓴다. 이 값은 `PageShell`·`SplitLayout` 같은 레이아웃 부품만 소유하고 화면이 다시 적지 않는다.
+화면 골격에는 `section-gap` 16px, 휴대폰 14px, 최대 폭 1180px, 2단 열 간격 16px를 쓴다. 스터디룸 계승 골격에는 페이지 여백 32px, 휴대폰 24px, 좌측 360px, 우측 최대 740px, 열 간격 20px를 쓴다. 이 값은 `PageLayout`, `SplitLayout`, `ColumnLayout`이 소유하고 화면이 다시 적지 않는다.
 
 **터치 타깃 44px 규칙**: 보이는 크기는 작게 두더라도 `:after` 로 히트박스만 44px 로 넓힌다. 아이콘 버튼을 크게 그려서 맞추지 않는다.
 
@@ -276,6 +276,17 @@ Wanted Sans Variable을 본문 1순위로 쓰고, 로컬 Pretendard를 대체 �
 
 feature 단위 신규 컴포넌트: `TreeMap`(약점 트리) · `CoachChat`(AI 코치) · `DrawingCanvas`(펜슬 풀이) · `StreakBanner` · `PointLedger` · `LevelBadge` · `OnboardingStepper` · `SolutionShareList`.
 
+### 6.6 레이아웃 컴포넌트
+
+| 부품               | 소유하는 규격                                                              |
+| ------------------ | -------------------------------------------------------------------------- |
+| `PageLayout`       | 페이지 여백 16px, 최대 폭 1180px 또는 콘텐츠 최대 폭 1100px                |
+| `SplitLayout`      | 일반 2단 `1.28fr : 1fr`, 할 일·회고 `1.34fr : 1fr`, 구 상세 `1.35fr : 1fr` |
+| `ColumnLayout`     | 스터디룸 여백 24/32px, 좌측 360px, 우측 최대 740px, 열 간격 20px           |
+| `CollectionLayout` | 0건 `EmptyState`, 과다 항목 명시적 접기·펼치기                             |
+
+레이아웃 부품의 자식은 항상 `min-width:0`을 상속한다. 따라서 긴 텍스트와 이미지가 열 너비를 밀어내지 않는다. 화면은 이 비율과 최대 폭을 임의 class로 다시 선언하지 않는다.
+
 ---
 
 ## 7. 반응형
@@ -317,4 +328,3 @@ feature 단위 신규 컴포넌트: `TreeMap`(약점 트리) · `CoachChat`(AI �
 3. 이름은 기존 관례를 따른다. 색은 `--color-*`, 간격은 `--spacing-*`, 모서리는 `--radius-*`, 그림자는 `--shadow-*` 네임스페이스에 넣어야 Tailwind 유틸리티로 나온다.
 4. 새 세대 이름(`4.0` 같은 것)을 만들지 않는다. 세대가 갈리면 정본도 갈린다.
 5. 컴포넌트 안에 raw hex 나 임의 px 을 넣지 않는다. 그게 필요하면 토큰이 빠진 것이므로 여기에 추가한다.
-   </content>

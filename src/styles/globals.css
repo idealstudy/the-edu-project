@@ -647,6 +647,31 @@ body {
   max-width: calc(100vw - var(--spacing-block-gap));
 }
 
+/* v22 §3.2. 일반 2단 화면은 이 비율을 화면에서 다시 선언하지 않는다. */
+@utility grid-split-v22 {
+  grid-template-columns: minmax(0, 1.28fr) minmax(0, 1fr);
+}
+
+/* v22 §3.2. 오늘 할 일과 회고가 한 카드 안에서 나뉘는 전용 비율. */
+@utility grid-split-agenda {
+  grid-template-columns: minmax(0, 1.34fr) minmax(0, 1fr);
+}
+
+/* v22 §3.2. 마이페이지와 관리자 상세의 기존 2단 비율. */
+@utility grid-split-legacy {
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+}
+
+@utility top-column-sticky {
+  top: calc(var(--spacing-header-height) + var(--spacing-control-xs));
+}
+
+@utility max-h-screen-content {
+  max-height: calc(
+    100vh - var(--spacing-header-height) - var(--spacing-room-page-mobile) * 2
+  );
+}
+
 @utility focus-ring {
   &:focus-visible {
     @apply ring-ring ring-offset-system-background-alt ring-2 ring-offset-2 outline-hidden;
