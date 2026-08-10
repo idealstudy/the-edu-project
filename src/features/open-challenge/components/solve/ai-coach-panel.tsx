@@ -499,10 +499,13 @@ export const AiCoachPanel = ({
           String(session.sessionId)
         );
         restored = history
-          .filter((item) => item.role === 'ASSISTANT' || item.role === 'STUDENT')
+          .filter(
+            (item) => item.role === 'ASSISTANT' || item.role === 'STUDENT'
+          )
           .map((item, index) => ({
             id: `history-${session.sessionId}-${index}`,
-            role: item.role === 'ASSISTANT' ? ('ai' as const) : ('user' as const),
+            role:
+              item.role === 'ASSISTANT' ? ('ai' as const) : ('user' as const),
             content: item.content,
             timestamp: getTimestamp(),
             step:
@@ -807,7 +810,7 @@ export const AiCoachPanel = ({
             {/* 아직 대화 시작 전에도 AI 호출 없이 정적인 첫 인사를 미리 보여준다.
                 실제 코칭 시작 시 나오는 메시지와 같은 문구(getIntroMessage)를 재사용해
                 READY 화면이 텅 비어 보이지 않게 한다. */}
-            <div className="ai-coach-handwriting font-body2-normal text-text-main w-full rounded-2xl rounded-tl-none bg-[#fffdf6] px-4 py-3 text-left leading-relaxed">
+            <div className="ai-coach-handwriting font-body2-normal text-text-main bg-surface-coach-paper w-full rounded-2xl rounded-tl-none px-4 py-3 text-left">
               <MarkdownMessage
                 content={
                   openingMessage ??
@@ -886,11 +889,11 @@ export const AiCoachPanel = ({
                     )}
                     <div
                       className={cn(
-                        'font-body2-normal rounded-2xl px-4 py-3 leading-relaxed',
+                        'font-body2-normal rounded-2xl px-4 py-3',
                         message.role === 'ai'
                           ? message.kind === 'solution'
-                            ? 'ai-coach-handwriting border-orange-2 rounded-tl-none border bg-[#fffdf3]'
-                            : 'ai-coach-handwriting text-text-main rounded-tl-none bg-[#fffdf6]'
+                            ? 'ai-coach-handwriting border-orange-2 bg-surface-coach-solution rounded-tl-none border'
+                            : 'ai-coach-handwriting text-text-main bg-surface-coach-paper rounded-tl-none'
                           : 'bg-orange-7 rounded-tr-none text-white'
                       )}
                     >
@@ -931,7 +934,7 @@ export const AiCoachPanel = ({
                       className="text-gray-7"
                     />
                   </div>
-                  <div className="text-text-main flex items-center gap-1 rounded-2xl rounded-tl-none bg-[#fffdf6] px-4 py-3.5">
+                  <div className="text-text-main bg-surface-coach-paper flex items-center gap-1 rounded-2xl rounded-tl-none px-4 py-3.5">
                     <span className="bg-orange-7/60 h-2 w-2 animate-bounce rounded-full [animation-delay:-0.3s]" />
                     <span className="bg-orange-7/60 h-2 w-2 animate-bounce rounded-full [animation-delay:-0.15s]" />
                     <span className="bg-orange-7/60 h-2 w-2 animate-bounce rounded-full" />

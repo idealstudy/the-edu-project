@@ -36,15 +36,15 @@ export default function RootLayout({
   return (
     <html
       lang="ko"
-      className={`${pretendard.variable} font-pretendard`}
+      className={`${pretendard.variable} font-app`}
       suppressHydrationWarning
     >
-      <body className="bg-[#F9F9F9] antialiased">
-        {/* 손글씨 해설용 한글 필기체 폰트 (Next가 head로 호이스팅). 미로드 시 .ai-coach-solution의 cursive 폴백 */}
-        {/* eslint-disable-next-line @next/next/no-page-custom-font -- App Router head 호이스팅 + cursive 폴백 의도, 전역 1회 로드 */}
+      <body className="bg-gray-1 antialiased">
+        {/* 승인 디자인의 앱 글꼴. CDN이 실패하면 로컬 Pretendard로 즉시 폴백한다. */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font -- 승인 디자인과 동일한 전역 variable font stylesheet */}
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Pen+Script&display=swap"
+          href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css"
         />
         {/* GTM Head 스니펫 */}
         {/* 배포환경일때만 작동되게 */}

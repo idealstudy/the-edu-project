@@ -1,5 +1,5 @@
-/* 손글씨 해설용 폰트는 layout <head>의 <link>로 로드(Tailwind v4가 외부 @import url을 처리 못 함).
-   .ai-coach-solution은 'Nanum Pen Script','Gaegu',cursive 폴백으로 미로드 시에도 동작. */
+/* Wanted Sans는 layout <head>의 stylesheet로 로드한다.
+   로드 실패 시 로컬 Pretendard가 앱 글꼴의 안전한 폴백이다. */
 @import 'tailwindcss';
 
 :root {
@@ -45,6 +45,9 @@
   --system-success-alt: #dcf9e3;
   --system-warning: #ff4040;
   --system-warning-alt: #ffd9d9;
+  --surface-coach-paper: #fffdf6;
+  --surface-coach-solution: #fffdf3;
+  --line-coach-paper: rgb(255 92 53 / 0.08);
 
   /* ========================================
     디에듀 3.0 디자인 시스템
@@ -209,21 +212,17 @@ body {
 /* 손글씨 해설 — 노트 톤 배경(버블)에 한글 필기체로 본문 렌더.
    가독성 우선: 폰트 크기·행간을 살짝 키우고, 수식(KaTeX)은 자체 폰트라 영향받지 않는다. */
 .ai-coach-solution {
+  border-left: 2px solid var(--orange-7);
   background-image: repeating-linear-gradient(
     transparent,
-    transparent 2rem,
-    rgba(255, 92, 53, 0.08) 2rem,
-    rgba(255, 92, 53, 0.08) calc(2rem + 1px)
+    transparent 26px,
+    var(--line-coach-paper) 26px,
+    var(--line-coach-paper) 27px
   );
 }
 
 .ai-coach-solution .ai-coach-markdown {
-  /* 가독성 우선: 얇은 펜글씨(Nanum Pen) 대신 둥글고 굵은 Gaegu 를 본문 기본으로. */
-  font-family: 'Gaegu', 'Nanum Pen Script', 'Pretendard', sans-serif;
-  font-size: 1.25rem;
-  line-height: 2rem;
-  letter-spacing: 0.01em;
-  color: #1f1f1f;
+  color: var(--gray-12);
 }
 
 .ai-coach-solution .ai-coach-markdown strong {
@@ -244,21 +243,17 @@ body {
 .ai-coach-handwriting {
   position: relative;
   padding-bottom: 1.7rem;
+  border-left: 2px solid var(--orange-7);
   background-image: repeating-linear-gradient(
     transparent,
-    transparent 2rem,
-    rgba(255, 92, 53, 0.08) 2rem,
-    rgba(255, 92, 53, 0.08) calc(2rem + 1px)
+    transparent 26px,
+    var(--line-coach-paper) 26px,
+    var(--line-coach-paper) 27px
   );
 }
 
 .ai-coach-handwriting .ai-coach-markdown {
-  /* 가독성 우선: 얇은 펜글씨(Nanum Pen) 대신 둥글고 굵은 Gaegu 를 본문 기본으로. */
-  font-family: 'Gaegu', 'Nanum Pen Script', 'Pretendard', sans-serif;
-  font-size: 1.25rem;
-  line-height: 2rem;
-  letter-spacing: 0.01em;
-  color: #1f1f1f;
+  color: var(--gray-12);
 }
 
 .ai-coach-handwriting .ai-coach-markdown strong {
@@ -280,6 +275,9 @@ body {
 
 @theme {
   /* 폰트 */
+  --font-app:
+    'Wanted Sans Variable', var(--font-pretendard), 'Pretendard Variable',
+    system-ui, sans-serif;
   --font-pretendard: var(--font-pretendard);
 
   /* ========================================
@@ -322,6 +320,8 @@ body {
   --color-system-success-alt: var(--system-success-alt);
   --color-system-warning: var(--system-warning);
   --color-system-warning-alt: var(--system-warning-alt);
+  --color-surface-coach-paper: var(--surface-coach-paper);
+  --color-surface-coach-solution: var(--surface-coach-solution);
 
   --color-key-color-primary: var(--orange-scale-orange-50);
   --color-key-color-quaternary: var(--gray-scale-black);
@@ -401,10 +401,24 @@ body {
     ======================================== */
   --spacing-card-pad: 16px; /* 카드 안쪽 여백 */
   --spacing-card-pad-mobile: 14px; /* 휴대폰 390 */
+  --spacing-inline-gap-xs: 5px; /* 페이지네이션·문항 격자 */
+  --spacing-inline-gap: 6px; /* 행 안의 액션 두 개 */
   --spacing-block-gap: 12px; /* 카드 사이 간격 */
   --spacing-section-gap: 16px; /* 구획(본문 영역) 여백 */
   --spacing-section-gap-mobile: 14px;
   --spacing-row-gap: 7px; /* 목록 행 사이 간격 */
+  --spacing-content-gap: 8px; /* 타일·콘텐츠 묶음 */
+  --spacing-grid-gap: 11px; /* 오늘의 문제·수업 카드 격자 */
+  --spacing-column-gap: 16px; /* 2단 배치 열 간격 */
+  --spacing-room-gap: 20px; /* 스터디룸 좌우 영역 */
+  --spacing-empty-pad-x: 22px; /* 빈 상태 가로 여백 */
+  --spacing-empty-pad-y: 38px; /* 빈 상태 세로 여백 */
+  --spacing-appbar-pad-x: 22px;
+  --spacing-appbar-pad-y: 13px;
+  --spacing-sidebar-pad-x: 12px;
+  --spacing-sidebar-pad-y: 16px;
+  --spacing-room-page-pad: 32px;
+  --spacing-room-page-pad-mobile: 24px;
 
   /* 최소 크기 (터치 타깃·부품 높이) */
   --spacing-touch-min: 44px; /* 터치 타깃 최소 */
@@ -413,6 +427,24 @@ body {
   --spacing-chip-min: 32px; /* 앱바 칩 최소 높이 */
   --spacing-badge-min: 22px; /* 배지 최소 높이 */
   --spacing-row-min: 58px; /* 목록 행 최소 높이 */
+  --spacing-control-xs: 40px; /* 기존 xsmall 제어 */
+  --spacing-control-md: 56px; /* 기존 medium 제어 */
+  --spacing-control-xl: 64px; /* 기존 large 제어 */
+  --spacing-empty-cta: 46px;
+  --spacing-flat-row: 66px;
+  --spacing-page-max: 1180px;
+  --spacing-content-max: 1100px;
+  --spacing-room-aside: 360px;
+  --spacing-room-content-max: 740px;
+
+  /* 타이포 리듬. MVP-E와 MVP-G가 공유하는 제품 전역 값 */
+  --tracking-heading: -0.03em;
+  --tracking-body: -0.015em;
+  --tracking-caption: 0em;
+  --tracking-number: -0.04em;
+  --leading-heading: 1.25;
+  --leading-body: 1.35;
+  --leading-coach: 1.9;
 
   /* ========================================
     모서리 (v22 §1.3 · §3.3)
@@ -443,113 +475,150 @@ body {
 @utility font-display-1 {
   font-weight: 700;
   font-size: 56px;
-  line-height: 135%;
-  letter-spacing: -3.19%;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
 }
 
 @utility font-display-2 {
   font-weight: 700;
   font-size: 40px;
-  line-height: 135%;
-  letter-spacing: -2.82%;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
 }
 
 @utility font-title-heading {
   font-weight: 700;
   font-size: 32px;
-  line-height: 135%;
-  letter-spacing: -4%;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
 }
 
 @utility font-title-normal {
   font-weight: 400;
   font-size: 32px;
-  line-height: 135%;
-  letter-spacing: -4%;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
 }
 
 @utility font-headline1-heading {
   font-weight: 700;
   font-size: 24px;
-  line-height: 135%;
-  letter-spacing: -4%;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
 }
 
 @utility font-headline1-normal {
   font-weight: 400;
   font-size: 24px;
-  line-height: 135%;
-  letter-spacing: -4%;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
 }
 
 @utility font-headline2-heading {
   font-weight: 600;
   font-size: 20px;
-  line-height: 135%;
-  letter-spacing: -4%;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
 }
 
 @utility font-headline2-normal {
   font-weight: 400;
   font-size: 20px;
-  line-height: 135%;
-  letter-spacing: -4%;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
 }
 
 @utility font-body1-heading {
   font-weight: 600;
   font-size: 18px;
-  line-height: 135%;
-  letter-spacing: -4%;
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-body);
 }
 
 @utility font-body1-normal {
   font-weight: 400;
   font-size: 18px;
-  line-height: 135%;
-  letter-spacing: -4%;
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-body);
 }
 
 @utility font-body2-heading {
   font-weight: 600;
   font-size: 16px;
-  line-height: 135%;
-  letter-spacing: -4%;
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-body);
 }
 
 @utility font-body2-normal {
   font-weight: 400;
   font-size: 16px;
-  line-height: 135%;
-  letter-spacing: -4%;
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-body);
 }
 
 @utility font-label-heading {
   font-weight: 600;
   font-size: 14px;
-  line-height: 135%;
-  letter-spacing: -4%;
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-body);
 }
 
 @utility font-label-normal {
   font-weight: 400;
   font-size: 14px;
-  line-height: 135%;
-  letter-spacing: -4%;
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-body);
 }
 
 @utility font-caption-normal {
   font-weight: 400;
   font-size: 12px;
-  line-height: 135%;
-  letter-spacing: normal;
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-caption);
 }
 
 @utility font-caption-heading {
   font-weight: 500;
   font-size: 12px;
-  line-height: 135%;
-  letter-spacing: normal;
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-caption);
+}
+
+@utility numeric-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@utility text-heading-wrap {
+  overflow-wrap: break-word;
+  word-break: keep-all;
+}
+
+@utility text-single-line {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@utility text-two-lines {
+  display: -webkit-box;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+@utility text-three-lines {
+  display: -webkit-box;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+@utility text-break-safe {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 @utility focus-ring {
@@ -560,7 +629,7 @@ body {
 
 @layer base {
   body {
-    @apply text-text-main bg-system-background-alt;
+    @apply text-text-main bg-system-background-alt font-app;
   }
 
   button,

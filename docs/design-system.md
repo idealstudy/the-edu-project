@@ -6,7 +6,7 @@
 
 | 항목        | 값                                                                                                                                                        |
 | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 버전        | v1.0.0                                                                                                                                                    |
+| 버전        | v1.1.0                                                                                                                                                    |
 | 갱신        | 2026-08-10                                                                                                                                                |
 | 코드 정본   | `mvp-front/src/styles/globals.css`                                                                                                                        |
 | 통합한 문서 | `docs/design-system-2.0.md`(2.0 톤·컴포넌트) · `docs/ui-guidelines.md §7`(색 우선순위) · `docs/mvp-g/design-spec-v22.md §1·§3`(승인 프로토타입 실측 규격) |
@@ -120,7 +120,7 @@
 
 ## 3. 타이포
 
-Pretendard(본문) 기준. **임의 px 금지.** 아래 `@utility` 스케일로만 쓴다.
+Wanted Sans Variable을 본문 1순위로 쓰고, 로컬 Pretendard를 대체 글꼴로 둔다. CDN이 차단되거나 오프라인이어도 Pretendard로 같은 굵기 계층을 유지한다. **임의 px 금지.** 아래 `@utility` 스케일로만 쓴다.
 
 | 유틸                                | 크기 / 굵기   | 용도        |
 | ----------------------------------- | ------------- | ----------- |
@@ -140,7 +140,20 @@ Pretendard(본문) 기준. **임의 px 금지.** 아래 `@utility` 스케일로�
 - 숫자(퍼센트·점수·건수)는 전부 `tabular-nums`.
 - 한국어 제목은 `word-break: keep-all`. 단어 중간에서 끊지 않는다.
 - 문제 본문은 `ui-serif, Georgia, serif` 로 본문 산세리프와 구분한다.
-- 손글씨 표현은 `Nanum Pen Script` 22px / 행간 28px.
+- 학생 손풀이 미리보기처럼 실제 필기를 재현하는 영역만 `Nanum Pen Script` 22px / 행간 28px를 쓸 수 있다. 코치 말풍선에는 적용하지 않는다.
+
+### 3.1 텍스트 안전 유틸리티
+
+| 유틸                | 계약                                                    | 쓰는 곳                |
+| ------------------- | ------------------------------------------------------- | ---------------------- |
+| `text-heading-wrap` | 한국어 단어를 보존하되 긴 단어는 컨테이너 안에서 줄바꿈 | 제목                   |
+| `text-single-line`  | 1줄 말줄임, `min-width:0` 포함                          | 목록 제목·앱바 이름    |
+| `text-two-lines`    | 2줄 말줄임 + 긴 단어 줄바꿈                             | 카드 설명              |
+| `text-three-lines`  | 3줄 말줄임 + 긴 단어 줄바꿈                             | 긴 요약                |
+| `text-break-safe`   | URL·긴 영문을 컨테이너 안에서 강제 줄바꿈               | 사용자 입력·API 메시지 |
+| `numeric-tabular`   | `font-variant-numeric: tabular-nums`                    | 점수·퍼센트·건수·시간  |
+
+코치 말풍선은 전용 손글씨를 쓰지 않는다. 앱 본문을 상속하고 종이색, 줄노트 배경, 왼쪽 오렌지 여백선만 남긴다. 수식은 KaTeX 글꼴 예외를 유지한다. 학생이 직접 쓴 손풀이 캔버스는 이 규칙의 대상이 아니다.
 
 ---
 
@@ -156,6 +169,14 @@ Pretendard(본문) 기준. **임의 px 금지.** 아래 `@utility` 스케일로�
 | `--spacing-section-gap`        | 16px | 구획(본문 영역) 여백        | `p-section-gap`     |
 | `--spacing-section-gap-mobile` | 14px | 휴대폰 구획 여백            |                     |
 | `--spacing-row-gap`            | 7px  | 목록 행 사이 간격           | `gap-row-gap`       |
+| `--spacing-inline-gap-xs`      | 5px  | 페이지네이션·문항 격자      | `gap-inline-gap-xs` |
+| `--spacing-inline-gap`         | 6px  | 행 안의 액션 두 개          | `gap-inline-gap`    |
+| `--spacing-content-gap`        | 8px  | 타일·콘텐츠 묶음            | `gap-content-gap`   |
+| `--spacing-grid-gap`           | 11px | 문제·수업 카드 격자         | `gap-grid-gap`      |
+| `--spacing-column-gap`         | 16px | 2단 배치 열 간격            | `gap-column-gap`    |
+| `--spacing-room-gap`           | 20px | 스터디룸 좌우 영역          | `gap-room-gap`      |
+| `--spacing-empty-pad-x`        | 22px | 빈 상태 가로 여백           | `px-empty-pad-x`    |
+| `--spacing-empty-pad-y`        | 38px | 빈 상태 세로 여백           | `py-empty-pad-y`    |
 | `--spacing-touch-min`          | 44px | 터치 타깃 최소              | `min-h-touch-min`   |
 | `--spacing-control-sm`         | 44px | 작은 버튼·선택 칩 최소 높이 |                     |
 | `--spacing-control-lg`         | 50px | 큰 CTA 최소 높이            |                     |
@@ -164,6 +185,8 @@ Pretendard(본문) 기준. **임의 px 금지.** 아래 `@utility` 스케일로�
 | `--spacing-row-min`            | 58px | 목록 행 최소 높이           |                     |
 
 셸 치수는 기존 토큰을 그대로 쓴다: `--spacing-header-height` 60px, `--spacing-sidebar-width` 260px, `--spacing-grid-margin` 20px.
+
+화면 골격에는 `section-gap` 16px, 휴대폰 14px, 최대 폭 1180px, 2단 열 간격 16px를 쓴다. 스터디룸 계승 골격에는 페이지 여백 32px, 휴대폰 24px, 좌측 360px, 우측 최대 740px, 열 간격 20px를 쓴다. 이 값은 `PageShell`·`SplitLayout` 같은 레이아웃 부품만 소유하고 화면이 다시 적지 않는다.
 
 **터치 타깃 44px 규칙**: 보이는 크기는 작게 두더라도 `:after` 로 히트박스만 44px 로 넓힌다. 아이콘 버튼을 크게 그려서 맞추지 않는다.
 
@@ -240,6 +263,12 @@ Pretendard(본문) 기준. **임의 px 금지.** 아래 `@utility` 스케일로�
 - 빈 상태: 점선 테두리, 패딩 `38px 22px`, CTA 최소 높이 46px.
 - 오류 상태: 테두리 `#f0c4c0`, 배경 `#fff0f0`, 재시도 버튼 최소 높이 44px.
 - **빈 카드 금지**: 그날 내용이 없는 블록은 자리를 비우지 않고 아예 렌더하지 않는다. 빈 게이지와 회색 자리표시는 거짓 약속이다.
+
+데이터 양 계약:
+
+- 0건: `EmptyState`가 안내와 다음 행동을 함께 제공한다. 행동이 없으면 해당 구획 자체를 렌더하지 않는다.
+- 소량: `ListRow`·`DataList` 기본 흐름을 쓴다.
+- 대량: `DataList`의 명시적 `maxVisibleItems`와 펼치기·접기, 또는 `Pagination`을 사용한다. 무한 격자나 무제한 높이 확장은 금지다.
 
 ### 6.5 재사용 컴포넌트
 
