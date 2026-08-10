@@ -56,7 +56,7 @@ const SelectTrigger = ({
   return (
     <SelectPrimitives.Trigger
       className={cn(
-        'border-gray-scale-gray-10 bg-gray-scale-white relative flex h-[56px] w-full items-center justify-between rounded-[4px] border pr-14 pl-6 text-start outline-hidden',
+        'border-line-line1 h-control-md rounded-input relative flex w-full items-center justify-between border bg-white pr-14 pl-6 text-start outline-hidden',
         'mock-placeholder:text-gray-scale-gray-50',
         '[&>span]:min-w-0',
         'placeholder-text-gray-scale-gray-50',
@@ -96,7 +96,7 @@ const SelectContent = ({
     <SelectPrimitives.Portal>
       <SelectPrimitives.Content
         className={cn(
-          'border-gray-scale-gray-10 text-main bg-gray-scale-white relative z-50 max-w-[calc(100vw-12px)] overflow-hidden rounded-[4px] border',
+          'border-line-line1 text-main max-w-select-viewport rounded-input relative z-50 overflow-hidden border bg-white',
           'max-h-[var(--radix-select-content-available-height)]',
           position === 'popper' &&
             'w-full min-w-[var(--radix-select-trigger-width)]',
@@ -128,7 +128,7 @@ const SelectOption = ({ className, children, ...props }: SelectOptionProps) => {
   return (
     <SelectPrimitives.Item
       className={cn(
-        'relative flex h-[56px] w-full cursor-pointer items-center px-6 outline-hidden select-none',
+        'h-control-md relative flex w-full cursor-pointer items-center px-6 outline-hidden select-none',
         'focus:bg-gray-scale-gray-1',
         'mock-[state=checked]:text-key-color-primary',
         'mock-disabled:pointer-events-none',
@@ -158,7 +158,7 @@ export const PlusIcon = ({ className }: { className?: string }) => {
       <g clipPath="url(#clip_plus_16)">
         <path
           d="M2.5 7.5L8 7.5L8 13M13.5 7.5L7.99948 7.49948L8 2"
-          stroke="#FF4805"
+          stroke="currentColor"
         />
       </g>
       <defs>
@@ -188,7 +188,7 @@ export const ChevronDownIcon = ({ className }: { className: string }) => {
       <g clipPath="url(#clip0_89_1012)">
         <path
           d="M14.772 6.27197L8.27197 12.772L1.77197 6.27197"
-          stroke="#1A1A1A"
+          stroke="currentColor"
         />
       </g>
       <defs>

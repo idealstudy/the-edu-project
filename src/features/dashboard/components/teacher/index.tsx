@@ -5,8 +5,9 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 import { TeacherDashboardHeader } from '@/features/dashboard/components/header/teacher-header';
-import { useTeacherStudyRoomDetailQuery } from '@/features/study-rooms/hooks';
 import { useUpdateStudyRoomTitle } from '@/features/study-rooms/components/sidebar/services/query';
+import { useTeacherStudyRoomDetailQuery } from '@/features/study-rooms/hooks';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { PRIVATE } from '@/shared/constants';
 
 import { useChangeStudyRoomStatus } from '../../hooks/use-change-study-room-status';
@@ -63,20 +64,24 @@ const RoomRenameDialog = ({
           </p>
         )}
         <div className="mt-4 flex justify-end gap-2">
-          <button
+          <UnstyledButton
+            variant="unstyled"
+            size="none"
             type="button"
             onClick={onClose}
             className="rounded-md border px-3 py-2 text-xs font-bold"
           >
             취소
-          </button>
-          <button
+          </UnstyledButton>
+          <UnstyledButton
+            variant="unstyled"
+            size="none"
             type="submit"
             disabled={!detail || rename.isPending || name.trim().length === 0}
             className="rounded-md bg-[#222] px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
           >
             저장
-          </button>
+          </UnstyledButton>
         </div>
       </form>
     </div>
@@ -194,7 +199,9 @@ const DashboardTeacher = ({
                       <b className="text-sm">손볼 것 {room.todoCount}건</b>
                       <span className="text-[#a4481e]">›</span>
                     </Link>
-                    <button
+                    <UnstyledButton
+                      variant="unstyled"
+                      size="none"
                       type="button"
                       aria-label={`${room.studentName ?? room.name} 스터디룸 더 보기`}
                       aria-expanded={openMenuRoomId === room.id}
@@ -206,12 +213,14 @@ const DashboardTeacher = ({
                       className="rounded px-2 py-1 text-sm font-bold text-[#60646b] hover:bg-[#f6f7f9]"
                     >
                       ···
-                    </button>
+                    </UnstyledButton>
                   </div>
                   {openMenuRoomId === room.id && (
                     <div className="absolute top-12 right-4 z-10 rounded-lg border bg-white p-1 shadow-lg">
                       {/* 승인 디자인 v22 `roomCard` 3323~3325: 메뉴 4개 */}
-                      <button
+                      <UnstyledButton
+                        variant="unstyled"
+                        size="none"
                         type="button"
                         onClick={() => {
                           setRenamingRoomId(room.id);
@@ -220,7 +229,7 @@ const DashboardTeacher = ({
                         className="block w-full rounded px-3 py-2 text-left text-xs font-bold hover:bg-[#f6f7f9]"
                       >
                         스터디룸 이름 수정
-                      </button>
+                      </UnstyledButton>
                       <Link
                         href={PRIVATE.ROOM.MEMBERS(room.id)}
                         onClick={() => setOpenMenuRoomId(null)}
@@ -235,14 +244,16 @@ const DashboardTeacher = ({
                       >
                         기록 일지 쓰기
                       </Link>
-                      <button
+                      <UnstyledButton
+                        variant="unstyled"
+                        size="none"
                         type="button"
                         disabled={statusMutation.isPending}
                         onClick={() => changeRoomStatus(room.id, 'CLOSED')}
                         className="block w-full rounded px-3 py-2 text-left text-xs font-bold text-[#b43b30] hover:bg-[#fff3f1] disabled:opacity-50"
                       >
                         이 수업 종료하기
-                      </button>
+                      </UnstyledButton>
                     </div>
                   )}
                   {renamingRoomId === room.id && (
@@ -280,13 +291,15 @@ const DashboardTeacher = ({
                     두었습니다. 방학에 쉬는 학생은 여기서 <b>재개하기</b>로 다시
                     시작합니다.
                   </span>
-                  <button
+                  <UnstyledButton
+                    variant="unstyled"
+                    size="none"
                     type="button"
                     onClick={() => setShowClosedRooms((visible) => !visible)}
                     className="ml-auto rounded-md border px-3 py-2 text-xs font-bold text-[#222]"
                   >
                     {showClosedRooms ? '종료된 것 접기' : '종료된 것 보기'}
-                  </button>
+                  </UnstyledButton>
                 </div>
                 {showClosedRooms && (
                   <ul className="mt-3 space-y-2 border-t pt-3">
@@ -301,14 +314,16 @@ const DashboardTeacher = ({
                             {room.name}
                           </small>
                         </span>
-                        <button
+                        <UnstyledButton
+                          variant="unstyled"
+                          size="none"
                           type="button"
                           disabled={statusMutation.isPending}
                           onClick={() => changeRoomStatus(room.id, 'OPERATING')}
                           className="rounded-md border px-3 py-2 text-xs font-bold text-[#222] disabled:opacity-50"
                         >
                           재개하기
-                        </button>
+                        </UnstyledButton>
                       </li>
                     ))}
                   </ul>

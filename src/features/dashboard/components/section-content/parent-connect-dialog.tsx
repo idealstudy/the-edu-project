@@ -3,6 +3,7 @@ import { useState } from 'react';
 import type { ConnectSearchMemberDTO } from '@/entities/connect';
 import type { ParentDashboardConnectedStudentListDTO } from '@/entities/parent';
 import { Button } from '@/shared/components/ui';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { Dialog } from '@/shared/components/ui/dialog';
 import { classifyConnectionError, handleApiError } from '@/shared/lib/errors';
 import { CircleAlert, XIcon } from 'lucide-react';
@@ -70,12 +71,14 @@ export const ConnectDialog = ({
             asChild
             aria-label="닫기"
           >
-            <button
+            <UnstyledButton
+              variant="unstyled"
+              size="none"
               type="button"
               className="flex size-6 cursor-pointer items-center justify-center"
             >
               <XIcon size={24} />
-            </button>
+            </UnstyledButton>
           </Dialog.Close>
         </Dialog.Header>
         <Dialog.Body className="mt-6 flex flex-col gap-3">

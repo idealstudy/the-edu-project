@@ -13,6 +13,7 @@ import {
 } from '@/features/dashboard/hooks/use-wrong-answer-query';
 import { Skeleton } from '@/shared/components/loading';
 import { Button, Input } from '@/shared/components/ui';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib';
 import { AlertTriangle, Check, Clock3, Inbox } from 'lucide-react';
 
@@ -66,7 +67,9 @@ const InboxItem = ({
         {QUICK_COMMENTS.map((comment) => {
           const isSelected = selectedComment === comment;
           return (
-            <button
+            <UnstyledButton
+              variant="unstyled"
+              size="none"
               key={comment}
               type="button"
               className={cn(
@@ -88,7 +91,7 @@ const InboxItem = ({
                 />
               )}
               {comment}
-            </button>
+            </UnstyledButton>
           );
         })}
         <Button

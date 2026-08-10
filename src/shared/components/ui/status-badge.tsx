@@ -21,7 +21,7 @@ export const StatusBadge = ({
   return (
     <span
       className={cn(
-        'font-label-normal rounded px-3 py-1.5 whitespace-nowrap',
+        'font-caption-heading min-h-badge-min rounded-pill inline-flex max-w-full items-center px-2.5 whitespace-nowrap',
         BADGE_STYLE[variant],
         className
       )}

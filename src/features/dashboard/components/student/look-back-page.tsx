@@ -6,6 +6,7 @@ import Link from 'next/link';
 
 import { useLookBackQuery } from '@/features/dashboard/hooks/use-look-back-query';
 import { useUnitNoteLibraryQuery } from '@/features/unit-note/hooks/use-unit-note-query';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { PRIVATE } from '@/shared/constants';
 
 const WEEK_DAYS = ['월', '화', '수', '목', '금', '토', '일'];
@@ -97,7 +98,9 @@ export const LookBackPage = () => {
         <div className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-[#e3e5e8] bg-white p-2">
           <div className="flex w-60 rounded-md bg-[#f0f1f3] p-1">
             {(['WEEK', 'MONTH'] as const).map((item) => (
-              <button
+              <UnstyledButton
+                variant="unstyled"
+                size="none"
                 key={item}
                 type="button"
                 onClick={() => {
@@ -107,36 +110,42 @@ export const LookBackPage = () => {
                 className={`flex-1 cursor-pointer rounded px-3 py-1.5 text-xs font-bold ${period === item ? 'bg-white shadow-sm' : ''}`}
               >
                 {item === 'WEEK' ? '주간' : '월간'}
-              </button>
+              </UnstyledButton>
             ))}
           </div>
-          <button
+          <UnstyledButton
+            variant="unstyled"
+            size="none"
             type="button"
             onClick={() => setOffset((current) => current + 1)}
             className="min-h-11 cursor-pointer rounded-lg border border-[#e3e5e8] px-3 text-xs font-bold"
           >
             ‹ 지난 {period === 'WEEK' ? '주' : '달'}
-          </button>
+          </UnstyledButton>
           <b className="text-sm">
             {offset === 0
               ? `현재 ${period === 'WEEK' ? '주' : '달'} 기록`
               : `${offset}${period === 'WEEK' ? '주' : '달'} 전 기록`}
           </b>
-          <button
+          <UnstyledButton
+            variant="unstyled"
+            size="none"
             type="button"
             disabled={offset === 0}
             onClick={() => setOffset((current) => Math.max(0, current - 1))}
             className="min-h-11 cursor-pointer rounded-lg border border-[#e3e5e8] px-3 text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40"
           >
             다음 {period === 'WEEK' ? '주' : '달'} ›
-          </button>
-          <button
+          </UnstyledButton>
+          <UnstyledButton
+            variant="unstyled"
+            size="none"
             type="button"
             onClick={() => setOffset(0)}
             className="ml-auto min-h-11 cursor-pointer rounded-lg border border-[#e3e5e8] px-3 text-xs font-bold"
           >
             오늘로
-          </button>
+          </UnstyledButton>
         </div>
 
         <div className="grid gap-4 lg:grid-cols-2">
@@ -153,7 +162,9 @@ export const LookBackPage = () => {
                   </span>
                 )}
                 {/* v22 `coachMsg` 2456 `다시 받기` — 코치 메시지를 서버에 다시 요청한다. */}
-                <button
+                <UnstyledButton
+                  variant="unstyled"
+                  size="none"
                   type="button"
                   onClick={() => lookBackQuery.refetch()}
                   disabled={lookBackQuery.isFetching}
@@ -161,7 +172,7 @@ export const LookBackPage = () => {
                   className="ml-auto min-h-9 cursor-pointer rounded-lg border border-[#e3e5e8] px-3 text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   {lookBackQuery.isFetching ? '받는 중' : '다시 받기'}
-                </button>
+                </UnstyledButton>
               </div>
               <div className="flex gap-3">
                 <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#fff1df]">
@@ -231,13 +242,15 @@ export const LookBackPage = () => {
                     <span className="text-xs">
                       {week.done} / {week.total}
                     </span>
-                    <button
+                    <UnstyledButton
+                      variant="unstyled"
+                      size="none"
                       type="button"
                       onClick={() => openWeek(week.monday)}
                       className="min-h-9 cursor-pointer rounded-lg border border-[#e3e5e8] px-3 text-xs font-bold"
                     >
                       그 주 보기
-                    </button>
+                    </UnstyledButton>
                   </div>
                 ))}
               </section>
@@ -283,7 +296,9 @@ export const LookBackPage = () => {
                 내가 쓴 문장 그대로
               </span>
               {/* v22 `sLookWeek` 2483 `회고 있는 날만` */}
-              <button
+              <UnstyledButton
+                variant="unstyled"
+                size="none"
                 type="button"
                 aria-pressed={onlyWithRetrospect}
                 onClick={() => setOnlyWithRetrospect((current) => !current)}
@@ -295,7 +310,7 @@ export const LookBackPage = () => {
                 }`}
               >
                 회고 있는 날만
-              </button>
+              </UnstyledButton>
             </div>
             {lookBackQuery.isError ? (
               <p className="rounded-lg bg-[#fff7f4] p-6 text-center text-sm">

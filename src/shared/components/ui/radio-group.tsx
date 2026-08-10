@@ -38,7 +38,7 @@ const RadioGroupItem = ({ className, ...props }: RadioGroupItemProps) => {
     <RadioGroupPrimitives.Item
       id={id}
       className={cn(
-        'border-line-line3 flex size-[24px] cursor-pointer items-center justify-center rounded-full border',
+        'border-line-line3 rounded-pill flex size-6 cursor-pointer items-center justify-center border',
         'disabled:border-line-line2',
         ariaInvalid && '',
 
@@ -48,7 +48,7 @@ const RadioGroupItem = ({ className, ...props }: RadioGroupItemProps) => {
     >
       <RadioGroupPrimitives.Indicator
         className={cn(
-          'bg-key-color-primary size-[12px] rounded-full',
+          'bg-orange-7 rounded-pill size-3',
           'mock-disabled:bg-gray-scale-gray-20'
         )}
       />

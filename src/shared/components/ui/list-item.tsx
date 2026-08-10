@@ -19,7 +19,7 @@ type ListItemBaseProps = {
 };
 
 const LIST_ITEM_CLASS =
-  'font-body2-normal hover:bg-gray-scale-gray-1 desktop:max-w-[740px] flex h-[66px] w-full min-w-0 flex-row items-center justify-between gap-4 bg-white px-4 py-3 hover:rounded-[12px]';
+  'font-body2-normal hover:bg-gray-1 desktop:max-w-room-content-max flex min-h-flat-row w-full min-w-0 flex-row items-center justify-between gap-column-gap rounded-card bg-white px-card-pad py-block-gap';
 
 const ListItemContent = ({
   title,
@@ -37,7 +37,7 @@ const ListItemContent = ({
       <div className="flex min-w-0 flex-1 flex-row items-center gap-3">
         {icon}
         {warn && (
-          <div className="flex min-w-16 items-center justify-center rounded-full bg-red-50 px-1.5 py-0.5 text-center text-[11px] font-semibold text-red-500 ring-1 ring-red-100">
+          <div className="bg-system-warning-alt text-system-warning rounded-pill font-caption-heading flex min-w-16 items-center justify-center px-1.5 py-0.5 text-center ring-1 ring-current">
             {warn}
           </div>
         )}
@@ -45,13 +45,13 @@ const ListItemContent = ({
           <div className="flex max-w-full min-w-0 flex-row items-center gap-2">
             <p
               data-testid={titleTestId}
-              className="mb-1 min-w-0 truncate"
+              className="text-single-line mb-1"
             >
               {title}
             </p>
             {tag && tag}
           </div>
-          <p className="font-caption-normal text-gray-scale-gray-60 max-w-full truncate">
+          <p className="font-caption-normal text-gray-9 text-single-line max-w-full">
             {subtitle}
           </p>
         </div>
@@ -60,7 +60,7 @@ const ListItemContent = ({
         <div className="flex flex-row items-center gap-1">
           <p
             data-testid="student-check-submit"
-            className="text-gray-scale-gray-70"
+            className="text-gray-9 numeric-tabular"
           >
             {rightTitle}
           </p>
@@ -74,7 +74,7 @@ const ListItemContent = ({
             {dropdown}
           </div>
         </div>
-        <p className="font-caption-normal text-gray-scale-gray-60">
+        <p className="font-caption-normal text-gray-9 text-break-safe">
           {rightSubTitle}
         </p>
       </div>

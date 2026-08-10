@@ -9,6 +9,7 @@ import { useTeacherDashboardStudyRoomListQuery } from '@/features/dashboard/hook
 import { useInvitationQuery } from '@/features/study-rooms/hooks/use-invitation-query';
 import { useToggleInvitation } from '@/features/study-rooms/hooks/use-toggle-invitation';
 import { showBottomToast } from '@/shared/components/ui/bottom-toast';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { PRIVATE } from '@/shared/constants';
 
 /**
@@ -119,7 +120,9 @@ const TeacherInviteCodeCard = () => {
               : (token ?? '이 수업의 초대 코드가 꺼져 있습니다')}
           </div>
           <div className="mt-3 flex gap-2">
-            <button
+            <UnstyledButton
+              variant="unstyled"
+              size="none"
               type="button"
               onClick={copyCode}
               disabled={!token}
@@ -127,8 +130,10 @@ const TeacherInviteCodeCard = () => {
               className="min-h-11 flex-1 cursor-pointer rounded-md border text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40"
             >
               코드 복사
-            </button>
-            <button
+            </UnstyledButton>
+            <UnstyledButton
+              variant="unstyled"
+              size="none"
               type="button"
               onClick={shareLink}
               disabled={!inviteLink}
@@ -136,14 +141,16 @@ const TeacherInviteCodeCard = () => {
               className="min-h-11 flex-1 cursor-pointer rounded-md border text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40"
             >
               링크로 보내기
-            </button>
+            </UnstyledButton>
           </div>
           <p className="mt-2 text-[11px] text-[#747980]">
             학생은 초대 코드 넣기 화면(/invite)에 이 코드를 붙여넣거나, 보낸
             링크를 눌러 들어옵니다.
           </p>
           {!token && !invitation.isPending && (
-            <button
+            <UnstyledButton
+              variant="unstyled"
+              size="none"
               type="button"
               onClick={() => toggleInvitation.mutate(true)}
               disabled={toggleInvitation.isPending}
@@ -151,7 +158,7 @@ const TeacherInviteCodeCard = () => {
               className="mt-2 min-h-11 w-full cursor-pointer rounded-md border border-[#e1aa8d] text-xs font-bold text-[#9a441f]"
             >
               {toggleInvitation.isPending ? '켜는 중' : '초대 코드 켜기'}
-            </button>
+            </UnstyledButton>
           )}
         </>
       )}

@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import { useAdminExamsQuery } from '@/features/exam/hooks/use-exam-query';
 import { Button, Input } from '@/shared/components/ui';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 
 import {
   useAdminPublicHall,
@@ -139,13 +140,15 @@ export const AdminPublicHall = () => {
               <br />
               문제은행에 검수 완료 문항이 올라와 있습니다.
             </p>
-            <button
+            <UnstyledButton
+              variant="unstyled"
+              size="none"
               type="button"
               className="mt-4 min-h-[46px] rounded-lg border border-[#9a3412] bg-[#c2410c] px-5 text-[13px] font-extrabold text-white"
               onClick={() => setShowForm(true)}
             >
               6월 학력평가로 게시하기
-            </button>
+            </UnstyledButton>
           </section>
           <section className="mt-3 rounded-xl border border-[#e4e4e7] bg-white p-4">
             <h2 className="mb-3 text-sm font-extrabold">영향을 받는 학생</h2>
@@ -184,14 +187,16 @@ export const AdminPublicHall = () => {
                   <span className="rounded-full bg-[#f0fdf4] px-2 py-1 text-[10.5px] font-extrabold text-[#15803d]">
                     게시 중
                   </span>
-                  <button
+                  <UnstyledButton
+                    variant="unstyled"
+                    size="none"
                     type="button"
                     className="min-h-11 rounded-lg border border-[#e4e4e7] px-3 text-xs font-extrabold"
                     disabled={unpost.isPending}
                     onClick={() => unpost.mutate(posting.postingId)}
                   >
                     내리기
-                  </button>
+                  </UnstyledButton>
                 </article>
               ))}
             </div>

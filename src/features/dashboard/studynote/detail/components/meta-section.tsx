@@ -17,6 +17,7 @@ import {
   dialogReducer,
   initialDialogState,
 } from '@/shared/components/dialog';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { PRIVATE } from '@/shared/constants';
 import { useRole } from '@/shared/hooks';
 import { Check, Eye, LockKeyhole, UserRound, X } from 'lucide-react';
@@ -135,14 +136,16 @@ export const StudyNoteDetailMetaSection = ({
           </div>
           {canManage && (
             <div className="relative">
-              <button
+              <UnstyledButton
+                variant="unstyled"
+                size="none"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="text-text-sub2 hover:text-text-main cursor-pointer rounded p-1 transition-colors"
                 aria-label="메뉴"
                 data-testid="note-menu-button"
               >
                 <EllipsisIcon className="h-5 w-5" />
-              </button>
+              </UnstyledButton>
 
               {/* 드롭다운 메뉴 */}
               {isMenuOpen && (
@@ -152,7 +155,9 @@ export const StudyNoteDetailMetaSection = ({
                     onClick={() => setIsMenuOpen(false)}
                   />
                   <div className="border-line-line1 absolute top-8 right-0 z-20 w-32 overflow-hidden rounded-lg border bg-white shadow-lg">
-                    <button
+                    <UnstyledButton
+                      variant="unstyled"
+                      size="none"
                       onClick={() => {
                         handleEdit();
                         setIsMenuOpen(false);
@@ -161,8 +166,10 @@ export const StudyNoteDetailMetaSection = ({
                       data-testid="note-edit-menu-item"
                     >
                       편집하기
-                    </button>
-                    <button
+                    </UnstyledButton>
+                    <UnstyledButton
+                      variant="unstyled"
+                      size="none"
                       onClick={() =>
                         dispatch({
                           type: 'OPEN',
@@ -174,7 +181,7 @@ export const StudyNoteDetailMetaSection = ({
                       data-testid="note-delete-menu-item"
                     >
                       삭제하기
-                    </button>
+                    </UnstyledButton>
                   </div>
                 </>
               )}

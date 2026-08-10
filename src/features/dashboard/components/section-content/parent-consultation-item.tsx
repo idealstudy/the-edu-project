@@ -1,4 +1,5 @@
 import { ParentDashboardConsultationItemDTO } from '@/entities/parent';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { formatDateDot } from '@/shared/lib';
 import { ChevronRight } from 'lucide-react';
 
@@ -26,7 +27,9 @@ export const ConsultationItem = ({
           )}
         </div>
 
-        <button
+        <UnstyledButton
+          variant="unstyled"
+          size="none"
           type="button"
           onClick={() => onSelectItem(item)}
           className="border-line-line1 flex w-full cursor-pointer items-start justify-between gap-3 rounded-xl border p-4 text-left transition-colors group-hover:shadow-lg"
@@ -46,7 +49,7 @@ export const ConsultationItem = ({
               size={20}
             />
           </div>
-        </button>
+        </UnstyledButton>
       </li>
     </ul>
   );

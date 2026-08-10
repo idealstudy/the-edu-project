@@ -2,6 +2,7 @@
 
 import { type ConnectListItemDTO, connectionKeys } from '@/entities/connect';
 import { Button } from '@/shared/components/ui';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { Dialog } from '@/shared/components/ui/dialog';
 import { classifyConnectionError, handleApiError } from '@/shared/lib/errors';
 import { useQueryClient } from '@tanstack/react-query';
@@ -75,12 +76,14 @@ export const ConfirmParentRequestDialog = ({
             asChild
             aria-label="닫기"
           >
-            <button
+            <UnstyledButton
+              variant="unstyled"
+              size="none"
               type="button"
               className="flex size-6 cursor-pointer items-center justify-center"
             >
               <XIcon size={24} />
-            </button>
+            </UnstyledButton>
           </Dialog.Close>
         </Dialog.Header>
         <Dialog.Body className="mt-5 gap-2">

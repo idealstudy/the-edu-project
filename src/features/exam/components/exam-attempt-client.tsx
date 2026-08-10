@@ -11,6 +11,7 @@ import {
   useExamAttemptQuery,
 } from '@/features/exam/hooks/use-exam-query';
 import { Button } from '@/shared/components/ui';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { PRIVATE } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import { handleApiError } from '@/shared/lib/errors/error-handler';
@@ -269,14 +270,16 @@ export const ExamAttemptClient = ({ attemptId }: ExamAttemptClientProps) => {
         )}
       >
         <aside className="h-fit rounded-xl border border-[#e4e4e7] bg-white p-3">
-          <button
+          <UnstyledButton
+            variant="unstyled"
+            size="none"
             type="button"
             className="mb-3 w-full cursor-pointer rounded-md border border-[#e4e4e7] py-2 text-xs font-bold"
             onClick={() => setFolded((value) => !value)}
             data-testid="exam-palette-toggle"
           >
             {folded ? '›' : '‹ 문항 접기'}
-          </button>
+          </UnstyledButton>
           <div
             className={cn(
               'grid gap-1.5',
@@ -284,7 +287,9 @@ export const ExamAttemptClient = ({ attemptId }: ExamAttemptClientProps) => {
             )}
           >
             {sheet.questions.map((question, index) => (
-              <button
+              <UnstyledButton
+                variant="unstyled"
+                size="none"
                 key={question.questionNo}
                 type="button"
                 className={cn(
@@ -301,7 +306,7 @@ export const ExamAttemptClient = ({ attemptId }: ExamAttemptClientProps) => {
                 {marked.has(question.questionNo) && (
                   <i className="absolute top-0.5 right-0.5 h-1.5 w-1.5 rounded-full bg-[#b5382f]" />
                 )}
-              </button>
+              </UnstyledButton>
             ))}
           </div>
           {!folded && (
@@ -340,7 +345,9 @@ export const ExamAttemptClient = ({ attemptId }: ExamAttemptClientProps) => {
                   ? '선생님이 올린 시험지 · 주관식'
                   : '문제은행 시험 · 객관식'}
               </span>
-              <button
+              <UnstyledButton
+                variant="unstyled"
+                size="none"
                 type="button"
                 className="ml-auto cursor-pointer rounded-md border border-[#d4d4d8] px-3 py-2 text-xs font-bold"
                 onClick={() =>
@@ -356,7 +363,7 @@ export const ExamAttemptClient = ({ attemptId }: ExamAttemptClientProps) => {
                 }
               >
                 나중에 볼 문항으로 표시
-              </button>
+              </UnstyledButton>
             </div>
             <div
               className={cn(
@@ -390,7 +397,9 @@ export const ExamAttemptClient = ({ attemptId }: ExamAttemptClientProps) => {
               ) : (
                 <div className="grid grid-cols-5 gap-2">
                   {['1', '2', '3', '4', '5'].map((choice) => (
-                    <button
+                    <UnstyledButton
+                      variant="unstyled"
+                      size="none"
                       key={choice}
                       type="button"
                       className={cn(
@@ -410,7 +419,7 @@ export const ExamAttemptClient = ({ attemptId }: ExamAttemptClientProps) => {
                       }
                     >
                       {choice}
-                    </button>
+                    </UnstyledButton>
                   ))}
                 </div>
               )}

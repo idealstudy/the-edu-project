@@ -10,6 +10,7 @@ import {
   Toggle,
   showBottomToast,
 } from '@/shared/components/ui';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib';
 import { handleApiError } from '@/shared/lib/errors/error-handler';
 import { classifyRetrospectError } from '@/shared/lib/errors/errors';
@@ -204,7 +205,9 @@ export const WeeklyRetroCard = ({ className }: Props) => {
               const isSelected = mood === option.value;
 
               return (
-                <button
+                <UnstyledButton
+                  variant="unstyled"
+                  size="none"
                   key={option.value}
                   type="button"
                   className={cn(
@@ -222,7 +225,7 @@ export const WeeklyRetroCard = ({ className }: Props) => {
                     aria-hidden
                   />
                   {option.label}
-                </button>
+                </UnstyledButton>
               );
             })}
           </div>
@@ -250,13 +253,15 @@ export const WeeklyRetroCard = ({ className }: Props) => {
         )}
 
         {isQuickMode && content && (
-          <button
+          <UnstyledButton
+            variant="unstyled"
+            size="none"
             type="button"
             className="font-caption-normal text-gray-8 hover:text-orange-10 mt-3 cursor-pointer text-left underline underline-offset-2"
             onClick={() => setIsQuickMode(false)}
           >
             저장된 한 줄 회고가 있어요 · 열어서 수정하기
-          </button>
+          </UnstyledButton>
         )}
 
         {formError && (

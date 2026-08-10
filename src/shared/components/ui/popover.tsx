@@ -25,7 +25,7 @@ const PopoverContent = forwardRef<
       align={align}
       sideOffset={sideOffset}
       className={cn(
-        'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 z-50 min-w-[280px] rounded-2xl bg-white p-4 text-gray-900 shadow-lg ring-1 ring-black/5 outline-none',
+        'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 min-w-popover-min rounded-card shadow-popover text-text-main p-card-pad z-50 bg-white ring-1 ring-black/5 outline-none',
         className
       )}
       {...props}

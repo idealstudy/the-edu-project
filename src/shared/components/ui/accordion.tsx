@@ -85,7 +85,6 @@ const AccordionContent = forwardRef<
   <AccordionPrimitive.Content
     ref={ref}
     className={cn(
-      // data-[state=closed]:max-h-0 data-[state=open]:max-h-[440px]
       // 이 부분은 Radix의 Collapsible Content 애니메이션 (높이 조정)을 위한 CSS 변환 속성으로 대체하는 것이 더 좋습니다.
       'data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown overflow-hidden text-sm transition-all',
       className

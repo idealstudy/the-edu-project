@@ -28,7 +28,7 @@ const DropdownMenuContent = ({
     <DropdownMenuPrimitives.Portal>
       <DropdownMenuPrimitives.Content
         className={cn(
-          'border-line-line1 bg-gray-scale-white text-text-main z-50 overflow-hidden rounded-[6px] border',
+          'border-line-line1 text-text-main rounded-focus z-50 overflow-hidden border bg-white',
           'animate-in fade-in-0',
           'mock-[side=bottom]:slide-in-from-top-2 mock-[side=left]:slide-in-from-right-2 mock-[side=right]:slide-in-from-left-2 mock-[side=top]:slide-in-from-bottom-2',
           className
@@ -44,7 +44,7 @@ const DropdownMenuContent = ({
 
 const dropdownMenuItemVariants = cva(
   cn(
-    'outline-hidden relative flex cursor-pointer select-none items-center px-4 h-[32px]',
+    'outline-hidden h-chip-min relative flex cursor-pointer items-center px-4 select-none',
     'focus:bg-background-gray',
     '[&_svg]:shrink-0'
   ),

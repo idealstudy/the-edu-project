@@ -2,6 +2,7 @@
 
 import type { QuestionBankItem, QuestionBankParams } from '@/entities/exam';
 import { useQuestionBankQuery } from '@/features/exam/hooks/use-exam-query';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib';
 
 type QuestionBankPickerProps = {
@@ -46,13 +47,15 @@ export const QuestionBankPicker = ({
           담은 문항은 그대로 남아 있습니다. 다시 불러오면 같은 조건에서
           이어집니다.
         </p>
-        <button
+        <UnstyledButton
+          variant="unstyled"
+          size="none"
           type="button"
           className="mt-3 cursor-pointer rounded-md border border-[#d88980] bg-white px-3 py-2 text-xs font-bold text-[#8c2f27]"
           onClick={() => void query.refetch()}
         >
           다시 불러오기
-        </button>
+        </UnstyledButton>
       </div>
     );
   }
@@ -71,20 +74,24 @@ export const QuestionBankPicker = ({
           <br />
           난이도 조건을 풀어 다시 찾아보세요.
         </p>
-        <button
+        <UnstyledButton
+          variant="unstyled"
+          size="none"
           type="button"
           className="mt-4 cursor-pointer rounded-md bg-[#ef6c00] px-4 py-2 text-xs font-bold text-white"
           onClick={onClearDifficulty}
         >
           난이도 조건 빼고 다시 찾기
-        </button>
-        <button
+        </UnstyledButton>
+        <UnstyledButton
+          variant="unstyled"
+          size="none"
           type="button"
           className="mt-3 block w-full cursor-pointer text-xs font-bold text-[#52525b] underline underline-offset-4"
           onClick={onChoosePdfPath}
         >
           PDF로 직접 올리기
-        </button>
+        </UnstyledButton>
       </div>
     );
   }
@@ -119,7 +126,9 @@ export const QuestionBankPicker = ({
                     : ` · 오답률 ${question.wrongAnswerRate}%`}
                 </small>
               </span>
-              <button
+              <UnstyledButton
+                variant="unstyled"
+                size="none"
                 type="button"
                 className={cn(
                   'cursor-pointer rounded-md border px-3 py-2 text-xs font-bold',
@@ -130,7 +139,7 @@ export const QuestionBankPicker = ({
                 onClick={() => onToggle(question)}
               >
                 {isSelected ? '담김' : '담기'}
-              </button>
+              </UnstyledButton>
             </div>
           );
         })

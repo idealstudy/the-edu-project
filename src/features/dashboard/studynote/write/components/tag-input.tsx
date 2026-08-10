@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import Image from 'next/image';
 
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
 import {
   Popover,
@@ -93,7 +94,9 @@ export default function TagInput({
                       <span className="text-key-color-primary">•</span>
                       <span className="text-key-color-primary">보호자</span>
                       <span className="text-key-color-primary">{`${fullInfo.parentCount}`}</span>
-                      <button
+                      <UnstyledButton
+                        variant="unstyled"
+                        size="none"
                         onClick={(e) => {
                           e.stopPropagation();
                           toggleSelect(student);
@@ -106,7 +109,7 @@ export default function TagInput({
                           height={16}
                           alt="close"
                         />
-                      </button>
+                      </UnstyledButton>
                     </div>
                   );
                 })}
@@ -146,7 +149,9 @@ export default function TagInput({
               {filtered.map((student) => {
                 const isSelected = selected.some((s) => s.id === student.id);
                 return (
-                  <button
+                  <UnstyledButton
+                    variant="unstyled"
+                    size="none"
                     key={student.id}
                     onClick={(e) => {
                       e.preventDefault();
@@ -189,7 +194,7 @@ export default function TagInput({
                     {isSelected ? (
                       <span className="ml-1 text-orange-500">✓</span>
                     ) : null}
-                  </button>
+                  </UnstyledButton>
                 );
               })}
             </div>

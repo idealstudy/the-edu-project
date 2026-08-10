@@ -70,7 +70,7 @@ const TextField = ({
         {label}
         <div
           className={cn(
-            'bg-gray-scale-white border-line-line2 flex h-[56px] gap-6 rounded-[4px] border px-6',
+            'border-line-line2 h-control-md rounded-input flex gap-6 border bg-white px-6',
             error
               ? 'border-system-warning focus-within:border-system-warning'
               : 'focus-within:border-key-color-quaternary',
@@ -153,15 +153,14 @@ const TextFieldLabel = ({
   return (
     <label
       htmlFor={textFieldId}
-      className={cn(
-        'mb-2 flex items-center text-[18px] font-semibold',
-        className
-      )}
+      className={cn('font-body1-heading mb-2 flex items-center', className)}
       {...props}
     >
       {children}
       {required && (
-        <span className="text-system-warning ml-1 text-[20px]">*</span>
+        <span className="text-system-warning font-headline2-heading ml-1">
+          *
+        </span>
       )}
     </label>
   );
@@ -221,7 +220,10 @@ const TextFieldErrorMessage = ({
     <p
       id={errorMessageId}
       ref={refCallback}
-      className={cn('text-system-warning mt-1 flex-1 text-[14px]', className)}
+      className={cn(
+        'text-system-warning font-label-normal mt-1 flex-1',
+        className
+      )}
       {...props}
     >
       {children}

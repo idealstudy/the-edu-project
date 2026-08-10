@@ -6,6 +6,7 @@ import Link from 'next/link';
 
 import { type AdminMemberRole } from '@/entities/member';
 import { Pagination, SearchInput, Toggle } from '@/shared/components/ui';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { PRIVATE } from '@/shared/constants/route';
 import { cn } from '@/shared/lib';
 
@@ -75,7 +76,9 @@ export const AdminMemberList = () => {
 
       <div className="mb-3 flex border-b border-[#e4e4e7]">
         {ROLE_TABS.map((tab) => (
-          <button
+          <UnstyledButton
+            variant="unstyled"
+            size="none"
             key={tab.value}
             type="button"
             className={cn(
@@ -88,7 +91,7 @@ export const AdminMemberList = () => {
             data-testid={`member-tab-${tab.value.toLowerCase()}`}
           >
             {tab.label}
-          </button>
+          </UnstyledButton>
         ))}
       </div>
 
@@ -145,14 +148,18 @@ export const AdminMemberList = () => {
               바로 갈 수 있습니다.
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
-              <button
+              <UnstyledButton
+                variant="unstyled"
+                size="none"
                 type="button"
                 className="min-h-11 rounded-lg border border-[#d4776c] bg-white px-3.5 text-xs font-extrabold text-[#a81b0e]"
                 onClick={() => query.refetch()}
               >
                 다시 불러오기
-              </button>
-              <button
+              </UnstyledButton>
+              <UnstyledButton
+                variant="unstyled"
+                size="none"
                 type="button"
                 className="min-h-11 rounded-lg border border-[#d4776c] bg-white px-3.5 text-xs font-extrabold text-[#a81b0e]"
                 onClick={() =>
@@ -160,7 +167,7 @@ export const AdminMemberList = () => {
                 }
               >
                 이메일로 회원 1명 바로 찾기
-              </button>
+              </UnstyledButton>
             </div>
           </section>
           <section className="mt-3 rounded-xl border border-[#e4e4e7] bg-white p-4">
@@ -197,18 +204,22 @@ export const AdminMemberList = () => {
                 선생님 탭에서 찾는 중입니다. 같은 이름으로{' '}
                 <b>학생 탭에는 1명</b>이 있습니다.
               </p>
-              <button
+              <UnstyledButton
+                variant="unstyled"
+                size="none"
                 type="button"
                 className="mt-4 min-h-[46px] rounded-lg border border-[#9a3412] bg-[#c2410c] px-5 text-[13px] font-extrabold text-white"
                 onClick={() => selectRole('STUDENT')}
               >
                 학생 탭에서 {`"${keyword}"`} 찾기
-              </button>
+              </UnstyledButton>
             </>
           )}
           {keyword && (
             <div className="mt-3">
-              <button
+              <UnstyledButton
+                variant="unstyled"
+                size="none"
                 type="button"
                 className="min-h-11 rounded-lg border border-[#e4e4e7] bg-white px-3 text-xs font-extrabold"
                 onClick={() => {
@@ -217,7 +228,7 @@ export const AdminMemberList = () => {
                 }}
               >
                 검색어 지우고 전체 보기
-              </button>
+              </UnstyledButton>
             </div>
           )}
         </section>

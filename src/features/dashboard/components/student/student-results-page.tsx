@@ -9,6 +9,7 @@ import { useStudentGrowthQuery } from '@/features/dashboard/hooks/use-growth-que
 import { useMyPointWalletQuery } from '@/features/point/hooks/use-point';
 import { useMyTreeQuery } from '@/features/weakness-tree/hooks/use-tree';
 import { Button } from '@/shared/components/ui';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { subjectLabel } from '@/shared/constants';
 import { PRIVATE } from '@/shared/constants/route';
 import { ChevronDown, ChevronRight } from 'lucide-react';
@@ -67,7 +68,7 @@ export const StudentResultsPage = () => {
   ).length;
 
   return (
-    <main className="flex w-full flex-col gap-block-gap p-section-gap">
+    <main className="gap-block-gap p-section-gap flex w-full flex-col">
       <section
         className="border-gray-3 bg-gray-white rounded-xl border p-4"
         data-testid="learning-map"
@@ -145,7 +146,9 @@ export const StudentResultsPage = () => {
                     data-testid={`learning-map-group-${subject}`}
                   >
                     {/* v22 §3.4 그룹 진행 막대(.tgbar) 높이 6px, 최대 폭 220px */}
-                    <button
+                    <UnstyledButton
+                      variant="unstyled"
+                      size="none"
                       type="button"
                       aria-expanded={opened}
                       onClick={() => toggle(subject)}
@@ -177,7 +180,7 @@ export const StudentResultsPage = () => {
                           style={{ width: `${groupPercent}%` }}
                         />
                       </span>
-                    </button>
+                    </UnstyledButton>
                     {opened && (
                       <div className={TILE_GRID}>
                         {group.nodes.map((node) => (

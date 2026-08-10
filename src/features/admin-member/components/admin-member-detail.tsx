@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { Button, Textarea } from '@/shared/components/ui';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib';
 
 import {
@@ -183,7 +184,9 @@ export const AdminMemberDetail = ({ memberId }: { memberId: number }) => {
             ) : (
               <>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <button
+                  <UnstyledButton
+                    variant="unstyled"
+                    size="none"
                     type="button"
                     className="min-h-11 rounded-lg border border-[#d4776c] px-3 text-xs font-extrabold text-[#a81b0e]"
                     onClick={() => {
@@ -192,8 +195,10 @@ export const AdminMemberDetail = ({ memberId }: { memberId: number }) => {
                     }}
                   >
                     일반 회원으로 강등
-                  </button>
-                  <button
+                  </UnstyledButton>
+                  <UnstyledButton
+                    variant="unstyled"
+                    size="none"
                     type="button"
                     className="min-h-11 rounded-lg border border-[#d4776c] px-3 text-xs font-extrabold text-[#a81b0e]"
                     onClick={() => {
@@ -202,7 +207,7 @@ export const AdminMemberDetail = ({ memberId }: { memberId: number }) => {
                     }}
                   >
                     로그인 즉시 정지
-                  </button>
+                  </UnstyledButton>
                 </div>
                 {showReason && (
                   <div className="mt-3">

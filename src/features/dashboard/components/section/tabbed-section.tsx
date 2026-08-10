@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib';
 import type { DashboardTab } from '@/shared/lib/analytics';
 import {
@@ -59,7 +60,9 @@ export const StudyRoomDropdown = ({
       ref={ref}
       className="tablet:w-48 relative inline-block w-30"
     >
-      <button
+      <UnstyledButton
+        variant="unstyled"
+        size="none"
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
         className={cn(
@@ -77,7 +80,7 @@ export const StudyRoomDropdown = ({
             isOpen && 'rotate-180'
           )}
         />
-      </button>
+      </UnstyledButton>
 
       {isOpen && (
         <ul
@@ -89,7 +92,9 @@ export const StudyRoomDropdown = ({
         >
           {!student && !parent && (
             <li>
-              <button
+              <UnstyledButton
+                variant="unstyled"
+                size="none"
                 type="button"
                 onClick={() => {
                   onSelect(null);
@@ -102,12 +107,14 @@ export const StudyRoomDropdown = ({
                 )}
               >
                 전체 스터디룸
-              </button>
+              </UnstyledButton>
             </li>
           )}
           {studyRooms.map((room) => (
             <li key={room.id}>
-              <button
+              <UnstyledButton
+                variant="unstyled"
+                size="none"
                 type="button"
                 onClick={() => {
                   onSelect(room.id);
@@ -120,7 +127,7 @@ export const StudyRoomDropdown = ({
                 )}
               >
                 {room.name}
-              </button>
+              </UnstyledButton>
             </li>
           ))}
         </ul>
@@ -197,7 +204,9 @@ const TabbedSection = ({
         className="flex flex-wrap gap-2"
       >
         {tabs.map((tab, index) => (
-          <button
+          <UnstyledButton
+            variant="unstyled"
+            size="none"
             key={tab}
             type="button"
             role="tab"
@@ -213,7 +222,7 @@ const TabbedSection = ({
             )}
           >
             {tab}
-          </button>
+          </UnstyledButton>
         ))}
       </div>
 

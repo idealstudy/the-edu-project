@@ -4,6 +4,7 @@ import { useAuth } from '@/features/auth/hooks/use-auth';
 import { useStudentDashboardStudyRoomListQuery } from '@/features/dashboard/hooks/use-student-dashboard-query';
 import { ListIcon } from '@/shared/components/icons';
 import { Sidebar } from '@/shared/components/sidebar';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { PRIVATE } from '@/shared/constants/route';
 import { useRole } from '@/shared/hooks/use-role';
 import { trackGnbLogoutClick } from '@/shared/lib/analytics';
@@ -36,18 +37,16 @@ export const DashboardSidebar = () => {
 
   return (
     <Sidebar>
-      <div className="px-2 pt-1 pb-3 text-sm font-extrabold tracking-[-0.045em] text-orange-9">
+      <div className="text-orange-9 px-2 pt-1 pb-3 text-sm font-extrabold tracking-[-0.045em]">
         D-EDU
-        <small className="mt-0.5 block text-[9.5px] font-semibold tracking-normal text-gray-8">
+        <small className="text-gray-8 mt-0.5 block text-[9.5px] font-semibold tracking-normal">
           {role === 'ROLE_TEACHER' ? '선생님' : '내 학습'}
         </small>
       </div>
       {/* 학생 전용: 내 학습 / 친구 / 약점 트리 (2.0 학생 중심 코어) — 선생님·학부모 화면 아님 */}
       {role === 'ROLE_STUDENT' && (
         <>
-          <Sidebar.Item
-            href={PRIVATE.DASHBOARD.STUDENT}
-          >
+          <Sidebar.Item href={PRIVATE.DASHBOARD.STUDENT}>
             <GraduationCap
               size={20}
               className="shrink-0"
@@ -79,7 +78,7 @@ export const DashboardSidebar = () => {
 
           {primaryRoom && (
             <>
-              <div className="px-2 pt-4 pb-1 text-[10px] font-extrabold text-gray-8">
+              <div className="text-gray-8 px-2 pt-4 pb-1 text-[10px] font-extrabold">
                 소속
               </div>
               <Sidebar.Item
@@ -97,7 +96,7 @@ export const DashboardSidebar = () => {
             </>
           )}
 
-          <div className="px-2 pt-4 pb-1 text-[10px] font-extrabold text-gray-8">
+          <div className="text-gray-8 px-2 pt-4 pb-1 text-[10px] font-extrabold">
             더 보기
           </div>
 
@@ -185,7 +184,7 @@ export const DashboardSidebar = () => {
 
       {role === 'ROLE_STUDENT' && (
         <>
-          <div className="px-2 pt-4 pb-1 text-[10px] font-extrabold text-gray-8">
+          <div className="text-gray-8 px-2 pt-4 pb-1 text-[10px] font-extrabold">
             오픈챌린지에서 열립니다
           </div>
           <Sidebar.Item
@@ -266,14 +265,16 @@ export const DashboardSidebar = () => {
       )}
 
       <div className="mt-auto flex justify-end p-2">
-        <button
+        <UnstyledButton
+          variant="unstyled"
+          size="none"
           type="button"
           onClick={handleLogout}
           className="text-text-sub2 hover:bg-background-gray font-body2-normal flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1"
         >
           <Sidebar.Text>로그아웃</Sidebar.Text>
           <LogOut size={20} />
-        </button>
+        </UnstyledButton>
       </div>
     </Sidebar>
   );

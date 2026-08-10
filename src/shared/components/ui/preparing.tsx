@@ -6,18 +6,18 @@ import { useRouter } from 'next/navigation';
 export const Preparing = () => {
   const router = useRouter();
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-center bg-gradient-to-b from-[#FCFBFA] to-[#FFE7E2] px-6">
-      <div className="relative w-full max-w-[400px]">
+    <div className="from-system-background to-orange-2 flex min-h-screen w-full flex-col items-center justify-center bg-gradient-to-b px-6">
+      <div className="max-w-dialog-sm relative w-full">
         <div className="absolute -top-5 -right-4 z-0 animate-bounce md:-right-10">
-          <div className="relative rotate-[10deg] rounded-2xl bg-[#FF6B4A] px-5 py-2 text-white shadow-xl">
+          <div className="bg-orange-7 rounded-card relative rotate-12 px-5 py-2 text-white">
             <span className="text-xl font-black tracking-widest uppercase md:text-base">
               Coming Soon
             </span>
-            <div className="absolute -bottom-1 left-6 h-3 w-3 rotate-45 bg-[#FF6B4A]"></div>
+            <div className="bg-orange-7 absolute -bottom-1 left-6 h-3 w-3 rotate-45"></div>
           </div>
         </div>
 
-        <div className="relative aspect-[4/4] w-full max-w-[400px]">
+        <div className="max-w-dialog-sm relative aspect-square w-full">
           <Image
             src="/character/img_coming_soon01.png"
             alt="Preparing"

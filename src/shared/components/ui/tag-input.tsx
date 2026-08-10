@@ -74,7 +74,7 @@ export const TagInput = ({
       <div className={cn('flex w-full items-center gap-2', className)}>
         <div
           className={cn(
-            'flex min-h-[56px] flex-1 flex-wrap items-center gap-2',
+            'min-h-control-md gap-content-gap flex flex-1 flex-wrap items-center',
             'border-dark-gray-03 border px-3 py-2',
             isError && 'border-red',
             disabled && 'border-light-gray-30 bg-light-gray-01 opacity-50',
@@ -103,7 +103,7 @@ export const TagInput = ({
             type="button"
             disabled={disabled || isMaxTagsReached}
             className={cn(
-              'h-[56px] rounded-md border px-4 text-sm whitespace-nowrap',
+              'h-control-md rounded-input px-card-pad font-label-normal border whitespace-nowrap',
               'border-dark-gray-03 hover:border-dedu-black transition-colors',
               'focus-visible:border-dedu-black focus-visible:outline-none',
               disabled &&
@@ -122,7 +122,7 @@ export const TagInput = ({
         <Popover.Content
           align="start"
           sideOffset={4}
-          className="z-50 max-h-60 w-[300px] overflow-y-scroll rounded-md border bg-white shadow-md"
+          className="w-tag-menu rounded-card shadow-popover z-50 max-h-60 overflow-y-scroll border bg-white"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
           <div className="border-b p-3">
@@ -195,7 +195,7 @@ const Tag = ({ text, onRemove, className, disabled = false }: TagProps) => {
         onRemove();
       }}
       className={cn(
-        'border-dark-gray-03 relative flex w-[120px] items-center justify-center gap-1 rounded-full border bg-[#FFEFE0] px-3 py-[10.5px]',
+        'border-orange-3 bg-orange-1 w-tag-item py-tag-pad-y gap-inline-gap-xs rounded-pill relative flex items-center justify-center border px-3',
         'transition-colors hover:bg-orange-100',
         disabled && 'opacity-50',
         className

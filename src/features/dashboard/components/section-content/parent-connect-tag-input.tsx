@@ -6,6 +6,7 @@ import Image from 'next/image';
 
 import type { ConnectSearchMemberDTO } from '@/entities/connect';
 import type { ParentDashboardConnectedStudentListDTO } from '@/entities/parent';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib';
 import {
   Popover,
@@ -111,7 +112,9 @@ export const ConnectTagInput = ({
                 <span className="text-key-color-primary max-w-[260px] truncate">
                   {selectedMember.email}
                 </span>
-                <button
+                <UnstyledButton
+                  variant="unstyled"
+                  size="none"
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -126,7 +129,7 @@ export const ConnectTagInput = ({
                     height={16}
                     alt="close"
                   />
-                </button>
+                </UnstyledButton>
               </div>
             ) : (
               <input
@@ -167,7 +170,9 @@ export const ConnectTagInput = ({
                 const isAlreadyPending = isPendingStudent(student.email);
 
                 return (
-                  <button
+                  <UnstyledButton
+                    variant="unstyled"
+                    size="none"
                     type="button"
                     key={student.memberId}
                     onClick={(e) => {
@@ -209,7 +214,7 @@ export const ConnectTagInput = ({
                         이미 요청함
                       </span>
                     )}
-                  </button>
+                  </UnstyledButton>
                 );
               })}
             </div>

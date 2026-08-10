@@ -54,7 +54,7 @@ const DialogContent = ({
       <DialogPrimitives.Content
         aria-modal
         className={cn(
-          'bg-system-background-alt border-line-line1 fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100%-4rem)] w-full max-w-[calc(100%-4rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-y-auto rounded-[16px] border p-9',
+          'bg-system-background-alt border-line-line1 max-h-dialog-viewport max-w-dialog-viewport rounded-section fixed top-1/2 left-1/2 z-50 flex w-full -translate-x-1/2 -translate-y-1/2 flex-col overflow-y-auto border p-9',
           className
         )}
         {...props}
@@ -97,7 +97,7 @@ type DialogFooterProps = React.ComponentPropsWithRef<'div'>;
 const DialogFooter = ({ className, children, ...props }: DialogFooterProps) => {
   return (
     <div
-      className={cn('flex gap-[10px]', className)}
+      className={cn('flex gap-2.5', className)}
       {...props}
     >
       {children}
@@ -157,7 +157,7 @@ const DialogTrigger = ({ children, ...props }: DialogTriggerProps) => {
 // const DialogClose = () => {
 //   return (
 //     <DialogPrimitives.Close
-//       className="absolute top-9 right-9 flex size-[24px] cursor-pointer items-center justify-center"
+//       className="absolute top-9 right-9 flex size-6 cursor-pointer items-center justify-center"
 //       aria-label="닫기"
 //     >
 //       <XIcon />

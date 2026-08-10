@@ -35,7 +35,7 @@ export const SearchInput = ({
       <input
         role="searchbox"
         className={cn(
-          'peer border-line-line1 font-body2-normal placeholder:text-text-inactive bg-gray-scale-white flex h-[48px] rounded-[8px] border pr-11 pl-4',
+          'peer border-line-line1 font-body2-normal placeholder:text-text-inactive rounded-input flex h-12 border bg-white pr-11 pl-4',
           'focus-visible:border-line-line3 outline-none',
           'disabled:pointer-events-none disabled:opacity-50',
           className

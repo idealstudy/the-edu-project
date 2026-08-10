@@ -6,6 +6,7 @@ import Link from 'next/link';
 
 import { type AdminConsultationCase } from '@/entities/admin-operations';
 import { SearchInput, Textarea } from '@/shared/components/ui';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { PRIVATE } from '@/shared/constants/route';
 import { cn } from '@/shared/lib';
 
@@ -118,7 +119,9 @@ export const AdminConsultations = () => {
       </div>
       <div className="mb-3 flex flex-wrap gap-2">
         {states.map(([value, label]) => (
-          <button
+          <UnstyledButton
+            variant="unstyled"
+            size="none"
             key={value}
             type="button"
             data-testid={`admin-consultations-chip-${value}`}
@@ -141,9 +144,11 @@ export const AdminConsultations = () => {
             <b className="tabular-nums">
               {query.data?.statusCounts[value] ?? 0}
             </b>
-          </button>
+          </UnstyledButton>
         ))}
-        <button
+        <UnstyledButton
+          variant="unstyled"
+          size="none"
           type="button"
           data-testid="admin-consultations-delayed-chip"
           aria-pressed={status === DELAYED}
@@ -164,7 +169,7 @@ export const AdminConsultations = () => {
           }}
         >
           지연 <b className="tabular-nums">{query.data?.delayedCount ?? 0}</b>
-        </button>
+        </UnstyledButton>
         <SearchInput
           className="min-w-[180px] flex-1 bg-white"
           value={searchValue}
@@ -194,7 +199,9 @@ export const AdminConsultations = () => {
           <p className="mt-2 text-[12.5px] leading-7 text-[#52525b]">
             받은 문의에 모두 하루 안에 손을 댔습니다.
           </p>
-          <button
+          <UnstyledButton
+            variant="unstyled"
+            size="none"
             type="button"
             className="mt-4 min-h-[46px] rounded-lg border border-[#9a3412] bg-[#c2410c] px-5 text-[13px] font-extrabold text-white"
             onClick={() => {
@@ -203,7 +210,7 @@ export const AdminConsultations = () => {
             }}
           >
             접수 {query.data.statusCounts.RECEIVED ?? 0}건 보기
-          </button>
+          </UnstyledButton>
         </section>
       )}
       {query.data && query.data.content.length === 0 && status !== DELAYED && (
@@ -218,13 +225,15 @@ export const AdminConsultations = () => {
               동안 받은 문의는 <b>{summary.data?.consultationCount ?? 0}건</b>
               이고 모두 답변 완료입니다.
             </p>
-            <button
+            <UnstyledButton
+              variant="unstyled"
+              size="none"
               type="button"
               className="mt-4 min-h-[46px] rounded-lg border border-[#9a3412] bg-[#c2410c] px-5 text-[13px] font-extrabold text-white"
               onClick={() => setStatus('ANSWERED')}
             >
               답변 완료 {summary.data?.consultationCount ?? 0}건 보기
-            </button>
+            </UnstyledButton>
           </section>
           <section className="mt-3 rounded-xl border border-[#e4e4e7] bg-white p-4">
             <h2 className="mb-3 text-sm font-extrabold">지난 30일</h2>
@@ -359,7 +368,9 @@ export const AdminConsultations = () => {
                         {item.assigneeName ?? '아직 없음'}
                       </td>
                       <td className="border-b border-[#f4f4f5] px-2.5 py-3">
-                        <button
+                        <UnstyledButton
+                          variant="unstyled"
+                          size="none"
                           type="button"
                           className={cn(
                             'min-h-11 rounded-lg border px-3 text-xs font-extrabold whitespace-nowrap',
@@ -373,7 +384,7 @@ export const AdminConsultations = () => {
                           }}
                         >
                           {item.status === 'RECEIVED' ? '답변 쓰기' : '열기'}
-                        </button>
+                        </UnstyledButton>
                       </td>
                     </tr>
                   ))}
@@ -432,7 +443,9 @@ export const AdminConsultations = () => {
                 placeholder="보낸 사람에게 그대로 전달됩니다. 계정 조치가 필요하면 회원 상세에서 실행하고 여기에 결과만 적습니다."
               />
               <div className="mt-3 flex flex-wrap gap-2">
-                <button
+                <UnstyledButton
+                  variant="unstyled"
+                  size="none"
                   type="button"
                   // "답변 보내고 완료 처 / 리" 로 쪼개지던 것을 막는다.
                   // 한 줄에 안 들어가면 두 번째 버튼이 아래 줄로 내려간다.
@@ -441,15 +454,17 @@ export const AdminConsultations = () => {
                   onClick={() => updateCase('ANSWERED')}
                 >
                   답변 보내고 완료 처리
-                </button>
-                <button
+                </UnstyledButton>
+                <UnstyledButton
+                  variant="unstyled"
+                  size="none"
                   type="button"
                   className="min-h-11 rounded-lg border border-[#e4e4e7] px-3 text-xs font-extrabold whitespace-nowrap"
                   disabled={update.isPending}
                   onClick={() => updateCase('IN_PROGRESS')}
                 >
                   처리 중으로 두기
-                </button>
+                </UnstyledButton>
               </div>
               <p className="mt-2 text-xs text-[#71717a]">
                 답변한 사람과 시각이 이력에 남습니다. 학생 학습 화면은 이
@@ -486,13 +501,15 @@ export const AdminConsultations = () => {
                 </Link>
               ) : (
                 <>
-                  <button
+                  <UnstyledButton
+                    variant="unstyled"
+                    size="none"
                     type="button"
                     disabled
                     className="mt-3 min-h-11 w-full rounded-lg border border-[#e4e4e7] text-xs font-extrabold disabled:text-[#a1a1aa]"
                   >
                     회원 상세 열기
-                  </button>
+                  </UnstyledButton>
                   <p className="mt-2 text-[11.5px] text-[#71717a]">
                     접수 연락처로 회원 계정을 찾지 못했습니다. 비회원 문의이거나
                     가입 연락처가 다른 경우입니다.

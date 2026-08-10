@@ -11,6 +11,7 @@ import {
 } from '@/features/exam/hooks/use-exam-query';
 import { Skeleton } from '@/shared/components/loading';
 import { Button } from '@/shared/components/ui';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { PRIVATE, PUBLIC } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 
@@ -63,7 +64,9 @@ export const ExamHallCard = ({ className }: Props) => {
                 실측 아님
               </span>
             )}
-            <button
+            <UnstyledButton
+              variant="unstyled"
+              size="none"
               type="button"
               aria-expanded={isBasisOpen}
               onClick={() => setIsBasisOpen((current) => !current)}
@@ -71,7 +74,7 @@ export const ExamHallCard = ({ className }: Props) => {
               className="ml-auto min-h-9 cursor-pointer rounded-lg border border-[#e4e4e7] px-3 text-[11px] font-bold text-[#52525b]"
             >
               등급이 어떻게 나왔나요
-            </button>
+            </UnstyledButton>
           </div>
           {isBasisOpen && (
             <div

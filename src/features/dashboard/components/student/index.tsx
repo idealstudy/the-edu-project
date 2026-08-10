@@ -49,7 +49,7 @@ const DashboardStudent = () => {
       {/*
         v22 §1.3: 구획 패딩 16px(--gap-section) · 카드 간 간격 12px(--gap-block).
       */}
-      <main className="relative flex w-full flex-col gap-block-gap p-section-gap">
+      <main className="gap-block-gap p-section-gap relative flex w-full flex-col">
         {/* v22 §4 구획 머리줄(:1194-1198): 하단 2px 선, 구획 제목이 카드 제목보다 크다 */}
         <div className="border-gray-12 flex items-baseline gap-2 border-b-2 pb-2">
           <h2 className="text-gray-12 text-lg font-extrabold">지금 내 상태</h2>

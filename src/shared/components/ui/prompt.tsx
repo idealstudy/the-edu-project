@@ -55,7 +55,7 @@ const PromptContent = ({
       <AlertDialogPrimitives.Content
         aria-modal
         className={cn(
-          'bg-system-background-alt fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100%-4rem)] w-[400px] max-w-[calc(100%-4rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-y-auto p-5',
+          'bg-system-background-alt max-h-dialog-viewport w-dialog-sm max-w-dialog-viewport fixed top-1/2 left-1/2 z-50 flex -translate-x-1/2 -translate-y-1/2 flex-col overflow-y-auto p-5',
           className
         )}
         {...props}
@@ -72,7 +72,7 @@ type PromptHeaderProps = React.ComponentPropsWithRef<'div'>;
 const PromptHeader = ({ className, children, ...props }: PromptHeaderProps) => {
   return (
     <div
-      className={cn('my-[25px] flex flex-col gap-1.5', className)}
+      className={cn('my-prompt-space flex flex-col gap-1.5', className)}
       {...props}
     >
       {children}
@@ -85,7 +85,7 @@ type PromptFooterProps = React.ComponentPropsWithRef<'div'>;
 const PromptFooter = ({ className, children, ...props }: PromptFooterProps) => {
   return (
     <div
-      className={cn('flex gap-[10px] pt-[10px]', className)}
+      className={cn('flex gap-2.5 pt-2.5', className)}
       {...props}
     >
       {children}
@@ -100,7 +100,7 @@ type PromptTitleProps = React.ComponentPropsWithRef<
 const PromptTitle = ({ className, children, ...props }: PromptTitleProps) => {
   return (
     <AlertDialogPrimitives.Title
-      className={cn('text-center text-[20px]', className)}
+      className={cn('font-headline2-heading text-center', className)}
       {...props}
     >
       {children}
@@ -145,7 +145,7 @@ const PromptTrigger = ({ children, ...props }: PromptTriggerProps) => {
 const PromptClose = () => {
   return (
     <AlertDialogPrimitives.Cancel
-      className="absolute top-[27px] right-[18px] flex size-[24px] cursor-pointer items-center justify-center"
+      className="top-prompt-close-top right-prompt-close-right absolute flex size-6 cursor-pointer items-center justify-center"
       aria-label="닫기"
     >
       <XIcon />

@@ -7,6 +7,7 @@ import Link from 'next/link';
 import type { TodoItem } from '@/entities/todo';
 import { Skeleton } from '@/shared/components/loading';
 import { Button, Input, showBottomToast } from '@/shared/components/ui';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { PRIVATE } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import { handleApiError } from '@/shared/lib/errors/error-handler';
@@ -321,7 +322,9 @@ export const TodayTodoCard = ({ className }: Props) => {
                   newTodoPreset.book === preset.book;
 
                 return (
-                  <button
+                  <UnstyledButton
+                    variant="unstyled"
+                    size="none"
                     key={label}
                     type="button"
                     className={cn(
@@ -334,7 +337,7 @@ export const TodayTodoCard = ({ className }: Props) => {
                     onClick={() => setNewTodoPreset(preset)}
                   >
                     {label}
-                  </button>
+                  </UnstyledButton>
                 );
               })}
             </div>
@@ -406,7 +409,9 @@ export const TodayTodoCard = ({ className }: Props) => {
                 data-testid={`student-todo-${item.id}`}
               >
                 <div className="flex items-start gap-3">
-                  <button
+                  <UnstyledButton
+                    variant="unstyled"
+                    size="none"
                     type="button"
                     className={cn(
                       'mt-0.5 flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-md border-2',
@@ -435,7 +440,7 @@ export const TodayTodoCard = ({ className }: Props) => {
                         aria-hidden
                       />
                     )}
-                  </button>
+                  </UnstyledButton>
 
                   <div className="min-w-0 flex-1">
                     <p

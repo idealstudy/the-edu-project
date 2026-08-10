@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
 import { ColumnLayout } from '@/layout/column-layout';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import {
   ChevronDownIcon,
@@ -74,7 +75,9 @@ const SelectArea = () => {
                     onOpenChange={setOpen}
                   >
                     <Popover.Trigger asChild>
-                      <button
+                      <UnstyledButton
+                        variant="unstyled"
+                        size="none"
                         type="button"
                         className="flex w-full cursor-pointer items-center justify-between text-start text-2xl leading-[140%] font-bold"
                       >
@@ -85,7 +88,7 @@ const SelectArea = () => {
                             open ? 'rotate-180' : ''
                           )}
                         />
-                      </button>
+                      </UnstyledButton>
                     </Popover.Trigger>
 
                     <Popover.Portal>
@@ -101,7 +104,9 @@ const SelectArea = () => {
                               key={room.id}
                               asChild
                             >
-                              <button
+                              <UnstyledButton
+                                variant="unstyled"
+                                size="none"
                                 type="button"
                                 onClick={() => {
                                   field.onChange(room.id);
@@ -113,7 +118,7 @@ const SelectArea = () => {
                                 )}
                               >
                                 {room.name}
-                              </button>
+                              </UnstyledButton>
                             </Popover.Close>
                           );
                         })}
@@ -175,10 +180,14 @@ const SelectArea = () => {
 
                         {/* 데이터가 없거나, 항상 맨 아래 “추가하기” 노출 */}
                         <Select.Option value="add">
-                          <button className="flex w-full cursor-pointer items-center justify-between gap-1 leading-[140%]">
+                          <UnstyledButton
+                            variant="unstyled"
+                            size="none"
+                            className="flex w-full cursor-pointer items-center justify-between gap-1 leading-[140%]"
+                          >
                             <PlusIcon />
                             <span>추가하기</span>
-                          </button>
+                          </UnstyledButton>
                         </Select.Option>
                       </Select.Content>
                     </Select>

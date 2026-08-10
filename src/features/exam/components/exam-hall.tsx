@@ -59,7 +59,7 @@ export const ExamHall = () => {
 
   return (
     <div
-      className="mx-auto flex max-w-[980px] flex-col gap-block-gap"
+      className="gap-block-gap mx-auto flex max-w-[980px] flex-col"
       data-testid="student-exam-hall"
     >
       {assigned.length > 0 && (

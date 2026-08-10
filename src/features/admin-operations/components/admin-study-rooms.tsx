@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 
 import { SearchInput } from '@/shared/components/ui';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib';
 
 import { useAdminStudyRooms } from '../hooks/use-admin-operations';
@@ -53,7 +54,9 @@ export const AdminStudyRooms = () => {
       </div>
       <div className="mb-3 flex flex-wrap gap-2">
         {states.map(([value, label]) => (
-          <button
+          <UnstyledButton
+            variant="unstyled"
+            size="none"
             key={value}
             type="button"
             className={cn(
@@ -71,7 +74,7 @@ export const AdminStudyRooms = () => {
             <b className="tabular-nums">
               {query.data?.stateCounts[value] ?? 0}
             </b>
-          </button>
+          </UnstyledButton>
         ))}
         <SearchInput
           className="min-w-[180px] flex-1 bg-white"
@@ -160,13 +163,15 @@ export const AdminStudyRooms = () => {
           <div className="mt-3 flex items-center gap-2 rounded-lg border border-[#e4e4e7] bg-white p-3 text-xs text-[#71717a]">
             종료된 수업은 최근 1건만 폈습니다. 나머지{' '}
             <b>{(query.data?.stateCounts.ENDED ?? 1) - 1}개</b>는 접어 두었어요.
-            <button
+            <UnstyledButton
+              variant="unstyled"
+              size="none"
               type="button"
               className="ml-auto min-h-11 rounded-lg border border-[#e4e4e7] px-3 font-extrabold text-[#27272a]"
               onClick={() => setShowAllEnded(true)}
             >
               종료분 전체 보기
-            </button>
+            </UnstyledButton>
           </div>
         )}
       <p className="mt-3 text-xs leading-6 text-[#71717a]">

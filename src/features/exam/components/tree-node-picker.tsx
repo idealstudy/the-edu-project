@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 
 import { useMyTreeQuery } from '@/features/weakness-tree/hooks/use-tree';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib';
 
 type TreeNodePickerProps = {
@@ -48,7 +49,9 @@ export const TreeNodePicker = ({ value, onChange }: TreeNodePickerProps) => {
           const nodeId = Number(node.nodeId);
           const checked = value.includes(nodeId);
           return (
-            <button
+            <UnstyledButton
+              variant="unstyled"
+              size="none"
               key={node.nodeId}
               type="button"
               className={cn(
@@ -65,7 +68,7 @@ export const TreeNodePicker = ({ value, onChange }: TreeNodePickerProps) => {
             >
               <span aria-hidden="true">{checked ? '✓' : '○'}</span>
               {node.displayName}
-            </button>
+            </UnstyledButton>
           );
         })}
       </div>

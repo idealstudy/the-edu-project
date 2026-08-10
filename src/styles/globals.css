@@ -430,12 +430,24 @@ body {
   --spacing-control-xs: 40px; /* 기존 xsmall 제어 */
   --spacing-control-md: 56px; /* 기존 medium 제어 */
   --spacing-control-xl: 64px; /* 기존 large 제어 */
+  --spacing-button-compact-x: 13px;
+  --spacing-button-wide-x: 26px;
   --spacing-empty-cta: 46px;
   --spacing-flat-row: 66px;
   --spacing-page-max: 1180px;
   --spacing-content-max: 1100px;
   --spacing-room-aside: 360px;
   --spacing-room-content-max: 740px;
+  --spacing-dialog-sm: 400px;
+  --spacing-dialog-viewport-offset: 4rem;
+  --spacing-tag-menu: 300px;
+  --spacing-tag-item: 120px;
+  --spacing-popover-min: 280px;
+  --spacing-pagination-control: 28px;
+  --spacing-prompt-space: 25px;
+  --spacing-prompt-close-top: 27px;
+  --spacing-prompt-close-right: 18px;
+  --spacing-tag-pad-y: 10.5px;
 
   /* 타이포 리듬. MVP-E와 MVP-G가 공유하는 제품 전역 값 */
   --tracking-heading: -0.03em;
@@ -455,6 +467,8 @@ body {
   --radius-card: 12px; /* 카드 */
   --radius-checkbox: 5px;
   --radius-focus: 6px; /* 포커스 링 */
+  --radius-control-compact: 4px;
+  --radius-section: 16px;
   --radius-pill: 999px; /* 칩·배지·게이지 트랙 */
 
   /* ========================================
@@ -619,6 +633,18 @@ body {
 @utility text-break-safe {
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+@utility max-h-dialog-viewport {
+  max-height: calc(100% - var(--spacing-dialog-viewport-offset));
+}
+
+@utility max-w-dialog-viewport {
+  max-width: calc(100% - var(--spacing-dialog-viewport-offset));
+}
+
+@utility max-w-select-viewport {
+  max-width: calc(100vw - var(--spacing-block-gap));
 }
 
 @utility focus-ring {

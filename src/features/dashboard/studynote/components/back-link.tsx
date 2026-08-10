@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
 
 const BackLink = ({
@@ -15,7 +16,9 @@ const BackLink = ({
   const router = useRouter();
   return (
     <div>
-      <button
+      <UnstyledButton
+        variant="unstyled"
+        size="none"
         className={cn(
           'text-text-sub2 flex cursor-pointer items-center gap-[6px] pt-4 text-xl leading-[160%] tracking-[-4%]',
           className
@@ -35,7 +38,7 @@ const BackLink = ({
             <p>이전으로</p>
           </>
         )}
-      </button>
+      </UnstyledButton>
     </div>
   );
 };

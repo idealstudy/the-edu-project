@@ -10,6 +10,7 @@ import {
   useCreateExam,
 } from '@/features/exam/hooks/use-exam-mutation';
 import { Select } from '@/shared/components/ui';
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib';
 
 import { QuestionBankPicker } from './question-bank-picker';
@@ -324,7 +325,9 @@ export const ExamCreate = ({
               이 수업에서 열어 미리 골라졌습니다
             </p>
           </div>
-          <button
+          <UnstyledButton
+            variant="unstyled"
+            size="none"
             type="button"
             className="mt-4 w-full cursor-pointer rounded-lg border border-[#c95400] bg-[#ef6c00] px-4 py-3 text-sm font-extrabold text-white disabled:cursor-not-allowed disabled:border-[#e4e4e7] disabled:bg-[#e4e4e7] disabled:text-[#71717a]"
             disabled={isPending || !studyRoomId || selected.length === 0}
@@ -332,7 +335,7 @@ export const ExamCreate = ({
             data-testid="teacher-exam-assign-button"
           >
             {isPending ? '시험을 내는 중입니다' : '시험 내기'}
-          </button>
+          </UnstyledButton>
           <p className="mt-2 text-center text-[11px] text-[#71717a]">
             내면 그 학생 응시장에 <b>우리 수업</b> 배지로 바로 뜹니다
           </p>

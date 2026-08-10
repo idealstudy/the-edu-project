@@ -1,5 +1,6 @@
 'use client';
 
+import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { Dialog } from '@/shared/components/ui/dialog';
 import { formatDateDot } from '@/shared/lib';
 import { XIcon } from 'lucide-react';
@@ -33,12 +34,14 @@ export const ConsultationItemDetail = ({
             asChild
             aria-label="닫기"
           >
-            <button
+            <UnstyledButton
+              variant="unstyled"
+              size="none"
               type="button"
               className="text-gray-10 flex size-6 cursor-pointer items-center justify-center"
             >
               <XIcon size={24} />
-            </button>
+            </UnstyledButton>
           </Dialog.Close>
         </Dialog.Header>
 

@@ -12,7 +12,7 @@ export const Input = ({
   return (
     <input
       className={cn(
-        'border-line-line2 placeholder:text-gray-scale-gray-50 h-[56px] w-full rounded-[4px] border px-[24px] outline-none',
+        'border-line-line2 placeholder:text-gray-7 h-control-md rounded-input w-full border px-6 outline-none',
         'focus-visible:border-line-line3',
         'disabled:border-text-inactive disabled:bg-gray-scale-gray-1 disabled:text-text-inactive',
         'read-only:border-light-gray-30 read-only:gray-scale-gray-5 read-only:text-gray-scale-gray-50',

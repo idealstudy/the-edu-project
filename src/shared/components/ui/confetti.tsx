@@ -3,13 +3,13 @@
 import { useEffect, useState } from 'react';
 
 const COLORS = [
-  '#f97316', // orange-500
-  '#fb923c', // orange-400
-  '#fbbf24', // amber-400
-  '#34d399', // emerald-400
-  '#60a5fa', // blue-400
-  '#a78bfa', // violet-400
-  '#f472b6', // pink-400
+  'var(--orange-3)',
+  'var(--orange-4)',
+  'var(--orange-5)',
+  'var(--orange-7)',
+  'var(--orange-9)',
+  'var(--gray-4)',
+  'var(--gray-7)',
 ];
 
 const PARTICLE_COUNT = 50;
@@ -58,7 +58,11 @@ export const Confetti = () => {
       {particles.map((p) => (
         <div
           key={p.id}
-          className={p.shape === 'circle' ? 'absolute rounded-full' : 'absolute rounded-sm'}
+          className={
+            p.shape === 'circle'
+              ? 'absolute rounded-full'
+              : 'absolute rounded-sm'
+          }
           style={{
             left: `${p.x}%`,
             top: '-16px',
