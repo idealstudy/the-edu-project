@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { TeacherDashboardHeader } from '@/features/dashboard/components/header/teacher-header';
 import { useUpdateStudyRoomTitle } from '@/features/study-rooms/components/sidebar/services/query';
 import { useTeacherStudyRoomDetailQuery } from '@/features/study-rooms/hooks';
+import { PageLayout } from '@/layout';
 import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { PRIVATE } from '@/shared/constants';
 
@@ -56,10 +57,10 @@ const RoomRenameDialog = ({
           maxLength={40}
           autoFocus
           aria-label="스터디룸 이름"
-          className="mt-3 w-full rounded-lg border border-[#e3e5e8] px-3 py-2 text-sm"
+          className="border-gray-3 mt-3 w-full rounded-lg border px-3 py-2 text-sm"
         />
         {!detail && (
-          <p className="mt-2 text-[11px] text-[#747980]">
+          <p className="text-gray-8 mt-2 text-[11px]">
             수업 정보를 불러오는 중입니다.
           </p>
         )}
@@ -78,7 +79,7 @@ const RoomRenameDialog = ({
             size="none"
             type="submit"
             disabled={!detail || rename.isPending || name.trim().length === 0}
-            className="rounded-md bg-[#222] px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
+            className="bg-gray-12 rounded-md px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
           >
             저장
           </UnstyledButton>
@@ -121,18 +122,18 @@ const DashboardTeacher = ({
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#f6f7f9]">
+    <div className="bg-gray-1 min-h-screen w-full">
       <TeacherDashboardHeader initialMemberName={initialMemberName} />
-      <main className="mx-auto w-full max-w-[1120px] px-6 py-6">
+      <PageLayout>
         <div className="mb-4 flex items-center gap-2">
           <h2 className="text-base font-extrabold">학생별 수업</h2>
-          <span className="text-xs text-[#747980]">
+          <span className="text-gray-8 text-xs">
             카드에서 손볼 것과 도착지를 바로 확인합니다
           </span>
           {rooms.length > 0 && (
             <Link
               href="/study-rooms/new"
-              className="ml-auto rounded-md bg-[#222] px-3 py-2 text-xs font-bold text-white"
+              className="bg-gray-12 ml-auto rounded-md px-3 py-2 text-xs font-bold text-white"
             >
               수업 만들기
             </Link>
@@ -144,20 +145,20 @@ const DashboardTeacher = ({
           </div>
         ) : rooms.length === 0 ? (
           <section
-            className="rounded-xl border border-[#e3e5e8] bg-white p-12 text-center"
+            className="border-gray-3 rounded-xl border bg-white p-12 text-center"
             data-testid="teacher-rooms-empty"
           >
             <h2 className="text-lg font-extrabold">
               아직 스터디룸이 하나도 없어요
             </h2>
-            <p className="mt-2 text-sm text-[#747980]">
+            <p className="text-gray-8 mt-2 text-sm">
               학생 한 명당 스터디룸 하나가 기본입니다. 먼저 만들어 두고 학생을
               부를 수도 있습니다.
             </p>
             <div className="mt-5 flex justify-center gap-2">
               <Link
                 href="/study-rooms/new"
-                className="rounded-md bg-[#222] px-4 py-2 text-sm font-bold text-white"
+                className="bg-gray-12 rounded-md px-4 py-2 text-sm font-bold text-white"
               >
                 첫 스터디룸 만들기
               </Link>
@@ -178,26 +179,26 @@ const DashboardTeacher = ({
               {activeRooms.map((room) => (
                 <article
                   key={`${room.id}-${room.studentName ?? 'empty'}`}
-                  className="relative rounded-xl border border-[#e3e5e8] bg-white p-5 hover:border-[#f26a2e]"
+                  className="border-gray-3 hover:border-orange-7 relative rounded-xl border bg-white p-5"
                 >
                   <div className="flex items-start gap-3">
                     <Link
                       href={`/study-rooms/${room.id}/note`}
                       className="flex min-w-0 flex-1 items-center gap-3"
                     >
-                      <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#fff0e7] font-extrabold text-[#a4481e]">
+                      <div className="bg-orange-1 text-orange-11 flex size-11 shrink-0 items-center justify-center rounded-full font-extrabold">
                         {(room.studentName ?? room.name).slice(0, 1)}
                       </div>
                       <div className="min-w-0 flex-1">
                         <h3 className="truncate text-sm font-extrabold">
                           {room.studentName ?? room.name}
                         </h3>
-                        <p className="mt-1 text-xs text-[#747980]">
+                        <p className="text-gray-8 mt-1 text-xs">
                           {room.name} · 활성 수업
                         </p>
                       </div>
                       <b className="text-sm">손볼 것 {room.todoCount}건</b>
-                      <span className="text-[#a4481e]">›</span>
+                      <span className="text-orange-11">›</span>
                     </Link>
                     <UnstyledButton
                       variant="unstyled"
@@ -210,7 +211,7 @@ const DashboardTeacher = ({
                           current === room.id ? null : room.id
                         )
                       }
-                      className="rounded px-2 py-1 text-sm font-bold text-[#60646b] hover:bg-[#f6f7f9]"
+                      className="text-gray-9 hover:bg-gray-1 rounded px-2 py-1 text-sm font-bold"
                     >
                       ···
                     </UnstyledButton>
@@ -226,21 +227,21 @@ const DashboardTeacher = ({
                           setRenamingRoomId(room.id);
                           setOpenMenuRoomId(null);
                         }}
-                        className="block w-full rounded px-3 py-2 text-left text-xs font-bold hover:bg-[#f6f7f9]"
+                        className="hover:bg-gray-1 block w-full rounded px-3 py-2 text-left text-xs font-bold"
                       >
                         스터디룸 이름 수정
                       </UnstyledButton>
                       <Link
                         href={PRIVATE.ROOM.MEMBERS(room.id)}
                         onClick={() => setOpenMenuRoomId(null)}
-                        className="block w-full rounded px-3 py-2 text-left text-xs font-bold hover:bg-[#f6f7f9]"
+                        className="hover:bg-gray-1 block w-full rounded px-3 py-2 text-left text-xs font-bold"
                       >
                         학생 초대
                       </Link>
                       <Link
                         href={PRIVATE.NOTE.CREATE(room.id)}
                         onClick={() => setOpenMenuRoomId(null)}
-                        className="block w-full rounded px-3 py-2 text-left text-xs font-bold hover:bg-[#f6f7f9]"
+                        className="hover:bg-gray-1 block w-full rounded px-3 py-2 text-left text-xs font-bold"
                       >
                         기록 일지 쓰기
                       </Link>
@@ -250,7 +251,7 @@ const DashboardTeacher = ({
                         type="button"
                         disabled={statusMutation.isPending}
                         onClick={() => changeRoomStatus(room.id, 'CLOSED')}
-                        className="block w-full rounded px-3 py-2 text-left text-xs font-bold text-[#b43b30] hover:bg-[#fff3f1] disabled:opacity-50"
+                        className="text-red-10 hover:bg-red-1 block w-full rounded px-3 py-2 text-left text-xs font-bold disabled:opacity-50"
                       >
                         이 수업 종료하기
                       </UnstyledButton>
@@ -263,7 +264,7 @@ const DashboardTeacher = ({
                       onClose={() => setRenamingRoomId(null)}
                     />
                   )}
-                  <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 rounded-lg bg-[#fafafa] px-3 py-2 text-[11px] text-[#60646b]">
+                  <div className="bg-gray-1 text-gray-9 mt-3 flex flex-wrap gap-x-4 gap-y-1 rounded-lg px-3 py-2 text-[11px]">
                     <span>
                       피드백 달 것 <b>{room.todoBreakdown.commentNeeded}</b>
                     </span>
@@ -282,7 +283,7 @@ const DashboardTeacher = ({
             </div>
             {closedRooms.length > 0 && (
               <section
-                className="mt-4 rounded-xl border border-[#e3e5e8] bg-white p-4 text-sm text-[#60646b]"
+                className="border-gray-3 text-gray-9 mt-4 rounded-xl border bg-white p-4 text-sm"
                 data-testid="teacher-closed-rooms"
               >
                 <div className="flex flex-wrap items-center gap-2">
@@ -296,7 +297,7 @@ const DashboardTeacher = ({
                     size="none"
                     type="button"
                     onClick={() => setShowClosedRooms((visible) => !visible)}
-                    className="ml-auto rounded-md border px-3 py-2 text-xs font-bold text-[#222]"
+                    className="text-gray-12 ml-auto rounded-md border px-3 py-2 text-xs font-bold"
                   >
                     {showClosedRooms ? '종료된 것 접기' : '종료된 것 보기'}
                   </UnstyledButton>
@@ -306,11 +307,11 @@ const DashboardTeacher = ({
                     {closedRooms.map((room) => (
                       <li
                         key={room.id}
-                        className="flex items-center justify-between gap-3 rounded-lg bg-[#fafafa] px-3 py-2"
+                        className="bg-gray-1 flex items-center justify-between gap-3 rounded-lg px-3 py-2"
                       >
                         <span className="font-bold">
                           {room.studentName ?? room.name}
-                          <small className="ml-2 font-normal text-[#747980]">
+                          <small className="text-gray-8 ml-2 font-normal">
                             {room.name}
                           </small>
                         </span>
@@ -320,7 +321,7 @@ const DashboardTeacher = ({
                           type="button"
                           disabled={statusMutation.isPending}
                           onClick={() => changeRoomStatus(room.id, 'OPERATING')}
-                          className="rounded-md border px-3 py-2 text-xs font-bold text-[#222] disabled:opacity-50"
+                          className="text-gray-12 rounded-md border px-3 py-2 text-xs font-bold disabled:opacity-50"
                         >
                           재개하기
                         </UnstyledButton>
@@ -333,7 +334,7 @@ const DashboardTeacher = ({
             {statusMutation.isError && (
               <p
                 role="alert"
-                className="mt-3 text-sm font-bold text-[#b43b30]"
+                className="text-red-10 mt-3 text-sm font-bold"
               >
                 수업 상태를 바꾸지 못했습니다. 잠시 후 다시 시도해 주세요.
               </p>
@@ -348,7 +349,7 @@ const DashboardTeacher = ({
             <LearningInboxCard />
           </div>
         )}
-      </main>
+      </PageLayout>
     </div>
   );
 };

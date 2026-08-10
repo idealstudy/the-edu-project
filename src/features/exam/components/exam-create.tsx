@@ -9,6 +9,7 @@ import {
   useAssignExam,
   useCreateExam,
 } from '@/features/exam/hooks/use-exam-mutation';
+import { ExamWizardLayout } from '@/layout';
 import { Select } from '@/shared/components/ui';
 import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib';
@@ -117,36 +118,33 @@ export const ExamCreate = ({
 
   return (
     <section
-      className={cn(
-        'rounded-xl border border-[#e4e4e7] bg-white p-5',
-        className
-      )}
+      className={cn('border-gray-3 rounded-xl border bg-white p-5', className)}
       data-testid="teacher-exam-card"
     >
       <div className="mb-3 flex flex-wrap items-baseline gap-2">
-        <h2 className="text-[19px] font-extrabold text-[#27272a]">시험 열기</h2>
-        <span className="text-xs text-[#71717a]">
+        <h2 className="text-gray-12 text-[19px] font-extrabold">시험 열기</h2>
+        <span className="text-gray-8 text-xs">
           정답을 치지 않습니다. 단원 번호를 고르지 않습니다.
         </span>
       </div>
 
-      <div className="mb-4 flex flex-wrap items-center gap-2 rounded-lg border border-[#ececef] bg-[#fafafa] px-3 py-2 text-xs font-bold text-[#71717a]">
-        <span className="text-[#ef6c00]">✓ 수업 고르기</span>
+      <div className="border-gray-2 bg-gray-1 text-gray-8 mb-4 flex flex-wrap items-center gap-2 rounded-lg border px-3 py-2 text-xs font-bold">
+        <span className="text-orange-7">✓ 수업 고르기</span>
         <span>›</span>
-        <span className="text-[#ef6c00]">✓ 문항 고르기</span>
+        <span className="text-orange-7">✓ 문항 고르기</span>
         <span>›</span>
-        <span className="rounded-full bg-[#ef6c00] px-3 py-1 text-white">
+        <span className="bg-orange-7 rounded-full px-3 py-1 text-white">
           3 담은 문항 확인
         </span>
         <span className="ml-auto">여기까지 {elapsed} 걸렸습니다</span>
       </div>
 
       <div className="mb-4 grid gap-2 md:grid-cols-3">
-        <div className="rounded-lg border-2 border-[#ef6c00] bg-[#fff7f0] p-3">
-          <p className="text-sm font-extrabold text-[#8f3f08]">
+        <div className="border-orange-7 bg-orange-1 rounded-lg border-2 p-3">
+          <p className="text-orange-11 text-sm font-extrabold">
             문제은행에서 고르기
           </p>
-          <p className="mt-1 text-xs text-[#71717a]">
+          <p className="text-gray-8 mt-1 text-xs">
             정답과 단원이 따라옵니다 · 2~3분
           </p>
         </div>
@@ -154,18 +152,18 @@ export const ExamCreate = ({
           ref={pdfMethodRef}
           tabIndex={-1}
           data-testid="teacher-exam-pdf-method"
-          className="rounded-lg border border-[#e4e4e7] p-3 focus:border-[#ef6c00] focus:ring-2 focus:ring-[#f8c79e] focus:outline-none"
+          className="border-gray-3 focus:border-orange-7 focus:ring-orange-3 rounded-lg border p-3 focus:ring-2 focus:outline-none"
         >
-          <p className="text-sm font-extrabold text-[#3f3f46]">
+          <p className="text-gray-11 text-sm font-extrabold">
             게시된 시험 복제
           </p>
-          <p className="mt-1 text-xs text-[#71717a]">
+          <p className="text-gray-8 mt-1 text-xs">
             관리자가 올린 시험을 내 것으로 · 1분
           </p>
         </div>
-        <div className="rounded-lg border border-[#e4e4e7] p-3">
-          <p className="text-sm font-extrabold text-[#3f3f46]">PDF 올리기</p>
-          <p className="mt-1 text-xs text-[#71717a]">
+        <div className="border-gray-3 rounded-lg border p-3">
+          <p className="text-gray-11 text-sm font-extrabold">PDF 올리기</p>
+          <p className="text-gray-8 mt-1 text-xs">
             정답을 직접 입력해야 합니다 · 10분 이상
           </p>
         </div>
@@ -173,7 +171,7 @@ export const ExamCreate = ({
 
       {message?.startsWith('시험이 저장되지') && (
         <div
-          className="mb-4 rounded-lg border border-[#efb5ae] bg-[#fff5f3] p-4 text-xs leading-6 text-[#8c2f27]"
+          className="border-red-3 bg-red-1 text-red-10 mb-4 rounded-lg border p-4 text-xs leading-6"
           role="alert"
           data-testid="exam-create-error"
         >
@@ -182,13 +180,11 @@ export const ExamCreate = ({
         </div>
       )}
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="rounded-xl border border-[#e4e4e7] p-4">
+      <ExamWizardLayout>
+        <div className="border-gray-3 rounded-xl border p-4">
           <div className="mb-3 flex items-baseline justify-between gap-2">
-            <h3 className="text-sm font-extrabold text-[#27272a]">
-              문항 고르기
-            </h3>
-            <span className="text-xs text-[#71717a]">문제은행 276문항</span>
+            <h3 className="text-gray-12 text-sm font-extrabold">문항 고르기</h3>
+            <span className="text-gray-8 text-xs">문제은행 276문항</span>
           </div>
           <div className="mb-3 flex flex-wrap gap-2">
             <Select
@@ -269,34 +265,34 @@ export const ExamCreate = ({
           />
         </div>
 
-        <aside className="h-fit rounded-xl border border-[#f0a36a] bg-[#fff7f0] p-4 lg:sticky lg:top-4">
-          <p className="text-xs font-extrabold text-[#8f3f08]">담은 문항</p>
-          <p className="mt-1 text-4xl font-black text-[#ef6c00] tabular-nums">
+        <aside className="border-orange-4 bg-orange-1 h-fit rounded-xl border p-4 lg:sticky lg:top-4">
+          <p className="text-orange-11 text-xs font-extrabold">담은 문항</p>
+          <p className="text-orange-7 mt-1 text-4xl font-black tabular-nums">
             {selected.length}
             <em className="ml-1 text-xs font-bold not-italic">문항</em>
           </p>
-          <div className="mt-3 rounded-lg border border-[#f0c08f] bg-white p-3 text-xs leading-6 text-[#62534a]">
+          <div className="border-orange-4 text-gray-10 mt-3 rounded-lg border bg-white p-3 text-xs leading-6">
             <b>자동으로 채워진 것</b>
             <br />
             정답{' '}
-            <span className="font-extrabold text-[#237a3d]">
+            <span className="text-system-success font-extrabold">
               {selected.length} / {selected.length}
             </span>{' '}
             · 단원{' '}
-            <span className="font-extrabold text-[#237a3d]">
+            <span className="text-system-success font-extrabold">
               {selected.filter((item) => item.treeNodeId).length} /{' '}
               {selected.length}
             </span>{' '}
             · 배점{' '}
-            <span className="font-extrabold text-[#237a3d]">
+            <span className="text-system-success font-extrabold">
               {selected.length} / {selected.length}
             </span>
           </div>
-          <div className="mt-2 rounded-lg border border-[#9fd3ab] bg-[#effaf1] p-3 text-xs font-bold text-[#237a3d]">
+          <div className="border-system-success bg-system-success-alt text-system-success mt-2 rounded-lg border p-3 text-xs font-bold">
             이 화면에서 타이핑한 횟수 <b>0회</b>
           </div>
           <div className="mt-4">
-            <p className="mb-2 text-xs font-extrabold text-[#8f3f08]">
+            <p className="text-orange-11 mb-2 text-xs font-extrabold">
               어느 수업에 낼까요
             </p>
             <Select
@@ -321,7 +317,7 @@ export const ExamCreate = ({
                 ))}
               </Select.Content>
             </Select>
-            <p className="mt-2 text-[11px] leading-5 text-[#71717a]">
+            <p className="text-gray-8 mt-2 text-[11px] leading-5">
               이 수업에서 열어 미리 골라졌습니다
             </p>
           </div>
@@ -329,26 +325,26 @@ export const ExamCreate = ({
             variant="unstyled"
             size="none"
             type="button"
-            className="mt-4 w-full cursor-pointer rounded-lg border border-[#c95400] bg-[#ef6c00] px-4 py-3 text-sm font-extrabold text-white disabled:cursor-not-allowed disabled:border-[#e4e4e7] disabled:bg-[#e4e4e7] disabled:text-[#71717a]"
+            className="border-orange-10 bg-orange-7 disabled:border-gray-3 disabled:bg-gray-3 disabled:text-gray-8 mt-4 w-full cursor-pointer rounded-lg border px-4 py-3 text-sm font-extrabold text-white disabled:cursor-not-allowed"
             disabled={isPending || !studyRoomId || selected.length === 0}
             onClick={() => void handlePublish()}
             data-testid="teacher-exam-assign-button"
           >
             {isPending ? '시험을 내는 중입니다' : '시험 내기'}
           </UnstyledButton>
-          <p className="mt-2 text-center text-[11px] text-[#71717a]">
+          <p className="text-gray-8 mt-2 text-center text-[11px]">
             내면 그 학생 응시장에 <b>우리 수업</b> 배지로 바로 뜹니다
           </p>
           {message && !message.startsWith('시험이 저장되지') && (
             <p
-              className="mt-3 text-center text-xs font-bold text-[#62534a]"
+              className="text-gray-10 mt-3 text-center text-xs font-bold"
               role="status"
             >
               {message}
             </p>
           )}
         </aside>
-      </div>
+      </ExamWizardLayout>
     </section>
   );
 };

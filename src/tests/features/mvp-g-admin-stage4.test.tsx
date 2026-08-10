@@ -296,7 +296,7 @@ describe('MVP-G 관리자 4단계 프로토타입 상태', () => {
     expect(chip).toHaveTextContent('3');
     expect(chip).toHaveAttribute('aria-pressed', 'false');
     // 안 눌린 상태라도 남은 지연이 있으면 경고색으로 눈에 걸려야 한다.
-    expect(chip.className).toContain('text-[#b91c1c]');
+    expect(chip.className).toContain('text-red-10');
     // 칩 문구가 좁은 폭에서 "지 / 연" 으로 쪼개지지 않는다.
     expect(chip.className).toContain('whitespace-nowrap');
     // 지연 건에는 표에도 표시가 붙는다.

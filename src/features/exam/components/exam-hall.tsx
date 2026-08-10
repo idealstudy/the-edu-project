@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 
 import { useStartPublicExamAttempt } from '@/features/exam/hooks/use-exam-mutation';
 import { useExamHallQuery } from '@/features/exam/hooks/use-exam-query';
-import { Button } from '@/shared/components/ui';
+import { Button, Card, EmptyState } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants';
 
 export const ExamHall = () => {
@@ -63,7 +63,7 @@ export const ExamHall = () => {
       data-testid="student-exam-hall"
     >
       {assigned.length > 0 && (
-        <section className="border-gray-3 bg-gray-white rounded-xl border p-4">
+        <Card>
           <div className="mb-3 flex items-baseline gap-2">
             <h2 className="text-gray-12 text-base font-extrabold">
               우리 반 시험
@@ -98,10 +98,10 @@ export const ExamHall = () => {
               </Button>
             </div>
           ))}
-        </section>
+        </Card>
       )}
 
-      <section className="border-gray-3 bg-gray-white rounded-xl border p-4">
+      <Card>
         <div className="mb-3 flex items-baseline gap-2">
           <h2 className="text-gray-12 text-base font-extrabold">공개 시험</h2>
           <span className="text-gray-9 text-xs">관리자 게시 · 누구나 응시</span>
@@ -146,34 +146,31 @@ export const ExamHall = () => {
           );
         })}
         {publicExams.length === 0 && (
-          <p className="text-gray-9 py-8 text-center text-xs">
-            지금 공개된 시험이 없습니다.
-          </p>
+          <EmptyState
+            className="my-block-gap"
+            title="지금 공개된 시험이 없습니다"
+          />
         )}
         <p className="text-gray-9 mt-3 text-[11px] leading-5">
           응시하기를 누르면 <b>우리 시험 응시 화면</b>이 열립니다. 시험지를 시간
           재고 통째로 푸는 일은 여기서 맡고, 한 문제씩 코치와 대화하며 푸는 일만
           오픈챌린지가 맡습니다.
         </p>
-      </section>
+      </Card>
 
       {assigned.length === 0 && (
-        <section className="border-gray-3 bg-gray-1 rounded-xl border px-6 py-10 text-center">
-          <h2 className="text-gray-12 text-sm font-extrabold">
-            우리 반 시험은 아직 없어요
-          </h2>
-          <p className="text-gray-9 mt-2 text-xs leading-6">
-            선생님이 연결되면 선생님이 낸 시험이 위 칸에 먼저 뜹니다. 지금은
-            공개 시험으로 시작하면 됩니다.
-          </p>
-          <Button
-            asChild
-            size="small"
-            className="mt-4"
-          >
-            <Link href={PRIVATE.DASHBOARD.CONNECTIONS}>선생님 연결하기</Link>
-          </Button>
-        </section>
+        <EmptyState
+          title="우리 반 시험은 아직 없어요"
+          description="선생님이 연결되면 선생님이 낸 시험이 위 칸에 먼저 뜹니다. 지금은 공개 시험으로 시작하면 됩니다."
+          action={
+            <Button
+              asChild
+              size="small"
+            >
+              <Link href={PRIVATE.DASHBOARD.CONNECTIONS}>선생님 연결하기</Link>
+            </Button>
+          }
+        />
       )}
     </div>
   );

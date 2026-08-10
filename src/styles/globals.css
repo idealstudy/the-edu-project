@@ -438,6 +438,14 @@ body {
   --spacing-content-max: 1100px;
   --spacing-room-aside: 360px;
   --spacing-room-content-max: 740px;
+  --spacing-exam-rail: 248px;
+  --spacing-exam-rail-folded: 56px;
+  --spacing-exam-layout-gap: 13px;
+  --spacing-exam-wizard-aside: 300px;
+  --spacing-answer-box-min: 84px;
+  --spacing-level-bar: 9px;
+  --spacing-tree-progress-max: 220px;
+  --spacing-tree-tile-min: 74px;
   --spacing-dialog-sm: 400px;
   --spacing-dialog-viewport-offset: 4rem;
   --spacing-tag-menu: 300px;
@@ -670,6 +678,18 @@ body {
   max-height: calc(
     100vh - var(--spacing-header-height) - var(--spacing-room-page-mobile) * 2
   );
+}
+
+@utility grid-exam-take {
+  grid-template-columns: var(--spacing-exam-rail) minmax(0, 1fr);
+}
+
+@utility grid-exam-take-folded {
+  grid-template-columns: var(--spacing-exam-rail-folded) minmax(0, 1fr);
+}
+
+@utility grid-exam-wizard {
+  grid-template-columns: minmax(0, 1fr) var(--spacing-exam-wizard-aside);
 }
 
 @utility focus-ring {

@@ -117,7 +117,7 @@ export const WrongAnswerWarehouse = () => {
   const wrongAnswersQuery = useWrongAnswersQuery();
 
   return (
-    <div className="min-h-screen bg-[#fcfbfa]">
+    <div className="bg-system-background min-h-screen">
       <main className="w-full p-4">
         <Button
           asChild

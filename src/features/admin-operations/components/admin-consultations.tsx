@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 
 import { type AdminConsultationCase } from '@/entities/admin-operations';
+import { PageLayout } from '@/layout';
 import { SearchInput, Textarea } from '@/shared/components/ui';
 import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { PRIVATE } from '@/shared/constants/route';
@@ -30,9 +31,9 @@ const states = [
 const DELAYED = 'DELAYED';
 type ConsultationFilter = (typeof states)[number][0] | typeof DELAYED;
 const badge = {
-  RECEIVED: 'bg-[#fff7ed] text-[#c2410c]',
-  IN_PROGRESS: 'bg-[#eff6ff] text-[#1d4ed8]',
-  ANSWERED: 'bg-[#f0fdf4] text-[#15803d]',
+  RECEIVED: 'bg-orange-1 text-orange-10',
+  IN_PROGRESS: 'bg-orange-1 text-orange-11',
+  ANSWERED: 'bg-system-success-alt text-system-success',
 };
 const roleLabel: Record<string, string> = {
   STUDENT: '학생',
@@ -106,13 +107,13 @@ export const AdminConsultations = () => {
   };
 
   return (
-    <main
-      className="p-[14px] md:p-[22px]"
+    <PageLayout
+      width="fluid"
       data-testid="admin-consultations"
     >
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <h1 className="text-[19px] font-extrabold">문의와 상담</h1>
-        <span className="text-xs text-[#71717a]">
+        <span className="text-gray-8 text-xs">
           들어온 문의를 받고 답하는 자리입니다. 학습 데이터는 여기서 열지
           않습니다.
         </span>
@@ -132,8 +133,8 @@ export const AdminConsultations = () => {
               // 좁은 폭에서 "답변 / 완료" 처럼 칩 안 문구가 쪼개지지 않게 한다.
               'flex min-h-[42px] shrink-0 items-center gap-2 rounded-lg border px-3 text-xs font-bold whitespace-nowrap',
               (status === undefined && value === 'RECEIVED') || status === value
-                ? 'border-[#c2410c] bg-[#fff7ed] text-[#9a3412]'
-                : 'border-[#e4e4e7] bg-white text-[#3f3f46]'
+                ? 'bg-orange-1 text-orange-11 border-orange-10'
+                : 'border-gray-3 text-gray-11 bg-white'
             )}
             onClick={() => {
               setStatus(value);
@@ -156,12 +157,12 @@ export const AdminConsultations = () => {
             // 배지 안에서 "지 / 연" 으로 쪼개지던 것을 막는다.
             'flex min-h-[42px] shrink-0 items-center gap-2 rounded-lg border px-3 text-xs font-bold whitespace-nowrap',
             status === DELAYED
-              ? 'border-[#b91c1c] bg-[#fef2f2] text-[#991b1b]'
+              ? 'border-red-10 bg-red-1 text-red-10'
               : // 안 눌린 상태라도 지연이 남아 있으면 눈에 걸리게 둔다.
                 // 다른 칩과 같은 회색이면 1200건이 쌓여도 그냥 지나친다.
                 (query.data?.delayedCount ?? 0) > 0
-                ? 'border-[#fca5a5] bg-white text-[#b91c1c]'
-                : 'border-[#e4e4e7] bg-white text-[#3f3f46]'
+                ? 'border-red-4 text-red-10 bg-white'
+                : 'border-gray-3 text-gray-11 bg-white'
           )}
           onClick={() => {
             setStatus(DELAYED);
@@ -179,31 +180,31 @@ export const AdminConsultations = () => {
         />
       </div>
       {query.isPending && (
-        <section className="rounded-xl border border-[#e4e4e7] bg-white p-10 text-center text-xs text-[#71717a]">
+        <section className="border-gray-3 text-gray-8 rounded-xl border bg-white p-10 text-center text-xs">
           문의를 불러오는 중입니다.
         </section>
       )}
       {query.isError && (
-        <section className="rounded-[10px] border border-[#f0c4c0] bg-[#fff4f2] p-4 text-xs text-[#a81b0e]">
+        <section className="border-red-3 bg-red-1 text-red-10 rounded-[10px] border p-4 text-xs">
           문의와 상담 목록을 불러오지 못했어요.
         </section>
       )}
       {query.data && query.data.content.length === 0 && status === DELAYED && (
         <section
-          className="rounded-[10px] border border-dashed border-[#e4e4e7] bg-white px-6 py-[38px] text-center"
+          className="border-gray-3 rounded-[10px] border border-dashed bg-white px-6 py-[38px] text-center"
           data-testid="admin-consultations-delayed-empty"
         >
           <h2 className="text-[15px] font-extrabold">
             24시간을 넘긴 문의가 없어요
           </h2>
-          <p className="mt-2 text-[12.5px] leading-7 text-[#52525b]">
+          <p className="text-gray-10 mt-2 text-[12.5px] leading-7">
             받은 문의에 모두 하루 안에 손을 댔습니다.
           </p>
           <UnstyledButton
             variant="unstyled"
             size="none"
             type="button"
-            className="mt-4 min-h-[46px] rounded-lg border border-[#9a3412] bg-[#c2410c] px-5 text-[13px] font-extrabold text-white"
+            className="border-orange-11 bg-orange-10 mt-4 min-h-[46px] rounded-lg border px-5 text-[13px] font-extrabold text-white"
             onClick={() => {
               setStatus('RECEIVED');
               setSelected(null);
@@ -216,11 +217,11 @@ export const AdminConsultations = () => {
       {query.data && query.data.content.length === 0 && status !== DELAYED && (
         <>
           <section
-            className="rounded-[10px] border border-dashed border-[#e4e4e7] bg-white px-6 py-[38px] text-center"
+            className="border-gray-3 rounded-[10px] border border-dashed bg-white px-6 py-[38px] text-center"
             data-testid="admin-consultations-empty"
           >
             <h2 className="text-[15px] font-extrabold">받은 문의가 없어요</h2>
-            <p className="mt-2 text-[12.5px] leading-7 text-[#52525b]">
+            <p className="text-gray-10 mt-2 text-[12.5px] leading-7">
               학생과 선생님이 앱 안에서 보낸 문의가 여기로 들어옵니다. 지난 30일
               동안 받은 문의는 <b>{summary.data?.consultationCount ?? 0}건</b>
               이고 모두 답변 완료입니다.
@@ -229,21 +230,21 @@ export const AdminConsultations = () => {
               variant="unstyled"
               size="none"
               type="button"
-              className="mt-4 min-h-[46px] rounded-lg border border-[#9a3412] bg-[#c2410c] px-5 text-[13px] font-extrabold text-white"
+              className="border-orange-11 bg-orange-10 mt-4 min-h-[46px] rounded-lg border px-5 text-[13px] font-extrabold text-white"
               onClick={() => setStatus('ANSWERED')}
             >
               답변 완료 {summary.data?.consultationCount ?? 0}건 보기
             </UnstyledButton>
           </section>
-          <section className="mt-3 rounded-xl border border-[#e4e4e7] bg-white p-4">
+          <section className="border-gray-3 mt-3 rounded-xl border bg-white p-4">
             <h2 className="mb-3 text-sm font-extrabold">지난 30일</h2>
-            <div className="flex justify-between border-b border-[#f4f4f5] py-2 text-xs">
+            <div className="border-gray-1 flex justify-between border-b py-2 text-xs">
               <span>받은 문의</span>
               <b className="tabular-nums">
                 {summary.data?.consultationCount ?? 0}건
               </b>
             </div>
-            <div className="flex justify-between border-b border-[#f4f4f5] py-2 text-xs">
+            <div className="border-gray-1 flex justify-between border-b py-2 text-xs">
               <span>평균 첫 응답</span>
               <b className="tabular-nums">
                 {summary.data?.averageFirstResponseMinutes == null
@@ -267,9 +268,9 @@ export const AdminConsultations = () => {
           칸이 표의 최소폭(720px)만큼 벌어져 페이지 몸통이 통째로 좌우로 밀렸다
           (390px 실측 scrollWidth 752).
         */
-        <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)] xl:grid-cols-[minmax(0,1.28fr)_minmax(0,1fr)]">
+        <div className="gap-block-gap lg:grid-split-v22 grid min-w-0 items-start">
           <div className="min-w-0">
-            <div className="overflow-x-auto rounded-xl border border-[#e4e4e7] bg-white px-2 py-1.5">
+            <div className="border-gray-3 overflow-x-auto rounded-xl border bg-white px-2 py-1.5">
               {/*
                 v22 321~322 는 표 최소폭을 모바일(`.f.m`)에만 걸었다. 태블릿 1024 는
                 v22 108~110 의 기본 프레임이라 표가 칸 안에 접혀 들어가야 하고,
@@ -292,7 +293,7 @@ export const AdminConsultations = () => {
                     좁은 화면에서는 보낸 사람과 담당을 문의 칸 아래 줄로 접는다.
                     지우는 것이 아니라 자리를 옮기는 것이라 정보는 그대로 남는다.
                   */}
-                  <tr className="text-[10.5px] text-[#71717a]">
+                  <tr className="text-gray-8 text-[10.5px]">
                     {(
                       [
                         ['상태', 'w-[104px] xl:w-auto'],
@@ -306,7 +307,7 @@ export const AdminConsultations = () => {
                       <th
                         key={`${label}-${index}`}
                         className={cn(
-                          'border-b border-[#e4e4e7] px-2.5 py-2 font-extrabold',
+                          'border-gray-3 border-b px-2.5 py-2 font-extrabold',
                           extra
                         )}
                       >
@@ -319,9 +320,9 @@ export const AdminConsultations = () => {
                   {query.data.content.map((item) => (
                     <tr
                       key={item.caseId}
-                      className="hover:bg-[#fff7ed]"
+                      className="hover:bg-orange-1"
                     >
-                      <td className="border-b border-[#f4f4f5] px-2.5 py-3 whitespace-normal xl:whitespace-nowrap">
+                      <td className="border-gray-1 border-b px-2.5 py-3 whitespace-normal xl:whitespace-nowrap">
                         <span
                           className={cn(
                             'inline-block rounded-full px-2 py-1 text-[10.5px] font-extrabold whitespace-nowrap',
@@ -334,29 +335,29 @@ export const AdminConsultations = () => {
                         {item.delayed && (
                           <span
                             data-testid="admin-consultation-delayed-badge"
-                            className="ml-1 inline-block rounded-full bg-[#fef2f2] px-2 py-1 text-[10.5px] font-extrabold whitespace-nowrap text-[#991b1b]"
+                            className="bg-red-1 text-red-10 ml-1 inline-block rounded-full px-2 py-1 text-[10.5px] font-extrabold whitespace-nowrap"
                           >
                             지연
                           </span>
                         )}
                       </td>
-                      <td className="border-b border-[#f4f4f5] px-2.5 py-3">
+                      <td className="border-gray-1 border-b px-2.5 py-3">
                         <b className="block">{item.title}</b>
-                        <span className="mt-0.5 block truncate text-[11px] text-[#71717a] xl:max-w-[260px]">
+                        <span className="text-gray-8 mt-0.5 block truncate text-[11px] xl:max-w-[260px]">
                           {item.message}
                         </span>
                         {/* 좁은 폭에서 접어 넣은 보낸 사람·담당. 넓은 폭에서는 제 칸으로 돌아간다. */}
-                        <span className="mt-1 block text-[11px] text-[#52525b] xl:hidden">
+                        <span className="text-gray-10 mt-1 block text-[11px] xl:hidden">
                           {item.senderName} (
                           {roleLabel[item.senderRole] ?? item.senderRole}) ·
                           담당 {item.assigneeName ?? '아직 없음'}
                         </span>
                       </td>
-                      <td className="hidden border-b border-[#f4f4f5] px-2.5 py-3 text-[11px] text-[#52525b] xl:table-cell">
+                      <td className="border-gray-1 text-gray-10 hidden border-b px-2.5 py-3 text-[11px] xl:table-cell">
                         {item.senderName} (
                         {roleLabel[item.senderRole] ?? item.senderRole})
                       </td>
-                      <td className="border-b border-[#f4f4f5] px-2.5 py-3 text-[11px] whitespace-nowrap text-[#52525b] tabular-nums">
+                      <td className="border-gray-1 text-gray-10 border-b px-2.5 py-3 text-[11px] whitespace-nowrap tabular-nums">
                         <span className="xl:hidden">
                           {shortDate(item.receivedAt)}
                         </span>
@@ -364,10 +365,10 @@ export const AdminConsultations = () => {
                           {date(item.receivedAt)}
                         </span>
                       </td>
-                      <td className="hidden border-b border-[#f4f4f5] px-2.5 py-3 text-[11px] text-[#52525b] xl:table-cell">
+                      <td className="border-gray-1 text-gray-10 hidden border-b px-2.5 py-3 text-[11px] xl:table-cell">
                         {item.assigneeName ?? '아직 없음'}
                       </td>
-                      <td className="border-b border-[#f4f4f5] px-2.5 py-3">
+                      <td className="border-gray-1 border-b px-2.5 py-3">
                         <UnstyledButton
                           variant="unstyled"
                           size="none"
@@ -375,8 +376,8 @@ export const AdminConsultations = () => {
                           className={cn(
                             'min-h-11 rounded-lg border px-3 text-xs font-extrabold whitespace-nowrap',
                             item.status === 'RECEIVED'
-                              ? 'border-[#9a3412] bg-[#c2410c] text-white'
-                              : 'border-[#e4e4e7]'
+                              ? 'border-orange-11 bg-orange-10 text-white'
+                              : 'border-gray-3'
                           )}
                           onClick={() => {
                             setSelected(item);
@@ -398,32 +399,31 @@ export const AdminConsultations = () => {
               지금 목록은 처리 상태 순이고 지연은 표시와 지연 칩으로 드러낸다.
             */}
             <p
-              className="mt-3 text-xs text-[#71717a]"
+              className="text-gray-8 mt-3 text-xs"
               data-testid="admin-consultations-delay-note"
             >
-              목록은{' '}
-              <b className="text-[#27272a]">접수 → 처리 중 → 답변 완료</b>{' '}
+              목록은 <b className="text-gray-12">접수 → 처리 중 → 답변 완료</b>{' '}
               순서로, 같은 상태 안에서는 최근에 받은 것부터 보여줍니다. 받은 지{' '}
-              <b className="text-[#27272a]">24시간</b>이 지나도 접수 상태인
-              문의는 <b className="text-[#27272a]">지연</b>으로 표시하고, 위
-              지연 칩을 누르면 그것만 모아 볼 수 있습니다. 지금 지연은{' '}
-              <b className="text-[#27272a] tabular-nums">
+              <b className="text-gray-12">24시간</b>이 지나도 접수 상태인 문의는{' '}
+              <b className="text-gray-12">지연</b>으로 표시하고, 위 지연 칩을
+              누르면 그것만 모아 볼 수 있습니다. 지금 지연은{' '}
+              <b className="text-gray-12 tabular-nums">
                 {query.data.delayedCount}건
               </b>
               입니다.
             </p>
           </div>
           <div className="min-w-0">
-            <section className="mb-3 rounded-xl border border-[#e4e4e7] bg-white p-4">
+            <section className="border-gray-3 mb-3 rounded-xl border bg-white p-4">
               <div className="mb-3 flex items-baseline justify-between gap-2">
                 <h2 className="shrink-0 text-sm font-extrabold">답변 쓰기</h2>
                 {/* 제목이 길면 이 줄이 칸을 밀어냈다. 넘치는 부분만 줄임표로 접는다. */}
-                <span className="min-w-0 truncate text-xs text-[#71717a]">
+                <span className="text-gray-8 min-w-0 truncate text-xs">
                   {selectedCase.senderName} · {selectedCase.title}
                 </span>
               </div>
-              <div className="mb-3 rounded-lg border border-[#e4e4e7] p-3 text-[11.5px] leading-7 text-[#52525b]">
-                <b className="text-[#27272a]">
+              <div className="border-gray-3 text-gray-10 mb-3 rounded-lg border p-3 text-[11.5px] leading-7">
+                <b className="text-gray-12">
                   {date(selectedCase.receivedAt)} · {selectedCase.senderName}
                 </b>
                 <br />
@@ -431,7 +431,7 @@ export const AdminConsultations = () => {
               </div>
               <label
                 htmlFor="consult-answer"
-                className="text-[10.5px] font-extrabold text-[#71717a]"
+                className="text-gray-8 text-[10.5px] font-extrabold"
               >
                 답변
               </label>
@@ -449,7 +449,7 @@ export const AdminConsultations = () => {
                   type="button"
                   // "답변 보내고 완료 처 / 리" 로 쪼개지던 것을 막는다.
                   // 한 줄에 안 들어가면 두 번째 버튼이 아래 줄로 내려간다.
-                  className="min-h-11 flex-1 rounded-lg border border-[#9a3412] bg-[#c2410c] px-3 text-xs font-extrabold whitespace-nowrap text-white disabled:opacity-50"
+                  className="border-orange-11 bg-orange-10 min-h-11 flex-1 rounded-lg border px-3 text-xs font-extrabold whitespace-nowrap text-white disabled:opacity-50"
                   disabled={!answer.trim() || update.isPending}
                   onClick={() => updateCase('ANSWERED')}
                 >
@@ -459,26 +459,26 @@ export const AdminConsultations = () => {
                   variant="unstyled"
                   size="none"
                   type="button"
-                  className="min-h-11 rounded-lg border border-[#e4e4e7] px-3 text-xs font-extrabold whitespace-nowrap"
+                  className="border-gray-3 min-h-11 rounded-lg border px-3 text-xs font-extrabold whitespace-nowrap"
                   disabled={update.isPending}
                   onClick={() => updateCase('IN_PROGRESS')}
                 >
                   처리 중으로 두기
                 </UnstyledButton>
               </div>
-              <p className="mt-2 text-xs text-[#71717a]">
+              <p className="text-gray-8 mt-2 text-xs">
                 답변한 사람과 시각이 이력에 남습니다. 학생 학습 화면은 이
                 자리에서 열 수 없습니다(학습 데이터 격리 §5.4).
               </p>
             </section>
-            <section className="rounded-xl border border-[#e4e4e7] bg-white p-4">
+            <section className="border-gray-3 rounded-xl border bg-white p-4">
               <div className="mb-3 flex items-baseline justify-between">
                 <h2 className="text-sm font-extrabold">이 사람 계정</h2>
-                <span className="text-xs text-[#71717a]">
+                <span className="text-gray-8 text-xs">
                   문의 처리에 필요한 최소 정보만
                 </span>
               </div>
-              <div className="text-[11.5px] leading-7 text-[#52525b]">
+              <div className="text-gray-10 text-[11.5px] leading-7">
                 {selectedCase.senderName} ·{' '}
                 {roleLabel[selectedCase.senderRole] ?? selectedCase.senderRole}
                 <br />
@@ -494,7 +494,7 @@ export const AdminConsultations = () => {
                   href={PRIVATE.ADMIN.MEMBERS.DETAIL(
                     selectedCase.senderMemberId
                   )}
-                  className="mt-3 flex min-h-11 w-full items-center justify-center rounded-lg border border-[#e4e4e7] text-xs font-extrabold"
+                  className="border-gray-3 mt-3 flex min-h-11 w-full items-center justify-center rounded-lg border text-xs font-extrabold"
                   data-testid="admin-consultation-open-member"
                 >
                   회원 상세 열기
@@ -506,11 +506,11 @@ export const AdminConsultations = () => {
                     size="none"
                     type="button"
                     disabled
-                    className="mt-3 min-h-11 w-full rounded-lg border border-[#e4e4e7] text-xs font-extrabold disabled:text-[#a1a1aa]"
+                    className="border-gray-3 disabled:text-gray-7 mt-3 min-h-11 w-full rounded-lg border text-xs font-extrabold"
                   >
                     회원 상세 열기
                   </UnstyledButton>
-                  <p className="mt-2 text-[11.5px] text-[#71717a]">
+                  <p className="text-gray-8 mt-2 text-[11.5px]">
                     접수 연락처로 회원 계정을 찾지 못했습니다. 비회원 문의이거나
                     가입 연락처가 다른 경우입니다.
                   </p>
@@ -520,6 +520,6 @@ export const AdminConsultations = () => {
           </div>
         </div>
       )}
-    </main>
+    </PageLayout>
   );
 };

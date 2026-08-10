@@ -1,4 +1,10 @@
-import { CollectionLayout, PageLayout, SplitLayout } from '@/layout';
+import {
+  CollectionLayout,
+  ExamTakeLayout,
+  ExamWizardLayout,
+  PageLayout,
+  SplitLayout,
+} from '@/layout';
 import { EmptyState } from '@/shared/components/ui';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -46,5 +52,26 @@ describe('디자인 시스템 레이아웃', () => {
     expect(screen.queryByText('둘째 기록')).toBeNull();
     await user.click(screen.getByRole('button', { name: '더 보기 (1)' }));
     expect(screen.getByText('둘째 기록')).toBeInTheDocument();
+  });
+
+  test('응시장 레이아웃은 v22 레일과 마법사 열을 소유한다', () => {
+    render(
+      <>
+        <ExamTakeLayout data-testid="exam-take" />
+        <ExamTakeLayout
+          folded
+          data-testid="exam-take-folded"
+        />
+        <ExamWizardLayout data-testid="exam-wizard" />
+      </>
+    );
+
+    expect(screen.getByTestId('exam-take')).toHaveClass('md:grid-exam-take');
+    expect(screen.getByTestId('exam-take-folded')).toHaveClass(
+      'grid-exam-take-folded'
+    );
+    expect(screen.getByTestId('exam-wizard')).toHaveClass(
+      'lg:grid-exam-wizard'
+    );
   });
 });

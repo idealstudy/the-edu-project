@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import { PageLayout } from '@/layout';
 import { Button, Textarea } from '@/shared/components/ui';
 import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib';
@@ -39,18 +40,21 @@ export const AdminMemberDetail = ({ memberId }: { memberId: number }) => {
 
   if (query.isPending) {
     return (
-      <main className="p-[22px] text-xs text-[#71717a]">
+      <PageLayout
+        width="fluid"
+        className="text-gray-8 text-xs"
+      >
         회원 정보를 불러오는 중입니다.
-      </main>
+      </PageLayout>
     );
   }
   if (query.isError || !query.data) {
     return (
-      <main className="p-[22px]">
-        <section className="rounded-[10px] border border-[#f0c4c0] bg-[#fff4f2] p-4 text-xs text-[#a81b0e]">
+      <PageLayout width="fluid">
+        <section className="border-red-3 bg-red-1 text-red-10 rounded-[10px] border p-4 text-xs">
           회원 상세를 불러오지 못했어요.
         </section>
-      </main>
+      </PageLayout>
     );
   }
   const member = query.data;
@@ -69,71 +73,71 @@ export const AdminMemberDetail = ({ memberId }: { memberId: number }) => {
   };
 
   return (
-    <main
-      className="p-[14px] md:p-[22px]"
+    <PageLayout
+      width="fluid"
       data-testid="admin-member-detail"
     >
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        <span className="text-xs text-[#71717a]">회원 관리 ›</span>
+        <span className="text-gray-8 text-xs">회원 관리 ›</span>
         <h1 className="text-[19px] font-extrabold">{displayName}</h1>
-        <span className="rounded-full bg-[#eff6ff] px-2 py-1 text-[10.5px] font-extrabold text-[#1d4ed8]">
+        <span className="bg-orange-1 text-orange-11 rounded-full px-2 py-1 text-[10.5px] font-extrabold">
           {ROLE_LABEL[member.role]}
         </span>
         <span
           className={cn(
             'rounded-full px-2 py-1 text-[10.5px] font-extrabold',
             member.revoked
-              ? 'bg-[#fff1f2] text-[#be123c]'
-              : 'bg-[#f0fdf4] text-[#15803d]'
+              ? 'bg-red-1 text-red-10'
+              : 'bg-system-success-alt text-system-success'
           )}
         >
           {member.revoked ? '권한 회수' : '활성'}
         </span>
       </div>
-      <div className="grid items-start gap-4 lg:grid-cols-2">
+      <div className="gap-block-gap lg:grid-split-legacy grid min-w-0 items-start">
         <div>
-          <section className="mb-3 rounded-xl border border-[#e4e4e7] bg-white p-4">
+          <section className="border-gray-3 mb-3 rounded-xl border bg-white p-4">
             <h2 className="mb-3 text-sm font-extrabold">계정</h2>
-            <div className="text-[11.5px] leading-7 text-[#52525b]">
-              이메일 <b className="text-[#27272a]">{member.email}</b>
+            <div className="text-gray-10 text-[11.5px] leading-7">
+              이메일 <b className="text-gray-12">{member.email}</b>
               <br />
               가입 경로{' '}
-              <b className="text-[#27272a]">
+              <b className="text-gray-12">
                 {member.signupPath
                   ? SIGNUP_LABEL[member.signupPath]
                   : '2026년 8월 이전 경로 미상'}
               </b>
               <br />
               가입 시각{' '}
-              <b className="text-[#27272a] tabular-nums">
+              <b className="text-gray-12 tabular-nums">
                 {date(member.signupAt)}
               </b>
               <br />
               마지막 접속{' '}
-              <b className="text-[#27272a] tabular-nums">
+              <b className="text-gray-12 tabular-nums">
                 {date(member.lastActiveAt)}
               </b>
               <br />
               스터디룸{' '}
-              <b className="text-[#27272a]">
+              <b className="text-gray-12">
                 {member.studyRooms.length
                   ? member.studyRooms.map((room) => room.name).join(', ')
                   : '없음'}
               </b>
             </div>
           </section>
-          <section className="rounded-xl border border-[#e4e4e7] bg-white p-4">
+          <section className="border-gray-3 rounded-xl border bg-white p-4">
             <div className="mb-3 flex items-baseline justify-between">
               <h2 className="text-sm font-extrabold">조치 이력</h2>
-              <span className="text-xs text-[#71717a]">
+              <span className="text-gray-8 text-xs">
                 실행자와 시각이 남습니다
               </span>
             </div>
-            <div className="rounded-lg border border-[#e4e4e7] p-3 text-[11.5px] leading-7 text-[#52525b]">
+            <div className="border-gray-3 text-gray-10 rounded-lg border p-3 text-[11.5px] leading-7">
               {member.actionHistory.length
                 ? member.actionHistory.map((action) => (
                     <p key={action.actionId}>
-                      <b className="text-[#27272a] tabular-nums">
+                      <b className="text-gray-12 tabular-nums">
                         {date(action.actedAt)}
                       </b>{' '}
                       · {action.actorName}이{' '}
@@ -146,28 +150,28 @@ export const AdminMemberDetail = ({ memberId }: { memberId: number }) => {
           </section>
         </div>
         <div>
-          <section className="mb-3 rounded-xl border border-[#e4e4e7] bg-white p-4">
+          <section className="border-gray-3 mb-3 rounded-xl border bg-white p-4">
             <h2 className="mb-3 text-sm font-extrabold">지원</h2>
-            <p className="text-xs leading-7 text-[#71717a]">
+            <p className="text-gray-8 text-xs leading-7">
               문제를 재현해야 하면 선생님에게 화면 녹화를 요청합니다.{' '}
-              <b className="text-[#27272a]">
+              <b className="text-gray-12">
                 대리 로그인은 이번 판에서 뺐습니다.
               </b>{' '}
               지금은 대표 혼자 쓰는 단계라 남의 계정으로 들어가는 기능이 필요
               없고, 감사 로그를 읽는 화면까지 같이 유지하는 비용이 더 큽니다.
             </p>
             <a
-              className="mt-3 grid min-h-11 w-full place-items-center rounded-lg border border-[#e4e4e7] text-xs font-extrabold"
+              className="border-gray-3 mt-3 grid min-h-11 w-full place-items-center rounded-lg border text-xs font-extrabold"
               href={`mailto:${member.email}`}
             >
               이메일로 문의 보내기
             </a>
           </section>
-          <section className="rounded-xl border border-[#f0c4c0] bg-white p-4">
-            <h2 className="mb-3 text-sm font-extrabold text-[#a81b0e]">
+          <section className="border-red-3 rounded-xl border bg-white p-4">
+            <h2 className="text-red-10 mb-3 text-sm font-extrabold">
               권한 회수
             </h2>
-            <p className="text-xs leading-7 text-[#71717a]">
+            <p className="text-gray-8 text-xs leading-7">
               선생님 권한을 즉시 해제합니다. 이 선생님이 만든 스터디룸의 학생
               연결은 유지되지만 접근은 그 순간부터 막힙니다.
             </p>
@@ -188,7 +192,7 @@ export const AdminMemberDetail = ({ memberId }: { memberId: number }) => {
                     variant="unstyled"
                     size="none"
                     type="button"
-                    className="min-h-11 rounded-lg border border-[#d4776c] px-3 text-xs font-extrabold text-[#a81b0e]"
+                    className="text-red-10 border-red-8 min-h-11 rounded-lg border px-3 text-xs font-extrabold"
                     onClick={() => {
                       setReason('일반 회원으로 강등: ');
                       setShowReason(true);
@@ -200,7 +204,7 @@ export const AdminMemberDetail = ({ memberId }: { memberId: number }) => {
                     variant="unstyled"
                     size="none"
                     type="button"
-                    className="min-h-11 rounded-lg border border-[#d4776c] px-3 text-xs font-extrabold text-[#a81b0e]"
+                    className="text-red-10 border-red-8 min-h-11 rounded-lg border px-3 text-xs font-extrabold"
                     onClick={() => {
                       setReason('로그인 즉시 정지: ');
                       setShowReason(true);
@@ -236,13 +240,13 @@ export const AdminMemberDetail = ({ memberId }: { memberId: number }) => {
                 )}
               </>
             )}
-            <p className="mt-2 text-xs text-[#71717a]">
+            <p className="text-gray-8 mt-2 text-xs">
               실행하려면 사유를 적어야 합니다. 실행자, 시각, 사유가 이력에
               남습니다.
             </p>
           </section>
         </div>
       </div>
-    </main>
+    </PageLayout>
   );
 };

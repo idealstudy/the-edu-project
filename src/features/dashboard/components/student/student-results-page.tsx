@@ -8,7 +8,8 @@ import type { TreeSubjectGroup } from '@/entities/tree';
 import { useStudentGrowthQuery } from '@/features/dashboard/hooks/use-growth-query';
 import { useMyPointWalletQuery } from '@/features/point/hooks/use-point';
 import { useMyTreeQuery } from '@/features/weakness-tree/hooks/use-tree';
-import { Button } from '@/shared/components/ui';
+import { PageLayout, SplitLayout } from '@/layout';
+import { Button, Card } from '@/shared/components/ui';
 import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { subjectLabel } from '@/shared/constants';
 import { PRIVATE } from '@/shared/constants/route';
@@ -68,11 +69,8 @@ export const StudentResultsPage = () => {
   ).length;
 
   return (
-    <main className="gap-block-gap p-section-gap flex w-full flex-col">
-      <section
-        className="border-gray-3 bg-gray-white rounded-xl border p-4"
-        data-testid="learning-map"
-      >
+    <PageLayout className="gap-block-gap flex flex-col">
+      <Card data-testid="learning-map">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <h2 className="text-gray-12 text-base font-extrabold">
             내 학습 지도
@@ -121,7 +119,7 @@ export const StudentResultsPage = () => {
                   찼어요
                 </p>
                 {/* v22 §3.4 레벨 막대(.lvbar) 높이 9px */}
-                <div className="bg-gray-2 h-[9px] overflow-hidden rounded-full">
+                <div className="bg-gray-2 h-level-bar rounded-pill overflow-hidden">
                   <i
                     className="bg-orange-7 block h-full rounded-full"
                     style={{ width: `${tree?.mastery.averageScore ?? 0}%` }}
@@ -168,13 +166,13 @@ export const StudentResultsPage = () => {
                           aria-hidden
                         />
                       )}
-                      <h3 className="text-gray-12 text-[13px] font-extrabold">
+                      <h3 className="text-gray-12 font-label-heading text-heading-wrap">
                         {subjectLabel(subject)}
                       </h3>
-                      <span className="text-gray-9 text-[11px] font-extrabold tabular-nums">
+                      <span className="text-gray-9 font-caption-heading numeric-tabular">
                         {masteredCount} / {group.nodes.length} 정복
                       </span>
-                      <span className="bg-gray-2 h-1.5 max-w-[220px] flex-1 overflow-hidden rounded-full">
+                      <span className="bg-gray-2 max-w-tree-progress-max rounded-pill h-1.5 flex-1 overflow-hidden">
                         <i
                           className="bg-orange-7 block h-full"
                           style={{ width: `${groupPercent}%` }}
@@ -189,7 +187,7 @@ export const StudentResultsPage = () => {
                             href={PRIVATE.DASHBOARD.UNIT_NOTE_ROOM(
                               Number(node.nodeId)
                             )}
-                            className={`border-gray-3 bg-gray-white relative flex min-h-[74px] flex-col justify-end gap-1 overflow-hidden rounded-lg border p-2.5 text-left ${
+                            className={`border-gray-3 bg-gray-white min-h-tree-tile-min rounded-button relative flex min-w-0 flex-col justify-end gap-1 overflow-hidden border p-2.5 text-left ${
                               node.masteryScore === 0 ? 'border-dashed' : ''
                             }`}
                           >
@@ -197,10 +195,10 @@ export const StudentResultsPage = () => {
                               className={`absolute inset-x-0 bottom-0 ${tileTone(node.masteryScore)}`}
                               style={{ height: `${node.masteryScore}%` }}
                             />
-                            <span className="text-gray-12 relative block text-[11.5px] font-bold break-keep">
+                            <span className="text-gray-12 font-caption-heading text-two-lines relative block">
                               {node.displayName}
                             </span>
-                            <span className="text-gray-10 relative block text-[11px] font-extrabold tabular-nums">
+                            <span className="text-gray-10 font-caption-heading numeric-tabular relative block">
                               {node.masteryScore > 0
                                 ? `${node.masteryScore}%`
                                 : '미진단'}
@@ -239,11 +237,11 @@ export const StudentResultsPage = () => {
             )}
           </>
         )}
-      </section>
+      </Card>
 
-      <div className="grid gap-3 lg:grid-cols-2">
+      <SplitLayout>
         {!isEmpty && (
-          <section className="border-gray-3 bg-gray-white rounded-xl border p-4">
+          <Card>
             <div className="mb-3 flex items-center gap-2">
               <h2 className="text-gray-12 text-base font-extrabold">
                 약한 단원
@@ -255,7 +253,7 @@ export const StudentResultsPage = () => {
             {weakUnits.map((unit) => (
               <div
                 key={unit.nodeId}
-                className="border-gray-2 flex min-h-[58px] items-center gap-3 border-t py-2 first:border-t-0"
+                className="border-gray-2 min-h-row-min flex min-w-0 items-center gap-3 border-t py-2 first:border-t-0"
               >
                 <div className="min-w-0 flex-1">
                   <b className="text-gray-12 block truncate text-sm">
@@ -289,9 +287,9 @@ export const StudentResultsPage = () => {
                 </Button>
               </div>
             ))}
-          </section>
+          </Card>
         )}
-        <section className="border-gray-3 bg-gray-white rounded-xl border p-4">
+        <Card>
           <div className="mb-4 flex items-center gap-2">
             <h2 className="text-gray-12 text-base font-extrabold">
               뱃지 · 포인트 · 레벨
@@ -309,7 +307,7 @@ export const StudentResultsPage = () => {
                 다음 레벨까지 {growthQuery.data?.xpToNextLevel ?? 0}포인트
               </span>
             </div>
-            <div className="bg-gray-2 mt-3 h-[9px] overflow-hidden rounded-full">
+            <div className="bg-gray-2 h-level-bar rounded-pill mt-3 overflow-hidden">
               <i
                 className="bg-orange-7 block h-full"
                 style={{
@@ -324,7 +322,7 @@ export const StudentResultsPage = () => {
               {pointQuery.data?.balance ?? 0}P
             </b>
           </div>
-          <div className="grid grid-cols-3 gap-2.5">
+          <div className="gap-content-gap grid grid-cols-3">
             {[
               ['첫 정복', (tree?.mastery.mastered ?? 0) >= 1],
               ['7일 연속', (growthQuery.data?.streakDays ?? 0) >= 7],
@@ -335,23 +333,25 @@ export const StudentResultsPage = () => {
             ].map(([label, earned]) => (
               <div
                 key={String(label)}
-                className="border-gray-3 rounded-xl border p-3 text-center"
+                className="border-gray-3 rounded-card p-content-gap min-w-0 border text-center"
               >
                 <span
                   className={`block text-lg ${earned ? 'text-orange-7' : 'text-gray-5'}`}
                 >
                   {earned ? '★' : '☆'}
                 </span>
-                <b className="text-gray-12 text-[11px]">{label}</b>
+                <b className="text-gray-12 font-caption-heading text-heading-wrap block">
+                  {label}
+                </b>
                 {!earned && (
                   <small className="text-gray-9 block text-[10px]">잠김</small>
                 )}
               </div>
             ))}
           </div>
-        </section>
-      </div>
-    </main>
+        </Card>
+      </SplitLayout>
+    </PageLayout>
   );
 };
 

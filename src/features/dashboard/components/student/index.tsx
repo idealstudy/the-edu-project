@@ -4,6 +4,8 @@ import Link from 'next/link';
 
 import { useAssignedExamsQuery } from '@/features/exam/hooks/use-exam-query';
 import { UnitNoteEntryCard } from '@/features/unit-note/components/unit-note-entry-card';
+import { PageLayout } from '@/layout';
+import { Card } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants/route';
 import { useMemberStore } from '@/store';
 
@@ -49,7 +51,7 @@ const DashboardStudent = () => {
       {/*
         v22 §1.3: 구획 패딩 16px(--gap-section) · 카드 간 간격 12px(--gap-block).
       */}
-      <main className="gap-block-gap p-section-gap relative flex w-full flex-col">
+      <PageLayout className="gap-block-gap relative flex flex-col">
         {/* v22 §4 구획 머리줄(:1194-1198): 하단 2px 선, 구획 제목이 카드 제목보다 크다 */}
         <div className="border-gray-12 flex items-baseline gap-2 border-b-2 pb-2">
           <h2 className="text-gray-12 text-lg font-extrabold">지금 내 상태</h2>
@@ -64,7 +66,7 @@ const DashboardStudent = () => {
         <TodayProblemsSection />
         <AgendaFlowCard />
         {inProgressExam && (
-          <section className="border-gray-3 bg-gray-white rounded-xl border p-4">
+          <Card>
             <div className="flex flex-wrap items-center gap-3">
               <div className="min-w-[180px] flex-1">
                 <h2 className="text-gray-12 text-base font-extrabold">
@@ -81,9 +83,9 @@ const DashboardStudent = () => {
                 이어 풀기
               </Link>
             </div>
-          </section>
+          </Card>
         )}
-      </main>
+      </PageLayout>
       <ConfirmParentRequestDialog
         connection={receivedParentRequest}
         open={isParentRequestDialogOpen}

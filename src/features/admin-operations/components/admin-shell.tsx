@@ -29,13 +29,13 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
 
   return (
     <div
-      className="flex min-h-dvh bg-[#f7f7f8] md:-ml-[186px]"
+      className="bg-system-background flex min-h-dvh md:-ml-[186px]"
       data-admin-shell
     >
-      <aside className="hidden w-[186px] shrink-0 border-r border-[#e4e4e7] bg-white px-3 py-4 md:block">
-        <div className="px-2 pt-1 pb-3 text-sm font-extrabold tracking-[-0.045em] text-[#9a3412]">
+      <aside className="border-gray-3 hidden w-[186px] shrink-0 border-r bg-white px-3 py-4 md:block">
+        <div className="text-orange-11 px-2 pt-1 pb-3 text-sm font-extrabold tracking-[-0.045em]">
           D-EDU
-          <small className="mt-0.5 block text-[9.5px] font-semibold tracking-normal text-[#71717a]">
+          <small className="text-gray-8 mt-0.5 block text-[9.5px] font-semibold tracking-normal">
             관리자
           </small>
         </div>
@@ -47,8 +47,8 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
                 key={href}
                 href={href}
                 className={cn(
-                  'flex min-h-11 items-center gap-2 rounded-lg px-2.5 text-[12.5px] font-semibold text-[#3f3f46]',
-                  active && 'bg-[#fff7ed] font-extrabold text-[#9a3412]'
+                  'text-gray-11 flex min-h-11 items-center gap-2 rounded-lg px-2.5 text-[12.5px] font-semibold',
+                  active && 'bg-orange-1 text-orange-11 font-extrabold'
                 )}
               >
                 <span className="w-[15px] text-center text-[11px]">{icon}</span>
@@ -59,34 +59,32 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
         </nav>
       </aside>
       <div className="min-w-0 flex-1">
-        <header className="flex min-h-[66px] items-center gap-2 border-b border-[#e4e4e7] bg-white px-4 md:px-[22px]">
-          <span className="grid size-8 place-items-center rounded-full bg-[#f4f4f5] text-xs font-extrabold text-[#3f3f46]">
+        <header className="border-gray-3 flex min-h-[66px] items-center gap-2 border-b bg-white px-4 md:px-[22px]">
+          <span className="bg-gray-1 text-gray-11 grid size-8 place-items-center rounded-full text-xs font-extrabold">
             {member?.name?.slice(0, 1) ?? ''}
           </span>
-          <div className="text-[13.5px] font-extrabold text-[#27272a]">
+          <div className="text-gray-12 text-[13.5px] font-extrabold">
             관리자
             {profileDetail ? (
-              <small className="block text-[10.5px] font-semibold text-[#71717a]">
+              <small className="text-gray-8 block text-[10.5px] font-semibold">
                 {profileDetail}
               </small>
             ) : null}
           </div>
           <div className="ml-auto flex gap-3 text-right md:gap-4">
             <div>
-              <div className="text-[10px] font-bold text-[#71717a]">
-                전체 회원
-              </div>
-              <div className="text-sm font-extrabold text-[#27272a] tabular-nums">
+              <div className="text-gray-8 text-[10px] font-bold">전체 회원</div>
+              <div className="text-gray-12 text-sm font-extrabold tabular-nums">
                 {summary.data
                   ? `${summary.data.totalMemberCount.toLocaleString()}명`
                   : ''}
               </div>
             </div>
             <div>
-              <div className="text-[10px] font-bold text-[#71717a]">
+              <div className="text-gray-8 text-[10px] font-bold">
                 최근 7일 가입
               </div>
-              <div className="text-sm font-extrabold text-[#27272a] tabular-nums">
+              <div className="text-gray-12 text-sm font-extrabold tabular-nums">
                 {summary.data
                   ? `${summary.data.newMemberCount.toLocaleString()}명`
                   : ''}

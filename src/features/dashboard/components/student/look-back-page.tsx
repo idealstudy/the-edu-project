@@ -6,6 +6,8 @@ import Link from 'next/link';
 
 import { useLookBackQuery } from '@/features/dashboard/hooks/use-look-back-query';
 import { useUnitNoteLibraryQuery } from '@/features/unit-note/hooks/use-unit-note-query';
+import { PageLayout, SplitLayout } from '@/layout';
+import { Card } from '@/shared/components/ui';
 import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { PRIVATE } from '@/shared/constants';
 
@@ -90,13 +92,13 @@ export const LookBackPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#fcfbfa]">
-      <main className="w-full p-4">
-        <p className="mb-4 text-xs text-[#747980]">
-          내 학습 › <b className="text-[#202226]">돌아보기</b>
+    <div className="bg-system-background min-h-screen">
+      <PageLayout>
+        <p className="text-gray-8 mb-4 text-xs">
+          내 학습 › <b className="text-gray-12">돌아보기</b>
         </p>
-        <div className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-[#e3e5e8] bg-white p-2">
-          <div className="flex w-60 rounded-md bg-[#f0f1f3] p-1">
+        <div className="border-gray-3 mb-4 flex flex-wrap items-center gap-3 rounded-lg border bg-white p-2">
+          <div className="bg-gray-2 flex w-60 rounded-md p-1">
             {(['WEEK', 'MONTH'] as const).map((item) => (
               <UnstyledButton
                 variant="unstyled"
@@ -118,7 +120,7 @@ export const LookBackPage = () => {
             size="none"
             type="button"
             onClick={() => setOffset((current) => current + 1)}
-            className="min-h-11 cursor-pointer rounded-lg border border-[#e3e5e8] px-3 text-xs font-bold"
+            className="border-gray-3 min-h-11 cursor-pointer rounded-lg border px-3 text-xs font-bold"
           >
             ‹ 지난 {period === 'WEEK' ? '주' : '달'}
           </UnstyledButton>
@@ -133,7 +135,7 @@ export const LookBackPage = () => {
             type="button"
             disabled={offset === 0}
             onClick={() => setOffset((current) => Math.max(0, current - 1))}
-            className="min-h-11 cursor-pointer rounded-lg border border-[#e3e5e8] px-3 text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40"
+            className="border-gray-3 min-h-11 cursor-pointer rounded-lg border px-3 text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40"
           >
             다음 {period === 'WEEK' ? '주' : '달'} ›
           </UnstyledButton>
@@ -142,22 +144,19 @@ export const LookBackPage = () => {
             size="none"
             type="button"
             onClick={() => setOffset(0)}
-            className="ml-auto min-h-11 cursor-pointer rounded-lg border border-[#e3e5e8] px-3 text-xs font-bold"
+            className="border-gray-3 ml-auto min-h-11 cursor-pointer rounded-lg border px-3 text-xs font-bold"
           >
             오늘로
           </UnstyledButton>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
+        <SplitLayout>
           <div className="space-y-4">
-            <section
-              className="rounded-xl border border-[#e3e5e8] bg-white p-5"
-              data-testid="coach-message"
-            >
+            <Card data-testid="coach-message">
               <div className="mb-4 flex items-center gap-2">
                 <h2 className="font-extrabold">코치가 보낸 말</h2>
                 {coachMessage && (
-                  <span className="rounded-full bg-[#fff0e7] px-2 py-1 text-[10px] font-bold text-[#a4481e]">
+                  <span className="bg-orange-1 text-orange-11 rounded-full px-2 py-1 text-[10px] font-bold">
                     AI가 씀
                   </span>
                 )}
@@ -169,35 +168,35 @@ export const LookBackPage = () => {
                   onClick={() => lookBackQuery.refetch()}
                   disabled={lookBackQuery.isFetching}
                   data-testid="look-back-coach-refresh"
-                  className="ml-auto min-h-9 cursor-pointer rounded-lg border border-[#e3e5e8] px-3 text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40"
+                  className="border-gray-3 ml-auto min-h-9 cursor-pointer rounded-lg border px-3 text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   {lookBackQuery.isFetching ? '받는 중' : '다시 받기'}
                 </UnstyledButton>
               </div>
               <div className="flex gap-3">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#fff1df]">
+                <div className="bg-orange-2 flex size-10 shrink-0 items-center justify-center rounded-full">
                   🦉
                 </div>
-                <div className="rounded-xl bg-[#f6f7f9] p-4 text-sm leading-6">
+                <div className="bg-gray-1 rounded-xl p-4 text-sm leading-6">
                   {coachMessage ??
                     '왔구나. 나는 네가 한 걸 보고 말을 거는 쪽이라, 아직은 해줄 말이 없어. 없는 기록을 지어내서 칭찬하진 않을게.'}
                 </div>
               </div>
-            </section>
-            <section className="rounded-xl border border-[#e3e5e8] bg-white p-5">
+            </Card>
+            <Card>
               <div className="mb-3 flex items-center gap-2">
                 <h2 className="font-extrabold">
                   {period === 'WEEK' ? '이 주 할 일' : '주별 완료'}
                 </h2>
-                <span className="text-xs text-[#747980]">완료 / 전체</span>
+                <span className="text-gray-8 text-xs">완료 / 전체</span>
               </div>
               <div className="grid grid-cols-7 gap-1">
                 {calendar.map((day, index) => (
                   <div
                     key={day.date}
-                    className="relative min-h-16 rounded-md border border-[#e3e5e8] bg-[#fafafa] p-2 text-center"
+                    className="border-gray-3 bg-gray-1 relative min-h-16 rounded-md border p-2 text-center"
                   >
-                    <span className="block text-[10px] text-[#747980]">
+                    <span className="text-gray-8 block text-[10px]">
                       {WEEK_DAYS[index % 7]}
                     </span>
                     <b className="text-sm">{Number(day.date.slice(-2))}</b>
@@ -205,35 +204,32 @@ export const LookBackPage = () => {
                       {day.todoDone} / {day.todoTotal}
                     </span>
                     {day.hasRetrospect && (
-                      <i className="absolute right-1.5 bottom-1.5 size-1.5 rounded-full bg-[#f26a2e]" />
+                      <i className="bg-orange-7 absolute right-1.5 bottom-1.5 size-1.5 rounded-full" />
                     )}
                   </div>
                 ))}
               </div>
-              <p className="mt-3 text-[11px] leading-5 text-[#747980]">
+              <p className="text-gray-8 mt-3 text-[11px] leading-5">
                 칸 안 숫자는 완료 / 전체입니다. 오른쪽 아래 점은 그날 회고가
                 있다는 뜻입니다.
                 {onlyWithRetrospect &&
                   ' 지금은 회고가 있는 날만 보고 있습니다.'}
               </p>
-            </section>
+            </Card>
 
             {/* v22 `sLookMonth` 2513 주별 완료 + `그 주 보기` */}
             {period === 'MONTH' && weeks.length > 0 && (
-              <section
-                className="rounded-xl border border-[#e3e5e8] bg-white p-5"
-                data-testid="look-back-weekly-rollup"
-              >
+              <Card data-testid="look-back-weekly-rollup">
                 <h2 className="mb-3 font-extrabold">주별 완료</h2>
                 {weeks.map((week) => (
                   <div
                     key={week.monday.toISOString()}
-                    className="flex items-center gap-3 border-t border-[#eee] py-3 first:border-t-0"
+                    className="border-gray-2 flex items-center gap-3 border-t py-3 first:border-t-0"
                   >
                     <b className="min-w-20 text-sm">{week.label}</b>
-                    <span className="h-1.5 flex-1 rounded-full bg-[#f0f1f3]">
+                    <span className="bg-gray-2 h-1.5 flex-1 rounded-full">
                       <i
-                        className="block h-1.5 rounded-full bg-[#f26a2e]"
+                        className="bg-orange-7 block h-1.5 rounded-full"
                         style={{
                           width: `${week.total === 0 ? 0 : Math.round((week.done / week.total) * 100)}%`,
                         }}
@@ -247,54 +243,49 @@ export const LookBackPage = () => {
                       size="none"
                       type="button"
                       onClick={() => openWeek(week.monday)}
-                      className="min-h-9 cursor-pointer rounded-lg border border-[#e3e5e8] px-3 text-xs font-bold"
+                      className="border-gray-3 min-h-9 cursor-pointer rounded-lg border px-3 text-xs font-bold"
                     >
                       그 주 보기
                     </UnstyledButton>
                   </div>
                 ))}
-              </section>
+              </Card>
             )}
 
             {/* v22 `sLookMonth` 2528 이 달 정리한 단원 + `노트 열기` */}
             {period === 'MONTH' && touchedUnits.length > 0 && (
-              <section
-                className="rounded-xl border border-[#e3e5e8] bg-white p-5"
-                data-testid="look-back-touched-units"
-              >
+              <Card data-testid="look-back-touched-units">
                 <h2 className="mb-3 font-extrabold">정리한 단원</h2>
                 {touchedUnits.map((node) => (
                   <div
                     key={node.nodeId}
-                    className="flex items-center gap-3 border-t border-[#eee] py-3 first:border-t-0"
+                    className="border-gray-2 flex items-center gap-3 border-t py-3 first:border-t-0"
                   >
                     <span className="min-w-0 flex-1">
                       <b className="block truncate text-sm">
                         {node.displayName || node.unit}
                       </b>
-                      <small className="text-xs text-[#747980]">
+                      <small className="text-gray-8 text-xs">
                         노트 {node.pageCount}장
                       </small>
                     </span>
                     <Link
                       href={PRIVATE.DASHBOARD.UNIT_NOTE_ROOM(node.nodeId)}
-                      className="min-h-9 rounded-lg border border-[#e3e5e8] px-3 text-xs leading-9 font-bold"
+                      className="border-gray-3 min-h-9 rounded-lg border px-3 text-xs leading-9 font-bold"
                     >
                       노트 열기
                     </Link>
                   </div>
                 ))}
-              </section>
+              </Card>
             )}
           </div>
-          <section className="rounded-xl border border-[#e3e5e8] bg-white p-5">
+          <Card>
             <div className="mb-3 flex items-center gap-2">
               <h2 className="font-extrabold">
                 이 {period === 'WEEK' ? '주' : '달'} 회고 {records.length}건
               </h2>
-              <span className="text-xs text-[#747980]">
-                내가 쓴 문장 그대로
-              </span>
+              <span className="text-gray-8 text-xs">내가 쓴 문장 그대로</span>
               {/* v22 `sLookWeek` 2483 `회고 있는 날만` */}
               <UnstyledButton
                 variant="unstyled"
@@ -305,25 +296,25 @@ export const LookBackPage = () => {
                 data-testid="look-back-only-retrospect"
                 className={`ml-auto min-h-9 cursor-pointer rounded-lg border px-3 text-xs font-bold ${
                   onlyWithRetrospect
-                    ? 'border-[#f26a2e] bg-[#fff3ec] text-[#9a441f]'
-                    : 'border-[#e3e5e8]'
+                    ? 'border-orange-7 bg-orange-1 text-orange-11'
+                    : 'border-gray-3'
                 }`}
               >
                 회고 있는 날만
               </UnstyledButton>
             </div>
             {lookBackQuery.isError ? (
-              <p className="rounded-lg bg-[#fff7f4] p-6 text-center text-sm">
+              <p className="bg-red-1 rounded-lg p-6 text-center text-sm">
                 회고를 불러오지 못했어요.
               </p>
             ) : records.length === 0 ? (
-              <div className="rounded-lg bg-[#fafafa] p-8 text-center text-sm text-[#747980]">
+              <div className="bg-gray-1 text-gray-8 rounded-lg p-8 text-center text-sm">
                 <p>
                   아직 돌아볼 기록이 없어요. 빈 날을 채우라고 재촉하지 않습니다.
                 </p>
                 <Link
                   href={PRIVATE.DASHBOARD.STUDENT}
-                  className="mt-4 inline-flex min-h-11 items-center rounded-lg bg-[#f26a2e] px-4 font-bold text-white"
+                  className="bg-orange-7 mt-4 inline-flex min-h-11 items-center rounded-lg px-4 font-bold text-white"
                 >
                   오늘 할 일 적으러 가기
                 </Link>
@@ -332,14 +323,14 @@ export const LookBackPage = () => {
               records.map((record) => (
                 <article
                   key={record.date}
-                  className="border-t border-[#eee] py-4 first:border-t-0"
+                  className="border-gray-2 border-t py-4 first:border-t-0"
                 >
                   <div className="mb-2 flex items-center gap-2">
                     <b className="text-sm">{record.date}</b>
                     {record.chips.map((chip) => (
                       <span
                         key={chip}
-                        className="rounded-full bg-[#fff0e7] px-2 py-1 text-[10px] font-bold"
+                        className="bg-orange-1 rounded-full px-2 py-1 text-[10px] font-bold"
                       >
                         {chip}
                       </span>
@@ -348,21 +339,21 @@ export const LookBackPage = () => {
                   <p className="text-sm leading-6">
                     {record.learned ?? '기록 없음'}
                   </p>
-                  <p className="mt-2 text-xs text-[#747980]">
+                  <p className="text-gray-8 mt-2 text-xs">
                     배운 것 · {record.learned ?? '기록 없음'}
                   </p>
-                  <p className="text-xs text-[#747980]">
+                  <p className="text-gray-8 text-xs">
                     돌아본 것 · {record.reflected ?? '기록 없음'}
                   </p>
-                  <p className="text-xs text-[#747980]">
+                  <p className="text-gray-8 text-xs">
                     내일 할 것 · {record.tomorrow ?? '기록 없음'}
                   </p>
                 </article>
               ))
             )}
-          </section>
-        </div>
-      </main>
+          </Card>
+        </SplitLayout>
+      </PageLayout>
     </div>
   );
 };

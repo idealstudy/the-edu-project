@@ -161,28 +161,32 @@ Wanted Sans Variable을 본문 1순위로 쓰고, 로컬 Pretendard를 대체 �
 
 `@theme` 의 `--spacing-*` 로 노출돼 있어 Tailwind 유틸리티로 바로 쓴다 (`p-card-pad`, `gap-block-gap`, `min-h-touch-min` 등).
 
-| 토큰                           | 값   | 뜻                          | 유틸 예             |
-| ------------------------------ | ---- | --------------------------- | ------------------- |
-| `--spacing-card-pad`           | 16px | 카드 안쪽 여백              | `p-card-pad`        |
-| `--spacing-card-pad-mobile`    | 14px | 휴대폰 390 카드 안쪽 여백   | `p-card-pad-mobile` |
-| `--spacing-block-gap`          | 12px | 카드 사이 간격              | `gap-block-gap`     |
-| `--spacing-section-gap`        | 16px | 구획(본문 영역) 여백        | `p-section-gap`     |
-| `--spacing-section-gap-mobile` | 14px | 휴대폰 구획 여백            |                     |
-| `--spacing-row-gap`            | 7px  | 목록 행 사이 간격           | `gap-row-gap`       |
-| `--spacing-inline-gap-xs`      | 5px  | 페이지네이션·문항 격자      | `gap-inline-gap-xs` |
-| `--spacing-inline-gap`         | 6px  | 행 안의 액션 두 개          | `gap-inline-gap`    |
-| `--spacing-content-gap`        | 8px  | 타일·콘텐츠 묶음            | `gap-content-gap`   |
-| `--spacing-grid-gap`           | 11px | 문제·수업 카드 격자         | `gap-grid-gap`      |
-| `--spacing-column-gap`         | 16px | 2단 배치 열 간격            | `gap-column-gap`    |
-| `--spacing-room-gap`           | 20px | 스터디룸 좌우 영역          | `gap-room-gap`      |
-| `--spacing-empty-pad-x`        | 22px | 빈 상태 가로 여백           | `px-empty-pad-x`    |
-| `--spacing-empty-pad-y`        | 38px | 빈 상태 세로 여백           | `py-empty-pad-y`    |
-| `--spacing-touch-min`          | 44px | 터치 타깃 최소              | `min-h-touch-min`   |
-| `--spacing-control-sm`         | 44px | 작은 버튼·선택 칩 최소 높이 |                     |
-| `--spacing-control-lg`         | 50px | 큰 CTA 최소 높이            |                     |
-| `--spacing-chip-min`           | 32px | 앱바 칩 최소 높이           |                     |
-| `--spacing-badge-min`          | 22px | 배지 최소 높이              |                     |
-| `--spacing-row-min`            | 58px | 목록 행 최소 높이           |                     |
+| 토큰                           | 값    | 뜻                          | 유틸 예             |
+| ------------------------------ | ----- | --------------------------- | ------------------- |
+| `--spacing-card-pad`           | 16px  | 카드 안쪽 여백              | `p-card-pad`        |
+| `--spacing-card-pad-mobile`    | 14px  | 휴대폰 390 카드 안쪽 여백   | `p-card-pad-mobile` |
+| `--spacing-block-gap`          | 12px  | 카드 사이 간격              | `gap-block-gap`     |
+| `--spacing-section-gap`        | 16px  | 구획(본문 영역) 여백        | `p-section-gap`     |
+| `--spacing-section-gap-mobile` | 14px  | 휴대폰 구획 여백            |                     |
+| `--spacing-row-gap`            | 7px   | 목록 행 사이 간격           | `gap-row-gap`       |
+| `--spacing-inline-gap-xs`      | 5px   | 페이지네이션·문항 격자      | `gap-inline-gap-xs` |
+| `--spacing-inline-gap`         | 6px   | 행 안의 액션 두 개          | `gap-inline-gap`    |
+| `--spacing-content-gap`        | 8px   | 타일·콘텐츠 묶음            | `gap-content-gap`   |
+| `--spacing-grid-gap`           | 11px  | 문제·수업 카드 격자         | `gap-grid-gap`      |
+| `--spacing-column-gap`         | 16px  | 2단 배치 열 간격            | `gap-column-gap`    |
+| `--spacing-room-gap`           | 20px  | 스터디룸 좌우 영역          | `gap-room-gap`      |
+| `--spacing-exam-layout-gap`    | 13px  | 시험 응시·열기 2단 간격     |                     |
+| `--spacing-exam-rail`          | 248px | 시험 응시 펼친 레일         |                     |
+| `--spacing-exam-rail-folded`   | 56px  | 시험 응시 접힌 레일         |                     |
+| `--spacing-exam-wizard-aside`  | 300px | 선생님 시험 열기 보조열     |                     |
+| `--spacing-empty-pad-x`        | 22px  | 빈 상태 가로 여백           | `px-empty-pad-x`    |
+| `--spacing-empty-pad-y`        | 38px  | 빈 상태 세로 여백           | `py-empty-pad-y`    |
+| `--spacing-touch-min`          | 44px  | 터치 타깃 최소              | `min-h-touch-min`   |
+| `--spacing-control-sm`         | 44px  | 작은 버튼·선택 칩 최소 높이 |                     |
+| `--spacing-control-lg`         | 50px  | 큰 CTA 최소 높이            |                     |
+| `--spacing-chip-min`           | 32px  | 앱바 칩 최소 높이           |                     |
+| `--spacing-badge-min`          | 22px  | 배지 최소 높이              |                     |
+| `--spacing-row-min`            | 58px  | 목록 행 최소 높이           |                     |
 
 셸 치수는 기존 토큰을 그대로 쓴다: `--spacing-header-height` 60px, `--spacing-sidebar-width` 260px, `--spacing-grid-margin` 20px.
 
@@ -284,6 +288,8 @@ feature 단위 신규 컴포넌트: `TreeMap`(약점 트리) · `CoachChat`(AI �
 | `SplitLayout`      | 일반 2단 `1.28fr : 1fr`, 할 일·회고 `1.34fr : 1fr`, 구 상세 `1.35fr : 1fr` |
 | `ColumnLayout`     | 스터디룸 여백 24/32px, 좌측 360px, 우측 최대 740px, 열 간격 20px           |
 | `CollectionLayout` | 0건 `EmptyState`, 과다 항목 명시적 접기·펼치기                             |
+| `ExamTakeLayout`   | 응시 레일 248px, 접힘 56px, 문제 영역 `minmax(0,1fr)`, 간격 13px           |
+| `ExamWizardLayout` | 선생님 시험 열기 `minmax(0,1fr) : 300px`, 간격 13px                        |
 
 레이아웃 부품의 자식은 항상 `min-width:0`을 상속한다. 따라서 긴 텍스트와 이미지가 열 너비를 밀어내지 않는다. 화면은 이 비율과 최대 폭을 임의 class로 다시 선언하지 않는다.
 

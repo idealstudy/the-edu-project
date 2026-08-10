@@ -231,13 +231,13 @@ export const StudyNoteDetailMetaSection = ({
                     {student.readAt ? (
                       <Check
                         className="justify-self-center"
-                        color="#34C759"
+                        color="var(--system-success)"
                         size={14}
                       />
                     ) : (
                       <X
                         className="justify-self-center"
-                        color="#c73342"
+                        color="var(--system-warning)"
                         size={14}
                       />
                     )}
