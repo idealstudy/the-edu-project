@@ -45,10 +45,10 @@ export const StudyroomSidebarHeader = ({
       onThumbnailDelete={onThumbnailDelete}
       teacherSuffix="선생님"
       fallbackStudyRoomName="스터디룸"
-      titleClassName="desktop:max-w-[260px] truncate text-[28px] leading-tight font-bold"
+      titleClassName="desktop:max-w-65 truncate text-2xl leading-tight font-bold"
       imageWrapperClassName={cn(
         thumbnailUrl ? '' : 'bg-orange-scale-orange-1',
-        'tablet:h-[200px] relative h-[150px] w-full overflow-hidden rounded-[12px]'
+        'tablet:h-50 relative h-37.5 w-full overflow-hidden rounded-card'
       )}
       rightSlot={
         canManage ? (
@@ -63,7 +63,7 @@ export const StudyroomSidebarHeader = ({
                 alt="kebab-menu"
                 width={48}
                 height={48}
-                className="cursor-pointer self-start rounded-[8px] border-none p-1 hover:bg-gray-100"
+                className="rounded-button cursor-pointer self-start border-none p-1 hover:bg-gray-100"
               />
             </DropdownMenu.Trigger>
             <DropdownMenu.Content>

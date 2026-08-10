@@ -16,9 +16,9 @@ const SORT_OPTIONS: Array<{ value: 'latest' | 'popular'; label: string }> = [
 
 const SELECT_STYLES = {
   trigger:
-    'border-line-line2 h-[36px] rounded-[8px] pr-8 pl-2 text-sm w-auto min-w-[110px] text-[var(--color-text-sub2)] whitespace-nowrap mock-[state=open]:border-line-line3 focus:ring-0 focus:outline-none px-3 font-label-normal',
+    'border-line-line2 h-9 rounded-button pr-8 pl-2 text-sm w-auto min-w-27.5 text-[var(--color-text-sub2)] whitespace-nowrap mock-[state=open]:border-line-line3 focus:ring-0 focus:outline-none px-3 font-label-normal',
   option:
-    'flex h-[32px] border-b-0 text-center w-full font-body2-normal justify-center items-center',
+    'flex h-8 border-b-0 text-center w-full font-body2-normal justify-center items-center',
 };
 
 export default function OpenChallengeShell({
@@ -47,7 +47,7 @@ export default function OpenChallengeShell({
   return (
     <div className="mb-4 min-h-screen w-full bg-white">
       <div className="bg-system-background w-full">
-        <div className="mx-auto w-full max-w-[1440px] px-4 pt-8 md:px-8 lg:px-20">
+        <div className="mx-auto w-full max-w-360 px-4 pt-8 md:px-8 lg:px-20">
           <h1 className="font-title-heading mt-4 mb-10 text-2xl leading-[135%] tracking-tight lg:text-3xl">
             디에듀 AI와 함께 문제를 풀어보세요
           </h1>
@@ -59,7 +59,7 @@ export default function OpenChallengeShell({
             >
               <div
                 className={cn(
-                  'relative cursor-pointer px-4 pb-4 text-lg leading-[135%] transition-all lg:text-[24px]',
+                  'relative cursor-pointer px-4 pb-4 text-lg leading-[135%] transition-all lg:text-2xl',
                   isOpenChallenge
                     ? 'font-[700] text-[#1A1A1A]'
                     : 'font-[400] text-[#AAAAAA]'
@@ -67,7 +67,7 @@ export default function OpenChallengeShell({
               >
                 오픈챌린지
                 {isOpenChallenge && (
-                  <div className="absolute bottom-0 left-0 h-[4px] w-full bg-[#FF5C35]" />
+                  <div className="absolute bottom-0 left-0 h-1 w-full bg-[#FF5C35]" />
                 )}
               </div>
             </Link>
@@ -76,7 +76,7 @@ export default function OpenChallengeShell({
       </div>
 
       <div className="w-full bg-white">
-        <div className="mx-auto max-w-[1440px] px-4 py-8 md:px-8 lg:px-20">
+        <div className="mx-auto max-w-360 px-4 py-8 md:px-8 lg:px-20">
           <div className="mb-6 flex gap-2">
             <Select
               value={sortBy}
@@ -104,7 +104,7 @@ export default function OpenChallengeShell({
               {children}
             </div>
             {isPending && (
-              <div className="absolute inset-0 bg-white/70 backdrop-blur-[1px]">
+              <div className="absolute inset-0 bg-white/70 backdrop-blur-none">
                 {isOpenChallenge ? <ChallengeListSkeleton /> : null}
               </div>
             )}

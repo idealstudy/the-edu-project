@@ -9,6 +9,8 @@
  */
 import { useState } from 'react';
 
+import Link from 'next/link';
+
 import type { FeedbackRow, TodoRow } from '@/entities/learning-management';
 import {
   useLearningManagementActions,
@@ -16,7 +18,6 @@ import {
 } from '@/features/study-notes/hooks/use-learning-management';
 import { Skeleton } from '@/shared/components/loading';
 import { PRIVATE } from '@/shared/constants/route';
-import Link from 'next/link';
 
 type Props = {
   studyRoomId: number;
@@ -69,10 +70,10 @@ const pill = (label: string, tone: 'done' | 'plain' | 'hidden') => (
   <span
     className={
       tone === 'done'
-        ? 'rounded-full bg-[#e8f4ec] px-2.5 py-1 text-[11px] font-bold text-[#25693f]'
+        ? 'text-ui-choice rounded-full bg-[#e8f4ec] px-2.5 py-1 font-bold text-[#25693f]'
         : tone === 'hidden'
-          ? 'rounded-full bg-[#f1f2f4] px-2.5 py-1 text-[11px] font-bold text-[#6b7076]'
-          : 'rounded-full bg-[#f6f7f8] px-2.5 py-1 text-[11px] font-bold text-[#4a4f55]'
+          ? 'text-ui-choice rounded-full bg-[#f1f2f4] px-2.5 py-1 font-bold text-[#6b7076]'
+          : 'text-ui-choice rounded-full bg-[#f6f7f8] px-2.5 py-1 font-bold text-[#4a4f55]'
     }
   >
     {label}
@@ -340,7 +341,7 @@ export const LearningManagementTab = ({ studyRoomId }: Props) => {
             <div>
               <h2 className="text-sm font-extrabold">{action.title}</h2>
               <p className="text-xs text-[#747980]">{action.subtitle}</p>
-              <p className="mt-3 rounded-md bg-[#faf6f2] px-3 py-2 text-[11px]">
+              <p className="text-ui-choice mt-3 rounded-md bg-[#faf6f2] px-3 py-2">
                 <b className="mr-2 text-[#a4481e]">학생 화면 도착지</b>
                 {action.destination}
               </p>
@@ -351,9 +352,7 @@ export const LearningManagementTab = ({ studyRoomId }: Props) => {
                   type="button"
                   className={tinyButton}
                   disabled={isBusy}
-                  onClick={() =>
-                    mutations.acknowledgeAllWrongAnswers.mutate()
-                  }
+                  onClick={() => mutations.acknowledgeAllWrongAnswers.mutate()}
                   data-testid="learning-management-acknowledge-all"
                 >
                   전부 확인함
@@ -436,9 +435,7 @@ export const LearningManagementTab = ({ studyRoomId }: Props) => {
                       )
                     }
                     onAcknowledge={() =>
-                      mutations.acknowledgeWrongAnswer.mutate(
-                        row.wrongAnswerId
-                      )
+                      mutations.acknowledgeWrongAnswer.mutate(row.wrongAnswerId)
                     }
                   />
                 ))

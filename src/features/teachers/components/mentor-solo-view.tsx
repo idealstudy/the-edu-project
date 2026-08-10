@@ -13,11 +13,11 @@ import { PUBLIC } from '@/shared/constants';
  */
 export function MentorSoloView() {
   return (
-    <div className="mx-auto w-full max-w-[960px] px-4 py-10 md:px-8">
+    <div className="mx-auto w-full max-w-240 px-4 py-10 md:px-8">
       <div className="flex flex-col items-center gap-6 text-center md:flex-row md:items-start md:gap-10 md:text-left">
         <div
           data-asset-slot="mentor-real-photo"
-          className="border-line-line1 relative h-[196px] w-[168px] shrink-0 overflow-hidden rounded-xl border bg-gradient-to-b from-[#FCFBFA] to-[#FFE7E2]"
+          className="border-line-line1 relative h-49 w-42 shrink-0 overflow-hidden rounded-xl border bg-gradient-to-b from-[#FCFBFA] to-[#FFE7E2]"
         >
           <Image
             src="/character/img_coming_soon01.png"
@@ -43,9 +43,7 @@ export function MentorSoloView() {
                 <p className="font-headline1-heading text-key-color-primary">
                   {fact.value}
                 </p>
-                <p className="font-label-normal text-text-sub2">
-                  {fact.label}
-                </p>
+                <p className="font-label-normal text-text-sub2">{fact.label}</p>
               </div>
             ))}
           </div>
@@ -55,21 +53,17 @@ export function MentorSoloView() {
             size="large"
             className="w-full md:w-fit"
           >
-            <Link href={PUBLIC.CONSULT.INDEX}>
-              조성진 선생님께 상담 신청
-            </Link>
+            <Link href={PUBLIC.CONSULT.INDEX}>조성진 선생님께 상담 신청</Link>
           </Button>
           <p className="font-label-normal text-text-sub2">
-            상담 신청만으로는 어떤 권한도 생기지 않아요 — 그냥 선생님을
-            찾는 학생·학부모로 남습니다.
+            상담 신청만으로는 어떤 권한도 생기지 않아요 — 그냥 선생님을 찾는
+            학생·학부모로 남습니다.
           </p>
         </div>
       </div>
 
       <section className="mt-12">
-        <h2 className="font-headline2-heading mb-6">
-          선별 기준 3가지
-        </h2>
+        <h2 className="font-headline2-heading mb-6">선별 기준 3가지</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {MENTOR_PROFILE.criteria.map((item) => (
             <div

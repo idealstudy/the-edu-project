@@ -140,7 +140,7 @@ export const StudentStudyNoteSubmitButton = ({
       <Button
         type="submit"
         disabled={!isValid || isPending || isSubmitting}
-        className="w-[200px] rounded-sm"
+        className="w-50 rounded-sm"
       >
         {isPending ? '저장 중...' : '저장하기'}
       </Button>

@@ -21,7 +21,7 @@ export const PointSummaryCard = () => {
       className="flex flex-col gap-4 md:flex-row md:items-stretch"
       aria-label="포인트 요약"
     >
-      <div className="border-line-line1 bg-orange-1 flex flex-1 flex-col gap-2 rounded-[12px] border p-5">
+      <div className="border-line-line1 bg-orange-1 rounded-card flex flex-1 flex-col gap-2 border p-5">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Wallet
@@ -62,7 +62,7 @@ export const PointSummaryCard = () => {
       </div>
 
       {/* 레벨 — 포인트와 다른 축(성장 지표) */}
-      <div className="w-full md:w-[300px] md:shrink-0">
+      <div className="w-full md:w-75 md:shrink-0">
         <LevelBadgeConnected />
       </div>
     </section>

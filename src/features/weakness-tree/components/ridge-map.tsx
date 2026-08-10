@@ -19,7 +19,7 @@ export const RidgeMap = ({
   selectedPeakId,
   onSelectPeak,
 }: RidgeMapProps) => (
-  <div className="-0 -0 flex items-stretch gap-3 overflow-x-auto px-1 pt-9 md:gap-3.5">
+  <div className="flex h-65 items-stretch gap-3 overflow-x-auto px-1 pt-9 md:h-80 md:gap-3.5">
     {peaks.map((peak) => {
       const untested = peak.attemptCount === 0 && peak.masteryScore <= 0;
       const height = untested ? 14 : Math.max(18, peak.masteryScore);
@@ -36,7 +36,7 @@ export const RidgeMap = ({
           aria-label={`${peak.displayName}, ${
             untested ? '미진단' : isMastered ? '정복' : isWeak ? '약점' : '진행'
           } ${untested ? 0 : peak.masteryScore}퍼센트, 누르면 세부 트리`}
-          className="-0 flex flex-1 flex-col bg-transparent p-0 font-sans"
+          className="flex min-w-23 flex-1 flex-col bg-transparent p-0 font-sans"
         >
           <div className="border-line-line2 relative flex flex-1 items-end justify-center border-b-2">
             <div

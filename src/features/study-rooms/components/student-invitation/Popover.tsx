@@ -31,7 +31,7 @@ const PopoverContent = ({
     <PopoverPrimitives.Portal>
       <PopoverPrimitives.Content
         className={cn(
-          'bg-gray-scale-white border-line-line2 relative z-50 overflow-y-auto rounded-[4px] border outline-hidden',
+          'bg-gray-scale-white border-line-line2 rounded-control-compact relative z-50 overflow-y-auto border outline-hidden',
           'min-w-[var(--radix-popover-trigger-width)]',
           'max-h-[calc(var(--radix-popover-content-available-height)-8px)]',
           className

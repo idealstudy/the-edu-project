@@ -2,10 +2,10 @@ import { Skeleton } from '@/shared/components/loading';
 
 export const ChallengeSolveSkeleton = () => (
   <div className="flex h-[calc(100vh-var(--spacing-header-height,64px))] overflow-hidden">
-    <aside className="border-line-line1 hidden w-[380px] shrink-0 border-r p-4 lg:block">
+    <aside className="border-line-line1 hidden w-95 shrink-0 border-r p-4 lg:block">
       <div className="flex h-full flex-col gap-4">
         <Skeleton.Block className="h-10 w-full rounded-lg" />
-        <Skeleton.Block className="min-h-[300px] w-full flex-1 rounded-xl" />
+        <Skeleton.Block className="min-h-75 w-full flex-1 rounded-xl" />
         <Skeleton.Block className="h-10 w-full rounded-lg" />
       </div>
     </aside>
@@ -25,7 +25,7 @@ export const ChallengeSolveSkeleton = () => (
 
         <div className="mb-5 flex flex-col gap-2">
           <Skeleton.Block className="h-5 w-24" />
-          <Skeleton.Block className="h-[420px] w-full rounded-lg" />
+          <Skeleton.Block className="h-105 w-full rounded-lg" />
         </div>
 
         <div className="flex flex-col gap-3">

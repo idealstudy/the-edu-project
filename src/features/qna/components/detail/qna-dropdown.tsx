@@ -132,7 +132,7 @@ export default function QuestionDropDown({
             onClick={() => handleOpen(item.id)}
           />
         </DropdownMenu.Trigger>
-        <DropdownMenu.Content className="w-[110px] justify-center">
+        <DropdownMenu.Content className="w-27.5 justify-center">
           <DropdownMenu.Item
             onClick={() => {
               dispatch({

@@ -3,10 +3,10 @@ export const CourseListSkeleton = () => (
     {Array.from({ length: 6 }).map((_, index) => (
       <div
         key={index}
-        className="border-line-line2 flex flex-col gap-4 rounded-[12px] border bg-white p-5"
+        className="border-line-line2 rounded-card flex flex-col gap-4 border bg-white p-5"
       >
         <div className="flex items-start justify-between">
-          <div className="bg-gray-1 size-11 animate-pulse rounded-[12px]" />
+          <div className="bg-gray-1 rounded-card size-11 animate-pulse" />
           <div className="bg-gray-1 h-7 w-14 animate-pulse rounded-full" />
         </div>
         <div className="bg-gray-1 h-5 w-3/4 animate-pulse rounded" />

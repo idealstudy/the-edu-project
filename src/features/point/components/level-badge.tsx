@@ -32,7 +32,7 @@ export const LevelBadge = ({
 
   return (
     <section
-      className="border-line-line1 flex h-full flex-col gap-4 rounded-[12px] border bg-white p-5"
+      className="border-line-line1 rounded-card flex h-full flex-col gap-4 border bg-white p-5"
       aria-label="레벨"
     >
       <div className="flex items-center gap-3">
@@ -65,7 +65,9 @@ export const LevelBadge = ({
             다음 레벨까지
           </span>
           <span className="font-caption-heading text-text-sub1 tabular-nums">
-            {isLoading ? '- XP' : `${expToNextLevel.toLocaleString('ko-KR')} XP`}
+            {isLoading
+              ? '- XP'
+              : `${expToNextLevel.toLocaleString('ko-KR')} XP`}
           </span>
         </div>
       </div>

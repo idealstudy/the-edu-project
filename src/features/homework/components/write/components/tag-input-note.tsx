@@ -52,7 +52,7 @@ export default function TagInputNote({
         <Popover.PopoverTrigger asChild>
           <div
             className={cn(
-              'flex min-h-[56px] cursor-text flex-wrap items-center gap-2 rounded-[4px] border px-6 py-[15px] text-sm',
+              'rounded-control-compact flex min-h-14 cursor-text flex-wrap items-center gap-2 border px-6 py-3.75 text-sm',
               'border-gray-scale-gray-50',
               open && 'border-line-line3',
               error && 'border-system-warning',
@@ -113,7 +113,7 @@ export default function TagInputNote({
             className="bg-background-gray w-full rounded-sm px-5 py-4 text-sm focus:outline-none"
           />
 
-          <div className="mt-4 flex max-h-[160px] flex-wrap gap-2 overflow-y-auto">
+          <div className="mt-4 flex max-h-40 flex-wrap gap-2 overflow-y-auto">
             {filtered.map((note) => {
               const isSelected = selectedIds.includes(note.id);
 

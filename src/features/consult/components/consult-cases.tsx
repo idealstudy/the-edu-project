@@ -2,10 +2,7 @@
 
 import Link from 'next/link';
 
-import {
-  consultationCaseKeys,
-  repository,
-} from '@/entities/consultation-lead';
+import { consultationCaseKeys, repository } from '@/entities/consultation-lead';
 import { PUBLIC } from '@/shared/constants';
 import { useQuery } from '@tanstack/react-query';
 
@@ -25,7 +22,7 @@ export function ConsultCases() {
 
   if (isLoading) {
     return (
-      <div className="border-line-line1 h-[220px] animate-pulse rounded-xl border bg-white" />
+      <div className="border-line-line1 h-55 animate-pulse rounded-xl border bg-white" />
     );
   }
 
@@ -52,7 +49,7 @@ export function ConsultCases() {
         <Link
           key={c.caseId}
           href={PUBLIC.CONSULT.CASE_DETAIL(c.caseId)}
-          className="border-line-line1 flex flex-col gap-2 rounded-xl border bg-white p-6 hover:border-line-line3"
+          className="border-line-line1 hover:border-line-line3 flex flex-col gap-2 rounded-xl border bg-white p-6"
         >
           <span className="font-label-normal text-key-color-primary">
             {c.category}

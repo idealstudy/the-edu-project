@@ -206,7 +206,7 @@ export const ChallengeResult = ({
     null;
 
   return (
-    <main className="tablet:px-8 mx-auto w-full max-w-[1200px] px-4 py-8">
+    <main className="tablet:px-8 mx-auto w-full max-w-300 px-4 py-8">
       <div className="mb-6">
         <BackButton />
       </div>
@@ -239,7 +239,7 @@ export const ChallengeResult = ({
           )}
           {!isUnlocked && isGuest && (
             <section
-              className="border-line-line2 flex flex-col gap-2 rounded-[12px] border bg-white p-5"
+              className="border-line-line2 rounded-card flex flex-col gap-2 border bg-white p-5"
               aria-label="게스트 결과 안내"
             >
               <h2 className="font-body1-heading text-text-main">
@@ -252,7 +252,7 @@ export const ChallengeResult = ({
             </section>
           )}
           {submittedResult?.myDrawingDataUrl && (
-            <section className="border-line-line2 flex flex-col gap-3 rounded-[12px] border bg-white p-5">
+            <section className="border-line-line2 rounded-card flex flex-col gap-3 border bg-white p-5">
               <h2 className="font-body1-heading text-text-main">내 풀이</h2>
               <div className="border-line-line2 bg-gray-1 overflow-hidden rounded-lg border">
                 {/* dataURL 스냅샷 — next/image 최적화 대상 아님 */}
@@ -267,7 +267,7 @@ export const ChallengeResult = ({
           )}
           {submittedResult?.drawingShareFailure && (
             <section
-              className="border-system-warning bg-system-warning-alt flex flex-col items-start gap-3 rounded-[12px] border p-5"
+              className="border-system-warning bg-system-warning-alt rounded-card flex flex-col items-start gap-3 border p-5"
               role="alert"
               data-testid="drawing-share-failed"
             >
@@ -295,7 +295,7 @@ export const ChallengeResult = ({
           )}
           {submittedResult?.drawingShareRecovered && (
             <p
-              className="bg-system-success-alt text-system-success font-caption-normal rounded-[12px] p-4"
+              className="bg-system-success-alt text-system-success font-caption-normal rounded-card p-4"
               role="status"
             >
               손풀이를 올렸어요.
@@ -316,9 +316,9 @@ export const ChallengeResult = ({
           />
         </div>
 
-        <aside className="flex w-full flex-col gap-4 lg:w-[340px] lg:shrink-0">
+        <aside className="flex w-full flex-col gap-4 lg:w-85 lg:shrink-0">
           {Number.isInteger(Number(challengeId)) && (
-            <div className="border-line-line2 flex flex-col gap-3 rounded-[12px] border bg-white p-5">
+            <div className="border-line-line2 rounded-card flex flex-col gap-3 border bg-white p-5">
               <div className="flex flex-col gap-1">
                 <h2 className="font-body1-heading text-text-main">
                   친구와 대결

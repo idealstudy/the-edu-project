@@ -207,7 +207,7 @@ export const StudyroomPreviewIntroTab = ({
               <button
                 type="button"
                 className={cn(
-                  'group text-gray-12 border-gray-5 font-label-normal flex h-8.5 w-[107px] cursor-pointer items-center justify-center gap-1 self-end rounded-md border px-2.5 py-1.5 whitespace-nowrap',
+                  'group text-gray-12 border-gray-5 font-label-normal flex h-8.5 w-26.75 cursor-pointer items-center justify-center gap-1 self-end rounded-md border px-2.5 py-1.5 whitespace-nowrap',
                   'hover:border-orange-7 hover:text-orange-7 transition'
                 )}
                 onClick={moveToStudyRoomEditPage}
@@ -257,7 +257,7 @@ export const StudyroomPreviewIntroTab = ({
                   </p>
                   <button
                     className={cn(
-                      'font-body2-normal border-orange-7 text-orange-7 flex h-8.5 w-[107px] cursor-pointer items-center justify-center rounded-md border',
+                      'font-body2-normal border-orange-7 text-orange-7 flex h-8.5 w-26.75 cursor-pointer items-center justify-center rounded-md border',
                       'hover:bg-orange-7/10 transition'
                     )}
                     onClick={moveToStudyRoomEditPage}

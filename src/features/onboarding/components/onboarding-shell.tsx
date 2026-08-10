@@ -30,7 +30,7 @@ export const OnboardingShell = ({
   footer,
 }: OnboardingShellProps) => (
   <div className="bg-system-background-alt flex min-h-screen w-full justify-center">
-    <div className="flex w-full max-w-[480px] flex-col">
+    <div className="flex w-full max-w-120 flex-col">
       {/* 상단 — sticky */}
       <header className="bg-system-background-alt sticky top-0 z-10 px-5 pt-4">
         <div className="mb-3 flex items-center justify-between">

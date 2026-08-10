@@ -267,7 +267,7 @@ const QuestionContent = ({
                   className="cursor-pointer"
                 />
               </DropdownMenu.Trigger>
-              <DropdownMenu.Content className="flex min-w-[110px] flex-col items-stretch">
+              <DropdownMenu.Content className="flex min-w-27.5 flex-col items-stretch">
                 <DropdownMenu.Item
                   className="justify-center"
                   onClick={handleEdit}

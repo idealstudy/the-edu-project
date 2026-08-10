@@ -2,7 +2,7 @@ import { Skeleton } from '@/shared/components/loading';
 
 const ChallengeCardSkeleton = () => (
   <div className="border-line-line1 flex min-h-full flex-col overflow-hidden rounded-xl border">
-    <Skeleton.Block className="h-[200px] w-full rounded-none" />
+    <Skeleton.Block className="h-50 w-full rounded-none" />
     <div className="flex flex-1 flex-col gap-3 bg-white p-5">
       <div className="flex flex-col gap-1">
         <Skeleton.Block className="h-4 w-2/5" />

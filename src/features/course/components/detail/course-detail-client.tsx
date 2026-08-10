@@ -125,7 +125,7 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
 
   if (isError || !course) {
     return (
-      <div className="border-line-line2 flex flex-col items-center gap-3 rounded-[12px] border bg-white p-12 text-center">
+      <div className="border-line-line2 rounded-card flex flex-col items-center gap-3 border bg-white p-12 text-center">
         <p className="font-body2-normal text-text-sub1">
           코스를 불러오지 못했어요.
         </p>
@@ -159,7 +159,7 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
   return (
     <div className="pb-24 lg:pb-0">
       <section
-        className="relative -mx-4 overflow-hidden bg-[#17130f] px-4 py-14 text-white sm:-mx-6 sm:px-6 lg:mx-0 lg:rounded-[20px] lg:px-10"
+        className="lg:rounded-section relative -mx-4 overflow-hidden bg-[#17130f] px-4 py-14 text-white sm:-mx-6 sm:px-6 lg:mx-0 lg:px-10"
         aria-labelledby="course-title"
       >
         <div
@@ -242,7 +242,7 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
               {VILLAINS.map(([number, title, description]) => (
                 <article
                   key={number}
-                  className="border-line-line2 rounded-[14px] border bg-white p-5"
+                  className="border-line-line2 rounded-card border bg-white p-5"
                 >
                   <span className="font-caption-heading text-key-color-primary">
                     {number}
@@ -256,7 +256,7 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
                 </article>
               ))}
             </div>
-            <div className="mt-4 rounded-[14px] bg-[#17130f] p-5 text-white">
+            <div className="rounded-card mt-4 bg-[#17130f] p-5 text-white">
               <span className="font-caption-heading text-orange-200">
                 셋의 원인은 하나입니다
               </span>
@@ -277,7 +277,7 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
             >
               새 문제집 대신, 핵심 문제를 될 때까지
             </h2>
-            <div className="mt-5 grid overflow-hidden rounded-[14px] border border-[#e7ddd7] md:grid-cols-2">
+            <div className="rounded-card mt-5 grid overflow-hidden border border-[#e7ddd7] md:grid-cols-2">
               <ComparisonColumn
                 title="그냥 인강"
                 muted
@@ -296,7 +296,7 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
                 ]}
               />
             </div>
-            <ol className="mt-5 flex flex-col divide-y divide-[#e7ddd7] rounded-[14px] border border-[#e7ddd7] bg-white px-5">
+            <ol className="rounded-card mt-5 flex flex-col divide-y divide-[#e7ddd7] border border-[#e7ddd7] bg-white px-5">
               <MethodStep
                 number="01"
                 title="개념을 내 말로 정리하고 제출"
@@ -313,7 +313,7 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
                 description="틀린 문제를 지나치지 않고 다시 풀어, 손에 남는 학습으로 연결합니다."
               />
             </ol>
-            <div className="mt-4 rounded-[14px] bg-orange-50 p-5">
+            <div className="rounded-card mt-4 bg-orange-50 p-5">
               <p className="font-body2-heading text-text-main">
                 선별된 핵심 문제 · 목표 10회독
               </p>
@@ -370,7 +370,7 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
           </section>
 
           <section
-            className="rounded-[16px] bg-[#17130f] p-6 text-white"
+            className="rounded-section bg-[#17130f] p-6 text-white"
             aria-labelledby="refund-heading"
           >
             <div className="flex items-start gap-3">
@@ -413,7 +413,7 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
             >
               자주 묻는 질문
             </h2>
-            <div className="border-line-line2 mt-5 overflow-hidden rounded-[14px] border bg-white">
+            <div className="border-line-line2 rounded-card mt-5 overflow-hidden border bg-white">
               {FAQS.map((faq) => (
                 <details
                   key={faq.question}
@@ -435,7 +435,7 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
             </div>
           </section>
 
-          <div className="rounded-[16px] bg-gradient-to-b from-transparent to-orange-50 px-4 py-8 text-center">
+          <div className="rounded-section bg-gradient-to-b from-transparent to-orange-50 px-4 py-8 text-center">
             <p className="font-title-heading text-text-main text-balance">
               새 문제집을 또 사는 대신,{' '}
               <span className="text-key-color-primary">
@@ -461,7 +461,7 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
           </div>
         </main>
 
-        <aside className="border-line-line2 hidden flex-col gap-4 rounded-[16px] border bg-white p-5 lg:sticky lg:top-6 lg:flex">
+        <aside className="border-line-line2 rounded-section hidden flex-col gap-4 border bg-white p-5 lg:sticky lg:top-6 lg:flex">
           <span className="font-caption-heading text-key-color-primary">
             {courseSubjectLabel(course.subject)} · 영상 {videoLessonCount}강 ·
             문제풀이 {problemSessionCount}회
@@ -493,7 +493,7 @@ export const CourseDetailClient = ({ courseId }: CourseDetailClientProps) => {
               </li>
             ))}
           </ul>
-          <div className="bg-orange-1 rounded-[10px] p-3">
+          <div className="bg-orange-1 rounded-row p-3">
             <p className="font-caption-heading text-text-main">
               관리형은 등급 인증 시 전액 환급
             </p>
@@ -585,7 +585,7 @@ const FreeOtCard = ({
 }) => (
   <div
     data-testid={testId}
-    className="border-line-line2 flex flex-col gap-3 rounded-[14px] border bg-white p-4"
+    className="border-line-line2 rounded-card flex flex-col gap-3 border bg-white p-4"
   >
     <div className="flex items-center gap-3">
       <span className="bg-orange-1 text-key-color-primary flex size-10 shrink-0 items-center justify-center rounded-full">
@@ -713,7 +713,7 @@ const CourseCurriculum = ({
             {groupedLessons.map((unit) => (
               <div key={unit.unitName}>
                 <div className="mb-2.5 flex items-center gap-2">
-                  <span className="font-caption-heading bg-text-main flex size-6 shrink-0 items-center justify-center rounded-[7px] text-[12px] font-extrabold text-white">
+                  <span className="font-caption-heading bg-text-main rounded-button flex size-6 shrink-0 items-center justify-center text-xs font-extrabold text-white">
                     {unit.unitName === '기타' ? '−' : unit.unitName.slice(0, 1)}
                   </span>
                   <span className="font-body2-heading text-text-main">
@@ -753,7 +753,7 @@ const CourseCurriculum = ({
 };
 
 const CurriculumEmpty = ({ text }: { text: string }) => (
-  <div className="border-line-line2 mt-5 flex flex-col items-center gap-2 rounded-[14px] border border-dashed bg-white p-7 text-center">
+  <div className="border-line-line2 rounded-card mt-5 flex flex-col items-center gap-2 border border-dashed bg-white p-7 text-center">
     <BookOpen
       size={20}
       className="text-key-color-primary"
@@ -765,17 +765,17 @@ const CurriculumEmpty = ({ text }: { text: string }) => (
 
 const CourseDetailSkeleton = () => (
   <div className="flex flex-col gap-6">
-    <div className="bg-gray-1 h-96 animate-pulse rounded-[20px]" />
+    <div className="bg-gray-1 rounded-section h-96 animate-pulse" />
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div className="flex flex-col gap-4">
         {Array.from({ length: 5 }).map((_, index) => (
           <div
             key={index}
-            className="bg-gray-1 h-32 animate-pulse rounded-[14px]"
+            className="bg-gray-1 rounded-card h-32 animate-pulse"
           />
         ))}
       </div>
-      <div className="bg-gray-1 h-60 animate-pulse rounded-[14px]" />
+      <div className="bg-gray-1 rounded-card h-60 animate-pulse" />
     </div>
   </div>
 );

@@ -80,7 +80,7 @@ export const SegmentCheckpointDialog = ({
         onOpenChange(open);
       }}
     >
-      <Dialog.Content className="z-[60] w-[420px] gap-4">
+      <Dialog.Content className="z-[60] w-105 gap-4">
         <Dialog.Header>
           <Dialog.Title className="text-text-main">
             30초 체크포인트
@@ -102,7 +102,7 @@ export const SegmentCheckpointDialog = ({
         ) : (
           <>
             {feedback === 'incorrect' && (
-              <div className="bg-system-warning-alt flex items-start gap-1.5 rounded-[8px] p-2.5">
+              <div className="bg-system-warning-alt rounded-button flex items-start gap-1.5 p-2.5">
                 <AlertCircle
                   size={14}
                   className="text-system-warning mt-0.5 shrink-0"
@@ -114,14 +114,14 @@ export const SegmentCheckpointDialog = ({
               </div>
             )}
             {enrollmentId == null && (
-              <div className="bg-gray-1 flex items-start gap-1.5 rounded-[8px] p-2.5">
+              <div className="bg-gray-1 rounded-button flex items-start gap-1.5 p-2.5">
                 <AlertCircle
                   size={14}
                   className="text-text-sub2 mt-0.5 shrink-0"
                 />
                 <span className="font-caption-normal text-text-sub2">
-                  수강 정보를 확인하지 못해 제출할 수 없어요. (백엔드 API
-                  갭 — 회장 확인 필요)
+                  수강 정보를 확인하지 못해 제출할 수 없어요. (백엔드 API 갭 —
+                  회장 확인 필요)
                 </span>
               </div>
             )}
@@ -141,7 +141,7 @@ export const SegmentCheckpointDialog = ({
                     aria-checked={selected}
                     onClick={() => setSelectedChoice(choice)}
                     className={cn(
-                      'border-line-line2 font-body2-heading rounded-[8px] border py-3 transition-colors',
+                      'border-line-line2 font-body2-heading rounded-button border py-3 transition-colors',
                       selected &&
                         'border-key-color-primary bg-orange-1 text-key-color-primary'
                     )}
@@ -169,7 +169,9 @@ export const SegmentCheckpointDialog = ({
             <Button
               size="medium"
               className="w-full"
-              disabled={selectedChoice == null || isPending || enrollmentId == null}
+              disabled={
+                selectedChoice == null || isPending || enrollmentId == null
+              }
               onClick={handleSubmit}
             >
               {isPending ? '채점 중…' : '제출하기'}

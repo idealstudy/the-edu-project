@@ -42,7 +42,7 @@ type TreeNodeButtonProps = {
  *  - 오렌지 강도 fill + 정복도 % 항상 표시
  *  - 반복 막힘 ⚠ 마커(노드 색은 안 바꿈)
  *  - 모의(자기신고) 옅은 "모의" 태그
- *  - 터치 타깃 ≥44px (-0)
+ *  - 터치 타깃 ≥44px (min-h-22)
  * ────────────────────────────────────────────────────*/
 export const TreeNodeButton = ({ node, onSelect }: TreeNodeButtonProps) => {
   const style = INTENSITY_STYLE[node.intensity];
@@ -52,7 +52,7 @@ export const TreeNodeButton = ({ node, onSelect }: TreeNodeButtonProps) => {
       type="button"
       onClick={() => onSelect(node)}
       className={cn(
-        '-0 rounded-card relative flex h-full flex-col justify-between p-4 text-left',
+        'rounded-card relative flex h-full min-h-22 flex-col justify-between p-4 text-left',
         'transition-transform duration-150 hover:scale-[1.02] active:scale-[0.99]',
         'focus-visible:ring-key-color-primary focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
         style.fill

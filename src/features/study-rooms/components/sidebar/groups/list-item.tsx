@@ -46,7 +46,7 @@ export const GroupListItem = ({
   return (
     <div
       className={cn(
-        'group desktop:max-w-[296px] hover:bg-gray-scale-gray-1 flex w-full cursor-pointer items-center justify-between gap-[10px] rounded-[8px] px-2 py-3',
+        'group desktop:max-w-74 hover:bg-gray-scale-gray-1 rounded-button flex w-full cursor-pointer items-center justify-between gap-2.5 px-2 py-3',
         selectedGroupId === group.id && 'text-key-color-primary'
       )}
       onClick={() => handleSelectGroup(group.id)}

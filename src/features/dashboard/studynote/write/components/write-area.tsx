@@ -22,7 +22,7 @@ const WriteArea = ({ isEditMode = false }: WriteAreaProps) => {
   const isPending = isEditMode ? isUpdateNotePending : isCreateNotePending;
 
   return (
-    <ColumnLayout.Right className="-0 border-line-line1 h-fit w-full rounded-xl border bg-white px-8 py-10">
+    <ColumnLayout.Right className="desktop:max-w-185 border-line-line1 h-fit w-full rounded-xl border bg-white px-8 py-10">
       <div className="flex w-full justify-between">
         <span>
           <div className="text-key-color-primary font-semibold">

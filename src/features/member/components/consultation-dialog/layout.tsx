@@ -27,7 +27,7 @@ export const ConsultationDialogLayout = ({
       isOpen={isOpen}
       onOpenChange={(open) => !open && onClose()}
     >
-      <Dialog.Content className="tablet:h-[80vh] tablet:max-w-[600px] desktop:h-[602px] desktop:w-[720px] desktop:max-w-[720px] h-[85vh] max-w-[calc(100%-2rem)] gap-0 overflow-y-hidden p-6">
+      <Dialog.Content className="tablet:h-[80vh] tablet:max-w-150 desktop:h-150.5 desktop:w-180 desktop:max-w-180 h-[85vh] max-w-[calc(100%-2rem)] gap-0 overflow-y-hidden p-6">
         <Dialog.Header className="mb-5">
           <div className="flex items-center justify-between gap-3">
             <Dialog.Title className="min-w-0 flex-1">{title}</Dialog.Title>

@@ -12,7 +12,10 @@ type ChallengeDifficulty = RecommendedChallengeItem['difficulty'];
 
 // 카드 본체와 동일한 토큰 규칙: 과목은 중립 그레이 칩,
 // 난이도는 오렌지 강도 한 축. (challenge-card.tsx와 일관)
-const SUBJECT_CONFIG: Record<ChallengeSubject, { label: string; bgClass: string }> = {
+const SUBJECT_CONFIG: Record<
+  ChallengeSubject,
+  { label: string; bgClass: string }
+> = {
   MATH: { label: '수학', bgClass: 'bg-orange-1' },
   KOREAN: { label: '국어', bgClass: 'bg-gray-1' },
   ENGLISH: { label: '영어', bgClass: 'bg-gray-1' },
@@ -51,7 +54,7 @@ export const RecommendedChallengeCard = ({
         {/* 문제 미리보기 */}
         <div
           className={cn(
-            'relative flex min-h-[200px] items-center justify-center rounded-xl p-6 md:w-[320px] md:shrink-0',
+            'relative flex min-h-50 items-center justify-center rounded-xl p-6 md:w-80 md:shrink-0',
             challenge.questionImageUrl ? 'bg-white' : subjectConfig.bgClass
           )}
         >
@@ -74,11 +77,11 @@ export const RecommendedChallengeCard = ({
               alt={challenge.sourceText}
               width={300}
               height={180}
-              className="max-h-[200px] object-contain"
+              className="max-h-50 object-contain"
             />
           ) : (
-            <div className="flex h-[200px] w-full items-center justify-center">
-              <div className="border-line-line2 relative h-full w-full max-w-[300px] rotate-[-1deg] overflow-hidden rounded-sm border bg-white px-6 py-4 shadow-sm">
+            <div className="flex h-50 w-full items-center justify-center">
+              <div className="border-line-line2 relative h-full w-full max-w-75 rotate-[-1deg] overflow-hidden rounded-sm border bg-white px-6 py-4 shadow-sm">
                 <div className="border-line-line1 absolute inset-x-0 top-8 border-t" />
                 <div className="border-line-line1 absolute inset-x-0 top-16 border-t" />
                 <div className="border-line-line1 absolute inset-x-0 top-24 border-t" />
@@ -97,26 +100,26 @@ export const RecommendedChallengeCard = ({
 
         {/* 추천 메타 + CTA */}
         <div className="flex flex-1 flex-col">
-          <p className="text-orange-8 flex items-center gap-1.5 font-label-heading">
+          <p className="text-orange-8 font-label-heading flex items-center gap-1.5">
             <Sparkles size={16} />
             오늘의 추천 1문제
           </p>
 
-          <h2 className="text-text-main mt-2 line-clamp-2 font-title-heading">
+          <h2 className="text-text-main font-title-heading mt-2 line-clamp-2">
             {challenge.title}
           </h2>
-          <p className="text-gray-8 mt-1 font-body2-normal">
+          <p className="text-gray-8 font-body2-normal mt-1">
             {challenge.sourceText}
           </p>
 
           {/* 추천 사유 한 줄 */}
-          <p className="text-orange-8 mt-4 inline-flex w-fit items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 font-body2-heading">
+          <p className="text-orange-8 font-body2-heading mt-4 inline-flex w-fit items-center gap-1.5 rounded-lg bg-white px-3 py-1.5">
             <Flame size={15} />
             {challenge.recommendReason}
           </p>
 
           {/* 오답률 · 통과율 · 참여자 */}
-          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 font-body2-normal">
+          <div className="font-body2-normal mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
             <span className="text-text-main">
               오답률{' '}
               <span className="text-orange-8 font-body2-heading tabular-nums">
@@ -144,7 +147,7 @@ export const RecommendedChallengeCard = ({
             <Button
               size="large"
               asChild
-              className="w-full shadow-[0_5px_0_var(--orange-10)] active:translate-y-[2px] active:shadow-[0_3px_0_var(--orange-10)] md:w-auto"
+              className="w-full shadow-[0_5px_0_var(--orange-10)] active:translate-y-0.5 active:shadow-[0_3px_0_var(--orange-10)] md:w-auto"
             >
               <Link
                 href={PUBLIC.OPEN_CHALLENGE.DETAIL(challenge.id)}

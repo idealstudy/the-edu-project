@@ -46,7 +46,7 @@ export const ParentHomeworkDetail = ({
         dispatch={dispatch}
       />
 
-      <ColumnLayout.Right className="desktop:min-w-[740px] flex w-full flex-col gap-3 rounded-[12px]">
+      <ColumnLayout.Right className="desktop:min-w-185 rounded-card flex w-full flex-col gap-3">
         <StudentHomeworkContent
           content={homework.resolvedContent?.content ?? homework.content ?? '-'}
           authorName={homework.teacherName ?? '-'}

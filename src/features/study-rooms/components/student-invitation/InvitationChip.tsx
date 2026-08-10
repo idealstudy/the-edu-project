@@ -19,7 +19,7 @@ export const InvitationChip = ({
     <li
       role="listitem"
       aria-label={`${name}${guardianCount > 0 ? `, 보호자 ${guardianCount}` : ''}`}
-      className="bg-line-line1/60 text-md inline-flex w-fit items-center gap-2 rounded-md border border-gray-300 px-3 py-[4px]"
+      className="bg-line-line1/60 text-md inline-flex w-fit items-center gap-2 rounded-md border border-gray-300 px-3 py-1"
     >
       <p className="text-md font-medium text-gray-900">{name}</p>
 
@@ -29,7 +29,7 @@ export const InvitationChip = ({
           className="text-system-warning flex items-center gap-2"
         >
           <span
-            className="text-[10px] leading-[0]"
+            className="text-ui-compact leading-[0]"
             aria-hidden="true"
           >
             ●

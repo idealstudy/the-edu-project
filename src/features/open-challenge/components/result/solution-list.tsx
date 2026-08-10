@@ -96,7 +96,7 @@ export const SolutionList = ({
           <p className="font-body1-heading text-text-main">
             먼저 문제를 풀어야 볼 수 있어요
           </p>
-          <p className="font-body2-normal text-gray-8 max-w-[320px] text-sm leading-relaxed text-balance">
+          <p className="font-body2-normal text-gray-8 max-w-80 text-sm leading-relaxed text-balance">
             풀고 나면 다른 학생들의 손글씨 풀이와 베스트 풀이를 확인할 수
             있어요.
           </p>
@@ -150,19 +150,19 @@ export const SolutionList = ({
           onValueChange={(value) => onSortChange(value as ChallengeReviewSort)}
         >
           <Select.Trigger
-            className="border-line-line2 font-label-normal h-[36px] w-auto min-w-[90px] rounded-[8px] px-3 pr-8 text-sm whitespace-nowrap focus:ring-0 focus:outline-none"
+            className="border-line-line2 font-label-normal rounded-button h-9 w-auto min-w-22.5 px-3 pr-8 text-sm whitespace-nowrap focus:ring-0 focus:outline-none"
             placeholder="추천순"
           />
           <Select.Content>
             <Select.Option
               value="recommend"
-              className="font-body2-normal flex h-[32px] w-full items-center justify-center border-b-0 text-center"
+              className="font-body2-normal flex h-8 w-full items-center justify-center border-b-0 text-center"
             >
               추천순
             </Select.Option>
             <Select.Option
               value="latest"
-              className="font-body2-normal flex h-[32px] w-full items-center justify-center border-b-0 text-center"
+              className="font-body2-normal flex h-8 w-full items-center justify-center border-b-0 text-center"
             >
               최신순
             </Select.Option>
@@ -216,7 +216,7 @@ export const SolutionList = ({
                       {solution.isCorrect !== null && (
                         <span
                           className={cn(
-                            'rounded-full px-2 py-0.5 text-[11px] font-bold',
+                            'text-ui-choice rounded-full px-2 py-0.5 font-bold',
                             solution.isCorrect
                               ? 'bg-system-success/10 text-system-success'
                               : 'bg-orange-1 text-orange-10'
@@ -226,7 +226,7 @@ export const SolutionList = ({
                         </span>
                       )}
                       {isDrawing && (
-                        <span className="bg-orange-1 text-orange-10 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold">
+                        <span className="bg-orange-1 text-orange-10 text-ui-choice inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-semibold">
                           <PencilLine size={11} />
                           손글씨
                         </span>
@@ -323,7 +323,7 @@ export const SolutionList = ({
           !open && !isWithdrawPending && setWithdrawTarget(null)
         }
       >
-        <Dialog.Content className="w-full max-w-[400px] gap-5 p-6 text-center">
+        <Dialog.Content className="w-full max-w-100 gap-5 p-6 text-center">
           <Dialog.Header>
             <Dialog.Title className="text-text-main text-lg font-bold">
               이 풀이를 내릴까요?

@@ -18,7 +18,7 @@ const TABS_CONFIG = [
 ];
 
 const baseCls =
-  'relative flex h-[55px] min-w-[110px] md:min-w-[150px] items-center justify-center gap-2 rounded-t-[12px] border px-5 text-lg transition-colors';
+  'relative flex h-13.75 min-w-27.5 md:min-w-37.5 items-center justify-center gap-2 rounded-t-card border px-5 text-lg transition-colors';
 
 export const StudyNoteTab = ({ studyRoomId, mode, path }: Props) => {
   return (

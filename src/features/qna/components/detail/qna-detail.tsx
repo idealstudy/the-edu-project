@@ -94,7 +94,7 @@ export function QuestionDetail({ studyRoomId, contextId, studentId }: Props) {
 
   return (
     <>
-      <ColumnLayout.Left className="rounded-[12px] bg-white">
+      <ColumnLayout.Left className="rounded-card bg-white">
         <div className="border-line-line1 flex flex-col gap-5 rounded-xl border bg-white p-10">
           <span
             className={cn(
@@ -116,7 +116,7 @@ export function QuestionDetail({ studyRoomId, contextId, studentId }: Props) {
                 width={14}
                 height={14}
                 alt="study-notes"
-                className="h-[14px] w-[14px]"
+                className="h-3.5 w-3.5"
               />
               <span>연결 수업노트</span>
             </div>
@@ -147,7 +147,7 @@ export function QuestionDetail({ studyRoomId, contextId, studentId }: Props) {
                 width={14}
                 height={14}
                 alt="study-notes"
-                className="h-[14px] w-[14px]"
+                className="h-3.5 w-3.5"
               />
               <span>공개범위</span>
             </div>
@@ -155,7 +155,7 @@ export function QuestionDetail({ studyRoomId, contextId, studentId }: Props) {
           </div>
         </div>
       </ColumnLayout.Left>
-      <ColumnLayout.Right className="desktop:min-w-[740px] flex h-[400px] w-full flex-col gap-3 rounded-[12px]">
+      <ColumnLayout.Right className="desktop:min-w-185 rounded-card flex h-100 w-full flex-col gap-3">
         {qnaDetail?.messages.map(
           (msg: {
             authorType: string;

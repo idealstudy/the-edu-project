@@ -635,7 +635,7 @@ export const ChallengeSolveClient = ({
                       alt={`${challenge.topic} 문제 이미지`}
                       width={760}
                       height={420}
-                      className="max-h-[420px] w-full object-contain"
+                      className="max-h-105 w-full object-contain"
                     />
                   </div>
                 )}
@@ -756,7 +756,7 @@ export const ChallengeSolveClient = ({
         isOpen={isMobileAiOpen}
         onOpenChange={setIsMobileAiOpen}
       >
-        <Dialog.Content className="h-[82vh] w-full max-w-[calc(100%-2rem)] gap-3 p-4 sm:max-w-[480px]">
+        <Dialog.Content className="h-[82vh] w-full max-w-[calc(100%-2rem)] gap-3 p-4 sm:max-w-120">
           <Dialog.Header>
             <div className="flex items-center justify-between gap-3">
               <Dialog.Title className="text-text-main text-base font-bold">
@@ -818,7 +818,7 @@ export const ChallengeSolveClient = ({
         isOpen={isLoginDialogOpen}
         onOpenChange={setIsLoginDialogOpen}
       >
-        <Dialog.Content className="w-full max-w-[360px] gap-5 p-6 text-center">
+        <Dialog.Content className="w-full max-w-90 gap-5 p-6 text-center">
           <Dialog.Header className="items-center">
             <div className="bg-orange-1 flex h-14 w-14 items-center justify-center rounded-full">
               <Bot

@@ -228,7 +228,7 @@ export const DashboardSidebar = () => {
               <Sidebar.Item
                 href={PRIVATE.ADMIN.MEMBERS.LIST}
                 matchPath={PRIVATE.ADMIN.MEMBERS.LIST}
-                className="-0 h-12 items-center justify-start"
+                className="h-12 items-center justify-start gap-0.5"
               >
                 <Users size={20} />
                 <Sidebar.Text className="font-body2-normal">
@@ -240,7 +240,7 @@ export const DashboardSidebar = () => {
               <Sidebar.Item
                 href={PRIVATE.ADMIN.COLUMN.LIST}
                 matchPath={PRIVATE.ADMIN.COLUMN.LIST}
-                className="-0 h-12 items-center justify-start"
+                className="h-12 items-center justify-start gap-0.5"
               >
                 <ListIcon />
                 <Sidebar.Text className="font-body2-normal">
@@ -252,7 +252,7 @@ export const DashboardSidebar = () => {
               <Sidebar.Item
                 href={PRIVATE.ADMIN.OPEN_CHALLENGE.LIST}
                 matchPath={PRIVATE.ADMIN.OPEN_CHALLENGE.LIST}
-                className="-0 h-12 items-center justify-start"
+                className="h-12 items-center justify-start gap-0.5"
               >
                 <ListIcon />
                 <Sidebar.Text className="font-body2-normal">

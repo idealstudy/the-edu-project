@@ -29,10 +29,7 @@ export const FriendRequestForm = () => {
     return () => window.clearTimeout(timer);
   }, [keyword]);
 
-  const {
-    data: results,
-    isFetching,
-  } = useSearchMembersQuery(debounced, {
+  const { data: results, isFetching } = useSearchMembersQuery(debounced, {
     enabled: debounced.length > 0,
   });
 
@@ -42,7 +39,7 @@ export const FriendRequestForm = () => {
   };
 
   return (
-    <div className="border-line-line2 flex flex-col gap-4 rounded-[12px] border bg-white p-5">
+    <div className="border-line-line2 rounded-card flex flex-col gap-4 border bg-white p-5">
       <div className="flex flex-col gap-1">
         <h2 className="font-body1-heading text-text-main">친구 찾기</h2>
         <p className="font-caption-normal text-text-sub2">
@@ -102,7 +99,7 @@ const MemberRow = ({
   disabled: boolean;
   onRequest: () => void;
 }) => (
-  <li className="border-line-line2 flex items-center justify-between gap-3 rounded-[12px] border px-4 py-3">
+  <li className="border-line-line2 rounded-card flex items-center justify-between gap-3 border px-4 py-3">
     <div className="flex min-w-0 items-center gap-3">
       <span className="bg-orange-1 text-key-color-primary flex size-10 shrink-0 items-center justify-center rounded-full">
         <UserPlus size={18} />
@@ -138,10 +135,7 @@ const PhoneNumberFallback = () => {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (!isValid || isPending) return;
-    mutate(
-      { phoneNumber: digits },
-      { onSuccess: () => setValue('') }
-    );
+    mutate({ phoneNumber: digits }, { onSuccess: () => setValue('') });
   };
 
   return (

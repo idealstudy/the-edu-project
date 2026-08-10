@@ -70,7 +70,7 @@ export const SocialSelectRole = () => {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <h1 className="text-gray-black tablet:mt-[117px] tablet:mb-[57px] tablet:text-[32px] mt-[57px] mb-[27px] text-[24px] font-bold">
+      <h1 className="text-gray-black tablet:mt-29.25 tablet:mb-14.25 tablet:font-title-heading mt-14.25 mb-6.75 text-2xl font-bold">
         <span className="text-orange-7">프로필</span> 만들기
       </h1>
       <ProfileForm

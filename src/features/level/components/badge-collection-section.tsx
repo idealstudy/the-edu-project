@@ -12,7 +12,7 @@ import { useMyBadgesQuery } from '../hooks/use-level';
 const BadgeCell = ({ badge }: { badge: Badge }) => (
   <li
     className={cn(
-      'flex flex-col items-center gap-2 rounded-[12px] border p-4 text-center transition-colors',
+      'rounded-card flex flex-col items-center gap-2 border p-4 text-center transition-colors',
       badge.earned
         ? 'border-orange-3 bg-orange-1'
         : 'border-line-line1 bg-white'
@@ -97,14 +97,14 @@ export const BadgeCollectionSection = () => {
           {Array.from({ length: 4 }).map((_, index) => (
             <li
               key={index}
-              className="border-line-line1 bg-gray-1/40 h-[150px] animate-pulse rounded-[12px] border motion-reduce:animate-none"
+              className="border-line-line1 bg-gray-1/40 rounded-card h-37.5 animate-pulse border motion-reduce:animate-none"
             />
           ))}
         </ul>
       )}
 
       {isError && !isLoading && (
-        <div className="border-line-line1 flex flex-col items-center gap-3 rounded-[12px] border bg-white py-12 text-center">
+        <div className="border-line-line1 rounded-card flex flex-col items-center gap-3 border bg-white py-12 text-center">
           <TriangleAlert
             size={28}
             className="text-system-warning"
@@ -116,7 +116,7 @@ export const BadgeCollectionSection = () => {
           <button
             type="button"
             onClick={() => refetch()}
-            className="bg-orange-7 font-label-heading flex h-11 items-center rounded-[8px] px-5 text-white"
+            className="bg-orange-7 font-label-heading rounded-button flex h-11 items-center px-5 text-white"
           >
             다시 시도
           </button>
@@ -124,7 +124,7 @@ export const BadgeCollectionSection = () => {
       )}
 
       {!isLoading && !isError && badges.length === 0 && (
-        <div className="border-line-line1 flex flex-col items-center gap-3 rounded-[12px] border border-dashed bg-white py-12 text-center">
+        <div className="border-line-line1 rounded-card flex flex-col items-center gap-3 border border-dashed bg-white py-12 text-center">
           <Award
             size={28}
             className="text-orange-7"
@@ -133,7 +133,7 @@ export const BadgeCollectionSection = () => {
           <p className="font-body2-heading text-text-main text-balance">
             아직 모을 수 있는 뱃지가 없어요.
           </p>
-          <p className="font-caption-normal text-text-sub1 max-w-[320px] text-balance">
+          <p className="font-caption-normal text-text-sub1 max-w-80 text-balance">
             문제를 제대로 풀어 가면 새로운 뱃지가 열려요.
           </p>
         </div>

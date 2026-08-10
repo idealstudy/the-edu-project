@@ -13,7 +13,7 @@ const TabsTrigger = ({ className, children, ...props }: TabsTriggerProps) => {
   return (
     <TabsPrimitives.Trigger
       className={cn(
-        'group border-line-line1 relative flex h-[55px] min-w-[170px] cursor-pointer items-center justify-center gap-2 rounded-t-[12px] border border-b-0 px-5',
+        'group border-line-line1 rounded-t-card relative flex h-13.75 min-w-42.5 cursor-pointer items-center justify-center gap-2 border border-b-0 px-5',
         'text-text-sub2 text-lg',
         'bg-transparent',
         '[&>svg]:text-text-inactive mock-[state=active]:[&>svg]:text-key-color-primary',
@@ -25,7 +25,7 @@ const TabsTrigger = ({ className, children, ...props }: TabsTriggerProps) => {
       {children}
       <span
         role="presentation"
-        className="bg-gray-scale-white absolute right-0 -bottom-[1px] left-0 hidden h-[1px] group-data-[state=active]:flex"
+        className="bg-gray-scale-white absolute right-0 -bottom-0.25 left-0 hidden h-0.25 group-data-[state=active]:flex"
       />
     </TabsPrimitives.Trigger>
   );

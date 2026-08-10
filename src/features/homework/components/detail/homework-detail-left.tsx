@@ -175,7 +175,7 @@ export const HomeworkDetailLeft = ({
         homeworkId={homeworkId}
         onPushList={onPushList}
       />
-      <ColumnLayout.Left className="rounded-[12px] bg-white">
+      <ColumnLayout.Left className="rounded-card bg-white">
         <div className="border-line-line1 flex flex-col gap-5 rounded-xl border bg-white p-10">
           <div className="flex items-center justify-between">
             <span
@@ -202,7 +202,7 @@ export const HomeworkDetailLeft = ({
                     className="cursor-pointer"
                   />
                 </DropdownMenu.Trigger>
-                <DropdownMenu.Content className="flex min-w-[110px] flex-col items-stretch">
+                <DropdownMenu.Content className="flex min-w-27.5 flex-col items-stretch">
                   <DropdownMenu.Item
                     className="justify-center"
                     onClick={handleEdit}

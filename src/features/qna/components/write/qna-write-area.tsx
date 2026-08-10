@@ -130,13 +130,13 @@ const WriteArea = ({ studyRoomId }: Props) => {
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
-      <ColumnLayout.Right className="desktop:min-w-[740px] border-line-line1 h-fit w-full rounded-xl border bg-white px-8 py-10">
+      <ColumnLayout.Right className="desktop:min-w-185 border-line-line1 h-fit w-full rounded-xl border bg-white px-8 py-10">
         <div className="flex w-full justify-between">
           <span>
             <div className="text-key-color-primary font-semibold">
               질문 작성
             </div>
-            <h1 className="mt-2 text-[32px] font-bold">
+            <h1 className="font-title-heading mt-2 font-bold">
               어떤 궁금증이 <br /> 생겼나요?
             </h1>
           </span>
@@ -244,7 +244,7 @@ const WriteArea = ({ studyRoomId }: Props) => {
                   onValueChange={field.onChange}
                 >
                   <Select.Trigger
-                    className="w-[240px]"
+                    className="w-60"
                     placeholder="공개 범위 선택"
                   />
                   <Select.Content>
@@ -260,7 +260,7 @@ const WriteArea = ({ studyRoomId }: Props) => {
             />
 
             {visibility === 'STUDENT_AND_PARENT' && (
-              <Form.Description className="text-text-sub2 flex gap-x-[3px] text-sm">
+              <Form.Description className="text-text-sub2 flex gap-x-0.75 text-sm">
                 <Image
                   src="/common/info.svg"
                   alt="info-icon"
@@ -277,7 +277,7 @@ const WriteArea = ({ studyRoomId }: Props) => {
             <Button
               type="submit"
               disabled={isButtonDisabled}
-              className="w-[200px] rounded-sm"
+              className="w-50 rounded-sm"
             >
               {isSubmitting ? '등록 중...' : '작성하기'}
             </Button>

@@ -92,7 +92,7 @@ export const WriteFormArea = ({ studyRoomId, homeworkId }: Props) => {
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
-      <ColumnLayout.Right className="desktop:min-w-[740px] h-fit w-full">
+      <ColumnLayout.Right className="desktop:min-w-185 h-fit w-full">
         <div className="space-y-5">
           {/* 내용 */}
           <Form.Item error={!!errors.content}>
@@ -123,7 +123,7 @@ export const WriteFormArea = ({ studyRoomId, homeworkId }: Props) => {
             <Button
               type="submit"
               disabled={isButtonDisabled}
-              className="w-[200px] rounded-sm"
+              className="w-50 rounded-sm"
               data-testid="homework-submit-button"
             >
               작성하기

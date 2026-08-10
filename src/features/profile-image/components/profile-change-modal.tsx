@@ -71,7 +71,7 @@ export const ProfileChangeModal = ({
       isOpen={isOpen}
       onOpenChange={onOpenChange}
     >
-      <Dialog.Content className="w-[480px] max-w-[calc(100%-2rem)] gap-0 overflow-hidden rounded-[32px] border-none p-2 shadow-2xl">
+      <Dialog.Content className="w-120 max-w-[calc(100%-2rem)] gap-0 overflow-hidden rounded-3xl border-none p-2 shadow-2xl">
         <Dialog.Header className="border-gray-2 relative border-b px-6 pt-5 pb-4">
           <Dialog.Close
             aria-label="프로필 사진 추가 모달 닫기"

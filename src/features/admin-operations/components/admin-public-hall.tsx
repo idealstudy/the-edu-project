@@ -128,7 +128,7 @@ export const AdminPublicHall = () => {
       {hall.data && hall.data.postings.length === 0 && (
         <>
           <section
-            className="border-gray-3 rounded-row -0 border border-dashed bg-white px-6 text-center"
+            className="border-gray-3 rounded-row border border-dashed bg-white px-6 py-9.5 text-center"
             data-testid="admin-public-hall-empty"
           >
             <h2 className="text-sm font-extrabold">
@@ -145,7 +145,7 @@ export const AdminPublicHall = () => {
               variant="unstyled"
               size="none"
               type="button"
-              className="border-orange-11 bg-orange-10 -0 text-coach mt-4 rounded-lg border px-5 font-extrabold text-white"
+              className="border-orange-11 bg-orange-10 text-coach mt-4 min-h-11.5 rounded-lg border px-5 font-extrabold text-white"
               onClick={() => setShowForm(true)}
             >
               6월 학력평가로 게시하기

@@ -114,7 +114,7 @@ const VisibilitySection = () => {
       )}
 
       {isGuardianSelectable && (
-        <Form.Description className="text-text-sub2 -0 flex text-sm">
+        <Form.Description className="text-text-sub2 flex gap-x-0.75 text-sm">
           <Image
             src="/common/info.svg"
             alt="info-icon"

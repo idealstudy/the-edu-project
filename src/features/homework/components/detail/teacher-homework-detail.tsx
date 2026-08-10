@@ -40,7 +40,7 @@ export const TeacherHomeworkDetail = ({
         dispatch={dispatch}
       />
 
-      <ColumnLayout.Right className="desktop:max-w-[740px] flex w-full flex-col gap-3 rounded-[12px]">
+      <ColumnLayout.Right className="desktop:max-w-185 rounded-card flex w-full flex-col gap-3">
         {/* 선생님이 낸 과제 */}
         <TeacherHomeworkContent
           content={

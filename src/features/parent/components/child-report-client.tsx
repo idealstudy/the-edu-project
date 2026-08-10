@@ -48,12 +48,12 @@ export const ChildReportClient = ({ childId }: ChildReportClientProps) => {
   if (isLoading) {
     return (
       <div className="flex flex-col gap-6">
-        <div className="bg-gray-1/40 h-9 w-40 animate-pulse rounded-[8px] motion-reduce:animate-none" />
+        <div className="bg-gray-1/40 rounded-button h-9 w-40 animate-pulse motion-reduce:animate-none" />
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {Array.from({ length: 3 }).map((_, index) => (
             <div
               key={index}
-              className="border-line-line1 bg-gray-1/40 h-[160px] animate-pulse rounded-[12px] border motion-reduce:animate-none"
+              className="border-line-line1 bg-gray-1/40 rounded-card h-40 animate-pulse border motion-reduce:animate-none"
             />
           ))}
         </div>
@@ -63,7 +63,7 @@ export const ChildReportClient = ({ childId }: ChildReportClientProps) => {
 
   if (isError || !data) {
     return (
-      <div className="border-line-line1 flex flex-col items-center gap-3 rounded-[12px] border bg-white py-14 text-center">
+      <div className="border-line-line1 rounded-card flex flex-col items-center gap-3 border bg-white py-14 text-center">
         <TriangleAlert
           size={28}
           className="text-system-warning"
@@ -72,21 +72,21 @@ export const ChildReportClient = ({ childId }: ChildReportClientProps) => {
         <p className="font-body2-heading text-text-main">
           리포트를 불러오지 못했어요.
         </p>
-        <p className="font-caption-normal text-text-sub1 max-w-[360px] text-balance">
+        <p className="font-caption-normal text-text-sub1 max-w-90 text-balance">
           연결되지 않은 자녀이거나 일시적인 오류일 수 있어요.
         </p>
         <div className="mt-1 flex gap-2">
           <button
             type="button"
             onClick={() => router.back()}
-            className="border-line-line1 font-label-heading text-text-sub1 flex h-11 items-center rounded-[8px] border px-5"
+            className="border-line-line1 font-label-heading text-text-sub1 rounded-button flex h-11 items-center border px-5"
           >
             돌아가기
           </button>
           <button
             type="button"
             onClick={() => refetch()}
-            className="bg-orange-7 font-label-heading flex h-11 items-center rounded-[8px] px-5 text-white"
+            className="bg-orange-7 font-label-heading rounded-button flex h-11 items-center px-5 text-white"
           >
             다시 시도
           </button>
@@ -122,15 +122,15 @@ export const ChildReportClient = ({ childId }: ChildReportClientProps) => {
 
       {/* 기간 내 활동 없음 — graceful 빈 상태 */}
       {!hasActivity && (
-        <div className="border-line-line1 bg-orange-1/40 flex items-start gap-3 rounded-[12px] border p-5">
+        <div className="border-line-line1 bg-orange-1/40 rounded-card flex items-start gap-3 border p-5">
           <Sparkles
             size={20}
             className="text-orange-7 mt-0.5 shrink-0"
             aria-hidden
           />
           <p className="font-caption-normal text-text-sub1 leading-relaxed">
-            이 기간에는 아직 완료한 문제가 없어요. 한 문제씩 풀어 가면 고민시간과
-            학습 흐름이 이곳에 쌓여요.
+            이 기간에는 아직 완료한 문제가 없어요. 한 문제씩 풀어 가면
+            고민시간과 학습 흐름이 이곳에 쌓여요.
           </p>
         </div>
       )}
@@ -179,7 +179,7 @@ export const ChildReportClient = ({ childId }: ChildReportClientProps) => {
 
       {/* D2 예상 등급 범위 — "범위"로만, 단정 금지 */}
       <section
-        className="border-line-line1 flex flex-col gap-2 rounded-[12px] border bg-white p-5"
+        className="border-line-line1 rounded-card flex flex-col gap-2 border bg-white p-5"
         aria-label="예상 등급 범위"
       >
         <div className="flex items-center gap-2">
@@ -192,7 +192,7 @@ export const ChildReportClient = ({ childId }: ChildReportClientProps) => {
             예상 등급 범위
           </span>
         </div>
-        <p className="font-title-heading text-text-main tabular-nums text-balance">
+        <p className="font-title-heading text-text-main text-balance tabular-nums">
           {data.expectedGradeRange}
         </p>
         <p className="font-caption-normal text-text-sub2 leading-relaxed">

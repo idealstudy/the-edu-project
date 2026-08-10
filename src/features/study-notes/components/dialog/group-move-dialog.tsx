@@ -122,7 +122,7 @@ export const GroupMoveDialog = ({
       isOpen={open}
       onOpenChange={() => dispatch({ type: 'CLOSE' })}
     >
-      <Dialog.Content className="w-[598px]">
+      <Dialog.Content className="w-149.5">
         <Dialog.Header>
           <Dialog.Title>그룹 이동하기</Dialog.Title>
         </Dialog.Header>
@@ -171,7 +171,7 @@ export const GroupMoveDialog = ({
           <Dialog.Close asChild>
             <Button
               variant="outlined"
-              className="w-[120px]"
+              className="w-30"
               size="xsmall"
               onClick={() => dispatch({ type: 'CLOSE' })}
             >
@@ -179,7 +179,7 @@ export const GroupMoveDialog = ({
             </Button>
           </Dialog.Close>
           <Button
-            className="w-[120px]"
+            className="w-30"
             size="xsmall"
             onClick={handleSave}
           >

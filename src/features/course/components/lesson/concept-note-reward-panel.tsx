@@ -23,7 +23,7 @@ export const ConceptNoteRewardPanel = ({
   return (
     <div
       className={cn(
-        'flex items-center gap-3 rounded-[12px] border p-4',
+        'rounded-card flex items-center gap-3 border p-4',
         unlocked
           ? 'border-key-color-primary bg-orange-1'
           : 'border-line-line2 border-dashed bg-white'
@@ -32,7 +32,9 @@ export const ConceptNoteRewardPanel = ({
       <span
         className={cn(
           'flex size-10 shrink-0 items-center justify-center rounded-full',
-          unlocked ? 'bg-key-color-primary text-white' : 'bg-gray-1 text-text-inactive'
+          unlocked
+            ? 'bg-key-color-primary text-white'
+            : 'bg-gray-1 text-text-inactive'
         )}
       >
         {unlocked ? <Sparkles size={18} /> : <Lock size={18} />}

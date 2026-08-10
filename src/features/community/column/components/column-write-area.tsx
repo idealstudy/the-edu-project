@@ -341,7 +341,7 @@ export default function ColumnWriteArea({
         isOpen={showImageDialog}
         onOpenChange={setShowImageDialog}
       >
-        <Dialog.Content className="max-w-[400px] space-y-2 text-center">
+        <Dialog.Content className="max-w-100 space-y-2 text-center">
           <Dialog.Title>썸네일 이미지를 추가해주세요</Dialog.Title>
           <Dialog.Description className="">
             칼럼의 썸네일을 위해

@@ -34,9 +34,9 @@ const LIMIT_OPTIONS: Array<{ value: StudyNoteLimit; label: string }> = [
 
 const SELECT_STYLES = {
   trigger:
-    'border-line-line2 h-[36px] rounded-[8px] pr-8 pl-2 text-sm min-w-[110px] text-[var(--color-text-sub2)] whitespace-nowrap mock-[state=open]:border-line-line3 focus:ring-0 focus:outline-none px-3 font-label-normal',
+    'border-line-line2 h-9 rounded-button pr-8 pl-2 text-sm min-w-27.5 text-[var(--color-text-sub2)] whitespace-nowrap mock-[state=open]:border-line-line3 focus:ring-0 focus:outline-none px-3 font-label-normal',
   option:
-    'flex h-[32px] border-b-0 text-center w-full font-body2-normal justify-center items-center',
+    'flex h-8 border-b-0 text-center w-full font-body2-normal justify-center items-center',
 };
 
 export const StudyNoteSearchFilterBar = ({
@@ -51,7 +51,7 @@ export const StudyNoteSearchFilterBar = ({
 
   return (
     <div className="flex items-center justify-between gap-4">
-      <div className="flex gap-[10px]">
+      <div className="flex gap-2.5">
         <Select
           value={sort}
           onValueChange={onSortChange}
@@ -97,9 +97,9 @@ export const StudyNoteSearchFilterBar = ({
           </Select.Content>
         </Select>
       </div>
-      <div className="relative w-[234px]">
+      <div className="relative w-58.5">
         <Input
-          className="border-line-line1 font-body2-normal h-12 w-full rounded-[8px] pr-[42px] pl-4"
+          className="border-line-line1 font-body2-normal rounded-button h-12 w-full pr-10.5 pl-4"
           placeholder="검색어를 입력하세요"
           value={localSearch}
           onChange={(e) => setLocalSearch(e.target.value)}

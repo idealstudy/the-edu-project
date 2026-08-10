@@ -155,12 +155,12 @@ export const MyOpenChallengeDetailDialog = ({
                   className="border-key-color-primary bg-orange-1 flex flex-wrap items-center gap-3 rounded-xl border p-4"
                   data-testid="my-challenge-resume"
                 >
-                  <p className="font-body2-heading text-text-main min-w-[180px] flex-1">
+                  <p className="font-body2-heading text-text-main min-w-45 flex-1">
                     아직 제출하지 않은 풀이가 있어요. 이어서 풀 수 있습니다.
                   </p>
                   <Link
                     href={PUBLIC.OPEN_CHALLENGE.DETAIL(challengeId)}
-                    className="bg-key-color-primary font-label-heading flex h-11 items-center rounded-[8px] px-5 text-white"
+                    className="bg-key-color-primary font-label-heading rounded-button flex h-11 items-center px-5 text-white"
                   >
                     이어 풀기
                   </Link>
@@ -186,7 +186,7 @@ export const MyOpenChallengeDetailDialog = ({
                       alt={`${challenge.sourceText} 문제 이미지`}
                       width={640}
                       height={360}
-                      className="max-h-[320px] w-full object-contain"
+                      className="max-h-80 w-full object-contain"
                     />
                   </div>
                 )}

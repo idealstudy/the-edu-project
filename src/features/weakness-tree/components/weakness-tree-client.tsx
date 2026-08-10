@@ -89,7 +89,7 @@ export const WeaknessTreeClient = () => {
         <p className="font-body1-heading text-text-main text-balance">
           아직 채워진 지도가 없어요.
         </p>
-        <p className="font-body2-normal text-text-sub1 -0 text-balance">
+        <p className="font-body2-normal text-text-sub1 max-w-80 text-balance">
           첫 문제를 제대로 풀면 능선이 솟아오르기 시작해요.
         </p>
         <Link

@@ -182,7 +182,7 @@ export const AiCoachSettingsDialog = ({
         if (!nextIsOpen) onClose();
       }}
     >
-      <Dialog.Content className="w-full max-w-[560px] gap-6 p-6 sm:p-8">
+      <Dialog.Content className="w-full max-w-140 gap-6 p-6 sm:p-8">
         <Dialog.Header>
           <div className="flex items-start justify-between gap-4">
             <div>

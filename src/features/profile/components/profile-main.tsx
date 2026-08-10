@@ -60,7 +60,7 @@ export default function ProfileMain({
           )}
         </div>
       </ColumnLayout.Left>
-      <ColumnLayout.Right className="desktop:max-w-[740px] desktop:px-8">
+      <ColumnLayout.Right className="desktop:max-w-185 desktop:px-8">
         <div className="flex flex-col gap-3">{sections}</div>
       </ColumnLayout.Right>
     </>

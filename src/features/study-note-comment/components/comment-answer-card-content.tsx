@@ -103,7 +103,7 @@ export const CommentAnswerCardContent = ({
 
   if (isEditing) {
     return (
-      <div className="min-h-[154px] space-y-3">
+      <div className="min-h-38.5 space-y-3">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <div className="border-gray-12 h-9 w-9 shrink-0 overflow-hidden rounded-full border">
@@ -129,13 +129,13 @@ export const CommentAnswerCardContent = ({
             <Button
               variant="outlined"
               onClick={onCancel}
-              className="font-label-normal disabled:font-label-normal h-[35px] shrink-0 px-6 py-2"
+              className="font-label-normal disabled:font-label-normal h-8.75 shrink-0 px-6 py-2"
             >
               취소
             </Button>
             <Button
               disabled={isSubmitDisabled}
-              className="font-label-normal disabled:font-label-normal h-[35px] shrink-0 px-6 py-2"
+              className="font-label-normal disabled:font-label-normal h-8.75 shrink-0 px-6 py-2"
               onClick={onClick}
             >
               {updating ? '수정 중...' : '수정 완료'}

@@ -61,7 +61,7 @@ export const AdminStudyRooms = () => {
             key={value}
             type="button"
             className={cn(
-              '-0 flex items-center gap-2 rounded-lg border px-3 text-xs font-bold',
+              'flex min-h-10.5 items-center gap-2 rounded-lg border px-3 text-xs font-bold',
               (state === undefined && value === 'ACTIVE') || state === value
                 ? 'bg-orange-1 text-orange-11 border-orange-10'
                 : 'border-gray-3 text-gray-11 bg-white'
@@ -78,7 +78,7 @@ export const AdminStudyRooms = () => {
           </UnstyledButton>
         ))}
         <SearchInput
-          className="-0 flex-1 bg-white"
+          className="min-w-45 flex-1 bg-white"
           value={searchValue}
           onChange={setSearchValue}
           onSearch={(value) => setKeyword(value.trim())}
@@ -97,7 +97,7 @@ export const AdminStudyRooms = () => {
       )}
       {query.data && (
         <div className="border-gray-3 overflow-x-auto rounded-xl border bg-white px-2 py-1.5">
-          <table className="-0 w-full border-collapse text-left text-xs">
+          <table className="w-full min-w-190 border-collapse text-left text-xs">
             <thead>
               <tr className="text-gray-8 text-ui-compact">
                 {[

@@ -26,13 +26,15 @@ export const ExperienceStep = ({
   <div className="flex flex-col gap-4">
     <QuestionHeader title="한 문제만 풀어볼게요" />
 
-    <div className="border-line-line1 flex flex-col gap-4 rounded-[12px] border bg-white p-[18px]">
-      <span className="font-caption-heading w-fit rounded-full bg-background-orange px-2.5 py-1 text-orange-10">
+    <div className="border-line-line1 rounded-card flex flex-col gap-4 border bg-white p-4.5">
+      <span className="font-caption-heading bg-background-orange text-orange-10 w-fit rounded-full px-2.5 py-1">
         수학Ⅰ · 지수와 로그
       </span>
       <div className="font-body2-normal text-text-main leading-relaxed">
         <MathMarkdown
-          content={'$\\log_2 8 + \\log_3 \\frac{1}{9}$ 의 값은? (아래에서 골라요)'}
+          content={
+            '$\\log_2 8 + \\log_3 \\frac{1}{9}$ 의 값은? (아래에서 골라요)'
+          }
         />
       </div>
       <div className="flex flex-col gap-2">
@@ -45,7 +47,7 @@ export const ExperienceStep = ({
               aria-pressed={on}
               onClick={() => onSelectChoice(i)}
               className={cn(
-                'flex items-center gap-3 rounded-[8px] border px-3.5 py-3 text-left font-label-normal transition',
+                'rounded-button font-label-normal flex items-center gap-3 border px-3.5 py-3 text-left transition',
                 'focus-visible:ring-key-color-primary focus-visible:ring-2 focus-visible:outline-none',
                 on
                   ? 'border-key-color-primary bg-background-orange'
@@ -54,7 +56,7 @@ export const ExperienceStep = ({
             >
               <span
                 className={cn(
-                  'flex size-[22px] shrink-0 items-center justify-center rounded-full border-[1.5px] font-caption-heading',
+                  'border-precision font-caption-heading flex size-5.5 shrink-0 items-center justify-center rounded-full',
                   on
                     ? 'border-key-color-primary bg-key-color-primary text-white'
                     : 'border-line-line2 text-text-sub2'
@@ -70,7 +72,7 @@ export const ExperienceStep = ({
     </div>
 
     {/* 코치 칩 — 정답 미제공 톤 */}
-    <div className="rounded-[12px] bg-background-orange px-4 py-3.5">
+    <div className="rounded-card bg-background-orange px-4 py-3.5">
       <p className="font-caption-heading text-orange-10 leading-snug">
         막히면 정답 대신 같이 생각해요. 어떤 게 필요해요?
       </p>

@@ -37,7 +37,7 @@ export default function WithdrawDialog({ isOpen, onClose }: Props) {
       isOpen={isOpen}
       onOpenChange={withdrawMutation.isPending ? undefined : handleClose}
     >
-      <Dialog.Content className="max-w-[600px] text-center">
+      <Dialog.Content className="max-w-150 text-center">
         {step === 'step1' && (
           <>
             <Dialog.Header>

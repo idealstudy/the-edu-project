@@ -161,7 +161,7 @@ export const CommentCard = ({
 
   const card = (
     <div
-      className={`border-gray-3 min-h-[154px] w-full rounded-sm border p-6 ${isStudent ? 'bg-gray-1' : 'bg-white'} ${className ?? ''}`}
+      className={`border-gray-3 min-h-38.5 w-full rounded-sm border p-6 ${isStudent ? 'bg-gray-1' : 'bg-white'} ${className ?? ''}`}
     >
       {!isEditing && (
         <CommentAnswerCardHeader

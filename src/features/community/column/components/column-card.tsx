@@ -11,10 +11,10 @@ export default function ColumnCard({ column }: { column: ColumnListItem }) {
   return (
     <Link
       href={PUBLIC.COMMUNITY.COLUMN.DETAIL(column.id)}
-      className="border-gray-3 rounded-xl border-[1.5px] bg-white"
+      className="border-gray-3 border-precision rounded-xl bg-white"
     >
       {/* 상단 영역 */}
-      <div className="bg-orange-1 relative h-[150px] rounded-t-xl">
+      <div className="bg-orange-1 relative h-37.5 rounded-t-xl">
         {column.thumbnailUrl && (
           <Image
             src={column.thumbnailUrl}

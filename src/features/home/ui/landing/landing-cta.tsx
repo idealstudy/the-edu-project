@@ -16,7 +16,12 @@ export function LandingCta() {
         'tablet:py-20'
       )}
     >
-      <h2 className={cn('font-headline1-heading text-balance text-white', 'tablet:font-title-heading')}>
+      <h2
+        className={cn(
+          'font-headline1-heading text-balance text-white',
+          'tablet:font-title-heading'
+        )}
+      >
         오늘의 한 문제부터.
       </h2>
       <p className="font-label-normal text-gray-5 tablet:font-body2-normal">
@@ -25,7 +30,7 @@ export function LandingCta() {
       <Button
         size="large"
         asChild
-        className="shadow-[0_5px_0_var(--orange-10)] active:translate-y-[2px] active:shadow-[0_3px_0_var(--orange-10)]"
+        className="shadow-[0_5px_0_var(--orange-10)] active:translate-y-0.5 active:shadow-[0_3px_0_var(--orange-10)]"
       >
         <Link
           href={PUBLIC.OPEN_CHALLENGE.LIST}

@@ -20,7 +20,7 @@ export const StudyroomClassLinksDeleteDialog = ({
       isOpen={isOpen}
       onOpenChange={onClose}
     >
-      <Dialog.Content className="tablet:max-w-[520px] max-w-[300px] gap-6">
+      <Dialog.Content className="tablet:max-w-130 max-w-75 gap-6">
         <div className="flex justify-end">
           <Dialog.Close
             className="text-gray-9 hover:text-gray-12 flex h-6 w-6 cursor-pointer items-center justify-center"
@@ -48,7 +48,7 @@ export const StudyroomClassLinksDeleteDialog = ({
           <Button
             variant="outlined"
             size="small"
-            className="tablet:h-[64px] tablet:font-headline2-heading flex-1"
+            className="tablet:h-16 tablet:font-headline2-heading flex-1"
             onClick={onClose}
           >
             취소
@@ -56,7 +56,7 @@ export const StudyroomClassLinksDeleteDialog = ({
           <Button
             variant="primary"
             size="small"
-            className="tablet:h-[64px] tablet:font-headline2-heading flex-1"
+            className="tablet:h-16 tablet:font-headline2-heading flex-1"
             onClick={onConfirm}
           >
             확인

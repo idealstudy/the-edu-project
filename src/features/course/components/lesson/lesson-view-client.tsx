@@ -47,8 +47,7 @@ export const LessonViewClient = ({ courseId }: { courseId: number }) => {
     useState<LessonSegment | null>(null);
 
   const selectedLessonLocked =
-    lessons?.find((lesson) => lesson.lessonId === selectedId)?.isLocked ??
-    true;
+    lessons?.find((lesson) => lesson.lessonId === selectedId)?.isLocked ?? true;
   // 세그먼트/체크포인트(frd-v2 §4, api-contract-v2 ⑦) — 잠긴 차시는 조회하지 않는다.
   const { data: segmentGroup } = useLessonSegmentsQuery(selectedId, {
     enabled: selectedId != null && !selectedLessonLocked,
@@ -81,7 +80,7 @@ export const LessonViewClient = ({ courseId }: { courseId: number }) => {
 
   if (isError) {
     return (
-      <div className="border-line-line2 flex flex-col items-center gap-3 rounded-[12px] border bg-white p-12 text-center">
+      <div className="border-line-line2 rounded-card flex flex-col items-center gap-3 border bg-white p-12 text-center">
         <p className="font-body2-normal text-text-sub1">
           차시를 불러오지 못했어요.
         </p>
@@ -98,7 +97,7 @@ export const LessonViewClient = ({ courseId }: { courseId: number }) => {
 
   if (!lessons || lessons.length === 0) {
     return (
-      <div className="border-line-line2 rounded-[12px] border border-dashed bg-white p-12 text-center">
+      <div className="border-line-line2 rounded-card border border-dashed bg-white p-12 text-center">
         <p className="font-body2-normal text-text-sub1">
           아직 등록된 차시가 없어요.
         </p>
@@ -118,7 +117,7 @@ export const LessonViewClient = ({ courseId }: { courseId: number }) => {
       {/* 차시 목록 */}
       <nav
         aria-label="차시 목록"
-        className="flex w-full flex-col gap-2 lg:w-[320px] lg:shrink-0"
+        className="flex w-full flex-col gap-2 lg:w-80 lg:shrink-0"
       >
         {lessons.map((lesson, index) => (
           <LessonRow
@@ -135,7 +134,7 @@ export const LessonViewClient = ({ courseId }: { courseId: number }) => {
       </nav>
 
       {/* 본문 / 잠금 */}
-      <section className="border-line-line2 flex min-w-0 flex-1 flex-col gap-5 rounded-[12px] border bg-white p-6">
+      <section className="border-line-line2 rounded-card flex min-w-0 flex-1 flex-col gap-5 border bg-white p-6">
         <header className="border-line-line2 flex flex-col gap-2 border-b pb-4">
           <span className="font-caption-normal text-text-sub2">
             {course?.title ?? '코스'}
@@ -163,7 +162,7 @@ export const LessonViewClient = ({ courseId }: { courseId: number }) => {
               />
             )}
 
-            <article className="min-h-[160px]">
+            <article className="min-h-40">
               {selected.contentRef && selected.contentRef.trim().length > 0 ? (
                 <MathMarkdown
                   content={selected.contentRef}
@@ -269,7 +268,7 @@ const LessonProblems = ({ problems }: { problems: LessonProblem[] }) => {
     return (
       <section
         aria-label="이 차시의 문제"
-        className="border-line-line2 rounded-[12px] border border-dashed p-5 text-center"
+        className="border-line-line2 rounded-card border border-dashed p-5 text-center"
       >
         <p className="font-caption-normal text-text-sub2">
           이 차시의 문제는 준비 중이거나 잠겨 있어요.
@@ -293,7 +292,7 @@ const LessonProblems = ({ problems }: { problems: LessonProblem[] }) => {
               <li key={problem.challengeId}>
                 <Link
                   href={PUBLIC.OPEN_CHALLENGE.DETAIL(problem.challengeId)}
-                  className="group border-line-line2 hover:border-key-color-primary flex items-center gap-3 rounded-[12px] border bg-white px-4 py-3 transition-colors"
+                  className="group border-line-line2 hover:border-key-color-primary rounded-card flex items-center gap-3 border bg-white px-4 py-3 transition-colors"
                 >
                   <span
                     className={cn(
@@ -326,14 +325,12 @@ const LockedPanel = ({
   isEnrolling: boolean;
   onEnroll: () => void;
 }) => (
-  <div className="flex min-h-[200px] flex-col items-center justify-center gap-3 text-center">
+  <div className="flex min-h-50 flex-col items-center justify-center gap-3 text-center">
     <span className="bg-gray-1 text-text-sub2 flex size-14 items-center justify-center rounded-full">
       <Lock size={26} />
     </span>
     <div className="flex flex-col gap-1">
-      <p className="font-body1-heading text-text-main">
-        수강 신청하면 열려요
-      </p>
+      <p className="font-body1-heading text-text-main">수강 신청하면 열려요</p>
       <p className="font-caption-normal text-text-sub2 text-balance">
         무료 맛보기 차시 이후 내용은 수강 신청 후 볼 수 있어요. 지금은 무료로
         등록할 수 있어요.
@@ -351,14 +348,14 @@ const LockedPanel = ({
 
 const LessonViewSkeleton = () => (
   <div className="flex flex-col gap-6 lg:flex-row">
-    <div className="flex w-full flex-col gap-2 lg:w-[320px]">
+    <div className="flex w-full flex-col gap-2 lg:w-80">
       {Array.from({ length: 5 }).map((_, index) => (
         <div
           key={index}
-          className="border-line-line2 bg-gray-1 h-16 animate-pulse rounded-[12px] border"
+          className="border-line-line2 bg-gray-1 rounded-card h-16 animate-pulse border"
         />
       ))}
     </div>
-    <div className="border-line-line2 bg-gray-1 h-80 flex-1 animate-pulse rounded-[12px] border" />
+    <div className="border-line-line2 bg-gray-1 rounded-card h-80 flex-1 animate-pulse border" />
   </div>
 );

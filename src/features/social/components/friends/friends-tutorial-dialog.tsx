@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react';
 import { Button, Dialog } from '@/shared/components/ui';
 import { cn } from '@/shared/lib';
 import {
-  type LucideIcon,
   ChevronLeft,
+  type LucideIcon,
   ShieldCheck,
   Swords,
   Trophy,
@@ -86,7 +86,7 @@ const FriendsTutorialDialog = ({
         if (!open) onClose();
       }}
     >
-      <Dialog.Content className="w-full max-w-[420px] gap-6 p-7">
+      <Dialog.Content className="w-full max-w-105 gap-6 p-7">
         <Dialog.Header className="items-center text-center">
           <div className="bg-orange-1 flex h-20 w-20 items-center justify-center rounded-full">
             <StepIcon
@@ -110,9 +110,7 @@ const FriendsTutorialDialog = ({
               key={index}
               className={cn(
                 'h-2 rounded-full transition-all',
-                index === stepIndex
-                  ? 'bg-orange-7 w-5'
-                  : 'bg-gray-3 w-2'
+                index === stepIndex ? 'bg-orange-7 w-5' : 'bg-gray-3 w-2'
               )}
             />
           ))}

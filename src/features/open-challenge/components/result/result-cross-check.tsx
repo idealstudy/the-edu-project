@@ -43,7 +43,7 @@ export const ResultCrossCheck = ({
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
       {/* 좌: 문제 + 내가 고른 답 vs 정답 */}
       <section
-        className="border-line-line2 flex flex-col gap-4 rounded-[12px] border bg-white p-5"
+        className="border-line-line2 rounded-card flex flex-col gap-4 border bg-white p-5"
         aria-label="문제와 내 답 비교"
       >
         <h2 className="font-body1-heading text-text-main">문제</h2>
@@ -121,7 +121,7 @@ export const ResultCrossCheck = ({
 
       {/* 우: 해설 */}
       <section
-        className="border-line-line2 flex flex-col gap-3 rounded-[12px] border bg-white p-5"
+        className="border-line-line2 rounded-card flex flex-col gap-3 border bg-white p-5"
         aria-label="정답 해설"
       >
         <div className="flex items-center gap-2">

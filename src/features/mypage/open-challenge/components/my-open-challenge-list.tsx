@@ -101,7 +101,7 @@ export const MyOpenChallengeList = () => {
                         className="hover:bg-gray-scale-gray-5 cursor-pointer rounded"
                       />
                     </DropdownMenu.Trigger>
-                    <DropdownMenu.Content className="w-[132px] justify-center">
+                    <DropdownMenu.Content className="w-33 justify-center">
                       <DropdownMenu.Item asChild>
                         <Link
                           href={PUBLIC.OPEN_CHALLENGE.DETAIL(

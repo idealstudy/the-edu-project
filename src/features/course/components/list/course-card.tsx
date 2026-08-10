@@ -14,10 +14,10 @@ export const CourseCard = ({ course }: { course: CourseListItem }) => (
   <Link
     href={PUBLIC.COURSE.DETAIL(course.courseId)}
     data-testid="course-card"
-    className="border-line-line2 hover:border-key-color-primary group flex flex-col gap-4 rounded-[12px] border bg-white p-5 transition-colors"
+    className="border-line-line2 hover:border-key-color-primary group rounded-card flex flex-col gap-4 border bg-white p-5 transition-colors"
   >
     <div className="flex items-start justify-between gap-3">
-      <span className="bg-orange-1 text-key-color-primary flex size-11 shrink-0 items-center justify-center rounded-[12px]">
+      <span className="bg-orange-1 text-key-color-primary rounded-card flex size-11 shrink-0 items-center justify-center">
         <BookOpen size={22} />
       </span>
       <StatusBadge
@@ -38,13 +38,13 @@ export const CourseCard = ({ course }: { course: CourseListItem }) => (
     </div>
 
     <div className="flex flex-wrap gap-1.5">
-      <span className="font-caption-normal text-text-sub1 bg-gray-1 rounded-[6px] px-2 py-1">
+      <span className="font-caption-normal text-text-sub1 bg-gray-1 rounded-focus px-2 py-1">
         인강+개념노트
       </span>
-      <span className="font-caption-normal text-text-sub1 bg-gray-1 rounded-[6px] px-2 py-1">
+      <span className="font-caption-normal text-text-sub1 bg-gray-1 rounded-focus px-2 py-1">
         매일 3제
       </span>
-      <span className="font-caption-normal text-text-sub1 bg-gray-1 rounded-[6px] px-2 py-1">
+      <span className="font-caption-normal text-text-sub1 bg-gray-1 rounded-focus px-2 py-1">
         50~100일
       </span>
     </div>

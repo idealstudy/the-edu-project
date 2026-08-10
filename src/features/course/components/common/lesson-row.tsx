@@ -35,13 +35,15 @@ export const LessonRow = ({
   /** durationSec=null·thumbnailUrl=null = 영상이 아니라 문제풀이 Day(lesson_problem 연결). */
   const isProblemSession = lesson.durationSec == null;
   const problemCountLabel =
-    lesson.problems.length > 0 ? `문제 ${lesson.problems.length}제` : '문제풀이';
+    lesson.problems.length > 0
+      ? `문제 ${lesson.problems.length}제`
+      : '문제풀이';
 
   const content = (
     <>
       <span
         className={cn(
-          'relative flex h-11 w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-[8px]',
+          'rounded-button relative flex h-11 w-18 shrink-0 items-center justify-center overflow-hidden',
           isProblemSession
             ? lesson.isLocked
               ? 'bg-gray-1'
@@ -52,7 +54,9 @@ export const LessonRow = ({
         {isProblemSession ? (
           <NotebookPen
             size={20}
-            className={lesson.isLocked ? 'text-text-sub2' : 'text-key-color-primary'}
+            className={
+              lesson.isLocked ? 'text-text-sub2' : 'text-key-color-primary'
+            }
           />
         ) : lesson.thumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element -- 외부 CDN 썸네일, 다수(23강) 목록 최적화 불필요
@@ -78,12 +82,12 @@ export const LessonRow = ({
           </span>
         )}
         {isProblemSession ? (
-          <span className="font-caption-normal absolute bottom-0.5 right-0.5 rounded bg-black/70 px-1 text-[10px] leading-tight text-white">
+          <span className="font-caption-normal text-ui-compact absolute right-0.5 bottom-0.5 rounded bg-black/70 px-1 leading-tight text-white">
             {problemCountLabel}
           </span>
         ) : (
           durationLabel && (
-            <span className="font-caption-normal absolute bottom-0.5 right-0.5 rounded bg-black/70 px-1 text-[10px] leading-tight text-white">
+            <span className="font-caption-normal text-ui-compact absolute right-0.5 bottom-0.5 rounded bg-black/70 px-1 leading-tight text-white">
               {durationLabel}
             </span>
           )
@@ -128,11 +132,13 @@ export const LessonRow = ({
   );
 
   const baseClassName = cn(
-    'flex w-full items-center gap-3 rounded-[12px] border px-4 py-3 text-left',
+    'flex w-full items-center gap-3 rounded-card border px-4 py-3 text-left',
     isActive
       ? 'border-key-color-primary bg-orange-1'
       : 'border-line-line2 bg-white',
-    interactive && !lesson.isLocked && 'hover:border-key-color-primary cursor-pointer',
+    interactive &&
+      !lesson.isLocked &&
+      'hover:border-key-color-primary cursor-pointer',
     interactive && lesson.isLocked && 'cursor-not-allowed'
   );
 

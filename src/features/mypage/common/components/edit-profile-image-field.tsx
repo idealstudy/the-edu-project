@@ -24,7 +24,7 @@ export default function EditProfileImageField({
   profileImageUrl,
 }: EditProfileImageFieldProps) {
   return (
-    <div className="relative mx-auto h-[280px] w-[280px]">
+    <div className="relative mx-auto h-70 w-70">
       <div className="h-full w-full overflow-hidden rounded-full">
         <Image
           src={profileImageUrl}

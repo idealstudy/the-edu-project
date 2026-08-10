@@ -68,7 +68,7 @@ export const StudyNotesList = ({
       title={item.title}
       tag={
         item.groupId && (
-          <p className="text-gray-scale-gray-60 bg-gray-scale-gray-5 flex h-5 items-center justify-center rounded-[4px] p-1 text-[10px]">
+          <p className="text-gray-scale-gray-60 bg-gray-scale-gray-5 rounded-control-compact text-ui-compact flex h-5 items-center justify-center p-1">
             {item.groupName}
           </p>
         )

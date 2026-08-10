@@ -58,7 +58,7 @@ export const StudyRoomCard = ({ studyRoom }: StudyRoomCardProps) => {
     <Link
       href={`/study-room-preview/${studyRoom.id}/${studyRoom.teacherId}`}
       className={cn(
-        'border-gray-scale-gray-10 relative block overflow-hidden rounded-2xl border-[1.5px] bg-white',
+        'border-gray-scale-gray-10 border-precision relative block overflow-hidden rounded-2xl bg-white',
         'group transition-all duration-300 hover:scale-105 hover:shadow-xl'
       )}
       onClick={handleStudyRoomClick}
@@ -68,7 +68,7 @@ export const StudyRoomCard = ({ studyRoom }: StudyRoomCardProps) => {
         {/* 상단 영역 */}
         <div
           className={cn(
-            'relative h-[150px] overflow-hidden',
+            'relative h-37.5 overflow-hidden',
             studyRoom.thumbnailUrl ? '' : 'bg-orange-1'
           )}
         >
@@ -77,7 +77,7 @@ export const StudyRoomCard = ({ studyRoom }: StudyRoomCardProps) => {
             width={440}
             height={150}
             alt="스터디룸 프리뷰 기본 이미지"
-            className="max-h-[150px] object-contain"
+            className="max-h-37.5 object-contain"
           />
           {/* 모집 상태 */}
           <span

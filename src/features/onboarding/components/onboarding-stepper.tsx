@@ -11,8 +11,8 @@ import type {
   OnboardingSelfGrade,
 } from '@/entities/onboarding';
 import { useMyTreeQuery } from '@/features/weakness-tree/hooks/use-tree';
-import { PUBLIC } from '@/shared/constants';
 import { showBottomToast } from '@/shared/components/ui';
+import { PUBLIC } from '@/shared/constants';
 import { TriangleAlert } from 'lucide-react';
 
 import { useOnboardingDiagnosisMutation } from '../hooks/use-onboarding-diagnosis';
@@ -113,7 +113,7 @@ export const OnboardingStepper = () => {
             {[0, 1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="bg-line-line1 h-[64px] animate-pulse rounded-[12px]"
+                className="bg-line-line1 rounded-card h-16 animate-pulse"
               />
             ))}
           </div>
@@ -127,9 +127,7 @@ export const OnboardingStepper = () => {
       <OnboardingShell
         step="grade"
         coreIndex={0}
-        footer={
-          <CtaButton onClick={() => refetch()}>다시 시도</CtaButton>
-        }
+        footer={<CtaButton onClick={() => refetch()}>다시 시도</CtaButton>}
       >
         <div className="flex flex-col items-center gap-3 py-16 text-center">
           <TriangleAlert
@@ -322,9 +320,7 @@ export const OnboardingStepper = () => {
             </span>
           }
           footer={
-            <CtaButton
-              onClick={() => router.push(PUBLIC.OPEN_CHALLENGE.LIST)}
-            >
+            <CtaButton onClick={() => router.push(PUBLIC.OPEN_CHALLENGE.LIST)}>
               오늘의 문제 시작
             </CtaButton>
           }

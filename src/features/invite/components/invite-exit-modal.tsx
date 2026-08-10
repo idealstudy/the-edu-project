@@ -16,7 +16,7 @@ export const InviteExitModal = ({
 }: InviteExitModalProps) => {
   return (
     <Dialog isOpen={isOpen}>
-      <Dialog.Content className="tablet:w-125 tablet:p-9 w-[285px] gap-6 p-5">
+      <Dialog.Content className="tablet:w-125 tablet:p-9 w-71.25 gap-6 p-5">
         <Dialog.Header className="flex-col items-end gap-2">
           <button
             type="button"

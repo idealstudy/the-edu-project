@@ -5,9 +5,8 @@ import { useState } from 'react';
 import { type ChallengeInvite } from '@/entities/social';
 import { Button, Dialog, showBottomToast } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
-import { Check, Copy, Swords } from 'lucide-react';
-
 import { trackOcInviteSent } from '@/shared/lib/analytics';
+import { Check, Copy, Swords } from 'lucide-react';
 
 import { useCreateChallengeInviteMutation } from '../../hooks';
 
@@ -113,7 +112,7 @@ export const ChallengeShareButton = ({
         isOpen={isOpen}
         onOpenChange={setIsOpen}
       >
-        <Dialog.Content className="max-w-[440px] gap-5">
+        <Dialog.Content className="max-w-110 gap-5">
           <Dialog.Header>
             <Dialog.Title className="font-headline2-heading">
               도전장 보내기
@@ -126,7 +125,7 @@ export const ChallengeShareButton = ({
 
           <Dialog.Body className="gap-4">
             {isPending && (
-              <div className="bg-gray-1 h-12 w-full animate-pulse rounded-[8px]" />
+              <div className="bg-gray-1 rounded-button h-12 w-full animate-pulse" />
             )}
 
             {isError && (
@@ -138,7 +137,7 @@ export const ChallengeShareButton = ({
             {invite && (
               <>
                 <div className="flex items-stretch gap-2">
-                  <div className="border-line-line2 bg-gray-1 flex min-w-0 flex-1 items-center rounded-[8px] border px-3">
+                  <div className="border-line-line2 bg-gray-1 rounded-button flex min-w-0 flex-1 items-center border px-3">
                     <span className="font-caption-normal text-text-sub1 truncate">
                       {shareUrl}
                     </span>

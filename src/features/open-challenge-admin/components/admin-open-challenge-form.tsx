@@ -510,7 +510,7 @@ export const AdminOpenChallengeForm = ({
               width={640}
               height={360}
               unoptimized
-              className="max-h-[240px] rounded-md bg-white object-contain"
+              className="max-h-60 rounded-md bg-white object-contain"
             />
           </div>
         )}
@@ -528,7 +528,7 @@ export const AdminOpenChallengeForm = ({
                 className="flex items-start gap-2"
               >
                 <div className="flex min-w-0 flex-1 items-center">
-                  <span className="border-line-line2 bg-gray-1 text-gray-8 flex h-[56px] w-[52px] shrink-0 items-center justify-center rounded-l-[4px] border border-r-0 text-lg font-bold">
+                  <span className="border-line-line2 bg-gray-1 text-gray-8 rounded-l-control-compact flex h-14 w-13 shrink-0 items-center justify-center border border-r-0 text-lg font-bold">
                     {CHOICE_LABELS[index]}
                   </span>
                   <Input
@@ -544,7 +544,7 @@ export const AdminOpenChallengeForm = ({
                     selectedCorrectIndex === index ? 'primary' : 'outlined'
                   }
                   size="small"
-                  className="h-[56px] w-[78px] shrink-0 px-0"
+                  className="h-14 w-19.5 shrink-0 px-0"
                   onClick={() =>
                     setValue('correctChoiceIndex', index, {
                       shouldDirty: true,
@@ -558,7 +558,7 @@ export const AdminOpenChallengeForm = ({
                   type="button"
                   variant="outlined"
                   size="small"
-                  className="h-[56px] w-[56px] shrink-0 px-0"
+                  className="h-14 w-14 shrink-0 px-0"
                   onClick={() => handleRemoveChoice(index)}
                   disabled={fields.length <= 1}
                   aria-label={`선지 ${index + 1} 삭제`}
@@ -588,7 +588,7 @@ export const AdminOpenChallengeForm = ({
           label="선택된 정답"
           error={errors.correctChoiceIndex?.message}
         >
-          <div className="border-line-line2 bg-gray-1 flex min-h-[56px] flex-col justify-center rounded-[4px] border px-4">
+          <div className="border-line-line2 bg-gray-1 rounded-control-compact flex min-h-14 flex-col justify-center border px-4">
             <p className="text-gray-8 text-xs">
               {CHOICE_LABELS[selectedCorrectIndex] ?? '-'}
             </p>

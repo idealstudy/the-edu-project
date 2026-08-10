@@ -118,7 +118,7 @@ export const StudyRoomClassLinks = ({
         {canManage && (
           <button
             type="button"
-            className="hover:bg-gray-scale-gray-1 flex h-9 w-9 cursor-pointer items-center justify-center rounded-[8px]"
+            className="hover:bg-gray-scale-gray-1 rounded-button flex h-9 w-9 cursor-pointer items-center justify-center"
             aria-label="수업 바로가기 링크 추가"
             onClick={() =>
               dispatch({
@@ -164,7 +164,7 @@ export const StudyRoomClassLinks = ({
                   <DropdownMenu.Trigger asChild>
                     <button
                       type="button"
-                      className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-[6px] text-[#0088FF] hover:bg-[#CCE8FF]"
+                      className="rounded-focus flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center text-[#0088FF] hover:bg-[#CCE8FF]"
                       aria-label="더보기"
                     >
                       <EllipsisVertical size={16} />

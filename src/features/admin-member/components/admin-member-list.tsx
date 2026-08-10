@@ -98,7 +98,7 @@ export const AdminMemberList = () => {
 
       <div className="mb-3 flex flex-wrap gap-2">
         <SearchInput
-          className="-0 flex-1 bg-white"
+          className="min-w-45 flex-1 bg-white"
           value={searchValue}
           onChange={setSearchValue}
           onSearch={(value) => {
@@ -107,11 +107,11 @@ export const AdminMemberList = () => {
           }}
           placeholder="이름 또는 이메일로 검색"
         />
-        <span className="border-gray-3 text-gray-11 -0 flex items-center gap-2 rounded-lg border bg-white px-3 text-xs font-bold">
+        <span className="border-gray-3 text-gray-11 flex min-h-10.5 items-center gap-2 rounded-lg border bg-white px-3 text-xs font-bold">
           가입일 <b>최근 7일</b>
         </span>
         {role === 'STUDENT' && (
-          <label className="border-gray-3 text-gray-8 -0 flex items-center gap-2 rounded-lg border bg-white px-3 text-xs">
+          <label className="border-gray-3 text-gray-8 flex min-h-10.5 items-center gap-2 rounded-lg border bg-white px-3 text-xs">
             점검용 계정 포함
             <Toggle
               checked={includeQaAccount}
@@ -187,7 +187,7 @@ export const AdminMemberList = () => {
 
       {query.data && query.data.content.length === 0 && (
         <section
-          className="border-gray-3 rounded-row -0 border border-dashed bg-white px-6 text-center"
+          className="border-gray-3 rounded-row border border-dashed bg-white px-6 py-9.5 text-center"
           data-testid="admin-members-empty"
         >
           <h2 className="text-sm font-extrabold">
@@ -205,7 +205,7 @@ export const AdminMemberList = () => {
                 variant="unstyled"
                 size="none"
                 type="button"
-                className="border-orange-11 bg-orange-10 -0 text-coach mt-4 rounded-lg border px-5 font-extrabold text-white"
+                className="border-orange-11 bg-orange-10 text-coach mt-4 min-h-11.5 rounded-lg border px-5 font-extrabold text-white"
                 onClick={() => selectRole('STUDENT')}
               >
                 학생 탭에서 {`"${keyword}"`} 찾기
@@ -234,7 +234,7 @@ export const AdminMemberList = () => {
       {!!query.data?.content.length && (
         <>
           <div className="border-gray-3 overflow-x-auto rounded-xl border bg-white px-2 py-1.5">
-            <table className="-0 w-full border-collapse text-left text-xs">
+            <table className="w-full min-w-190 border-collapse text-left text-xs">
               <thead>
                 <tr className="text-gray-8 text-ui-compact">
                   {[

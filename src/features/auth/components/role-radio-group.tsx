@@ -20,7 +20,7 @@ const RoleRadioGroupItem = ({
     <RadioGroupPrimitives.Item
       className={cn(
         // 기본 스타일
-        'text-gray-scale-gray-50 border-gray-scale-gray-10 flex h-[180px] w-[174px] cursor-pointer flex-col items-center justify-center gap-2 border pt-6 pb-3 font-medium transition-all duration-200',
+        'text-gray-scale-gray-50 border-gray-scale-gray-10 flex h-45 w-43.5 cursor-pointer flex-col items-center justify-center gap-2 border pt-6 pb-3 font-medium transition-all duration-200',
         // 호버 효과
         'hover:border-key-color-primary hover:bg-orange-scale-orange-1 hover:text-text-main',
         // 선택된 상태 (Radix UI는 data-[state=checked] 사용)

@@ -23,14 +23,21 @@ export function LandingValues() {
   return (
     <section
       className={cn(
-        'mx-auto flex w-full max-w-[912px] flex-col gap-6 px-6 py-14',
+        'mx-auto flex w-full max-w-228 flex-col gap-6 px-6 py-14',
         'tablet:py-20'
       )}
     >
-      <h2 className={cn('font-headline1-heading text-balance', 'tablet:font-title-heading')}>
+      <h2
+        className={cn(
+          'font-headline1-heading text-balance',
+          'tablet:font-title-heading'
+        )}
+      >
         오르는 공부는 다릅니다
       </h2>
-      <div className={cn('flex flex-col gap-3', 'tablet:grid tablet:grid-cols-3')}>
+      <div
+        className={cn('flex flex-col gap-3', 'tablet:grid tablet:grid-cols-3')}
+      >
         {VALUES.map((v) => (
           <div
             key={v.title}
@@ -40,7 +47,9 @@ export function LandingValues() {
               {v.tag}
             </span>
             <h3 className="font-body1-heading text-text-main">{v.title}</h3>
-            <p className="font-label-normal text-gray-9 tablet:font-body2-normal">{v.desc}</p>
+            <p className="font-label-normal text-gray-9 tablet:font-body2-normal">
+              {v.desc}
+            </p>
           </div>
         ))}
       </div>

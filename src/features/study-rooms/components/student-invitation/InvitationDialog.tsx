@@ -82,7 +82,7 @@ export const InvitationDialog = ({
       isOpen={isOpen}
       onOpenChange={onOpenChange}
     >
-      <Dialog.Content className="w-[798px]">
+      <Dialog.Content className="w-199.5">
         <Dialog.Header>
           <Dialog.Title className="text-3xl">{title}</Dialog.Title>
         </Dialog.Header>
@@ -104,7 +104,7 @@ export const InvitationDialog = ({
               alt="alert"
               width={20}
               height={20}
-              className="relative top-[3px]"
+              className="relative top-0.75"
             />
             <h2
               id="invitation-info-title"
@@ -126,7 +126,7 @@ export const InvitationDialog = ({
         </Dialog.Body>
         <Dialog.Footer className="mt-6 justify-end">
           <Button
-            className="w-[140px]"
+            className="w-35"
             type="button"
             disabled={!invitation.invitees.size || !!error || isPending}
             onClick={handleSubmit}

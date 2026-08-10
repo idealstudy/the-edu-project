@@ -24,7 +24,7 @@ export function LandingHero() {
       <div className="flex flex-col items-center gap-4">
         <span
           className={cn(
-            'font-label-heading text-orange-7 bg-white/70 rounded-full px-4 py-1.5',
+            'font-label-heading text-orange-7 rounded-full bg-white/70 px-4 py-1.5',
             'tablet:font-body2-heading'
           )}
         >
@@ -53,11 +53,16 @@ export function LandingHero() {
         </p>
       </div>
 
-      <div className={cn('flex w-full flex-col gap-2', 'tablet:w-auto tablet:flex-row tablet:gap-3')}>
+      <div
+        className={cn(
+          'flex w-full flex-col gap-2',
+          'tablet:w-auto tablet:flex-row tablet:gap-3'
+        )}
+      >
         <Button
           size="large"
           asChild
-          className="shadow-[0_5px_0_var(--orange-10)] active:translate-y-[2px] active:shadow-[0_3px_0_var(--orange-10)]"
+          className="shadow-[0_5px_0_var(--orange-10)] active:translate-y-0.5 active:shadow-[0_3px_0_var(--orange-10)]"
         >
           <Link
             href={PUBLIC.OPEN_CHALLENGE.LIST}

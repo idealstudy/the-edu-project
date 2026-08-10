@@ -1,7 +1,7 @@
 import { Skeleton } from '@/shared/components/loading';
 
 export const ChallengeResultSkeleton = () => (
-  <main className="tablet:px-8 mx-auto w-full max-w-[1200px] px-4 py-8">
+  <main className="tablet:px-8 mx-auto w-full max-w-300 px-4 py-8">
     <Skeleton.Block className="mb-6 h-8 w-16 rounded-lg" />
 
     <div className="flex flex-col gap-6 lg:flex-row">
@@ -28,7 +28,7 @@ export const ChallengeResultSkeleton = () => (
         </div>
       </div>
 
-      <aside className="flex w-full flex-col gap-4 lg:w-[340px] lg:shrink-0">
+      <aside className="flex w-full flex-col gap-4 lg:w-85 lg:shrink-0">
         <Skeleton.Block className="h-40 w-full rounded-xl" />
         <Skeleton.Block className="h-32 w-full rounded-xl" />
       </aside>

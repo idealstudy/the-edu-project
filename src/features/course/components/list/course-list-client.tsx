@@ -28,7 +28,7 @@ export const CourseListClient = () => {
 
   if (isError) {
     return (
-      <div className="border-line-line2 flex flex-col items-center gap-3 rounded-[12px] border bg-white p-12 text-center">
+      <div className="border-line-line2 rounded-card flex flex-col items-center gap-3 border bg-white p-12 text-center">
         <p className="font-body2-normal text-text-sub1">
           코스를 불러오지 못했어요.
         </p>
@@ -47,7 +47,7 @@ export const CourseListClient = () => {
 
   if (courses.length === 0) {
     return (
-      <div className="border-line-line2 flex flex-col items-center gap-2 rounded-[12px] border border-dashed bg-white p-12 text-center">
+      <div className="border-line-line2 rounded-card flex flex-col items-center gap-2 border border-dashed bg-white p-12 text-center">
         <span className="bg-orange-1 text-key-color-primary flex size-14 items-center justify-center rounded-full">
           <BookOpen size={26} />
         </span>

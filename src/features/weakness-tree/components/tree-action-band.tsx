@@ -30,7 +30,7 @@ export const TreeActionBand = ({ valley, onAction }: TreeActionBandProps) => {
       <Button
         size="small"
         onClick={() => onAction(valley)}
-        className="-0 shrink-0 shadow-[0_4px_0_var(--orange-10)] active:shadow-[0_1px_0_var(--orange-10)]"
+        className="shrink-0 shadow-[0_4px_0_var(--orange-10)] active:translate-y-0.5 active:shadow-[0_1px_0_var(--orange-10)]"
       >
         가장 약한 곳부터 메우기
       </Button>

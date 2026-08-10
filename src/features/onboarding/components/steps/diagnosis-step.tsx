@@ -51,13 +51,15 @@ export const DiagnosisStep = ({
       />
 
       <div className="flex items-center gap-2">
-        <span className="font-label-heading text-text-main">단원별 자기신고</span>
-        <span className="font-caption-heading rounded-full border border-orange-1 bg-background-orange px-2 py-0.5 text-orange-10">
+        <span className="font-label-heading text-text-main">
+          단원별 자기신고
+        </span>
+        <span className="font-caption-heading border-orange-1 bg-background-orange text-orange-10 rounded-full border px-2 py-0.5">
           선택 입력
         </span>
       </div>
 
-      <ul className="border-line-line1 divide-line-line1 divide-y rounded-[12px] border bg-white">
+      <ul className="border-line-line1 divide-line-line1 rounded-card divide-y border bg-white">
         {nodes.map((node) => {
           const mark = marks[node.nodeId];
           return (
@@ -74,7 +76,7 @@ export const DiagnosisStep = ({
                   aria-pressed={mark === false}
                   onClick={() => onMark(node.nodeId, false)}
                   className={cn(
-                    'font-caption-heading min-h-[36px] rounded-full border px-3 transition',
+                    'font-caption-heading min-h-9 rounded-full border px-3 transition',
                     mark === false
                       ? 'border-key-color-primary bg-key-color-primary text-white'
                       : 'border-line-line1 text-text-sub2 bg-white'
@@ -87,7 +89,7 @@ export const DiagnosisStep = ({
                   aria-pressed={mark === true}
                   onClick={() => onMark(node.nodeId, true)}
                   className={cn(
-                    'font-caption-heading min-h-[36px] rounded-full border px-3 transition',
+                    'font-caption-heading min-h-9 rounded-full border px-3 transition',
                     mark === true
                       ? 'border-system-warning bg-system-warning text-white'
                       : 'border-line-line1 text-text-sub2 bg-white'

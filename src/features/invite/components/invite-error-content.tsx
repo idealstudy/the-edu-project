@@ -62,7 +62,7 @@ export const InviteErrorContent = ({ reason }: { reason: ErrorReason }) => {
         >
           <Button
             variant="primary"
-            className="h-[46px] rounded-sm px-8"
+            className="h-11.5 rounded-sm px-8"
           >
             <span className="font-body2-heading">홈으로 이동하기</span>
           </Button>

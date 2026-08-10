@@ -29,10 +29,10 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
 
   return (
     <div
-      className="bg-system-background -0 flex min-h-dvh"
+      className="bg-system-background flex min-h-dvh md:-ml-46.5"
       data-admin-shell
     >
-      <aside className="border-gray-3 -0 hidden shrink-0 border-r bg-white px-3 py-4 md:block">
+      <aside className="border-gray-3 hidden w-46.5 shrink-0 border-r bg-white px-3 py-4 md:block">
         <div className="text-orange-11 px-2 pt-1 pb-3 text-sm font-extrabold tracking-[-0.045em]">
           D-EDU
           <small className="text-gray-8 text-ui-compact mt-0.5 block font-semibold tracking-normal">
@@ -51,7 +51,9 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
                   active && 'bg-orange-1 text-orange-11 font-extrabold'
                 )}
               >
-                <span className="-0 text-ui-choice text-center">{icon}</span>
+                <span className="text-ui-choice w-3.75 text-center">
+                  {icon}
+                </span>
                 {label}
               </Link>
             );
@@ -59,7 +61,7 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
         </nav>
       </aside>
       <div className="min-w-0 flex-1">
-        <header className="border-gray-3 -0 -0 flex items-center gap-2 border-b bg-white px-4">
+        <header className="border-gray-3 flex min-h-16.5 items-center gap-2 border-b bg-white px-4 md:px-5.5">
           <span className="bg-gray-1 text-gray-11 grid size-8 place-items-center rounded-full text-xs font-extrabold">
             {member?.name?.slice(0, 1) ?? ''}
           </span>

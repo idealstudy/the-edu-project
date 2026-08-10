@@ -87,15 +87,15 @@ export const ChallengeInviteLanding = ({ token }: { token: string }) => {
 
   if (isLoading) {
     return (
-      <div className="w-full max-w-[440px]">
-        <div className="border-line-line2 bg-gray-1 h-72 w-full animate-pulse rounded-[16px] border" />
+      <div className="w-full max-w-110">
+        <div className="border-line-line2 bg-gray-1 rounded-section h-72 w-full animate-pulse border" />
       </div>
     );
   }
 
   if (isError || !preview) {
     return (
-      <div className="border-line-line2 flex w-full max-w-[440px] flex-col items-center gap-4 rounded-[16px] border bg-white p-8 text-center">
+      <div className="border-line-line2 rounded-section flex w-full max-w-110 flex-col items-center gap-4 border bg-white p-8 text-center">
         <span className="bg-orange-1 text-key-color-primary flex size-14 items-center justify-center rounded-full">
           <Swords size={26} />
         </span>
@@ -122,14 +122,14 @@ export const ChallengeInviteLanding = ({ token }: { token: string }) => {
   const difficulty = difficultyLabel(preview.difficulty);
 
   return (
-    <div className="flex w-full max-w-[560px] flex-col gap-4">
+    <div className="flex w-full max-w-140 flex-col gap-4">
       <div className="border-line-line2 grid grid-cols-4 overflow-hidden rounded-xl border bg-white text-center">
         {['열어보기', '풀어보기', '채점', '기록 남기기'].map((label, index) => (
           <div
             key={label}
             className={index === 0 ? 'bg-orange-1 px-2 py-3' : 'px-2 py-3'}
           >
-            <span className="text-text-sub2 block text-[10px]">
+            <span className="text-text-sub2 text-ui-compact block">
               {index + 1}단계
             </span>
             <strong
@@ -145,7 +145,7 @@ export const ChallengeInviteLanding = ({ token }: { token: string }) => {
         ))}
       </div>
 
-      <div className="border-line-line2 flex flex-col gap-6 rounded-[16px] border bg-white p-6 sm:p-8">
+      <div className="border-line-line2 rounded-section flex flex-col gap-6 border bg-white p-6 sm:p-8">
         <div className="flex flex-col items-center gap-3 text-center">
           <span className="bg-orange-1 text-key-color-primary flex size-14 items-center justify-center rounded-full">
             <Swords size={26} />
@@ -161,7 +161,7 @@ export const ChallengeInviteLanding = ({ token }: { token: string }) => {
           </p>
         </div>
 
-        <div className="border-line-line2 bg-gray-1 flex flex-col gap-3 rounded-[12px] border p-5">
+        <div className="border-line-line2 bg-gray-1 rounded-card flex flex-col gap-3 border p-5">
           <div className="flex flex-wrap items-center gap-2">
             <StatusBadge
               variant="primary"

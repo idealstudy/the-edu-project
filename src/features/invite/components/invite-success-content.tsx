@@ -29,7 +29,7 @@ export const InviteSuccessContent = ({
         >
           <Button
             variant="primary"
-            className="h-[46px] rounded-sm px-8"
+            className="h-11.5 rounded-sm px-8"
           >
             <span className="font-body2-heading">스터디룸 바로 가기</span>
           </Button>

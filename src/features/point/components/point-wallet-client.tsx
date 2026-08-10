@@ -2,7 +2,12 @@
 
 import { type PointTransactionView } from '@/entities/point';
 import { LevelBadgeConnected } from '@/features/level';
-import { ArrowDownRight, ArrowUpRight, TriangleAlert, Wallet } from 'lucide-react';
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  TriangleAlert,
+  Wallet,
+} from 'lucide-react';
 
 import { useMyPointWalletQuery } from '../hooks/use-point';
 import { PointWalletSkeleton } from './point-wallet-skeleton';
@@ -91,7 +96,7 @@ export const PointWalletClient = () => {
 
   if (isError) {
     return (
-      <div className="border-line-line1 flex flex-col items-center gap-3 rounded-[12px] border bg-white py-16 text-center">
+      <div className="border-line-line1 rounded-card flex flex-col items-center gap-3 border bg-white py-16 text-center">
         <TriangleAlert
           size={32}
           className="text-system-warning"
@@ -103,7 +108,7 @@ export const PointWalletClient = () => {
         <button
           type="button"
           onClick={() => refetch()}
-          className="bg-key-color-primary font-label-heading mt-1 flex h-11 items-center rounded-[8px] px-5 text-white"
+          className="bg-key-color-primary font-label-heading rounded-button mt-1 flex h-11 items-center px-5 text-white"
         >
           다시 시도
         </button>
@@ -115,11 +120,11 @@ export const PointWalletClient = () => {
   const transactions = data?.transactions ?? [];
 
   return (
-    <div className="flex flex-col gap-6 min-[1200px]:flex-row min-[1200px]:items-start">
+    <div className="desktop:flex-row desktop:items-start flex flex-col gap-6">
       <div className="flex flex-1 flex-col gap-6">
         {/* 잔액 히어로 */}
         <section
-          className="bg-orange-1 border-line-line1 flex flex-col gap-2 rounded-[12px] border p-6"
+          className="bg-orange-1 border-line-line1 rounded-card flex flex-col gap-2 border p-6"
           aria-label="포인트 잔액"
         >
           <div className="flex items-center gap-2">
@@ -144,7 +149,7 @@ export const PointWalletClient = () => {
 
         {/* 적립/차감 타임라인 */}
         <section
-          className="border-line-line1 flex flex-col gap-3 rounded-[12px] border bg-white p-5"
+          className="border-line-line1 rounded-card flex flex-col gap-3 border bg-white p-5"
           aria-label="포인트 적립·차감 내역"
         >
           <h2 className="font-body1-heading text-text-main">적립·차감 내역</h2>
@@ -161,7 +166,7 @@ export const PointWalletClient = () => {
               <p className="font-body2-heading text-text-main text-balance">
                 아직 포인트 내역이 없어요.
               </p>
-              <p className="font-caption-normal text-text-sub2 max-w-[280px] text-balance">
+              <p className="font-caption-normal text-text-sub2 max-w-70 text-balance">
                 첫 문제를 제대로 풀면 포인트가 쌓이기 시작해요.
               </p>
             </div>
@@ -179,7 +184,7 @@ export const PointWalletClient = () => {
       </div>
 
       {/* 레벨 (성장 지표 — 포인트와 다른 축) */}
-      <div className="w-full shrink-0 min-[1200px]:w-[300px]">
+      <div className="desktop:w-75 w-full shrink-0">
         <LevelBadgeConnected />
       </div>
     </div>

@@ -165,7 +165,7 @@ export const HomeworkMetaFields = () => {
           <Form.Label>리마인드 알림</Form.Label>
 
           <Form.Control>
-            <div className="border-gray-scale-gray-30 flex h-[56px] items-center gap-4 rounded-[4px] border px-[24px]">
+            <div className="border-gray-scale-gray-30 rounded-control-compact flex h-14 items-center gap-4 border px-6">
               {REMINDER_OPTIONS.map((opt) => (
                 <label
                   key={opt.value}

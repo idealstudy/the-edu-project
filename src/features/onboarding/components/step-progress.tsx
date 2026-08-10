@@ -33,7 +33,11 @@ const stepMeta = (
     case 'experience':
       return { n: '체험 문제', t: '· 딱 한 문제만' };
     case 'reveal':
-      return { n: '진단 완료', t: '· 내 약점 트리가 만들어졌어요', tone: 'done' };
+      return {
+        n: '진단 완료',
+        t: '· 내 약점 트리가 만들어졌어요',
+        tone: 'done',
+      };
   }
 };
 
@@ -68,7 +72,7 @@ export const StepProgress = ({
             <span
               key={i}
               className={cn(
-                'h-[5px] flex-1 rounded-full',
+                'h-1.25 flex-1 rounded-full',
                 done && 'bg-key-color-primary',
                 now && 'bg-key-color-primary opacity-45',
                 !done && !now && 'bg-line-line1'
@@ -79,11 +83,10 @@ export const StepProgress = ({
         {/* 선택 진단 막대 — 점선 표현 */}
         <span
           className={cn(
-            'h-[5px] flex-1 rounded-full',
-            'bg-[length:9px_5px] bg-[repeating-linear-gradient(90deg,var(--color-line-line1)_0_5px,transparent_5px_9px)]',
+            'h-1.25 flex-1 rounded-full',
+            'bg-[repeating-linear-gradient(90deg,var(--color-line-line1)_0_5px,transparent_5px_9px)] bg-[length:9px_5px]',
             step === 'diagnosis' && 'opacity-100',
-            beyondCore &&
-              'bg-key-color-primary bg-none' /* 진단 이후는 채움 */
+            beyondCore && 'bg-key-color-primary bg-none' /* 진단 이후는 채움 */
           )}
         />
       </div>

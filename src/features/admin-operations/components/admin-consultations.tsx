@@ -131,7 +131,7 @@ export const AdminConsultations = () => {
             }
             className={cn(
               // 좁은 폭에서 "답변 / 완료" 처럼 칩 안 문구가 쪼개지지 않게 한다.
-              '-0 flex shrink-0 items-center gap-2 rounded-lg border px-3 text-xs font-bold whitespace-nowrap',
+              'flex min-h-10.5 shrink-0 items-center gap-2 rounded-lg border px-3 text-xs font-bold whitespace-nowrap',
               (status === undefined && value === 'RECEIVED') || status === value
                 ? 'bg-orange-1 text-orange-11 border-orange-10'
                 : 'border-gray-3 text-gray-11 bg-white'
@@ -155,7 +155,7 @@ export const AdminConsultations = () => {
           aria-pressed={status === DELAYED}
           className={cn(
             // 배지 안에서 "지 / 연" 으로 쪼개지던 것을 막는다.
-            '-0 flex shrink-0 items-center gap-2 rounded-lg border px-3 text-xs font-bold whitespace-nowrap',
+            'flex min-h-10.5 shrink-0 items-center gap-2 rounded-lg border px-3 text-xs font-bold whitespace-nowrap',
             status === DELAYED
               ? 'border-red-10 bg-red-1 text-red-10'
               : // 안 눌린 상태라도 지연이 남아 있으면 눈에 걸리게 둔다.
@@ -172,7 +172,7 @@ export const AdminConsultations = () => {
           지연 <b className="tabular-nums">{query.data?.delayedCount ?? 0}</b>
         </UnstyledButton>
         <SearchInput
-          className="-0 flex-1 bg-white"
+          className="min-w-45 flex-1 bg-white"
           value={searchValue}
           onChange={setSearchValue}
           onSearch={(value) => setKeyword(value.trim())}
@@ -191,7 +191,7 @@ export const AdminConsultations = () => {
       )}
       {query.data && query.data.content.length === 0 && status === DELAYED && (
         <section
-          className="border-gray-3 rounded-row -0 border border-dashed bg-white px-6 text-center"
+          className="border-gray-3 rounded-row border border-dashed bg-white px-6 py-9.5 text-center"
           data-testid="admin-consultations-delayed-empty"
         >
           <h2 className="text-sm font-extrabold">
@@ -204,7 +204,7 @@ export const AdminConsultations = () => {
             variant="unstyled"
             size="none"
             type="button"
-            className="border-orange-11 bg-orange-10 -0 text-coach mt-4 rounded-lg border px-5 font-extrabold text-white"
+            className="border-orange-11 bg-orange-10 text-coach mt-4 min-h-11.5 rounded-lg border px-5 font-extrabold text-white"
             onClick={() => {
               setStatus('RECEIVED');
               setSelected(null);
@@ -217,7 +217,7 @@ export const AdminConsultations = () => {
       {query.data && query.data.content.length === 0 && status !== DELAYED && (
         <>
           <section
-            className="border-gray-3 rounded-row -0 border border-dashed bg-white px-6 text-center"
+            className="border-gray-3 rounded-row border border-dashed bg-white px-6 py-9.5 text-center"
             data-testid="admin-consultations-empty"
           >
             <h2 className="text-sm font-extrabold">받은 문의가 없어요</h2>
@@ -230,7 +230,7 @@ export const AdminConsultations = () => {
               variant="unstyled"
               size="none"
               type="button"
-              className="border-orange-11 bg-orange-10 -0 text-coach mt-4 rounded-lg border px-5 font-extrabold text-white"
+              className="border-orange-11 bg-orange-10 text-coach mt-4 min-h-11.5 rounded-lg border px-5 font-extrabold text-white"
               onClick={() => setStatus('ANSWERED')}
             >
               답변 완료 {summary.data?.consultationCount ?? 0}건 보기
@@ -282,7 +282,7 @@ export const AdminConsultations = () => {
                 카드 밖으로 잘려 누를 수 없었다. 넓은 폭(1280 이상)에서는
                 v22 가 그린 자동 배분을 그대로 쓴다.
               */}
-              <table className="-0 w-full table-fixed border-collapse text-left text-xs lg:min-w-0 xl:table-auto">
+              <table className="w-full min-w-140 table-fixed border-collapse text-left text-xs lg:min-w-0 xl:table-auto">
                 <thead>
                   {/*
                     v22 4171 은 여섯 칸(상태·문의·보낸 사람·받은 시각·담당·동작)을 그렸고
@@ -296,12 +296,12 @@ export const AdminConsultations = () => {
                   <tr className="text-gray-8 text-ui-compact">
                     {(
                       [
-                        ['상태', '-0 xl:w-auto'],
+                        ['상태', 'w-26 xl:w-auto'],
                         ['문의', ''],
                         ['보낸 사람', 'hidden xl:table-cell'],
-                        ['받은 시각', '-0 xl:w-auto'],
+                        ['받은 시각', 'w-21 xl:w-auto'],
                         ['담당', 'hidden xl:table-cell'],
-                        ['', '-0 xl:w-auto'],
+                        ['', 'w-24 xl:w-auto'],
                       ] as const
                     ).map(([label, extra], index) => (
                       <th
@@ -343,7 +343,7 @@ export const AdminConsultations = () => {
                       </td>
                       <td className="border-gray-1 border-b px-2.5 py-3">
                         <b className="block">{item.title}</b>
-                        <span className="text-gray-8 text-ui-choice -0 mt-0.5 block truncate">
+                        <span className="text-gray-8 text-ui-choice mt-0.5 block truncate xl:max-w-65">
                           {item.message}
                         </span>
                         {/* 좁은 폭에서 접어 넣은 보낸 사람·담당. 넓은 폭에서는 제 칸으로 돌아간다. */}
@@ -437,7 +437,7 @@ export const AdminConsultations = () => {
               </label>
               <Textarea
                 id="consult-answer"
-                className="-0 mt-1 px-3 py-2 text-xs"
+                className="mt-1 min-h-30 px-3 py-2 text-xs"
                 value={answer}
                 onChange={(event) => setAnswer(event.target.value)}
                 placeholder="보낸 사람에게 그대로 전달됩니다. 계정 조치가 필요하면 회원 상세에서 실행하고 여기에 결과만 적습니다."

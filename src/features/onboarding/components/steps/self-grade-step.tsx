@@ -3,10 +3,7 @@
 import type { OnboardingSelfGrade } from '@/entities/onboarding';
 import { cn } from '@/shared/lib';
 
-import {
-  GRADE_NUMBERS,
-  SELF_GRADE_UNKNOWN,
-} from '../../model/steps';
+import { GRADE_NUMBERS, SELF_GRADE_UNKNOWN } from '../../model/steps';
 import { QuestionHeader } from '../question-header';
 
 /* ─────────────────────────────────────────────────────
@@ -34,7 +31,8 @@ export const SelfGradeStep = ({ value, onChange }: SelfGradeStepProps) => {
         }
         sub={
           <>
-            <b>솔직할수록</b> 추천이 정확해져요. 비공개이고 언제든 바꿀 수 있어요.
+            <b>솔직할수록</b> 추천이 정확해져요. 비공개이고 언제든 바꿀 수
+            있어요.
           </>
         }
       />
@@ -49,16 +47,16 @@ export const SelfGradeStep = ({ value, onChange }: SelfGradeStepProps) => {
               aria-pressed={selected}
               onClick={() => onChange(n)}
               className={cn(
-                'flex min-h-[56px] flex-col items-center justify-center rounded-[10px] border font-headline2-heading tabular-nums transition',
+                'rounded-row font-headline2-heading flex min-h-14 flex-col items-center justify-center border tabular-nums transition',
                 'focus-visible:ring-key-color-primary focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none',
                 selected
                   ? 'border-key-color-primary bg-key-color-primary text-white'
-                  : 'border-line-line1 bg-white text-text-main'
+                  : 'border-line-line1 text-text-main bg-white'
               )}
             >
               {n}
               {selected && (
-                <span className="font-caption-normal mt-0.5 text-orange-1">
+                <span className="font-caption-normal text-orange-1 mt-0.5">
                   선택됨
                 </span>
               )}
@@ -71,11 +69,11 @@ export const SelfGradeStep = ({ value, onChange }: SelfGradeStepProps) => {
           aria-pressed={unknownSelected}
           onClick={() => onChange(SELF_GRADE_UNKNOWN)}
           className={cn(
-            'col-span-3 flex min-h-[48px] items-center justify-center rounded-[10px] border font-label-heading transition',
+            'rounded-row font-label-heading col-span-3 flex min-h-12 items-center justify-center border transition',
             'focus-visible:ring-key-color-primary focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none',
             unknownSelected
               ? 'border-key-color-primary bg-background-orange text-orange-10'
-              : 'border-line-line1 bg-white text-text-sub2'
+              : 'border-line-line1 text-text-sub2 bg-white'
           )}
         >
           잘 모르겠어요 · 진단으로 알려주세요

@@ -80,7 +80,7 @@ export const InviteLetter = ({
           <div className="tablet:flex mt-1 hidden w-full justify-center gap-2">
             <Button
               variant="outlined"
-              className="font-label-normal h-[35px] rounded-sm px-9"
+              className="font-label-normal h-8.75 rounded-sm px-9"
               size="xsmall"
               onClick={onOpenExitModal}
             >
@@ -88,7 +88,7 @@ export const InviteLetter = ({
             </Button>
             <Button
               variant="primary"
-              className="font-label-normal h-[35px] rounded-sm px-9"
+              className="font-label-normal h-8.75 rounded-sm px-9"
               size="xsmall"
               onClick={handleAccept}
             >

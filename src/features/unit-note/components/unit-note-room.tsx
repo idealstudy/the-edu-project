@@ -156,9 +156,9 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
 
   if (libraryQuery.isPending) {
     return (
-      <main className="-0 mx-auto w-full px-4 py-8">
+      <main className="mx-auto w-full max-w-280 px-4 py-8">
         <Skeleton.Block className="h-32 w-full rounded-xl" />
-        <Skeleton.Block className="-0 mt-5 w-full rounded-xl" />
+        <Skeleton.Block className="mt-5 h-130 w-full rounded-xl" />
       </main>
     );
   }
@@ -284,7 +284,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
 
         <header className="border-gray-3 bg-gray-white mt-2 rounded-xl border p-4">
           <div className="flex flex-wrap items-center gap-3">
-            <div className="-0 flex-1">
+            <div className="min-w-50 flex-1">
               <p className="font-caption-heading text-gray-8">
                 {subjectLabel(root.subject)} · 단권화 노트
               </p>
@@ -342,7 +342,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                   <button
                     key={concept.nodeId}
                     type="button"
-                    className={`border-gray-2 -0 grid cursor-pointer grid-cols-[28px_minmax(0,1fr)_72px_44px] items-center gap-2 border-b text-left last:border-b-0 ${
+                    className={`border-gray-2 grid h-11.5 cursor-pointer grid-cols-[28px_minmax(0,1fr)_72px_44px] items-center gap-2 border-b text-left last:border-b-0 ${
                       activeNodeId === concept.nodeId ? 'bg-orange-1' : ''
                     }`}
                     onClick={() => setSelectedNodeId(concept.nodeId)}
@@ -450,11 +450,11 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                     아직 이 과목에 쓴 정리가 없어요.
                   </p>
                 ) : (
-                  <div className="-0 mt-3 flex flex-col">
+                  <div className="mt-3 flex flex-col gap-1.75">
                     {recentConcepts.map((concept) => (
                       <div
                         key={concept.nodeId}
-                        className={`border-gray-3 -0 flex items-center gap-2 rounded-lg border px-3 ${
+                        className={`border-gray-3 flex min-h-14.5 items-center gap-2 rounded-lg border px-3 ${
                           concept.nodeId === activeNodeId ? 'bg-orange-1' : ''
                         }`}
                       >

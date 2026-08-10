@@ -102,7 +102,7 @@ export const AiFeedbackForm = ({ attemptId }: AiFeedbackFormProps) => {
                 />
               </button>
               <span className="text-gray-7 text-xs">{score}점</span>
-              <span className="text-gray-6 text-center text-[10px] leading-tight">
+              <span className="text-gray-6 text-ui-compact text-center leading-tight">
                 {label}
               </span>
             </div>

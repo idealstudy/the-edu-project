@@ -40,7 +40,7 @@ export const StudyroomPreviewContents = ({
               <Link
                 href={`?tab=${value}`}
                 className={cn(
-                  'border-line-line1 desktop:min-w-[150px] relative flex h-[55px] items-center justify-center rounded-t-xl border border-b-0 px-5 text-lg',
+                  'border-line-line1 desktop:min-w-37.5 relative flex h-13.75 items-center justify-center rounded-t-xl border border-b-0 px-5 text-lg',
                   isActive
                     ? 'text-key-color-primary border-b-white bg-white font-semibold'
                     : 'text-text-sub2 bg-transparent hover:bg-zinc-50'

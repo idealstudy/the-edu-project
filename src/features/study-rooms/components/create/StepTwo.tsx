@@ -146,7 +146,7 @@ export default function StepTwo({
                       >
                         <Select.Trigger
                           placeholder="학교를 선택하세요"
-                          className="max-desktop:w-full w-[240px]"
+                          className="max-desktop:w-full w-60"
                           data-testid="study-room-school-level-trigger"
                         />
                         <Select.Content>
@@ -179,7 +179,7 @@ export default function StepTwo({
                         <Select.Trigger
                           placeholder="학년을 선택하세요"
                           disabled={!school || school === 'OTHER'}
-                          className="max-desktop:w-full w-[240px]"
+                          className="max-desktop:w-full w-60"
                           data-testid="study-room-grade-trigger"
                         />
                         <Select.Content>

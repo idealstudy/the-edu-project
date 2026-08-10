@@ -20,7 +20,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ArrowRight, ChevronRight, RefreshCw } from 'lucide-react';
 
 const cardClass =
-  'overflow-hidden rounded-[18px] border border-gray-3 bg-white shadow-[0_3px_12px_rgba(26,26,26,0.06)] transition duration-200 hover:-translate-y-px hover:shadow-[0_9px_24px_rgba(26,26,26,0.12)]';
+  'overflow-hidden rounded-section border border-gray-3 bg-white shadow-[0_3px_12px_rgba(26,26,26,0.06)] transition duration-200 hover:-translate-y-px hover:shadow-[0_9px_24px_rgba(26,26,26,0.12)]';
 
 function ModuleHeading({
   title,
@@ -63,7 +63,7 @@ function ModuleState({
   retry?: () => void;
 }) {
   return (
-    <div className="border-gray-3 rounded-[18px] border bg-white px-6 py-10 text-center">
+    <div className="border-gray-3 rounded-section border bg-white px-6 py-10 text-center">
       <p className="font-body2-heading text-gray-11">{message}</p>
       {retry && (
         <button
@@ -86,19 +86,19 @@ function PortalHero() {
   return (
     <section
       aria-label="디에듀 소개"
-      className="relative overflow-hidden rounded-[18px] bg-[radial-gradient(circle_at_82%_16%,rgba(255,255,255,0.82),transparent_22%),radial-gradient(circle_at_68%_75%,rgba(255,145,123,0.54),transparent_28%),linear-gradient(135deg,var(--orange-1),var(--orange-2),#ffdccf)] px-6 py-9 shadow-[0_9px_28px_rgba(209,56,0,0.12)] sm:px-10 sm:py-12"
+      className="rounded-section relative overflow-hidden bg-[radial-gradient(circle_at_82%_16%,rgba(255,255,255,0.82),transparent_22%),radial-gradient(circle_at_68%_75%,rgba(255,145,123,0.54),transparent_28%),linear-gradient(135deg,var(--orange-1),var(--orange-2),#ffdccf)] px-6 py-9 shadow-[0_9px_28px_rgba(209,56,0,0.12)] sm:px-10 sm:py-12"
     >
-      <div className="relative z-10 max-w-[620px]">
+      <div className="relative z-10 max-w-155">
         <span className="bg-gray-12 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-bold text-white">
           <span className="bg-orange-5 h-1.5 w-1.5 rounded-full" />
           이상한수학 · 중위권 수학 관리
         </span>
-        <h1 className="text-gray-12 mt-5 text-[34px] leading-[1.2] font-bold tracking-[-0.055em] sm:text-[42px]">
+        <h1 className="text-gray-12 font-title-heading sm:font-display-2 mt-5 leading-[1.2] font-bold tracking-[-0.055em]">
           오늘 한 문제, <em className="text-orange-8 not-italic">자력으로.</em>
           <br />
           숨은 등급을 찾습니다.
         </h1>
-        <p className="text-gray-10 mt-5 max-w-[530px] text-base leading-7 sm:text-lg">
+        <p className="text-gray-10 mt-5 max-w-132.5 text-base leading-7 sm:text-lg">
           해설을 열기 전에 스스로 버틴 시간만 실력으로 남깁니다. 가입 전에도
           오늘의 문제를 풀고, 약점 트리를 채워보세요.
         </p>
@@ -106,7 +106,7 @@ function PortalHero() {
           <Button
             asChild
             size="medium"
-            className="shadow-[0_5px_0_var(--orange-10)] active:translate-y-[2px] active:shadow-[0_3px_0_var(--orange-10)]"
+            className="shadow-[0_5px_0_var(--orange-10)] active:translate-y-0.5 active:shadow-[0_3px_0_var(--orange-10)]"
           >
             <Link href="#today-challenge">
               무료로 오늘의 문제 풀기 <ArrowRight size={17} />
@@ -121,7 +121,7 @@ function PortalHero() {
             <Link href={PUBLIC.CONSULT.INDEX}>고민 비공개로 올리기</Link>
           </Button>
         </div>
-        <div className="border-orange-4 mt-8 grid max-w-[500px] grid-cols-3 gap-3 border-t pt-5">
+        <div className="border-orange-4 mt-8 grid max-w-125 grid-cols-3 gap-3 border-t pt-5">
           {MENTOR_PROFILE.facts.map((fact) => (
             <div key={fact.label}>
               <p className="text-orange-9 text-xl font-extrabold tabular-nums sm:text-2xl">
@@ -135,7 +135,7 @@ function PortalHero() {
           경력·상담·배출 수치는 실제 값입니다.
         </p>
       </div>
-      <div className="relative z-10 mt-8 ml-auto w-full max-w-[290px] sm:absolute sm:right-8 sm:bottom-[-2px] sm:mt-0 sm:w-[34%] sm:min-w-[260px]">
+      <div className="relative z-10 mt-8 ml-auto w-full max-w-72.5 sm:absolute sm:right-8 sm:bottom-[-2px] sm:mt-0 sm:w-[34%] sm:min-w-65">
         <Image
           src="/character/img_intro01.png"
           alt="학습 중인 디에듀 캐릭터 일러스트"
@@ -144,8 +144,8 @@ function PortalHero() {
           priority
           className="mx-auto h-auto w-full drop-shadow-[0_16px_12px_rgba(86,23,0,0.22)]"
         />
-        <div className="border-gray-3 absolute -bottom-3 -left-10 w-[245px] overflow-hidden rounded-xl border bg-white shadow-[0_10px_24px_rgba(26,26,26,0.18)] sm:-left-16">
-          <div className="bg-gray-12 flex items-center gap-2 px-3 py-2 text-[11px] font-bold text-white">
+        <div className="border-gray-3 absolute -bottom-3 -left-10 w-61.25 overflow-hidden rounded-xl border bg-white shadow-[0_10px_24px_rgba(26,26,26,0.18)] sm:-left-16">
+          <div className="bg-gray-12 text-ui-choice flex items-center gap-2 px-3 py-2 font-bold text-white">
             <span className="bg-orange-6 h-1.5 w-1.5 rounded-full" />
             지금 풀 수 있는 오늘의 문제
           </div>
@@ -154,9 +154,9 @@ function PortalHero() {
             alt="오늘의 문제 스캔 미리보기"
             width={490}
             height={276}
-            className="h-[92px] w-full object-cover object-top"
+            className="h-23 w-full object-cover object-top"
           />
-          <p className="text-gray-8 flex justify-between px-3 py-2 text-[10px]">
+          <p className="text-gray-8 text-ui-compact flex justify-between px-3 py-2">
             <span>수학 · 예상 8분</span>
             <span>무료 · 로그인 없이</span>
           </p>
@@ -241,8 +241,8 @@ function TodayChallenge() {
                 무료로 지금 풀기 <ChevronRight size={17} />
               </span>
             </div>
-            <div className="border-gray-3 bg-orange-1 relative min-h-[220px] overflow-hidden rounded-xl border">
-              <span className="text-orange-9 absolute top-3 left-3 z-10 rounded-full bg-white px-2 py-1 text-[11px] font-bold shadow-sm">
+            <div className="border-gray-3 bg-orange-1 relative min-h-55 overflow-hidden rounded-xl border">
+              <span className="text-orange-9 text-ui-choice absolute top-3 left-3 z-10 rounded-full bg-white px-2 py-1 font-bold shadow-sm">
                 실제 EBSi 스캔
               </span>
               {challenge.questionImageUrl ? (
@@ -311,7 +311,7 @@ function PopularPosts() {
             <li key={post.id}>
               <Link
                 href={PUBLIC.BOARD.DETAIL(post.id)}
-                className="focus-ring hover:bg-orange-1 flex min-h-[64px] items-center gap-3 px-3 py-3"
+                className="focus-ring hover:bg-orange-1 flex min-h-16 items-center gap-3 px-3 py-3"
               >
                 <span
                   className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-sm font-extrabold text-white ${index < 3 ? 'from-orange-6 to-orange-9 bg-gradient-to-br' : 'bg-gray-5'}`}
@@ -327,7 +327,7 @@ function PopularPosts() {
                     {post.viewCount.toLocaleString()}
                   </span>
                 </span>
-                <span className="bg-gray-1 text-gray-10 rounded-full px-2 py-1 text-[11px] font-bold">
+                <span className="bg-gray-1 text-gray-10 text-ui-choice rounded-full px-2 py-1 font-bold">
                   칼럼
                 </span>
               </Link>
@@ -354,7 +354,7 @@ function Consultation() {
         href={PUBLIC.CONSULT.INDEX}
         more="상담소 전체"
       />
-      <div className="from-orange-6 to-orange-9 rounded-[18px] bg-gradient-to-br p-6 text-white shadow-[0_8px_20px_rgba(209,56,0,0.22)]">
+      <div className="from-orange-6 to-orange-9 rounded-section bg-gradient-to-br p-6 text-white shadow-[0_8px_20px_rgba(209,56,0,0.22)]">
         <p className="text-orange-1 text-xs font-bold">무료 · 비공개 접수</p>
         <h3 className="mt-2 text-2xl font-bold">내 고민 올리기</h3>
         <p className="mt-3 max-w-xl text-sm leading-6 text-white/85">
@@ -443,7 +443,7 @@ function MentorAndCourses() {
           </div>
           <span
             data-asset-slot="mentor-real-photo"
-            className="border-orange-4 text-orange-9 ml-auto rounded-full border bg-white/75 px-2 py-1 text-[10px] font-bold"
+            className="border-orange-4 text-orange-9 text-ui-compact ml-auto rounded-full border bg-white/75 px-2 py-1 font-bold"
           >
             실사진 예정
           </span>
@@ -497,7 +497,7 @@ function MentorAndCourses() {
               href={PUBLIC.COURSE.DETAIL(course.courseId)}
               className="focus-ring border-gray-3 hover:border-orange-4 flex min-h-16 items-center gap-3 rounded-xl border bg-white p-2.5 shadow-sm"
             >
-              <span className="from-orange-4 to-orange-9 relative flex h-14 w-19 shrink-0 items-end overflow-hidden rounded-lg bg-gradient-to-br p-1.5 text-[10px] font-bold text-white">
+              <span className="from-orange-4 to-orange-9 text-ui-compact relative flex h-14 w-19 shrink-0 items-end overflow-hidden rounded-lg bg-gradient-to-br p-1.5 font-bold text-white">
                 <Image
                   src={`/home/im_card_${(index % 3) + 1}_desktop.png`}
                   alt=""
@@ -598,7 +598,7 @@ function EditorialAndNews() {
               <div
                 className={`relative flex aspect-video items-end overflow-hidden p-3 ${index === 0 ? 'from-orange-6 to-orange-9 bg-gradient-to-br' : index === 1 ? 'from-orange-8 to-orange-11 bg-gradient-to-br' : 'from-gray-11 to-orange-11 bg-gradient-to-br'}`}
               >
-                <span className="text-orange-9 relative rounded-full bg-white/90 px-2 py-1 text-[11px] font-bold">
+                <span className="text-orange-9 text-ui-choice relative rounded-full bg-white/90 px-2 py-1 font-bold">
                   실사진 예정
                 </span>
                 <b className="absolute right-0 -bottom-5 text-7xl font-extrabold tracking-tighter text-white/15">
@@ -626,7 +626,7 @@ function EditorialAndNews() {
 
 export function PortalHome() {
   return (
-    <main className="mx-auto w-full max-w-[1240px] px-4 py-7 sm:px-8 sm:py-10 lg:px-12">
+    <main className="mx-auto w-full max-w-310 px-4 py-7 sm:px-8 sm:py-10 lg:px-12">
       <PortalHero />
       <div className="mt-10 grid gap-x-8 gap-y-10 lg:grid-cols-[minmax(0,1.55fr)_minmax(320px,.95fr)]">
         <div className="space-y-10">

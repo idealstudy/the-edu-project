@@ -96,7 +96,7 @@ const WriteArea = ({ studyRoomId, contextId }: Props) => {
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
-      <ColumnLayout.Right className="desktop:min-w-[740px] h-fit w-full">
+      <ColumnLayout.Right className="desktop:min-w-185 h-fit w-full">
         <div className="space-y-5">
           {/* 내용 */}
           <Form.Item error={!!errors.content}>
@@ -131,7 +131,7 @@ const WriteArea = ({ studyRoomId, contextId }: Props) => {
             <Button
               type="submit"
               disabled={isButtonDisabled}
-              className="w-[200px] rounded-sm"
+              className="w-50 rounded-sm"
             >
               {isSubmitting ? '등록 중...' : '작성하기'}
             </Button>

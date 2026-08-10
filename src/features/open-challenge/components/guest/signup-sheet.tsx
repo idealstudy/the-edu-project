@@ -73,7 +73,7 @@ export const SignupSheet = ({
     >
       <Dialog.Content
         data-testid="signup-sheet"
-        className="fixed top-auto bottom-0 left-0 w-full max-w-full translate-x-0 translate-y-0 gap-5 rounded-t-[24px] rounded-b-none p-6 pb-8 text-center sm:top-1/2 sm:left-1/2 sm:max-w-[420px] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[24px]"
+        className="fixed top-auto bottom-0 left-0 w-full max-w-full translate-x-0 translate-y-0 gap-5 rounded-t-3xl rounded-b-none p-6 pb-8 text-center sm:top-1/2 sm:left-1/2 sm:max-w-105 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-3xl"
       >
         <Dialog.Header className="items-center">
           {showVerdict && (

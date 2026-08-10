@@ -20,7 +20,7 @@ export const TeacherDashboardHeader = ({
   const todoCount = rooms.reduce((sum, room) => sum + room.todoCount, 0);
 
   return (
-    <header className="border-gray-3 -0 sticky top-0 z-30 flex items-center gap-3 border-b bg-white px-4 py-3">
+    <header className="border-gray-3 sticky top-0 z-30 flex items-center gap-3 border-b bg-white px-4 py-3 md:px-5.5">
       <span className="bg-orange-7 flex size-9 items-center justify-center rounded-full text-sm font-extrabold text-white">
         {memberName.slice(0, 1)}
       </span>

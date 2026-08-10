@@ -25,7 +25,7 @@ const StudentDashboardHeader = ({
   ] as const;
 
   return (
-    <header className="border-gray-3 bg-gray-white -0 sticky top-0 z-20 border-b px-4 py-3">
+    <header className="border-gray-3 bg-gray-white sticky top-0 z-20 border-b px-4 py-3 md:px-5.5">
       <div className="flex w-full flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-gray-12 text-coach font-extrabold">{title}</h1>

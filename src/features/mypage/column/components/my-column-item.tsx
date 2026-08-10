@@ -69,7 +69,7 @@ export default function MyColumnItem({ column }: { column: MyColumnListItem }) {
                 className="hover:bg-gray-scale-gray-5 cursor-pointer rounded"
               />
             </DropdownMenu.Trigger>
-            <DropdownMenu.Content className="w-[110px] justify-center">
+            <DropdownMenu.Content className="w-27.5 justify-center">
               <DropdownMenu.Item asChild>
                 <Link
                   href={PRIVATE.COMMUNITY.COLUMN.EDIT(column.id)}

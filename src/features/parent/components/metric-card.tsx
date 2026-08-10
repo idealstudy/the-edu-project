@@ -58,7 +58,7 @@ export const MetricCard = ({
 
   return (
     <section
-      className="border-line-line1 flex flex-col gap-4 rounded-[12px] border bg-white p-5"
+      className="border-line-line1 rounded-card flex flex-col gap-4 border bg-white p-5"
       aria-label={label}
     >
       <div className="flex items-center gap-3">

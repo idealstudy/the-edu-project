@@ -183,7 +183,7 @@ const InviteRow = ({
   invite: ChallengeInvite;
   onViewResult: (invite: ChallengeInvite) => void;
 }) => (
-  <div className="border-line-line2 bg-gray-1 flex items-center justify-between gap-3 rounded-[10px] border px-3 py-2.5">
+  <div className="border-line-line2 bg-gray-1 rounded-row flex items-center justify-between gap-3 border px-3 py-2.5">
     <div className="flex min-w-0 flex-col">
       <span className="font-caption-heading text-text-main truncate">
         {opponentLabel(invite)}
@@ -229,7 +229,7 @@ const InviteGroupRow = ({
   const contentId = `challenge-invite-group-${group.challengeId}`;
 
   return (
-    <li className="border-line-line2 flex flex-col gap-3 rounded-[12px] border bg-white px-4 py-3">
+    <li className="border-line-line2 rounded-card flex flex-col gap-3 border bg-white px-4 py-3">
       <div className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <span className="bg-orange-1 text-key-color-primary flex size-10 shrink-0 items-center justify-center rounded-full">
@@ -259,7 +259,7 @@ const InviteGroupRow = ({
               aria-expanded={expanded}
               aria-controls={contentId}
               onClick={onToggle}
-              className="border-line-line2 text-text-sub1 hover:bg-gray-scale-gray-1 flex h-10 items-center gap-1 rounded-[8px] border px-3 text-sm"
+              className="border-line-line2 text-text-sub1 hover:bg-gray-scale-gray-1 rounded-button flex h-10 items-center gap-1 border px-3 text-sm"
             >
               {expanded ? '접기' : '보기'}
               <ChevronDown
@@ -284,7 +284,7 @@ const InviteGroupRow = ({
       {hasMultiple && expanded && (
         <div
           id={contentId}
-          className="flex flex-col gap-2 pl-[52px]"
+          className="flex flex-col gap-2 pl-13"
         >
           {group.invites.map((invite) => (
             <InviteRow
@@ -338,14 +338,14 @@ export const MyChallengeInvites = () => {
           {Array.from({ length: 3 }).map((_, index) => (
             <div
               key={index}
-              className="border-line-line2 bg-gray-1 h-16 animate-pulse rounded-[12px] border"
+              className="border-line-line2 bg-gray-1 rounded-card h-16 animate-pulse border"
             />
           ))}
         </div>
       )}
 
       {isError && (
-        <div className="border-line-line2 flex flex-col items-center gap-3 rounded-[12px] border bg-white p-8 text-center">
+        <div className="border-line-line2 rounded-card flex flex-col items-center gap-3 border bg-white p-8 text-center">
           <p className="font-body2-normal text-text-sub1">
             도전 기록을 불러오지 못했어요.
           </p>
@@ -374,7 +374,7 @@ export const MyChallengeInvites = () => {
               ))}
             </ul>
           ) : (
-            <div className="border-line-line2 flex flex-col items-center gap-2 rounded-[12px] border border-dashed bg-white p-8 text-center">
+            <div className="border-line-line2 rounded-card flex flex-col items-center gap-2 border border-dashed bg-white p-8 text-center">
               <p className="font-body2-heading text-text-main">
                 아직 보낸 도전장이 없어요
               </p>

@@ -102,11 +102,11 @@ export const InvitationSearchResult = ({
                         <span className="font-medium text-gray-900">
                           {user.inviteeName}
                         </span>
-                        <span className="rounded-md border border-gray-300 px-1.5 py-[1px] text-sm text-gray-700">
+                        <span className="rounded-md border border-gray-300 px-1.5 py-0.25 text-sm text-gray-700">
                           {user.role === 'ROLE_STUDENT' && '학생'}
                         </span>
                         <span
-                          className="text-key-color-primary text-[10px] leading-[0]"
+                          className="text-key-color-primary text-ui-compact leading-[0]"
                           aria-hidden="true"
                         >
                           ●

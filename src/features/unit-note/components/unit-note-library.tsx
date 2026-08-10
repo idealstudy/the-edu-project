@@ -121,9 +121,9 @@ export const UnitNoteLibrary = () => {
 
           {libraryQuery.isPending ? (
             <div className="mt-4 space-y-2">
-              <Skeleton.Block className="-0 w-full rounded-lg" />
-              <Skeleton.Block className="-0 w-full rounded-lg" />
-              <Skeleton.Block className="-0 w-full rounded-lg" />
+              <Skeleton.Block className="h-14.5 w-full rounded-lg" />
+              <Skeleton.Block className="h-14.5 w-full rounded-lg" />
+              <Skeleton.Block className="h-14.5 w-full rounded-lg" />
             </div>
           ) : libraryQuery.isError ? (
             <div
@@ -156,7 +156,7 @@ export const UnitNoteLibrary = () => {
                 return (
                   <div
                     key={subject.key}
-                    className={`-0 grid items-center gap-3 py-2 md:grid-cols-[minmax(190px,1fr)_minmax(250px,1.2fr)_150px] ${index === 0 ? 'bg-orange-1 px-2' : 'px-2'}`}
+                    className={`grid min-h-14.5 items-center gap-3 py-2 md:grid-cols-[minmax(190px,1fr)_minmax(250px,1.2fr)_150px] ${index === 0 ? 'bg-orange-1 px-2' : 'px-2'}`}
                   >
                     <div className="min-w-0">
                       <p className="text-gray-12 text-sm font-extrabold">

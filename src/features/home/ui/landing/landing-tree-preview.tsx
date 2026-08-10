@@ -38,31 +38,34 @@ export function LandingTreePreview() {
   return (
     <section
       className={cn(
-        'mx-auto flex w-full max-w-[912px] flex-col gap-6 px-6 py-14',
+        'mx-auto flex w-full max-w-228 flex-col gap-6 px-6 py-14',
         'tablet:py-20'
       )}
     >
       <div className="flex flex-col gap-2">
-        <span className="font-label-heading text-orange-7">내 약점 트리 · 수학 I</span>
-        <h2 className={cn('font-headline1-heading text-balance', 'tablet:font-title-heading')}>
+        <span className="font-label-heading text-orange-7">
+          내 약점 트리 · 수학 I
+        </span>
+        <h2
+          className={cn(
+            'font-headline1-heading text-balance',
+            'tablet:font-title-heading'
+          )}
+        >
           채울수록 진해지는, 내 정복 지도
         </h2>
         <p className="font-label-normal text-gray-9 tablet:font-body2-normal">
-          진할수록 정복. 옅으면 약점, 회색은 미진단. <span aria-hidden>⚠</span> = 반복해서 막힌 단원.
+          진할수록 정복. 옅으면 약점, 회색은 미진단. <span aria-hidden>⚠</span>{' '}
+          = 반복해서 막힌 단원.
         </p>
       </div>
 
-      <div
-        className={cn(
-          'grid grid-cols-2 gap-3',
-          'tablet:grid-cols-3'
-        )}
-      >
+      <div className={cn('grid grid-cols-2 gap-3', 'tablet:grid-cols-3')}>
         {NODES.map((node) => (
           <div
             key={node.label}
             className={cn(
-              'relative flex min-h-[88px] flex-col justify-between rounded-xl p-4',
+              'relative flex min-h-22 flex-col justify-between rounded-xl p-4',
               STAGE_BG[node.stage]
             )}
           >
@@ -74,7 +77,9 @@ export function LandingTreePreview() {
                 ⚠
               </span>
             )}
-            <span className="font-body2-heading text-balance">{node.label}</span>
+            <span className="font-body2-heading text-balance">
+              {node.label}
+            </span>
             <span className="font-caption-heading flex items-baseline gap-1.5 opacity-90">
               {node.meta}
               {node.pct !== undefined && (
@@ -92,7 +97,10 @@ export function LandingTreePreview() {
             className="flex items-center gap-1.5"
           >
             <span
-              className={cn('h-3 w-3 rounded-full', STAGE_BG[stage].split(' ')[0])}
+              className={cn(
+                'h-3 w-3 rounded-full',
+                STAGE_BG[stage].split(' ')[0]
+              )}
               aria-hidden
             />
             {label}

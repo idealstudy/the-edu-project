@@ -13,7 +13,7 @@ export default function StudyNoteVisibilityIcon({
           width={28}
           height={28}
           alt="study-notes"
-          className="h-[28px] w-[28px] cursor-pointer"
+          className="h-7 w-7 cursor-pointer"
         />
       );
     case 'SPECIFIC_STUDENTS_ONLY':
@@ -23,7 +23,7 @@ export default function StudyNoteVisibilityIcon({
           width={28}
           height={28}
           alt="study-notes"
-          className="h-[28px] w-[28px] cursor-pointer"
+          className="h-7 w-7 cursor-pointer"
         />
       );
     case 'SPECIFIC_STUDENTS_AND_PARENTS':
@@ -33,7 +33,7 @@ export default function StudyNoteVisibilityIcon({
           width={28}
           height={28}
           alt="study-notes"
-          className="h-[28px] w-[28px] cursor-pointer"
+          className="h-7 w-7 cursor-pointer"
         />
       );
     case 'STUDY_ROOM_STUDENTS_AND_PARENTS':
@@ -43,7 +43,7 @@ export default function StudyNoteVisibilityIcon({
           width={28}
           height={28}
           alt="study-notes"
-          className="h-[28px] w-[28px] cursor-pointer"
+          className="h-7 w-7 cursor-pointer"
         />
       );
     case 'TEACHER_ONLY':
@@ -53,7 +53,7 @@ export default function StudyNoteVisibilityIcon({
           width={28}
           height={28}
           alt="study-notes"
-          className="h-[28px] w-[28px] cursor-pointer"
+          className="h-7 w-7 cursor-pointer"
         />
       );
     default:

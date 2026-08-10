@@ -132,7 +132,7 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
           </Form.Control>
           <Button
             variant="secondary"
-            className="h-[56px] rounded-l-none"
+            className="h-14 rounded-l-none"
             disabled={!canResend}
             onClick={onSendButtonClick}
           >
@@ -156,7 +156,7 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
           </Form.Control>
 
           <Button
-            className="h-[56px] rounded-l-none"
+            className="h-14 rounded-l-none"
             onClick={onVerifyCodeButtonClick}
             disabled={
               emailCodeVerified ||

@@ -111,7 +111,7 @@ export const ProfileStep = () => {
           />
           <Button
             variant="secondary"
-            className="h-[56px] rounded-l-none"
+            className="h-14 rounded-l-none"
             type="button"
             onClick={onCheckPhoneNumberButtonClick}
             disabled={

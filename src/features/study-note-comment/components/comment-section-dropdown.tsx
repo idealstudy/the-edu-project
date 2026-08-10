@@ -32,7 +32,7 @@ export const CommentDropdown = ({
           className="h-4 w-4"
         />
       </DropdownMenu.Trigger>
-      <DropdownMenu.Content className="w-[120px]">
+      <DropdownMenu.Content className="w-30">
         {canReply && (
           <DropdownMenu.Item
             onSelect={onReply}

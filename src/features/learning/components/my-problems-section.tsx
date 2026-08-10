@@ -146,7 +146,7 @@ export const MyProblemsSection = () => {
 
   return (
     <section
-      className="border-line-line1 flex flex-col gap-4 rounded-[12px] border bg-white p-5"
+      className="border-line-line1 rounded-card flex flex-col gap-4 border bg-white p-5"
       aria-label="내 문제"
     >
       <div className="flex flex-col gap-1">
@@ -173,7 +173,7 @@ export const MyProblemsSection = () => {
               aria-selected={active}
               onClick={() => changeStatusTab(tab.value)}
               className={cn(
-                'font-label-heading flex h-11 items-center rounded-[8px] border px-4 transition-colors',
+                'font-label-heading rounded-button flex h-11 items-center border px-4 transition-colors',
                 active
                   ? 'border-key-color-primary bg-orange-1 text-key-color-primary'
                   : 'border-line-line1 text-text-sub1 hover:bg-gray-1'
@@ -234,7 +234,7 @@ export const MyProblemsSection = () => {
           <button
             type="button"
             onClick={() => refetch()}
-            className="bg-key-color-primary font-label-heading flex h-11 items-center rounded-[8px] px-5 text-white"
+            className="bg-key-color-primary font-label-heading rounded-button flex h-11 items-center px-5 text-white"
           >
             다시 시도
           </button>
@@ -248,7 +248,7 @@ export const MyProblemsSection = () => {
           </p>
           <Link
             href={PUBLIC.OPEN_CHALLENGE.LIST}
-            className="bg-key-color-primary font-label-heading flex h-11 items-center rounded-[8px] px-5 text-white"
+            className="bg-key-color-primary font-label-heading rounded-button flex h-11 items-center px-5 text-white"
           >
             오픈챌린지 가기
           </Link>
@@ -283,7 +283,7 @@ export const MyProblemsSection = () => {
                           className="hover:bg-gray-scale-gray-5 cursor-pointer rounded"
                         />
                       </DropdownMenu.Trigger>
-                      <DropdownMenu.Content className="w-[132px] justify-center">
+                      <DropdownMenu.Content className="w-33 justify-center">
                         <DropdownMenu.Item asChild>
                           <Link
                             href={PUBLIC.OPEN_CHALLENGE.DETAIL(
@@ -303,7 +303,7 @@ export const MyProblemsSection = () => {
                     <Link
                       href={PUBLIC.OPEN_CHALLENGE.DETAIL(item.challengeId)}
                       data-testid={`my-problem-resume-${item.challengeId}`}
-                      className="bg-key-color-primary font-label-heading flex h-11 items-center rounded-[8px] px-5 text-white"
+                      className="bg-key-color-primary font-label-heading rounded-button flex h-11 items-center px-5 text-white"
                     >
                       이어 풀기
                     </Link>

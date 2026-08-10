@@ -133,7 +133,7 @@ export const ChallengeCard = ({
       aria-label={`${challenge.title} 도전하기`}
     >
       {/* 썸네일은 항상 '퀴즈 티저' — 원본 문제(이미지)는 풀이 화면에서만 노출한다. */}
-      <div className="relative min-h-[200px]">
+      <div className="relative min-h-50">
         <div className="absolute top-3 left-3 z-20 flex gap-1.5">
           <span
             className={cn(
@@ -168,14 +168,14 @@ export const ChallengeCard = ({
             />
           </div>
         )}
-        {(
+        {
           // '퀴즈 티저' — 문제 내용·수식은 숨기고 단원/난이도/정답률·출처로 궁금증 유발.
-          <div className="from-orange-1 to-orange-3 relative flex min-h-[200px] w-full flex-col overflow-hidden bg-gradient-to-br px-5 pt-12 pb-5">
+          <div className="from-orange-1 to-orange-3 relative flex min-h-50 w-full flex-col overflow-hidden bg-gradient-to-br px-5 pt-12 pb-5">
             {/* 배경: 정답률을 큰 숫자로 — 수식 대신 도발 스탯 */}
             {correctRate !== null && (
-              <span className="text-orange-4/40 pointer-events-none absolute -right-2 -bottom-6 text-[96px] leading-none font-black tabular-nums select-none">
+              <span className="text-orange-4/40 pointer-events-none absolute -right-2 -bottom-6 text-8xl leading-none font-black tabular-nums select-none">
                 {correctRate}
-                <span className="text-[40px]">%</span>
+                <span className="font-display-2">%</span>
               </span>
             )}
 
@@ -209,7 +209,7 @@ export const ChallengeCard = ({
               </span>
             </div>
           </div>
-        )}
+        }
       </div>
 
       <div className="flex flex-1 flex-col gap-3 bg-white p-5">

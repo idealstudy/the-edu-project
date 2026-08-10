@@ -1,7 +1,7 @@
 import { Skeleton } from '@/shared/components/loading';
 
 const NodeSkeleton = () => (
-  <Skeleton.Block className="-0 rounded-card w-full" />
+  <Skeleton.Block className="rounded-card h-22 w-full" />
 );
 
 const SectionSkeleton = () => (
@@ -20,7 +20,7 @@ const SectionSkeleton = () => (
  * ────────────────────────────────────────────────────*/
 export const TreeSkeleton = () => (
   <div className="flex flex-col gap-8">
-    <Skeleton.Block className="-0 rounded-card w-full" />
+    <Skeleton.Block className="rounded-card h-30 w-full" />
     <Skeleton.Block className="h-12 w-full rounded-xl" />
     <SectionSkeleton />
     <SectionSkeleton />

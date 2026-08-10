@@ -40,7 +40,7 @@ export default function StepOne({
         height="200"
         decoding="async"
         data-nimg="1"
-        className="bg-orange-scale-orange-1 w-full rounded-[12px] p-[14px]"
+        className="bg-orange-scale-orange-1 rounded-card w-full p-3.5"
         src="/studyroom/study-room-hero.svg"
       />
       <Form.Item
@@ -150,7 +150,7 @@ export default function StepOne({
               onValueChange={field.onChange}
             >
               <Select.Trigger
-                className="w-[240px]"
+                className="w-60"
                 placeholder="공개 범위 선택"
               />
               <Select.Content>

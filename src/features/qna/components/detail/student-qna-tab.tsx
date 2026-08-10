@@ -40,17 +40,17 @@ export default function StudentQuestionSession({ studyRoomId }: Props) {
 
       <form
         onSubmit={handleSubmit}
-        className="flex h-[56px] flex-row items-center gap-[10px] rounded-[12px] bg-white"
+        className="rounded-card flex h-14 flex-row items-center gap-2.5 bg-white"
       >
         <Input
           ref={inputRef}
-          className="desktop:w-[504px] border-line-line1 h-[56px] px-6 py-[18px]"
+          className="desktop:w-126 border-line-line1 h-14 px-6 py-4.5"
           placeholder="선생님이 질문을 기다리고 있어요."
           maxLength={30}
         />
         <Button
           type="submit"
-          className="desktop:w-[162px] h-[56px] rounded-[8px] text-white"
+          className="desktop:w-40.5 rounded-button h-14 text-white"
           disabled={isLoading}
         >
           <span className="font-body2-normal font-bold">

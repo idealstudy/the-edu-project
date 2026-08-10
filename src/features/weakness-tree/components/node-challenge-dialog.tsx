@@ -42,7 +42,7 @@ export const NodeChallengeDialog = ({
         if (!open) onClose();
       }}
     >
-      <Dialog.Content className="-0 gap-5 p-6 md:p-8">
+      <Dialog.Content className="max-w-160 gap-5 p-6 md:p-8">
         <Dialog.Header>
           <Dialog.Title className="font-headline2-heading text-pretty">
             {node?.displayName ?? '단원'}
@@ -76,9 +76,9 @@ export const NodeChallengeDialog = ({
         <Dialog.Body className="gap-2">
           {isLoading ? (
             <div className="flex flex-col gap-2">
-              <Skeleton.Block className="-0 rounded-row w-full" />
-              <Skeleton.Block className="-0 rounded-row w-full" />
-              <Skeleton.Block className="-0 rounded-row w-full" />
+              <Skeleton.Block className="rounded-row h-17 w-full" />
+              <Skeleton.Block className="rounded-row h-17 w-full" />
+              <Skeleton.Block className="rounded-row h-17 w-full" />
             </div>
           ) : (challenges?.length ?? 0) === 0 ? (
             <div className="border-line-line1 rounded-row flex flex-col items-center gap-2 border border-dashed bg-white py-10 text-center">
@@ -100,7 +100,7 @@ export const NodeChallengeDialog = ({
                 <li key={challenge.challengeId}>
                   <Link
                     href={PUBLIC.OPEN_CHALLENGE.DETAIL(challenge.challengeId)}
-                    className="border-line-line1 hover:border-key-color-primary -0 rounded-row flex items-center gap-3 border bg-white p-3 transition-colors"
+                    className="border-line-line1 hover:border-key-color-primary rounded-row flex min-h-11 items-center gap-3 border bg-white p-3 transition-colors"
                   >
                     <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                       <span className="font-caption-heading text-text-sub2">

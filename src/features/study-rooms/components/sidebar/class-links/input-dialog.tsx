@@ -58,7 +58,7 @@ export const StudyroomClassLinksInputDialog = ({
       isOpen={isOpen}
       onOpenChange={handleClose}
     >
-      <Dialog.Content className="max-w-[520px] gap-6">
+      <Dialog.Content className="max-w-130 gap-6">
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex flex-col gap-2">
@@ -86,7 +86,7 @@ export const StudyroomClassLinksInputDialog = ({
             value={linkName}
             onChange={setLinkName}
             label={
-              <TextField.Label className="font-body1-heading text-gray-12 mb-2 text-[18px]">
+              <TextField.Label className="font-body1-heading text-gray-12 mb-2 text-lg">
                 링크 이름
               </TextField.Label>
             }
@@ -110,7 +110,7 @@ export const StudyroomClassLinksInputDialog = ({
               </TextField.ErrorMessage>
             }
             label={
-              <TextField.Label className="font-body1-heading text-gray-12 mb-2 text-[18px]">
+              <TextField.Label className="font-body1-heading text-gray-12 mb-2 text-lg">
                 링크 주소
               </TextField.Label>
             }

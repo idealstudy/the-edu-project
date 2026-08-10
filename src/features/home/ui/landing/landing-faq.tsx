@@ -43,7 +43,7 @@ export function LandingFaq() {
   return (
     <section
       className={cn(
-        'mx-auto flex w-full max-w-[760px] flex-col gap-6 px-6 py-14',
+        'mx-auto flex w-full max-w-190 flex-col gap-6 px-6 py-14',
         'tablet:py-20'
       )}
     >
@@ -79,7 +79,7 @@ export function LandingFaq() {
                 </span>
               </button>
               {isOpen && (
-                <div className="border-line-line1 font-label-normal text-gray-9 tablet:font-body2-normal space-y-2 border-t px-5 py-4 tablet:px-6">
+                <div className="border-line-line1 font-label-normal text-gray-9 tablet:font-body2-normal tablet:px-6 space-y-2 border-t px-5 py-4">
                   {item.a.map((line) => (
                     <p key={line}>{line}</p>
                   ))}

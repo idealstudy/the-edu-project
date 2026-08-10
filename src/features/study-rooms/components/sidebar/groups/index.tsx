@@ -96,7 +96,7 @@ export const StudyroomGroups = ({
           <p className="font-body1-heading">수업노트 그룹</p>
           {role === 'ROLE_TEACHER' && (
             <div
-              className="hover:bg-gray-scale-gray-1 flex h-9 w-9 cursor-pointer items-center justify-center rounded-[8px]"
+              className="hover:bg-gray-scale-gray-1 rounded-button flex h-9 w-9 cursor-pointer items-center justify-center"
               onClick={handleCreateGroupClick}
             >
               <PlusIcon />
@@ -106,7 +106,7 @@ export const StudyroomGroups = ({
 
         <div
           ref={scrollContainerRef}
-          className="desktop:max-h-[1000px] flex flex-col overflow-y-auto"
+          className="desktop:max-h-250 flex flex-col overflow-y-auto"
         >
           {allGroups.map((group) => (
             <GroupListItem

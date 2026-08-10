@@ -86,7 +86,7 @@ export const StudentHomeworkDetail = ({
         dispatch={dispatch}
       />
 
-      <ColumnLayout.Right className="desktop:min-w-[740px] flex w-full flex-col gap-3 rounded-[12px]">
+      <ColumnLayout.Right className="desktop:min-w-185 rounded-card flex w-full flex-col gap-3">
         {/* 선생님이 낸 과제 */}
         {data.homework && (
           <StudentHomeworkContent

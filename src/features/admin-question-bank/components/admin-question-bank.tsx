@@ -110,11 +110,9 @@ export const AdminQuestionBank = () => {
       className="bg-[#f7f7f8] p-4 md:p-8"
       data-testid="admin-question-bank"
     >
-      <div className="mx-auto max-w-[1180px]">
+      <div className="mx-auto max-w-295">
         <div className="mb-4 flex flex-wrap items-center gap-2">
-          <h1 className="text-[19px] font-extrabold text-[#27272a]">
-            문제은행
-          </h1>
+          <h1 className="text-xl font-extrabold text-[#27272a]">문제은행</h1>
           <span className="text-xs text-[#71717a]">
             선생님 시험 열기가 여기 데이터를 그대로 먹습니다.
           </span>
@@ -204,19 +202,19 @@ export const AdminQuestionBank = () => {
                   <span className="text-center text-xs font-extrabold text-[#52525b] tabular-nums">
                     {question.challengeId}
                   </span>
-                  <span className="min-w-0 text-[13px] leading-5 font-semibold text-[#27272a]">
+                  <span className="text-coach min-w-0 leading-5 font-semibold text-[#27272a]">
                     {question.questionText ?? question.title}
-                    <small className="mt-1 block truncate text-[11px] font-normal text-[#71717a]">
+                    <small className="text-ui-choice mt-1 block truncate font-normal text-[#71717a]">
                       {question.treeNodePath} · {question.sourceText}
                     </small>
                   </span>
                   <span className="flex items-center gap-2">
                     {needsReview(question) ? (
-                      <span className="rounded-full bg-[#fff7ed] px-2 py-1 text-[11px] font-bold text-[#c2410c]">
+                      <span className="text-ui-choice rounded-full bg-[#fff7ed] px-2 py-1 font-bold text-[#c2410c]">
                         검수 대기
                       </span>
                     ) : (
-                      <span className="rounded-full bg-[#effaf1] px-2 py-1 text-[11px] font-bold text-[#237a3d]">
+                      <span className="text-ui-choice rounded-full bg-[#effaf1] px-2 py-1 font-bold text-[#237a3d]">
                         공개
                       </span>
                     )}
@@ -241,8 +239,10 @@ export const AdminQuestionBank = () => {
                       className="col-span-3 rounded-lg border border-[#e4e4e7] bg-[#fafafa] p-3 text-xs leading-6 text-[#3f3f46]"
                       data-testid={`admin-question-bank-detail-${question.challengeId}`}
                     >
-                      <p>{question.questionText ?? '지문이 등록되지 않았습니다.'}</p>
-                      <p className="mt-2 text-[11px] text-[#71717a]">
+                      <p>
+                        {question.questionText ?? '지문이 등록되지 않았습니다.'}
+                      </p>
+                      <p className="text-ui-choice mt-2 text-[#71717a]">
                         정답 {question.hasCorrectAnswer ? '등록됨' : '없음'} ·
                         단원 {question.treeNodePath || '미지정'} · 난이도{' '}
                         {question.difficulty}
@@ -286,7 +286,7 @@ export const AdminQuestionBank = () => {
                 검수 시작
               </Button>
               {pendingCount === 0 && (
-                <p className="mt-2 text-[11px] text-[#71717a]">
+                <p className="text-ui-choice mt-2 text-[#71717a]">
                   이 과목에 검수 대기 문항이 없습니다.
                 </p>
               )}
@@ -301,7 +301,7 @@ export const AdminQuestionBank = () => {
                 목록으로 보여주고 사람이 지정합니다. 이미 있는 문항은
                 건너뜁니다.
               </p>
-              <div className="mt-3 rounded-lg border border-[#e4e4e7] bg-[#fafafa] p-3 text-[11px] leading-5 text-[#52525b]">
+              <div className="text-ui-choice mt-3 rounded-lg border border-[#e4e4e7] bg-[#fafafa] p-3 leading-5 text-[#52525b]">
                 <b>마지막 올리기</b>
                 <br />
                 6월 학력평가 30문항 · 신규 30 · 건너뜀 0 · 단원 미매칭 0
@@ -315,7 +315,7 @@ export const AdminQuestionBank = () => {
               <h2 className="text-sm font-extrabold text-[#27272a]">
                 등급 기준표 등록
               </h2>
-              <p className="mt-1 text-[11px] leading-5 text-[#71717a]">
+              <p className="text-ui-choice mt-1 leading-5 text-[#71717a]">
                 기준표가 붙으면 학생에게 실측 등급과 표준점수가 표시됩니다.
               </p>
               <Select
@@ -347,7 +347,7 @@ export const AdminQuestionBank = () => {
                 placeholder="출처: EBSi 2027 6월 모의평가"
                 {...register('source')}
               />
-              <p className="mt-3 text-[11px] leading-5 font-bold text-[#52525b]">
+              <p className="text-ui-choice mt-3 leading-5 font-bold text-[#52525b]">
                 1등급부터 8등급까지 원점수 하한
               </p>
               <div className="mt-2 grid grid-cols-2 gap-2">

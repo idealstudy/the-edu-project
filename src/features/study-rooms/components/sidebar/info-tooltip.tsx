@@ -18,7 +18,7 @@ export const InfoTooltipToast = ({
   return (
     <div className="absolute top-full left-[calc(50%-42px)] z-[100] mt-5 flex flex-col">
       {/* 삼각형 - 박스 왼쪽에서 32px, 상단에 밀착 (너비 20px, 높이 17px) */}
-      <div className="border-b-gray-12 absolute -top-[17px] left-8 h-0 w-0 border-t-0 border-r-[10px] border-b-[17px] border-l-[10px] border-transparent" />
+      <div className="border-b-gray-12 absolute -top-4.25 left-8 h-0 w-0 border-t-0 border-r-10 border-b-17 border-l-10 border-transparent" />
       <div className="bg-gray-12 relative flex items-start justify-between gap-1 rounded-lg px-3 py-2">
         <p className="font-caption-normal text-gray-white tablet:w-max w-35">
           링크가 {!toggleEnabled && '비'}활성화된 상태예요.

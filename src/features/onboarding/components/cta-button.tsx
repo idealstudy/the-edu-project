@@ -24,15 +24,14 @@ export const CtaButton = ({
     type="button"
     disabled={disabled}
     className={cn(
-      'font-body1-heading block w-full rounded-[12px] py-4 text-center tracking-tight transition-transform',
+      'font-body1-heading rounded-card block w-full py-4 text-center tracking-tight transition-transform',
       'focus-visible:ring-key-color-primary focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
-      'active:translate-y-[2px]',
+      'active:translate-y-0.5',
       variant === 'primary' &&
         'bg-key-color-primary text-white shadow-[0_5px_0_var(--color-orange-10)]',
-      variant === 'ghost' &&
-        'border-line-line1 text-text-sub2 border bg-white',
+      variant === 'ghost' && 'border-line-line1 text-text-sub2 border bg-white',
       disabled &&
-        'pointer-events-none translate-y-0 bg-background-inactive text-white shadow-[0_5px_0_#cfcdc9]',
+        'bg-background-inactive pointer-events-none translate-y-0 text-white shadow-[0_5px_0_#cfcdc9]',
       className
     )}
     {...props}

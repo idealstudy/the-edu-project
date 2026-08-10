@@ -49,7 +49,7 @@ export default function ExpandableListSection({
             onValueChange={onSortChange}
           >
             <Select.Trigger
-              className="font-label-normal h-9 w-auto min-w-[130px] rounded-lg pr-10 pl-3"
+              className="font-label-normal h-9 w-auto min-w-32.5 rounded-lg pr-10 pl-3"
               placeholder="정렬"
             />
             <Select.Content>

@@ -25,13 +25,15 @@ export const WriteArea = ({ isEditMode = false }: WriteAreaProps) => {
     : isCreateHomeworkPending;
 
   return (
-    <ColumnLayout.Right className="desktop:max-w-[740px] border-line-line1 h-fit w-full rounded-xl border bg-white px-8 py-10">
+    <ColumnLayout.Right className="desktop:max-w-185 border-line-line1 h-fit w-full rounded-xl border bg-white px-8 py-10">
       <div className="flex w-full justify-between">
         <span>
           <div className="text-key-color-primary font-semibold">
             {isEditMode ? '과제 편집' : '과제 작성'}
           </div>
-          <h1 className="mt-2 text-[32px] font-bold">어떤 과제인가요?</h1>
+          <h1 className="font-title-heading mt-2 font-bold">
+            어떤 과제인가요?
+          </h1>
         </span>
         <Image
           src="/studyroom/study-room-write-header.png"

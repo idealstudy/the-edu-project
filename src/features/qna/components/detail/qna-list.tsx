@@ -42,18 +42,18 @@ export default function QuestionList({ studyRoomId, data, isPending }: Props) {
           return (
             <Link
               key={question.id}
-              className="font-body2-normal hover:bg-gray-scale-gray-1 desktop:max-w-[740px] flex min-h-[66px] w-full flex-row items-center justify-between gap-4 bg-white px-4 py-3 hover:rounded-[12px]"
+              className="font-body2-normal hover:bg-gray-scale-gray-1 desktop:max-w-185 hover:rounded-card flex min-h-16.5 w-full flex-row items-center justify-between gap-4 bg-white px-4 py-3"
               href={`/study-rooms/${studyRoomId}/qna/${question.id}`}
               prefetch={false}
               onClick={() => handleQuestionClick(question.id)}
             >
-              <div className="font-label-normal flex min-w-0 flex-1 flex-row items-center gap-[10px]">
+              <div className="font-label-normal flex min-w-0 flex-1 flex-row items-center gap-2.5">
                 {question.status === 'PENDING' ? (
-                  <span className="border-orange-scale-orange-50 text-orange-scale-orange-50 bg-orange-scale-orange-1 shrink-0 rounded-full border px-3 py-[2px]">
+                  <span className="border-orange-scale-orange-50 text-orange-scale-orange-50 bg-orange-scale-orange-1 shrink-0 rounded-full border px-3 py-0.5">
                     피드백 대기
                   </span>
                 ) : (
-                  <span className="border-gray-scale-gray-60 text-gray-scale-gray-60 bg-gray-scale-gray-1 shrink-0 rounded-full border px-3 py-[2px]">
+                  <span className="border-gray-scale-gray-60 text-gray-scale-gray-60 bg-gray-scale-gray-1 shrink-0 rounded-full border px-3 py-0.5">
                     피드백 완료
                   </span>
                 )}

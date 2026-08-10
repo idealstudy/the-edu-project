@@ -29,7 +29,7 @@ export const SelectCard = ({
     disabled={disabled}
     onClick={onSelect}
     className={cn(
-      'flex w-full items-center justify-between rounded-[12px] border bg-white px-[18px] py-4 text-left transition',
+      'rounded-card flex w-full items-center justify-between border bg-white px-4.5 py-4 text-left transition',
       'focus-visible:ring-key-color-primary focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
       selected
         ? 'border-key-color-primary bg-background-orange'
@@ -53,7 +53,7 @@ export const SelectCard = ({
     {!disabled && (
       <span
         className={cn(
-          'size-[22px] shrink-0 rounded-full border-2',
+          'size-5.5 shrink-0 rounded-full border-2',
           selected
             ? 'border-key-color-primary bg-[radial-gradient(circle,var(--color-key-color-primary)_0_6px,#fff_6px_9px,var(--color-key-color-primary)_9px)]'
             : 'border-line-line2'

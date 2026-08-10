@@ -85,7 +85,7 @@ export const ChallengeResultDialog = ({
       isOpen={isOpen}
       onOpenChange={onOpenChange}
     >
-      <Dialog.Content className="w-[420px] items-center gap-0 p-7 text-center">
+      <Dialog.Content className="w-105 items-center gap-0 p-7 text-center">
         <span className="bg-orange-1 text-key-color-primary mx-auto mb-4 flex size-14 items-center justify-center rounded-full">
           <Swords size={26} />
         </span>
@@ -95,7 +95,7 @@ export const ChallengeResultDialog = ({
             <Dialog.Title className="font-body1-heading text-text-main">
               결과를 불러오는 중이에요…
             </Dialog.Title>
-            <div className="bg-gray-1 mt-5 h-24 w-full animate-pulse rounded-[12px]" />
+            <div className="bg-gray-1 rounded-card mt-5 h-24 w-full animate-pulse" />
           </>
         )}
 
@@ -374,7 +374,7 @@ const ResultCell = ({
   return (
     <div
       className={cn(
-        'border-line-line2 flex flex-col items-center gap-2 rounded-[12px] border p-4',
+        'border-line-line2 rounded-card flex flex-col items-center gap-2 border p-4',
         highlight && 'border-key-color-primary bg-orange-1'
       )}
     >
@@ -428,7 +428,7 @@ const ResultCell = ({
         <img
           src={solutionImageUrl}
           alt={`${label} 풀이 이미지`}
-          className="border-line-line2 mt-1 h-16 w-full rounded-[8px] border object-cover"
+          className="border-line-line2 rounded-button mt-1 h-16 w-full border object-cover"
         />
       )}
     </div>

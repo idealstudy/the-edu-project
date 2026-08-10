@@ -36,11 +36,11 @@ export const TreeSummarySection = () => {
       </div>
 
       {isLoading && (
-        <div className="border-line-line1 bg-gray-1/40 h-[120px] w-full animate-pulse rounded-[14px] border motion-reduce:animate-none" />
+        <div className="border-line-line1 bg-gray-1/40 rounded-card h-30 w-full animate-pulse border motion-reduce:animate-none" />
       )}
 
       {isError && !isLoading && (
-        <div className="border-line-line1 flex flex-col items-center gap-3 rounded-[14px] border bg-white py-12 text-center">
+        <div className="border-line-line1 rounded-card flex flex-col items-center gap-3 border bg-white py-12 text-center">
           <TriangleAlert
             size={28}
             className="text-system-warning"
@@ -52,7 +52,7 @@ export const TreeSummarySection = () => {
           <button
             type="button"
             onClick={() => refetch()}
-            className="bg-key-color-primary font-label-heading flex h-11 items-center rounded-[8px] px-5 text-white"
+            className="bg-key-color-primary font-label-heading rounded-button flex h-11 items-center px-5 text-white"
           >
             다시 시도
           </button>
@@ -60,7 +60,7 @@ export const TreeSummarySection = () => {
       )}
 
       {!isLoading && !isError && !hasNodes && (
-        <div className="border-line-line1 flex flex-col items-center gap-3 rounded-[14px] border border-dashed bg-white py-12 text-center">
+        <div className="border-line-line1 rounded-card flex flex-col items-center gap-3 border border-dashed bg-white py-12 text-center">
           <Sprout
             size={28}
             className="text-key-color-primary"
@@ -69,12 +69,12 @@ export const TreeSummarySection = () => {
           <p className="font-body2-heading text-text-main text-balance">
             아직 채워진 지도가 없어요.
           </p>
-          <p className="font-caption-normal text-text-sub1 max-w-[320px] text-balance">
+          <p className="font-caption-normal text-text-sub1 max-w-80 text-balance">
             첫 문제를 제대로 풀면 단원이 오렌지로 채워지기 시작해요.
           </p>
           <Link
             href={PUBLIC.OPEN_CHALLENGE.LIST}
-            className="bg-key-color-primary font-label-heading mt-1 flex h-11 items-center rounded-[8px] px-5 text-white"
+            className="bg-key-color-primary font-label-heading rounded-button mt-1 flex h-11 items-center px-5 text-white"
           >
             오늘의 문제 시작
           </Link>

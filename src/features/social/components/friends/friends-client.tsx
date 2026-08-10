@@ -95,7 +95,7 @@ export const FriendsClient = () => {
       {isLoading && <FriendsSkeleton />}
 
       {isError && (
-        <div className="border-line-line2 flex flex-col items-center gap-3 rounded-[12px] border bg-white p-10 text-center">
+        <div className="border-line-line2 rounded-card flex flex-col items-center gap-3 border bg-white p-10 text-center">
           <p className="font-body2-normal text-text-sub1">
             친구 목록을 불러오지 못했어요.
           </p>
@@ -124,7 +124,7 @@ export const FriendsClient = () => {
                 {incomingRequests.map((item) => (
                   <li
                     key={item.id}
-                    className="border-line-line2 flex items-center justify-between gap-3 rounded-[12px] border bg-white px-4 py-3"
+                    className="border-line-line2 rounded-card flex items-center justify-between gap-3 border bg-white px-4 py-3"
                   >
                     <FriendIdentityLink {...otherIdentity(item, myId)} />
                     <Button
@@ -148,7 +148,7 @@ export const FriendsClient = () => {
                 {outgoingRequests.map((item) => (
                   <li
                     key={item.id}
-                    className="border-line-line2 flex items-center justify-between gap-3 rounded-[12px] border bg-white px-4 py-3"
+                    className="border-line-line2 rounded-card flex items-center justify-between gap-3 border bg-white px-4 py-3"
                   >
                     <FriendIdentityLink {...otherIdentity(item, myId)} />
                     <StatusBadge
@@ -174,7 +174,7 @@ export const FriendsClient = () => {
                 {accepted.map((item) => (
                   <li
                     key={item.id}
-                    className="border-line-line2 flex items-center justify-between gap-3 rounded-[12px] border bg-white px-4 py-3"
+                    className="border-line-line2 rounded-card flex items-center justify-between gap-3 border bg-white px-4 py-3"
                   >
                     <AcceptedFriendRow {...otherIdentity(item, myId)} />
                   </li>
@@ -242,7 +242,7 @@ const AcceptedFriendRow = (identity: OtherIdentity) => {
               : '대결 기록 불러오는 중'}
           </span>
           {record && record.myTurn > 0 && (
-            <span className="text-orange-10 text-[11px] font-bold">
+            <span className="text-orange-10 text-ui-choice font-bold">
               내 차례 {record.myTurn}건
             </span>
           )}
@@ -279,7 +279,7 @@ const FriendIdentity = ({ name, profileImageUrl }: OtherIdentity) => (
 );
 
 const EmptyFriends = () => (
-  <div className="border-line-line2 flex flex-col items-center gap-2 rounded-[12px] border border-dashed bg-white p-10 text-center">
+  <div className="border-line-line2 rounded-card flex flex-col items-center gap-2 border border-dashed bg-white p-10 text-center">
     <span className="bg-orange-1 text-key-color-primary flex size-12 items-center justify-center rounded-full">
       <UserPlus size={24} />
     </span>
@@ -295,7 +295,7 @@ const FriendsSkeleton = () => (
     {Array.from({ length: 4 }).map((_, index) => (
       <div
         key={index}
-        className="border-line-line2 flex items-center gap-3 rounded-[12px] border bg-white px-4 py-3"
+        className="border-line-line2 rounded-card flex items-center gap-3 border bg-white px-4 py-3"
       >
         <div className="bg-gray-1 size-10 shrink-0 animate-pulse rounded-full" />
         <div className="bg-gray-1 h-4 w-32 animate-pulse rounded" />

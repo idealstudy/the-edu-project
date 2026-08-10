@@ -69,7 +69,7 @@ export function CareerDropdown({
             className="cursor-pointer"
           />
         </DropdownMenu.Trigger>
-        <DropdownMenu.Content className="w-[110px] justify-center">
+        <DropdownMenu.Content className="w-27.5 justify-center">
           <DropdownMenu.Item
             onClick={() => setIsCareerDialogOpen(true)}
             aria-label="경력 수정"

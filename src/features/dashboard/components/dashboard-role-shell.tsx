@@ -24,7 +24,7 @@ export const DashboardRoleShell = ({
   if (isInviteProcessing) {
     return (
       <div className="bg-system-background">
-        <div className="-0 mx-auto flex w-full items-center justify-center px-6 pt-12 pb-24">
+        <div className="mx-auto flex w-full max-w-280 items-center justify-center px-6 pt-12 pb-24">
           <div className="text-text-sub2 text-center">로딩 중...</div>
         </div>
       </div>

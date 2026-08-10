@@ -199,17 +199,17 @@ const GuestChallengeLanding = ({
         </div>
 
         <div className="text-text-main rounded-xl bg-white p-4 sm:p-5">
-          <div className="bg-orange-1 relative flex min-h-[178px] items-center justify-center overflow-hidden rounded-lg p-4">
+          <div className="bg-orange-1 relative flex min-h-44.5 items-center justify-center overflow-hidden rounded-lg p-4">
             {challenge.questionImageUrl ? (
               <Image
                 src={challenge.questionImageUrl}
                 alt={`${challenge.sourceText} 문제 미리보기`}
                 width={320}
                 height={180}
-                className="max-h-[180px] w-full object-contain"
+                className="max-h-45 w-full object-contain"
               />
             ) : (
-              <p className="max-w-[260px] text-center text-lg leading-relaxed font-bold text-balance">
+              <p className="max-w-65 text-center text-lg leading-relaxed font-bold text-balance">
                 {challenge.title}
               </p>
             )}

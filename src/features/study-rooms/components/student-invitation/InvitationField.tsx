@@ -42,7 +42,7 @@ export const InvitationField = ({
               invitation.removeLast();
             }
           }}
-          className="text-text-sub2 border-line-line2 hover:border-key-color-primary focus-visible:ring-key-color-primary mb-4 flex min-h-12 cursor-pointer flex-wrap items-center justify-start gap-2 rounded-[4px] border px-3 py-2 hover:bg-transparent focus:outline-none focus-visible:ring-2 active:bg-transparent"
+          className="text-text-sub2 border-line-line2 hover:border-key-color-primary focus-visible:ring-key-color-primary rounded-control-compact mb-4 flex min-h-12 cursor-pointer flex-wrap items-center justify-start gap-2 border px-3 py-2 hover:bg-transparent focus:outline-none focus-visible:ring-2 active:bg-transparent"
         >
           {invitation.invitees.size === 0 && (
             <span

@@ -44,7 +44,11 @@ const TIER_COPY: Record<
   },
   PREMIUM_1ON1: {
     tagline: '1:1 밀착 배정 — 상담 후 확정',
-    bullets: ['담당 튜터 1:1 배정', '주간 학부모 리포트', '등급 인증 시 전액 환급'],
+    bullets: [
+      '담당 튜터 1:1 배정',
+      '주간 학부모 리포트',
+      '등급 인증 시 전액 환급',
+    ],
     comparison: '과외 하루 21,400원 vs 이 코스 하루 15,800원',
     honestNote: '제출 기준 미달 또는 등급 미달 시 환급되지 않아요.',
   },
@@ -68,13 +72,13 @@ export const CourseTierSection = ({
   isAuthenticated,
   onRequireLogin,
 }: CourseTierSectionProps) => {
-  const { data: products, isLoading, isError } = useCourseProductsQuery(
-    courseId
-  );
+  const {
+    data: products,
+    isLoading,
+    isError,
+  } = useCourseProductsQuery(courseId);
   const { mutate: createOrder, isPending } = useCreateCourseOrderMutation();
-  const [pendingProductId, setPendingProductId] = useState<number | null>(
-    null
-  );
+  const [pendingProductId, setPendingProductId] = useState<number | null>(null);
   const [orderStub, setOrderStub] = useState<{
     orderKey: string;
     amount: number;
@@ -134,13 +138,14 @@ export const CourseTierSection = ({
               honestNote: '',
             };
             const isPremium = product.planType === 'PREMIUM_1ON1';
-            const isSubmitting = isPending && pendingProductId === product.productId;
+            const isSubmitting =
+              isPending && pendingProductId === product.productId;
 
             return (
               <div
                 key={product.productId}
                 className={cn(
-                  'border-line-line2 relative flex flex-col gap-3 rounded-[12px] border bg-white p-5',
+                  'border-line-line2 rounded-card relative flex flex-col gap-3 border bg-white p-5',
                   product.best && 'border-key-color-primary border-2'
                 )}
               >
@@ -191,7 +196,7 @@ export const CourseTierSection = ({
                 </ul>
 
                 {product.refundGuaranteed && (
-                  <div className="bg-orange-1 flex items-start gap-1.5 rounded-[8px] p-2.5">
+                  <div className="bg-orange-1 rounded-button flex items-start gap-1.5 p-2.5">
                     <ShieldCheck
                       size={14}
                       className="text-key-color-primary mt-0.5 shrink-0"
@@ -243,15 +248,14 @@ export const CourseTierSection = ({
       </div>
 
       {orderStub && (
-        <div className="border-line-line2 flex flex-col gap-1 rounded-[12px] border border-dashed bg-white p-4">
+        <div className="border-line-line2 rounded-card flex flex-col gap-1 border border-dashed bg-white p-4">
           <span className="font-body2-heading text-text-main">
             주문이 생성됐어요 — {orderStub.planLabel} ·{' '}
             {priceLabel(orderStub.amount)}
           </span>
           <span className="font-caption-normal text-text-sub2">
-            주문번호 {orderStub.orderKey} · 실제 결제 연동(PG)은 준비
-            중이에요. 미검증: 결제 승인·웹훅은 dev 미배포라 실 API로 확인
-            못 했어요.
+            주문번호 {orderStub.orderKey} · 실제 결제 연동(PG)은 준비 중이에요.
+            미검증: 결제 승인·웹훅은 dev 미배포라 실 API로 확인 못 했어요.
           </span>
         </div>
       )}
@@ -264,7 +268,7 @@ const CourseTierSkeleton = () => (
     {Array.from({ length: 3 }).map((_, index) => (
       <div
         key={index}
-        className="border-line-line2 bg-gray-1 h-64 animate-pulse rounded-[12px] border"
+        className="border-line-line2 bg-gray-1 rounded-card h-64 animate-pulse border"
       />
     ))}
   </div>

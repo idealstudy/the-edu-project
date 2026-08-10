@@ -56,7 +56,7 @@ const LeafRow = ({
           {meta}
         </div>
       </div>
-      <div className="bg-tree-untested -0 -0 hidden shrink-0 overflow-hidden rounded-full sm:block">
+      <div className="bg-tree-untested hidden h-1.75 w-22 shrink-0 overflow-hidden rounded-full sm:block">
         <div
           className={cn('h-full rounded-full', FLAT_FILL[node.intensity])}
           style={{ width: `${untested ? 2 : node.masteryScore}%` }}
@@ -169,7 +169,7 @@ export const RidgeDrilldown = ({
                       <span className="font-body2-heading flex-1">
                         {mid.displayName}
                       </span>
-                      <span className="bg-tree-untested -0 hidden h-2 shrink-0 overflow-hidden rounded-full sm:block">
+                      <span className="bg-tree-untested hidden h-2 w-27.5 shrink-0 overflow-hidden rounded-full sm:block">
                         <span
                           className={cn(
                             'block h-full rounded-full',

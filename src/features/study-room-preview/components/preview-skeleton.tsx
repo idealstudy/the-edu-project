@@ -6,7 +6,7 @@ export const PreviewSideSkeleton = () => {
   return (
     <section className="flex flex-col gap-5 px-2 py-3">
       <div className="flex flex-col gap-3">
-        <Skeleton.Block className="tablet:h-[300px] h-[200px] w-full rounded-xl" />
+        <Skeleton.Block className="tablet:h-75 h-50 w-full rounded-xl" />
         <Skeleton.Block className="h-7 w-3/4" />
         <Skeleton.Block className="h-5 w-1/2" />
       </div>

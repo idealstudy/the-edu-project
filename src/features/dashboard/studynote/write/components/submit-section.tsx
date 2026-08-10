@@ -26,7 +26,7 @@ const SubmitSection = ({
       <Button
         type="submit"
         disabled={isButtonDisabled}
-        className="-0 rounded-sm"
+        className="w-50 rounded-sm"
         data-testid="note-submit-button"
       >
         {isPending ? '저장 중...' : isEditMode ? '수정하기' : '저장하기'}

@@ -13,14 +13,14 @@ import { PUBLIC } from '@/shared/constants';
 export function PortalHero() {
   return (
     <section className="bg-system-background w-full">
-      <div className="mx-auto w-full max-w-[1440px] px-4 py-12 md:px-8 lg:px-20 lg:py-16">
+      <div className="mx-auto w-full max-w-360 px-4 py-12 md:px-8 lg:px-20 lg:py-16">
         <p className="font-label-normal text-key-color-primary mb-3">
           디에듀 상담소
         </p>
-        <h1 className="font-title-heading max-w-[720px] text-3xl leading-[135%] tracking-tight lg:text-4xl">
+        <h1 className="font-title-heading max-w-180 text-3xl leading-[135%] tracking-tight lg:text-4xl">
           문제 하나로 시작해서, 등급을 관리해드립니다
         </h1>
-        <p className="font-body1-normal text-text-sub2 mt-4 max-w-[560px]">
+        <p className="font-body1-normal text-text-sub2 mt-4 max-w-140">
           오늘의 문제로 지금 실력을 확인하거나, 고민을 비공개로 남기면
           {MENTOR_PROFILE.name} 선생님이 직접 확인합니다.
         </p>
@@ -31,9 +31,7 @@ export function PortalHero() {
               <p className="font-headline1-heading text-key-color-primary">
                 {fact.value}
               </p>
-              <p className="font-label-normal text-text-sub2">
-                {fact.label}
-              </p>
+              <p className="font-label-normal text-text-sub2">{fact.label}</p>
             </div>
           ))}
         </div>

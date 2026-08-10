@@ -54,7 +54,7 @@ export const FriendDetailClient = ({ friendId }: { friendId: number }) => {
 
   return (
     <main className="bg-system-background min-h-screen px-4 py-8 sm:px-8">
-      <div className="mx-auto flex w-full max-w-[960px] flex-col gap-3">
+      <div className="mx-auto flex w-full max-w-240 flex-col gap-3">
         <Link
           href={PRIVATE.FRIENDS.INDEX}
           className="text-text-sub1 hover:text-text-main inline-flex w-fit items-center gap-1 text-sm font-semibold"
@@ -152,7 +152,9 @@ const RecordBar = ({
         )}
       >
         <strong className="text-text-main text-xl tabular-nums">{value}</strong>
-        <span className="text-text-sub2 text-[11px] sm:text-xs">{label}</span>
+        <span className="text-text-sub2 text-ui-choice sm:text-xs">
+          {label}
+        </span>
       </div>
     ))}
   </section>
@@ -502,7 +504,7 @@ const LockedFriendDetail = ({ name }: { name: string }) => (
 );
 
 const DetailSkeleton = () => (
-  <div className="mx-auto flex max-w-[960px] flex-col gap-3 px-4 py-8">
+  <div className="mx-auto flex max-w-240 flex-col gap-3 px-4 py-8">
     <div className="bg-gray-1 h-28 animate-pulse rounded-xl" />
     <div className="bg-gray-1 h-64 animate-pulse rounded-xl" />
   </div>

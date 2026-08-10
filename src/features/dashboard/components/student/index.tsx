@@ -68,7 +68,7 @@ const DashboardStudent = () => {
         {inProgressExam && (
           <Card>
             <div className="flex flex-wrap items-center gap-3">
-              <div className="-0 flex-1">
+              <div className="min-w-45 flex-1">
                 <h2 className="text-gray-12 text-base font-extrabold">
                   이어 풀기
                 </h2>

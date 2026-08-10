@@ -23,7 +23,7 @@ export function PortalPopularPosts() {
   const posts = data?.content?.slice(0, 3);
 
   return (
-    <section className="mx-auto w-full max-w-[1440px] px-4 py-10 md:px-8 lg:px-20">
+    <section className="mx-auto w-full max-w-360 px-4 py-10 md:px-8 lg:px-20">
       <div className="mb-6 flex items-center justify-between">
         <h2 className="font-headline2-heading">인기 글</h2>
         <Link

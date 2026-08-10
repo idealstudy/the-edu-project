@@ -82,7 +82,7 @@ export const WeakUnitsStep = ({
               aria-pressed={on}
               onClick={() => onToggle(node.nodeId)}
               className={cn(
-                'font-label-heading flex min-h-[44px] items-center gap-2 rounded-full border px-3.5 py-2.5 transition',
+                'font-label-heading flex min-h-11 items-center gap-2 rounded-full border px-3.5 py-2.5 transition',
                 'focus-visible:ring-key-color-primary focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none',
                 on
                   ? 'border-key-color-primary bg-background-orange text-orange-10'
@@ -91,7 +91,7 @@ export const WeakUnitsStep = ({
             >
               <span
                 className={cn(
-                  'flex size-[18px] items-center justify-center rounded-[5px] border-[1.5px]',
+                  'rounded-checkbox border-precision flex size-4.5 items-center justify-center',
                   on
                     ? 'border-key-color-primary bg-key-color-primary text-white'
                     : 'border-line-line2 text-transparent'

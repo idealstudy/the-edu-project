@@ -81,7 +81,7 @@ export default function LoginForm() {
 
   return (
     <>
-      <p className="mt-10 w-fit text-[20px] font-medium">소셜 로그인</p>
+      <p className="mt-10 w-fit text-xl font-medium">소셜 로그인</p>
       <SocialLoginButton />
 
       <div className="text-text-sub2 mt-10 flex items-center justify-between gap-1">

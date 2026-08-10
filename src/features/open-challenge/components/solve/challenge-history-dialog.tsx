@@ -153,7 +153,7 @@ export const ChallengeHistoryDialog = ({
                       alt={`${challenge.topic} 문제 이미지`}
                       width={640}
                       height={360}
-                      className="max-h-[320px] w-full object-contain"
+                      className="max-h-80 w-full object-contain"
                     />
                   </div>
                 )}

@@ -63,7 +63,7 @@ export const EmailStep = ({ onNext }: EmailStepProps) => {
   };
 
   return (
-    <div className="flex flex-col gap-[52px]">
+    <div className="flex flex-col gap-13">
       <Form.Item error={!!form.formState.errors.email}>
         <Form.Label>이메일</Form.Label>
         <Form.Control>

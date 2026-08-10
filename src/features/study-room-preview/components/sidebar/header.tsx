@@ -28,11 +28,11 @@ export const StudyroomPreviewSidebarHeader = ({
       onThumbnailDelete={onThumbnailDelete}
       teacherSuffix="선생님"
       fallbackStudyRoomName="스터디룸"
-      titleClassName="tablet:font-headline1-heading desktop:font-title-heading truncate text-[20px] leading-tight font-bold"
+      titleClassName="tablet:font-headline1-heading desktop:font-title-heading truncate text-xl leading-tight font-bold"
       teacherClassName="text-gray-scale-gray-60 tablet:text-base text-sm"
       imageWrapperClassName={cn(
         thumbnailUrl ? '' : 'bg-orange-scale-orange-1',
-        'tablet:h-[200px] relative h-[150px] w-full overflow-hidden rounded-[12px]'
+        'tablet:h-50 relative h-37.5 w-full overflow-hidden rounded-card'
       )}
       wrapperClassName="flex flex-col gap-6"
     />

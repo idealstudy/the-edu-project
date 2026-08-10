@@ -26,7 +26,7 @@ export const ReviewStamps = ({
             key={index}
             aria-hidden
             className={cn(
-              '-0 text-ui-compact grid place-items-center rounded-full border font-extrabold',
+              'text-ui-compact grid size-5.5 place-items-center rounded-full border font-extrabold',
               isFilled && 'border-orange-7 bg-orange-2 text-orange-9',
               isNext && 'border-orange-7 bg-gray-white text-orange-9',
               !isFilled && !isNext && 'border-gray-3 bg-gray-white text-gray-5'

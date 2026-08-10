@@ -25,7 +25,7 @@ export const ConsultationItemDetail = ({
       isOpen={open}
       onOpenChange={onOpenChange}
     >
-      <Dialog.Content className="-0 -0 max-w-[calc(100%-4rem)] p-10">
+      <Dialog.Content className="h-131 w-180 max-w-[calc(100%-4rem)] p-10">
         <Dialog.Header className="flex-row items-center justify-between">
           <Dialog.Title className="font-headline1-heading text-gray-12">
             {titleDate ? `${titleDate} 기록 일지` : '기록 일지'}

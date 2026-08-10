@@ -69,9 +69,7 @@ export const SolutionPanel = ({
           </p>
         )}
         <MathMarkdown
-          content={
-            solution.content || '해설 본문이 준비되지 않았어요.'
-          }
+          content={solution.content || '해설 본문이 준비되지 않았어요.'}
           className="text-text-main text-sm leading-relaxed"
         />
       </section>
@@ -105,7 +103,7 @@ export const SolutionPanel = ({
         isOpen={isWarningOpen}
         onOpenChange={setIsWarningOpen}
       >
-        <Dialog.Content className="w-full max-w-[380px] gap-5 p-6 text-center">
+        <Dialog.Content className="w-full max-w-95 gap-5 p-6 text-center">
           <Dialog.Header className="items-center">
             <div className="bg-orange-1 flex h-14 w-14 items-center justify-center rounded-full">
               <TriangleAlert

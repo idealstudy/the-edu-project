@@ -9,7 +9,7 @@ const TeacherCardSkeleton = ({ className }: { className?: string }) => {
         className
       )}
     >
-      <Skeleton.Block className="h-[100px] w-[100px] shrink-0 rounded-full" />
+      <Skeleton.Block className="h-25 w-25 shrink-0 rounded-full" />
 
       <div className="flex flex-1 flex-col gap-3">
         <Skeleton.Block className="h-5 w-2/5" />
@@ -27,11 +27,11 @@ const StudyRoomCardSkeleton = ({ className }: { className?: string }) => {
   return (
     <div
       className={cn(
-        'border-gray-scale-gray-10 overflow-hidden rounded-2xl border-[1.5px] bg-white',
+        'border-gray-scale-gray-10 border-precision overflow-hidden rounded-2xl bg-white',
         className
       )}
     >
-      <div className="bg-orange-1 flex flex-col gap-[10px] p-6">
+      <div className="bg-orange-1 flex flex-col gap-2.5 p-6">
         <Skeleton.Block className="h-6 w-3/5" />
         <Skeleton.Block className="h-5 w-full" />
         <Skeleton.Block className="h-5 w-4/5" />

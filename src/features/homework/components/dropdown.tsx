@@ -58,7 +58,7 @@ export const HomeworkDropdown = ({
             onClick={() => handleOpen(item.id)}
           />
         </DropdownMenu.Trigger>
-        <DropdownMenu.Content className="w-[110px] justify-center">
+        <DropdownMenu.Content className="w-27.5 justify-center">
           <DropdownMenu.Item asChild>
             <Link
               href={`/study-rooms/${studyRoomId}/homework/${item.id}/edit`}

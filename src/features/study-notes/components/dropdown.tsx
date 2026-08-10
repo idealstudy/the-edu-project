@@ -75,7 +75,7 @@ export const StudyNotesDropdown = ({
             onClick={() => handleOpen(item.id)}
           />
         </DropdownMenu.Trigger>
-        <DropdownMenu.Content className="w-[110px] justify-center">
+        <DropdownMenu.Content className="w-27.5 justify-center">
           <DropdownMenu.Item
             onClick={() => {
               dispatch({
@@ -102,7 +102,7 @@ export const StudyNotesDropdown = ({
                 },
               });
             }}
-            className="justify-center px-[12px]"
+            className="justify-center px-3"
           >
             그룹이동하기
           </DropdownMenu.Item>

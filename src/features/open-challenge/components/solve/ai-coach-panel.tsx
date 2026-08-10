@@ -1027,7 +1027,7 @@ export const AiCoachPanel = ({
         isOpen={isSolutionWarningOpen}
         onOpenChange={setIsSolutionWarningOpen}
       >
-        <Dialog.Content className="w-full max-w-[380px] gap-5 p-6 text-center">
+        <Dialog.Content className="w-full max-w-95 gap-5 p-6 text-center">
           <Dialog.Header className="items-center">
             <div className="bg-orange-1 flex h-14 w-14 items-center justify-center rounded-full">
               <TriangleAlert
@@ -1088,7 +1088,7 @@ export const AiCoachPanel = ({
         isOpen={isDrawingUploadFailedOpen}
         onOpenChange={setIsDrawingUploadFailedOpen}
       >
-        <Dialog.Content className="w-full max-w-[380px] gap-5 p-6 text-center">
+        <Dialog.Content className="w-full max-w-95 gap-5 p-6 text-center">
           <Dialog.Header className="items-center">
             <div className="bg-orange-1 flex h-14 w-14 items-center justify-center rounded-full">
               <TriangleAlert
@@ -1167,7 +1167,7 @@ const GuestCoachPanel = ({
   };
 
   return (
-    <div className="border-line-line1 flex h-full min-h-[360px] flex-col rounded-xl border bg-white">
+    <div className="border-line-line1 flex h-full min-h-90 flex-col rounded-xl border bg-white">
       <div className="border-line-line1 flex items-center justify-between border-b px-4 py-3">
         <span className="font-body1-heading text-text-main">AI 코치</span>
         <span className="text-orange-10 text-xs font-bold">

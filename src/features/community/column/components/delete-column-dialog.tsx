@@ -19,7 +19,7 @@ export default function DeleteColumnDialog({
       isOpen={isOpen}
       onOpenChange={(open) => !open && onClose()}
     >
-      <Dialog.Content className="max-w-[400px]">
+      <Dialog.Content className="max-w-100">
         <Dialog.Header>
           <Dialog.Title>칼럼을 삭제하시겠습니까?</Dialog.Title>
           <Dialog.Description>

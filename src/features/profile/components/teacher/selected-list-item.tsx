@@ -26,7 +26,7 @@ export const SelectedListItem = ({
       type="button"
       onClick={onClick}
       className={cn(
-        'font-body2-normal desktop:max-w-[740px] flex h-[66px] w-full cursor-pointer flex-row items-center gap-4 rounded-[12px] px-4 py-3',
+        'font-body2-normal desktop:max-w-185 rounded-card flex h-16.5 w-full cursor-pointer flex-row items-center gap-4 px-4 py-3',
         checked && 'bg-background-orange border-ring border',
         !checked &&
           'border-line-line2 hover:bg-gray-scale-gray-1 border bg-white'

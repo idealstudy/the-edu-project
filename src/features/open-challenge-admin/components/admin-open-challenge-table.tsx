@@ -154,7 +154,7 @@ export const AdminOpenChallengeTable = () => {
         </div>
 
         <div className="border-line-line2 overflow-hidden rounded-md border bg-white">
-          <table className="w-full min-w-[920px]">
+          <table className="w-full min-w-230">
             <thead className="border-line-line2 bg-gray-1 border-b text-left">
               <tr className="*:px-5 *:py-4">
                 <th>문제</th>
@@ -280,7 +280,7 @@ export const AdminOpenChallengeTable = () => {
               숨김 문제는 공개 목록에 표시되지 않아 ID로 직접 노출 재개합니다.
             </p>
           </div>
-          <div className="flex w-full flex-col gap-2 sm:flex-row lg:w-[420px]">
+          <div className="flex w-full flex-col gap-2 sm:flex-row lg:w-105">
             <Input
               value={showTargetId}
               onChange={(event) => setShowTargetId(event.target.value)}

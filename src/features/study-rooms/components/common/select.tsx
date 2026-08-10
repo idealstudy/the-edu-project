@@ -25,8 +25,8 @@ const SelectTrigger = ({
   return (
     <SelectPrimitives.Trigger
       className={cn(
-        'border-line-line3 bg-gray-scale-white relative flex h-[36px] items-center justify-between rounded-[8px] border pr-11 pl-3 text-start text-sm outline-hidden',
-        'min-w-[110px]',
+        'border-line-line3 bg-gray-scale-white rounded-button relative flex h-9 items-center justify-between border pr-11 pl-3 text-start text-sm outline-hidden',
+        'min-w-27.5',
         'mock-placeholder:text-text-sub2',
         '[&>span]:min-w-0',
         'placeholder-text-text-sub2',
@@ -63,7 +63,7 @@ const SelectContent = ({
     <SelectPrimitives.Portal>
       <SelectPrimitives.Content
         className={cn(
-          'border-line-line2 text-main bg-gray-scale-white relative z-50 max-w-[calc(100vw-12px)] overflow-hidden rounded-[6px] border',
+          'border-line-line2 text-main bg-gray-scale-white rounded-focus relative z-50 max-w-[calc(100vw-12px)] overflow-hidden border',
           'max-h-[var(--radix-select-content-available-height)]',
           position === 'popper' &&
             'w-full min-w-[var(--radix-select-trigger-width)]',
@@ -94,7 +94,7 @@ const SelectOption = ({ className, children, ...props }: SelectOptionProps) => {
   return (
     <SelectPrimitives.Item
       className={cn(
-        'relative flex h-[32px] cursor-pointer items-center justify-center px-3 outline-hidden select-none',
+        'relative flex h-8 cursor-pointer items-center justify-center px-3 outline-hidden select-none',
         'focus:bg-gray-scale-gray-5',
         'mock-[state=checked]:text-key-color-primary',
         'mock-disabled:pointer-events-none',

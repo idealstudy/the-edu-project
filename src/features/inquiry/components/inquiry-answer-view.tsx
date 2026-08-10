@@ -90,7 +90,7 @@ export default function InquiryAnswerView({
                     alt="더보기"
                   />
                 </DropdownMenu.Trigger>
-                <DropdownMenu.Content className="flex min-w-[110px] flex-col items-stretch">
+                <DropdownMenu.Content className="flex min-w-27.5 flex-col items-stretch">
                   <DropdownMenu.Item
                     className="justify-center"
                     onClick={() => {

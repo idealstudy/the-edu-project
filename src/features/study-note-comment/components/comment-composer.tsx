@@ -103,7 +103,7 @@ export const CommentComposer = ({
   };
 
   const composer = (
-    <div className="border-gray-3 min-h-[154px] w-full rounded-sm border bg-white p-6">
+    <div className="border-gray-3 min-h-38.5 w-full rounded-sm border bg-white p-6">
       <div className="flex justify-between gap-4">
         <CommentCardHeader
           profileImageSrc={profileImageSrc}
@@ -115,13 +115,13 @@ export const CommentComposer = ({
             <Button
               variant="outlined"
               onClick={onCancel}
-              className="font-label-normal disabled:font-label-normal h-[35px] shrink-0 px-6 py-2"
+              className="font-label-normal disabled:font-label-normal h-8.75 shrink-0 px-6 py-2"
             >
               취소
             </Button>
           ) : null}
           <Button
-            className="font-label-normal disabled:font-label-normal h-[35px] shrink-0 px-6 py-2"
+            className="font-label-normal disabled:font-label-normal h-8.75 shrink-0 px-6 py-2"
             disabled={isSubmitDisabled}
             onClick={onSubmit}
           >

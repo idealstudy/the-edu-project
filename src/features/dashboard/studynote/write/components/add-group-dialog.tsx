@@ -62,7 +62,7 @@ export const AddGroupDialog = ({
           </Dialog.Trigger>
         )}
         <Dialog.Content
-          className="-0"
+          className="w-149.5"
           aria-describedby={undefined}
         >
           <Dialog.Header>
@@ -89,7 +89,7 @@ export const AddGroupDialog = ({
           <Dialog.Footer className="mt-6 justify-end">
             <Dialog.Close asChild>
               <Button
-                className="-0"
+                className="w-30"
                 variant="outlined"
                 size="small"
               >

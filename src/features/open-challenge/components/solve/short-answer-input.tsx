@@ -26,7 +26,7 @@ export const ShortAnswerInput = ({
         placeholder="답을 입력해 주세요 (예: 42)"
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-[84px] text-center text-xl font-bold"
+        className="h-21 text-center text-xl font-bold"
       />
       <p className="text-gray-7 text-xs">주관식 문제예요. 정답은 숫자예요.</p>
     </div>
