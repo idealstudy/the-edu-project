@@ -19,7 +19,7 @@ export const RidgeMap = ({
   selectedPeakId,
   onSelectPeak,
 }: RidgeMapProps) => (
-  <div className="flex h-[260px] items-stretch gap-3 overflow-x-auto px-1 pt-9 md:h-[320px] md:gap-3.5">
+  <div className="-0 -0 flex items-stretch gap-3 overflow-x-auto px-1 pt-9 md:gap-3.5">
     {peaks.map((peak) => {
       const untested = peak.attemptCount === 0 && peak.masteryScore <= 0;
       const height = untested ? 14 : Math.max(18, peak.masteryScore);
@@ -36,11 +36,11 @@ export const RidgeMap = ({
           aria-label={`${peak.displayName}, ${
             untested ? '미진단' : isMastered ? '정복' : isWeak ? '약점' : '진행'
           } ${untested ? 0 : peak.masteryScore}퍼센트, 누르면 세부 트리`}
-          className="flex min-w-[92px] flex-1 flex-col bg-transparent p-0 font-sans"
+          className="-0 flex flex-1 flex-col bg-transparent p-0 font-sans"
         >
           <div className="border-line-line2 relative flex flex-1 items-end justify-center border-b-2">
             <div
-              className="relative flex w-full items-start justify-center overflow-hidden rounded-t-[12px] pt-2.5 transition-[height] duration-700 ease-out"
+              className="rounded-t-card relative flex w-full items-start justify-center overflow-hidden pt-2.5 transition-[height] duration-700 ease-out"
               style={{
                 height: `${height}%`,
                 background: untested
@@ -79,7 +79,7 @@ export const RidgeMap = ({
               {isMastered && (
                 <span
                   aria-hidden
-                  className="absolute -top-7 left-1/2 -translate-x-1/2 text-[17px] leading-none"
+                  className="absolute -top-7 left-1/2 -translate-x-1/2 text-base leading-none"
                 >
                   🚩
                 </span>
@@ -87,7 +87,7 @@ export const RidgeMap = ({
               {isWeak && (
                 <span
                   aria-hidden
-                  className="text-system-warning absolute -top-7 left-1/2 -translate-x-1/2 text-[16px] leading-none font-bold"
+                  className="text-system-warning absolute -top-7 left-1/2 -translate-x-1/2 text-base leading-none font-bold"
                 >
                   ⚠
                 </span>

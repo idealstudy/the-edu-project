@@ -56,7 +56,7 @@ export const WeaknessTreeClient = () => {
 
   if (isError) {
     return (
-      <div className="border-line-line1 flex flex-col items-center gap-3 rounded-[14px] border bg-white py-16 text-center">
+      <div className="border-line-line1 rounded-card flex flex-col items-center gap-3 border bg-white py-16 text-center">
         <TriangleAlert
           size={32}
           className="text-system-warning"
@@ -80,7 +80,7 @@ export const WeaknessTreeClient = () => {
 
   if (!hasNodes) {
     return (
-      <div className="border-line-line1 flex flex-col items-center gap-3 rounded-[14px] border border-dashed bg-white py-16 text-center">
+      <div className="border-line-line1 rounded-card flex flex-col items-center gap-3 border border-dashed bg-white py-16 text-center">
         <Sprout
           size={32}
           className="text-key-color-primary"
@@ -89,12 +89,12 @@ export const WeaknessTreeClient = () => {
         <p className="font-body1-heading text-text-main text-balance">
           아직 채워진 지도가 없어요.
         </p>
-        <p className="font-body2-normal text-text-sub1 max-w-[320px] text-balance">
+        <p className="font-body2-normal text-text-sub1 -0 text-balance">
           첫 문제를 제대로 풀면 능선이 솟아오르기 시작해요.
         </p>
         <Link
           href={PUBLIC.OPEN_CHALLENGE.LIST}
-          className="bg-key-color-primary font-label-heading mt-2 flex h-12 items-center rounded-[8px] px-6 text-white"
+          className="bg-key-color-primary font-label-heading rounded-button mt-2 flex h-12 items-center px-6 text-white"
         >
           오늘의 문제 시작
         </Link>
@@ -126,7 +126,7 @@ export const WeaknessTreeClient = () => {
           }}
         />
 
-        <div className="border-line-line1 rounded-[16px] border bg-white px-4 pt-5 pb-4 md:px-5">
+        <div className="border-line-line1 rounded-section border bg-white px-4 pt-5 pb-4 md:px-5">
           <p className="font-caption-normal text-text-sub2 mb-1 px-1">
             봉우리 높이 = 해설 안 보고 맞힌 비율(자력, 실측) · 90%+는 정복
             그라데이션

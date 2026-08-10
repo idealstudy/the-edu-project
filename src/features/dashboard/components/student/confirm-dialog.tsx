@@ -69,7 +69,7 @@ export const ConfirmParentRequestDialog = ({
       isOpen={open}
       onOpenChange={onOpenChange}
     >
-      <Dialog.Content className="w-[480px]">
+      <Dialog.Content className="-0">
         <Dialog.Header className="flex-row items-center justify-between">
           <Dialog.Title>보호자 연결 요청</Dialog.Title>
           <Dialog.Close
@@ -99,7 +99,7 @@ export const ConfirmParentRequestDialog = ({
           <Button
             variant="outlined"
             size="xsmall"
-            className="w-[96px]"
+            className="-0"
             disabled={isPending}
             onClick={handleReject}
           >
@@ -107,7 +107,7 @@ export const ConfirmParentRequestDialog = ({
           </Button>
           <Button
             size="xsmall"
-            className="w-[96px]"
+            className="-0"
             disabled={isPending}
             onClick={handleAccept}
           >

@@ -30,7 +30,7 @@ type TreeSummaryProps = {
  *  평균 정복도 게이지(오렌지) + 단계별 카운트.
  * ────────────────────────────────────────────────────*/
 export const TreeSummary = ({ mastery }: TreeSummaryProps) => (
-  <div className="border-line-line1 flex flex-col gap-4 rounded-[14px] border bg-white p-5">
+  <div className="border-line-line1 rounded-card flex flex-col gap-4 border bg-white p-5">
     <div className="flex flex-wrap items-end justify-between gap-4">
       <div className="flex flex-col gap-1">
         <span className="font-caption-heading text-text-sub2">

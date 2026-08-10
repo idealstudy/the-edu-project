@@ -51,13 +51,13 @@ export const ExamHallCard = ({ className }: Props) => {
               내 위치 ·{' '}
               {analysis.data.gradeBasis === 'MEASURED' ? '실측' : '예측'}
             </h3>
-            <span className="bg-orange-2 text-orange-11 rounded-full px-2.5 py-1 text-[11px] font-extrabold">
+            <span className="bg-orange-2 text-orange-11 text-ui-choice rounded-full px-2.5 py-1 font-extrabold">
               {analysis.data.gradeBasis === 'MEASURED'
                 ? '기준표 반영'
                 : 'AI 예측'}
             </span>
             {analysis.data.gradeBasis === 'PREDICTED' && (
-              <span className="border-gray-4 text-gray-10 rounded-full border px-2.5 py-1 text-[11px] font-bold">
+              <span className="border-gray-4 text-gray-10 text-ui-choice rounded-full border px-2.5 py-1 font-bold">
                 실측 아님
               </span>
             )}
@@ -68,14 +68,14 @@ export const ExamHallCard = ({ className }: Props) => {
               aria-expanded={isBasisOpen}
               onClick={() => setIsBasisOpen((current) => !current)}
               data-testid="expected-grade-basis-toggle"
-              className="border-gray-3 text-gray-10 ml-auto min-h-9 cursor-pointer rounded-lg border px-3 text-[11px] font-bold"
+              className="border-gray-3 text-gray-10 text-ui-choice ml-auto min-h-9 cursor-pointer rounded-lg border px-3 font-bold"
             >
               등급이 어떻게 나왔나요
             </UnstyledButton>
           </div>
           {isBasisOpen && (
             <div
-              className="border-gray-2 bg-gray-1 text-gray-10 mt-3 rounded-lg border p-4 text-[11.5px] leading-6"
+              className="border-gray-2 bg-gray-1 text-gray-10 text-ui-choice mt-3 rounded-lg border p-4 leading-6"
               data-testid="expected-grade-basis"
             >
               <p>
@@ -119,7 +119,7 @@ export const ExamHallCard = ({ className }: Props) => {
               </p>
             ))}
           </div>
-          <p className="text-gray-8 mt-3 text-[11px] leading-5">
+          <p className="text-gray-8 text-ui-choice mt-3 leading-5">
             {analysis.data.dataNotice}
           </p>
         </>
@@ -129,10 +129,10 @@ export const ExamHallCard = ({ className }: Props) => {
             <h3 className="text-gray-12 text-sm font-extrabold">
               내 위치 · 참고
             </h3>
-            <span className="bg-orange-2 text-orange-11 rounded-full px-2.5 py-1 text-[11px] font-extrabold">
+            <span className="bg-orange-2 text-orange-11 text-ui-choice rounded-full px-2.5 py-1 font-extrabold">
               시험 아님
             </span>
-            <span className="border-gray-4 text-gray-10 rounded-full border px-2.5 py-1 text-[11px] font-bold">
+            <span className="border-gray-4 text-gray-10 text-ui-choice rounded-full border px-2.5 py-1 font-bold">
               {reference.gradedQuestionCount}문항 기준
             </span>
           </div>
@@ -152,7 +152,7 @@ export const ExamHallCard = ({ className }: Props) => {
               </p>
             ))}
           </div>
-          <p className="text-gray-8 mt-3 text-[11px] leading-5">
+          <p className="text-gray-8 text-ui-choice mt-3 leading-5">
             {reference.dataNotice}
           </p>
         </div>

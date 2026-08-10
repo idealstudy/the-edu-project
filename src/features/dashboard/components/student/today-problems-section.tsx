@@ -124,7 +124,7 @@ const TodayProblemCard = ({ item, wrongAnswer }: TodayProblemCardProps) => {
         />
       </div>
 
-      <div className="border-gray-3 bg-system-background mx-4 mt-2.5 min-h-[120px] rounded-lg border p-3.5">
+      <div className="border-gray-3 bg-system-background -0 mx-4 mt-2.5 rounded-lg border p-3.5">
         <p className="font-caption-heading text-gray-8">
           {wrongAnswer?.questionSnapshot?.unit
             ? String(wrongAnswer.questionSnapshot.unit)
@@ -171,7 +171,7 @@ const TodayProblemsLoading = () => (
       {Array.from({ length: 3 }, (_, index) => (
         <Skeleton.Block
           key={index}
-          className="tablet:min-w-0 h-[360px] min-w-[82%]"
+          className="tablet:min-w-0 -0 min-w-[82%]"
         />
       ))}
     </div>

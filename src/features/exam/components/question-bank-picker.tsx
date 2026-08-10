@@ -117,9 +117,9 @@ export const QuestionBankPicker = ({
               <span className="text-gray-10 text-center text-xs font-extrabold tabular-nums">
                 {String(index + 1).padStart(2, '0')}
               </span>
-              <span className="text-gray-12 min-w-0 text-[13px] leading-5 font-semibold">
+              <span className="text-gray-12 text-coach min-w-0 leading-5 font-semibold">
                 {question.questionText ?? question.title}
-                <small className="text-gray-8 mt-1 block truncate text-[11px] font-normal">
+                <small className="text-gray-8 text-ui-choice mt-1 block truncate font-normal">
                   {question.treeNodePath}
                   {question.wrongAnswerRate === null
                     ? ' · 오답률 자료 없음'
@@ -144,7 +144,7 @@ export const QuestionBankPicker = ({
           );
         })
       )}
-      <p className="text-gray-8 mt-3 text-[11px] leading-5">
+      <p className="text-gray-8 text-ui-choice mt-3 leading-5">
         단원은 <b>트리에서 골랐습니다.</b> 화면에 보이는 단원 이름이 그대로
         문항에 붙어 학생 숙련도로 자동으로 흘러갑니다.
       </p>

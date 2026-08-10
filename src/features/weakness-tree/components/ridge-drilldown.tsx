@@ -56,7 +56,7 @@ const LeafRow = ({
           {meta}
         </div>
       </div>
-      <div className="bg-tree-untested hidden h-[7px] w-[88px] shrink-0 overflow-hidden rounded-full sm:block">
+      <div className="bg-tree-untested -0 -0 hidden shrink-0 overflow-hidden rounded-full sm:block">
         <div
           className={cn('h-full rounded-full', FLAT_FILL[node.intensity])}
           style={{ width: `${untested ? 2 : node.masteryScore}%` }}
@@ -116,7 +116,7 @@ export const RidgeDrilldown = ({
         }`;
 
   return (
-    <div className="border-orange-3 animate-in fade-in slide-in-from-top-1 mt-4 overflow-hidden rounded-[16px] border bg-white duration-200">
+    <div className="border-orange-3 animate-in fade-in slide-in-from-top-1 rounded-section mt-4 overflow-hidden border bg-white duration-200">
       <div className="bg-orange-1 border-orange-2 flex items-center justify-between gap-3 border-b px-5 py-4">
         <div>
           <p className="font-caption-heading text-orange-10">
@@ -162,14 +162,14 @@ export const RidgeDrilldown = ({
                 <Accordion.Item
                   key={mid.nodeId}
                   value={mid.nodeId}
-                  className="border-line-line1/70 mb-1 rounded-[10px] border-0 border-b bg-transparent backdrop-blur-none last:border-b-0"
+                  className="border-line-line1/70 rounded-row mb-1 border-0 border-b bg-transparent backdrop-blur-none last:border-b-0"
                 >
                   <Accordion.Trigger className="text-text-main px-1 py-3 text-left font-normal hover:bg-transparent">
                     <span className="flex w-full items-center gap-3">
                       <span className="font-body2-heading flex-1">
                         {mid.displayName}
                       </span>
-                      <span className="bg-tree-untested hidden h-2 w-[110px] shrink-0 overflow-hidden rounded-full sm:block">
+                      <span className="bg-tree-untested -0 hidden h-2 shrink-0 overflow-hidden rounded-full sm:block">
                         <span
                           className={cn(
                             'block h-full rounded-full',

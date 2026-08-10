@@ -27,7 +27,7 @@ export const TreeMap = ({ groups, onSelectNode }: TreeMapProps) => (
             {group.nodes.length}단원
           </span>
         </h2>
-        <div className="grid grid-cols-1 gap-3 min-[640px]:grid-cols-2 min-[1200px]:grid-cols-4">
+        <div className="desktop:grid-cols-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
           {group.nodes.map((node) => (
             <TreeNodeButton
               key={node.nodeId}

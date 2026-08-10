@@ -46,7 +46,7 @@ export const AdminStudyRooms = () => {
       data-testid="admin-study-rooms"
     >
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        <h1 className="text-[19px] font-extrabold">수업 전체</h1>
+        <h1 className="text-xl font-extrabold">수업 전체</h1>
         <span className="text-gray-8 text-xs">
           회원 관리가 사람 목록이라면 이 화면은{' '}
           <b className="text-gray-12">누가 누구를 가르치는가</b>를 보는 관계
@@ -61,7 +61,7 @@ export const AdminStudyRooms = () => {
             key={value}
             type="button"
             className={cn(
-              'flex min-h-[42px] items-center gap-2 rounded-lg border px-3 text-xs font-bold',
+              '-0 flex items-center gap-2 rounded-lg border px-3 text-xs font-bold',
               (state === undefined && value === 'ACTIVE') || state === value
                 ? 'bg-orange-1 text-orange-11 border-orange-10'
                 : 'border-gray-3 text-gray-11 bg-white'
@@ -78,7 +78,7 @@ export const AdminStudyRooms = () => {
           </UnstyledButton>
         ))}
         <SearchInput
-          className="min-w-[180px] flex-1 bg-white"
+          className="-0 flex-1 bg-white"
           value={searchValue}
           onChange={setSearchValue}
           onSearch={(value) => setKeyword(value.trim())}
@@ -91,15 +91,15 @@ export const AdminStudyRooms = () => {
         </section>
       )}
       {query.isError && (
-        <section className="border-red-3 bg-red-1 text-red-10 rounded-[10px] border p-4 text-xs">
+        <section className="border-red-3 bg-red-1 text-red-10 rounded-row border p-4 text-xs">
           수업 전체 목록을 불러오지 못했어요.
         </section>
       )}
       {query.data && (
         <div className="border-gray-3 overflow-x-auto rounded-xl border bg-white px-2 py-1.5">
-          <table className="w-full min-w-[760px] border-collapse text-left text-xs">
+          <table className="-0 w-full border-collapse text-left text-xs">
             <thead>
-              <tr className="text-gray-8 text-[10.5px]">
+              <tr className="text-gray-8 text-ui-compact">
                 {[
                   '수업',
                   '선생님',
@@ -126,10 +126,10 @@ export const AdminStudyRooms = () => {
                   <td className="border-gray-1 border-b px-2.5 py-3 font-bold">
                     {room.name}
                   </td>
-                  <td className="border-gray-1 text-gray-10 border-b px-2.5 py-3 text-[11px]">
+                  <td className="border-gray-1 text-gray-10 text-ui-choice border-b px-2.5 py-3">
                     {room.teacherName}
                   </td>
-                  <td className="border-gray-1 text-gray-10 border-b px-2.5 py-3 text-[11px]">
+                  <td className="border-gray-1 text-gray-10 text-ui-choice border-b px-2.5 py-3">
                     {room.studentCount > 1
                       ? `${room.studentName} 외 ${room.studentCount - 1}명`
                       : room.studentName}
@@ -137,7 +137,7 @@ export const AdminStudyRooms = () => {
                   <td className="border-gray-1 border-b px-2.5 py-3">
                     <span
                       className={cn(
-                        'rounded-full px-2 py-1 text-[10.5px] font-extrabold',
+                        'text-ui-compact rounded-full px-2 py-1 font-extrabold',
                         room.state === 'ENDED'
                           ? 'bg-orange-1 text-orange-10'
                           : 'bg-system-success-alt text-system-success'
@@ -146,10 +146,10 @@ export const AdminStudyRooms = () => {
                       {states.find(([value]) => value === room.state)?.[1]}
                     </span>
                   </td>
-                  <td className="border-gray-1 text-gray-10 border-b px-2.5 py-3 text-[11px] tabular-nums">
+                  <td className="border-gray-1 text-gray-10 text-ui-choice border-b px-2.5 py-3 tabular-nums">
                     {date(room.startedAt)}
                   </td>
-                  <td className="border-gray-1 text-gray-10 border-b px-2.5 py-3 text-[11px] tabular-nums">
+                  <td className="border-gray-1 text-gray-10 text-ui-choice border-b px-2.5 py-3 tabular-nums">
                     {date(room.lastLessonAt)}
                   </td>
                 </tr>

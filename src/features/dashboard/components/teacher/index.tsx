@@ -60,7 +60,7 @@ const RoomRenameDialog = ({
           className="border-gray-3 mt-3 w-full rounded-lg border px-3 py-2 text-sm"
         />
         {!detail && (
-          <p className="text-gray-8 mt-2 text-[11px]">
+          <p className="text-gray-8 text-ui-choice mt-2">
             수업 정보를 불러오는 중입니다.
           </p>
         )}
@@ -264,7 +264,7 @@ const DashboardTeacher = ({
                       onClose={() => setRenamingRoomId(null)}
                     />
                   )}
-                  <div className="bg-gray-1 text-gray-9 mt-3 flex flex-wrap gap-x-4 gap-y-1 rounded-lg px-3 py-2 text-[11px]">
+                  <div className="bg-gray-1 text-gray-9 text-ui-choice mt-3 flex flex-wrap gap-x-4 gap-y-1 rounded-lg px-3 py-2">
                     <span>
                       피드백 달 것 <b>{room.todoBreakdown.commentNeeded}</b>
                     </span>

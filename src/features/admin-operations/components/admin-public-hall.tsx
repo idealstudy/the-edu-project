@@ -50,7 +50,7 @@ export const AdminPublicHall = () => {
       data-testid="admin-public-hall"
     >
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        <h1 className="text-[19px] font-extrabold">공개 응시장</h1>
+        <h1 className="text-xl font-extrabold">공개 응시장</h1>
         <span className="text-gray-8 text-xs">
           수업을 듣지 않는 학생에게 시험을 여는 자리입니다.
         </span>
@@ -121,20 +121,20 @@ export const AdminPublicHall = () => {
         </section>
       )}
       {hall.isError && (
-        <section className="border-red-3 bg-red-1 text-red-10 rounded-[10px] border p-4 text-xs">
+        <section className="border-red-3 bg-red-1 text-red-10 rounded-row border p-4 text-xs">
           공개 응시장을 불러오지 못했어요.
         </section>
       )}
       {hall.data && hall.data.postings.length === 0 && (
         <>
           <section
-            className="border-gray-3 rounded-[10px] border border-dashed bg-white px-6 py-[38px] text-center"
+            className="border-gray-3 rounded-row -0 border border-dashed bg-white px-6 text-center"
             data-testid="admin-public-hall-empty"
           >
-            <h2 className="text-[15px] font-extrabold">
+            <h2 className="text-sm font-extrabold">
               지금 게시 중인 시험이 없어요
             </h2>
-            <p className="text-gray-10 mt-2 text-[12.5px] leading-7">
+            <p className="text-gray-10 mt-2 text-xs leading-7">
               게시하지 않으면 반이 없는 학생은 응시할 시험이 하나도 없습니다. 그
               학생들의 대시보드 맨 위 <b>내 위치</b> 카드도 {`"없음"`} 상태로
               남습니다.
@@ -145,7 +145,7 @@ export const AdminPublicHall = () => {
               variant="unstyled"
               size="none"
               type="button"
-              className="border-orange-11 bg-orange-10 mt-4 min-h-[46px] rounded-lg border px-5 text-[13px] font-extrabold text-white"
+              className="border-orange-11 bg-orange-10 -0 text-coach mt-4 rounded-lg border px-5 font-extrabold text-white"
               onClick={() => setShowForm(true)}
             >
               6월 학력평가로 게시하기
@@ -174,9 +174,9 @@ export const AdminPublicHall = () => {
                   key={posting.postingId}
                   className="border-gray-3 flex min-h-12 items-center gap-2 rounded-lg border px-3 py-2.5"
                 >
-                  <div className="min-w-0 flex-1 text-[12.5px] font-bold">
+                  <div className="min-w-0 flex-1 text-xs font-bold">
                     {posting.title}
-                    <small className="text-gray-8 mt-0.5 block text-[10.5px] font-semibold">
+                    <small className="text-gray-8 text-ui-compact mt-0.5 block font-semibold">
                       {posting.questionCount}문항 · 대상:{' '}
                       {posting.audience === 'NO_STUDY_ROOM'
                         ? '스터디룸 없는 학생'
@@ -185,7 +185,7 @@ export const AdminPublicHall = () => {
                       {posting.attemptCount}명
                     </small>
                   </div>
-                  <span className="bg-system-success-alt text-system-success rounded-full px-2 py-1 text-[10.5px] font-extrabold">
+                  <span className="bg-system-success-alt text-system-success text-ui-compact rounded-full px-2 py-1 font-extrabold">
                     게시 중
                   </span>
                   <UnstyledButton
@@ -209,7 +209,7 @@ export const AdminPublicHall = () => {
                 원본은 바뀌지 않습니다
               </span>
             </div>
-            <div className="border-gray-3 text-gray-10 rounded-lg border p-3 text-[11.5px] leading-7">
+            <div className="border-gray-3 text-gray-10 text-ui-choice rounded-lg border p-3 leading-7">
               {hall.data.clones.length
                 ? hall.data.clones.map((clone) => (
                     <p key={clone.examId}>

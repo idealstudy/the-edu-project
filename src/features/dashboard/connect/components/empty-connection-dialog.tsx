@@ -10,11 +10,11 @@
 // import { useConnectionList } from '../services/query';
 
 // const DialogTwStyles = {
-//   content: 'w-[480px] rounded-2xl p-0',
-//   header: 'flex items-center justify-center pt-[73px]',
-//   title: 'text-[24px] leading-[160%] font-bold tracking-[-4%]',
-//   body: 'mx-auto mt-4 max-w-[298px] pb-[52px] text-center leading-[160%] tracking-[-4%]',
-//   footer: 'flex h-[85px] items-center gap-0',
+//   content: '-0 rounded-2xl p-0',
+//   header: 'flex items-center justify-center -0',
+//   title: 'text-2xl leading-[160%] font-bold tracking-[-4%]',
+//   body: 'mx-auto mt-4 -0 -0 text-center leading-[160%] tracking-[-4%]',
+//   footer: 'flex -0 items-center gap-0',
 //   closeButton: 'h-full flex-1',
 //   cancelButton:
 //     'bg-gray-scale-gray-90 text-white hover:bg-gray-scale-gray-90/80',

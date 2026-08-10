@@ -78,7 +78,7 @@ export const StudentResultsPage = () => {
           <span className="text-gray-9 text-xs">
             {groups.length}과목 {nodes.length}단원 · 지금까지 채운 것
           </span>
-          <span className="border-gray-3 text-gray-10 ml-auto rounded-md border px-2 py-1 text-[11px] font-bold">
+          <span className="border-gray-3 text-gray-10 text-ui-choice ml-auto rounded-md border px-2 py-1 font-bold">
             최근 바뀐 순
           </span>
         </div>
@@ -344,7 +344,9 @@ export const StudentResultsPage = () => {
                   {label}
                 </b>
                 {!earned && (
-                  <small className="text-gray-9 block text-[10px]">잠김</small>
+                  <small className="text-gray-9 text-ui-compact block">
+                    잠김
+                  </small>
                 )}
               </div>
             ))}
@@ -358,6 +360,6 @@ export const StudentResultsPage = () => {
 const MapStat = ({ value, label }: { value: number; label: string }) => (
   <div className="text-center">
     <strong className="text-gray-12 block text-xl tabular-nums">{value}</strong>
-    <span className="text-gray-9 text-[11px]">{label}</span>
+    <span className="text-gray-9 text-ui-choice">{label}</span>
   </div>
 );

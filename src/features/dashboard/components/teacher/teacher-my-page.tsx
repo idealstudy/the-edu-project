@@ -144,7 +144,7 @@ const TeacherInviteCodeCard = () => {
               링크로 보내기
             </UnstyledButton>
           </div>
-          <p className="text-gray-8 mt-2 text-[11px]">
+          <p className="text-gray-8 text-ui-choice mt-2">
             학생은 초대 코드 넣기 화면(/invite)에 이 코드를 붙여넣거나, 보낸
             링크를 눌러 들어옵니다.
           </p>
@@ -174,7 +174,7 @@ export const TeacherMyPage = ({ memberName }: { memberName: string }) => (
       className="gap-block-gap lg:grid-split-legacy grid items-start"
       data-testid="teacher-my-page"
     >
-      <h1 className="col-span-full text-[19px] font-extrabold">마이페이지</h1>
+      <h1 className="col-span-full text-xl font-extrabold">마이페이지</h1>
       <div className="space-y-4">
         <section className="border-gray-3 rounded-xl border bg-white p-5">
           <div className="mb-4 flex items-center">

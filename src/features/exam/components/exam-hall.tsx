@@ -59,7 +59,7 @@ export const ExamHall = () => {
 
   return (
     <div
-      className="gap-block-gap mx-auto flex max-w-[980px] flex-col"
+      className="gap-block-gap -0 mx-auto flex flex-col"
       data-testid="student-exam-hall"
     >
       {assigned.length > 0 && (
@@ -75,16 +75,16 @@ export const ExamHall = () => {
               key={exam.attemptId}
               className="border-gray-2 flex flex-wrap items-center gap-3 border-b py-3 last:border-b-0"
             >
-              <span className="text-gray-12 min-w-0 flex-1 text-[13px] font-semibold">
+              <span className="text-gray-12 text-coach min-w-0 flex-1 font-semibold">
                 {exam.title}
-                <small className="text-gray-9 mt-1 block text-[11px] font-normal">
+                <small className="text-gray-9 text-ui-choice mt-1 block font-normal">
                   {exam.periodEnd
                     ? `${new Date(exam.periodEnd).toLocaleString('ko-KR')}까지`
                     : '마감 시각 없음'}{' '}
                   · {exam.questionCount}문항
                 </small>
               </span>
-              <span className="bg-orange-1 text-orange-10 rounded-full px-2.5 py-1 text-[11px] font-bold">
+              <span className="bg-orange-1 text-orange-10 text-ui-choice rounded-full px-2.5 py-1 font-bold">
                 우리 반
               </span>
               <Button
@@ -114,15 +114,15 @@ export const ExamHall = () => {
               key={exam.examId}
               className="border-gray-2 flex flex-wrap items-center gap-3 border-b py-3 last:border-b-0"
             >
-              <span className="text-gray-12 min-w-0 flex-1 text-[13px] font-semibold">
+              <span className="text-gray-12 text-coach min-w-0 flex-1 font-semibold">
                 {exam.title}
-                <small className="text-gray-9 mt-1 block text-[11px] font-normal">
+                <small className="text-gray-9 text-ui-choice mt-1 block font-normal">
                   {exam.questionCount}문항 ·{' '}
                   {exam.hasCutoff ? '전국 통계 있음' : 'AI 예측'}
                 </small>
                 {failedExamId === exam.examId && (
                   <small
-                    className="text-red-10 mt-1 block text-[11px] font-bold"
+                    className="text-red-10 text-ui-choice mt-1 block font-bold"
                     role="alert"
                   >
                     지금은 응시를 시작할 수 없어요. 게시 기간이 끝났을 수
@@ -130,7 +130,7 @@ export const ExamHall = () => {
                   </small>
                 )}
               </span>
-              <span className="bg-gray-1 text-gray-10 rounded-full px-2.5 py-1 text-[11px] font-bold">
+              <span className="bg-gray-1 text-gray-10 text-ui-choice rounded-full px-2.5 py-1 font-bold">
                 공개
               </span>
               <Button
@@ -151,7 +151,7 @@ export const ExamHall = () => {
             title="지금 공개된 시험이 없습니다"
           />
         )}
-        <p className="text-gray-9 mt-3 text-[11px] leading-5">
+        <p className="text-gray-9 text-ui-choice mt-3 leading-5">
           응시하기를 누르면 <b>우리 시험 응시 화면</b>이 열립니다. 시험지를 시간
           재고 통째로 푸는 일은 여기서 맡고, 한 문제씩 코치와 대화하며 푸는 일만
           오픈챌린지가 맡습니다.

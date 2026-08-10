@@ -20,7 +20,7 @@ const BackLink = ({
         variant="unstyled"
         size="none"
         className={cn(
-          'text-text-sub2 flex cursor-pointer items-center gap-[6px] pt-4 text-xl leading-[160%] tracking-[-4%]',
+          'text-text-sub2 -0 flex cursor-pointer items-center pt-4 text-xl leading-[160%] tracking-[-4%]',
           className
         )}
         onClick={() => router.back()}

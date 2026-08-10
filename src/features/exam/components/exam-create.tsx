@@ -122,7 +122,7 @@ export const ExamCreate = ({
       data-testid="teacher-exam-card"
     >
       <div className="mb-3 flex flex-wrap items-baseline gap-2">
-        <h2 className="text-gray-12 text-[19px] font-extrabold">시험 열기</h2>
+        <h2 className="text-gray-12 text-xl font-extrabold">시험 열기</h2>
         <span className="text-gray-8 text-xs">
           정답을 치지 않습니다. 단원 번호를 고르지 않습니다.
         </span>
@@ -317,7 +317,7 @@ export const ExamCreate = ({
                 ))}
               </Select.Content>
             </Select>
-            <p className="text-gray-8 mt-2 text-[11px] leading-5">
+            <p className="text-gray-8 text-ui-choice mt-2 leading-5">
               이 수업에서 열어 미리 골라졌습니다
             </p>
           </div>
@@ -332,7 +332,7 @@ export const ExamCreate = ({
           >
             {isPending ? '시험을 내는 중입니다' : '시험 내기'}
           </UnstyledButton>
-          <p className="text-gray-8 mt-2 text-center text-[11px]">
+          <p className="text-gray-8 text-ui-choice mt-2 text-center">
             내면 그 학생 응시장에 <b>우리 수업</b> 배지로 바로 뜹니다
           </p>
           {message && !message.startsWith('시험이 저장되지') && (

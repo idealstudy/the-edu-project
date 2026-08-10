@@ -273,7 +273,7 @@ export const TodayTodoCard = ({ className }: Props) => {
           <span
             key={supply}
             className={cn(
-              'rounded-full px-2.5 py-1 text-[11px] font-bold',
+              'text-ui-choice rounded-full px-2.5 py-1 font-bold',
               SUPPLY_STYLE[supply]
             )}
           >
@@ -328,7 +328,7 @@ export const TodayTodoCard = ({ className }: Props) => {
                     key={label}
                     type="button"
                     className={cn(
-                      'cursor-pointer rounded-full border px-2.5 py-1 text-[11px] font-bold',
+                      'text-ui-choice cursor-pointer rounded-full border px-2.5 py-1 font-bold',
                       isSelected
                         ? 'border-orange-7 bg-orange-7 text-white'
                         : 'border-orange-3 text-orange-10 bg-white'
@@ -454,7 +454,7 @@ export const TodayTodoCard = ({ className }: Props) => {
                     <div className="font-caption-normal text-gray-8 mt-1 flex flex-wrap items-center gap-1.5">
                       <span
                         className={cn(
-                          'rounded-full px-2 py-0.5 text-[11px] font-bold',
+                          'text-ui-choice rounded-full px-2 py-0.5 font-bold',
                           SUPPLY_STYLE[supply]
                         )}
                       >

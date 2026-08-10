@@ -164,7 +164,7 @@ const SelectArea = () => {
                     >
                       <Select.Trigger
                         placeholder="없음"
-                        className="mt-[9px]"
+                        className="-0"
                       />
                       <Select.Content>
                         {Array.isArray(studyNoteGroups?.content) &&

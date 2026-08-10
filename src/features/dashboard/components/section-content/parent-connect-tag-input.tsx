@@ -92,7 +92,7 @@ export const ConnectTagInput = ({
         <PopoverAnchor asChild>
           <div
             className={cn(
-              'border-line-line1 flex min-h-[56px] w-full cursor-text items-center rounded-[4px] border bg-white px-5 transition-colors',
+              'border-line-line1 -0 rounded-control-compact flex w-full cursor-text items-center border bg-white px-5 transition-colors',
               open
                 ? 'border-gray-scale-gray-80'
                 : 'hover:border-gray-scale-gray-60'
@@ -105,11 +105,11 @@ export const ConnectTagInput = ({
           >
             {selectedMember ? (
               <div className="bg-background-gray border-line-line1 flex max-w-full items-center gap-2 rounded-sm border py-2 pr-2 pl-3 text-sm">
-                <span className="max-w-[120px] truncate text-base text-black">
+                <span className="-0 truncate text-base text-black">
                   {selectedMember.name}
                 </span>
                 <span className="text-key-color-primary">•</span>
-                <span className="text-key-color-primary max-w-[260px] truncate">
+                <span className="text-key-color-primary -0 truncate">
                   {selectedMember.email}
                 </span>
                 <UnstyledButton
@@ -147,7 +147,7 @@ export const ConnectTagInput = ({
         </PopoverAnchor>
 
         <PopoverContent
-          className="border-line-line1 z-50 w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-[4px] border bg-white p-0 shadow-md"
+          className="border-line-line1 rounded-control-compact z-50 w-[var(--radix-popover-trigger-width)] overflow-hidden border bg-white p-0 shadow-md"
           align="start"
           sideOffset={6}
         >
@@ -164,7 +164,7 @@ export const ConnectTagInput = ({
               연결할 학생을 검색해보세요.
             </div>
           ) : (
-            <div className="max-h-[216px] overflow-y-auto py-2">
+            <div className="-0 overflow-y-auto py-2">
               {searchedMemberData.map((student) => {
                 const isAlreadyConnected = isConnectedStudent(student.memberId);
                 const isAlreadyPending = isPendingStudent(student.email);

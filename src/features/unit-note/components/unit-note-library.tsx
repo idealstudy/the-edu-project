@@ -121,9 +121,9 @@ export const UnitNoteLibrary = () => {
 
           {libraryQuery.isPending ? (
             <div className="mt-4 space-y-2">
-              <Skeleton.Block className="h-[58px] w-full rounded-lg" />
-              <Skeleton.Block className="h-[58px] w-full rounded-lg" />
-              <Skeleton.Block className="h-[58px] w-full rounded-lg" />
+              <Skeleton.Block className="-0 w-full rounded-lg" />
+              <Skeleton.Block className="-0 w-full rounded-lg" />
+              <Skeleton.Block className="-0 w-full rounded-lg" />
             </div>
           ) : libraryQuery.isError ? (
             <div
@@ -156,13 +156,13 @@ export const UnitNoteLibrary = () => {
                 return (
                   <div
                     key={subject.key}
-                    className={`grid min-h-[58px] items-center gap-3 py-2 md:grid-cols-[minmax(190px,1fr)_minmax(250px,1.2fr)_150px] ${index === 0 ? 'bg-orange-1 px-2' : 'px-2'}`}
+                    className={`-0 grid items-center gap-3 py-2 md:grid-cols-[minmax(190px,1fr)_minmax(250px,1.2fr)_150px] ${index === 0 ? 'bg-orange-1 px-2' : 'px-2'}`}
                   >
                     <div className="min-w-0">
                       <p className="text-gray-12 text-sm font-extrabold">
                         {subject.label}
                       </p>
-                      <p className="text-gray-8 mt-0.5 text-[11px]">
+                      <p className="text-gray-8 text-ui-choice mt-0.5">
                         {subject.unitCount > 0
                           ? `${subject.unitCount}단원 · 내 노트 ${subject.pageCount}장`
                           : '아직 시작 전'}
@@ -222,7 +222,7 @@ export const UnitNoteLibrary = () => {
             </div>
           )}
 
-          <div className="text-gray-8 mt-4 flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-semibold">
+          <div className="text-gray-8 text-ui-choice mt-4 flex flex-wrap gap-x-4 gap-y-1 font-semibold">
             <span className="flex items-center gap-1.5">
               <i className="bg-orange-7 size-2.5 rounded-sm" /> 문제 푼 것
             </span>
@@ -233,7 +233,7 @@ export const UnitNoteLibrary = () => {
               <i className="bg-gray-2 size-2.5 rounded-sm" /> 아직 비어 있는 곳
             </span>
           </div>
-          <p className="text-gray-8 mt-2 text-[11px] leading-5">
+          <p className="text-gray-8 text-ui-choice mt-2 leading-5">
             태블릿에서 쓴 굿노트 파일을 올려도 한 장으로 셉니다. 노트 안 문제를
             풀면 진한 색이, 개념을 정리하면 옅은 색이 늘어납니다.
           </p>

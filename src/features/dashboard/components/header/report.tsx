@@ -57,7 +57,7 @@ export const HeaderReport = ({
           </div>
 
           {index !== stats.length - 1 && (
-            <div className="bg-gray-3 h-full w-[1px]" />
+            <div className="bg-gray-3 -0 h-full" />
           )}
         </div>
       ))}

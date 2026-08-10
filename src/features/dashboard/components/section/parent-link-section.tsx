@@ -66,7 +66,7 @@ export const ParentLinkSection = ({
             onClick={() => {
               setIsDialogOpen(true);
             }}
-            className="font-label-heading h-[35px] w-[121px]"
+            className="font-label-heading -0 -0"
           >
             {hasPendingConnections ? '학생 추가하기' : '학생 연결하기'}
           </Button>

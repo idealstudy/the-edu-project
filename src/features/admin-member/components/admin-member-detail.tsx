@@ -51,7 +51,7 @@ export const AdminMemberDetail = ({ memberId }: { memberId: number }) => {
   if (query.isError || !query.data) {
     return (
       <PageLayout width="fluid">
-        <section className="border-red-3 bg-red-1 text-red-10 rounded-[10px] border p-4 text-xs">
+        <section className="border-red-3 bg-red-1 text-red-10 rounded-row border p-4 text-xs">
           회원 상세를 불러오지 못했어요.
         </section>
       </PageLayout>
@@ -79,13 +79,13 @@ export const AdminMemberDetail = ({ memberId }: { memberId: number }) => {
     >
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <span className="text-gray-8 text-xs">회원 관리 ›</span>
-        <h1 className="text-[19px] font-extrabold">{displayName}</h1>
-        <span className="bg-orange-1 text-orange-11 rounded-full px-2 py-1 text-[10.5px] font-extrabold">
+        <h1 className="text-xl font-extrabold">{displayName}</h1>
+        <span className="bg-orange-1 text-orange-11 text-ui-compact rounded-full px-2 py-1 font-extrabold">
           {ROLE_LABEL[member.role]}
         </span>
         <span
           className={cn(
-            'rounded-full px-2 py-1 text-[10.5px] font-extrabold',
+            'text-ui-compact rounded-full px-2 py-1 font-extrabold',
             member.revoked
               ? 'bg-red-1 text-red-10'
               : 'bg-system-success-alt text-system-success'
@@ -98,7 +98,7 @@ export const AdminMemberDetail = ({ memberId }: { memberId: number }) => {
         <div>
           <section className="border-gray-3 mb-3 rounded-xl border bg-white p-4">
             <h2 className="mb-3 text-sm font-extrabold">계정</h2>
-            <div className="text-gray-10 text-[11.5px] leading-7">
+            <div className="text-gray-10 text-ui-choice leading-7">
               이메일 <b className="text-gray-12">{member.email}</b>
               <br />
               가입 경로{' '}
@@ -133,7 +133,7 @@ export const AdminMemberDetail = ({ memberId }: { memberId: number }) => {
                 실행자와 시각이 남습니다
               </span>
             </div>
-            <div className="border-gray-3 text-gray-10 rounded-lg border p-3 text-[11.5px] leading-7">
+            <div className="border-gray-3 text-gray-10 text-ui-choice rounded-lg border p-3 leading-7">
               {member.actionHistory.length
                 ? member.actionHistory.map((action) => (
                     <p key={action.actionId}>

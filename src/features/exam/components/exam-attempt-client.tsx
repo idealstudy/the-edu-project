@@ -357,13 +357,13 @@ export const ExamAttemptClient = ({ attemptId }: ExamAttemptClientProps) => {
             </div>
             <div
               className={cn(
-                'text-gray-12 mt-4 min-h-44 rounded-lg border p-5 text-[15px] leading-8',
+                'text-gray-12 mt-4 min-h-44 rounded-lg border p-5 text-sm leading-8',
                 sheet.examType === 'SCHOOL'
                   ? 'border-gray-4 bg-gray-1'
                   : 'border-gray-3 bg-white'
               )}
             >
-              <span className="text-gray-8 text-[11px]">
+              <span className="text-gray-8 text-ui-choice">
                 {sheet.examType === 'SCHOOL' ? '올린 시험지' : '문제'}
               </span>
               <p className="mt-3">{currentQuestion.prompt}</p>

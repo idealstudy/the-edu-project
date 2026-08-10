@@ -44,15 +44,15 @@ export const ExamAnalysisCard = ({ analysis }: { analysis: ExamAnalysis }) => {
         </div>
         <div className="border-gray-3 border-t p-6 md:border-t-0 md:border-l">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="bg-orange-2 text-orange-11 rounded-full px-2.5 py-1 text-[11px] font-extrabold">
+            <span className="bg-orange-2 text-orange-11 text-ui-choice rounded-full px-2.5 py-1 font-extrabold">
               {analysis.gradeBasis === 'MEASURED' ? '실측' : 'AI 예측'}
             </span>
             {analysis.gradeBasis === 'PREDICTED' && (
-              <span className="border-gray-4 text-gray-10 rounded-full border px-2.5 py-1 text-[11px] font-bold">
+              <span className="border-gray-4 text-gray-10 text-ui-choice rounded-full border px-2.5 py-1 font-bold">
                 실측 아님
               </span>
             )}
-            <span className="text-gray-8 text-[11px] font-bold">
+            <span className="text-gray-8 text-ui-choice font-bold">
               신뢰 {analysis.confidence}
             </span>
           </div>
@@ -92,7 +92,7 @@ export const ExamAnalysisCard = ({ analysis }: { analysis: ExamAnalysis }) => {
             ))}
           </div>
           {analysis.adjustmentReason && (
-            <p className="text-orange-11 mt-3 text-[11px] leading-5">
+            <p className="text-orange-11 text-ui-choice mt-3 leading-5">
               보정: {analysis.adjustmentReason}
             </p>
           )}
@@ -113,15 +113,15 @@ export const ExamAnalysisCard = ({ analysis }: { analysis: ExamAnalysis }) => {
                 key={answer.questionNo}
                 className={
                   answer.correct
-                    ? 'border-system-success bg-system-success-alt text-system-success flex aspect-square items-center justify-center rounded-md border text-[11px] font-bold'
-                    : 'border-red-3 bg-red-1 text-red-10 flex aspect-square items-center justify-center rounded-md border text-[11px] font-bold'
+                    ? 'border-system-success bg-system-success-alt text-system-success text-ui-choice flex aspect-square items-center justify-center rounded-md border font-bold'
+                    : 'border-red-3 bg-red-1 text-red-10 text-ui-choice flex aspect-square items-center justify-center rounded-md border font-bold'
                 }
               >
                 {answer.questionNo}
               </span>
             ))}
           </div>
-          <p className="text-gray-8 mt-3 text-[11px]">
+          <p className="text-gray-8 text-ui-choice mt-3">
             선생님이 표시한 문항은 번호 칸 테두리로만 알립니다.
           </p>
           {visiblePins.map((pin) => (
@@ -209,7 +209,7 @@ export const ExamAnalysisCard = ({ analysis }: { analysis: ExamAnalysis }) => {
           </section>
         </div>
       </div>
-      <p className="text-gray-8 text-center text-[11px] leading-5">
+      <p className="text-gray-8 text-ui-choice text-center leading-5">
         틀린 문항이 오답 회독과 오늘의 문제와 단권화로 가는 것은{' '}
         <b>시스템이 알아서 합니다.</b> 이 화면은 <b>분석만</b> 합니다.
       </p>

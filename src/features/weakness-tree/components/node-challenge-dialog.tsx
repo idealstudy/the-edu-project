@@ -42,7 +42,7 @@ export const NodeChallengeDialog = ({
         if (!open) onClose();
       }}
     >
-      <Dialog.Content className="max-w-[640px] gap-5 p-6 md:p-8">
+      <Dialog.Content className="-0 gap-5 p-6 md:p-8">
         <Dialog.Header>
           <Dialog.Title className="font-headline2-heading text-pretty">
             {node?.displayName ?? '단원'}
@@ -61,7 +61,7 @@ export const NodeChallengeDialog = ({
         </Dialog.Header>
 
         {node?.stuck && (
-          <div className="bg-orange-1 border-line-line1 flex items-start gap-2 rounded-[10px] border p-3">
+          <div className="bg-orange-1 border-line-line1 rounded-row flex items-start gap-2 border p-3">
             <AlertTriangle
               size={18}
               className="text-system-warning mt-0.5 shrink-0"
@@ -76,12 +76,12 @@ export const NodeChallengeDialog = ({
         <Dialog.Body className="gap-2">
           {isLoading ? (
             <div className="flex flex-col gap-2">
-              <Skeleton.Block className="h-[68px] w-full rounded-[10px]" />
-              <Skeleton.Block className="h-[68px] w-full rounded-[10px]" />
-              <Skeleton.Block className="h-[68px] w-full rounded-[10px]" />
+              <Skeleton.Block className="-0 rounded-row w-full" />
+              <Skeleton.Block className="-0 rounded-row w-full" />
+              <Skeleton.Block className="-0 rounded-row w-full" />
             </div>
           ) : (challenges?.length ?? 0) === 0 ? (
-            <div className="border-line-line1 flex flex-col items-center gap-2 rounded-[10px] border border-dashed bg-white py-10 text-center">
+            <div className="border-line-line1 rounded-row flex flex-col items-center gap-2 border border-dashed bg-white py-10 text-center">
               <Inbox
                 size={28}
                 className="text-gray-6"
@@ -100,7 +100,7 @@ export const NodeChallengeDialog = ({
                 <li key={challenge.challengeId}>
                   <Link
                     href={PUBLIC.OPEN_CHALLENGE.DETAIL(challenge.challengeId)}
-                    className="border-line-line1 hover:border-key-color-primary flex min-h-[44px] items-center gap-3 rounded-[10px] border bg-white p-3 transition-colors"
+                    className="border-line-line1 hover:border-key-color-primary -0 rounded-row flex items-center gap-3 border bg-white p-3 transition-colors"
                   >
                     <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                       <span className="font-caption-heading text-text-sub2">
@@ -131,7 +131,7 @@ export const NodeChallengeDialog = ({
         </Dialog.Body>
 
         <Dialog.Footer className="justify-end">
-          <Dialog.Close className="font-label-heading text-text-sub1 hover:bg-background-gray flex h-11 cursor-pointer items-center rounded-[8px] px-4">
+          <Dialog.Close className="font-label-heading text-text-sub1 hover:bg-background-gray rounded-button flex h-11 cursor-pointer items-center px-4">
             닫기
           </Dialog.Close>
         </Dialog.Footer>

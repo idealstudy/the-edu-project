@@ -67,7 +67,7 @@ export const AdminMemberList = () => {
       data-testid="admin-members"
     >
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        <h1 className="text-gray-12 text-[19px] font-extrabold">회원 관리</h1>
+        <h1 className="text-gray-12 text-xl font-extrabold">회원 관리</h1>
         <span className="text-gray-8 text-xs">
           {role === 'STUDENT'
             ? '초대로 들어온 선생님은 자동 승인됩니다. 그래서 이 화면이 유일한 사후 통제 지점입니다.'
@@ -83,7 +83,7 @@ export const AdminMemberList = () => {
             key={tab.value}
             type="button"
             className={cn(
-              'min-h-11 border-b-2 px-5 text-[12.5px] font-bold',
+              'min-h-11 border-b-2 px-5 text-xs font-bold',
               role === tab.value
                 ? 'text-orange-11 border-orange-10'
                 : 'text-gray-8 border-transparent'
@@ -98,7 +98,7 @@ export const AdminMemberList = () => {
 
       <div className="mb-3 flex flex-wrap gap-2">
         <SearchInput
-          className="min-w-[180px] flex-1 bg-white"
+          className="-0 flex-1 bg-white"
           value={searchValue}
           onChange={setSearchValue}
           onSearch={(value) => {
@@ -107,11 +107,11 @@ export const AdminMemberList = () => {
           }}
           placeholder="이름 또는 이메일로 검색"
         />
-        <span className="border-gray-3 text-gray-11 flex min-h-[42px] items-center gap-2 rounded-lg border bg-white px-3 text-xs font-bold">
+        <span className="border-gray-3 text-gray-11 -0 flex items-center gap-2 rounded-lg border bg-white px-3 text-xs font-bold">
           가입일 <b>최근 7일</b>
         </span>
         {role === 'STUDENT' && (
-          <label className="border-gray-3 text-gray-8 flex min-h-[42px] items-center gap-2 rounded-lg border bg-white px-3 text-xs">
+          <label className="border-gray-3 text-gray-8 -0 flex items-center gap-2 rounded-lg border bg-white px-3 text-xs">
             점검용 계정 포함
             <Toggle
               checked={includeQaAccount}
@@ -135,10 +135,10 @@ export const AdminMemberList = () => {
       {query.isError && (
         <>
           <section
-            className="border-red-3 bg-red-1 rounded-[10px] border p-4"
+            className="border-red-3 bg-red-1 rounded-row border p-4"
             data-testid="admin-members-error"
           >
-            <h2 className="text-red-10 text-[13.5px] font-extrabold">
+            <h2 className="text-red-10 text-coach font-extrabold">
               회원 목록을 불러오지 못했어요
             </h2>
             <p className="text-red-10 mt-1.5 text-xs leading-[1.65]">
@@ -174,7 +174,7 @@ export const AdminMemberList = () => {
               <h2 className="text-sm font-extrabold">최근 조치 이력</h2>
               <span className="text-gray-8 text-xs">이 기록은 정상입니다</span>
             </div>
-            <div className="border-gray-3 text-gray-10 rounded-lg border p-3 text-[11.5px] leading-7">
+            <div className="border-gray-3 text-gray-10 text-ui-choice rounded-lg border p-3 leading-7">
               <b className="text-gray-12">8월 2일 오후 3:12</b> ·
               관리자(조성진)가 점검용 계정 test-student-02 비활성
               <br />
@@ -187,17 +187,17 @@ export const AdminMemberList = () => {
 
       {query.data && query.data.content.length === 0 && (
         <section
-          className="border-gray-3 rounded-[10px] border border-dashed bg-white px-6 py-[38px] text-center"
+          className="border-gray-3 rounded-row -0 border border-dashed bg-white px-6 text-center"
           data-testid="admin-members-empty"
         >
-          <h2 className="text-[15px] font-extrabold">
+          <h2 className="text-sm font-extrabold">
             {keyword
               ? `\"${keyword}\"으로 찾은 ${ROLE_LABEL[role]}이 없어요`
               : `등록된 ${ROLE_LABEL[role]}이 없어요`}
           </h2>
           {keyword && role === 'TEACHER' && (
             <>
-              <p className="text-gray-10 mt-2 text-[12.5px] leading-7">
+              <p className="text-gray-10 mt-2 text-xs leading-7">
                 선생님 탭에서 찾는 중입니다. 같은 이름으로{' '}
                 <b>학생 탭에는 1명</b>이 있습니다.
               </p>
@@ -205,7 +205,7 @@ export const AdminMemberList = () => {
                 variant="unstyled"
                 size="none"
                 type="button"
-                className="border-orange-11 bg-orange-10 mt-4 min-h-[46px] rounded-lg border px-5 text-[13px] font-extrabold text-white"
+                className="border-orange-11 bg-orange-10 -0 text-coach mt-4 rounded-lg border px-5 font-extrabold text-white"
                 onClick={() => selectRole('STUDENT')}
               >
                 학생 탭에서 {`"${keyword}"`} 찾기
@@ -234,9 +234,9 @@ export const AdminMemberList = () => {
       {!!query.data?.content.length && (
         <>
           <div className="border-gray-3 overflow-x-auto rounded-xl border bg-white px-2 py-1.5">
-            <table className="w-full min-w-[760px] border-collapse text-left text-xs">
+            <table className="-0 w-full border-collapse text-left text-xs">
               <thead>
-                <tr className="text-gray-8 text-[10.5px]">
+                <tr className="text-gray-8 text-ui-compact">
                   {[
                     '이름',
                     '가입 경로',
@@ -263,14 +263,14 @@ export const AdminMemberList = () => {
                   >
                     <td className="border-gray-1 border-b px-2.5 py-3">
                       <b className="block">{member.name || '이름 미등록'}</b>
-                      <span className="text-gray-8 mt-0.5 block text-[11px]">
+                      <span className="text-gray-8 text-ui-choice mt-0.5 block">
                         {member.email}
                       </span>
                     </td>
                     <td className="border-gray-1 border-b px-2.5 py-3">
                       <span
                         className={cn(
-                          'rounded-full px-2 py-1 text-[10.5px] font-extrabold',
+                          'text-ui-compact rounded-full px-2 py-1 font-extrabold',
                           member.signupPath === 'TEACHER_INVITE'
                             ? 'bg-orange-1 text-orange-11'
                             : 'bg-gray-1 text-gray-10'
@@ -281,21 +281,21 @@ export const AdminMemberList = () => {
                           : '2026년 8월 이전 경로 미상'}
                       </span>
                     </td>
-                    <td className="border-gray-1 text-gray-10 border-b px-2.5 py-3 text-[11px] tabular-nums">
+                    <td className="border-gray-1 text-gray-10 text-ui-choice border-b px-2.5 py-3 tabular-nums">
                       {formatDateTime(member.signupAt)}
                     </td>
-                    <td className="border-gray-1 text-gray-10 border-b px-2.5 py-3 text-[11px]">
+                    <td className="border-gray-1 text-gray-10 text-ui-choice border-b px-2.5 py-3">
                       {member.studyRoomCount
                         ? `${member.studyRoomCount}개`
                         : '없음'}
                     </td>
-                    <td className="border-gray-1 text-gray-10 border-b px-2.5 py-3 text-[11px] tabular-nums">
+                    <td className="border-gray-1 text-gray-10 text-ui-choice border-b px-2.5 py-3 tabular-nums">
                       {formatDateTime(member.lastActiveAt)}
                     </td>
                     <td className="border-gray-1 border-b px-2.5 py-3">
                       <span
                         className={cn(
-                          'rounded-full px-2 py-1 text-[10.5px] font-extrabold',
+                          'text-ui-compact rounded-full px-2 py-1 font-extrabold',
                           member.revoked
                             ? 'bg-red-1 text-red-10'
                             : 'bg-system-success-alt text-system-success'

@@ -39,7 +39,7 @@ export const DashboardSidebar = () => {
     <Sidebar>
       <div className="text-orange-9 px-2 pt-1 pb-3 text-sm font-extrabold tracking-[-0.045em]">
         D-EDU
-        <small className="text-gray-8 mt-0.5 block text-[9.5px] font-semibold tracking-normal">
+        <small className="text-gray-8 text-ui-compact mt-0.5 block font-semibold tracking-normal">
           {role === 'ROLE_TEACHER' ? '선생님' : '내 학습'}
         </small>
       </div>
@@ -78,7 +78,7 @@ export const DashboardSidebar = () => {
 
           {primaryRoom && (
             <>
-              <div className="text-gray-8 px-2 pt-4 pb-1 text-[10px] font-extrabold">
+              <div className="text-gray-8 text-ui-compact px-2 pt-4 pb-1 font-extrabold">
                 소속
               </div>
               <Sidebar.Item
@@ -96,7 +96,7 @@ export const DashboardSidebar = () => {
             </>
           )}
 
-          <div className="text-gray-8 px-2 pt-4 pb-1 text-[10px] font-extrabold">
+          <div className="text-gray-8 text-ui-compact px-2 pt-4 pb-1 font-extrabold">
             더 보기
           </div>
 
@@ -184,7 +184,7 @@ export const DashboardSidebar = () => {
 
       {role === 'ROLE_STUDENT' && (
         <>
-          <div className="text-gray-8 px-2 pt-4 pb-1 text-[10px] font-extrabold">
+          <div className="text-gray-8 text-ui-compact px-2 pt-4 pb-1 font-extrabold">
             오픈챌린지에서 열립니다
           </div>
           <Sidebar.Item
@@ -228,7 +228,7 @@ export const DashboardSidebar = () => {
               <Sidebar.Item
                 href={PRIVATE.ADMIN.MEMBERS.LIST}
                 matchPath={PRIVATE.ADMIN.MEMBERS.LIST}
-                className="h-12 items-center justify-start gap-[2px]"
+                className="-0 h-12 items-center justify-start"
               >
                 <Users size={20} />
                 <Sidebar.Text className="font-body2-normal">
@@ -240,7 +240,7 @@ export const DashboardSidebar = () => {
               <Sidebar.Item
                 href={PRIVATE.ADMIN.COLUMN.LIST}
                 matchPath={PRIVATE.ADMIN.COLUMN.LIST}
-                className="h-12 items-center justify-start gap-[2px]"
+                className="-0 h-12 items-center justify-start"
               >
                 <ListIcon />
                 <Sidebar.Text className="font-body2-normal">
@@ -252,7 +252,7 @@ export const DashboardSidebar = () => {
               <Sidebar.Item
                 href={PRIVATE.ADMIN.OPEN_CHALLENGE.LIST}
                 matchPath={PRIVATE.ADMIN.OPEN_CHALLENGE.LIST}
-                className="h-12 items-center justify-start gap-[2px]"
+                className="-0 h-12 items-center justify-start"
               >
                 <ListIcon />
                 <Sidebar.Text className="font-body2-normal">

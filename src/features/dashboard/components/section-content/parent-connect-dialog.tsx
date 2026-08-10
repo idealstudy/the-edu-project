@@ -64,7 +64,7 @@ export const ConnectDialog = ({
       isOpen={open}
       onOpenChange={onOpenChange}
     >
-      <Dialog.Content className="w-[598px]">
+      <Dialog.Content className="-0">
         <Dialog.Header className="flex-row items-center justify-between">
           <Dialog.Title>학생 연결하기</Dialog.Title>
           <Dialog.Close
@@ -99,7 +99,7 @@ export const ConnectDialog = ({
         </Dialog.Body>
         <Dialog.Footer className="mt-6 justify-end">
           <Button
-            className="w-[120px]"
+            className="-0"
             size="xsmall"
             onClick={handleSave}
             disabled={!selectedMember || isPending}

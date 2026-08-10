@@ -18,9 +18,9 @@ export const TreeHero = ({ mastery, valley }: TreeHeroProps) => {
   const gapCount = mastery.weak + mastery.untested;
 
   return (
-    <section className="bg-gray-12 rounded-[18px] px-6 py-8 text-white md:px-7">
+    <section className="bg-gray-12 rounded-section px-6 py-8 text-white md:px-7">
       <p className="font-caption-heading text-orange-3">내 정복 능선</p>
-      <h1 className="mt-3.5 text-[22px] leading-[1.4] font-bold tracking-[-0.02em] text-balance md:text-[26px]">
+      <h1 className="mt-3.5 text-xl leading-[1.4] font-bold tracking-[-0.02em] text-balance md:text-2xl">
         {gapCount > 0 ? (
           <>
             능선이 <span className="text-[#ff7a4d]">{gapCount}곳</span> 아직
@@ -30,12 +30,12 @@ export const TreeHero = ({ mastery, valley }: TreeHeroProps) => {
           <>능선이 고르게 채워졌다. 지금 페이스를 유지해.</>
         )}
       </h1>
-      <p className="mt-3 max-w-[46ch] text-[14px] text-[#cfc9c6]">
+      <p className="mt-3 max-w-[46ch] text-sm text-[#cfc9c6]">
         옅은 봉우리는 해설 없이는 못 푸는 단원, 비어 있는 봉우리는 아직 안
         풀어본 구멍이다. 코치한테 물어보는 건 괜찮아. 해설만 참으면 자력으로
         쳐준다.
       </p>
-      <p className="mt-5 flex items-center gap-2 text-[13px] font-semibold text-[#a59f9c]">
+      <p className="text-coach mt-5 flex items-center gap-2 font-semibold text-[#a59f9c]">
         평균 정복도{' '}
         <b className="text-white tabular-nums">{mastery.averageScore}%</b>
         {valley && (

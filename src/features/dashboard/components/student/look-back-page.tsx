@@ -156,7 +156,7 @@ export const LookBackPage = () => {
               <div className="mb-4 flex items-center gap-2">
                 <h2 className="font-extrabold">코치가 보낸 말</h2>
                 {coachMessage && (
-                  <span className="bg-orange-1 text-orange-11 rounded-full px-2 py-1 text-[10px] font-bold">
+                  <span className="bg-orange-1 text-orange-11 text-ui-compact rounded-full px-2 py-1 font-bold">
                     AI가 씀
                   </span>
                 )}
@@ -196,11 +196,11 @@ export const LookBackPage = () => {
                     key={day.date}
                     className="border-gray-3 bg-gray-1 relative min-h-16 rounded-md border p-2 text-center"
                   >
-                    <span className="text-gray-8 block text-[10px]">
+                    <span className="text-gray-8 text-ui-compact block">
                       {WEEK_DAYS[index % 7]}
                     </span>
                     <b className="text-sm">{Number(day.date.slice(-2))}</b>
-                    <span className="mt-1 block text-[10px]">
+                    <span className="text-ui-compact mt-1 block">
                       {day.todoDone} / {day.todoTotal}
                     </span>
                     {day.hasRetrospect && (
@@ -209,7 +209,7 @@ export const LookBackPage = () => {
                   </div>
                 ))}
               </div>
-              <p className="text-gray-8 mt-3 text-[11px] leading-5">
+              <p className="text-gray-8 text-ui-choice mt-3 leading-5">
                 칸 안 숫자는 완료 / 전체입니다. 오른쪽 아래 점은 그날 회고가
                 있다는 뜻입니다.
                 {onlyWithRetrospect &&
@@ -330,7 +330,7 @@ export const LookBackPage = () => {
                     {record.chips.map((chip) => (
                       <span
                         key={chip}
-                        className="bg-orange-1 rounded-full px-2 py-1 text-[10px] font-bold"
+                        className="bg-orange-1 text-ui-compact rounded-full px-2 py-1 font-bold"
                       >
                         {chip}
                       </span>

@@ -62,8 +62,8 @@ export default function TagInput({
         <PopoverTrigger asChild>
           <div
             className={cn(
-              'border-gray-scale-gray-50 text-gray-scale-gray-40 flex min-h-[56px] cursor-text flex-wrap items-center gap-2 rounded-sm border px-6 py-[15px]',
-              'rounded-[4px] border outline-none',
+              'border-gray-scale-gray-50 text-gray-scale-gray-40 -0 -0 flex cursor-text flex-wrap items-center gap-2 rounded-sm border px-6',
+              'rounded-control-compact border outline-none',
               open ? 'border-line-line3' : '',
               error ? 'border-system-warning' : '',
               disabled
@@ -86,7 +86,7 @@ export default function TagInput({
                   return (
                     <div
                       key={student.id}
-                      className="bg-background-gray border-line-line1 flex items-center gap-1 rounded-sm py-2 pl-[12px] text-sm"
+                      className="bg-background-gray border-line-line1 -0 flex items-center gap-1 rounded-sm py-2 text-sm"
                     >
                       <span className="text-base text-black">
                         {fullInfo.name}
@@ -145,7 +145,7 @@ export default function TagInput({
               검색 결과가 없습니다.
             </div>
           ) : (
-            <div className="mt-4 flex max-h-[150px] flex-wrap gap-2 overflow-y-auto">
+            <div className="-0 mt-4 flex flex-wrap gap-2 overflow-y-auto">
               {filtered.map((student) => {
                 const isSelected = selected.some((s) => s.id === student.id);
                 return (

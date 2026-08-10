@@ -25,7 +25,7 @@ export const ConsultationItemDetail = ({
       isOpen={open}
       onOpenChange={onOpenChange}
     >
-      <Dialog.Content className="h-[524px] w-[720px] max-w-[calc(100%-4rem)] p-10">
+      <Dialog.Content className="-0 -0 max-w-[calc(100%-4rem)] p-10">
         <Dialog.Header className="flex-row items-center justify-between">
           <Dialog.Title className="font-headline1-heading text-gray-12">
             {titleDate ? `${titleDate} 기록 일지` : '기록 일지'}
@@ -46,7 +46,7 @@ export const ConsultationItemDetail = ({
         </Dialog.Header>
 
         <Dialog.Body className="mt-8">
-          <div className="border-line-line1 h-full rounded-[4px] border px-3 py-4">
+          <div className="border-line-line1 rounded-control-compact h-full border px-3 py-4">
             <div className="h-full overflow-y-auto pr-2">
               <p className="font-body2-normal text-gray-10 break-words whitespace-pre-wrap">
                 {content ?? ''}

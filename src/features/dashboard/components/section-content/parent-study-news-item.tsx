@@ -99,7 +99,7 @@ export const StudyNewsItem = ({
             <span className="font-caption-normal text-gray-8">{metaText}</span>
 
             {isQna && data.status === 'COMPLETED' && (
-              <span className="bg-system-success-alt text-system-success font-caption-heading flex items-center gap-1 rounded-[4px] px-2 py-1">
+              <span className="bg-system-success-alt text-system-success font-caption-heading rounded-control-compact flex items-center gap-1 px-2 py-1">
                 답변 완료
                 <Check
                   className="h-3.5 w-3.5 shrink-0"
@@ -112,7 +112,7 @@ export const StudyNewsItem = ({
               <StatusBadge
                 variant="default"
                 label="답변 대기"
-                className="font-caption-heading rounded-[4px] px-2 py-1"
+                className="font-caption-heading rounded-control-compact px-2 py-1"
               />
             )}
           </div>

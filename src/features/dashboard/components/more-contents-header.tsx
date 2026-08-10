@@ -52,7 +52,7 @@ export const MoreContentsHeader = ({
           </span>
         </Link>
       </div>
-      <div className="tablet:pt-19 tablet:pb-9 tablet:h-[155px] flex h-20 w-full pt-8 pb-4">
+      <div className="tablet:pt-19 tablet:pb-9 -0 flex h-20 w-full pt-8 pb-4">
         <h1 className="font-headline2-heading tablet:font-title-heading text-gray-12 text-left">
           {headerTitle}
         </h1>

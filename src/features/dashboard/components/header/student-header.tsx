@@ -25,17 +25,17 @@ const StudentDashboardHeader = ({
   ] as const;
 
   return (
-    <header className="border-gray-3 bg-gray-white sticky top-0 z-20 border-b px-4 py-3 md:px-[22px]">
+    <header className="border-gray-3 bg-gray-white -0 sticky top-0 z-20 border-b px-4 py-3">
       <div className="flex w-full flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-gray-12 text-[13.5px] font-extrabold">{title}</h1>
+          <h1 className="text-gray-12 text-coach font-extrabold">{title}</h1>
           <p className="text-gray-7 text-xs">{memberName} · 고2 수학</p>
         </div>
         <div className="flex flex-wrap items-center justify-end gap-1.5">
           {chips.map(([label, value]) => (
             <span
               key={label}
-              className="border-gray-3 bg-gray-1 text-gray-8 rounded-full border px-2.5 py-1 text-[11px] font-bold"
+              className="border-gray-3 bg-gray-1 text-gray-8 text-ui-choice rounded-full border px-2.5 py-1 font-bold"
             >
               {label} <b className="text-gray-12 tabular-nums">{value}</b>
             </span>

@@ -85,7 +85,7 @@ export const StudyRoomDropdown = ({
       {isOpen && (
         <ul
           className={cn(
-            'absolute top-full left-0 z-10 max-h-[300px] w-full overflow-y-auto',
+            '-0 absolute top-full left-0 z-10 w-full overflow-y-auto',
             'bg-gray-1 rounded-b-lg shadow-md',
             'flex flex-col py-1'
           )}

@@ -16,8 +16,8 @@ export const TreeActionBand = ({ valley, onAction }: TreeActionBandProps) => {
   if (!valley) return null;
 
   return (
-    <div className="bg-orange-1 border-orange-3 flex flex-col items-stretch gap-3.5 rounded-[14px] border px-5 py-4.5 sm:flex-row sm:items-center">
-      <p className="text-orange-12 flex-1 text-[13px] leading-[1.5] font-semibold">
+    <div className="bg-orange-1 border-orange-3 rounded-card flex flex-col items-stretch gap-3.5 border px-5 py-4.5 sm:flex-row sm:items-center">
+      <p className="text-orange-12 text-coach flex-1 leading-[1.5] font-semibold">
         <span className="text-system-warning mr-1 font-bold">⚠</span>
         가장 깊은 협곡은{' '}
         <b className="text-key-color-primary">{valley.displayName}</b> · 자력{' '}
@@ -30,7 +30,7 @@ export const TreeActionBand = ({ valley, onAction }: TreeActionBandProps) => {
       <Button
         size="small"
         onClick={() => onAction(valley)}
-        className="shrink-0 shadow-[0_4px_0_var(--orange-10)] active:translate-y-[2px] active:shadow-[0_1px_0_var(--orange-10)]"
+        className="-0 shrink-0 shadow-[0_4px_0_var(--orange-10)] active:shadow-[0_1px_0_var(--orange-10)]"
       >
         가장 약한 곳부터 메우기
       </Button>

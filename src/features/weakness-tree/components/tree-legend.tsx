@@ -20,7 +20,7 @@ export const TreeLegend = () => (
           className="flex items-center gap-2"
         >
           <span
-            className={`size-4 rounded-[5px] ${item.swatch}`}
+            className={`rounded-checkbox size-4 ${item.swatch}`}
             aria-hidden
           />
           <span className="font-caption-heading text-text-sub1">

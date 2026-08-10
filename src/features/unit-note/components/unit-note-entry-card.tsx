@@ -108,7 +108,7 @@ export const UnitNoteEntryCard = () => {
                   정리한 적이 없는 것인데 예전에는 "마지막 정리 기록 있음"으로 나와
                   진행률 0% 와 어긋났다(fix-report-v8-2 곁다리 관찰).
                 */}
-                <p className="text-gray-7 mt-0.5 text-[11px]">
+                <p className="text-gray-7 text-ui-choice mt-0.5">
                   {subject.unitCount === 0
                     ? '아직 시작 전'
                     : subject.noteCount > 0
@@ -149,7 +149,7 @@ export const UnitNoteEntryCard = () => {
           ))}
         </div>
       )}
-      <div className="text-gray-7 mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-semibold">
+      <div className="text-gray-7 text-ui-choice mt-3 flex flex-wrap gap-x-4 gap-y-1 font-semibold">
         <span className="flex items-center gap-1.5">
           <i className="bg-orange-7 size-2.5 rounded-sm" /> 문제 푼 것
         </span>

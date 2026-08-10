@@ -133,6 +133,8 @@ Wanted Sans Variable을 본문 1순위로 쓰고, 로컬 Pretendard를 대체 �
 | `font-label-heading`                | 14 / 600      | 라벨·버튼   |
 | `font-caption-heading`              | 12 / 500      | 캡션·메타   |
 
+v22가 부품 단위로 고정한 예외 글자 크기는 `text-ui-compact` 10.5px(배지·관리자 표 머리), `text-ui-choice` 11.5px(선택 칩), `text-coach` 13.5px(코치 말풍선) 세 개뿐이다. 일반 본문에 새 크기를 만들지 않는다.
+
 추가 규칙 (승인 프로토타입 v22 §1.2):
 
 - 자간: 제목 `-0.03em`, 본문 `-0.015em`, 캡션 `0`. 큰 숫자는 `-0.04em`~`-0.05em`.
@@ -206,6 +208,8 @@ Wanted Sans Variable을 본문 1순위로 쓰고, 로컬 Pretendard를 대체 �
 | `--radius-checkbox`                  | 5px   | 체크박스            |                  |
 | `--radius-focus`                     | 6px   | 포커스 링           |                  |
 | `--radius-pill`                      | 999px | 칩·배지·게이지 트랙 | `rounded-pill`   |
+
+체크박스처럼 1.5px 테두리가 필요한 v22 부품은 `--border-width-precision`과 `border-precision`을 쓴다. 일반 카드 테두리는 기존 1px `border`를 유지한다.
 
 그림자는 **아래 둘만** 허용한다. 장식 그림자는 금지다. 카드에는 그림자를 넣지 않는다 (테두리 `1px solid gray-3` 으로 구분).
 

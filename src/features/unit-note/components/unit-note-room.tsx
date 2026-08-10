@@ -156,9 +156,9 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
 
   if (libraryQuery.isPending) {
     return (
-      <main className="mx-auto w-full max-w-[1120px] px-4 py-8">
+      <main className="-0 mx-auto w-full px-4 py-8">
         <Skeleton.Block className="h-32 w-full rounded-xl" />
-        <Skeleton.Block className="mt-5 h-[520px] w-full rounded-xl" />
+        <Skeleton.Block className="-0 mt-5 w-full rounded-xl" />
       </main>
     );
   }
@@ -284,7 +284,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
 
         <header className="border-gray-3 bg-gray-white mt-2 rounded-xl border p-4">
           <div className="flex flex-wrap items-center gap-3">
-            <div className="min-w-[200px] flex-1">
+            <div className="-0 flex-1">
               <p className="font-caption-heading text-gray-8">
                 {subjectLabel(root.subject)} · 단권화 노트
               </p>
@@ -342,7 +342,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                   <button
                     key={concept.nodeId}
                     type="button"
-                    className={`border-gray-2 grid h-[46px] cursor-pointer grid-cols-[28px_minmax(0,1fr)_72px_44px] items-center gap-2 border-b text-left last:border-b-0 ${
+                    className={`border-gray-2 -0 grid cursor-pointer grid-cols-[28px_minmax(0,1fr)_72px_44px] items-center gap-2 border-b text-left last:border-b-0 ${
                       activeNodeId === concept.nodeId ? 'bg-orange-1' : ''
                     }`}
                     onClick={() => setSelectedNodeId(concept.nodeId)}
@@ -396,7 +396,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                 className="border-orange-3 bg-orange-1 rounded-xl border p-4"
                 data-testid="unit-note-subject-mastery"
               >
-                <p className="text-gray-9 text-[11px] font-bold">
+                <p className="text-gray-9 text-ui-choice font-bold">
                   {subjectLabel(root.subject)} 전체 숙련도
                 </p>
                 <p className="text-gray-12 mt-1 text-2xl font-extrabold tabular-nums">
@@ -409,7 +409,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                     style={{ width: `${root.masteryScore}%` }}
                   />
                 </div>
-                <p className="text-gray-9 mt-2 text-[11px]">
+                <p className="text-gray-9 text-ui-choice mt-2">
                   문제 {branchProblems}개 · 노트 {branchPages}장
                 </p>
                 {/* v22 `sNoteUnits` :2733 `가장 약한 단원 먼저 정리하기` */}
@@ -450,19 +450,19 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                     아직 이 과목에 쓴 정리가 없어요.
                   </p>
                 ) : (
-                  <div className="mt-3 flex flex-col gap-[7px]">
+                  <div className="-0 mt-3 flex flex-col">
                     {recentConcepts.map((concept) => (
                       <div
                         key={concept.nodeId}
-                        className={`border-gray-3 flex min-h-[58px] items-center gap-2 rounded-lg border px-3 ${
+                        className={`border-gray-3 -0 flex items-center gap-2 rounded-lg border px-3 ${
                           concept.nodeId === activeNodeId ? 'bg-orange-1' : ''
                         }`}
                       >
                         <span className="min-w-0 flex-1">
-                          <b className="text-gray-12 block truncate text-[13px]">
+                          <b className="text-gray-12 text-coach block truncate">
                             {concept.displayName}
                           </b>
-                          <small className="text-gray-9 block truncate text-[11px]">
+                          <small className="text-gray-9 text-ui-choice block truncate">
                             노트 {concept.pageCount}장 · 숙련도{' '}
                             {concept.masteryScore}%
                           </small>
@@ -522,10 +522,10 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                       page={page}
                       compact
                     />
-                    <p className="text-gray-11 mt-2 truncate text-[11px] font-bold">
+                    <p className="text-gray-11 text-ui-choice mt-2 truncate font-bold">
                       {page.fileName}
                     </p>
-                    <p className="text-gray-7 mt-0.5 text-[10px]">
+                    <p className="text-gray-7 text-ui-compact mt-0.5">
                       {page.position}장 ·{' '}
                       {page.source === 'PEN'
                         ? '내 필기'
@@ -710,7 +710,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                   </div>
                   {page.source === 'TEACHER' ? (
                     <div className="mt-3 flex items-center gap-2">
-                      <span className="bg-orange-2 text-orange-10 rounded-full px-2 py-1 text-[10px] font-bold">
+                      <span className="bg-orange-2 text-orange-10 text-ui-compact rounded-full px-2 py-1 font-bold">
                         선생님
                       </span>
                       <button
@@ -805,7 +805,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
                       </div>
                     </div>
                     <div className="mt-3 flex items-center gap-2">
-                      <span className="bg-orange-2 text-orange-10 rounded-full px-2 py-1 text-[10px] font-bold">
+                      <span className="bg-orange-2 text-orange-10 text-ui-compact rounded-full px-2 py-1 font-bold">
                         선생님
                       </span>
                       <button
