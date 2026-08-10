@@ -22,13 +22,42 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 const TILE_GRID = 'grid grid-cols-2 gap-2 md:grid-cols-5';
 
 /**
- * v22 §8 R1: 지도 규격은 3과목 18단원 전제인데 실제 DB 는 7과목 22대단원이다.
- * v22 가 접기 규칙을 안 정했으므로, v22 가 0건 상태에서 쓴 방식(:2383 "미적분Ⅰ과
- * 확률과 통계 칸은 접어 뒀어요")을 전 과목으로 확장했다. 손댄 과목은 펼치고
- * 아직 한 칸도 안 찬 과목은 접는다. 접힌 줄은 진행 막대와 함께 남아 눌러서 편다.
+ * v22 §5의 768px 접힘선과 §8 R1의 대량 데이터 위험을 실제 9과목 73단원에 맞춘다.
+ * 기본 펼침은 한 과목뿐이다. 아직 정복하지 못했고 실제 풀이 이력이 있는 단원이
+ * 많은 과목을 우선하고, 동률이면 그 단원들의 풀이 수, 전체 풀이 수, 서버 과목
+ * 순서를 차례로 쓴다. API에 최근 수정 시각이 없으므로 누적 풀이를 최근성처럼
+ * 가장하지 않는다. 학생은 모든 과목 머리줄을 눌러 추가로 펼칠 수 있다.
  */
-const shouldOpenByDefault = (group: TreeSubjectGroup) =>
-  group.nodes.some((node) => node.masteryScore > 0);
+export const selectDefaultOpenSubjects = (groups: TreeSubjectGroup[]) => {
+  const ranked = groups
+    .map((group, index) => {
+      const activeNodes = group.nodes.filter(
+        (node) => node.attemptCount > 0 && node.masteryScore < 80
+      );
+      return {
+        subject: group.subject as string,
+        activeNodeCount: activeNodes.length,
+        activeAttemptCount: activeNodes.reduce(
+          (sum, node) => sum + node.attemptCount,
+          0
+        ),
+        totalAttemptCount: group.nodes.reduce(
+          (sum, node) => sum + node.attemptCount,
+          0
+        ),
+        index,
+      };
+    })
+    .sort(
+      (a, b) =>
+        b.activeNodeCount - a.activeNodeCount ||
+        b.activeAttemptCount - a.activeAttemptCount ||
+        b.totalAttemptCount - a.totalAttemptCount ||
+        a.index - b.index
+    );
+
+  return ranked[0] ? [ranked[0].subject] : [];
+};
 
 const tileTone = (masteryScore: number) => {
   if (masteryScore >= 80) return 'bg-orange-7';
@@ -52,12 +81,7 @@ export const StudentResultsPage = () => {
     nodes.length === 0 || nodes.every((node) => node.masteryScore === 0);
 
   const defaultOpen = useMemo(() => {
-    const opened = groups
-      .filter(shouldOpenByDefault)
-      .map((group) => group.subject as string);
-    if (opened.length > 0) return opened;
-    const first = groups[0]?.subject as string | undefined;
-    return first ? [first] : [];
+    return selectDefaultOpenSubjects(groups);
   }, [groups]);
   const [manualOpen, setManualOpen] = useState<Record<string, boolean>>({});
   const isOpen = (subject: string) =>
@@ -79,7 +103,7 @@ export const StudentResultsPage = () => {
             {groups.length}과목 {nodes.length}단원 · 지금까지 채운 것
           </span>
           <span className="border-gray-3 text-gray-10 text-ui-choice ml-auto rounded-md border px-2 py-1 font-bold">
-            최근 바뀐 순
+            진행 중 1과목 먼저
           </span>
         </div>
 
@@ -219,8 +243,11 @@ export const StudentResultsPage = () => {
               {foldedCount > 0 && (
                 <>
                   {' '}
-                  아직 한 칸도 안 찬 과목 <b>{foldedCount}개</b>는 접어 뒀어요.
-                  과목 줄을 누르면 펼쳐집니다.
+                  나머지 <b>{foldedCount}과목</b>은 접어 뒀어요. 처음에는{' '}
+                  {isEmpty
+                    ? '첫 과목 하나만'
+                    : '아직 정복하지 못한 풀이가 가장 많은 과목 하나만'}{' '}
+                  펼칩니다. 과목 줄을 누르면 더 볼 수 있어요.
                 </>
               )}
             </p>
