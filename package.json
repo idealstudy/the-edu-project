@@ -14,12 +14,13 @@
     "format": "prettier --write */**/*.{js,jsx,json,ts,tsx,scss,css,md}",
     "format:check": "prettier -c */**/*.{js,jsx,json,ts,tsx,scss,css,md}",
     "test": "vitest",
-    "test:ci": "vitest run",
+    "test:ci": "node scripts/check-design-tokens.mjs && vitest run",
     "prepare": "cd .. && husky mvp-front/.husky",
     "check-types": "tsc --noEmit",
     "check-types:watch": "tsc --noEmit --watch",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "check-design": "node scripts/check-design-tokens.mjs"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.39.0",
