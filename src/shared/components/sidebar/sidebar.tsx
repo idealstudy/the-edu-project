@@ -53,7 +53,7 @@ const SidebarRoot = ({ children }: { children: ReactNode }) => {
       data-dashboard-sidebar
       className={cn('fixed top-0 left-0 z-40 hidden h-dvh flex-col', 'md:flex')}
     >
-      <aside className="border-gray-3 px-sidebar-pad-x py-sidebar-pad-y relative flex w-sidebar-width flex-1 flex-col overflow-hidden border-r bg-white">
+      <aside className="border-gray-3 px-sidebar-pad-x py-sidebar-pad-y w-sidebar-width relative flex flex-1 flex-col overflow-hidden border-r bg-white">
         {children}
       </aside>
     </div>
@@ -93,9 +93,7 @@ const SidebarItem = ({
       prefetch={prefetch}
       className={cn(
         'min-h-touch-min rounded-button px-button-compact-x flex items-center gap-2 text-sm font-semibold',
-        isActive
-          ? 'bg-orange-1 text-orange-9'
-          : 'hover:bg-gray-1',
+        isActive ? 'bg-orange-1 text-orange-9' : 'hover:bg-gray-1',
         isCreatePage && 'h-9 w-9 justify-center gap-0 bg-transparent px-0',
         className
       )}
@@ -233,10 +231,7 @@ const SidebarSectionIcon = ({ className }: { className?: string }) => {
   const { isStudyRoomSectionActive } = useSidebarContext();
   return (
     <TextIcon
-      className={cn(
-        isStudyRoomSectionActive && 'text-orange-9',
-        className
-      )}
+      className={cn(isStudyRoomSectionActive && 'text-orange-9', className)}
     />
   );
 };

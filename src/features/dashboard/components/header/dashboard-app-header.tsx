@@ -3,9 +3,9 @@
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
-import { useTeacherDashboardStudyRoomListQuery } from '@/features/dashboard/hooks/use-teacher-dashboard-query';
 import { useStudentGrowthQuery } from '@/features/dashboard/hooks/use-growth-query';
 import { useParentDashboardReportQuery } from '@/features/dashboard/hooks/use-parent-dashboard-query';
+import { useTeacherDashboardStudyRoomListQuery } from '@/features/dashboard/hooks/use-teacher-dashboard-query';
 import { useWrongAnswersQuery } from '@/features/dashboard/hooks/use-wrong-answer-query';
 import { useMyPointWalletQuery } from '@/features/point/hooks/use-point';
 import { cn } from '@/shared/lib';
@@ -70,11 +70,10 @@ const StudentHeaderContent = ({
             key={label}
             className="bg-gray-1 text-gray-9 text-ui-choice min-h-chip-min rounded-pill px-button-chip-x inline-flex items-center font-bold"
           >
-            {label}{' '}
-            <b className="text-gray-12 ml-1 tabular-nums">{value}</b>
+            {label} <b className="text-gray-12 ml-1 tabular-nums">{value}</b>
           </span>
         ))}
-        <span className="bg-orange-9 text-gray-white flex size-8 items-center justify-center rounded-pill text-xs font-extrabold">
+        <span className="bg-orange-9 text-gray-white rounded-pill flex size-8 items-center justify-center text-xs font-extrabold">
           {memberName.slice(0, 1)}
         </span>
       </div>
@@ -98,7 +97,7 @@ const TeacherHeaderContent = ({
 
   return (
     <div className="flex w-full items-center gap-3">
-      <span className="bg-orange-9 text-gray-white flex size-8 shrink-0 items-center justify-center rounded-pill text-sm font-extrabold">
+      <span className="bg-orange-9 text-gray-white rounded-pill flex size-8 shrink-0 items-center justify-center text-sm font-extrabold">
         {memberName.slice(0, 1)}
       </span>
       <div className="min-w-0">
@@ -159,16 +158,16 @@ const ParentHeaderContent = ({
   ];
 
   return (
-    <div className="mx-auto flex w-full max-w-content-max flex-col gap-3">
+    <div className="max-w-content-max mx-auto flex w-full flex-col gap-3">
       <div className="relative flex w-full items-end justify-between gap-4">
-        <div className="flex min-h-25 min-w-0 flex-col justify-between gap-6 tablet:min-h-50 desktop:min-h-55">
+        <div className="tablet:min-h-50 desktop:min-h-55 flex min-h-25 min-w-0 flex-col justify-between gap-6">
           <p className="text-gray-12 font-body1-heading tablet:font-headline1-heading desktop:font-title-heading">
             {memberName ? <b>{memberName} 학부모님,</b> : <b>학부모님,</b>}
             <br />
             학습 여정을 함께 확인해보세요
           </p>
           <HeaderReport
-            className="hidden tablet:flex"
+            className="tablet:flex hidden"
             stats={stats}
             isPending={isPending}
           />
@@ -181,11 +180,11 @@ const ParentHeaderContent = ({
           priority
           fetchPriority="high"
           sizes="(min-width: 1200px) 220px, (min-width: 768px) 200px, 100px"
-          className="size-25 object-contain tablet:size-50 desktop:size-55"
+          className="tablet:size-50 desktop:size-55 size-25 object-contain"
         />
       </div>
       <HeaderReport
-        className="flex tablet:hidden"
+        className="tablet:hidden flex"
         stats={stats}
         isPending={isPending}
       />
@@ -206,7 +205,7 @@ export const DashboardAppHeader = ({
       className={cn(
         'border-gray-3 bg-gray-white sticky top-0 z-30 w-full border-b',
         role === 'ROLE_PARENT'
-          ? 'bg-system-background px-section-gap pt-8 pb-3 tablet:px-room-page-pad tablet:pt-19'
+          ? 'bg-system-background px-section-gap tablet:px-room-page-pad tablet:pt-19 pt-8 pb-3'
           : 'min-h-header-height px-appbar-pad-x py-appbar-pad-y flex items-center'
       )}
     >

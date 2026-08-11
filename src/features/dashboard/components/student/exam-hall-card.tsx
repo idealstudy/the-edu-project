@@ -78,7 +78,7 @@ export const ExamHallCard = ({ className }: Props) => {
           </div>
           {isBasisOpen && (
             <div
-              className="border-gray-2 bg-gray-1 text-gray-10 text-ui-choice p-card-pad mt-3 rounded-row border leading-6"
+              className="border-gray-2 bg-gray-1 text-gray-10 text-ui-choice p-card-pad rounded-row mt-3 border leading-6"
               data-testid="expected-grade-basis"
             >
               <p>
@@ -112,7 +112,7 @@ export const ExamHallCard = ({ className }: Props) => {
               표준점수 {analysis.data.standardScore}
             </p>
           )}
-          <div className="divide-gray-2 border-gray-2 px-card-pad mt-4 divide-y rounded-row border">
+          <div className="divide-gray-2 border-gray-2 px-card-pad rounded-row mt-4 divide-y border">
             {analysis.data.evidence.map((item) => (
               <p
                 key={item.source}
@@ -143,7 +143,7 @@ export const ExamHallCard = ({ className }: Props) => {
             {reference.predictedGradeLow}~{reference.predictedGradeHigh}등급
           </p>
           <div
-            className="divide-gray-2 border-gray-2 px-card-pad mt-4 divide-y rounded-row border"
+            className="divide-gray-2 border-gray-2 px-card-pad rounded-row mt-4 divide-y border"
             data-testid="expected-grade-reference-evidence"
           >
             {reference.evidence.map((item) => (
@@ -200,7 +200,7 @@ export const ExamHallCard = ({ className }: Props) => {
 
       <Link
         href={PRIVATE.DASHBOARD.EXAM_HALL}
-        className="border-orange-4 bg-orange-1 text-orange-11 p-card-pad min-h-touch-min mt-5 flex items-center gap-3 rounded-button border text-xs font-bold"
+        className="border-orange-4 bg-orange-1 text-orange-11 p-card-pad min-h-touch-min rounded-button mt-5 flex items-center gap-3 border text-xs font-bold"
       >
         <span className="flex-1">
           응시장 열기

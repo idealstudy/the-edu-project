@@ -2,8 +2,8 @@ import { ReactNode, Suspense } from 'react';
 
 import { cookies } from 'next/headers';
 
-import { DashboardAppHeader } from '@/features/dashboard/components/header/dashboard-app-header';
 import { DashboardSidebar } from '@/features/dashboard/components/dashboard-sidebar';
+import { DashboardAppHeader } from '@/features/dashboard/components/header/dashboard-app-header';
 import { ImpersonationBanner } from '@/features/impersonation/components/impersonation-banner';
 import { SessionGuard } from '@/providers/session/session-guard';
 import { fetchMemberRole } from '@/shared/lib/server';
@@ -32,7 +32,7 @@ export default async function DashboardLayout({
   return (
     <SessionGuard>
       <main
-        className="bg-system-background flex min-h-screen flex-col md:pl-sidebar-width"
+        className="bg-system-background md:pl-sidebar-width flex min-h-screen flex-col"
         data-private-app-shell
       >
         <DashboardSidebar />

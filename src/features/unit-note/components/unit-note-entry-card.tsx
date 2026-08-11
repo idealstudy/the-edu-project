@@ -75,7 +75,7 @@ export const UnitNoteEntryCard = () => {
       </div>
 
       {libraryQuery.isError ? (
-        <div className="border-system-warning bg-system-warning-alt p-card-pad mt-4 flex items-center gap-3 rounded-card border">
+        <div className="border-system-warning bg-system-warning-alt p-card-pad rounded-card mt-4 flex items-center gap-3 border">
           <RefreshCw
             size={18}
             className="text-system-warning-text"

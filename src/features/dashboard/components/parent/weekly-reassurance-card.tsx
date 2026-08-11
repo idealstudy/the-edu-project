@@ -43,7 +43,7 @@ export const WeeklyReassuranceCard = ({
   return (
     <section
       className={cn(
-        'bg-gray-white border-gray-3 p-card-pad flex flex-col rounded-section border',
+        'bg-gray-white border-gray-3 p-card-pad rounded-section flex flex-col border',
         className
       )}
       data-testid="parent-grade-summary-card"
@@ -77,7 +77,7 @@ export const WeeklyReassuranceCard = ({
       <h4 className="font-caption-heading text-gray-7 mt-6 tracking-wide">
         가장 큰 변화
       </h4>
-      <div className="border-gray-3 p-card-pad mt-2 rounded-section border">
+      <div className="border-gray-3 p-card-pad rounded-section mt-2 border">
         <p className="font-body2-heading text-gray-11">
           막혔을 때 해설을 여는 비율
         </p>
@@ -165,7 +165,7 @@ export const WeeklyReassuranceCard = ({
         </div>
       </div>
 
-      <div className="border-orange-3 bg-orange-1 p-card-pad mt-3 rounded-section border">
+      <div className="border-orange-3 bg-orange-1 p-card-pad rounded-section mt-3 border">
         <div className="flex items-center gap-2">
           <span className="bg-orange-7 flex size-8 items-center justify-center rounded-full text-sm font-bold text-white">
             선
@@ -202,7 +202,7 @@ export const WeeklyReassuranceCard = ({
       </p>
 
       {!summary || !beforeAfter?.sufficientData ? (
-        <div className="border-gray-4 px-empty-pad-x py-empty-pad-y mt-5 flex flex-col items-center rounded-card border border-dashed text-center">
+        <div className="border-gray-4 px-empty-pad-x py-empty-pad-y rounded-card mt-5 flex flex-col items-center border border-dashed text-center">
           <Sprout
             size={30}
             className="text-orange-6"

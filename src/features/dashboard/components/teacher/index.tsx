@@ -38,7 +38,7 @@ const RoomRenameDialog = ({
   return (
     <div className="bg-system-dim p-section-gap fixed inset-0 z-50 flex items-center justify-center">
       <form
-        className="p-card-pad w-full max-w-sm rounded-card bg-white"
+        className="p-card-pad rounded-card w-full max-w-sm bg-white"
         data-testid="study-room-rename-dialog"
         onSubmit={(event) => {
           event.preventDefault();
@@ -146,9 +146,6 @@ const DashboardTeacher = (_props: { initialMemberName?: string }) => {
             <span className="border-orange-4 bg-orange-1 text-orange-9 min-h-control-sm rounded-button px-button-compact-x inline-flex items-center border text-xs font-bold">
               정렬 · 손볼 것 많은 순 · 기본
             </span>
-            <span className="border-gray-3 text-gray-9 min-h-control-sm rounded-button px-button-compact-x inline-flex items-center border bg-white text-xs font-bold">
-              학생 이름, 스터디룸 이름으로 찾기
-            </span>
           </div>
         )}
         {isPending ? (
@@ -165,7 +162,8 @@ const DashboardTeacher = (_props: { initialMemberName?: string }) => {
             </h2>
             <p className="text-gray-9 mt-2 text-sm leading-relaxed">
               학생 한 명당 스터디룸 하나가 기본입니다. 학생이 초대 링크로
-              들어오면 카드가 생기고, 먼저 만들어 두고 학생을 부를 수도 있습니다.
+              들어오면 카드가 생기고, 먼저 만들어 두고 학생을 부를 수도
+              있습니다.
             </p>
             <div className="gap-inline-gap mt-5 flex flex-wrap justify-center">
               <Link
@@ -191,7 +189,7 @@ const DashboardTeacher = (_props: { initialMemberName?: string }) => {
               {activeRooms.map((room) => (
                 <article
                   key={`${room.id}-${room.studentName ?? 'empty'}`}
-                  className="border-gray-3 p-card-pad relative flex flex-col rounded-card border bg-white"
+                  className="border-gray-3 p-card-pad rounded-card relative flex flex-col border bg-white"
                 >
                   <div className="flex items-start gap-2">
                     <div className="min-w-0 flex-1">
@@ -202,7 +200,7 @@ const DashboardTeacher = (_props: { initialMemberName?: string }) => {
                         {room.name} · 활성 수업
                       </p>
                     </div>
-                    <span className="bg-gray-2 text-gray-10 min-h-badge-min rounded-pill px-button-chip-x inline-flex items-center text-ui-compact font-extrabold">
+                    <span className="bg-gray-2 text-gray-10 min-h-badge-min rounded-pill px-button-chip-x text-ui-compact inline-flex items-center font-extrabold">
                       {room.studentName ? '1대1' : '그룹'}
                     </span>
                     <UnstyledButton
@@ -222,7 +220,7 @@ const DashboardTeacher = (_props: { initialMemberName?: string }) => {
                     </UnstyledButton>
                   </div>
                   {openMenuRoomId === room.id && (
-                    <div className="border-gray-3 shadow-popover top-control-lg right-card-pad absolute z-10 w-47 rounded-row border bg-white p-1">
+                    <div className="border-gray-3 shadow-popover top-control-lg right-card-pad rounded-row absolute z-10 w-47 border bg-white p-1">
                       {/* 승인 디자인 v22 `roomCard` 3323~3325: 메뉴 4개 */}
                       <UnstyledButton
                         variant="unstyled"
@@ -271,7 +269,7 @@ const DashboardTeacher = (_props: { initialMemberName?: string }) => {
                   )}
                   <div
                     className={cn(
-                      'p-card-pad mt-3 rounded-row border',
+                      'p-card-pad rounded-row mt-3 border',
                       room.todoCount > 0
                         ? 'border-orange-3 bg-orange-1'
                         : 'border-gray-3 bg-system-background'
@@ -290,9 +288,9 @@ const DashboardTeacher = (_props: { initialMemberName?: string }) => {
                         손볼 것
                       </span>
                     </div>
-                    <p className="text-gray-11 text-break-safe mt-2 text-xs font-bold leading-relaxed">
-                      피드백 달 것 {room.todoBreakdown.commentNeeded} · 할 일 승인{' '}
-                      {room.todoBreakdown.todoApproval} · 못했어요 사유{' '}
+                    <p className="text-gray-11 text-break-safe mt-2 text-xs leading-relaxed font-bold">
+                      피드백 달 것 {room.todoBreakdown.commentNeeded} · 할 일
+                      승인 {room.todoBreakdown.todoApproval} · 못했어요 사유{' '}
                       {room.todoBreakdown.notDoneReason} · 미확인 제출{' '}
                       {room.todoBreakdown.unreadSubmission}
                     </p>
@@ -307,7 +305,7 @@ const DashboardTeacher = (_props: { initialMemberName?: string }) => {
                         'min-h-control-sm rounded-button px-button-compact-x inline-flex items-center justify-center border text-xs font-bold',
                         room.todoCount > 0
                           ? 'border-orange-10 bg-orange-9 text-gray-white'
-                          : 'border-gray-3 bg-white text-gray-11'
+                          : 'border-gray-3 text-gray-11 bg-white'
                       )}
                     >
                       {room.todoCount > 0 ? '학습 관리 열기' : '스터디룸 열기'}
@@ -318,7 +316,7 @@ const DashboardTeacher = (_props: { initialMemberName?: string }) => {
             </div>
             {closedRooms.length > 0 && (
               <section
-                className="border-gray-3 text-gray-9 p-card-pad rounded-row border bg-system-background text-sm"
+                className="border-gray-3 text-gray-9 p-card-pad rounded-row bg-system-background border text-sm"
                 data-testid="teacher-closed-rooms"
               >
                 <div className="flex flex-wrap items-center gap-2">

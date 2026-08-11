@@ -60,9 +60,9 @@ describe('MVP-G 공통 앱 헤더', () => {
       />
     );
 
-    expect(container.querySelectorAll('[data-dashboard-app-header]')).toHaveLength(
-      1
-    );
+    expect(
+      container.querySelectorAll('[data-dashboard-app-header]')
+    ).toHaveLength(1);
     expect(screen.getByRole('heading', { name: '내 학습' })).toBeVisible();
     expect(screen.getByText('내 오답')).toBeVisible();
 
@@ -74,9 +74,9 @@ describe('MVP-G 공통 앱 헤더', () => {
       />
     );
 
-    expect(container.querySelectorAll('[data-dashboard-app-header]')).toHaveLength(
-      1
-    );
+    expect(
+      container.querySelectorAll('[data-dashboard-app-header]')
+    ).toHaveLength(1);
     expect(screen.getByRole('heading', { name: '내 성과' })).toBeVisible();
   });
 
