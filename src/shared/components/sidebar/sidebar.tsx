@@ -53,7 +53,7 @@ const SidebarRoot = ({ children }: { children: ReactNode }) => {
       data-dashboard-sidebar
       className={cn('fixed top-0 left-0 z-40 hidden h-dvh flex-col', 'md:flex')}
     >
-      <aside className="border-gray-3 relative flex w-[186px] flex-1 flex-col overflow-hidden border-r bg-white p-3">
+      <aside className="border-gray-3 px-sidebar-pad-x py-sidebar-pad-y relative flex w-sidebar-width flex-1 flex-col overflow-hidden border-r bg-white">
         {children}
       </aside>
     </div>
@@ -92,10 +92,10 @@ const SidebarItem = ({
       href={href}
       prefetch={prefetch}
       className={cn(
-        'flex min-h-11 items-center gap-2 rounded-lg px-2.5 text-[12.5px] font-semibold',
+        'min-h-touch-min rounded-button px-button-compact-x flex items-center gap-2 text-sm font-semibold',
         isActive
-          ? 'text-key-color-primary bg-orange-1'
-          : 'hover:bg-gray-scale-gray-5',
+          ? 'bg-orange-1 text-orange-9'
+          : 'hover:bg-gray-1',
         isCreatePage && 'h-9 w-9 justify-center gap-0 bg-transparent px-0',
         className
       )}
@@ -188,15 +188,15 @@ const SidebarListItem = ({ item }: { item: BaseSidebarItem }) => {
         href={detailHref}
         prefetch={false}
         isActive={isActive}
-        className="h-12 items-center justify-start gap-[2px]"
+        className="h-12 items-center justify-start gap-0.5"
       >
         <ListIcon
           className={cn(
-            'StudyRoomListIcon ml-[2px] shrink-0',
-            isActive && 'text-key-color-primary'
+            'StudyRoomListIcon ml-0.5 shrink-0',
+            isActive && 'text-orange-9'
           )}
         />
-        <Sidebar.Text className="font-body2-normal max-w-[173px] shrink-0 truncate text-left">
+        <Sidebar.Text className="font-body2-normal max-w-43 shrink-0 truncate text-left">
           <span title={item.text}>{item.text}</span>
         </Sidebar.Text>
       </Sidebar.Item>
@@ -209,7 +209,7 @@ const SidebarListItem = ({ item }: { item: BaseSidebarItem }) => {
  * ────────────────────────────────────────────────────*/
 const SidebarHeader = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="flex h-[58px] w-full items-center justify-between pr-[10px] pl-5">
+    <div className="min-h-row-min pr-button-compact-x flex w-full items-center justify-between pl-5">
       {children}
     </div>
   );
@@ -221,7 +221,7 @@ const SidebarHeaderText = ({ children }: { children: ReactNode }) => {
     <p
       className={cn(
         'pointer-events-none font-bold select-none',
-        isStudyRoomSectionActive && 'text-key-color-primary'
+        isStudyRoomSectionActive && 'text-orange-9'
       )}
     >
       {children}
@@ -234,7 +234,7 @@ const SidebarSectionIcon = ({ className }: { className?: string }) => {
   return (
     <TextIcon
       className={cn(
-        isStudyRoomSectionActive && 'text-key-color-primary',
+        isStudyRoomSectionActive && 'text-orange-9',
         className
       )}
     />

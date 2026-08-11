@@ -2,6 +2,7 @@ import { ReactNode, Suspense } from 'react';
 
 import { cookies } from 'next/headers';
 
+import { DashboardAppHeader } from '@/features/dashboard/components/header/dashboard-app-header';
 import { DashboardSidebar } from '@/features/dashboard/components/dashboard-sidebar';
 import { ImpersonationBanner } from '@/features/impersonation/components/impersonation-banner';
 import { SessionGuard } from '@/providers/session/session-guard';
@@ -31,7 +32,7 @@ export default async function DashboardLayout({
   return (
     <SessionGuard>
       <main
-        className="flex flex-col bg-[#fcfbfa] md:pl-[186px]"
+        className="bg-system-background flex min-h-screen flex-col md:pl-sidebar-width"
         data-private-app-shell
       >
         <DashboardSidebar />
@@ -41,6 +42,12 @@ export default async function DashboardLayout({
             session.status === 'authenticated' ? session.name : '대상 회원'
           }
         />
+        {session.status === 'authenticated' && (
+          <DashboardAppHeader
+            role={session.role}
+            initialMemberName={session.name}
+          />
+        )}
         <div className="w-full">{children}</div>
       </main>
     </SessionGuard>
