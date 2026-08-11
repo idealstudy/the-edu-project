@@ -9,6 +9,7 @@ import { useTeacherStudyRoomDetailQuery } from '@/features/study-rooms/hooks';
 import { PageLayout } from '@/layout';
 import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { PRIVATE } from '@/shared/constants';
+import { cn } from '@/shared/lib';
 
 import { useChangeStudyRoomStatus } from '../../hooks/use-change-study-room-status';
 import { useTeacherDashboardStudyRoomListQuery } from '../../hooks/use-teacher-dashboard-query';
@@ -35,9 +36,9 @@ const RoomRenameDialog = ({
   const detail = detailQuery.data;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
+    <div className="bg-system-dim p-section-gap fixed inset-0 z-50 flex items-center justify-center">
       <form
-        className="w-full max-w-sm rounded-xl bg-white p-5"
+        className="p-card-pad w-full max-w-sm rounded-card bg-white"
         data-testid="study-room-rename-dialog"
         onSubmit={(event) => {
           event.preventDefault();
@@ -56,7 +57,7 @@ const RoomRenameDialog = ({
           maxLength={40}
           autoFocus
           aria-label="스터디룸 이름"
-          className="border-gray-3 mt-3 w-full rounded-lg border px-3 py-2 text-sm"
+          className="border-gray-3 min-h-control-sm rounded-input mt-3 w-full border px-3 text-sm"
         />
         {!detail && (
           <p className="text-gray-8 text-ui-choice mt-2">
@@ -69,7 +70,7 @@ const RoomRenameDialog = ({
             size="none"
             type="button"
             onClick={onClose}
-            className="rounded-md border px-3 py-2 text-xs font-bold"
+            className="border-gray-3 min-h-control-sm rounded-button px-button-compact-x border text-xs font-bold"
           >
             취소
           </UnstyledButton>
@@ -78,7 +79,7 @@ const RoomRenameDialog = ({
             size="none"
             type="submit"
             disabled={!detail || rename.isPending || name.trim().length === 0}
-            className="bg-gray-12 rounded-md px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
+            className="bg-orange-9 border-orange-10 text-gray-white min-h-control-sm rounded-button px-button-compact-x border text-xs font-bold disabled:opacity-50"
           >
             저장
           </UnstyledButton>
@@ -118,47 +119,64 @@ const DashboardTeacher = (_props: { initialMemberName?: string }) => {
 
   return (
     <div className="bg-system-background min-h-screen w-full">
-      <PageLayout>
-        <div className="mb-4 flex items-center gap-2">
-          <h2 className="text-base font-extrabold">학생별 수업</h2>
-          <span className="text-gray-8 text-xs">
-            카드에서 손볼 것과 도착지를 바로 확인합니다
+      <PageLayout className="gap-block-gap flex flex-col">
+        <div className="flex flex-wrap items-center gap-2">
+          <h2 className="text-gray-12 font-headline2-heading">내 수업</h2>
+          <span className="text-gray-9 text-xs">
+            오늘 <b className="text-gray-12">학생 화면에 넣어줄 것</b>{' '}
+            <b className="text-gray-12 tabular-nums">
+              {rooms.reduce((sum, room) => sum + room.todoCount, 0)}건
+            </b>
+            이 위 수업에 모여 있습니다.
           </span>
           {rooms.length > 0 && (
             <Link
               href="/study-rooms/new"
-              className="bg-gray-12 ml-auto rounded-md px-3 py-2 text-xs font-bold text-white"
+              className="bg-orange-9 border-orange-10 text-gray-white min-h-control-sm rounded-button px-button-compact-x ml-auto inline-flex items-center border text-xs font-bold"
             >
-              수업 만들기
+              스터디룸 만들기
             </Link>
           )}
         </div>
+        {rooms.length > 0 && (
+          <div
+            className="gap-row-gap flex flex-wrap"
+            aria-label="수업 목록 정렬 기준"
+          >
+            <span className="border-orange-4 bg-orange-1 text-orange-9 min-h-control-sm rounded-button px-button-compact-x inline-flex items-center border text-xs font-bold">
+              정렬 · 손볼 것 많은 순 · 기본
+            </span>
+            <span className="border-gray-3 text-gray-9 min-h-control-sm rounded-button px-button-compact-x inline-flex items-center border bg-white text-xs font-bold">
+              학생 이름, 스터디룸 이름으로 찾기
+            </span>
+          </div>
+        )}
         {isPending ? (
-          <div className="rounded-xl border bg-white p-10 text-center text-sm">
+          <div className="border-gray-3 py-empty-pad-y px-empty-pad-x rounded-card border bg-white text-center text-sm">
             수업을 불러오는 중입니다.
           </div>
         ) : rooms.length === 0 ? (
           <section
-            className="border-gray-3 rounded-xl border bg-white p-12 text-center"
+            className="border-gray-4 py-empty-pad-y px-empty-pad-x rounded-card border border-dashed bg-white text-center"
             data-testid="teacher-rooms-empty"
           >
-            <h2 className="text-lg font-extrabold">
+            <h2 className="text-gray-12 font-body1-heading">
               아직 스터디룸이 하나도 없어요
             </h2>
-            <p className="text-gray-8 mt-2 text-sm">
-              학생 한 명당 스터디룸 하나가 기본입니다. 먼저 만들어 두고 학생을
-              부를 수도 있습니다.
+            <p className="text-gray-9 mt-2 text-sm leading-relaxed">
+              학생 한 명당 스터디룸 하나가 기본입니다. 학생이 초대 링크로
+              들어오면 카드가 생기고, 먼저 만들어 두고 학생을 부를 수도 있습니다.
             </p>
-            <div className="mt-5 flex justify-center gap-2">
+            <div className="gap-inline-gap mt-5 flex flex-wrap justify-center">
               <Link
                 href="/study-rooms/new"
-                className="bg-gray-12 rounded-md px-4 py-2 text-sm font-bold text-white"
+                className="bg-orange-9 border-orange-10 text-gray-white min-h-empty-cta rounded-button px-button-default-x inline-flex items-center border text-sm font-bold"
               >
                 첫 스터디룸 만들기
               </Link>
               <Link
                 href="/dashboard/teacher/my"
-                className="rounded-md border px-4 py-2 text-sm font-bold"
+                className="border-gray-3 min-h-empty-cta rounded-button px-button-default-x inline-flex items-center border bg-white text-sm font-bold"
               >
                 학생 초대 코드 보기
               </Link>
@@ -167,33 +185,26 @@ const DashboardTeacher = (_props: { initialMemberName?: string }) => {
         ) : (
           <>
             <div
-              className="grid gap-3 md:grid-cols-2"
+              className="gap-grid-gap grid md:grid-cols-2"
               data-testid="teacher-rooms-list"
             >
               {activeRooms.map((room) => (
                 <article
                   key={`${room.id}-${room.studentName ?? 'empty'}`}
-                  className="border-gray-3 hover:border-orange-7 relative rounded-xl border bg-white p-5"
+                  className="border-gray-3 p-card-pad relative flex flex-col rounded-card border bg-white"
                 >
-                  <div className="flex items-start gap-3">
-                    <Link
-                      href={`/study-rooms/${room.id}/note`}
-                      className="flex min-w-0 flex-1 items-center gap-3"
-                    >
-                      <div className="bg-orange-1 text-orange-11 flex size-11 shrink-0 items-center justify-center rounded-full font-extrabold">
-                        {(room.studentName ?? room.name).slice(0, 1)}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="truncate text-sm font-extrabold">
-                          {room.studentName ?? room.name}
-                        </h3>
-                        <p className="text-gray-8 mt-1 text-xs">
-                          {room.name} · 활성 수업
-                        </p>
-                      </div>
-                      <b className="text-sm">손볼 것 {room.todoCount}건</b>
-                      <span className="text-orange-11">›</span>
-                    </Link>
+                  <div className="flex items-start gap-2">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-gray-12 text-single-line text-base font-extrabold">
+                        {room.studentName ?? room.name}
+                      </h3>
+                      <p className="text-gray-9 text-ui-choice mt-1">
+                        {room.name} · 활성 수업
+                      </p>
+                    </div>
+                    <span className="bg-gray-2 text-gray-10 min-h-badge-min rounded-pill px-button-chip-x inline-flex items-center text-ui-compact font-extrabold">
+                      {room.studentName ? '1대1' : '그룹'}
+                    </span>
                     <UnstyledButton
                       variant="unstyled"
                       size="none"
@@ -205,13 +216,13 @@ const DashboardTeacher = (_props: { initialMemberName?: string }) => {
                           current === room.id ? null : room.id
                         )
                       }
-                      className="text-gray-9 hover:bg-gray-1 rounded px-2 py-1 text-sm font-bold"
+                      className="border-gray-3 text-gray-9 hover:bg-gray-1 min-h-touch-min min-w-touch-min rounded-button cursor-pointer border text-sm font-bold"
                     >
                       ···
                     </UnstyledButton>
                   </div>
                   {openMenuRoomId === room.id && (
-                    <div className="absolute top-12 right-4 z-10 rounded-lg border bg-white p-1 shadow-lg">
+                    <div className="border-gray-3 shadow-popover top-control-lg right-card-pad absolute z-10 w-47 rounded-row border bg-white p-1">
                       {/* 승인 디자인 v22 `roomCard` 3323~3325: 메뉴 4개 */}
                       <UnstyledButton
                         variant="unstyled"
@@ -221,21 +232,21 @@ const DashboardTeacher = (_props: { initialMemberName?: string }) => {
                           setRenamingRoomId(room.id);
                           setOpenMenuRoomId(null);
                         }}
-                        className="hover:bg-gray-1 block w-full rounded px-3 py-2 text-left text-xs font-bold"
+                        className="hover:bg-gray-1 min-h-touch-min rounded-button block w-full px-3 text-left text-xs font-bold"
                       >
                         스터디룸 이름 수정
                       </UnstyledButton>
                       <Link
                         href={PRIVATE.ROOM.MEMBERS(room.id)}
                         onClick={() => setOpenMenuRoomId(null)}
-                        className="hover:bg-gray-1 block w-full rounded px-3 py-2 text-left text-xs font-bold"
+                        className="hover:bg-gray-1 min-h-touch-min rounded-button flex w-full items-center px-3 text-left text-xs font-bold"
                       >
                         학생 초대
                       </Link>
                       <Link
                         href={PRIVATE.NOTE.CREATE(room.id)}
                         onClick={() => setOpenMenuRoomId(null)}
-                        className="hover:bg-gray-1 block w-full rounded px-3 py-2 text-left text-xs font-bold"
+                        className="hover:bg-gray-1 min-h-touch-min rounded-button flex w-full items-center px-3 text-left text-xs font-bold"
                       >
                         기록 일지 쓰기
                       </Link>
@@ -245,7 +256,7 @@ const DashboardTeacher = (_props: { initialMemberName?: string }) => {
                         type="button"
                         disabled={statusMutation.isPending}
                         onClick={() => changeRoomStatus(room.id, 'CLOSED')}
-                        className="text-red-10 hover:bg-red-1 block w-full rounded px-3 py-2 text-left text-xs font-bold disabled:opacity-50"
+                        className="text-system-warning-text hover:bg-system-warning-alt min-h-touch-min rounded-button block w-full px-3 text-left text-xs font-bold disabled:opacity-50"
                       >
                         이 수업 종료하기
                       </UnstyledButton>
@@ -258,26 +269,56 @@ const DashboardTeacher = (_props: { initialMemberName?: string }) => {
                       onClose={() => setRenamingRoomId(null)}
                     />
                   )}
-                  <div className="bg-gray-1 text-gray-9 text-ui-choice mt-3 flex flex-wrap gap-x-4 gap-y-1 rounded-lg px-3 py-2">
-                    <span>
-                      피드백 달 것 <b>{room.todoBreakdown.commentNeeded}</b>
+                  <div
+                    className={cn(
+                      'p-card-pad mt-3 rounded-row border',
+                      room.todoCount > 0
+                        ? 'border-orange-3 bg-orange-1'
+                        : 'border-gray-3 bg-system-background'
+                    )}
+                  >
+                    <div className="flex items-end gap-2">
+                      <b
+                        className={cn(
+                          'font-headline1-heading tabular-nums',
+                          room.todoCount > 0 ? 'text-orange-9' : 'text-gray-7'
+                        )}
+                      >
+                        {room.todoCount}
+                      </b>
+                      <span className="text-gray-9 text-ui-compact mb-1 font-extrabold">
+                        손볼 것
+                      </span>
+                    </div>
+                    <p className="text-gray-11 text-break-safe mt-2 text-xs font-bold leading-relaxed">
+                      피드백 달 것 {room.todoBreakdown.commentNeeded} · 할 일 승인{' '}
+                      {room.todoBreakdown.todoApproval} · 못했어요 사유{' '}
+                      {room.todoBreakdown.notDoneReason} · 미확인 제출{' '}
+                      {room.todoBreakdown.unreadSubmission}
+                    </p>
+                  </div>
+                  <div className="gap-inline-gap mt-3 flex items-center">
+                    <span className="text-gray-9 text-ui-compact text-single-line flex-1 font-semibold">
+                      학생 화면에 넣을 내용을 확인합니다
                     </span>
-                    <span>
-                      할 일 승인 <b>{room.todoBreakdown.todoApproval}</b>
-                    </span>
-                    <span>
-                      못했어요 사유 <b>{room.todoBreakdown.notDoneReason}</b>
-                    </span>
-                    <span>
-                      미확인 제출 <b>{room.todoBreakdown.unreadSubmission}</b>
-                    </span>
+                    <Link
+                      href={`/study-rooms/${room.id}/note`}
+                      className={cn(
+                        'min-h-control-sm rounded-button px-button-compact-x inline-flex items-center justify-center border text-xs font-bold',
+                        room.todoCount > 0
+                          ? 'border-orange-10 bg-orange-9 text-gray-white'
+                          : 'border-gray-3 bg-white text-gray-11'
+                      )}
+                    >
+                      {room.todoCount > 0 ? '학습 관리 열기' : '스터디룸 열기'}
+                    </Link>
                   </div>
                 </article>
               ))}
             </div>
             {closedRooms.length > 0 && (
               <section
-                className="border-gray-3 text-gray-9 mt-4 rounded-xl border bg-white p-4 text-sm"
+                className="border-gray-3 text-gray-9 p-card-pad rounded-row border bg-system-background text-sm"
                 data-testid="teacher-closed-rooms"
               >
                 <div className="flex flex-wrap items-center gap-2">
@@ -291,7 +332,7 @@ const DashboardTeacher = (_props: { initialMemberName?: string }) => {
                     size="none"
                     type="button"
                     onClick={() => setShowClosedRooms((visible) => !visible)}
-                    className="text-gray-12 ml-auto rounded-md border px-3 py-2 text-xs font-bold"
+                    className="border-gray-3 text-gray-12 min-h-control-sm rounded-button px-button-compact-x ml-auto cursor-pointer border bg-white text-xs font-bold"
                   >
                     {showClosedRooms ? '종료된 것 접기' : '종료된 것 보기'}
                   </UnstyledButton>
@@ -301,7 +342,7 @@ const DashboardTeacher = (_props: { initialMemberName?: string }) => {
                     {closedRooms.map((room) => (
                       <li
                         key={room.id}
-                        className="bg-gray-1 flex items-center justify-between gap-3 rounded-lg px-3 py-2"
+                        className="bg-gray-1 min-h-row-min rounded-row flex items-center justify-between gap-3 px-3"
                       >
                         <span className="font-bold">
                           {room.studentName ?? room.name}
@@ -315,7 +356,7 @@ const DashboardTeacher = (_props: { initialMemberName?: string }) => {
                           type="button"
                           disabled={statusMutation.isPending}
                           onClick={() => changeRoomStatus(room.id, 'OPERATING')}
-                          className="text-gray-12 rounded-md border px-3 py-2 text-xs font-bold disabled:opacity-50"
+                          className="border-gray-3 text-gray-12 min-h-control-sm rounded-button px-button-compact-x cursor-pointer border bg-white text-xs font-bold disabled:opacity-50"
                         >
                           재개하기
                         </UnstyledButton>
@@ -328,7 +369,7 @@ const DashboardTeacher = (_props: { initialMemberName?: string }) => {
             {statusMutation.isError && (
               <p
                 role="alert"
-                className="text-red-10 mt-3 text-sm font-bold"
+                className="text-system-warning-text bg-system-warning-alt border-system-warning p-card-pad rounded-card border text-sm font-bold"
               >
                 수업 상태를 바꾸지 못했습니다. 잠시 후 다시 시도해 주세요.
               </p>
@@ -342,6 +383,12 @@ const DashboardTeacher = (_props: { initialMemberName?: string }) => {
           >
             <LearningInboxCard />
           </div>
+        )}
+        {rooms.length > 0 && (
+          <p className="text-gray-9 text-xs leading-relaxed">
+            선생님이 하는 일은 학생의 내 학습 화면을 대신 채워 주는 것입니다.
+            손볼 것 많은 순으로 위에서부터 내려가면 오늘 확인할 내용이 닫힙니다.
+          </p>
         )}
       </PageLayout>
     </div>

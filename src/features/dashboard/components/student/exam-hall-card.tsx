@@ -41,7 +41,10 @@ export const ExamHallCard = ({ className }: Props) => {
 
   return (
     <section
-      className={cn('border-gray-3 rounded-2xl border bg-white p-6', className)}
+      className={cn(
+        'border-gray-3 p-card-pad rounded-card border bg-white',
+        className
+      )}
       data-testid="expected-grade-card"
     >
       {analysis.data ? (
@@ -68,14 +71,14 @@ export const ExamHallCard = ({ className }: Props) => {
               aria-expanded={isBasisOpen}
               onClick={() => setIsBasisOpen((current) => !current)}
               data-testid="expected-grade-basis-toggle"
-              className="border-gray-3 text-gray-10 text-ui-choice ml-auto min-h-9 cursor-pointer rounded-lg border px-3 font-bold"
+              className="border-gray-3 text-gray-10 text-ui-choice min-h-control-sm rounded-button px-button-compact-x ml-auto cursor-pointer border font-bold"
             >
               등급이 어떻게 나왔나요
             </UnstyledButton>
           </div>
           {isBasisOpen && (
             <div
-              className="border-gray-2 bg-gray-1 text-gray-10 text-ui-choice mt-3 rounded-lg border p-4 leading-6"
+              className="border-gray-2 bg-gray-1 text-gray-10 text-ui-choice p-card-pad mt-3 rounded-row border leading-6"
               data-testid="expected-grade-basis"
             >
               <p>
@@ -100,7 +103,7 @@ export const ExamHallCard = ({ className }: Props) => {
               <p className="mt-2">{analysis.data.dataNotice}</p>
             </div>
           )}
-          <p className="text-gray-12 mt-3 text-4xl font-black tracking-tight">
+          <p className="text-gray-12 font-title-heading mt-3 tabular-nums">
             {analysis.data.predictedGradeLow}~{analysis.data.predictedGradeHigh}
             등급
           </p>
@@ -109,7 +112,7 @@ export const ExamHallCard = ({ className }: Props) => {
               표준점수 {analysis.data.standardScore}
             </p>
           )}
-          <div className="divide-gray-2 border-gray-2 mt-4 divide-y rounded-lg border px-4">
+          <div className="divide-gray-2 border-gray-2 px-card-pad mt-4 divide-y rounded-row border">
             {analysis.data.evidence.map((item) => (
               <p
                 key={item.source}
@@ -136,11 +139,11 @@ export const ExamHallCard = ({ className }: Props) => {
               {reference.gradedQuestionCount}문항 기준
             </span>
           </div>
-          <p className="text-gray-12 mt-3 text-4xl font-black tracking-tight">
+          <p className="text-gray-12 font-title-heading mt-3 tabular-nums">
             {reference.predictedGradeLow}~{reference.predictedGradeHigh}등급
           </p>
           <div
-            className="divide-gray-2 border-gray-2 mt-4 divide-y rounded-lg border px-4"
+            className="divide-gray-2 border-gray-2 px-card-pad mt-4 divide-y rounded-row border"
             data-testid="expected-grade-reference-evidence"
           >
             {reference.evidence.map((item) => (
@@ -169,7 +172,7 @@ export const ExamHallCard = ({ className }: Props) => {
           <div className="mt-4 space-y-2">
             <Link
               href={PUBLIC.OPEN_CHALLENGE.LIST}
-              className="border-gray-3 text-gray-12 flex items-center gap-3 rounded-lg border p-3 text-xs font-bold"
+              className="border-gray-3 text-gray-12 min-h-touch-min p-card-pad rounded-row flex items-center gap-3 border text-xs font-bold"
             >
               <span className="flex-1">
                 문제를 풀어 내 위치 만들기
@@ -181,7 +184,7 @@ export const ExamHallCard = ({ className }: Props) => {
             </Link>
             <Link
               href={PRIVATE.DASHBOARD.EXAM_HALL}
-              className="border-gray-3 text-gray-12 flex items-center gap-3 rounded-lg border p-3 text-xs font-bold"
+              className="border-gray-3 text-gray-12 min-h-touch-min p-card-pad rounded-row flex items-center gap-3 border text-xs font-bold"
             >
               <span className="flex-1">
                 공개 응시장에서 모의고사 응시
@@ -197,7 +200,7 @@ export const ExamHallCard = ({ className }: Props) => {
 
       <Link
         href={PRIVATE.DASHBOARD.EXAM_HALL}
-        className="border-orange-4 bg-orange-1 text-orange-11 mt-5 flex items-center gap-3 rounded-lg border p-4 text-xs font-bold"
+        className="border-orange-4 bg-orange-1 text-orange-11 p-card-pad min-h-touch-min mt-5 flex items-center gap-3 rounded-button border text-xs font-bold"
       >
         <span className="flex-1">
           응시장 열기

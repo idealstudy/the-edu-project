@@ -52,7 +52,7 @@ export const UnitNoteEntryCard = () => {
 
   return (
     <section
-      className="border-gray-3 bg-gray-white rounded-xl border p-5 md:p-6"
+      className="border-gray-3 bg-gray-white p-card-pad rounded-card border"
       data-testid="unit-note-entry-card"
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -64,7 +64,7 @@ export const UnitNoteEntryCard = () => {
         </div>
         <Link
           href={PRIVATE.DASHBOARD.UNIT_NOTES}
-          className="border-gray-4 text-gray-9 hover:border-orange-6 hover:text-orange-9 flex items-center gap-1 rounded-lg border px-3 py-2 text-xs font-bold"
+          className="border-gray-4 text-gray-9 hover:border-orange-6 hover:text-orange-9 min-h-control-sm rounded-button px-button-compact-x flex items-center gap-1 border text-xs font-bold"
         >
           단권화 열기
           <ChevronRight
@@ -75,18 +75,18 @@ export const UnitNoteEntryCard = () => {
       </div>
 
       {libraryQuery.isError ? (
-        <div className="border-red-2 bg-red-1 mt-4 flex items-center gap-3 rounded-lg border p-4">
+        <div className="border-system-warning bg-system-warning-alt p-card-pad mt-4 flex items-center gap-3 rounded-card border">
           <RefreshCw
             size={18}
-            className="text-red-8"
+            className="text-system-warning-text"
             aria-hidden
           />
-          <p className="text-red-10 flex-1 text-xs font-bold">
+          <p className="text-system-warning-text flex-1 text-xs font-bold">
             단권화 현황을 불러오지 못했어요
           </p>
           <button
             type="button"
-            className="border-red-4 cursor-pointer rounded-lg border px-3 py-2 text-xs font-bold"
+            className="border-system-warning text-system-warning-text min-h-control-sm rounded-button px-button-compact-x cursor-pointer border bg-white text-xs font-bold"
             onClick={() => void libraryQuery.refetch()}
           >
             다시 불러오기
@@ -97,7 +97,7 @@ export const UnitNoteEntryCard = () => {
           {normalizedSubjects.map((subject, index) => (
             <div
               key={subject.subject}
-              className="grid items-center gap-3 py-3 md:grid-cols-[minmax(190px,1fr)_minmax(280px,1.35fr)_112px]"
+              className="min-h-row-min gap-content-gap grid items-center py-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)_8rem]"
             >
               <div>
                 <p className="text-gray-12 text-sm font-extrabold">
@@ -137,7 +137,7 @@ export const UnitNoteEntryCard = () => {
               </div>
               <Link
                 href={PRIVATE.DASHBOARD.UNIT_NOTES}
-                className={`rounded-lg border px-3 py-2 text-center text-xs font-bold ${
+                className={`min-h-control-sm rounded-button px-button-compact-x inline-flex items-center justify-center border text-center text-xs font-bold ${
                   index === 0
                     ? 'border-orange-7 bg-orange-7 text-white'
                     : 'border-gray-4 text-gray-9'
