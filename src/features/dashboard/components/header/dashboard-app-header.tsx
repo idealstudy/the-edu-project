@@ -25,10 +25,16 @@ const STUDENT_TITLE_BY_PATH: Array<[RegExp, string]> = [
   [/^\/dashboard\/student\/unit-notes(\/.*)?$/, '단권화 노트'],
   [/^\/dashboard\/student\/exam-hall\/?$/, '응시장'],
   [/^\/dashboard\/student\/exams(\/.*)?$/, '시험 응시'],
-  [/^\/tree\/?$/, '약점 나무'],
+  [/^\/tree\/?$/, '약점 트리'],
   [/^\/friends\/?$/, '친구'],
   [/^\/points\/?$/, '포인트'],
   [/^\/mypage(\/.*)?$/, '마이페이지'],
+];
+
+const STUDENT_PATHS_WITHOUT_SUMMARY = [
+  /^\/tree\/?$/,
+  /^\/friends\/?$/,
+  /^\/points\/?$/,
 ];
 
 export const studentAppBarTitle = (pathname: string): string => {
@@ -38,21 +44,43 @@ export const studentAppBarTitle = (pathname: string): string => {
   return matched ? matched[1] : '내 학습';
 };
 
-const StudentHeaderContent = ({
-  initialMemberName,
-}: Pick<DashboardAppHeaderProps, 'initialMemberName'>) => {
-  const pathname = usePathname() ?? '';
-  const storedMemberName = useMemberStore((state) => state.member?.name);
+const StudentSummaryChips = ({ memberName }: { memberName: string }) => {
   const growthQuery = useStudentGrowthQuery();
   const pointQuery = useMyPointWalletQuery();
   const wrongAnswersQuery = useWrongAnswersQuery();
-  const memberName = initialMemberName.trim() || storedMemberName || '학생';
   const chips = [
     ['내 오답', `${wrongAnswersQuery.data?.totalCount ?? '-'}개`],
     ['연속', `${growthQuery.data?.streakDays ?? '-'}일`],
     ['레벨', `Lv.${growthQuery.data?.level ?? '-'}`],
     ['포인트', `${pointQuery.data?.balance.toLocaleString('ko-KR') ?? '-'}P`],
   ] as const;
+
+  return (
+    <div className="gap-inline-gap flex flex-wrap items-center justify-end">
+      {chips.map(([label, value]) => (
+        <span
+          key={label}
+          className="bg-gray-1 text-gray-9 text-ui-choice min-h-chip-min rounded-pill px-button-chip-x inline-flex items-center font-bold"
+        >
+          {label} <b className="text-gray-12 ml-1 tabular-nums">{value}</b>
+        </span>
+      ))}
+      <span className="bg-orange-9 text-gray-white rounded-pill flex size-8 items-center justify-center text-xs font-extrabold">
+        {memberName.slice(0, 1)}
+      </span>
+    </div>
+  );
+};
+
+const StudentHeaderContent = ({
+  initialMemberName,
+}: Pick<DashboardAppHeaderProps, 'initialMemberName'>) => {
+  const pathname = usePathname() ?? '';
+  const storedMemberName = useMemberStore((state) => state.member?.name);
+  const memberName = initialMemberName.trim() || storedMemberName || '학생';
+  const showsSummary = !STUDENT_PATHS_WITHOUT_SUMMARY.some((pattern) =>
+    pattern.test(pathname)
+  );
 
   return (
     <div className="flex w-full flex-wrap items-center justify-between gap-3">
@@ -64,19 +92,13 @@ const StudentHeaderContent = ({
           {memberName} · 고2 수학
         </p>
       </div>
-      <div className="gap-inline-gap flex flex-wrap items-center justify-end">
-        {chips.map(([label, value]) => (
-          <span
-            key={label}
-            className="bg-gray-1 text-gray-9 text-ui-choice min-h-chip-min rounded-pill px-button-chip-x inline-flex items-center font-bold"
-          >
-            {label} <b className="text-gray-12 ml-1 tabular-nums">{value}</b>
-          </span>
-        ))}
+      {showsSummary ? (
+        <StudentSummaryChips memberName={memberName} />
+      ) : (
         <span className="bg-orange-9 text-gray-white rounded-pill flex size-8 items-center justify-center text-xs font-extrabold">
           {memberName.slice(0, 1)}
         </span>
-      </div>
+      )}
     </div>
   );
 };
@@ -91,7 +113,7 @@ const TeacherHeaderContent = ({
   const memberName = initialMemberName.trim() || storedMemberName || '선생님';
   const studentCount = rooms.filter((room) => room.studentName).length;
   const todoCount = rooms.reduce((sum, room) => sum + room.todoCount, 0);
-  const subtitle = pathname.startsWith('/study-rooms/')
+  const subtitle = /^\/study-rooms\/\d+(?:\/|$)/.test(pathname)
     ? '수업 상세 · 학생 화면 관리'
     : `스터디룸 ${rooms.length}개 · 학생 ${studentCount}명`;
 
