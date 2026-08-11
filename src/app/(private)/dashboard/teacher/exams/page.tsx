@@ -1,4 +1,3 @@
-import { TeacherDashboardHeader } from '@/features/dashboard/components/header/teacher-header';
 import { ExamCreate } from '@/features/exam/components/exam-create';
 import { assertDashboardRole } from '@/shared/lib/assert-dashboard-role';
 
@@ -7,7 +6,7 @@ type Props = {
 };
 
 export default async function TeacherExamCreatePage({ searchParams }: Props) {
-  const { initialMemberName } = await assertDashboardRole('ROLE_TEACHER');
+  await assertDashboardRole('ROLE_TEACHER');
   const { studyRoomId } = await searchParams;
   const parsedStudyRoomId = Number(studyRoomId);
   const initialStudyRoomId = Number.isInteger(parsedStudyRoomId)
@@ -15,10 +14,9 @@ export default async function TeacherExamCreatePage({ searchParams }: Props) {
     : undefined;
 
   return (
-    <div className="min-h-screen bg-[#f6f7f9]">
-      <TeacherDashboardHeader initialMemberName={initialMemberName} />
+    <div className="bg-system-background min-h-screen">
       <main className="p-6">
-        <div className="mx-auto max-w-[1120px]">
+        <div className="mx-auto max-w-content-max">
           <ExamCreate initialStudyRoomId={initialStudyRoomId} />
         </div>
       </main>

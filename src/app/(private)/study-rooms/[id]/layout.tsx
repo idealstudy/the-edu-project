@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 
 import { useParams, usePathname, useRouter } from 'next/navigation';
 
-import { TeacherDashboardHeader } from '@/features/dashboard/components/header/teacher-header';
 import { StudyNoteTab } from '@/features/study-notes/components/study-note-tab';
 import { StudyNoteTabShell } from '@/features/study-notes/components/study-note-tab-shell';
 import { StudyNoteGroupContext } from '@/features/study-notes/contexts/study-note-group.context';
@@ -72,9 +71,6 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
       value={{ selectedGroupId, setSelectedGroupId }}
     >
       <div data-study-room-shell>
-        {role === 'ROLE_TEACHER' && (
-          <TeacherDashboardHeader subtitle="수업 상세 · 학생 화면 관리" />
-        )}
         <ColumnLayout className="items-start gap-5 md:flex-row md:px-4 md:py-4">
           <ColumnLayout.Left className="md:sticky md:top-4 md:w-[360px]">
             <StudyroomSidebar

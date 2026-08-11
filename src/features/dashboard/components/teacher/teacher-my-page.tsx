@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from 'react';
 
 import Link from 'next/link';
 
-import { TeacherDashboardHeader } from '@/features/dashboard/components/header/teacher-header';
 import { useTeacherDashboardStudyRoomListQuery } from '@/features/dashboard/hooks/use-teacher-dashboard-query';
 import { useInvitationQuery } from '@/features/study-rooms/hooks/use-invitation-query';
 import { useToggleInvitation } from '@/features/study-rooms/hooks/use-toggle-invitation';
@@ -168,8 +167,7 @@ const TeacherInviteCodeCard = () => {
 };
 
 export const TeacherMyPage = ({ memberName }: { memberName: string }) => (
-  <div className="bg-gray-1 min-h-screen w-full">
-    <TeacherDashboardHeader initialMemberName={memberName} />
+  <div className="bg-system-background min-h-screen w-full">
     <PageLayout
       className="gap-block-gap lg:grid-split-legacy grid items-start"
       data-testid="teacher-my-page"
