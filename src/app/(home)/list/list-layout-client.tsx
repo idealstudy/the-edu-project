@@ -132,7 +132,7 @@ export default function ListLayoutClient({
     <main className="min-h-screen w-full">
       <div className="mb-4 min-h-screen w-full bg-white">
         <div className="bg-system-background w-full">
-          <div className="mx-auto max-w-[1440px] px-4 pt-8 md:px-8 lg:px-20">
+          <div className="mx-auto max-w-shell-wide px-4 pt-8 md:px-8 lg:px-20">
             {!isAuthenticated && <BackLink />}
 
             <div className="mt-4 mb-10">
@@ -185,7 +185,7 @@ export default function ListLayoutClient({
 
         {/* 하단 리스트 및 필터 영역 */}
         <div className="w-full bg-white">
-          <div className="mx-auto max-w-[1440px] px-4 py-8 md:px-8 lg:px-20">
+          <div className="mx-auto max-w-shell-wide px-4 py-8 md:px-8 lg:px-20">
             {/* 정렬 필터 */}
             <div className="mb-6 flex items-center justify-between gap-2">
               {/* 왼쪽: 스터디룸 전용 필터 */}

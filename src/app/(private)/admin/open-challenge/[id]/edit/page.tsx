@@ -11,7 +11,7 @@ export default async function AdminOpenChallengeEditPage({
 
   return (
     <div className="min-h-screen w-full bg-white">
-      <div className="mx-auto w-full max-w-[1120px] px-4 py-8 md:px-8 lg:px-20">
+      <div className="mx-auto w-full max-w-content px-4 py-8 md:px-8 lg:px-20">
         <AdminOpenChallengeEditClient id={id} />
       </div>
     </div>

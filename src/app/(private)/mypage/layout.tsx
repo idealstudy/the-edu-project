@@ -10,7 +10,7 @@ export default function MypageLayout({ children }: LayoutProps) {
     <main className="bg-[#F9F9F9]">
       <ColumnLayout>
         <MypageSidebar />
-        <ColumnLayout.Right className="desktop:max-w-[740px] desktop:px-8">
+        <ColumnLayout.Right className="desktop:max-w-reading desktop:px-8">
           <div className="flex flex-col gap-3">{children}</div>
         </ColumnLayout.Right>
       </ColumnLayout>

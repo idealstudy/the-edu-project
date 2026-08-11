@@ -50,7 +50,7 @@ export default function InvitePage() {
     return (
       <main className="bg-gray-white mx-auto flex h-[calc(100vh-var(--spacing-header-height))] w-full items-center justify-center px-6">
         <form
-          className="border-gray-3 w-full max-w-[420px] rounded-xl border bg-white p-6"
+          className="border-gray-3 w-full max-w-dialog rounded-xl border bg-white p-6"
           data-testid="invite-code-form"
           onSubmit={(event) => {
             event.preventDefault();

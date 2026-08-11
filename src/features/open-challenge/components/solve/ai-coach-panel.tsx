@@ -73,7 +73,7 @@ type AiCoachPanelProps = {
   onAttemptCreated: (attemptId: string) => void;
   onAttemptCleared: () => void;
   onSessionChange?: (sessionId: string | null) => void;
-  // 학생이 풀이 공간에 쓴 손글씨 strokes — 메시지 전송 시 스냅샷을 업로드해
+  // 학생이 풀이 공간에 쓴 손글씨 strokes. 메시지 전송 시 스냅샷을 업로드해
   // AI 가 "현재 풀이"를 보고 코칭하도록 넘긴다.
   drawingStrokes?: Stroke[];
   /** D2 계측 콜백: 해설 열람 시 부모에게 알림 (used_solution 플래그) */
@@ -87,9 +87,18 @@ const MAX_COMMENT_LENGTH = 200;
 const AI_COACH_INITIAL_MESSAGE =
   '좋아요. 정답을 바로 고르기보다, 먼저 문제에서 무엇을 묻는지 같이 정리해볼게요.';
 
+const DEFAULT_AI_COACH_SETTINGS: AiCoachSettings = {
+  subject: '수학',
+  learningStage: 'CONCEPT_FOCUSED',
+  learningGoal: 'CSAT',
+  difficultAreas: [],
+  customText: '',
+  skipped: true,
+};
+
 const SOLUTION_COST = 30;
 
-// 칩 클릭 시 보내는 템플릿 메시지 — 백엔드 progression(progressionStep)이 단계 답변을 싣는다.
+// 칩 클릭 시 보내는 템플릿 메시지. 백엔드 progression(progressionStep)이 단계 답변을 싣는다.
 const CONCEPT_PROMPT = '이 문제 개념부터 알려줘';
 const HINT_PROMPT = '다음 힌트 줘';
 
@@ -370,15 +379,24 @@ export const AiCoachPanel = ({
   onSolutionViewed,
   onMessageSent,
 }: AiCoachPanelProps) => {
-  const [messages, setMessages] = useState<AiCoachMessage[]>([]);
+  const [messages, setMessages] = useState<AiCoachMessage[]>([
+    {
+      id: 'ai-opening',
+      role: 'ai',
+      content: openingMessage ?? AI_COACH_INITIAL_MESSAGE,
+      timestamp: '',
+    },
+  ]);
   const [inputMessage, setInputMessage] = useState('');
-  const [status, setStatus] = useState<AiCoachStatus>('READY');
+  const [status, setStatus] = useState<AiCoachStatus>('WAITING_ANSWER');
   const [settings, setSettings] = useState<AiCoachSettings | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [sessionId, setSessionId] = useState('');
+  const [sessionGeneration, setSessionGeneration] = useState(0);
   const [isSolutionWarningOpen, setIsSolutionWarningOpen] = useState(false);
   const [hasViewedSolution, setHasViewedSolution] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const hasStartedSessionRef = useRef(false);
 
   const preferenceEnumsQuery = useAiCoachingPreferenceEnumsQuery({
     enabled: isLoggedIn,
@@ -419,12 +437,12 @@ export const AiCoachPanel = ({
     solutionMutation.isPending ||
     isUploadingDrawing;
   const isSending = status === 'COACHING' || isBusy;
-  // AI가 실제로 답변을 생성 중인 정확한 신호 — 타이핑 인디케이터용(무관한 mutation 제외).
+  // AI가 실제로 답변을 생성 중인 정확한 신호. 타이핑 인디케이터용(무관한 mutation 제외).
   const isAiReplying = status === 'COACHING' || sendMessageMutation.isPending;
   // 풀이를 시작(attempt 생성)하고 로그인한 상태에서만, 아직 안 본 해설을 열 수 있다.
   const canViewSolution = isLoggedIn && !!attemptId && !hasViewedSolution;
 
-  // 다음 해설 보기가 무료인지/얼마인지 — 버튼·다이얼로그 카피를 정직하게 표시.
+  // 다음 해설 보기가 무료인지/얼마인지. 버튼·다이얼로그 카피를 정직하게 표시.
   const solutionCostQuery = useSolutionViewCostQuery({ enabled: isLoggedIn });
   const isSolutionFree = solutionCostQuery.data?.free ?? false;
   const solutionCostP = solutionCostQuery.data?.cost ?? SOLUTION_COST;
@@ -461,10 +479,13 @@ export const AiCoachPanel = ({
     kind,
   });
 
-  const startCoach = async (nextSettings: AiCoachSettings) => {
+  const startCoach = async (
+    nextSettings: AiCoachSettings,
+    options: { persistPreference?: boolean } = {}
+  ) => {
     try {
       setSettings(nextSettings);
-      if (!nextSettings.skipped) {
+      if (!nextSettings.skipped && options.persistPreference !== false) {
         await updatePreferenceMutation.mutateAsync(
           toPreferencePayload(nextSettings)
         );
@@ -522,32 +543,37 @@ export const AiCoachPanel = ({
           ? restored
           : [createAiMessage(openingMessage ?? getIntroMessage(nextSettings))]
       );
-      setStatus('WAITING_ANSWER');
+      setStatus(session.status === 'READY' ? 'WAITING_ANSWER' : session.status);
       setIsSettingsOpen(false);
     } catch {
       // mutation hook에서 공통 API 에러 처리를 수행한다.
     }
   };
 
-  const handleStartClick = () => {
-    if (!hasLoadedSettings) return;
-    if (!settings) {
-      setIsSettingsOpen(true);
+  const startCoachRef = useRef(startCoach);
+  startCoachRef.current = startCoach;
+
+  useEffect(() => {
+    if (!isLoggedIn || !hasLoadedSettings || hasStartedSessionRef.current) {
       return;
     }
-    startCoach(settings);
-  };
 
-  const handleSkipSettings = () => {
-    startCoach({
-      subject: '수학',
-      learningStage: 'CONCEPT_FOCUSED',
-      learningGoal: 'CSAT',
-      difficultAreas: [],
-      customText: '',
-      skipped: true,
-    });
-  };
+    // 로컬 첫 인사와 입력창을 먼저 그린 뒤 DB 세션만 생성하거나 이어 연다.
+    // 실제 AI provider 호출은 학생이 메시지를 보내는 POST /messages 시점에만 발생한다.
+    hasStartedSessionRef.current = true;
+    const initialSettings =
+      settings ??
+      (myPreferenceQuery.data
+        ? toSettings(myPreferenceQuery.data)
+        : DEFAULT_AI_COACH_SETTINGS);
+    void startCoachRef.current(initialSettings, { persistPreference: false });
+  }, [
+    hasLoadedSettings,
+    isLoggedIn,
+    myPreferenceQuery.data,
+    sessionGeneration,
+    settings,
+  ]);
 
   const handleSettingsSubmit = async (nextSettings: AiCoachSettings) => {
     if (status === 'READY') {
@@ -568,7 +594,7 @@ export const AiCoachPanel = ({
 
   // 현재 손글씨 풀이 스냅샷을 업로드해 media_id 를 얻는다(있을 때만).
   // 같은 strokes 면 이전 업로드를 재사용한다. 업로드 실패는 여기서 삼키지 않고
-  // 그대로 던진다 — 호출부(sendMessage)가 사용자에게 실패를 표면화한다(A-2).
+  // 그대로 던진다. 호출부(sendMessage)가 사용자에게 실패를 표면화한다(A-2).
   const uploadSolutionMediaId = async (): Promise<string | undefined> => {
     if (drawingStrokes.length === 0) return undefined;
     if (lastDrawingUploadRef.current?.strokes === drawingStrokes) {
@@ -588,7 +614,7 @@ export const AiCoachPanel = ({
     if (!trimmedMessage || status === 'READY' || isSending || !sessionId)
       return;
 
-    // 풀이 이미지 업로드를 메시지 전송보다 먼저 확정한다 — 실패 시 사용자
+    // 풀이 이미지 업로드를 메시지 전송보다 먼저 확정한다. 실패 시 사용자
     // 확인(재시도/이미지 없이 진행) 전에는 AI를 조용히 부르지 않는다(A-2).
     let studentSolutionImageMediaId: string | undefined;
     if (!sendOptions.skipSolutionImage) {
@@ -654,7 +680,7 @@ export const AiCoachPanel = ({
     setInputMessage('');
   };
 
-  // 풀이 이미지 업로드 실패 다이얼로그 — "다시 시도"는 이미지 재업로드부터,
+  // 풀이 이미지 업로드 실패 다이얼로그. "다시 시도"는 이미지 재업로드부터,
   // "그냥 질문만 보낼게요"는 사용자의 명시 동의로 이미지 없이 진행한다(A-2).
   const handleRetryDrawingUpload = () => {
     const pending = pendingMessageRef.current;
@@ -696,15 +722,28 @@ export const AiCoachPanel = ({
     });
   };
 
-  const handleRestart = () => {
+  const handleRestart = async () => {
     if (sessionId && status !== 'FINISHED' && status !== 'ABANDONED') {
-      abandonSessionMutation.mutate(sessionId);
+      try {
+        await abandonSessionMutation.mutateAsync(sessionId);
+      } catch {
+        return;
+      }
     }
-    setMessages([]);
+    setMessages([
+      {
+        id: 'ai-opening',
+        role: 'ai',
+        content: openingMessage ?? AI_COACH_INITIAL_MESSAGE,
+        timestamp: '',
+      },
+    ]);
     setSessionId('');
     onSessionChange?.(null);
-    setStatus('READY');
+    setStatus('WAITING_ANSWER');
     onAttemptCleared();
+    hasStartedSessionRef.current = false;
+    setSessionGeneration((generation) => generation + 1);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -789,222 +828,168 @@ export const AiCoachPanel = ({
           </div>
         </div>
 
-        {status === 'READY' ? (
-          <div className="flex flex-1 flex-col items-center justify-center gap-5 p-6 text-center">
-            <div className="bg-orange-1 flex h-16 w-16 items-center justify-center rounded-full">
-              <Bot
-                size={32}
-                className="text-orange-7"
-              />
-            </div>
-            <div>
-              <p className="font-body1-heading text-text-main">
-                막히는 지점부터 같이 생각해요
-              </p>
-              <p className="text-gray-8 font-body2-normal mt-2 leading-relaxed">
-                AI 코치는 정답을 알려주지 않고,
-                <br />
-                직접 답을 고를 수 있게 힌트를 나눠서 줘요.
-              </p>
-            </div>
-            {/* 아직 대화 시작 전에도 AI 호출 없이 정적인 첫 인사를 미리 보여준다.
-                실제 코칭 시작 시 나오는 메시지와 같은 문구(getIntroMessage)를 재사용해
-                READY 화면이 텅 비어 보이지 않게 한다. */}
-            <div className="ai-coach-handwriting font-body2-normal text-text-main bg-surface-coach-paper w-full rounded-2xl rounded-tl-none px-4 py-3 text-left">
-              <MarkdownMessage
-                content={
-                  openingMessage ??
-                  getIntroMessage(
-                    settings ?? {
-                      subject: '수학',
-                      skipped: true,
-                      learningGoal: 'CSAT',
-                      learningStage: 'CONCEPT_FOCUSED',
-                      difficultAreas: [],
-                      customText: '',
-                    }
-                  )
-                }
-              />
-            </div>
-            <Button
-              type="button"
-              onClick={handleStartClick}
-              disabled={!hasLoadedSettings || isBusy}
-              className="w-full"
-              data-testid="ai-coach-start-button"
-            >
-              {isBusy ? 'AI 코치 준비 중...' : 'AI 힌트 받기'}
-            </Button>
-            {settings && (
-              <button
-                type="button"
-                onClick={() => setIsSettingsOpen(true)}
-                className="text-orange-7 cursor-pointer text-sm font-semibold"
+        <>
+          <div
+            ref={scrollAreaRef}
+            className="ai-coach-conversation flex flex-1 flex-col gap-4 overflow-y-auto p-4"
+          >
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={cn(
+                  'flex',
+                  message.role === 'user' ? 'justify-end' : 'items-start gap-2'
+                )}
               >
-                맞춤 설정 수정
-              </button>
-            )}
-          </div>
-        ) : (
-          <>
-            <div
-              ref={scrollAreaRef}
-              className="ai-coach-conversation flex flex-1 flex-col gap-4 overflow-y-auto p-4"
-            >
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={cn(
-                    'flex',
-                    message.role === 'user'
-                      ? 'justify-end'
-                      : 'items-start gap-2'
-                  )}
-                >
-                  {message.role === 'ai' && (
-                    <div className="bg-gray-1 mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full">
-                      <Bot
-                        size={16}
-                        className="text-gray-7"
-                      />
-                    </div>
-                  )}
-                  <div
-                    className={cn(
-                      'flex max-w-[80%] flex-col gap-1',
-                      message.role === 'user' && 'items-end'
-                    )}
-                  >
-                    {message.step && (
-                      <span className="text-orange-7 text-xs font-semibold">
-                        {getProgressStepLabel(message.step)}
-                      </span>
-                    )}
-                    {message.kind === 'solution' && (
-                      <span className="text-orange-7 flex items-center gap-1 text-xs font-semibold">
-                        <PenLine size={13} />
-                        손글씨 해설
-                      </span>
-                    )}
-                    <div
-                      className={cn(
-                        'font-body2-normal rounded-2xl px-4 py-3',
-                        message.role === 'ai'
-                          ? message.kind === 'solution'
-                            ? 'ai-coach-handwriting border-orange-2 bg-surface-coach-solution rounded-tl-none border'
-                            : 'ai-coach-handwriting text-text-main bg-surface-coach-paper rounded-tl-none'
-                          : 'bg-orange-7 rounded-tr-none text-white'
-                      )}
-                    >
-                      {message.role === 'ai' ? (
-                        <>
-                          <MarkdownMessage content={message.content} />
-                          {/* 디에듀 로고 워터마크 — 손글씨 노트에 도장 찍듯 */}
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src="/logo.svg"
-                            alt="디에듀"
-                            className="ai-coach-logo"
-                          />
-                        </>
-                      ) : (
-                        <span className="whitespace-pre-line">
-                          {message.content}
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-gray-6 text-xs">
-                      {message.timestamp}
-                    </span>
-                  </div>
-                </div>
-              ))}
-
-              {/* AI 응답 생성 중 — 타이핑 인디케이터(… 점 애니메이션) */}
-              {isAiReplying && (
-                <div
-                  className="flex items-start gap-2"
-                  aria-live="polite"
-                  aria-label="AI 코치가 답변을 작성하고 있어요"
-                >
+                {message.role === 'ai' && (
                   <div className="bg-gray-1 mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full">
                     <Bot
                       size={16}
                       className="text-gray-7"
                     />
                   </div>
-                  <div className="text-text-main bg-surface-coach-paper flex items-center gap-1 rounded-2xl rounded-tl-none px-4 py-3.5">
-                    <span className="bg-orange-7/60 h-2 w-2 animate-bounce rounded-full [animation-delay:-0.3s]" />
-                    <span className="bg-orange-7/60 h-2 w-2 animate-bounce rounded-full [animation-delay:-0.15s]" />
-                    <span className="bg-orange-7/60 h-2 w-2 animate-bounce rounded-full" />
+                )}
+                <div
+                  className={cn(
+                    'flex max-w-[80%] flex-col gap-1',
+                    message.role === 'user' && 'items-end'
+                  )}
+                >
+                  {message.step && (
+                    <span className="text-orange-7 text-xs font-semibold">
+                      {getProgressStepLabel(message.step)}
+                    </span>
+                  )}
+                  {message.kind === 'solution' && (
+                    <span className="text-orange-7 flex items-center gap-1 text-xs font-semibold">
+                      <PenLine size={13} />
+                      손글씨 해설
+                    </span>
+                  )}
+                  <div
+                    className={cn(
+                      'font-body2-normal rounded-2xl px-4 py-3',
+                      message.role === 'ai'
+                        ? message.kind === 'solution'
+                          ? 'ai-coach-handwriting border-orange-2 bg-surface-coach-solution rounded-tl-none border'
+                          : 'ai-coach-handwriting text-text-main bg-surface-coach-paper rounded-tl-none'
+                        : 'bg-orange-7 rounded-tr-none text-white'
+                    )}
+                  >
+                    {message.role === 'ai' ? (
+                      <>
+                        <MarkdownMessage content={message.content} />
+                        {/* 디에듀 로고 워터마크. 손글씨 노트에 도장 찍듯 */}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src="/logo.svg"
+                          alt="디에듀"
+                          className="ai-coach-logo"
+                        />
+                      </>
+                    ) : (
+                      <span className="whitespace-pre-line">
+                        {message.content}
+                      </span>
+                    )}
                   </div>
+                  {message.timestamp && (
+                    <span className="text-gray-6 text-xs">
+                      {message.timestamp}
+                    </span>
+                  )}
                 </div>
-              )}
-            </div>
-
-            {/* 빠른 동작 칩 — 개념/힌트는 권장(쉽게), 정답 해설은 차감 명시(신중) */}
-            <div className="flex flex-col gap-2 px-4 pb-2">
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => sendMessage(CONCEPT_PROMPT, 'concept')}
-                  disabled={isSending}
-                  className="border-orange-3 bg-orange-1 text-orange-7 hover:bg-orange-2 flex h-11 flex-1 cursor-pointer items-center justify-center rounded-xl border text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  개념 보기
-                </button>
-                <button
-                  type="button"
-                  onClick={() => sendMessage(HINT_PROMPT, 'hint')}
-                  disabled={isSending}
-                  className="border-orange-3 bg-orange-1 text-orange-7 hover:bg-orange-2 flex h-11 flex-1 cursor-pointer items-center justify-center rounded-xl border text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  힌트 보기
-                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setIsSolutionWarningOpen(true)}
-                disabled={!canViewSolution || isSending}
-                className="text-gray-7 hover:bg-gray-1 flex h-11 cursor-pointer items-center justify-center gap-1.5 rounded-xl text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                <BookOpenCheck size={16} />
-                {hasViewedSolution
-                  ? '해설을 확인했어요'
-                  : `정답 해설 보기 (${solutionCostLabel})`}
-              </button>
-            </div>
+            ))}
 
-            <div className="border-line-line1 flex items-center gap-2 border-t px-4 py-3">
-              <input
-                value={inputMessage}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                disabled={status === 'COACHING' || isBusy}
-                placeholder={
-                  status === 'COACHING'
-                    ? 'AI 코치가 생각 중이에요...'
-                    : '메시지를 입력하세요...'
-                }
-                className="placeholder:text-gray-6 font-body2-normal flex-1 outline-none disabled:cursor-not-allowed"
-                data-testid="ai-coach-message-input"
-              />
+            {/* AI 응답 생성 중. 타이핑 인디케이터(… 점 애니메이션) */}
+            {isAiReplying && (
+              <div
+                className="flex items-start gap-2"
+                aria-live="polite"
+                aria-label="AI 코치가 답변을 작성하고 있어요"
+              >
+                <div className="bg-gray-1 mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full">
+                  <Bot
+                    size={16}
+                    className="text-gray-7"
+                  />
+                </div>
+                <div className="text-text-main bg-surface-coach-paper flex items-center gap-1 rounded-2xl rounded-tl-none px-4 py-3.5">
+                  <span className="bg-orange-7/60 h-2 w-2 animate-bounce rounded-full [animation-delay:-0.3s]" />
+                  <span className="bg-orange-7/60 h-2 w-2 animate-bounce rounded-full [animation-delay:-0.15s]" />
+                  <span className="bg-orange-7/60 h-2 w-2 animate-bounce rounded-full" />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 빠른 동작 칩. 개념/힌트는 권장(쉽게), 정답 해설은 차감 명시(신중) */}
+          <div className="flex flex-col gap-2 px-4 pb-2">
+            <div className="flex gap-2">
               <button
                 type="button"
-                onClick={handleSendMessage}
-                disabled={
-                  !inputMessage.trim() || status === 'COACHING' || isBusy
-                }
-                className="bg-orange-7 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-white disabled:cursor-not-allowed disabled:opacity-40"
-                aria-label="AI 코치에게 메시지 보내기"
-                data-testid="ai-coach-send-button"
+                onClick={() => sendMessage(CONCEPT_PROMPT, 'concept')}
+                disabled={!sessionId || isSending}
+                className="border-orange-3 bg-orange-1 text-orange-7 hover:bg-orange-2 flex h-11 flex-1 cursor-pointer items-center justify-center rounded-xl border text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40"
               >
-                <Send size={14} />
+                개념 보기
+              </button>
+              <button
+                type="button"
+                onClick={() => sendMessage(HINT_PROMPT, 'hint')}
+                disabled={!sessionId || isSending}
+                className="border-orange-3 bg-orange-1 text-orange-7 hover:bg-orange-2 flex h-11 flex-1 cursor-pointer items-center justify-center rounded-xl border text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                힌트 보기
               </button>
             </div>
-          </>
-        )}
+            <button
+              type="button"
+              onClick={() => setIsSolutionWarningOpen(true)}
+              disabled={!canViewSolution || isSending}
+              className="text-gray-7 hover:bg-gray-1 flex h-11 cursor-pointer items-center justify-center gap-1.5 rounded-xl text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <BookOpenCheck size={16} />
+              {hasViewedSolution
+                ? '해설을 확인했어요'
+                : `정답 해설 보기 (${solutionCostLabel})`}
+            </button>
+          </div>
+
+          <div className="border-line-line1 flex items-center gap-2 border-t px-4 py-3">
+            <input
+              value={inputMessage}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              disabled={status === 'COACHING'}
+              placeholder={
+                status === 'COACHING'
+                  ? 'AI 코치가 생각 중이에요...'
+                  : !sessionId
+                    ? '코치와 연결 중이에요...'
+                    : '메시지를 입력하세요...'
+              }
+              className="placeholder:text-gray-6 font-body2-normal flex-1 outline-none disabled:cursor-not-allowed"
+              data-testid="ai-coach-message-input"
+            />
+            <button
+              type="button"
+              onClick={handleSendMessage}
+              disabled={
+                !sessionId ||
+                !inputMessage.trim() ||
+                status === 'COACHING' ||
+                isBusy
+              }
+              className="bg-orange-7 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-white disabled:cursor-not-allowed disabled:opacity-40"
+              aria-label="AI 코치에게 메시지 보내기"
+              data-testid="ai-coach-send-button"
+            >
+              <Send size={14} />
+            </button>
+          </div>
+        </>
       </div>
 
       <AiCoachSettingsDialog
@@ -1015,14 +1000,10 @@ export const AiCoachPanel = ({
         difficultAreaOptions={toDialogOptions(enumOptions?.difficultArea)}
         onClose={() => setIsSettingsOpen(false)}
         onSubmit={handleSettingsSubmit}
-        onSkip={
-          status === 'READY'
-            ? handleSkipSettings
-            : () => setIsSettingsOpen(false)
-        }
+        onSkip={() => setIsSettingsOpen(false)}
       />
 
-      {/* 정답 해설 — 차감·트리 제외 경고 후 열람(코치보다 조용히) */}
+      {/* 정답 해설. 차감·트리 제외 경고 후 열람(코치보다 조용히) */}
       <Dialog
         isOpen={isSolutionWarningOpen}
         onOpenChange={setIsSolutionWarningOpen}
@@ -1083,7 +1064,7 @@ export const AiCoachPanel = ({
         </Dialog.Content>
       </Dialog>
 
-      {/* 풀이 이미지 업로드 실패 — 무음 삼킴 금지(A-2). 명시 확인 후에만 이미지 없이 진행 */}
+      {/* 풀이 이미지 업로드 실패. 무음 삼킴 금지(A-2). 명시 확인 후에만 이미지 없이 진행 */}
       <Dialog
         isOpen={isDrawingUploadFailedOpen}
         onOpenChange={setIsDrawingUploadFailedOpen}

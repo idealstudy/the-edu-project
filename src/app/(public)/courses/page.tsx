@@ -17,7 +17,7 @@ export default function CoursesPage() {
     <div className="bg-gray-1 min-h-screen w-full">
       {/* 히어로 — 코스 존재 이유(왜 인강이 아니라 이 코스인지) */}
       <section className="bg-gray-12 relative -mx-0 overflow-hidden px-4 py-12 text-white sm:px-8 lg:px-12">
-        <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-3">
+        <div className="mx-auto flex w-full max-w-shell flex-col gap-3">
           <span className="font-caption-heading text-orange-200">
             수학 매3제 · 관리형 코스
           </span>
@@ -30,7 +30,7 @@ export default function CoursesPage() {
         </div>
       </section>
 
-      <div className="mx-auto w-full max-w-[1200px] px-4 pb-16 md:px-8 lg:px-12">
+      <div className="mx-auto w-full max-w-shell px-4 pb-16 md:px-8 lg:px-12">
         {/* 거울 훅 — 결제 전 자기점검 3문 */}
         <section
           className="bg-gray-12 relative mt-6 overflow-hidden rounded-[20px] p-6 text-white sm:p-8"

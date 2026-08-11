@@ -180,7 +180,7 @@ const ParentHeaderContent = ({
   ];
 
   return (
-    <div className="max-w-content-max mx-auto flex w-full flex-col gap-3">
+    <div className="max-w-content mx-auto flex w-full flex-col gap-3">
       <div className="relative flex w-full items-end justify-between gap-4">
         <div className="tablet:min-h-50 desktop:min-h-55 flex min-h-25 min-w-0 flex-col justify-between gap-6">
           <p className="text-gray-12 font-body1-heading tablet:font-headline1-heading desktop:font-title-heading">

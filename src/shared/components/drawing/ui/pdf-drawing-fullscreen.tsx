@@ -286,7 +286,7 @@ export function PdfDrawingFullscreen({
 
       {/* 전체 지우기 확인 모달 */}
       {showClearModal && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-(--z-layer-dialog) flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="mx-4 w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
             <h2 className="text-base font-bold text-gray-900">전체 지우기</h2>
             <p className="mt-3 text-sm leading-relaxed text-gray-600">
@@ -313,7 +313,7 @@ export function PdfDrawingFullscreen({
 
       {/* 페이지 초과 모달 */}
       {pageLimitModal && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-(--z-layer-dialog) flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="mx-4 w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
             <div className="mb-1 flex items-center gap-2">
               <WarningIcon />

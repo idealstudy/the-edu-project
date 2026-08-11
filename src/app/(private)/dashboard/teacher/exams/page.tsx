@@ -16,7 +16,7 @@ export default async function TeacherExamCreatePage({ searchParams }: Props) {
   return (
     <div className="bg-system-background min-h-screen">
       <main className="p-6">
-        <div className="max-w-content-max mx-auto">
+        <div className="mx-auto max-w-content">
           <ExamCreate initialStudyRoomId={initialStudyRoomId} />
         </div>
       </main>

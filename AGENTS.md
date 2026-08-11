@@ -8,7 +8,7 @@ Read this file first before touching any code.
 ## Required Reading
 
 Read the following files **in order** before writing any code.
-All files are located in the `docs/` folder.
+The design system entry is the repository root `DESIGN.md`; the other files are in `docs/`.
 
 | Order | File                     | What it covers                                                                                 |
 | ----- | ------------------------ | ---------------------------------------------------------------------------------------------- |
@@ -21,7 +21,7 @@ All files are located in the `docs/` folder.
 | 7     | `docs/ui-guidelines.md`  | UI coding rules: components, icons, tokens, a11y, responsive, loading patterns                 |
 
 > 화면을 만들거나 고칠 때는 6번이 필수다. 색·간격·모서리는 전부 토큰이 있고, 임의 hex 와 임의 px 은 위반이다.
-> 옛 문서 `docs/DESIGN.md` 는 `docs/DESIGN.md` 로 통합됐다. 정본이 아니다.
+> 옛 문서 `docs/design-system.md` · `docs/design-system-2.0.md` 와 레포 루트 `DESIGN.md` 는 이 파일로 통합됐다. 정본이 아니다.
 
 ---
 

@@ -14,7 +14,7 @@ export default async function ChildReportPage({
 
   return (
     <div className="min-h-screen w-full bg-[#F9F9F9]">
-      <div className="mx-auto w-full max-w-[1000px] px-4 pt-8 pb-16 md:px-8 lg:px-12">
+      <div className="mx-auto w-full max-w-content px-4 pt-8 pb-16 md:px-8 lg:px-12">
         <ChildReportClient childId={Number(childId)} />
       </div>
     </div>

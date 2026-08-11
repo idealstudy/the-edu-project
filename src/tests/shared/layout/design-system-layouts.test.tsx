@@ -17,7 +17,7 @@ describe('디자인 시스템 레이아웃', () => {
     render(<PageLayout data-testid="page">본문</PageLayout>);
 
     expect(screen.getByTestId('page')).toHaveClass(
-      'max-w-page-max',
+      'max-w-page',
       'px-section-gap',
       'py-section-gap'
     );

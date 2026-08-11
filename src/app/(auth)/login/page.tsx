@@ -3,7 +3,7 @@ import { PageViewTracker } from '@/shared/components/analytics';
 
 export default function LoginPage() {
   return (
-    <main className="mx-auto w-full max-w-[570px] px-4">
+    <main className="mx-auto w-full max-w-dialog-wide px-4">
       <PageViewTracker pageName="auth_login" />
       <LoginForm />
     </main>

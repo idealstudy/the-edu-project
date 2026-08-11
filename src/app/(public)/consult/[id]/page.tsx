@@ -39,7 +39,7 @@ export default async function ConsultCaseDetailPage({ params }: PageProps) {
   try {
     const detail = await repository.getCaseDetail(numericId);
     return (
-      <div className="mx-auto w-full max-w-[840px] px-4 py-10 md:px-8">
+      <div className="mx-auto w-full max-w-reading px-4 py-10 md:px-8">
         <Link
           href={PUBLIC.CONSULT.INDEX}
           className="font-label-normal text-text-sub2 mb-6 inline-block"

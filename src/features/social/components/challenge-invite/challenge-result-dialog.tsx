@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 
 import { type ChallengeInviteResult } from '@/entities/social';
-import { Button } from '@/shared/components/ui';
+import { Button, Card } from '@/shared/components/ui';
 import { Dialog } from '@/shared/components/ui/dialog';
 import { PRIVATE, PUBLIC } from '@/shared/constants';
 import { cn } from '@/shared/lib';
@@ -20,7 +20,7 @@ import { Check, Swords, X } from 'lucide-react';
 import { useCreateRematchMutation, useInviteResultQuery } from '../../hooks';
 
 /* ─────────────────────────────────────────────────────
- * 도전장 결과 비교 — 나 vs 상대 정답 여부 + 승패.
+ * 도전장 결과 비교: 나 vs 상대 정답 여부 + 승패.
  *  - 컨닝 가드: status === COMPLETED 일 때만 결과 노출.
  *  - 둘 다 정답=무승부 / 한쪽만=승·패 / 둘 다 오답=무승부(아쉬움).
  *  - 톤: 재미·격려.
@@ -193,7 +193,7 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
       ? extractErrorCode(rematch.error.response?.data)
       : undefined;
 
-  // D2 계측: versus_view — 결과 다이얼로그 마운트 시 1회
+  // D2 계측: versus_view. 결과 다이얼로그 마운트 시 1회
   // is_inviter: ChallengeInviteResult에 inviterId 미포함 → false 기본값(수신자 관점)
   useEffect(() => {
     if (!outcome) return;
@@ -221,12 +221,12 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
       {outcome !== 'WIN' &&
         result.divergence?.hasData &&
         result.divergence.reason && (
-          <div className="border-line-line2 bg-gray-1 text-text-main mt-5 w-full rounded-xl border px-4 py-3 text-left text-sm">
+          <Card className="bg-gray-1 text-text-main mt-5 w-full text-left text-sm">
             <strong className="block">갈린 지점</strong>
             <span className="text-text-sub1 mt-1 block">
               {result.divergence.reason}
             </span>
-          </div>
+          </Card>
         )}
 
       <div className="mt-6 grid w-full grid-cols-2 gap-3">
@@ -243,7 +243,7 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
         <ResultCell
           label={result.context?.inviterName ?? '상대'}
           correct={result.opponentCorrect ?? false}
-          highlight={outcome === 'LOSE'}
+          highlight={false}
           timeSpentSeconds={result.opponentAttempt?.timeSpentSeconds ?? null}
           solutionImageUrl={result.opponentAttempt?.solutionImageUrl ?? null}
           selectedAnswer={result.opponentAttempt?.selectedAnswer ?? null}
@@ -252,57 +252,80 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
         />
       </div>
 
-      {/*
-        회장 확정(2026-08-09): 이미 대결한 문제는 친구와 다시 붙는 게 아니라
-        **본인이 오답으로 혼자 다시 푸는 것**이다. 그래서 내가 틀린 경우의 주 동작은
-        같은 문제로 돌아가는 것이고, 시도는 그 문제의 기존 기록에 회차로 쌓인다.
-        새 문제로 다시 겨루는 기능(rematch)은 남기되, "다시 붙기"라는 이름이 같은 문제를
-        다시 푸는 것으로 읽혀 오해를 낳았으므로 하는 일 그대로 이름을 붙였다.
-      */}
-      <Dialog.Footer className="mt-6 flex w-full flex-col gap-2 sm:flex-row">
-        {result.myCorrect === false ? (
-          <Button
-            variant="primary"
-            size="large"
-            className="flex-1"
-            asChild
-          >
-            <Link href={PUBLIC.OPEN_CHALLENGE.DETAIL(result.challengeId)}>
-              이 문제 다시 풀기
-            </Link>
-          </Button>
-        ) : (
-          <Button
-            variant="primary"
-            size="large"
-            className="flex-1"
-            disabled={rematch.isPending}
-            onClick={() => rematch.mutate(result.shareToken)}
-          >
-            {rematch.isPending ? '문제 고르는 중…' : '새 문제로 겨루기'}
-          </Button>
+      <Card className="bg-gray-1 mt-6 w-full text-left">
+        <Card.Header>
+          <div className="min-w-0">
+            {/* 문구는 "지금 실제로 하는 일"만 말한다 (2026-08-11 코드리뷰 BLOCK 해소).
+                원래 시안 문구는 "같은 함정이 있는 문제로 이어집니다" + 버튼 "이 유형 3문제" 였으나,
+                같은 유형을 골라주는 추천 기능이 서버에 없어 링크가 무필터 전체 목록으로 갔다.
+                = 화면이 하지 않는 일을 약속하는 상태. 시안을 따르는 것보다 거짓말을 없애는 게 먼저라
+                문구를 실제 동작 수준으로 낮췄다. 같은 유형 추천은 별도 건으로 설계한다.
+                복구 조건: 유형별 추천 API 가 생기면 시안 원문 문구로 되돌린다. */}
+            <Card.Title>
+              {result.myCorrect === false
+                ? '지금은 문제를 더 풀어보는 게 낫습니다'
+                : '다음 대결은 둘 다 약한 단원에서 이어집니다'}
+            </Card.Title>
+            <Card.Description className="mt-inline-gap">
+              {result.myCorrect === false
+                ? '다시 붙기를 누르면 같은 문제가 아니라 둘 다 약한 단원의 다른 문제로 이어집니다.'
+                : '같은 문제는 다시 보내지 않고, 둘 다 약한 단원의 다른 문제를 고릅니다.'}
+            </Card.Description>
+          </div>
+        </Card.Header>
+        {rematch.data && (
+          <Card.Content className="font-caption-normal text-text-sub1">
+            선정 이유: 둘 다 약한 {rematch.data.unitName}에서{' '}
+            {rematch.data.challengeTitle}을 골랐어요.
+          </Card.Content>
         )}
-        {result.myCorrect === false ? (
-          <Button
-            variant="outlined"
-            size="large"
-            className="flex-1"
-            disabled={rematch.isPending}
-            onClick={() => rematch.mutate(result.shareToken)}
-          >
-            {rematch.isPending ? '문제 고르는 중…' : '새 문제로 겨루기'}
-          </Button>
-        ) : (
-          <Button
-            variant="outlined"
-            size="large"
-            className="flex-1"
-            asChild
-          >
-            <Link href={PUBLIC.OPEN_CHALLENGE.LIST}>다른 문제로</Link>
-          </Button>
-        )}
-      </Dialog.Footer>
+        <Card.Footer className="flex-col sm:flex-row">
+          {result.myCorrect === false ? (
+            <Button
+              variant="primary"
+              size="large"
+              className="w-full flex-1"
+              asChild
+            >
+              {/* 무필터 전체 목록으로 간다. 라벨도 그렇게 말한다(위 주석 참조). */}
+              <Link href={PUBLIC.OPEN_CHALLENGE.LIST}>문제 더 풀기</Link>
+            </Button>
+          ) : (
+            <Button
+              variant="primary"
+              size="large"
+              className="w-full flex-1"
+              disabled={rematch.isPending}
+              onClick={() => rematch.mutate(result.shareToken)}
+            >
+              {rematch.isPending ? '문제 고르는 중…' : '다시 붙기'}
+            </Button>
+          )}
+          {result.myCorrect === false ? (
+            <Button
+              variant="outlined"
+              size="large"
+              className="w-full flex-1"
+              disabled={rematch.isPending}
+              onClick={() => rematch.mutate(result.shareToken)}
+            >
+              {rematch.isPending ? '문제 고르는 중…' : '다시 붙기'}
+            </Button>
+          ) : (
+            <Button
+              variant="outlined"
+              size="large"
+              className="w-full flex-1"
+              asChild
+            >
+              <Link href={PUBLIC.OPEN_CHALLENGE.LIST}>다른 문제로</Link>
+            </Button>
+          )}
+        </Card.Footer>
+        <p className="font-caption-normal text-text-sub2 mt-content-gap">
+          한 친구와 동시에 3건까지 열 수 있어요.
+        </p>
+      </Card>
       {rematchErrorCode === 'REMATCH_NO_CANDIDATE' && (
         <div className="border-line-line2 bg-gray-1 mt-3 w-full rounded-xl border px-4 py-3 text-left">
           <strong className="text-text-main text-sm">
@@ -372,9 +395,9 @@ const ResultCell = ({
   const timeLabel = formatTimeSpent(timeSpentSeconds ?? null);
 
   return (
-    <div
+    <Card
       className={cn(
-        'border-line-line2 rounded-card flex flex-col items-center gap-2 border p-4',
+        'flex flex-col items-center gap-2',
         highlight && 'border-key-color-primary bg-orange-1'
       )}
     >
@@ -431,6 +454,6 @@ const ResultCell = ({
           className="border-line-line2 rounded-button mt-1 h-16 w-full border object-cover"
         />
       )}
-    </div>
+    </Card>
   );
 };

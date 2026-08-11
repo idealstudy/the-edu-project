@@ -12,8 +12,8 @@
 // const DialogTwStyles = {
 //   content: 'w-120 rounded-2xl p-0',
 //   header: 'flex items-center justify-center pt-18.25',
-//   title: 'text-2xl leading-[160%] font-bold tracking-[-4%]',
-//   body: 'mx-auto mt-4 max-w-74.5 pb-13 text-center leading-[160%] tracking-[-4%]',
+//   title: 'text-2xl leading-[160%] font-bold tracking-heading',
+//   body: 'mx-auto mt-4 max-w-74.5 pb-13 text-center leading-[160%] tracking-body',
 //   footer: 'flex h-21.25 items-center gap-0',
 //   closeButton: 'h-full flex-1',
 //   cancelButton:

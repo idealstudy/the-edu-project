@@ -30,7 +30,7 @@ export default async function StudyRoomDetailPage({ params }: PageProps) {
               studyRoomId={studyRoomId}
             />
           </ColumnLayout.Left>
-          <ColumnLayout.Right className="desktop:max-w-[740px]">
+          <ColumnLayout.Right className="desktop:max-w-reading">
             <StudyroomPreviewContents
               studyRoomId={studyRoomId}
               teacherId={teacherIdNum}

@@ -80,7 +80,7 @@ export const SegmentCheckpointDialog = ({
         onOpenChange(open);
       }}
     >
-      <Dialog.Content className="z-[60] w-105 gap-4">
+      <Dialog.Content className="z-(--z-layer-dialog) w-105 gap-4">
         <Dialog.Header>
           <Dialog.Title className="text-text-main">
             30초 체크포인트

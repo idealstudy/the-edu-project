@@ -121,7 +121,7 @@ export const BubbleMenuToolbar = ({
       ref={menuRef}
       className={cn(
         'notion-bubble-menu',
-        'fixed z-[9999] flex items-center gap-0.5 rounded-lg border p-1 shadow-lg',
+        'fixed z-(--z-layer-disclosure) flex items-center gap-0.5 rounded-lg border p-1 shadow-lg',
         'animate-in fade-in-0 slide-in-from-bottom-2 duration-150',
         darkMode
           ? 'border-gray-scale-gray-70 bg-gray-scale-gray-80'

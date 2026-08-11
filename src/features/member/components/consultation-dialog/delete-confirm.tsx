@@ -20,7 +20,7 @@ export const DeleteConfirm = ({
       isOpen={isOpen}
       onOpenChange={onOpenChange}
     >
-      <Dialog.Content className="z-[60] w-100 items-center gap-0 p-5 text-center">
+      <Dialog.Content className="z-(--z-layer-dialog) w-100 items-center gap-0 p-5 text-center">
         <div className="bg-orange-1 mx-auto my-6 flex h-12 w-12 items-center justify-center rounded-full">
           <AlertCircle
             className="text-orange-6"

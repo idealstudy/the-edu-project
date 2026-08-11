@@ -19,7 +19,7 @@ export default function BoardPage() {
   return (
     <div className="min-h-screen w-full bg-white">
       <div className="bg-system-background w-full">
-        <div className="mx-auto w-full max-w-[1440px] px-4 pt-8 md:px-8 lg:px-20">
+        <div className="mx-auto w-full max-w-shell-wide px-4 pt-8 md:px-8 lg:px-20">
           <h1 className="font-title-heading mt-4 mb-2 text-2xl leading-[135%] tracking-tight lg:text-3xl">
             상담소 매거진
           </h1>
@@ -29,7 +29,7 @@ export default function BoardPage() {
           </p>
         </div>
       </div>
-      <div className="mx-auto w-full max-w-[1440px] px-4 py-8 md:px-8 lg:px-20">
+      <div className="mx-auto w-full max-w-shell-wide px-4 py-8 md:px-8 lg:px-20">
         <ColumnList />
       </div>
     </div>

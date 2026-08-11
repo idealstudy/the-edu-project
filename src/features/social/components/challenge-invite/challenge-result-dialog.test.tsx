@@ -1,5 +1,8 @@
+import { repository } from '@/entities/social';
+import { PUBLIC } from '@/shared/constants';
 import { renderWithProviders } from '@/tests/utils';
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { AxiosError, AxiosHeaders } from 'axios';
 import { afterEach, describe, expect, test, vi } from 'vitest';
 
@@ -12,11 +15,6 @@ vi.mock('../../hooks', async (importOriginal) => {
   return {
     ...actual,
     useInviteResultQuery: () => mockUseInviteResultQuery(),
-    useCreateRematchMutation: () => ({
-      mutate: vi.fn(),
-      isPending: false,
-      error: null,
-    }),
   };
 });
 
@@ -39,6 +37,7 @@ describe('ChallengeResultDialog', () => {
   afterEach(() => {
     cleanup();
     vi.clearAllMocks();
+    vi.restoreAllMocks();
   });
 
   test('CUNNING_GUARD_BLOCKED 이면 서버 사유를 그대로 보여주고 "문제 풀러 가기"를 제공한다', () => {
@@ -159,8 +158,67 @@ describe('ChallengeResultDialog', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('(2,2)를 빠뜨렸어요.')).toBeInTheDocument();
     expect(screen.getByText('상대가 풀이를 내렸어요')).toBeInTheDocument();
-    // 회장 확정(2026-08-09): 내가 틀린 대결의 주 동작은 "같은 문제를 혼자 다시 푸는 것"이다.
-    // 예전에는 유형이 같은 다른 문제로 보냈는데, 그러면 틀린 그 문제는 영영 안 풀게 된다.
-    expect(screen.getByText('이 문제 다시 풀기')).toBeInTheDocument();
+    expect(screen.getByText('조성진').closest('section')).not.toHaveClass(
+      'border-key-color-primary'
+    );
+    // 라벨은 "실제로 가는 곳"과 일치해야 한다. 무필터 전체 목록으로 가므로 "문제 더 풀기".
+    // (구 라벨 "이 유형 3문제"는 존재하지 않는 유형별 추천을 약속해 2026-08-11 코드리뷰에서 BLOCK 됐다.
+    //  유형별 추천 API 가 생기면 라벨·링크·이 단언을 함께 되돌린다.)
+    const practiceLink = screen.getByRole('link', {
+      name: '문제 더 풀기',
+    });
+    expect(practiceLink).toHaveAttribute('href', PUBLIC.OPEN_CHALLENGE.LIST);
+    expect(screen.queryByRole('link', { name: '이 유형 3문제' })).toBeNull();
+    expect(screen.getByRole('button', { name: '다시 붙기' })).toHaveClass(
+      'border-line-line2'
+    );
+  });
+
+  test('내가 이긴 결과에서 다시 붙기를 누르면 rematch API mutation을 호출한다', async () => {
+    const createRematch = vi
+      .spyOn(repository, 'createRematch')
+      .mockResolvedValue({
+        shareToken: 'tok-next',
+        challengeId: 77,
+        challengeTitle: '경우의 수 새 문제',
+        unitName: '경우의 수',
+        rematchOfShareToken: 'tok-win',
+      });
+    mockUseInviteResultQuery.mockReturnValue({
+      data: {
+        shareToken: 'tok-win',
+        status: 'COMPLETED',
+        challengeId: 42,
+        outcome: 'WIN',
+        myCorrect: true,
+        opponentCorrect: false,
+        myAttempt: null,
+        opponentAttempt: null,
+        divergence: null,
+        context: { inviterName: '조성진' },
+      },
+      error: null,
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(),
+    });
+
+    renderWithProviders(
+      <ChallengeResultDialog
+        token="tok-win"
+        isOpen
+        onOpenChange={vi.fn()}
+      />
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: '다시 붙기' }));
+
+    await waitFor(() => expect(createRematch).toHaveBeenCalledWith('tok-win'));
+    expect(
+      screen.getByText(/둘 다 약한 단원의 다른 문제를 고릅니다/)
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText(/선정 이유: 둘 다 약한 경우의 수에서/)
+    ).toBeInTheDocument();
   });
 });

@@ -19,7 +19,7 @@ export default function ConsultPage() {
   return (
     <div className="min-h-screen w-full bg-white">
       <div className="bg-system-background w-full">
-        <div className="mx-auto w-full max-w-[1440px] px-4 pt-8 pb-6 md:px-8 lg:px-20">
+        <div className="mx-auto w-full max-w-shell-wide px-4 pt-8 pb-6 md:px-8 lg:px-20">
           <h1 className="font-title-heading mt-4 mb-2 text-2xl leading-[135%] tracking-tight lg:text-3xl">
             비공개 상담 신청
           </h1>
@@ -31,7 +31,7 @@ export default function ConsultPage() {
         </div>
       </div>
 
-      <div className="mx-auto grid w-full max-w-[1440px] grid-cols-1 gap-10 px-4 py-10 md:px-8 lg:grid-cols-[1fr_420px] lg:px-20">
+      <div className="mx-auto grid w-full max-w-shell-wide grid-cols-1 gap-10 px-4 py-10 md:px-8 lg:grid-cols-[1fr_420px] lg:px-20">
         <section>
           <ConsultForm />
         </section>

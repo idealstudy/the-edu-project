@@ -60,7 +60,7 @@ export default function HomeworkLayout({ children }: LayoutProps) {
               onSelectGroup={setSelectedGroupId}
             />
           </ColumnLayout.Left>
-          <ColumnLayout.Right className="desktop:max-w-[740px] desktop:px-8 flex h-[400px] flex-col gap-3 rounded-[12px]">
+          <ColumnLayout.Right className="desktop:max-w-reading desktop:px-8 flex h-[400px] flex-col gap-3 rounded-[12px]">
             <div>
               <StudyNoteTab
                 mode={role}

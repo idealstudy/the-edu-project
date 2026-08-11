@@ -223,7 +223,7 @@ const StudentStudyNoteDetailPage = () => {
           </div>
         </ColumnLayout.Left>
 
-        <ColumnLayout.Right className="border-line-line1 desktop:max-w-[740px] max-h-[calc(100vh-var(--spacing-header-height)-48px)] overflow-y-auto rounded-xl border bg-white px-8 py-10">
+        <ColumnLayout.Right className="border-line-line1 desktop:max-w-reading max-h-[calc(100vh-var(--spacing-header-height)-48px)] overflow-y-auto rounded-xl border bg-white px-8 py-10">
           {hasMeaningfulEditorContent(parsedContent) ? (
             <TextViewer value={parsedContent} />
           ) : (

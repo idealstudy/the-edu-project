@@ -8,9 +8,13 @@ type PageLayoutProps = React.ComponentPropsWithRef<'main'> & {
   width?: 'page' | 'content' | 'fluid';
 };
 
+// 토큰 이름은 globals.css `@theme` 의 `--container-*` 와 정확히 일치해야 한다.
+// 2026-08-11 발견: 구 이름 `max-w-page-max` · `max-w-content-max` 는 대응 토큰이 없어
+// Tailwind 가 규칙을 아예 만들지 않았다(= 폭 제한이 안 걸리는 무효 클래스).
+// 실재 토큰은 `--container-page`(1180px) · `--container-content`(1100px).
 const WIDTH_CLASS: Record<NonNullable<PageLayoutProps['width']>, string> = {
-  page: 'max-w-page-max',
-  content: 'max-w-content-max',
+  page: 'max-w-page',
+  content: 'max-w-content',
   fluid: 'max-w-none',
 };
 

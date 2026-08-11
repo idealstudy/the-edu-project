@@ -6,7 +6,7 @@ const ColumnLayout = ({ className, children, ...props }: ColumnLayoutProps) => {
   return (
     <main
       className={cn(
-        'max-w-page-max gap-room-gap px-room-page-mobile py-room-page-mobile tablet:px-room-page tablet:py-room-page desktop:flex-row mx-auto flex w-full min-w-0 flex-col',
+        'max-w-page gap-room-gap px-room-page-mobile py-room-page-mobile tablet:px-room-page tablet:py-room-page desktop:flex-row mx-auto flex w-full min-w-0 flex-col',
         className
       )}
       {...props}

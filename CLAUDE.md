@@ -45,7 +45,7 @@ Next.js 15 / React 19 / App Router / Tailwind v4 / FSD.
 - **터치 타깃 44px.** `min-h-touch-min`.
 - `gray-scale-*` · `orange-scale-*` 는 레거시 별칭이다. 새 코드에 쓰지 않는다.
 - 공용 부품(`@/shared/components/ui`)이 있으면 원시 `<button>` · `<input>` 을 새로 만들지 않는다. 형태가 부족하면 부품에 variant 를 추가한다.
-- 승인된 화면 규격이 있으면 그 수치대로 만든다: `../docs/mvp-g/design-spec-v22.md`.
+- 승인된 화면 규격은 대상 `pipeline-state*.md`의 `approved_artifacts.design_hub` 핀에서 읽고 그 수치대로 만든다. 경로를 추측하거나 고정하지 않는다.
 
 ---
 
