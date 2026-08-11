@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { type FC, useState } from 'react';
 
 import Link from 'next/link';
 
@@ -89,7 +89,7 @@ const RoomRenameDialog = ({
   );
 };
 
-const DashboardTeacher = (_props: { initialMemberName?: string }) => {
+const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
   const { data: studyRooms = [], isPending } =
     useTeacherDashboardStudyRoomListQuery();
   const rooms = [...studyRooms].sort((a, b) => b.todoCount - a.todoCount);
