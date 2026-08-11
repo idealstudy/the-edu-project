@@ -1,10 +1,12 @@
 import FriendsPage from '@/app/(private)/friends/page';
+import LearningPage from '@/app/(private)/learning/page';
 import PointsPage from '@/app/(private)/points/page';
 import TreePage from '@/app/(private)/tree/page';
 import {
   DashboardAppHeader,
   studentAppBarTitle,
 } from '@/features/dashboard/components/header/dashboard-app-header';
+import { renderWithProviders } from '@/tests/utils';
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -17,6 +19,16 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('next/navigation', () => ({
   usePathname: () => mocks.pathname,
+  // /learning 화면 안쪽 부품이 라우터를 쓴다. 없으면 그 테스트만 라우터 없음으로 죽는다.
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 vi.mock('@/features/weakness-tree/components/weakness-tree-client', () => ({
@@ -144,6 +156,24 @@ describe('MVP-G 공통 앱 헤더', () => {
     expect(studentAppBarTitle('/learning')).toBe('내 학습');
     expect(studentAppBarTitle('/dashboard/student/exam-hall')).toBe('응시장');
     expect(studentAppBarTitle('/tree')).toBe('약점 트리');
+  });
+
+  // 2026-08-11: /learning 이 아래 목록에 없어서 제목 중복을 못 잡았다.
+  // 전역 헤더가 "내 학습"을 그리는데 페이지도 h1 으로 또 그려 dev 화면에 두 번 보였고,
+  // 코드와 테스트만 보고는 안 잡혀 화면을 눈으로 보고서야 발견했다.
+  // 이 화면은 학습 허브라 요약 쿼리를 실제로 쓰므로 아래 목록에 넣지 않고 제목 중복만 따로 못박는다.
+  it('/learning 에서 화면 제목이 전역 헤더 하나뿐이다 (페이지가 또 그리지 않는다)', () => {
+    mocks.pathname = '/learning';
+
+    // 이 화면은 조회 도구를 실제로 쓰므로 공용 래퍼로 감싼다.
+    renderWithProviders(
+      <>
+        <DashboardAppHeader role="ROLE_STUDENT" initialMemberName="김서준" />
+        <LearningPage />
+      </>
+    );
+
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
   });
 
   it.each([
