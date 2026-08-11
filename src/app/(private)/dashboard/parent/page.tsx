@@ -2,7 +2,7 @@ import { DashboardParentContainer } from '@/features/dashboard/components/dashbo
 import { assertDashboardRole } from '@/shared/lib/assert-dashboard-role';
 
 export default async function ParentDashboardPage() {
-  const { initialMemberName } = await assertDashboardRole('ROLE_PARENT');
+  await assertDashboardRole('ROLE_PARENT');
 
-  return <DashboardParentContainer initialMemberName={initialMemberName} />;
+  return <DashboardParentContainer />;
 }

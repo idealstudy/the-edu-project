@@ -10,7 +10,6 @@ import {
   useParentDashboardStudyConsultationQuery,
   useParentDashboardStudyNewsQuery,
 } from '../../hooks/use-parent-dashboard-query';
-import ParentDashboardHeader from '../header/parent-header';
 import { ClassConsultationHistorySection } from '../section/parent-class-consultation-history-section';
 import { ConsultationSection } from '../section/parent-consultation-section';
 import { ParentLinkSection } from '../section/parent-link-section';
@@ -18,11 +17,7 @@ import { StudyNewsSection } from '../section/parent-study-news-section';
 import { StudyRoomPreviewSection } from '../section/parent-studyroom-preview-section';
 import { WeeklyReassuranceCard } from './weekly-reassurance-card';
 
-const DashboardParent = ({
-  initialMemberName,
-}: {
-  initialMemberName: string;
-}) => {
+const DashboardParent = () => {
   const { data: connectedStudentData, isPending: connectedStudentIsPending } =
     useParentDashboardConnectedStudentQuery();
 
@@ -144,7 +139,6 @@ const DashboardParent = ({
 
   return (
     <div className="flex w-full flex-col">
-      <ParentDashboardHeader initialMemberName={initialMemberName} />
       <main className="tablet:gap-12 desktop:gap-20 bg-gray-white tablet:py-12 desktop:pb-25 tablet:px-20 relative flex w-full flex-col gap-8 px-4.5 py-8">
         <ParentLinkSection connectedStudents={connectedStudentData ?? []} />
         {/* MVP-G v4 — 학부모 전용 예상등급 안심 요약 실 API */}

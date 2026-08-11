@@ -1,6 +1,5 @@
 import { ReactNode } from 'react';
 
-import { StudentAppBar } from '@/features/dashboard/components/header/student-app-bar';
 import { assertDashboardRole } from '@/shared/lib/assert-dashboard-role';
 
 /**
@@ -11,12 +10,7 @@ import { assertDashboardRole } from '@/shared/lib/assert-dashboard-role';
 export default async function StudentDashboardLayout({
   children,
 }: Readonly<{ children: ReactNode }>) {
-  const { initialMemberName } = await assertDashboardRole('ROLE_STUDENT');
+  await assertDashboardRole('ROLE_STUDENT');
 
-  return (
-    <div className="flex min-h-screen w-full flex-col bg-[#fcfbfa]">
-      <StudentAppBar initialMemberName={initialMemberName} />
-      {children}
-    </div>
-  );
+  return children;
 }

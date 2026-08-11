@@ -4,7 +4,6 @@ import { useState } from 'react';
 
 import Link from 'next/link';
 
-import { TeacherDashboardHeader } from '@/features/dashboard/components/header/teacher-header';
 import { useUpdateStudyRoomTitle } from '@/features/study-rooms/components/sidebar/services/query';
 import { useTeacherStudyRoomDetailQuery } from '@/features/study-rooms/hooks';
 import { PageLayout } from '@/layout';
@@ -89,11 +88,7 @@ const RoomRenameDialog = ({
   );
 };
 
-const DashboardTeacher = ({
-  initialMemberName,
-}: {
-  initialMemberName: string;
-}) => {
+const DashboardTeacher = (_props: { initialMemberName?: string }) => {
   const { data: studyRooms = [], isPending } =
     useTeacherDashboardStudyRoomListQuery();
   const rooms = [...studyRooms].sort((a, b) => b.todoCount - a.todoCount);
@@ -122,8 +117,7 @@ const DashboardTeacher = ({
   };
 
   return (
-    <div className="bg-gray-1 min-h-screen w-full">
-      <TeacherDashboardHeader initialMemberName={initialMemberName} />
+    <div className="bg-system-background min-h-screen w-full">
       <PageLayout>
         <div className="mb-4 flex items-center gap-2">
           <h2 className="text-base font-extrabold">학생별 수업</h2>

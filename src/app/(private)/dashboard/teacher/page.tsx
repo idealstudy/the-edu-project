@@ -2,7 +2,7 @@ import { DashboardTeacherContainer } from '@/features/dashboard/components/dashb
 import { assertDashboardRole } from '@/shared/lib/assert-dashboard-role';
 
 export default async function TeacherDashboardPage() {
-  const { initialMemberName } = await assertDashboardRole('ROLE_TEACHER');
+  await assertDashboardRole('ROLE_TEACHER');
 
-  return <DashboardTeacherContainer initialMemberName={initialMemberName} />;
+  return <DashboardTeacherContainer />;
 }
