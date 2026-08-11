@@ -52,10 +52,6 @@ vi.mock('@/features/dashboard/hooks/use-change-study-room-status', () => ({
   }),
 }));
 
-vi.mock('@/features/dashboard/components/header/teacher-header', () => ({
-  TeacherDashboardHeader: () => <header>선생님 대시보드</header>,
-}));
-
 /** v22 학습 관리 처리 행 계약. 이 테스트는 진입점 링크만 보므로 처리 행은 비워 둔다. */
 vi.mock('@/features/study-notes/hooks/use-learning-management', () => {
   const idleMutation = () => ({ mutate: vi.fn(), isPending: false });

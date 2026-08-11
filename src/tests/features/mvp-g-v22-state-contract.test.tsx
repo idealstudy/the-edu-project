@@ -11,10 +11,6 @@ const mocks = vi.hoisted(() => ({
   wrongAnswers: vi.fn(),
 }));
 
-vi.mock('@/features/dashboard/components/header/student-header', () => ({
-  default: ({ title }: { title: string }) => <header>{title}</header>,
-}));
-
 vi.mock('@/features/dashboard/hooks/use-look-back-query', () => ({
   useLookBackQuery: mocks.lookBack,
 }));

@@ -20,10 +20,6 @@ const mocks = vi.hoisted(() => ({
   writeText: vi.fn(),
 }));
 
-vi.mock('@/features/dashboard/components/header/teacher-header', () => ({
-  TeacherDashboardHeader: () => <header>선생님 대시보드</header>,
-}));
-
 vi.mock('@/features/dashboard/hooks/use-teacher-dashboard-query', () => ({
   useTeacherDashboardStudyRoomListQuery: mocks.rooms,
 }));
