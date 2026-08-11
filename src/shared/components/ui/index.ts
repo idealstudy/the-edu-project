@@ -4,6 +4,7 @@ export { ProfileAvatar } from './profile-avatar';
 export { TagInput } from './tag-input';
 export { Select } from './select';
 export { SearchInput } from './search-input';
+export { SegmentedProgress } from './segmented-progress';
 export { RadioGroup } from './radio-group';
 export { RadioCard } from './radio-card';
 export { Checkbox } from './checkbox';

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 
+import { SegmentedProgress } from '@/shared/components/ui/segmented-progress';
 import { PRIVATE } from '@/shared/constants/route';
 import { ChevronRight, RefreshCw } from 'lucide-react';
 
@@ -117,18 +118,11 @@ export const UnitNoteEntryCard = () => {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <div
-                  className="bg-gray-3 flex h-2.5 min-w-0 flex-1 overflow-hidden rounded-full"
-                  role="img"
-                  aria-label={`${subject.label} 문제 ${subject.solvedPercent}퍼센트, 정리 ${subject.notedPercent}퍼센트`}
-                >
-                  <span
-                    className="bg-orange-7 h-full"
-                    style={{ width: `${subject.solvedPercent}%` }}
-                  />
-                  <span
-                    className="bg-orange-4 h-full"
-                    style={{ width: `${subject.notedPercent}%` }}
+                <div className="min-w-0 flex-1">
+                  <SegmentedProgress
+                    primaryValue={subject.solvedPercent}
+                    secondaryValue={subject.notedPercent}
+                    label={`${subject.label} 문제 ${subject.solvedPercent}퍼센트, 정리 ${subject.notedPercent}퍼센트`}
                   />
                 </div>
                 <span className="text-gray-8 w-9 text-right text-xs font-bold tabular-nums">

@@ -2,6 +2,7 @@
 
 import { useChildReportQuery } from '@/features/parent';
 import { Skeleton } from '@/shared/components/loading';
+import { SegmentedProgress } from '@/shared/components/ui/segmented-progress';
 import { cn } from '@/shared/lib';
 import { ArrowRight, LockKeyhole, ShieldCheck, Sprout } from 'lucide-react';
 
@@ -100,19 +101,12 @@ export const WeeklyReassuranceCard = ({
             </p>
           </div>
         </div>
-        <div
-          className="bg-gray-2 mt-4 flex h-2.5 overflow-hidden rounded-full"
-          role="img"
-          aria-label={`해설 열람 비율 ${formatPercent(beforeAfter?.solutionViewRateBefore)}에서 ${formatPercent(beforeAfter?.solutionViewRateAfter)}로 변화`}
-          data-testid="parent-before-after-track"
-        >
-          <div
-            className="bg-gray-4 h-full"
-            style={{ width: `${beforeTrack}%` }}
-          />
-          <div
-            className="bg-orange-7 h-full"
-            style={{ width: `${100 - beforeTrack}%` }}
+        <div className="mt-4">
+          <SegmentedProgress
+            primaryValue={beforeTrack}
+            variant="comparison"
+            label={`해설 열람 비율 ${formatPercent(beforeAfter?.solutionViewRateBefore)}에서 ${formatPercent(beforeAfter?.solutionViewRateAfter)}로 변화`}
+            testId="parent-before-after-track"
           />
         </div>
         <p className="font-caption-normal text-gray-8 mt-3 leading-relaxed">

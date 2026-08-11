@@ -1,0 +1,57 @@
+.root {
+  position: relative;
+  height: var(--spacing-content-gap);
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--color-gray-3);
+}
+
+.progress {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  appearance: none;
+  border: 0;
+}
+
+.progress::-webkit-progress-bar {
+  background: transparent;
+}
+
+.segmentBase::-webkit-progress-bar {
+  background: var(--color-gray-3);
+}
+
+.segmentBase::-webkit-progress-value {
+  background: var(--color-orange-4);
+}
+
+.segmentBase::-moz-progress-bar {
+  background: var(--color-orange-4);
+}
+
+.segmentOverlay::-webkit-progress-value {
+  background: var(--color-orange-7);
+}
+
+.segmentOverlay::-moz-progress-bar {
+  background: var(--color-orange-7);
+}
+
+.comparisonBase::-webkit-progress-value {
+  background: var(--color-orange-7);
+}
+
+.comparisonBase::-moz-progress-bar {
+  background: var(--color-orange-7);
+}
+
+.comparisonOverlay::-webkit-progress-value {
+  background: var(--color-gray-4);
+}
+
+.comparisonOverlay::-moz-progress-bar {
+  background: var(--color-gray-4);
+}

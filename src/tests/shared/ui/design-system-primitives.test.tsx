@@ -4,6 +4,7 @@ import {
   DataList,
   EmptyState,
   MediaFrame,
+  SegmentedProgress,
   StatChip,
 } from '@/shared/components/ui';
 import { cleanup, render, screen } from '@testing-library/react';
@@ -116,5 +117,25 @@ describe('디자인 시스템 공용 부품', () => {
     );
 
     expect(screen.getByTestId('media-frame')).toHaveClass('overflow-hidden');
+  });
+
+  test('SegmentedProgress는 인라인 스타일 없이 데이터 비율을 전달한다', () => {
+    render(
+      <SegmentedProgress
+        primaryValue={35}
+        secondaryValue={25}
+        label="문제 35퍼센트, 정리 25퍼센트"
+        testId="subject-progress"
+      />
+    );
+
+    const progress = screen.getByTestId('subject-progress');
+    const tracks = progress.querySelectorAll('progress');
+
+    expect(progress).toHaveAccessibleName('문제 35퍼센트, 정리 25퍼센트');
+    expect(progress).not.toHaveAttribute('style');
+    expect(tracks).toHaveLength(2);
+    expect(tracks[0]).toHaveAttribute('value', '60');
+    expect(tracks[1]).toHaveAttribute('value', '35');
   });
 });
