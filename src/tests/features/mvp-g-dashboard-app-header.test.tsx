@@ -12,9 +12,35 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   pathname: '/dashboard/student',
-  growthQuery: vi.fn(() => ({ data: { streakDays: 12, level: 7 } })),
-  wrongAnswersQuery: vi.fn(() => ({ data: { totalCount: 6 } })),
-  pointWalletQuery: vi.fn(() => ({ data: { balance: 320 } })),
+  growthQuery: vi.fn(
+    (): { data?: { streakDays?: number | null; level?: number | null } } => ({
+      data: { streakDays: 12, level: 7 },
+    })
+  ),
+  wrongAnswersQuery: vi.fn(
+    (): { data?: { totalCount?: number | null } } => ({
+      data: { totalCount: 6 },
+    })
+  ),
+  pointWalletQuery: vi.fn(
+    (): { data?: { balance?: number | null } } => ({
+      data: { balance: 320 },
+    })
+  ),
+  teacherRoomsQuery: vi.fn((): {
+    data?: Array<{
+      id: number;
+      studentName: string | null;
+      todoCount: number;
+    }>;
+    isPending: boolean;
+  } => ({
+    data: [
+      { id: 1, studentName: '김서준', todoCount: 4 },
+      { id: 2, studentName: '박하윤', todoCount: 3 },
+    ],
+    isPending: false,
+  })),
 }));
 
 vi.mock('next/navigation', () => ({
@@ -57,13 +83,7 @@ vi.mock('@/features/point/hooks/use-point', () => ({
 }));
 
 vi.mock('@/features/dashboard/hooks/use-teacher-dashboard-query', () => ({
-  useTeacherDashboardStudyRoomListQuery: () => ({
-    data: [
-      { id: 1, studentName: '김서준', todoCount: 4 },
-      { id: 2, studentName: '박하윤', todoCount: 3 },
-    ],
-    isPending: false,
-  }),
+  useTeacherDashboardStudyRoomListQuery: mocks.teacherRoomsQuery,
 }));
 
 vi.mock('@/features/dashboard/hooks/use-parent-dashboard-query', () => ({
@@ -84,6 +104,19 @@ describe('MVP-G 공통 앱 헤더', () => {
     mocks.growthQuery.mockClear();
     mocks.wrongAnswersQuery.mockClear();
     mocks.pointWalletQuery.mockClear();
+    mocks.teacherRoomsQuery.mockClear();
+    mocks.growthQuery.mockReturnValue({
+      data: { streakDays: 12, level: 7 },
+    });
+    mocks.wrongAnswersQuery.mockReturnValue({ data: { totalCount: 6 } });
+    mocks.pointWalletQuery.mockReturnValue({ data: { balance: 320 } });
+    mocks.teacherRoomsQuery.mockReturnValue({
+      data: [
+        { id: 1, studentName: '김서준', todoCount: 4 },
+        { id: 2, studentName: '박하윤', todoCount: 3 },
+      ],
+      isPending: false,
+    });
   });
 
   it('학생 경로가 바뀌어도 같은 헤더 셸 안에서 제목만 교체한다', () => {
@@ -125,6 +158,53 @@ describe('MVP-G 공통 앱 헤더', () => {
     expect(screen.getByText('조성진 선생님')).toBeVisible();
     expect(screen.getByText('스터디룸 2개 · 학생 2명')).toBeVisible();
     expect(screen.getByText('7건')).toBeVisible();
+  });
+
+  it('학생 요약 데이터가 없으면 네 값을 0 단위로 표시한다', () => {
+    mocks.growthQuery.mockReturnValue({ data: undefined });
+    mocks.wrongAnswersQuery.mockReturnValue({ data: undefined });
+    mocks.pointWalletQuery.mockReturnValue({ data: undefined });
+
+    render(
+      <DashboardAppHeader
+        role="ROLE_STUDENT"
+        initialMemberName="김서준"
+      />
+    );
+
+    expect(screen.getByText('0개')).toBeVisible();
+    expect(screen.getByText('0일')).toBeVisible();
+    expect(screen.getByText('Lv.0')).toBeVisible();
+    expect(screen.getByText('0P')).toBeVisible();
+  });
+
+  it('선생님 지표 데이터가 없으면 0건을 표시한다', () => {
+    mocks.teacherRoomsQuery.mockReturnValue({
+      data: undefined,
+      isPending: true,
+    });
+
+    render(
+      <DashboardAppHeader
+        role="ROLE_TEACHER"
+        initialMemberName="조성진"
+      />
+    );
+
+    expect(screen.getByText('스터디룸 0개 · 학생 0명')).toBeVisible();
+    expect(screen.getByText('0건')).toBeVisible();
+  });
+
+  it('이름이 선생님으로 끝나면 접미를 중복하지 않는다', () => {
+    render(
+      <DashboardAppHeader
+        role="ROLE_TEACHER"
+        initialMemberName="정성 선생님"
+      />
+    );
+
+    expect(screen.getByText('정성 선생님')).toBeVisible();
+    expect(screen.queryByText('정성 선생님 선생님')).not.toBeInTheDocument();
   });
 
   it('학부모 슬롯은 역할 전용 카피와 리포트 지표를 같은 셸에서 표시한다', () => {

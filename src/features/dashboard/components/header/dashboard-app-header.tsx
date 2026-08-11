@@ -48,11 +48,15 @@ const StudentSummaryChips = ({ memberName }: { memberName: string }) => {
   const growthQuery = useStudentGrowthQuery();
   const pointQuery = useMyPointWalletQuery();
   const wrongAnswersQuery = useWrongAnswersQuery();
+  const wrongAnswerCount = wrongAnswersQuery.data?.totalCount ?? 0;
+  const streakDays = growthQuery.data?.streakDays ?? 0;
+  const level = growthQuery.data?.level ?? 0;
+  const pointBalance = pointQuery.data?.balance ?? 0;
   const chips = [
-    ['내 오답', `${wrongAnswersQuery.data?.totalCount ?? '-'}개`],
-    ['연속', `${growthQuery.data?.streakDays ?? '-'}일`],
-    ['레벨', `Lv.${growthQuery.data?.level ?? '-'}`],
-    ['포인트', `${pointQuery.data?.balance.toLocaleString('ko-KR') ?? '-'}P`],
+    ['내 오답', `${wrongAnswerCount}개`],
+    ['연속', `${streakDays}일`],
+    ['레벨', `Lv.${level}`],
+    ['포인트', `${pointBalance.toLocaleString('ko-KR')}P`],
   ] as const;
 
   return (
@@ -111,6 +115,9 @@ const TeacherHeaderContent = ({
   const roomsQuery = useTeacherDashboardStudyRoomListQuery();
   const rooms = roomsQuery.data ?? [];
   const memberName = initialMemberName.trim() || storedMemberName || '선생님';
+  const teacherName = memberName.endsWith('선생님')
+    ? memberName
+    : `${memberName} 선생님`;
   const studentCount = rooms.filter((room) => room.studentName).length;
   const todoCount = rooms.reduce((sum, room) => sum + room.todoCount, 0);
   const subtitle = /^\/study-rooms\/\d+(?:\/|$)/.test(pathname)
@@ -124,7 +131,7 @@ const TeacherHeaderContent = ({
       </span>
       <div className="min-w-0">
         <b className="text-gray-12 text-single-line block text-sm font-extrabold">
-          {memberName} 선생님
+          {teacherName}
         </b>
         <small className="text-gray-9 text-ui-choice text-single-line block font-semibold">
           {subtitle}
@@ -136,7 +143,7 @@ const TeacherHeaderContent = ({
             손볼 것 · 누르면 정렬
           </small>
           <b className="text-gray-12 block text-sm font-extrabold tabular-nums">
-            {roomsQuery.isPending ? '-' : `${todoCount}건`}
+            {todoCount}건
           </b>
         </div>
         <div className="hidden sm:block">
