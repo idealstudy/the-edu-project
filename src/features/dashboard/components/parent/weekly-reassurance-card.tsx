@@ -27,9 +27,9 @@ export const WeeklyReassuranceCard = ({
     summary?.expectedGradeRange !== undefined &&
     summary.expectedGradeRange !== '데이터 없음';
   const formatPercent = (value: number | undefined) =>
-    value === undefined ? '—' : `${Math.round(value)}%`;
+    value === undefined ? '자료 없음' : `${Math.round(value)}%`;
   const formatDays = (value: number | undefined) =>
-    value === undefined ? '—' : `주 ${Number(value.toFixed(1))}일`;
+    value === undefined ? '자료 없음' : `주 ${Number(value.toFixed(1))}일`;
   const trackTotal =
     (beforeAfter?.solutionViewRateBefore ?? 0) +
     (beforeAfter?.solutionViewRateAfter ?? 0);
@@ -43,13 +43,13 @@ export const WeeklyReassuranceCard = ({
   return (
     <section
       className={cn(
-        'bg-gray-white border-gray-4 flex flex-col rounded-2xl border p-5 md:p-6',
+        'bg-gray-white border-gray-3 p-card-pad flex flex-col rounded-section border',
         className
       )}
       data-testid="parent-grade-summary-card"
     >
-      <header className="border-gray-3 from-orange-1 rounded-2xl border bg-gradient-to-b to-white px-5 py-7 text-center">
-        <span className="border-orange-3 text-orange-9 inline-flex items-center gap-1.5 rounded-full border bg-white px-3 py-1.5 text-xs font-semibold">
+      <header className="border-gray-3 bg-orange-1 p-card-pad rounded-section border text-center">
+        <span className="border-orange-3 text-orange-9 bg-gray-white min-h-badge-min rounded-pill inline-flex items-center gap-1.5 border px-3 text-xs font-semibold">
           <ShieldCheck
             size={15}
             aria-hidden
@@ -62,7 +62,7 @@ export const WeeklyReassuranceCard = ({
         <p className="font-body2-normal text-gray-8 mt-1">
           학습 변화 기록 · 주간 관리
         </p>
-        <span className="bg-orange-1 text-orange-9 mt-3 inline-flex rounded-full px-3 py-1 text-xs font-bold">
+        <span className="bg-gray-white border-orange-2 text-orange-9 min-h-badge-min rounded-pill mt-3 inline-flex items-center border px-3 text-xs font-bold">
           최근 4주 실제 학습 기록
         </span>
       </header>
@@ -77,7 +77,7 @@ export const WeeklyReassuranceCard = ({
       <h4 className="font-caption-heading text-gray-7 mt-6 tracking-wide">
         가장 큰 변화
       </h4>
-      <div className="border-gray-3 mt-2 rounded-2xl border p-5">
+      <div className="border-gray-3 p-card-pad mt-2 rounded-section border">
         <p className="font-body2-heading text-gray-11">
           막혔을 때 해설을 여는 비율
         </p>
@@ -143,7 +143,7 @@ export const WeeklyReassuranceCard = ({
                 </span>
               </>
             ) : (
-              '— → —'
+              '자료 없음'
             )}
           </p>
         </div>
@@ -165,7 +165,7 @@ export const WeeklyReassuranceCard = ({
         </div>
       </div>
 
-      <div className="border-orange-3 bg-orange-1 mt-3 rounded-2xl border p-5">
+      <div className="border-orange-3 bg-orange-1 p-card-pad mt-3 rounded-section border">
         <div className="flex items-center gap-2">
           <span className="bg-orange-7 flex size-8 items-center justify-center rounded-full text-sm font-bold text-white">
             선
@@ -191,8 +191,8 @@ export const WeeklyReassuranceCard = ({
           aria-hidden
         />
         <p className="font-caption-normal text-gray-9 leading-relaxed">
-          <b className="text-gray-11">디에듀가 보장합니다</b> — 매주 증거 리포트
-          · 자습 추적 · 약점 진단. 어느 주든 관리가 끊기지 않아요.
+          <b className="text-gray-11">디에듀가 보장합니다.</b> 매주 증거 리포트,
+          자습 추적, 약점 진단이 어느 주든 끊기지 않아요.
         </p>
       </div>
       <p className="font-caption-normal text-gray-7 mt-3 text-center leading-relaxed">
@@ -202,7 +202,7 @@ export const WeeklyReassuranceCard = ({
       </p>
 
       {!summary || !beforeAfter?.sufficientData ? (
-        <div className="border-gray-3 mt-5 flex flex-col items-center rounded-2xl border border-dashed px-5 py-8 text-center">
+        <div className="border-gray-4 px-empty-pad-x py-empty-pad-y mt-5 flex flex-col items-center rounded-card border border-dashed text-center">
           <Sprout
             size={30}
             className="text-orange-6"

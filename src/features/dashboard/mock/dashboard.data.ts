@@ -13,13 +13,11 @@ export const SUMMARY_CARDS: SummaryCard[] = [
     value: '4',
     description: '예정된 수업',
     icon: Icon.Notebook,
-    accentClassName:
-      'bg-gradient-to-br from-orange-scale-orange-1 to-orange-scale-orange-5 shadow-[0_18px_40px_rgba(255,103,55,0.15)]',
-    iconClassName:
-      'bg-gray-scale-white text-key-color-primary shadow-[0_12px_30px_rgba(255,103,55,0.24)]',
+    accentClassName: 'border-orange-3 bg-orange-1',
+    iconClassName: 'bg-gray-white text-orange-9',
     badge: {
       label: '신규 1건',
-      className: 'bg-orange-scale-orange-10/70 text-key-color-primary',
+      className: 'bg-orange-2 text-orange-9',
     },
   },
   {
@@ -28,10 +26,8 @@ export const SUMMARY_CARDS: SummaryCard[] = [
     value: '55',
     description: '함께하는 학생 수',
     icon: Icon.Person,
-    accentClassName:
-      'bg-gradient-to-br from-[#F3F6FF] to-[#EEF1FF] shadow-[0_18px_40px_rgba(88,110,255,0.12)]',
-    iconClassName:
-      'bg-white text-[#586EFF] shadow-[0_12px_30px_rgba(88,110,255,0.18)]',
+    accentClassName: 'border-gray-3 bg-gray-white',
+    iconClassName: 'bg-orange-1 text-orange-9',
   },
   {
     id: 'assignments',
@@ -39,10 +35,8 @@ export const SUMMARY_CARDS: SummaryCard[] = [
     value: '69',
     description: '제출 대기 중',
     icon: Icon.BookText,
-    accentClassName:
-      'bg-gradient-to-br from-[#FFF6E5] to-[#FFEFD1] shadow-[0_18px_40px_rgba(255,200,72,0.14)]',
-    iconClassName:
-      'bg-white text-[#FFB200] shadow-[0_12px_30px_rgba(255,200,72,0.2)]',
+    accentClassName: 'border-gray-3 bg-gray-white',
+    iconClassName: 'bg-orange-1 text-orange-9',
   },
   {
     id: 'notifications',
@@ -50,10 +44,8 @@ export const SUMMARY_CARDS: SummaryCard[] = [
     value: '13',
     description: '새로운 메시지',
     icon: Icon.Mail,
-    accentClassName:
-      'bg-gradient-to-br from-[#FFE9EF] to-[#FFD9E4] shadow-[0_18px_40px_rgba(244,114,182,0.18)]',
-    iconClassName:
-      'bg-white text-[#F472B6] shadow-[0_12px_30px_rgba(244,114,182,0.22)]',
+    accentClassName: 'border-gray-3 bg-gray-white',
+    iconClassName: 'bg-orange-1 text-orange-9',
   },
 ];
 
