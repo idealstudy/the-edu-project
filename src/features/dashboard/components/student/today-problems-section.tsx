@@ -11,13 +11,7 @@ import { useOpenChallengeDetailQuery } from '@/features/open-challenge/hooks/use
 import { Skeleton } from '@/shared/components/loading';
 import { Button } from '@/shared/components/ui';
 import { PRIVATE, PUBLIC } from '@/shared/constants';
-import {
-  Archive,
-  BookOpenCheck,
-  GraduationCap,
-  Puzzle,
-  RefreshCw,
-} from 'lucide-react';
+import { Archive, BookOpenCheck, RefreshCw } from 'lucide-react';
 
 import {
   useDailyProblemsQuery,
@@ -30,27 +24,15 @@ type TodayProblemCardProps = {
   wrongAnswer?: WrongAnswerItem;
 };
 
-const DIFFICULTY_LABEL: Record<string, string> = {
-  HIGHEST: '1등급 문제',
-  HIGH: '2등급 문제',
-  MIDDLE: '3등급 문제',
-  MID: '3등급 문제',
-  LOW: '기초 문제',
-};
-
 // 시안 v23 `.badge`(HTML:610): 출처 뱃지는 짧게 "선생님"/"추천".
 const getProvider = (provider: DailyProblemItem['provider']) =>
   provider === 'TEACHER'
     ? {
         label: '선생님',
-        detail: '선생님이 배정',
-        icon: GraduationCap,
         badgeClassName: 'border-orange-3 bg-orange-2 text-orange-10',
       }
     : {
         label: '추천',
-        detail: '약점·복습 주기 기반 추천',
-        icon: Puzzle,
         badgeClassName: 'border-gray-3 bg-gray-white text-gray-8',
       };
 
@@ -61,19 +43,14 @@ const TodayProblemCard = ({ item, wrongAnswer }: TodayProblemCardProps) => {
   });
   const challenge = challengeQuery.data;
   const provider = getProvider(item.provider);
-  const ProviderIcon = provider.icon;
-  const title =
-    wrongAnswer?.title ?? challenge?.topic ?? `오늘의 문제 ${item.position}`;
-  const questionText =
-    wrongAnswer?.questionText ??
-    challenge?.questionText ??
-    '문제 내용을 불러오는 중이에요.';
-  const sourceLabel =
-    wrongAnswer?.questionSnapshot?.sourceText ??
-    wrongAnswer?.questionSnapshot?.source ??
-    (challenge
-      ? `${challenge.topic} ${challenge.questionNumber}번`
-      : undefined);
+  const unit =
+    (wrongAnswer?.questionSnapshot?.unit
+      ? String(wrongAnswer.questionSnapshot.unit)
+      : undefined) ??
+    challenge?.units?.find((candidate) => candidate.isPrimary)?.displayName ??
+    wrongAnswer?.title ??
+    challenge?.topic ??
+    `오늘의 문제 ${item.position}`;
   const href = item.wrongAnswerId
     ? PRIVATE.DASHBOARD.WRONG_ANSWER_REVIEW(item.wrongAnswerId)
     : item.challengeId
@@ -82,7 +59,11 @@ const TodayProblemCard = ({ item, wrongAnswer }: TodayProblemCardProps) => {
 
   return (
     <article
-      className="border-gray-3 bg-gray-white tablet:min-w-0 flex min-w-[82%] snap-start flex-col overflow-hidden rounded-xl border"
+      className={`tablet:min-w-0 flex min-w-[82%] snap-start flex-col overflow-hidden rounded-xl border ${
+        item.provider === 'OPEN_CHALLENGE_RECOMMEND'
+          ? 'border-orange-3 bg-orange-1'
+          : 'border-gray-3 bg-gray-white'
+      }`}
       data-testid={`daily-problem-card-${item.position}`}
     >
       <div className="flex items-center gap-2 px-4 pt-3.5">
@@ -96,29 +77,11 @@ const TodayProblemCard = ({ item, wrongAnswer }: TodayProblemCardProps) => {
         <span
           className={`font-caption-heading flex items-center gap-1 rounded-full border px-2.5 py-1 ${provider.badgeClassName}`}
         >
-          <ProviderIcon
-            size={13}
-            aria-hidden
-          />
           {provider.label}
-        </span>
-        <span className="font-caption-normal text-gray-8 min-w-0 truncate">
-          {provider.detail}
         </span>
       </div>
 
-      <div className="mt-2 flex flex-wrap items-center gap-1.5 px-4">
-        {typeof sourceLabel === 'string' && sourceLabel.length > 0 && (
-          <span className="font-caption-heading bg-gray-2 text-gray-10 rounded-full px-2.5 py-1">
-            {sourceLabel}
-          </span>
-        )}
-        {item.difficulty && (
-          <span className="font-caption-heading border-orange-7 text-orange-9 rounded-full border px-2.5 py-1">
-            {DIFFICULTY_LABEL[item.difficulty] ?? item.difficulty}
-          </span>
-        )}
-      </div>
+      <p className="font-label-heading text-gray-12 mt-2 px-4">{unit}</p>
 
       <div className="mt-2 flex min-h-6 items-center justify-between gap-2 px-4">
         <span className="font-caption-heading text-gray-8 tabular-nums">
@@ -132,34 +95,13 @@ const TodayProblemCard = ({ item, wrongAnswer }: TodayProblemCardProps) => {
         />
       </div>
 
-      <div className="border-gray-3 bg-system-background mx-4 mt-2.5 min-h-30 rounded-lg border p-3.5">
-        <p className="font-caption-heading text-gray-8">
-          {wrongAnswer?.questionSnapshot?.unit
-            ? String(wrongAnswer.questionSnapshot.unit)
-            : title}
-        </p>
-        {challengeQuery.isPending && !wrongAnswer?.questionText ? (
-          <div className="mt-3 flex flex-col gap-2">
-            <Skeleton.Block className="h-3 w-full" />
-            <Skeleton.Block className="h-3 w-4/5" />
-            <Skeleton.Block className="h-3 w-2/3" />
-          </div>
-        ) : (
-          <p className="font-body2-normal text-gray-11 mt-2 line-clamp-4 leading-relaxed">
-            {questionText}
-          </p>
-        )}
-      </div>
-
-      <p className="font-caption-heading text-orange-10 mt-3 flex-1 px-4 leading-relaxed">
-        <b>왜 이 문제?</b> {item.reason}
-      </p>
-
       <Button
         asChild
         size="small"
-        variant={item.provider === 'TEACHER' ? 'primary' : 'secondary'}
-        className="mx-4 mt-3 w-auto"
+        variant={
+          item.provider === 'OPEN_CHALLENGE_RECOMMEND' ? 'primary' : 'secondary'
+        }
+        className="mx-4 mt-3 mb-4 w-auto"
       >
         <Link
           href={href}
@@ -168,12 +110,6 @@ const TodayProblemCard = ({ item, wrongAnswer }: TodayProblemCardProps) => {
           풀기
         </Link>
       </Button>
-      {/* 시안 v23 `.handoff`(HTML:621): 오픈챌린지 라인으로 넘어간다는 안내. */}
-      <p className="bg-gray-1 text-gray-9 font-caption-normal mx-4 mt-3 mb-4 rounded-lg px-3 py-2.5 leading-relaxed">
-        카드를 누르면 <b className="text-gray-11 font-bold">오픈챌린지 라인의 풀이 화면</b>으로
-        넘어갑니다. 문제 본문, AI 코치, 손풀이, 채점, 해설은 그쪽 소관입니다.
-        다 풀면 결과만 이 화면으로 돌아옵니다.
-      </p>
     </article>
   );
 };
@@ -349,6 +285,14 @@ export const TodayProblemsSection = () => {
           />
         ))}
       </div>
+
+      {/* 시안 v23 `.handoff`(HTML:660): 카드 공통 안내는 그리드 아래 한 번만 둔다. */}
+      <p className="bg-gray-1 text-gray-9 font-caption-normal mt-3 rounded-lg px-3 py-2.5 leading-relaxed">
+        카드를 누르면{' '}
+        <b className="text-gray-11 font-bold">오픈챌린지 라인의 풀이 화면</b>
+        으로 넘어갑니다. 문제 본문, AI 코치, 손풀이, 채점, 해설은 그쪽
+        소관입니다. 다 풀면 결과만 이 화면으로 돌아옵니다.
+      </p>
 
       <p className="font-caption-normal text-gray-7 mt-3 leading-relaxed">
         난이도·전국 오답률은 교육청·평가원 기출처럼 공개 데이터가 있는 문제에만

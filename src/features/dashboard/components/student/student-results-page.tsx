@@ -22,11 +22,9 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 const TILE_GRID = 'grid grid-cols-2 gap-2 md:grid-cols-5';
 
 /**
- * v22 §5의 768px 접힘선과 §8 R1의 대량 데이터 위험을 실제 9과목 73단원에 맞춘다.
- * 기본 펼침은 한 과목뿐이다. 아직 정복하지 못했고 실제 풀이 이력이 있는 단원이
- * 많은 과목을 우선하고, 동률이면 그 단원들의 풀이 수, 전체 풀이 수, 서버 과목
- * 순서를 차례로 쓴다. API에 최근 수정 시각이 없으므로 누적 풀이를 최근성처럼
- * 가장하지 않는다. 학생은 모든 과목 머리줄을 눌러 추가로 펼칠 수 있다.
+ * v22 §6.0의 "채운 면적으로 성취가 보이게" 의도를 실제 9과목 73단원에 맞춘다.
+ * 풀이 또는 정복도 기록이 있는 과목은 기존 랭킹 순서대로 모두 펼치고,
+ * 기록이 전혀 없는 과목만 접는다. 학생은 모든 과목 머리줄을 눌러 상태를 바꿀 수 있다.
  */
 export const selectDefaultOpenSubjects = (groups: TreeSubjectGroup[]) => {
   const ranked = groups
@@ -36,6 +34,9 @@ export const selectDefaultOpenSubjects = (groups: TreeSubjectGroup[]) => {
       );
       return {
         subject: group.subject as string,
+        hasProgress: group.nodes.some(
+          (node) => node.attemptCount > 0 || node.masteryScore > 0
+        ),
         activeNodeCount: activeNodes.length,
         activeAttemptCount: activeNodes.reduce(
           (sum, node) => sum + node.attemptCount,
@@ -56,7 +57,9 @@ export const selectDefaultOpenSubjects = (groups: TreeSubjectGroup[]) => {
         a.index - b.index
     );
 
-  return ranked[0] ? [ranked[0].subject] : [];
+  return ranked
+    .filter((group) => group.hasProgress)
+    .map((group) => group.subject);
 };
 
 const tileTone = (masteryScore: number) => {
@@ -103,7 +106,7 @@ export const StudentResultsPage = () => {
             {groups.length}과목 {nodes.length}단원 · 지금까지 채운 것
           </span>
           <span className="border-gray-3 text-gray-10 text-ui-choice ml-auto rounded-md border px-2 py-1 font-bold">
-            진행 중 1과목 먼저
+            진행 중 과목 먼저
           </span>
         </div>
 
@@ -239,17 +242,15 @@ export const StudentResultsPage = () => {
             <p className="bg-gray-1 text-gray-10 mt-4 rounded-lg p-3 text-xs leading-5">
               칸을 누르면 그 단원 <b>단권화 노트</b>로 갑니다. 여기서는 보기만
               하고 고치지 않습니다. 숙련도 값은 <b>오픈챌린지</b>에서
-              가져옵니다.
+              가져옵니다. 풀이 또는 정복도 기록이 있는 과목은 모두 펼치고,
+              기록이 없는 과목만 접습니다.
               {foldedCount > 0 && (
                 <>
                   {' '}
-                  나머지 <b>{foldedCount}과목</b>은 접어 뒀어요. 처음에는{' '}
-                  {isEmpty
-                    ? '첫 과목 하나만'
-                    : '아직 정복하지 못한 풀이가 가장 많은 과목 하나만'}{' '}
-                  펼칩니다. 과목 줄을 누르면 더 볼 수 있어요.
+                  지금 <b>{foldedCount}과목</b>이 접혀 있어요.
                 </>
-              )}
+              )}{' '}
+              과목 줄을 누르면 펼치거나 접을 수 있어요.
             </p>
             {isEmpty && (
               <Button
