@@ -118,7 +118,7 @@ const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
   const activeRooms = searchedRooms.filter(
     (room) => room.enrollmentStatus !== 'CLOSED'
   );
-  const closedRooms = rooms.filter(
+  const closedRooms = searchedRooms.filter(
     (room, index, all) =>
       room.enrollmentStatus === 'CLOSED' &&
       all.findIndex((candidate) => candidate.id === room.id) === index
@@ -274,6 +274,19 @@ const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
                 학생 초대 코드 보기
               </Link>
             </div>
+          </section>
+        ) : searchedRooms.length === 0 ? (
+          <section
+            className="border-gray-4 py-empty-pad-y px-empty-pad-x rounded-card border border-dashed bg-white text-center"
+            data-testid="teacher-rooms-search-empty"
+          >
+            <h2 className="text-gray-12 font-body1-heading">
+              검색 결과가 없어요
+            </h2>
+            <p className="text-gray-9 mt-2 text-sm leading-relaxed">
+              &apos;{searchQuery.trim()}&apos;와 일치하는 학생 이름이나
+              스터디룸 이름이 없습니다. 검색어를 다시 확인해 주세요.
+            </p>
           </section>
         ) : (
           <>
