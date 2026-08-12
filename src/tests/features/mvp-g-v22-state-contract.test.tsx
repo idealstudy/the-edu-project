@@ -8,11 +8,16 @@ const mocks = vi.hoisted(() => ({
   detail: vi.fn(),
   library: vi.fn(),
   lookBack: vi.fn(),
+  weeklyRetro: vi.fn(),
   wrongAnswers: vi.fn(),
 }));
 
 vi.mock('@/features/dashboard/hooks/use-look-back-query', () => ({
   useLookBackQuery: mocks.lookBack,
+}));
+
+vi.mock('@/features/dashboard/hooks/use-retrospect-query', () => ({
+  useWeeklyRetrospectQuery: mocks.weeklyRetro,
 }));
 
 vi.mock('@/features/dashboard/hooks/use-wrong-answer-query', () => ({
@@ -84,6 +89,11 @@ describe('MVP-G v22 상태 계약', () => {
     mocks.detail.mockReturnValue({
       isError: true,
       refetch: vi.fn(),
+    });
+    mocks.weeklyRetro.mockReturnValue({
+      data: undefined,
+      isError: false,
+      isPending: false,
     });
   });
 

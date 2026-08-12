@@ -14,7 +14,6 @@ import { RefreshCw } from 'lucide-react';
 
 import { useChangeStudyRoomStatus } from '../../hooks/use-change-study-room-status';
 import { useTeacherDashboardStudyRoomListQuery } from '../../hooks/use-teacher-dashboard-query';
-import { LearningInboxCard } from './learning-inbox-card';
 
 /**
  * 승인 디자인 v22 `roomCard` 3324 `스터디룸 이름 수정`.
@@ -486,14 +485,6 @@ const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
               </p>
             )}
           </>
-        )}
-        {rooms.length > 0 && (
-          <div
-            className="mt-4"
-            data-testid="teacher-learning-inbox-after-rooms"
-          >
-            <LearningInboxCard />
-          </div>
         )}
         {rooms.length > 0 && (
           // 시안 v23 `.foot`(HTML:434) 원문.

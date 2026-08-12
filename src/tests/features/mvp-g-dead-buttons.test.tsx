@@ -161,42 +161,15 @@ describe('MVP-G 죽은 버튼 회귀', () => {
     });
   });
 
-  it('선생님 대시보드가 처리함과 기존 수업 목록을 함께 렌더한다', () => {
-    mocks.teacherInbox.mockReturnValue({
-      data: {
-        recentExamCount: 1,
-        recentExam: [
-          {
-            id: 7,
-            studentId: 9,
-            title: '수열 12번',
-            status: 'ACTIVE',
-            reviewCount: 1,
-            wrongAgainCount: 0,
-            hintFreeSolveCount: 0,
-            teacherComment: null,
-          },
-        ],
-        neglectedCount: 0,
-        neglected: [],
-        stuckAfterGraduationCount: 0,
-        stuckAfterGraduation: [],
-        neglectedThresholdDays: 3,
-      },
-      isPending: false,
-    });
-
+  it('선생님 대시보드가 기존 수업 목록을 렌더한다(처리함 워크플로우는 시안맞춤 v23.5로 제거됨)', () => {
     render(<DashboardTeacher initialMemberName="한지원" />);
 
-    expect(screen.getByTestId('teacher-learning-inbox')).toBeVisible();
-    expect(screen.getByRole('button', { name: '직접 쓰기' })).toBeVisible();
     const roomList = screen.getByTestId('teacher-rooms-list');
-    const inbox = screen.getByTestId('teacher-learning-inbox-after-rooms');
     expect(roomList).toBeVisible();
-    expect(
-      roomList.compareDocumentPosition(inbox) & Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy();
     expect(screen.getByText(/김서준 수업/)).toBeVisible();
+    expect(
+      screen.queryByTestId('teacher-learning-inbox-after-rooms')
+    ).not.toBeInTheDocument();
   });
 
   it('수업 0 빈 상태는 승인된 두 복구 행동만 첫 화면에 둔다', () => {

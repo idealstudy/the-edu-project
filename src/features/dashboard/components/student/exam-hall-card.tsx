@@ -10,7 +10,6 @@ import {
   useExamAnalysisQuery,
 } from '@/features/exam/hooks/use-exam-query';
 import { Skeleton } from '@/shared/components/loading';
-import { Button } from '@/shared/components/ui';
 import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { PRIVATE, PUBLIC } from '@/shared/constants';
 import { cn } from '@/shared/lib';
@@ -274,18 +273,6 @@ export const ExamHallCard = ({ className }: Props) => {
         )}
         <span>›</span>
       </Link>
-      {analyzedExam && (
-        <Button
-          asChild
-          size="small"
-          variant="outlined"
-          className="mt-3 w-full"
-        >
-          <Link href={PRIVATE.DASHBOARD.EXAM_ATTEMPT(analyzedExam.attemptId)}>
-            시험 분석 보기
-          </Link>
-        </Button>
-      )}
     </section>
   );
 };

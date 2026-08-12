@@ -4,19 +4,13 @@ import { FormEvent, useEffect, useState } from 'react';
 
 import type { RetrospectMood } from '@/entities/retrospect';
 import { Skeleton } from '@/shared/components/loading';
-import {
-  Button,
-  Textarea,
-  Toggle,
-  showBottomToast,
-} from '@/shared/components/ui';
+import { Button, Textarea, showBottomToast } from '@/shared/components/ui';
 import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib';
 import { handleApiError } from '@/shared/lib/errors/error-handler';
 import { classifyRetrospectError } from '@/shared/lib/errors/errors';
 import {
   BatteryLow,
-  Bot,
   CalendarCheck,
   CalendarX,
   CircleGauge,
@@ -28,7 +22,6 @@ import {
 import {
   useSaveRetrospect,
   useTodayRetrospectQuery,
-  useWeeklyRetrospectQuery,
 } from '../../hooks/use-retrospect-query';
 
 type Props = {
@@ -61,12 +54,6 @@ const MOOD_CHIP_OPTIONS = [
 }>;
 
 type MoodChipKey = (typeof MOOD_CHIP_OPTIONS)[number]['key'];
-
-const MOOD_LABEL: Record<RetrospectMood, string> = {
-  TIRED: '힘들었어요',
-  OKAY: '할 만했어요',
-  FOCUSED: '집중했어요',
-};
 
 /** 서버에서 불러온 mood → 화면에 보일 기본 칩(첫 매치)으로 되돌린다. */
 const moodToChipKey = (mood: RetrospectMood | null): MoodChipKey | null =>
@@ -116,9 +103,7 @@ const WeeklyRetroLoading = ({ className }: Props) => (
 
 export const WeeklyRetroCard = ({ className }: Props) => {
   const todayQuery = useTodayRetrospectQuery();
-  const weeklyQuery = useWeeklyRetrospectQuery();
   const saveRetrospect = useSaveRetrospect();
-  const [isQuickMode, setIsQuickMode] = useState(true);
   const [moodChipKey, setMoodChipKey] = useState<MoodChipKey | null>(null);
   const [learnedContent, setLearnedContent] = useState('');
   const [regretContent, setRegretContent] = useState('');
@@ -142,11 +127,11 @@ export const WeeklyRetroCard = ({ className }: Props) => {
     setInitializedRetrospectId(todayRetrospect.id);
   }, [initializedRetrospectId, todayQuery.data?.retrospect]);
 
-  if (todayQuery.isPending || weeklyQuery.isPending) {
+  if (todayQuery.isPending) {
     return <WeeklyRetroLoading className={className} />;
   }
 
-  if (todayQuery.isError || weeklyQuery.isError) {
+  if (todayQuery.isError) {
     return (
       <section
         className={cn(
@@ -172,7 +157,6 @@ export const WeeklyRetroCard = ({ className }: Props) => {
           className="mt-5"
           onClick={() => {
             void todayQuery.refetch();
-            void weeklyQuery.refetch();
           }}
         >
           다시 불러오기
@@ -182,7 +166,6 @@ export const WeeklyRetroCard = ({ className }: Props) => {
   }
 
   const today = todayQuery.data;
-  const weekly = weeklyQuery.data;
   const handleSaveError = (error: unknown) => {
     handleApiError(error, classifyRetrospectError, {
       onField: setFormError,
@@ -244,15 +227,6 @@ export const WeeklyRetroCard = ({ className }: Props) => {
             {formatMonthDay(today.date)} · 한 줄이면 충분해요
           </p>
         </div>
-        <label className="flex cursor-pointer items-center gap-2">
-          <span className="font-caption-heading text-gray-9">30초 회고</span>
-          <Toggle
-            checked={isQuickMode}
-            onCheckedChange={setIsQuickMode}
-            aria-label="30초 회고 모드"
-            data-testid="student-retrospect-quick-toggle"
-          />
-        </label>
       </div>
 
       <form
@@ -298,58 +272,44 @@ export const WeeklyRetroCard = ({ className }: Props) => {
           </div>
         </div>
 
-        {!isQuickMode && (
-          <div className="mt-4 flex flex-col gap-3">
-            <div>
-              <label
-                htmlFor="student-retrospect-learned"
-                className="font-caption-heading text-orange-10"
-              >
-                배운 것
-              </label>
-              <Textarea
-                id="student-retrospect-learned"
-                value={learnedContent}
-                onChange={(event) => setLearnedContent(event.target.value)}
-                maxLength={500}
-                rows={2}
-                className="border-orange-3 mt-2 bg-white px-3 py-3"
-                placeholder="예: 등비수열 합 공식에서 항의 개수를 잘못 세는 게 문제였다"
-                data-testid="student-retrospect-learned"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="student-retrospect-regret"
-                className="font-caption-heading text-orange-10"
-              >
-                아쉬운 것
-              </label>
-              <Textarea
-                id="student-retrospect-regret"
-                value={regretContent}
-                onChange={(event) => setRegretContent(event.target.value)}
-                maxLength={500}
-                rows={2}
-                className="border-orange-3 mt-2 bg-white px-3 py-3"
-                placeholder="예: 18번은 또 틀렸다"
-                data-testid="student-retrospect-regret"
-              />
-            </div>
+        <div className="mt-4 flex flex-col gap-3">
+          <div>
+            <label
+              htmlFor="student-retrospect-learned"
+              className="font-caption-heading text-orange-10"
+            >
+              배운 것
+            </label>
+            <Textarea
+              id="student-retrospect-learned"
+              value={learnedContent}
+              onChange={(event) => setLearnedContent(event.target.value)}
+              maxLength={500}
+              rows={2}
+              className="border-orange-3 mt-2 bg-white px-3 py-3"
+              placeholder="예: 등비수열 합 공식에서 항의 개수를 잘못 세는 게 문제였다"
+              data-testid="student-retrospect-learned"
+            />
           </div>
-        )}
-
-        {isQuickMode && (learnedContent || regretContent) && (
-          <UnstyledButton
-            variant="unstyled"
-            size="none"
-            type="button"
-            className="font-caption-normal text-gray-8 hover:text-orange-10 mt-3 cursor-pointer text-left underline underline-offset-2"
-            onClick={() => setIsQuickMode(false)}
-          >
-            저장된 회고가 있어요 · 열어서 수정하기
-          </UnstyledButton>
-        )}
+          <div>
+            <label
+              htmlFor="student-retrospect-regret"
+              className="font-caption-heading text-orange-10"
+            >
+              아쉬운 것
+            </label>
+            <Textarea
+              id="student-retrospect-regret"
+              value={regretContent}
+              onChange={(event) => setRegretContent(event.target.value)}
+              maxLength={500}
+              rows={2}
+              className="border-orange-3 mt-2 bg-white px-3 py-3"
+              placeholder="예: 18번은 또 틀렸다"
+              data-testid="student-retrospect-regret"
+            />
+          </div>
+        </div>
 
         {formError && (
           <p
@@ -374,113 +334,6 @@ export const WeeklyRetroCard = ({ className }: Props) => {
           이 회고는 나와 선생님이 봐요 · 부모님께는 공유되지 않아요.
         </p>
       </form>
-
-      <div className="mt-6 flex flex-wrap items-start justify-between gap-2">
-        <div>
-          <h4 className="font-body1-heading text-gray-12">주간 회고</h4>
-          <p className="font-caption-normal text-gray-8 mt-1">
-            {formatMonthDay(weekly.weekOf)}–{formatMonthDay(weekly.weekEnd)} ·{' '}
-            {weekly.writtenDays}/7일 기록
-          </p>
-        </div>
-        <span className="bg-gray-1 text-gray-9 font-caption-heading rounded-full px-3 py-1.5">
-          {weekly.aiSummaryStatus === 'READY' ? 'AI 요약 완료' : '기록 수집 중'}
-        </span>
-      </div>
-
-      {weekly.aiSummary ? (
-        <div className="bg-orange-1 border-orange-3 mt-3 rounded-xl border p-4">
-          <div className="text-orange-10 flex items-center gap-2">
-            <Bot
-              size={17}
-              aria-hidden
-            />
-            <p className="font-caption-heading">AI 조교가 먼저 정리했어요</p>
-          </div>
-          <p className="font-body2-normal text-gray-11 mt-2 leading-relaxed">
-            {weekly.aiSummary}
-          </p>
-          {weekly.evidenceTags.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {weekly.evidenceTags.map((tag) => (
-                <span
-                  key={tag}
-                  className="bg-gray-white border-orange-3 text-orange-9 font-caption-heading rounded-md border px-2 py-1"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-      ) : (
-        <div
-          className="border-gray-2 bg-gray-1 mt-3 flex items-center gap-3 rounded-xl border p-4"
-          data-testid="student-weekly-retrospect-summary-pending"
-        >
-          <Bot
-            size={22}
-            className="text-gray-6 shrink-0"
-            aria-hidden
-          />
-          <div>
-            <p className="font-body2-heading text-gray-10">
-              AI 주간 요약을 준비하고 있어요
-            </p>
-            <p className="font-caption-normal text-gray-8 mt-1">
-              이번 주 회고 {weekly.writtenDays}일치가 쌓였어요.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {weekly.retrospects.length === 0 ? (
-        <div
-          className="border-gray-2 mt-3 rounded-xl border border-dashed py-7 text-center"
-          data-testid="student-weekly-retrospect-empty"
-        >
-          <p className="font-body2-heading text-gray-9">
-            이번 주 회고가 아직 없어요
-          </p>
-          <p className="font-caption-normal text-gray-7 mt-1">
-            위에서 오늘의 첫 기록을 남겨보세요.
-          </p>
-        </div>
-      ) : (
-        <ul
-          className="mt-3 flex flex-col"
-          data-testid="student-weekly-retrospect-list"
-        >
-          {weekly.retrospects.map((retrospect) => {
-            const { learned, regret } = splitRetroContent(
-              retrospect.content ?? null
-            );
-            return (
-              <li
-                key={retrospect.id}
-                className="border-gray-2 tablet:flex-row tablet:items-start tablet:gap-4 flex flex-col gap-1 border-b py-3 last:border-b-0"
-              >
-                <span className="font-caption-heading text-gray-8 w-10 shrink-0">
-                  {formatMonthDay(retrospect.reflectDate)}
-                </span>
-                <span className="font-caption-heading text-orange-10 tablet:w-20 tablet:shrink-0">
-                  {retrospect.mood ? MOOD_LABEL[retrospect.mood] : '한 줄 기록'}
-                </span>
-                <p className="font-body2-normal text-gray-10 min-w-0 flex-1 break-words">
-                  {learned || regret
-                    ? [learned, regret].filter(Boolean).join(' · ')
-                    : '컨디션만 기록했어요.'}
-                </p>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-
-      <p className="font-caption-normal text-gray-7 mt-3 leading-relaxed">
-        주간 요약과 매일 회고는 선생님이 상담·수업 준비에 봐요. 부모님께는
-        전달되지 않아요.
-      </p>
     </section>
   );
 };

@@ -4,14 +4,44 @@ import { useState } from 'react';
 
 import Link from 'next/link';
 
+import type { RetrospectMood } from '@/entities/retrospect';
+import { useWeeklyRetrospectQuery } from '@/features/dashboard/hooks/use-retrospect-query';
 import { useLookBackQuery } from '@/features/dashboard/hooks/use-look-back-query';
 import { useUnitNoteLibraryQuery } from '@/features/unit-note/hooks/use-unit-note-query';
 import { PageLayout, SplitLayout } from '@/layout';
 import { Card } from '@/shared/components/ui';
 import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { PRIVATE } from '@/shared/constants';
+import { Bot } from 'lucide-react';
 
 const WEEK_DAYS = ['월', '화', '수', '목', '금', '토', '일'];
+
+const MOOD_LABEL: Record<RetrospectMood, string> = {
+  TIRED: '힘들었어요',
+  OKAY: '할 만했어요',
+  FOCUSED: '집중했어요',
+};
+
+/**
+ * 주간 회고 카드(원래 오늘 화면 weekly-retro-card 안에 있던 것을 돌아보기로 이동,
+ * 시안맞춤-결정확정-v23.5 §"주간 회고 + AI 요약").
+ * 저장 스키마(content)는 단일 문자열이라 배운 것/아쉬운 것을 구분자로 이어 붙여 저장했으므로
+ * 표시 시 같은 구분자로 되돌린다.
+ */
+const RETRO_FIELD_DELIMITER = '\n---아쉬운 것---\n';
+
+const splitRetroContent = (
+  content: string | null
+): { learned: string; regret: string } => {
+  if (!content) return { learned: '', regret: '' };
+  const [learned = '', regret = ''] = content.split(RETRO_FIELD_DELIMITER);
+  return { learned, regret };
+};
+
+const formatMonthDay = (date: string) => {
+  const [, month = '', day = ''] = date.split('-');
+  return `${Number(month)}/${Number(day)}`;
+};
 
 const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000;
 
@@ -67,6 +97,8 @@ export const LookBackPage = () => {
   const [onlyWithRetrospect, setOnlyWithRetrospect] = useState(false);
   const lookBackQuery = useLookBackQuery(period, offset);
   const unitNoteQuery = useUnitNoteLibraryQuery();
+  const weeklyRetroQuery = useWeeklyRetrospectQuery();
+  const weeklyRetro = weeklyRetroQuery.data;
   const allRecords = lookBackQuery.data?.retrospects ?? [];
   const allCalendar = lookBackQuery.data?.calendar ?? [];
   const coachMessage = lookBackQuery.data?.coachMessage ?? null;
@@ -183,6 +215,123 @@ export const LookBackPage = () => {
                 </div>
               </div>
             </Card>
+            {weeklyRetro && (
+              <Card data-testid="look-back-weekly-retrospect">
+                <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
+                  <div>
+                    <h2 className="font-extrabold">주간 회고</h2>
+                    <p className="text-gray-8 mt-1 text-xs">
+                      {formatMonthDay(weeklyRetro.weekOf)}–
+                      {formatMonthDay(weeklyRetro.weekEnd)} ·{' '}
+                      {weeklyRetro.writtenDays}/7일 기록
+                    </p>
+                  </div>
+                  <span className="bg-gray-1 text-gray-9 text-ui-compact rounded-full px-3 py-1.5 font-bold">
+                    {weeklyRetro.aiSummaryStatus === 'READY'
+                      ? 'AI 요약 완료'
+                      : '기록 수집 중'}
+                  </span>
+                </div>
+
+                {weeklyRetro.aiSummary ? (
+                  <div className="bg-orange-1 border-orange-3 rounded-xl border p-4">
+                    <div className="text-orange-10 flex items-center gap-2">
+                      <Bot
+                        size={17}
+                        aria-hidden
+                      />
+                      <p className="text-xs font-bold">
+                        AI 조교가 먼저 정리했어요
+                      </p>
+                    </div>
+                    <p className="text-gray-11 mt-2 text-sm leading-relaxed">
+                      {weeklyRetro.aiSummary}
+                    </p>
+                    {weeklyRetro.evidenceTags.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-1.5">
+                        {weeklyRetro.evidenceTags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="bg-gray-white border-orange-3 text-orange-9 text-ui-compact rounded-md border px-2 py-1 font-bold"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div
+                    className="border-gray-2 bg-gray-1 flex items-center gap-3 rounded-xl border p-4"
+                    data-testid="student-weekly-retrospect-summary-pending"
+                  >
+                    <Bot
+                      size={22}
+                      className="text-gray-6 shrink-0"
+                      aria-hidden
+                    />
+                    <div>
+                      <p className="text-gray-10 text-sm font-bold">
+                        AI 주간 요약을 준비하고 있어요
+                      </p>
+                      <p className="text-gray-8 mt-1 text-xs">
+                        이번 주 회고 {weeklyRetro.writtenDays}일치가 쌓였어요.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {weeklyRetro.retrospects.length === 0 ? (
+                  <div
+                    className="border-gray-2 mt-3 rounded-xl border border-dashed py-7 text-center"
+                    data-testid="student-weekly-retrospect-empty"
+                  >
+                    <p className="text-gray-9 text-sm font-bold">
+                      이번 주 회고가 아직 없어요
+                    </p>
+                    <p className="text-gray-7 mt-1 text-xs">
+                      오늘 화면에서 첫 기록을 남겨보세요.
+                    </p>
+                  </div>
+                ) : (
+                  <ul
+                    className="mt-3 flex flex-col"
+                    data-testid="student-weekly-retrospect-list"
+                  >
+                    {weeklyRetro.retrospects.map((retrospect) => {
+                      const { learned, regret } = splitRetroContent(
+                        retrospect.content ?? null
+                      );
+                      return (
+                        <li
+                          key={retrospect.id}
+                          className="border-gray-2 tablet:flex-row tablet:items-start tablet:gap-4 flex flex-col gap-1 border-b py-3 last:border-b-0"
+                        >
+                          <span className="text-gray-8 w-10 shrink-0 text-xs font-bold">
+                            {formatMonthDay(retrospect.reflectDate)}
+                          </span>
+                          <span className="text-orange-10 tablet:w-20 tablet:shrink-0 text-xs font-bold">
+                            {retrospect.mood
+                              ? MOOD_LABEL[retrospect.mood]
+                              : '한 줄 기록'}
+                          </span>
+                          <p className="text-gray-10 min-w-0 flex-1 text-sm break-words">
+                            {learned || regret
+                              ? [learned, regret].filter(Boolean).join(' · ')
+                              : '컨디션만 기록했어요.'}
+                          </p>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+
+                <p className="text-gray-7 mt-3 text-xs leading-relaxed">
+                  주간 요약과 매일 회고는 선생님이 상담·수업 준비에 봐요.
+                  부모님께는 전달되지 않아요.
+                </p>
+              </Card>
+            )}
             <Card>
               <div className="mb-3 flex items-center gap-2">
                 <h2 className="font-extrabold">
