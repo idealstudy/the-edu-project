@@ -83,6 +83,27 @@ const DashboardStudent = () => {
                 이어 풀기
               </Link>
             </div>
+            {/*
+              시안 v23 `.pbar`(HTML:670): 이어 풀기 진행 게이지.
+              응시 API(assignedExam)에 답변한 문항 수 필드가 없어 실제 %를 계산할 수 없다
+              (⛔ 데이터 없음: exam-hall-card.tsx `analyzedExam` 근처 스키마에도 없음).
+              구조만 시안대로 두고 0%로 렌더한다. 백엔드에 answeredCount 필드가 붙으면
+              `answeredCount / totalQuestions`로 채운다.
+            */}
+            <div
+              className="bg-gray-2 mt-3 h-1.5 w-full overflow-hidden rounded-full"
+              data-testid="in-progress-exam-gauge"
+            >
+              <div
+                className="bg-orange-7 h-full rounded-full"
+                style={{ width: '0%' }}
+                role="progressbar"
+                aria-label="이어 풀기 진행률(데이터 없음)"
+                aria-valuemin={0}
+                aria-valuemax={inProgressExam.totalQuestions}
+                aria-valuenow={0}
+              />
+            </div>
           </Card>
         )}
       </PageLayout>

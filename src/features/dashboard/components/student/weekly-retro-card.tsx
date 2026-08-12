@@ -14,7 +14,16 @@ import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib';
 import { handleApiError } from '@/shared/lib/errors/error-handler';
 import { classifyRetrospectError } from '@/shared/lib/errors/errors';
-import { BatteryLow, Bot, CircleGauge, Flame, RefreshCw } from 'lucide-react';
+import {
+  BatteryLow,
+  Bot,
+  CalendarCheck,
+  CalendarX,
+  CircleGauge,
+  Flame,
+  RefreshCw,
+  Wind,
+} from 'lucide-react';
 
 import {
   useSaveRetrospect,
@@ -26,16 +35,64 @@ type Props = {
   className?: string;
 };
 
-const MOOD_OPTIONS = [
-  { value: 'TIRED', label: '힘들었어요', icon: BatteryLow },
-  { value: 'OKAY', label: '할 만했어요', icon: CircleGauge },
-  { value: 'FOCUSED', label: '집중했어요', icon: Flame },
-] as const;
+/**
+ * 시안 v23 `.chips`(HTML:636): 회고 컨디션 칩 5개 `집중 잘됨/보통/산만함/계획대로/밀림`.
+ * 백엔드 계약(retrospect.dto.ts `mood = z.enum(['TIRED','OKAY','FOCUSED'])`)은 3종뿐이라
+ * 저장 시 5라벨 → 3enum으로 매핑한다(⛔ 계약 영향: 산만함·밀림이 같은 TIRED로, 집중
+ * 잘됨·계획대로가 같은 FOCUSED로 저장돼 서버 조회 시 라벨이 완전히 복원되진 않는다).
+ * 화면에는 선택한 라벨 자체를 별도로 기억해 5칩 중 정확히 하나만 켜진 것처럼 보인다.
+ */
+const MOOD_CHIP_OPTIONS = [
+  { key: 'FOCUSED_WELL', label: '집중 잘됨', icon: Flame, mood: 'FOCUSED' },
+  { key: 'OKAY', label: '보통', icon: CircleGauge, mood: 'OKAY' },
+  { key: 'DISTRACTED', label: '산만함', icon: Wind, mood: 'TIRED' },
+  {
+    key: 'ON_PLAN',
+    label: '계획대로',
+    icon: CalendarCheck,
+    mood: 'FOCUSED',
+  },
+  { key: 'BEHIND', label: '밀림', icon: CalendarX, mood: 'TIRED' },
+] as const satisfies ReadonlyArray<{
+  key: string;
+  label: string;
+  icon: typeof BatteryLow;
+  mood: RetrospectMood;
+}>;
+
+type MoodChipKey = (typeof MOOD_CHIP_OPTIONS)[number]['key'];
 
 const MOOD_LABEL: Record<RetrospectMood, string> = {
   TIRED: '힘들었어요',
   OKAY: '할 만했어요',
   FOCUSED: '집중했어요',
+};
+
+/** 서버에서 불러온 mood → 화면에 보일 기본 칩(첫 매치)으로 되돌린다. */
+const moodToChipKey = (mood: RetrospectMood | null): MoodChipKey | null =>
+  MOOD_CHIP_OPTIONS.find((option) => option.mood === mood)?.key ?? null;
+
+/**
+ * 시안 v23 `.fld`(HTML:637-638): `배운 것`/`아쉬운 것` 2필드.
+ * 저장 스키마(retrospect payload `content`)는 단일 문자열이라, 두 필드를 구분자로
+ * 이어 붙여 저장하고 불러올 때 같은 구분자로 되돌린다(⛔ 계약 영향: 구분자를 학생이
+ * 직접 입력하면 필드가 잘못 나뉜다. 표시 전용 파싱이라 저장은 항상 안전).
+ */
+const RETRO_FIELD_DELIMITER = '\n---아쉬운 것---\n';
+
+const splitRetroContent = (
+  content: string | null
+): { learned: string; regret: string } => {
+  if (!content) return { learned: '', regret: '' };
+  const [learned = '', regret = ''] = content.split(RETRO_FIELD_DELIMITER);
+  return { learned, regret };
+};
+
+const joinRetroContent = (learned: string, regret: string): string => {
+  const trimmedLearned = learned.trim();
+  const trimmedRegret = regret.trim();
+  if (!trimmedLearned && !trimmedRegret) return '';
+  return `${trimmedLearned}${RETRO_FIELD_DELIMITER}${trimmedRegret}`;
 };
 
 const formatMonthDay = (date: string) => {
@@ -62,8 +119,9 @@ export const WeeklyRetroCard = ({ className }: Props) => {
   const weeklyQuery = useWeeklyRetrospectQuery();
   const saveRetrospect = useSaveRetrospect();
   const [isQuickMode, setIsQuickMode] = useState(true);
-  const [mood, setMood] = useState<RetrospectMood | null>(null);
-  const [content, setContent] = useState('');
+  const [moodChipKey, setMoodChipKey] = useState<MoodChipKey | null>(null);
+  const [learnedContent, setLearnedContent] = useState('');
+  const [regretContent, setRegretContent] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
   const [initializedRetrospectId, setInitializedRetrospectId] = useState<
     number | null
@@ -75,8 +133,12 @@ export const WeeklyRetroCard = ({ className }: Props) => {
       return;
     }
 
-    setMood(todayRetrospect.mood);
-    setContent(todayRetrospect.content ?? '');
+    setMoodChipKey(moodToChipKey(todayRetrospect.mood));
+    const { learned, regret } = splitRetroContent(
+      todayRetrospect.content ?? null
+    );
+    setLearnedContent(learned);
+    setRegretContent(regret);
     setInitializedRetrospectId(todayRetrospect.id);
   }, [initializedRetrospectId, todayQuery.data?.retrospect]);
 
@@ -130,8 +192,11 @@ export const WeeklyRetroCard = ({ className }: Props) => {
   };
   const handleSave = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const trimmedContent = content.trim();
-    if (!mood && !trimmedContent) {
+    const mood =
+      MOOD_CHIP_OPTIONS.find((option) => option.key === moodChipKey)?.mood ??
+      null;
+    const joinedContent = joinRetroContent(learnedContent, regretContent);
+    if (!mood && !joinedContent) {
       setFormError('오늘 컨디션을 고르거나 한 줄 회고를 남겨주세요.');
       return;
     }
@@ -142,7 +207,7 @@ export const WeeklyRetroCard = ({ className }: Props) => {
         written: today.written,
         input: {
           mood,
-          content: trimmedContent || null,
+          content: joinedContent || null,
         },
       },
       {
@@ -199,16 +264,16 @@ export const WeeklyRetroCard = ({ className }: Props) => {
           <p className="font-caption-heading text-orange-10">
             오늘 컨디션 · 하나만 골라도 저장돼요
           </p>
-          <div className="tablet:flex-row mt-3 flex flex-col gap-2">
-            {MOOD_OPTIONS.map((option) => {
+          <div className="tablet:flex-row mt-3 flex flex-col flex-wrap gap-2">
+            {MOOD_CHIP_OPTIONS.map((option) => {
               const MoodIcon = option.icon;
-              const isSelected = mood === option.value;
+              const isSelected = moodChipKey === option.key;
 
               return (
                 <UnstyledButton
                   variant="unstyled"
                   size="none"
-                  key={option.value}
+                  key={option.key}
                   type="button"
                   className={cn(
                     'font-caption-heading flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-full border px-3 py-2.5',
@@ -217,8 +282,10 @@ export const WeeklyRetroCard = ({ className }: Props) => {
                       : 'border-orange-3 bg-gray-white text-gray-9 hover:border-orange-7'
                   )}
                   aria-pressed={isSelected}
-                  onClick={() => setMood(option.value)}
-                  data-testid={`student-retrospect-mood-${option.value.toLowerCase()}`}
+                  onClick={() =>
+                    setMoodChipKey(isSelected ? null : option.key)
+                  }
+                  data-testid={`student-retrospect-mood-${option.key.toLowerCase()}`}
                 >
                   <MoodIcon
                     size={16}
@@ -232,27 +299,47 @@ export const WeeklyRetroCard = ({ className }: Props) => {
         </div>
 
         {!isQuickMode && (
-          <div className="mt-4">
-            <label
-              htmlFor="student-retrospect-content"
-              className="font-caption-heading text-orange-10"
-            >
-              한 줄 회고 · 선택
-            </label>
-            <Textarea
-              id="student-retrospect-content"
-              value={content}
-              onChange={(event) => setContent(event.target.value)}
-              maxLength={1000}
-              rows={3}
-              className="border-orange-3 mt-2 bg-white px-3 py-3"
-              placeholder="예: 등비수열 합 공식은 내일 유도 과정을 다시 써보기"
-              data-testid="student-retrospect-content"
-            />
+          <div className="mt-4 flex flex-col gap-3">
+            <div>
+              <label
+                htmlFor="student-retrospect-learned"
+                className="font-caption-heading text-orange-10"
+              >
+                배운 것
+              </label>
+              <Textarea
+                id="student-retrospect-learned"
+                value={learnedContent}
+                onChange={(event) => setLearnedContent(event.target.value)}
+                maxLength={500}
+                rows={2}
+                className="border-orange-3 mt-2 bg-white px-3 py-3"
+                placeholder="예: 등비수열 합 공식에서 항의 개수를 잘못 세는 게 문제였다"
+                data-testid="student-retrospect-learned"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="student-retrospect-regret"
+                className="font-caption-heading text-orange-10"
+              >
+                아쉬운 것
+              </label>
+              <Textarea
+                id="student-retrospect-regret"
+                value={regretContent}
+                onChange={(event) => setRegretContent(event.target.value)}
+                maxLength={500}
+                rows={2}
+                className="border-orange-3 mt-2 bg-white px-3 py-3"
+                placeholder="예: 18번은 또 틀렸다"
+                data-testid="student-retrospect-regret"
+              />
+            </div>
           </div>
         )}
 
-        {isQuickMode && content && (
+        {isQuickMode && (learnedContent || regretContent) && (
           <UnstyledButton
             variant="unstyled"
             size="none"
@@ -260,7 +347,7 @@ export const WeeklyRetroCard = ({ className }: Props) => {
             className="font-caption-normal text-gray-8 hover:text-orange-10 mt-3 cursor-pointer text-left underline underline-offset-2"
             onClick={() => setIsQuickMode(false)}
           >
-            저장된 한 줄 회고가 있어요 · 열어서 수정하기
+            저장된 회고가 있어요 · 열어서 수정하기
           </UnstyledButton>
         )}
 
@@ -364,22 +451,29 @@ export const WeeklyRetroCard = ({ className }: Props) => {
           className="mt-3 flex flex-col"
           data-testid="student-weekly-retrospect-list"
         >
-          {weekly.retrospects.map((retrospect) => (
-            <li
-              key={retrospect.id}
-              className="border-gray-2 tablet:flex-row tablet:items-start tablet:gap-4 flex flex-col gap-1 border-b py-3 last:border-b-0"
-            >
-              <span className="font-caption-heading text-gray-8 w-10 shrink-0">
-                {formatMonthDay(retrospect.reflectDate)}
-              </span>
-              <span className="font-caption-heading text-orange-10 tablet:w-20 tablet:shrink-0">
-                {retrospect.mood ? MOOD_LABEL[retrospect.mood] : '한 줄 기록'}
-              </span>
-              <p className="font-body2-normal text-gray-10 min-w-0 flex-1 break-words">
-                {retrospect.content ?? '컨디션만 기록했어요.'}
-              </p>
-            </li>
-          ))}
+          {weekly.retrospects.map((retrospect) => {
+            const { learned, regret } = splitRetroContent(
+              retrospect.content ?? null
+            );
+            return (
+              <li
+                key={retrospect.id}
+                className="border-gray-2 tablet:flex-row tablet:items-start tablet:gap-4 flex flex-col gap-1 border-b py-3 last:border-b-0"
+              >
+                <span className="font-caption-heading text-gray-8 w-10 shrink-0">
+                  {formatMonthDay(retrospect.reflectDate)}
+                </span>
+                <span className="font-caption-heading text-orange-10 tablet:w-20 tablet:shrink-0">
+                  {retrospect.mood ? MOOD_LABEL[retrospect.mood] : '한 줄 기록'}
+                </span>
+                <p className="font-body2-normal text-gray-10 min-w-0 flex-1 break-words">
+                  {learned || regret
+                    ? [learned, regret].filter(Boolean).join(' · ')
+                    : '컨디션만 기록했어요.'}
+                </p>
+              </li>
+            );
+          })}
         </ul>
       )}
 

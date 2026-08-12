@@ -10,6 +10,7 @@ import { PageLayout } from '@/layout';
 import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { PRIVATE } from '@/shared/constants';
 import { cn } from '@/shared/lib';
+import { RefreshCw } from 'lucide-react';
 
 import { useChangeStudyRoomStatus } from '../../hooks/use-change-study-room-status';
 import { useTeacherDashboardStudyRoomListQuery } from '../../hooks/use-teacher-dashboard-query';
@@ -89,11 +90,32 @@ const RoomRenameDialog = ({
   );
 };
 
+// 시안 v23 `.filters`(HTML:427-433): 정렬 칩 2개(손볼것순/최근접속순) + 검색.
+type RoomSortKey = 'TODO' | 'RECENT';
+
 const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
-  const { data: studyRooms = [], isPending } =
-    useTeacherDashboardStudyRoomListQuery();
-  const rooms = [...studyRooms].sort((a, b) => b.todoCount - a.todoCount);
-  const activeRooms = rooms.filter(
+  const {
+    data: studyRooms = [],
+    isPending,
+    isError,
+    refetch,
+  } = useTeacherDashboardStudyRoomListQuery();
+  const [sortKey, setSortKey] = useState<RoomSortKey>('TODO');
+  const [searchQuery, setSearchQuery] = useState('');
+  const rooms = [...studyRooms].sort((a, b) => {
+    // "최근 접속 순"은 학생 마지막 접속 데이터가 아직 없어(⛔ 데이터 없음, 항목20과 동일
+    // 필드 부재) 손볼 것 순 정렬로 폴백한다. 칩은 눌리지만 결과가 같다 — exit_report 명시.
+    if (sortKey === 'RECENT') return b.todoCount - a.todoCount;
+    return b.todoCount - a.todoCount;
+  });
+  const searchedRooms = searchQuery.trim()
+    ? rooms.filter((room) =>
+        `${room.studentName ?? ''} ${room.name}`
+          .toLowerCase()
+          .includes(searchQuery.trim().toLowerCase())
+      )
+    : rooms;
+  const activeRooms = searchedRooms.filter(
     (room) => room.enrollmentStatus !== 'CLOSED'
   );
   const closedRooms = rooms.filter(
@@ -122,13 +144,16 @@ const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
       <PageLayout className="gap-block-gap flex flex-col">
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="text-gray-12 font-headline2-heading">내 수업</h2>
-          <span className="text-gray-9 text-xs">
-            오늘 <b className="text-gray-12">학생 화면에 넣어줄 것</b>{' '}
-            <b className="text-gray-12 tabular-nums">
-              {rooms.reduce((sum, room) => sum + room.todoCount, 0)}건
-            </b>
-            이 위 수업에 모여 있습니다.
-          </span>
+          {/* 시안 v23 `.titlerow .mini`(HTML:442-443): 빈 상태에선 "0건" 문구를 숨긴다. */}
+          {rooms.length > 0 && (
+            <span className="text-gray-9 text-xs">
+              오늘 <b className="text-gray-12">학생 화면에 넣어줄 것</b>{' '}
+              <b className="text-gray-12 tabular-nums">
+                {rooms.reduce((sum, room) => sum + room.todoCount, 0)}건
+              </b>
+              이 위 수업에 몰려 있습니다.
+            </span>
+          )}
           {rooms.length > 0 && (
             <Link
               href="/study-rooms/new"
@@ -140,18 +165,88 @@ const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
         </div>
         {rooms.length > 0 && (
           <div
-            className="gap-row-gap flex flex-wrap"
-            aria-label="수업 목록 정렬 기준"
+            className="gap-row-gap flex flex-wrap items-center"
+            aria-label="수업 목록 정렬·검색"
           >
-            <span className="border-orange-4 bg-orange-1 text-orange-9 min-h-control-sm rounded-button px-button-compact-x inline-flex items-center border text-xs font-bold">
-              정렬 · 손볼 것 많은 순 · 기본
-            </span>
+            <UnstyledButton
+              variant="unstyled"
+              size="none"
+              type="button"
+              onClick={() => setSortKey('TODO')}
+              aria-pressed={sortKey === 'TODO'}
+              className={cn(
+                'min-h-control-sm rounded-button px-button-compact-x inline-flex cursor-pointer items-center border text-xs font-bold',
+                sortKey === 'TODO'
+                  ? 'border-orange-4 bg-orange-1 text-orange-9'
+                  : 'border-gray-3 bg-white text-gray-10'
+              )}
+            >
+              손볼 것 많은 순 {sortKey === 'TODO' && '· 기본'}
+            </UnstyledButton>
+            <UnstyledButton
+              variant="unstyled"
+              size="none"
+              type="button"
+              onClick={() => setSortKey('RECENT')}
+              aria-pressed={sortKey === 'RECENT'}
+              className={cn(
+                'min-h-control-sm rounded-button px-button-compact-x inline-flex cursor-pointer items-center border text-xs font-bold',
+                sortKey === 'RECENT'
+                  ? 'border-orange-4 bg-orange-1 text-orange-9'
+                  : 'border-gray-3 bg-white text-gray-10'
+              )}
+            >
+              최근 접속 순
+            </UnstyledButton>
+            <input
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="학생 이름, 스터디룸 이름으로 검색"
+              aria-label="학생 이름, 스터디룸 이름으로 검색"
+              className="border-gray-3 min-h-control-sm rounded-button min-w-45 flex-1 border px-3 text-xs"
+              data-testid="teacher-rooms-search"
+            />
           </div>
         )}
         {isPending ? (
           <div className="border-gray-3 py-empty-pad-y px-empty-pad-x rounded-card border bg-white text-center text-sm">
             수업을 불러오는 중입니다.
           </div>
+        ) : isError ? (
+          <section
+            className="border-system-warning bg-system-warning-alt rounded-card border p-6"
+            data-testid="teacher-rooms-error"
+          >
+            <h2 className="text-system-warning-text font-body1-heading">
+              수업 목록을 지금 불러오지 못했어요
+            </h2>
+            <p className="text-gray-10 mt-2 text-sm leading-relaxed">
+              서버 응답이 없습니다. 이미 열려 있던 스터디룸과 기록은 그대로
+              있으니, 잠시 뒤 다시 불러오면 손볼 것 목록이 나옵니다.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <UnstyledButton
+                variant="unstyled"
+                size="none"
+                type="button"
+                onClick={() => void refetch()}
+                className="text-system-warning-text border-system-warning min-h-control-sm rounded-button px-button-compact-x inline-flex cursor-pointer items-center border bg-white text-xs font-bold"
+              >
+                <RefreshCw
+                  size={14}
+                  aria-hidden
+                  className="mr-1.5 inline"
+                />
+                다시 불러오기
+              </UnstyledButton>
+              <Link
+                href="/dashboard/teacher/my"
+                className="text-system-warning-text border-system-warning min-h-control-sm rounded-button px-button-compact-x inline-flex items-center border bg-white text-xs font-bold"
+              >
+                마이페이지로 가기
+              </Link>
+            </div>
+          </section>
         ) : rooms.length === 0 ? (
           <section
             className="border-gray-4 py-empty-pad-y px-empty-pad-x rounded-card border border-dashed bg-white text-center"
@@ -162,8 +257,8 @@ const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
             </h2>
             <p className="text-gray-9 mt-2 text-sm leading-relaxed">
               학생 한 명당 스터디룸 하나가 기본입니다. 학생이 초대 링크로
-              들어오면 카드가 생기고, 먼저 만들어 두고 학생을 부를 수도
-              있습니다.
+              들어오면 그 학생 스터디룸이 자동으로 생기고, 여기에 카드로
+              쌓입니다. 먼저 만들어 두고 학생을 부를 수도 있습니다.
             </p>
             <div className="gap-inline-gap mt-5 flex flex-wrap justify-center">
               <Link
@@ -196,8 +291,13 @@ const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
                       <h3 className="text-gray-12 text-single-line text-base font-extrabold">
                         {room.studentName ?? room.name}
                       </h3>
+                      {/*
+                        시안 v23 카드 부제(HTML:402-407)는 "고2·화목 8시·1대1"처럼
+                        학년·요일시간을 보여준다. 그 필드(학년/수업 요일시간)가 room
+                        스키마에 없어(⛔ 데이터 없음) 있는 필드(스터디룸 이름)만 노출한다.
+                      */}
                       <p className="text-gray-9 text-ui-choice mt-1">
-                        {room.name} · 활성 수업
+                        {room.name}
                       </p>
                     </div>
                     <span className="bg-gray-2 text-gray-10 min-h-badge-min rounded-pill px-button-chip-x text-ui-compact inline-flex items-center font-extrabold">
@@ -383,9 +483,19 @@ const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
           </div>
         )}
         {rooms.length > 0 && (
+          // 시안 v23 `.foot`(HTML:434) 원문.
           <p className="text-gray-9 text-xs leading-relaxed">
-            선생님이 하는 일은 학생의 내 학습 화면을 대신 채워 주는 것입니다.
-            손볼 것 많은 순으로 위에서부터 내려가면 오늘 확인할 내용이 닫힙니다.
+            이 제품에서 선생님이 하는 일은{' '}
+            <b className="text-gray-11">학생의 내 학습 화면을 대신 채워 주는 것</b>
+            입니다(대표 확정 2026-08-05). 그래서 카드가 세는 것도 &ldquo;학생이
+            뭘 안 했나&rdquo;가 아니라{' '}
+            <b className="text-gray-11">내가 넣어줄 것이 몇 건인가</b>입니다.
+            각 카드가 그 내역(피드백 달 것 · 할 일 승인 · 못했어요 사유 · 미확인
+            제출)을 한 줄로 펼치고, 기본 정렬이 많은 순이라{' '}
+            <b className="text-gray-11">
+              맨 위 카드부터 눌러 내려가면 오늘 치가 끝납니다.
+            </b>{' '}
+            수업 20개가 되어도 하나씩 열어볼 일이 없습니다.
           </p>
         )}
       </PageLayout>

@@ -22,6 +22,14 @@ import {
 
 type Props = {
   className?: string;
+  /**
+   * 시안 v23 `agflow.two .hd`(HTML:640-641): ＋추가 버튼이 통합카드 공유헤더에 있다.
+   * 부모(AgendaFlowCard)가 이 두 prop을 같이 넘기면 내부 ＋추가 버튼을 숨기고 부모가 준
+   * 상태를 그대로 쓴다. 둘 다 없으면(예: 이 컴포넌트를 단독으로 쓰는 테스트) 기존처럼
+   * 내부 상태 + 내부 버튼으로 동작한다.
+   */
+  isAdding?: boolean;
+  onAddingChange?: (value: boolean) => void;
 };
 
 type TodoSupply = 'TEACHER' | 'EXAM_HALL' | 'OPEN_CHALLENGE' | 'STUDENT';
@@ -82,11 +90,25 @@ const TodoCardLoading = ({ className }: Props) => (
   </section>
 );
 
-export const TodayTodoCard = ({ className }: Props) => {
+export const TodayTodoCard = ({
+  className,
+  isAdding: controlledIsAdding,
+  onAddingChange,
+}: Props) => {
   const todosQuery = useStudentTodosQuery();
   const createTodo = useCreateTodo();
   const updateTodo = useUpdateTodo();
-  const [isAdding, setIsAdding] = useState(false);
+  const isControlledAdding =
+    controlledIsAdding !== undefined && onAddingChange !== undefined;
+  const [internalIsAdding, setInternalIsAdding] = useState(false);
+  const isAdding = isControlledAdding ? controlledIsAdding : internalIsAdding;
+  const setIsAdding = (value: boolean) => {
+    if (isControlledAdding) {
+      onAddingChange?.(value);
+      return;
+    }
+    setInternalIsAdding(value);
+  };
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [newTodoPreset, setNewTodoPreset] = useState<TodoPreset>({
     subject: null,
@@ -249,14 +271,16 @@ export const TodayTodoCard = ({ className }: Props) => {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            size="xsmall"
-            variant="outlined"
-            onClick={() => setIsAdding((current) => !current)}
-            data-testid="student-todo-add-toggle"
-          >
-            + 추가
-          </Button>
+          {!isControlledAdding && (
+            <Button
+              size="xsmall"
+              variant="outlined"
+              onClick={() => setIsAdding(!isAdding)}
+              data-testid="student-todo-add-toggle"
+            >
+              + 추가
+            </Button>
+          )}
           <span className="bg-orange-1 border-orange-3 text-orange-10 rounded-full border px-3 py-1.5 text-xs font-bold">
             {summary.totalCount - summary.doneCount - summary.skippedCount}개
             남음

@@ -17,6 +17,42 @@ import { cn } from '@/shared/lib';
 
 type Props = { className?: string };
 
+const GRADE_MIN = 1;
+const GRADE_MAX = 5;
+const GRADE_BAND_WIDTH = 100 / (GRADE_MAX - GRADE_MIN + 1);
+
+/**
+ * 시안 v23 `.rbar`(HTML:534-535): 1~5 등급 눈금 위에 low~high 등급 구간을 막대로 표시.
+ * 등급 1(최상)~5을 0~100%에 5등분해, [low, high] 구간에 안쪽 여백 2%p를 두고 그린다.
+ */
+const gradeRangeToBarStyle = (low: number, high: number) => {
+  const clampedLow = Math.min(Math.max(low, GRADE_MIN), GRADE_MAX);
+  const clampedHigh = Math.min(Math.max(high, GRADE_MIN), GRADE_MAX);
+  const left = (clampedLow - GRADE_MIN) * GRADE_BAND_WIDTH + 2;
+  const width = (clampedHigh - clampedLow + 1) * GRADE_BAND_WIDTH - 4;
+  return { left: `${left}%`, width: `${Math.max(width, 4)}%` };
+};
+
+const GradeRangeBar = ({ low, high }: { low: number; high: number }) => (
+  <div
+    className="bg-gray-2 relative mt-3.5 mb-6 h-2.5 rounded-full"
+    data-testid="expected-grade-range-bar"
+  >
+    <i
+      className="from-orange-4 to-orange-7 absolute top-0 h-full rounded-full bg-gradient-to-r"
+      style={gradeRangeToBarStyle(low, high)}
+    />
+    <div className="text-gray-7 absolute top-3.5 right-0 left-0 flex justify-between text-xs font-semibold">
+      {Array.from(
+        { length: GRADE_MAX - GRADE_MIN + 1 },
+        (_, index) => GRADE_MIN + index
+      ).map((grade) => (
+        <span key={grade}>{grade}</span>
+      ))}
+    </div>
+  </div>
+);
+
 export const ExamHallCard = ({ className }: Props) => {
   // 승인 디자인 v22 `locMeasured` 1754 `등급이 어떻게 나왔나요`
   const [isBasisOpen, setIsBasisOpen] = useState(false);
@@ -29,6 +65,9 @@ export const ExamHallCard = ({ className }: Props) => {
     enabled: !analyzedExam,
   });
   const pendingExam = exams.data?.find((exam) => exam.status !== 'ANALYZED');
+  // 시안 v23 `.hbdg`(HTML:539): 응시장 버튼 뱃지 = 배정 건수 숫자.
+  const pendingExamCount =
+    exams.data?.filter((exam) => exam.status !== 'ANALYZED').length ?? 0;
   const reference = !analyzedExam ? report.data?.referenceExpectedGrade : null;
 
   if (
@@ -103,10 +142,17 @@ export const ExamHallCard = ({ className }: Props) => {
               <p className="mt-2">{analysis.data.dataNotice}</p>
             </div>
           )}
-          <p className="text-gray-12 font-title-heading mt-3 tabular-nums">
-            {analysis.data.predictedGradeLow}~{analysis.data.predictedGradeHigh}
-            등급
-          </p>
+          <div className="mt-3 flex flex-wrap items-baseline gap-2">
+            <p className="text-gray-12 font-title-heading tabular-nums">
+              {analysis.data.predictedGradeLow}~
+              {analysis.data.predictedGradeHigh}등급
+            </p>
+            <span className="text-gray-8 text-xs">범위로 말해요</span>
+          </div>
+          <GradeRangeBar
+            low={analysis.data.predictedGradeLow}
+            high={analysis.data.predictedGradeHigh}
+          />
           {analysis.data.standardScore !== null && (
             <p className="text-gray-10 mt-1 text-sm font-bold tabular-nums">
               표준점수 {analysis.data.standardScore}
@@ -139,9 +185,16 @@ export const ExamHallCard = ({ className }: Props) => {
               {reference.gradedQuestionCount}문항 기준
             </span>
           </div>
-          <p className="text-gray-12 font-title-heading mt-3 tabular-nums">
-            {reference.predictedGradeLow}~{reference.predictedGradeHigh}등급
-          </p>
+          <div className="mt-3 flex flex-wrap items-baseline gap-2">
+            <p className="text-gray-12 font-title-heading tabular-nums">
+              {reference.predictedGradeLow}~{reference.predictedGradeHigh}등급
+            </p>
+            <span className="text-gray-8 text-xs">범위로 말해요</span>
+          </div>
+          <GradeRangeBar
+            low={reference.predictedGradeLow}
+            high={reference.predictedGradeHigh}
+          />
           <div
             className="divide-gray-2 border-gray-2 px-card-pad rounded-row mt-4 divide-y border"
             data-testid="expected-grade-reference-evidence"
@@ -214,9 +267,9 @@ export const ExamHallCard = ({ className }: Props) => {
             </small>
           )}
         </span>
-        {pendingExam && (
-          <span className="bg-orange-7 flex h-6 min-w-6 items-center justify-center rounded-full px-2 text-white">
-            새 시험
+        {pendingExamCount > 0 && (
+          <span className="bg-orange-7 flex h-6 min-w-6 items-center justify-center rounded-full px-2 text-white tabular-nums">
+            {pendingExamCount}
           </span>
         )}
         <span>›</span>

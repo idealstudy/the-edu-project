@@ -38,16 +38,17 @@ const DIFFICULTY_LABEL: Record<string, string> = {
   LOW: '기초 문제',
 };
 
+// 시안 v23 `.badge`(HTML:610): 출처 뱃지는 짧게 "선생님"/"추천".
 const getProvider = (provider: DailyProblemItem['provider']) =>
   provider === 'TEACHER'
     ? {
-        label: '선생님 출제',
+        label: '선생님',
         detail: '선생님이 배정',
         icon: GraduationCap,
         badgeClassName: 'border-orange-3 bg-orange-2 text-orange-10',
       }
     : {
-        label: '오픈챌린지 추천',
+        label: '추천',
         detail: '약점·복습 주기 기반 추천',
         icon: Puzzle,
         badgeClassName: 'border-gray-3 bg-gray-white text-gray-8',
@@ -85,6 +86,13 @@ const TodayProblemCard = ({ item, wrongAnswer }: TodayProblemCardProps) => {
       data-testid={`daily-problem-card-${item.position}`}
     >
       <div className="flex items-center gap-2 px-4 pt-3.5">
+        {/* 시안 v23 `.no3`(HTML:610): 카드 좌상단 순번 뱃지. */}
+        <span
+          className="bg-gray-1 text-gray-11 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-extrabold tabular-nums"
+          data-testid={`daily-problem-index-${item.position}`}
+        >
+          {item.position}
+        </span>
         <span
           className={`font-caption-heading flex items-center gap-1 rounded-full border px-2.5 py-1 ${provider.badgeClassName}`}
         >
@@ -151,15 +159,21 @@ const TodayProblemCard = ({ item, wrongAnswer }: TodayProblemCardProps) => {
         asChild
         size="small"
         variant={item.provider === 'TEACHER' ? 'primary' : 'secondary'}
-        className="mx-4 mt-3 mb-4 w-auto"
+        className="mx-4 mt-3 w-auto"
       >
         <Link
           href={href}
           data-testid={`daily-problem-start-${item.position}`}
         >
-          {item.wrongAnswerId ? '지금 다시 풀기' : '오픈챌린지 풀기'}
+          풀기
         </Link>
       </Button>
+      {/* 시안 v23 `.handoff`(HTML:621): 오픈챌린지 라인으로 넘어간다는 안내. */}
+      <p className="bg-gray-1 text-gray-9 font-caption-normal mx-4 mt-3 mb-4 rounded-lg px-3 py-2.5 leading-relaxed">
+        카드를 누르면 <b className="text-gray-11 font-bold">오픈챌린지 라인의 풀이 화면</b>으로
+        넘어갑니다. 문제 본문, AI 코치, 손풀이, 채점, 해설은 그쪽 소관입니다.
+        다 풀면 결과만 이 화면으로 돌아옵니다.
+      </p>
     </article>
   );
 };
@@ -276,26 +290,38 @@ export const TodayProblemsSection = () => {
               id="daily-problems-title"
               className="font-headline2-heading text-gray-12"
             >
-              오늘은 이 3개면 돼요
+              오늘의 문제
             </h2>
           </div>
           <p className="font-caption-normal text-gray-8 mt-1">
             선생님 문제 먼저 · 모자라면 오픈챌린지에서 추천 · 도장 = 회독
           </p>
         </div>
-        <Button
-          asChild
-          size="xsmall"
-          variant="outlined"
-        >
-          <Link href={PRIVATE.DASHBOARD.WRONG_ANSWERS}>
-            <Archive
-              size={16}
-              aria-hidden
-            />
-            오답 목록
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          {/*
+            시안 v23 `.badge.o`(HTML:619): 진행 카운트 뱃지 `0/3`.
+            "완료" 판정 데이터가 아직 없어 분자는 0으로 고정한다(exit_report 명시).
+          */}
+          <span
+            className="bg-orange-1 text-orange-9 font-caption-heading rounded-full px-2.5 py-1 tabular-nums"
+            data-testid="daily-problems-progress-badge"
+          >
+            0/{queue.items.length}
+          </span>
+          <Button
+            asChild
+            size="xsmall"
+            variant="outlined"
+          >
+            <Link href={PRIVATE.DASHBOARD.WRONG_ANSWERS}>
+              <Archive
+                size={16}
+                aria-hidden
+              />
+              오답 목록
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <div className="border-orange-3 bg-orange-1 mt-4 flex items-center gap-3 rounded-lg border px-4 py-3">

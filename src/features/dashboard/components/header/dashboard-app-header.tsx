@@ -55,7 +55,8 @@ const StudentSummaryChips = ({ memberName }: { memberName: string }) => {
   const chips = [
     ['내 오답', `${wrongAnswerCount}개`],
     ['연속', `${streakDays}일`],
-    ['레벨', `Lv.${level}`],
+    // 시안 v23 `.chip`(HTML:512): 레벨 칩은 라벨 없이 "Lv.7"만 보인다.
+    [null, `Lv.${level}`],
     ['포인트', `${pointBalance.toLocaleString('ko-KR')}P`],
   ] as const;
 
@@ -63,10 +64,11 @@ const StudentSummaryChips = ({ memberName }: { memberName: string }) => {
     <div className="gap-inline-gap flex flex-wrap items-center justify-end">
       {chips.map(([label, value]) => (
         <span
-          key={label}
+          key={label ?? value}
           className="bg-gray-1 text-gray-9 text-ui-choice min-h-chip-min rounded-pill px-button-chip-x inline-flex items-center font-bold"
         >
-          {label} <b className="text-gray-12 ml-1 tabular-nums">{value}</b>
+          {label && `${label} `}
+          <b className="text-gray-12 ml-1 tabular-nums">{value}</b>
         </span>
       ))}
       <span className="bg-orange-9 text-gray-white rounded-pill flex size-8 items-center justify-center text-xs font-extrabold">

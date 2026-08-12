@@ -43,8 +43,9 @@ export const ReviewStamps = ({
           </span>
         );
       })}
+      {/* 시안 v23 `.st3 .sl`(HTML:613): 회독 도장 꼬리 = `filled/total`. */}
       <span className="font-caption-heading text-gray-8 ml-1 tabular-nums">
-        {Math.min(filled + 1, total)}회독째
+        {filled}/{total}
       </span>
     </div>
   );
