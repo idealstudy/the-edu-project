@@ -18,12 +18,12 @@ import { cn } from '@/shared/lib';
 type Props = { className?: string };
 
 const GRADE_MIN = 1;
-const GRADE_MAX = 5;
+const GRADE_MAX = 9;
 const GRADE_BAND_WIDTH = 100 / (GRADE_MAX - GRADE_MIN + 1);
 
 /**
- * 시안 v23 `.rbar`(HTML:534-535): 1~5 등급 눈금 위에 low~high 등급 구간을 막대로 표시.
- * 등급 1(최상)~5을 0~100%에 5등분해, [low, high] 구간에 안쪽 여백 2%p를 두고 그린다.
+ * 시안 v23 `.rbar`(HTML:534-535): 1~9 등급 눈금 위에 low~high 등급 구간을 막대로 표시.
+ * DESIGN.md §6.3.1 게이지 규격: 등급 1(최상)~9을 0~100%에 9등분해, [low, high] 구간에 안쪽 여백 2%p를 두고 그린다.
  */
 const gradeRangeToBarStyle = (low: number, high: number) => {
   const clampedLow = Math.min(Math.max(low, GRADE_MIN), GRADE_MAX);

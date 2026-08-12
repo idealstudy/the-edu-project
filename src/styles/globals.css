@@ -348,8 +348,8 @@ body {
   --color-line-line1: var(--gray-scale-gray-10);
   --color-line-line2: var(--gray-scale-gray-30);
   --color-line-line3: var(--gray-scale-black);
-  --color-line-primary: var(--key-color-primary);
-  --color-line-secondary: var(--key-color-secondary);
+  --color-line-primary: var(--color-key-color-primary);
+  --color-line-secondary: var(--color-key-color-secondary);
 
   --color-ring: var(--orange-scale-orange-50);
 
@@ -714,7 +714,7 @@ body {
 
 @utility max-h-screen-content {
   max-height: calc(
-    100vh - var(--spacing-header-height) - var(--spacing-room-page-mobile) * 2
+    100vh - var(--spacing-header-height) - var(--spacing-room-page-pad-mobile) * 2
   );
 }
 

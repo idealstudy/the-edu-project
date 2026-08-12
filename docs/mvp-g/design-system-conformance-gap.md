@@ -1,5 +1,7 @@
 # 디자인 시스템 정합 갭 (문서 ↔ 코드 ↔ 3역할 hub 프로토타입)
 
+> **[구버전 · 2026-08-11 작업지시서]** SSOT = `mvp-front/docs/DESIGN.md` (v1.2.2+). 이 문서는 v1.2.0 시점의 코드화 작업지시서이며 정본이 아니다. 최신 문서↔코드 정합 갭표는 `docs/mvp-g/design-system-parity-2026-08-12.md`. 삭제하지 않고 이력으로 보존한다.
+
 > 구현 STAMP: 2026-08-11 04:12 KST | line: mvp-g | model: gpt-codex/gpt-5.6-sol | agent: code-builder | skills: 없음 | 근거: `docs/DESIGN.md` v1.2.1, 승인 프로토타입 v22, 이 문서의 T/K/L/P 판정, Tailwind CSS v4·shadcn Button 공식 문서 | 고민: 제품 로직을 건드리지 않으면서 문서가 지정한 오프팔레트만 제거하고, 자동 lint의 실제 제품 위반과 검사기 오탐을 분리했다.
 >
 > **2026-08-11 코드 반영 상태**: T-1·T-2·T-3·K-2를 반영했고 K-1·L-1·P-1·P-2의 기존 문서 판정을 유지했다. L-2는 이 문서가 명시한 선택 부채라 아키텍처를 바꾸지 않았다. 과제 지정 오프팔레트 hex는 `src/`에서 0건, TypeScript·Vitest 164/164·Next production build는 통과했다. 다만 공용 `design-lint.sh`는 `global\.css`만 제외해 실제 `globals.css` 토큰 정의를 다시 위반으로 세고, 런타임 동적 `style`도 일괄 집계하여 4종 경고가 남는다. 검사기 자체 수정은 이 build 범위 밖이므로 gate는 미통과로 기록한다.
