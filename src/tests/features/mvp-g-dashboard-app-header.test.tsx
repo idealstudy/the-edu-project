@@ -41,6 +41,23 @@ const mocks = vi.hoisted(() => ({
     ],
     isPending: false,
   })),
+  parentReportQuery: vi.fn((): {
+    data?: {
+      studyNews: number;
+      waitingInquiries: number;
+      answeredInquiries: number;
+      myStudentCount: number;
+    };
+    isPending: boolean;
+  } => ({
+    data: {
+      studyNews: 12,
+      waitingInquiries: 1,
+      answeredInquiries: 2,
+      myStudentCount: 1,
+    },
+    isPending: false,
+  })),
 }));
 
 vi.mock('next/navigation', () => ({
@@ -87,15 +104,7 @@ vi.mock('@/features/dashboard/hooks/use-teacher-dashboard-query', () => ({
 }));
 
 vi.mock('@/features/dashboard/hooks/use-parent-dashboard-query', () => ({
-  useParentDashboardReportQuery: () => ({
-    data: {
-      studyNews: 12,
-      waitingInquiries: 1,
-      answeredInquiries: 2,
-      myStudentCount: 1,
-    },
-    isPending: false,
-  }),
+  useParentDashboardReportQuery: mocks.parentReportQuery,
 }));
 
 describe('MVP-G 공통 앱 헤더', () => {
@@ -105,6 +114,7 @@ describe('MVP-G 공통 앱 헤더', () => {
     mocks.wrongAnswersQuery.mockClear();
     mocks.pointWalletQuery.mockClear();
     mocks.teacherRoomsQuery.mockClear();
+    mocks.parentReportQuery.mockClear();
     mocks.growthQuery.mockReturnValue({
       data: { streakDays: 12, level: 7 },
     });
@@ -115,6 +125,15 @@ describe('MVP-G 공통 앱 헤더', () => {
         { id: 1, studentName: '김서준', todoCount: 4 },
         { id: 2, studentName: '박하윤', todoCount: 3 },
       ],
+      isPending: false,
+    });
+    mocks.parentReportQuery.mockReturnValue({
+      data: {
+        studyNews: 12,
+        waitingInquiries: 1,
+        answeredInquiries: 2,
+        myStudentCount: 1,
+      },
       isPending: false,
     });
   });
@@ -217,6 +236,28 @@ describe('MVP-G 공통 앱 헤더', () => {
 
     expect(screen.getByText('민수 학부모님,')).toBeVisible();
     expect(screen.getAllByText('12개').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('매칭된 학생').length).toBeGreaterThan(0);
+  });
+
+  it('학부모 리포트 데이터가 없으면 네 통계칩을 0값으로 유지한다', () => {
+    mocks.parentReportQuery.mockReturnValue({
+      data: undefined,
+      isPending: false,
+    });
+
+    render(
+      <DashboardAppHeader
+        role="ROLE_PARENT"
+        initialMemberName="민수"
+      />
+    );
+
+    expect(screen.getAllByText('0개').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('0건')).toHaveLength(4);
+    expect(screen.getAllByText('0명').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('학습 소식').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('답변 대기').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('답변 완료').length).toBeGreaterThan(0);
     expect(screen.getAllByText('매칭된 학생').length).toBeGreaterThan(0);
   });
 

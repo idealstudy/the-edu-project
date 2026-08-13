@@ -15,7 +15,12 @@ import {
   GraduationCap,
   Handshake,
   History,
+  Home,
   LogOut,
+  MessageCircle,
+  Newspaper,
+  NotebookText,
+  Search,
   ShieldUserIcon,
   Sprout,
   User2Icon,
@@ -40,7 +45,11 @@ export const DashboardSidebar = () => {
       <div className="text-orange-9 px-2 pt-1 pb-3 text-sm font-extrabold tracking-[-0.045em]">
         D-EDU
         <small className="text-gray-8 text-ui-compact mt-0.5 block font-semibold tracking-normal">
-          {role === 'ROLE_TEACHER' ? '선생님' : '내 학습'}
+          {role === 'ROLE_TEACHER'
+            ? '선생님'
+            : role === 'ROLE_PARENT'
+              ? '학부모'
+              : '내 학습'}
         </small>
       </div>
       {/* 학생 전용: 내 학습 / 친구 / 약점 트리 (2.0 학생 중심 코어) — 선생님·학부모 화면 아님 */}
@@ -172,7 +181,7 @@ export const DashboardSidebar = () => {
         </Sidebar.Item>
       )}
 
-      {role !== 'ROLE_TEACHER' && (
+      {role !== 'ROLE_TEACHER' && role !== 'ROLE_PARENT' && (
         <Sidebar.Item
           href={PRIVATE.MYPAGE}
           matchPath={PRIVATE.MYPAGE}
@@ -200,18 +209,54 @@ export const DashboardSidebar = () => {
         </>
       )}
 
-      {/* 자녀 학습 (학부모 전용 — 자녀 목록·학습 리포트) */}
+      {/* 학부모 전용: v23 학부모 hub 정보 구조 6항목 */}
       {role === 'ROLE_PARENT' && (
-        <Sidebar.Item
-          href={PRIVATE.PARENT.INDEX}
-          matchPath={PRIVATE.PARENT.INDEX}
-        >
-          <Users
-            size={20}
-            className="shrink-0"
+        <>
+          <Sidebar.Item href={PRIVATE.DASHBOARD.PARENT}>
+            <Home
+              size={20}
+              className="shrink-0"
+            />
+            <Sidebar.Text>홈</Sidebar.Text>
+          </Sidebar.Item>
+          <Sidebar.Item href={PRIVATE.DASHBOARD.PARENT_STUDY_NEWS}>
+            <Newspaper
+              size={20}
+              className="shrink-0"
+            />
+            <Sidebar.Text>학습 소식</Sidebar.Text>
+          </Sidebar.Item>
+          <Sidebar.Item href={PRIVATE.DASHBOARD.PARENT_STUDY_RECORDS}>
+            <NotebookText
+              size={20}
+              className="shrink-0"
+            />
+            <Sidebar.Text>스터디룸 기록일지</Sidebar.Text>
+          </Sidebar.Item>
+          <div
+            role="separator"
+            aria-orientation="horizontal"
+            className="border-gray-3 my-2 border-t"
           />
-          <Sidebar.Text>자녀 학습</Sidebar.Text>
-        </Sidebar.Item>
+          <Sidebar.Item href={PRIVATE.DASHBOARD.PARENT_STUDY_ROOMS}>
+            <Search
+              size={20}
+              className="shrink-0"
+            />
+            <Sidebar.Text>스터디룸 둘러보기</Sidebar.Text>
+          </Sidebar.Item>
+          <Sidebar.Item href={PRIVATE.DASHBOARD.PARENT_CONSULTATIONS}>
+            <MessageCircle
+              size={20}
+              className="shrink-0"
+            />
+            <Sidebar.Text>상담 내역</Sidebar.Text>
+          </Sidebar.Item>
+          <Sidebar.Item href={PRIVATE.MYPAGE}>
+            <User2Icon className="shrink-0" />
+            <Sidebar.Text>마이페이지</Sidebar.Text>
+          </Sidebar.Item>
+        </>
       )}
 
       {role === 'ROLE_ADMIN' && (

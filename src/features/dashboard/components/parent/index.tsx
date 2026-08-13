@@ -170,10 +170,15 @@ const DashboardParent = () => {
             studyRoomPreviewData={studyRoomPreviewData?.content ?? []}
             studyRoomPreviewIsPending={studyRoomPreviewIsPending}
           />
-          <ClassConsultationHistorySection
-            inquiryListData={inquiryListData ?? basicData}
-            inquiryListIsPending={inquiryListIsPending}
-          />
+          <div
+            id="parent-consultations"
+            className="scroll-mt-header-height"
+          >
+            <ClassConsultationHistorySection
+              inquiryListData={inquiryListData ?? basicData}
+              inquiryListIsPending={inquiryListIsPending}
+            />
+          </div>
         </div>
       </main>
     </div>

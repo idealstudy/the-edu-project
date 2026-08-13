@@ -171,19 +171,19 @@ const ParentHeaderContent = ({
   const memberName = initialMemberName.trim();
   const { data: parentReport, isPending } = useParentDashboardReportQuery();
   const stats: HeaderStat[] = [
-    { value: parentReport?.studyNews ?? '-', unit: '개', label: '학습 소식' },
+    { value: parentReport?.studyNews ?? 0, unit: '개', label: '학습 소식' },
     {
-      value: parentReport?.waitingInquiries ?? '-',
+      value: parentReport?.waitingInquiries ?? 0,
       unit: '건',
       label: '답변 대기',
     },
     {
-      value: parentReport?.answeredInquiries ?? '-',
+      value: parentReport?.answeredInquiries ?? 0,
       unit: '건',
       label: '답변 완료',
     },
     {
-      value: parentReport?.myStudentCount ?? '-',
+      value: parentReport?.myStudentCount ?? 0,
       unit: '명',
       label: '매칭된 학생',
     },
