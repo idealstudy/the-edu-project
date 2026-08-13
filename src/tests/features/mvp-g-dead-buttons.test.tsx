@@ -167,6 +167,9 @@ describe('MVP-G 죽은 버튼 회귀', () => {
     const roomList = screen.getByTestId('teacher-rooms-list');
     expect(roomList).toBeVisible();
     expect(screen.getByText(/김서준 수업/)).toBeVisible();
+    expect(screen.getByTestId('teacher-rooms-summary')).toHaveTextContent(
+      '오늘 학생 화면에 넣어줄 것 1건이 위 한 수업에 몰려 있습니다.'
+    );
     expect(
       screen.queryByTestId('teacher-learning-inbox-after-rooms')
     ).not.toBeInTheDocument();

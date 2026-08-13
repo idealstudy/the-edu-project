@@ -11,7 +11,7 @@ import { useOpenChallengeDetailQuery } from '@/features/open-challenge/hooks/use
 import { Skeleton } from '@/shared/components/loading';
 import { Button } from '@/shared/components/ui';
 import { PRIVATE, PUBLIC } from '@/shared/constants';
-import { Archive, BookOpenCheck, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 
 import {
   useDailyProblemsQuery,
@@ -216,48 +216,26 @@ export const TodayProblemsSection = () => {
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2">
-            <BookOpenCheck
-              size={22}
-              className="text-orange-7"
-              aria-hidden
-            />
-            <h2
-              id="daily-problems-title"
-              className="font-headline2-heading text-gray-12"
-            >
-              오늘의 문제
-            </h2>
-          </div>
+          <h2
+            id="daily-problems-title"
+            className="font-headline2-heading text-gray-12"
+          >
+            오늘의 문제
+          </h2>
           <p className="font-caption-normal text-gray-8 mt-1">
-            선생님 문제 먼저 · 모자라면 오픈챌린지에서 추천 · 도장 = 회독
+            선생님이 준 문제가 먼저, 부족분만 오픈챌린지 추천
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          {/*
-            시안 v23 `.badge.o`(HTML:619): 진행 카운트 뱃지 `0/3`.
-            "완료" 판정 데이터가 아직 없어 분자는 0으로 고정한다(exit_report 명시).
-          */}
-          <span
-            className="bg-orange-1 text-orange-9 font-caption-heading rounded-full px-2.5 py-1 tabular-nums"
-            data-testid="daily-problems-progress-badge"
-          >
-            0/{queue.items.length}
-          </span>
-          <Button
-            asChild
-            size="xsmall"
-            variant="outlined"
-          >
-            <Link href={PRIVATE.DASHBOARD.WRONG_ANSWERS}>
-              <Archive
-                size={16}
-                aria-hidden
-              />
-              오답 목록
-            </Link>
-          </Button>
-        </div>
+        {/*
+          시안 v23 `.badge.o`(HTML:619): 진행 카운트 뱃지 `0/3`.
+          "완료" 판정 데이터가 아직 없어 분자는 0으로 고정한다(exit_report 명시).
+        */}
+        <span
+          className="bg-orange-1 text-orange-9 font-caption-heading rounded-full px-2.5 py-1 tabular-nums"
+          data-testid="daily-problems-progress-badge"
+        >
+          0/{queue.items.length}
+        </span>
       </div>
 
       <div className="border-orange-3 bg-orange-1 mt-4 flex items-center gap-3 rounded-lg border px-4 py-3">
@@ -292,11 +270,6 @@ export const TodayProblemsSection = () => {
         <b className="text-gray-11 font-bold">오픈챌린지 라인의 풀이 화면</b>
         으로 넘어갑니다. 문제 본문, AI 코치, 손풀이, 채점, 해설은 그쪽
         소관입니다. 다 풀면 결과만 이 화면으로 돌아옵니다.
-      </p>
-
-      <p className="font-caption-normal text-gray-7 mt-3 leading-relaxed">
-        난이도·전국 오답률은 교육청·평가원 기출처럼 공개 데이터가 있는 문제에만
-        표시돼요.
       </p>
     </section>
   );

@@ -190,9 +190,17 @@ describe('학생 성과 학습 지도 대량 데이터 접기', () => {
     expect(screen.getByText('수열의 합')).toBeVisible();
     expect(screen.getByText('시그마 계산')).toBeVisible();
     expect(screen.getAllByRole('link', { name: '풀기' })).toHaveLength(2);
+    expect(
+      screen.getByTestId('daily-problems-progress-badge')
+    ).toHaveTextContent('0/2');
+    expect(
+      screen.getByText('선생님이 준 문제가 먼저, 부족분만 오픈챌린지 추천')
+    ).toBeVisible();
+    expect(screen.queryByRole('link', { name: '오답 목록' })).toBeNull();
     expect(text).not.toContain('카드에서 제거할 문제 본문');
     expect(text).not.toContain('카드에서 제거할 선정 이유');
     expect(text).not.toContain('왜 이 문제?');
+    expect(text).not.toContain('난이도·전국 오답률은');
     expect(text.match(/오픈챌린지 라인의 풀이 화면/g)).toHaveLength(1);
     expect(text).toContain(
       '카드를 누르면 오픈챌린지 라인의 풀이 화면으로 넘어갑니다. 문제 본문, AI 코치, 손풀이, 채점, 해설은 그쪽 소관입니다. 다 풀면 결과만 이 화면으로 돌아옵니다.'

@@ -92,6 +92,16 @@ const RoomRenameDialog = ({
 // 시안 v23 `.filters`(HTML:427-433): 정렬 칩 2개(손볼것순/최근접속순) + 검색.
 type RoomSortKey = 'TODO' | 'RECENT';
 
+const KOREAN_ROOM_COUNT: Record<number, string> = {
+  1: '한',
+  2: '두',
+  3: '세',
+  4: '네',
+};
+
+const formatRoomCount = (count: number) =>
+  KOREAN_ROOM_COUNT[count] ?? `${count}개`;
+
 const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
   const {
     data: studyRooms = [],
@@ -103,7 +113,7 @@ const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const rooms = [...studyRooms].sort((a, b) => {
     // "최근 접속 순"은 학생 마지막 접속 데이터가 아직 없어(⛔ 데이터 없음, 항목20과 동일
-    // 필드 부재) 손볼 것 순 정렬로 폴백한다. 칩은 눌리지만 결과가 같다 — exit_report 명시.
+    // 필드 부재) 손볼 것 순 정렬로 폴백한다. 칩은 눌리지만 결과가 같다. exit_report 명시.
     if (sortKey === 'RECENT') return b.todoCount - a.todoCount;
     return b.todoCount - a.todoCount;
   });
@@ -122,6 +132,7 @@ const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
       room.enrollmentStatus === 'CLOSED' &&
       all.findIndex((candidate) => candidate.id === room.id) === index
   );
+  const actionableRoomCount = rooms.filter((room) => room.todoCount > 0).length;
   const [openMenuRoomId, setOpenMenuRoomId] = useState<number | null>(null);
   const [showClosedRooms, setShowClosedRooms] = useState(false);
   // 승인 디자인 v22 `roomCard` 3324 `스터디룸 이름 수정`
@@ -145,12 +156,15 @@ const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
           <h2 className="text-gray-12 font-headline2-heading">내 수업</h2>
           {/* 시안 v23 `.titlerow .mini`(HTML:442-443): 빈 상태에선 "0건" 문구를 숨긴다. */}
           {rooms.length > 0 && (
-            <span className="text-gray-9 text-xs">
+            <span
+              className="text-gray-9 text-xs"
+              data-testid="teacher-rooms-summary"
+            >
               오늘 <b className="text-gray-12">학생 화면에 넣어줄 것</b>{' '}
               <b className="text-gray-12 tabular-nums">
                 {rooms.reduce((sum, room) => sum + room.todoCount, 0)}건
               </b>
-              이 위 수업에 몰려 있습니다.
+              이 위 {formatRoomCount(actionableRoomCount)} 수업에 몰려 있습니다.
             </span>
           )}
           {rooms.length > 0 && (
@@ -177,7 +191,7 @@ const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
                 'min-h-control-sm rounded-button px-button-compact-x inline-flex cursor-pointer items-center border text-xs font-bold',
                 sortKey === 'TODO'
                   ? 'border-orange-4 bg-orange-1 text-orange-9'
-                  : 'border-gray-3 bg-white text-gray-10'
+                  : 'border-gray-3 text-gray-10 bg-white'
               )}
             >
               손볼 것 많은 순 {sortKey === 'TODO' && '· 기본'}
@@ -192,7 +206,7 @@ const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
                 'min-h-control-sm rounded-button px-button-compact-x inline-flex cursor-pointer items-center border text-xs font-bold',
                 sortKey === 'RECENT'
                   ? 'border-orange-4 bg-orange-1 text-orange-9'
-                  : 'border-gray-3 bg-white text-gray-10'
+                  : 'border-gray-3 text-gray-10 bg-white'
               )}
             >
               최근 접속 순
@@ -283,8 +297,8 @@ const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
               검색 결과가 없어요
             </h2>
             <p className="text-gray-9 mt-2 text-sm leading-relaxed">
-              &apos;{searchQuery.trim()}&apos;와 일치하는 학생 이름이나
-              스터디룸 이름이 없습니다. 검색어를 다시 확인해 주세요.
+              &apos;{searchQuery.trim()}&apos;와 일치하는 학생 이름이나 스터디룸
+              이름이 없습니다. 검색어를 다시 확인해 주세요.
             </p>
           </section>
         ) : (
@@ -490,11 +504,13 @@ const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
           // 시안 v23 `.foot`(HTML:434) 원문.
           <p className="text-gray-9 text-xs leading-relaxed">
             이 제품에서 선생님이 하는 일은{' '}
-            <b className="text-gray-11">학생의 내 학습 화면을 대신 채워 주는 것</b>
+            <b className="text-gray-11">
+              학생의 내 학습 화면을 대신 채워 주는 것
+            </b>
             입니다(대표 확정 2026-08-05). 그래서 카드가 세는 것도 &ldquo;학생이
             뭘 안 했나&rdquo;가 아니라{' '}
-            <b className="text-gray-11">내가 넣어줄 것이 몇 건인가</b>입니다.
-            각 카드가 그 내역(피드백 달 것 · 할 일 승인 · 못했어요 사유 · 미확인
+            <b className="text-gray-11">내가 넣어줄 것이 몇 건인가</b>입니다. 각
+            카드가 그 내역(피드백 달 것 · 할 일 승인 · 못했어요 사유 · 미확인
             제출)을 한 줄로 펼치고, 기본 정렬이 많은 순이라{' '}
             <b className="text-gray-11">
               맨 위 카드부터 눌러 내려가면 오늘 치가 끝납니다.
