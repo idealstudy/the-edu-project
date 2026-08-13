@@ -18,6 +18,16 @@ const FriendshipDtoSchema = z.object({
   requesterProfileImageUrl: NullableString,
   addresseeName: NullableString,
   addresseeProfileImageUrl: NullableString,
+  myTurn: z.boolean().optional(),
+  lastActivity: z
+    .object({
+      occurredAt: z.string(),
+      // 서버가 활동 종류를 먼저 추가해도 친구 목록 전체를 깨뜨리지 않는다.
+      // 사용자에게 보여줄 수 있는 값인지는 표시 계층의 허용 목록이 결정한다.
+      type: z.string(),
+    })
+    .nullable()
+    .optional(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -78,6 +88,16 @@ const ChallengeInviteResultDtoSchema = z.object({
   shareToken: z.string(),
   status: z.enum(['OPEN', 'ACCEPTED', 'COMPLETED']),
   challengeId: z.number(),
+  opponentName: z.string().optional(),
+  viewerRole: z.enum(['INVITER', 'INVITEE']).optional(),
+  openDuelCount: z.number().int().nonnegative().optional(),
+  headToHead: z
+    .object({
+      win: z.number().int().nonnegative(),
+      lose: z.number().int().nonnegative(),
+      draw: z.number().int().nonnegative(),
+    })
+    .optional(),
   outcome: z
     .enum(['WIN', 'LOSE', 'BOTH_WRONG', 'BOTH_CORRECT'])
     .nullable()

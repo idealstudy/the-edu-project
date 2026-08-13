@@ -16,13 +16,6 @@ vi.mock('./challenge-share-button', () => ({
   ),
 }));
 
-// 결과 비교 다이얼로그 자체 렌더는 challenge-result-dialog 자체 테스트 소관 —
-// 여기서는 "결과 보기" 클릭 시 열리는지만 확인 가능하게 마운트 여부만 스텁.
-vi.mock('./challenge-result-dialog', () => ({
-  ChallengeResultDialog: ({ isOpen }: { isOpen: boolean }) =>
-    isOpen ? <div data-testid="result-dialog" /> : null,
-}));
-
 vi.mock('../../hooks', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../hooks')>();
   return {
@@ -343,9 +336,7 @@ describe('MyChallengeInvites', () => {
     ).not.toBeInTheDocument();
   });
 
-  test('"결과 보기" 클릭 시 결과 비교 다이얼로그가 열린다', async () => {
-    const { default: userEvent } = await import('@testing-library/user-event');
-
+  test('"결과 보기"는 팝업이 아니라 전용 결과 페이지 경로로 링크된다(D-10-4)', () => {
     mockUseMyChallengeInvitesQuery.mockReturnValue({
       data: [
         {
@@ -368,10 +359,9 @@ describe('MyChallengeInvites', () => {
 
     renderWithProviders(<MyChallengeInvites />);
 
-    expect(screen.queryByTestId('result-dialog')).not.toBeInTheDocument();
-
-    await userEvent.setup().click(screen.getByText('결과 보기'));
-
-    expect(screen.getByTestId('result-dialog')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '결과 보기' })).toHaveAttribute(
+      'href',
+      '/friends/challenge/tok-click/result'
+    );
   });
 });

@@ -3,10 +3,12 @@
 import { type ReactNode, useState } from 'react';
 
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 import { type FriendDuels } from '@/entities/social';
+import { useRecommendedChallengesQuery } from '@/features/open-challenge/hooks/use-open-challenge';
 import { useMyTreeQuery } from '@/features/weakness-tree/hooks/use-tree';
-import { Button } from '@/shared/components/ui';
+import { Button, showBottomToast } from '@/shared/components/ui';
 import { PRIVATE, PUBLIC } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import {
@@ -23,8 +25,9 @@ import {
   useFriendDuelsQuery,
   useFriendMasteryQuery,
   useFriendSummaryQuery,
+  useRequestFriendMutation,
 } from '../../hooks';
-import { ChallengeResultDialog } from '../challenge-invite/challenge-result-dialog';
+import { ChallengeShareButton } from '../challenge-invite/challenge-share-button';
 
 type Duel = FriendDuels['items'][number];
 
@@ -37,12 +40,17 @@ const formatMinute = (value: string) =>
   }).format(new Date(value));
 
 export const FriendDetailClient = ({ friendId }: { friendId: number }) => {
+  const searchParams = useSearchParams();
+  const challengeIdParam = searchParams.get('challengeId');
+  const challengeId = challengeIdParam ? Number(challengeIdParam) : null;
   const summary = useFriendSummaryQuery(friendId);
-  const isFriend = summary.data?.relation !== 'NOT_FRIEND';
+  const isFriend =
+    summary.data?.relation === 'FRIEND' ||
+    summary.data?.relation === 'FRIEND_NO_DUEL';
   const duels = useFriendDuelsQuery(friendId, undefined, { enabled: isFriend });
   const mastery = useFriendMasteryQuery(friendId, { enabled: isFriend });
   const myTree = useMyTreeQuery();
-  const [resultToken, setResultToken] = useState<string | null>(null);
+  const requestFriend = useRequestFriendMutation();
 
   if (summary.isLoading) return <DetailSkeleton />;
   if (summary.isError || !summary.data) {
@@ -77,14 +85,31 @@ export const FriendDetailClient = ({ friendId }: { friendId: number }) => {
                 : ''}
             </p>
           </div>
-          <Button
-            size="small"
-            asChild
-          >
-            <Link href={PUBLIC.OPEN_CHALLENGE.LIST}>
-              {isStranger ? '친구 요청 보내기' : '도전장 보내기'}
-            </Link>
-          </Button>
+          {isStranger ? (
+            <Button
+              size="small"
+              disabled={requestFriend.isPending || requestFriend.isSuccess}
+              onClick={() => requestFriend.mutate({ addresseeId: friendId })}
+            >
+              {requestFriend.isSuccess ? '친구 요청 보냄' : '친구 요청 보내기'}
+            </Button>
+          ) : challengeId != null && Number.isFinite(challengeId) ? (
+            <ChallengeShareButton
+              challengeId={challengeId}
+              variant="primary"
+              size="small"
+              label="이 문제로 도전장 보내기"
+            />
+          ) : (
+            <Button
+              size="small"
+              asChild
+            >
+              <Link href={PUBLIC.OPEN_CHALLENGE.LIST}>
+                문제 골라 도전장 보내기
+              </Link>
+            </Button>
+          )}
         </section>
 
         {isStranger ? (
@@ -103,29 +128,23 @@ export const FriendDetailClient = ({ friendId }: { friendId: number }) => {
               items={duels.data?.items ?? []}
               isLoading={duels.isLoading}
               isError={duels.isError}
-              onResult={setResultToken}
+              onRetry={() => duels.refetch()}
             />
-            {!mastery.isError && (
-              <ConquestMap
-                friendName={friend.displayName}
-                friendUnits={mastery.data?.units ?? []}
-                myNodes={
-                  myTree.data?.groups.flatMap((group) => group.nodes) ?? []
-                }
-                isLoading={mastery.isLoading || myTree.isLoading}
-              />
-            )}
+            <ConquestMap
+              friendName={friend.displayName}
+              friendUnits={mastery.data?.units ?? []}
+              myNodes={
+                myTree.data?.groups.flatMap((group) => group.nodes) ?? []
+              }
+              isLoading={mastery.isLoading || myTree.isLoading}
+              friendError={mastery.isError}
+              myTreeError={myTree.isError}
+              onRetryFriend={() => mastery.refetch()}
+              onRetryMine={() => myTree.refetch()}
+            />
           </>
         )}
       </div>
-
-      {resultToken && (
-        <ChallengeResultDialog
-          token={resultToken}
-          isOpen
-          onOpenChange={(open) => !open && setResultToken(null)}
-        />
-      )}
     </main>
   );
 };
@@ -193,54 +212,70 @@ const DuelHistory = ({
   items,
   isLoading,
   isError,
-  onResult,
+  onRetry,
 }: {
   friendName: string;
   items: Duel[];
   isLoading: boolean;
   isError: boolean;
-  onResult: (token: string) => void;
-}) => (
-  <section className="border-line-line1 rounded-xl border bg-white p-5">
-    <h2 className="font-body1-heading text-text-main mb-3">
-      {friendName}님과 한 대결
-    </h2>
-    {isLoading && <div className="bg-gray-1 h-28 animate-pulse rounded-lg" />}
-    {isError && (
-      <p className="text-text-sub1 py-8 text-center text-sm">
-        대결 기록을 불러오지 못했어요.
-      </p>
-    )}
-    {!isLoading && !isError && items.length === 0 && (
-      <div className="py-8 text-center">
-        <p className="text-text-main font-bold">
-          {friendName}님과는 아직 붙어본 적이 없어요
-        </p>
-        <p className="text-text-sub1 mt-1 text-sm">
-          둘 다 정복 중인 단원에서 첫 문제를 보내보세요.
-        </p>
-      </div>
-    )}
-    <div className="divide-line-line1 divide-y">
-      {items.map((duel) => (
-        <DuelRow
-          key={duel.shareToken}
-          duel={duel}
-          onResult={onResult}
-        />
-      ))}
-    </div>
-  </section>
-);
-
-const DuelRow = ({
-  duel,
-  onResult,
-}: {
-  duel: Duel;
-  onResult: (token: string) => void;
+  onRetry: () => void;
 }) => {
+  const [hiddenTokens, setHiddenTokens] = useState<Set<string>>(new Set());
+  const visibleItems = items.filter(
+    (item) => !hiddenTokens.has(item.shareToken)
+  );
+
+  const hideDuel = (shareToken: string) => {
+    setHiddenTokens((current) => new Set(current).add(shareToken));
+    showBottomToast('이 기기 목록에서 대결을 숨겼어요.');
+  };
+
+  return (
+    <section className="border-line-line1 rounded-xl border bg-white p-5">
+      <h2 className="font-body1-heading text-text-main mb-3">
+        {friendName}님과 한 대결
+      </h2>
+      {isLoading && <div className="bg-gray-1 h-28 animate-pulse rounded-lg" />}
+      {isError && (
+        <div className="flex flex-col items-center gap-3 py-8 text-center">
+          <p className="text-text-sub1 text-sm">
+            대결 기록을 불러오지 못했어요.
+          </p>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={onRetry}
+          >
+            대결 기록 다시 시도
+          </Button>
+        </div>
+      )}
+      {!isLoading && !isError && visibleItems.length === 0 && (
+        <div className="py-8 text-center">
+          <p className="text-text-main font-bold">
+            {friendName}님과는 아직 붙어본 적이 없어요
+          </p>
+          <p className="text-text-sub1 mt-1 text-sm">
+            둘 다 정복 중인 단원에서 첫 문제를 보내보세요.
+          </p>
+        </div>
+      )}
+      <div className="divide-line-line1 divide-y">
+        {visibleItems.map((duel) => (
+          <DuelRow
+            key={duel.shareToken}
+            duel={duel}
+            onHide={() => hideDuel(duel.shareToken)}
+          />
+        ))}
+      </div>
+    </section>
+  );
+};
+
+const DuelRow = ({ duel, onHide }: { duel: Duel; onHide: () => void }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  // "결과 보기"도 팝업이 아니라 전용 결과 페이지로 이동한다(D-10-4).
   const action =
     duel.status === 'OPEN'
       ? {
@@ -256,7 +291,11 @@ const DuelRow = ({
           }
         : duel.opponentSolvedAt == null
           ? { label: '결과 기다리는 중', href: '', disabled: true }
-          : { label: '결과 보기', href: '', disabled: false };
+          : {
+              label: '결과 보기',
+              href: PRIVATE.FRIENDS.CHALLENGE_RESULT(duel.shareToken),
+              disabled: false,
+            };
 
   return (
     <div className="relative flex items-center gap-3 py-4">
@@ -295,65 +334,76 @@ const DuelRow = ({
           size="xsmall"
           variant="outlined"
           disabled={action.disabled}
-          onClick={() => !action.disabled && onResult(duel.shareToken)}
         >
           {action.label}
         </Button>
       )}
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="xsmall"
         aria-label="대결 메뉴 열기"
         aria-expanded={menuOpen}
         onClick={() => setMenuOpen((value) => !value)}
         className="hover:bg-gray-1 flex size-9 items-center justify-center rounded-lg"
       >
         <MoreHorizontal size={18} />
-      </button>
+      </Button>
       {menuOpen && (
         <DuelMenu
           duel={duel}
-          onResult={onResult}
+          onHide={onHide}
         />
       )}
     </div>
   );
 };
 
-const DuelMenu = ({
-  duel,
-  onResult,
-}: {
-  duel: Duel;
-  onResult: (token: string) => void;
-}) => {
+const DuelMenu = ({ duel, onHide }: { duel: Duel; onHide: () => void }) => {
   const canViewResult = duel.viewerCompleted && duel.opponentSolvedAt !== null;
-  const disabledItems = [
-    '상대에게 알림 보내기',
-    '보낸 도전장 취소하기',
-    '목록에서 숨기기',
-    '신고하기',
-  ];
+  const canNotify =
+    duel.status !== 'COMPLETED' &&
+    duel.viewerCompleted &&
+    duel.opponentSolvedAt == null;
+  const canRequestCancellation = duel.status === 'OPEN';
+  const inviteUrl = `${typeof window === 'undefined' ? '' : window.location.origin}${PUBLIC.CORE.INVITE.CHALLENGE(duel.shareToken)}`;
+
+  const shareReminder = async () => {
+    if (!canNotify) return;
+    if (typeof navigator.share === 'function') {
+      await navigator.share({
+        title: '도전장을 다시 보냈어요',
+        text: `${duel.challengeTitle}, 네 차례야.`,
+        url: inviteUrl,
+      });
+      return;
+    }
+    await navigator.clipboard.writeText(inviteUrl);
+    showBottomToast('상대에게 다시 보낼 링크를 복사했어요.');
+  };
+
   return (
-    <div className="border-line-line1 absolute top-14 right-0 z-20 w-56 rounded-xl border bg-white p-2 shadow-lg">
-      <button
+    <div className="border-line-line1 shadow-popover absolute top-14 right-0 z-20 w-56 rounded-xl border bg-white p-2">
+      <Button
         type="button"
+        variant="ghost"
+        size="xsmall"
         onClick={() =>
           navigator.clipboard.writeText(
             `${window.location.origin}${PUBLIC.CORE.INVITE.CHALLENGE(duel.shareToken)}`
           )
         }
-        className="hover:bg-gray-1 text-text-main block w-full rounded-lg px-3 py-2 text-left text-xs"
+        className="w-full justify-start"
       >
         도전장 링크 복사하기
-      </button>
+      </Button>
       {canViewResult ? (
-        <button
-          type="button"
-          onClick={() => onResult(duel.shareToken)}
-          className="hover:bg-gray-1 text-text-main block w-full rounded-lg px-3 py-2 text-left text-xs"
+        <Link
+          href={PRIVATE.FRIENDS.CHALLENGE_RESULT(duel.shareToken)}
+          className="hover:bg-gray-1 text-text-main block rounded-lg px-3 py-2 text-xs"
         >
           이 대결 자세히
-        </button>
+        </Link>
       ) : (
         <Link
           href={PUBLIC.CORE.INVITE.CHALLENGE(duel.shareToken)}
@@ -368,16 +418,52 @@ const DuelMenu = ({
       >
         이 문제 혼자 다시 풀기
       </Link>
-      {disabledItems.map((label) => (
-        <button
-          key={label}
-          type="button"
-          disabled
-          className="text-text-inactive block w-full rounded-lg px-3 py-2 text-left text-xs"
+      <Button
+        type="button"
+        variant="ghost"
+        size="xsmall"
+        disabled={!canNotify}
+        onClick={shareReminder}
+        className={cn(
+          'w-full justify-start',
+          !canNotify && 'text-text-inactive'
+        )}
+      >
+        상대에게 링크 다시 보내기{canNotify ? '' : ' (상대 차례에 가능)'}
+      </Button>
+      {canRequestCancellation ? (
+        <a
+          href={`mailto:the.edu.devs@gmail.com?subject=${encodeURIComponent('도전장 취소 요청')}&body=${encodeURIComponent(`도전장 ${duel.shareToken} 취소를 요청합니다.`)}`}
+          className="hover:bg-gray-1 text-text-main block rounded-lg px-3 py-2 text-xs"
         >
-          {label} (지금은 안 됨)
-        </button>
-      ))}
+          보낸 도전장 취소 요청하기
+        </a>
+      ) : (
+        <Button
+          type="button"
+          variant="ghost"
+          size="xsmall"
+          disabled
+          className="text-text-inactive w-full justify-start"
+        >
+          보낸 도전장 취소 요청하기 (수락 전만 가능)
+        </Button>
+      )}
+      <Button
+        type="button"
+        variant="ghost"
+        size="xsmall"
+        onClick={onHide}
+        className="w-full justify-start"
+      >
+        목록에서 숨기기
+      </Button>
+      <a
+        href={`mailto:the.edu.devs@gmail.com?subject=${encodeURIComponent('도전장 신고')}&body=${encodeURIComponent(`신고할 도전장: ${duel.shareToken}`)}`}
+        className="text-system-warning-text hover:bg-gray-1 block rounded-lg px-3 py-2 text-xs"
+      >
+        신고하기
+      </a>
     </div>
   );
 };
@@ -387,6 +473,10 @@ const ConquestMap = ({
   friendUnits,
   myNodes,
   isLoading,
+  friendError,
+  myTreeError,
+  onRetryFriend,
+  onRetryMine,
 }: {
   friendName: string;
   friendUnits: Array<{
@@ -397,25 +487,54 @@ const ConquestMap = ({
   }>;
   myNodes: Array<{ nodeId: string; masteryScore: number }>;
   isLoading: boolean;
+  friendError: boolean;
+  myTreeError: boolean;
+  onRetryFriend: () => void;
+  onRetryMine: () => void;
 }) => {
   const myScores = new Map(
     myNodes.map((node) => [Number(node.nodeId), node.masteryScore])
   );
-  const sorted = [...friendUnits].sort((a, b) => {
-    const aMe = myScores.get(a.nodeId) ?? 0;
-    const bMe = myScores.get(b.nodeId) ?? 0;
-    return Math.abs(a.masteryScore - aMe) - Math.abs(b.masteryScore - bMe);
-  });
+  const inProgress = (score: number) => score > 0 && score < 80;
+  const orderFor = (myScore: number, friendScore: number) => {
+    if (inProgress(myScore) && inProgress(friendScore)) return 0;
+    if (inProgress(myScore)) return 1;
+    if (inProgress(friendScore)) return 2;
+    if (myScore >= 80 && friendScore >= 80) return 3;
+    return 4;
+  };
+  const sorted = [...friendUnits].sort(
+    (a, b) =>
+      orderFor(myScores.get(a.nodeId) ?? 0, a.masteryScore) -
+      orderFor(myScores.get(b.nodeId) ?? 0, b.masteryScore)
+  );
 
   return (
     <section className="border-line-line1 rounded-xl border bg-white p-5">
       <div className="mb-4 flex items-baseline justify-between gap-3">
         <h2 className="font-body1-heading text-text-main">정복 지도</h2>
         <span className="text-text-sub2 text-xs">
-          따라잡기 가까운 순 · 서로 친구일 때만 보여요
+          둘 다 정복 중인 단원부터 · 서로 친구일 때만 보여요
         </span>
       </div>
-      {isLoading ? (
+      {friendError || myTreeError ? (
+        <div className="flex flex-col gap-3">
+          {friendError && (
+            <ConquestError
+              message={`${friendName}님의 정복 지도를 불러오지 못했어요.`}
+              action="친구 지도 다시 시도"
+              onRetry={onRetryFriend}
+            />
+          )}
+          {myTreeError && (
+            <ConquestError
+              message="내 정복 지도를 불러오지 못했어요."
+              action="내 지도 다시 시도"
+              onRetry={onRetryMine}
+            />
+          )}
+        </div>
+      ) : isLoading ? (
         <div className="bg-gray-1 h-32 animate-pulse rounded-lg" />
       ) : sorted.length === 0 ? (
         <p className="text-text-sub1 py-8 text-center text-sm">
@@ -424,22 +543,40 @@ const ConquestMap = ({
         </p>
       ) : (
         <div className="flex flex-col gap-5">
-          {sorted.map((unit) => (
-            <div key={unit.nodeId}>
-              <p className="text-text-main mb-2 text-sm font-bold">
-                {unit.subjectName} · {unit.displayName}
-              </p>
-              <MasteryBar
-                name="나"
-                score={myScores.get(unit.nodeId) ?? 0}
-              />
-              <MasteryBar
-                name={friendName}
-                score={unit.masteryScore}
-                opponent
-              />
-            </div>
-          ))}
+          {sorted.map((unit) => {
+            const myScore = myScores.get(unit.nodeId) ?? 0;
+            const bothInProgress =
+              inProgress(myScore) && inProgress(unit.masteryScore);
+            return (
+              <div key={unit.nodeId}>
+                <div className="mb-2 flex flex-wrap items-center gap-2">
+                  <p className="text-text-main text-sm font-bold">
+                    {unit.subjectName} · {unit.displayName}
+                  </p>
+                  {bothInProgress && (
+                    <span className="bg-orange-1 text-orange-10 rounded-full px-2 py-1 text-xs font-bold">
+                      둘 다 정복 중
+                    </span>
+                  )}
+                </div>
+                <MasteryBar
+                  name="나"
+                  score={myScore}
+                />
+                <MasteryBar
+                  name={friendName}
+                  score={unit.masteryScore}
+                  opponent
+                />
+                {bothInProgress && (
+                  <UnitChallengeInviteButton
+                    unitNodeId={unit.nodeId}
+                    unitName={unit.displayName}
+                  />
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
       <p className="bg-gray-1 text-text-sub1 mt-5 rounded-lg px-3 py-2 text-xs">
@@ -460,23 +597,94 @@ const MasteryBar = ({
 }) => (
   <div className="mb-1 grid grid-cols-[72px_1fr_94px] items-center gap-2 text-xs">
     <span className="text-text-sub1 truncate">{name}</span>
-    <span className="bg-gray-1 h-2 overflow-hidden rounded-full">
-      <i
-        className={cn(
-          'block h-full rounded-full',
-          score >= 80
-            ? 'bg-system-success'
-            : opponent
-              ? 'bg-orange-3'
-              : 'bg-orange-7'
-        )}
-        style={{ width: `${Math.max(score, 2)}%` }}
-      />
-    </span>
+    <progress
+      value={score}
+      max={100}
+      aria-label={`${name} 정복도 ${score}%`}
+      className={cn(
+        'bg-gray-1 h-2 w-full overflow-hidden rounded-full',
+        opponent
+          ? score >= 80
+            ? 'accent-gray-10'
+            : 'accent-gray-8'
+          : score >= 80
+            ? 'accent-system-success-text'
+            : 'accent-orange-7'
+      )}
+    />
     <span className="text-text-sub2 text-right tabular-nums">
       {score >= 80 ? '정복 완료' : score > 0 ? '정복 중' : '아직 안 간 곳'}{' '}
       {score}%
     </span>
+  </div>
+);
+
+const UnitChallengeInviteButton = ({
+  unitNodeId,
+  unitName,
+}: {
+  unitNodeId: number;
+  unitName: string;
+}) => {
+  const recommendation = useRecommendedChallengesQuery(
+    { unitNodeId, size: 1 },
+    { enabled: true }
+  );
+  const challenge = recommendation.data?.[0];
+
+  if (recommendation.isLoading) {
+    return (
+      <p className="text-text-sub2 mt-2 text-xs">
+        보낼 문제를 고르는 중이에요.
+      </p>
+    );
+  }
+  if (recommendation.isError || !challenge) {
+    return (
+      <div className="mt-2 flex items-center gap-2">
+        <span className="text-system-warning-text text-xs">
+          보낼 문제를 고르지 못했어요.
+        </span>
+        <Button
+          variant="outlined"
+          size="xsmall"
+          onClick={() => recommendation.refetch()}
+        >
+          다시 시도
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <ChallengeShareButton
+      challengeId={Number(challenge.id)}
+      variant="outlined"
+      size="xsmall"
+      className="mt-2"
+      label={`${unitName}로 도전장 보내기`}
+    />
+  );
+};
+
+const ConquestError = ({
+  message,
+  action,
+  onRetry,
+}: {
+  message: string;
+  action: string;
+  onRetry: () => void;
+}) => (
+  <div className="border-system-warning bg-system-warning-alt rounded-card flex flex-col items-center gap-3 border px-4 py-6 text-center">
+    <p className="text-system-warning-text text-sm">{message}</p>
+    <Button
+      variant="outlined"
+      size="small"
+      onClick={onRetry}
+    >
+      {action}
+    </Button>
   </div>
 );
 

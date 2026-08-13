@@ -108,6 +108,11 @@ export type ChallengeListParams = {
 export type RecommendedChallengeParams = {
   grade?: number;
   subject?: ChallengeSubject | 'ALL';
+  // 대결 결과 화면의 "같은 유형 더 풀기"류 CTA용 — 백엔드 GET
+  // /public/challenges/recommended?unitNodeId= 는 원래 있었는데 프론트가
+  // 배선하지 않고 있었다(2026-08-12 정정 반영).
+  unitNodeId?: number;
+  size?: number;
 };
 
 export type ChallengeReviewSort = 'recommend' | 'latest';

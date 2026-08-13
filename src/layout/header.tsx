@@ -8,6 +8,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { NotificationPopover } from '@/features/notifications/components/notification-popover';
+import { useMyPointWalletQuery } from '@/features/point/hooks/use-point';
 import { useProfileImage } from '@/features/profile-image/hooks/use-profile-image';
 import { HomeIcon } from '@/shared/components/icons';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
@@ -37,6 +38,20 @@ import {
   trackGnbProfileClick,
 } from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
+
+/* 포인트 칩(R-13) — "내 학습" 셸(친구·트리·학습)엔 이미 상시 노출되는데
+ * 오픈챌린지 랜딩 셸(이 GNB)만 없었다. QA 정합표(docs/qa/design-conformance-matrix.md
+ * D-10-4·R-13 행)가 확정한 갭. 로그인 상태에서만 조회·노출한다. */
+const HeaderPointChip = () => {
+  const { data: wallet } = useMyPointWalletQuery();
+  if (wallet == null) return null;
+
+  return (
+    <span className="border-gray-9 text-gray-white desktop:flex hidden items-center gap-1 rounded-full border px-3 py-1 text-xs font-bold">
+      포인트 <b className="tabular-nums">{wallet.balance.toLocaleString()}</b>P
+    </span>
+  );
+};
 
 export const Header = () => {
   const session = useMemberStore((s) => s.member);
@@ -151,6 +166,7 @@ export const Header = () => {
 
         {session && (
           <div className="desktop:gap-4 flex items-center gap-1">
+            <HeaderPointChip />
             <NotificationPopover />
 
             <DropdownMenu>

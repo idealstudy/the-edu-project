@@ -162,6 +162,8 @@ const toDetail = (raw: unknown): ChallengeDetail => {
   return domain.detail.parse({
     id,
     subject: SUBJECT_LABELS[subject],
+    // 서버에 되돌려 보낼 값은 한글 표시값이 아니라 코드다(추천 조회 400 원인, 2026-08-12).
+    subjectCode: subject,
     topic: parsed.topic ?? parsed.sourceText ?? parsed.title,
     questionNumber: parsed.questionNumber,
     questionText: parsed.questionText,
@@ -281,10 +283,12 @@ const getChallengeList = async (
 };
 
 /* ─────────────────────────────────────────────────────
- * [READ] 추천 오픈챌린지 조회 (공개 · 오답률·등급 기반)
- *  GET /api/public/challenges/recommended?grade=&subject=
+ * [READ] 추천 오픈챌린지 조회 (공개 · 오답률·등급·단원 기반)
+ *  GET /api/public/challenges/recommended?grade=&subject=&unitNodeId=&size=
  *  - grade 미지정 시 백엔드가 오답률 내림차순으로 추천.
  *  - subject 'ALL'/미지정은 파라미터 생략(전체 과목).
+ *  - unitNodeId 지정 시 그 단원으로 좁혀 추천(대결 결과 화면의 "같은 유형
+ *    더 풀기" CTA용, 2026-08-12 배선).
  *  - 응답은 평면 배열(List<RecommendedChallengeResponse>).
  * ────────────────────────────────────────────────────*/
 const getRecommendedChallenges = async (
@@ -297,6 +301,8 @@ const getRecommendedChallenges = async (
         !params.subject || params.subject === 'ALL'
           ? undefined
           : params.subject,
+      unitNodeId: params.unitNodeId ?? undefined,
+      size: params.size ?? undefined,
     },
   });
   const list = unwrapEnvelope(response, dto.recommendedList);

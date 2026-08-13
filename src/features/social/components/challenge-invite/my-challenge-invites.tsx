@@ -6,12 +6,11 @@ import Link from 'next/link';
 
 import { type ChallengeInvite } from '@/entities/social';
 import { Button, StatusBadge } from '@/shared/components/ui';
-import { PUBLIC } from '@/shared/constants';
+import { PRIVATE, PUBLIC } from '@/shared/constants';
 import { ChevronDown, Swords } from 'lucide-react';
 
 import { useMyChallengeInvitesQuery } from '../../hooks';
 import { inviteStatusLabel, subjectLabel } from '../../lib/labels';
-import { ChallengeResultDialog } from './challenge-result-dialog';
 import { ChallengeShareButton } from './challenge-share-button';
 
 const STATUS_VARIANT = {
@@ -114,13 +113,7 @@ const opponentLabel = (invite: ChallengeInvite): string => {
  * 모든 상태에서 고정한다(2026-08 배치: "수락됨/대기중 UI가 안 맞아 일관성
  * 깨짐" 지적 반영). 링크 복사 등 보조 동작은 공유 다이얼로그 내부로 옮겼다.
  */
-const PrimaryAction = ({
-  invite,
-  onViewResult,
-}: {
-  invite: ChallengeInvite;
-  onViewResult: (token: string) => void;
-}) => {
+const PrimaryAction = ({ invite }: { invite: ChallengeInvite }) => {
   if (invite.status === 'OPEN') {
     // 이미 OPEN 도전장이 있으면 백엔드가 idempotent 하게 같은 shareToken 을
     // 재사용한다. 다시 눌러도 새 레코드가 쌓이지 않는다. 링크 복사는 다이얼로그
@@ -164,11 +157,18 @@ const PrimaryAction = ({
   }
 
   return (
+    // 팝업 대신 전용 결과 페이지로 이동한다(D-10-4). 화면 폭 상관없이 항상
+    // 같은 경로 — 좁은 화면에서만 팝업을 유지하는 분기는 두지 않았다.
+    // 이유: 팝업은 앱바+사이드바+도전 맥락 띠를 담을 자리가 없어 모바일에서도
+    // 결국 전용 페이지가 더 읽기 좋고, 진입 지점이 2곳뿐이라 분기 유지비가
+    // 이점보다 크다고 판단했다.
     <Button
       size="xsmall"
-      onClick={() => onViewResult(invite.shareToken)}
+      asChild
     >
-      결과 보기
+      <Link href={PRIVATE.FRIENDS.CHALLENGE_RESULT(invite.shareToken)}>
+        결과 보기
+      </Link>
     </Button>
   );
 };
@@ -176,13 +176,7 @@ const PrimaryAction = ({
 /**
  * 그룹 안쪽(펼쳤을 때) 한 도전장(=한 상대) 행.
  */
-const InviteRow = ({
-  invite,
-  onViewResult,
-}: {
-  invite: ChallengeInvite;
-  onViewResult: (invite: ChallengeInvite) => void;
-}) => (
+const InviteRow = ({ invite }: { invite: ChallengeInvite }) => (
   <div className="border-line-line2 bg-gray-1 rounded-row flex items-center justify-between gap-3 border px-3 py-2.5">
     <div className="flex min-w-0 flex-col">
       <span className="font-caption-heading text-text-main truncate">
@@ -197,10 +191,7 @@ const InviteRow = ({
         variant={STATUS_VARIANT[invite.status]}
         label={inviteStatusLabel(invite.status)}
       />
-      <PrimaryAction
-        invite={invite}
-        onViewResult={() => onViewResult(invite)}
-      />
+      <PrimaryAction invite={invite} />
     </div>
   </div>
 );
@@ -215,12 +206,10 @@ const InviteGroupRow = ({
   group,
   expanded,
   onToggle,
-  onViewResult,
 }: {
   group: InviteGroup;
   expanded: boolean;
   onToggle: () => void;
-  onViewResult: (invite: ChallengeInvite) => void;
 }) => {
   const representative =
     group.invites.find((i) => i.challengeTitle) ??
@@ -273,10 +262,7 @@ const InviteGroupRow = ({
               />
             </button>
           ) : (
-            <PrimaryAction
-              invite={representative}
-              onViewResult={() => onViewResult(representative)}
-            />
+            <PrimaryAction invite={representative} />
           )}
         </div>
       </div>
@@ -290,7 +276,6 @@ const InviteGroupRow = ({
             <InviteRow
               key={invite.id}
               invite={invite}
-              onViewResult={onViewResult}
             />
           ))}
         </div>
@@ -310,9 +295,6 @@ export const MyChallengeInvites = () => {
     isError,
     refetch,
   } = useMyChallengeInvitesQuery();
-  const [resultInvite, setResultInvite] = useState<ChallengeInvite | null>(
-    null
-  );
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
 
   const toggleGroup = (challengeId: number) => {
@@ -369,7 +351,6 @@ export const MyChallengeInvites = () => {
                   group={group}
                   expanded={expandedIds.has(group.challengeId)}
                   onToggle={() => toggleGroup(group.challengeId)}
-                  onViewResult={(invite) => setResultInvite(invite)}
                 />
               ))}
             </ul>
@@ -384,17 +365,6 @@ export const MyChallengeInvites = () => {
             </div>
           )}
         </>
-      )}
-
-      {resultInvite && (
-        <ChallengeResultDialog
-          token={resultInvite.shareToken}
-          challengeId={resultInvite.challengeId}
-          isOpen={resultInvite !== null}
-          onOpenChange={(open) => {
-            if (!open) setResultInvite(null);
-          }}
-        />
       )}
     </section>
   );

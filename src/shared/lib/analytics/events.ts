@@ -481,7 +481,7 @@ export interface RewardShownParams extends CommonEventParams {
  */
 export interface VersusViewParams extends CommonEventParams {
   outcome: 'WIN' | 'LOSE' | 'DRAW';
-  is_inviter: boolean;
+  is_inviter?: boolean;
 }
 
 /**

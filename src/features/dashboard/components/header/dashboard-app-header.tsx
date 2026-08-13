@@ -26,6 +26,7 @@ const STUDENT_TITLE_BY_PATH: Array<[RegExp, string]> = [
   [/^\/dashboard\/student\/exam-hall\/?$/, '응시장'],
   [/^\/dashboard\/student\/exams(\/.*)?$/, '시험 응시'],
   [/^\/tree\/?$/, '약점 트리'],
+  [/^\/friends\/challenge\/.+\/result\/?$/, '대결 결과'],
   [/^\/friends\/?$/, '친구'],
   [/^\/points\/?$/, '포인트'],
   [/^\/mypage(\/.*)?$/, '마이페이지'],
@@ -34,6 +35,7 @@ const STUDENT_TITLE_BY_PATH: Array<[RegExp, string]> = [
 const STUDENT_PATHS_WITHOUT_SUMMARY = [
   /^\/tree\/?$/,
   /^\/friends\/?$/,
+  /^\/friends\/challenge\/.+\/result\/?$/,
   /^\/points\/?$/,
 ];
 

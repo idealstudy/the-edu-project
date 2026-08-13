@@ -44,12 +44,28 @@
   --system-success: #34c759;
   --system-success-alt: #dcf9e3;
   --system-success-text: #1f6b2c;
+  --system-success-line: #cfe8d5; /* 완료 칩 테두리 (DESIGN.md §2.5) */
   --system-warning: #ff4040;
   --system-warning-alt: #ffd9d9;
   --system-warning-text: #c0281c;
   --surface-coach-paper: #fffdf6;
   --surface-coach-solution: #fffdf3;
   --line-coach-paper: rgb(255 92 53 / 0.08);
+  --line-coach-edge: #f0e6cf; /* 코치 말풍선 테두리 */
+
+  /* 오답 노트 종이 계열 (틀린 풀이 표현 전용) */
+  --surface-wrong-chip: #fceeee;
+  --surface-wrong-soft: #fdf5f5;
+  --surface-wrong-paper: #fffafa;
+  --line-wrong-rule: #f6e6e6;
+  --line-wrong-edge: #f0cccc;
+
+  /* 불러오는 중 자리표시 */
+  --surface-skeleton: #f2f1ee;
+  --surface-skeleton-alt: #f7f6f4;
+
+  /* 필기 잉크 (DESIGN.md §2.4 승인 예외) */
+  --ink-handwriting: #1a3fa0;
 
   /* ========================================
     디에듀 3.0 디자인 시스템
@@ -320,11 +336,21 @@ body {
   --color-system-success: var(--system-success);
   --color-system-success-alt: var(--system-success-alt);
   --color-system-success-text: var(--system-success-text);
+  --color-system-success-line: var(--system-success-line);
   --color-system-warning: var(--system-warning);
   --color-system-warning-alt: var(--system-warning-alt);
   --color-system-warning-text: var(--system-warning-text);
   --color-surface-coach-paper: var(--surface-coach-paper);
   --color-surface-coach-solution: var(--surface-coach-solution);
+  --color-line-coach-edge: var(--line-coach-edge);
+  --color-surface-wrong-chip: var(--surface-wrong-chip);
+  --color-surface-wrong-soft: var(--surface-wrong-soft);
+  --color-surface-wrong-paper: var(--surface-wrong-paper);
+  --color-line-wrong-rule: var(--line-wrong-rule);
+  --color-line-wrong-edge: var(--line-wrong-edge);
+  --color-surface-skeleton: var(--surface-skeleton);
+  --color-surface-skeleton-alt: var(--surface-skeleton-alt);
+  --color-ink-handwriting: var(--ink-handwriting);
 
   --color-key-color-primary: var(--orange-scale-orange-50);
   --color-key-color-quaternary: var(--gray-scale-black);

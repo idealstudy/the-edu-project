@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { type MemberSearchResult } from '@/entities/social';
 import { Button, Input, SearchInput } from '@/shared/components/ui';
-import { Loader2, UserPlus } from 'lucide-react';
+import { ChevronDown, Loader2, UserPlus } from 'lucide-react';
 
 import {
   useRequestFriendByPhoneMutation,
@@ -13,11 +13,19 @@ import {
 } from '../../hooks';
 
 /* ─────────────────────────────────────────────────────
- * 친구 요청 폼 — 이름/닉네임으로 검색 → 결과에서 친구 요청.
+ * 친구 요청 폼. 이름/닉네임으로 검색 → 결과에서 친구 요청.
  *  - 디바운스 검색 + 4상태(빈/로딩/없음/결과)
  *  - 회원 번호 직접 입력은 폴백으로 유지.
+ *
+ * 시안(mvp-e-v1.1.0-디자인허브-v3-opus5.html §4)에는 이 검색 UI가 없다.
+ * 화면의 주인공은 "사람 한 줄(전적·최근활동)"이다. 그렇다고 검색·전화번호
+ * 추가 기능을 통째로 지우면 실제로 쓰는 길이 사라진다. 그래서 기본은
+ * 접어두고(제목 줄만 노출) 필요할 때 펴는 형태로 바꿨다. 화면 상단 절반을
+ * 차지하던 것을 한 줄로 줄인다. 이건 시안에 없는 화면에 대한 판단이라
+ * ⛔ 회수 필요로 병행 보고한다(코드 리뷰/회장 확인 대상).
  * ────────────────────────────────────────────────────*/
 export const FriendRequestForm = () => {
+  const [expanded, setExpanded] = useState(false);
   const [keyword, setKeyword] = useState('');
   const [debounced, setDebounced] = useState('');
   const { mutate, isPending } = useRequestFriendMutation();
@@ -30,7 +38,7 @@ export const FriendRequestForm = () => {
   }, [keyword]);
 
   const { data: results, isFetching } = useSearchMembersQuery(debounced, {
-    enabled: debounced.length > 0,
+    enabled: expanded && debounced.length > 0,
   });
 
   const handleRequest = (memberId: number) => {
@@ -39,53 +47,68 @@ export const FriendRequestForm = () => {
   };
 
   return (
-    <div className="border-line-line2 rounded-card flex flex-col gap-4 border bg-white p-5">
-      <div className="flex flex-col gap-1">
-        <h2 className="font-body1-heading text-text-main">친구 찾기</h2>
-        <p className="font-caption-normal text-text-sub2">
-          함께 도전할 친구를 이름이나 닉네임으로 검색해 요청을 보내요.
-        </p>
-      </div>
+    <div className="border-line-line2 rounded-card border bg-white">
+      <button
+        type="button"
+        onClick={() => setExpanded((prev) => !prev)}
+        aria-expanded={expanded}
+        className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left"
+      >
+        <span className="flex min-w-0 flex-col gap-0.5">
+          <span className="font-body2-heading text-text-main">친구 찾기</span>
+          <span className="font-caption-normal text-text-sub2">
+            이름·닉네임 검색 또는 전화번호로 추가
+          </span>
+        </span>
+        <ChevronDown
+          size={18}
+          className={`text-text-sub2 shrink-0 transition-transform ${expanded ? 'rotate-180' : ''}`}
+        />
+      </button>
 
-      <SearchInput
-        value={keyword}
-        onChange={setKeyword}
-        placeholder="이름 또는 닉네임으로 검색"
-        aria-label="친구 검색"
-        className="w-full"
-      />
+      {expanded && (
+        <div className="border-line-line2 flex flex-col gap-4 border-t p-5 pt-4">
+          <SearchInput
+            value={keyword}
+            onChange={setKeyword}
+            placeholder="이름 또는 닉네임으로 검색"
+            aria-label="친구 검색"
+            className="w-full"
+          />
 
-      {/* 검색 결과 4상태 */}
-      {debounced.length > 0 && (
-        <div className="flex flex-col gap-2">
-          {isFetching ? (
-            <div className="text-text-sub2 flex items-center justify-center gap-2 py-6">
-              <Loader2
-                size={18}
-                className="animate-spin"
-              />
-              <span className="font-caption-normal">검색 중이에요…</span>
+          {/* 검색 결과 4상태 */}
+          {debounced.length > 0 && (
+            <div className="flex flex-col gap-2">
+              {isFetching ? (
+                <div className="text-text-sub2 flex items-center justify-center gap-2 py-6">
+                  <Loader2
+                    size={18}
+                    className="animate-spin"
+                  />
+                  <span className="font-caption-normal">검색 중이에요…</span>
+                </div>
+              ) : !results || results.length === 0 ? (
+                <p className="font-caption-normal text-text-sub2 py-6 text-center">
+                  검색 결과가 없어요. 다른 이름으로 찾아보세요.
+                </p>
+              ) : (
+                <ul className="flex flex-col gap-2">
+                  {results.map((member) => (
+                    <MemberRow
+                      key={member.memberId}
+                      member={member}
+                      disabled={isPending}
+                      onRequest={() => handleRequest(member.memberId)}
+                    />
+                  ))}
+                </ul>
+              )}
             </div>
-          ) : !results || results.length === 0 ? (
-            <p className="font-caption-normal text-text-sub2 py-6 text-center">
-              검색 결과가 없어요. 다른 이름으로 찾아보세요.
-            </p>
-          ) : (
-            <ul className="flex flex-col gap-2">
-              {results.map((member) => (
-                <MemberRow
-                  key={member.memberId}
-                  member={member}
-                  disabled={isPending}
-                  onRequest={() => handleRequest(member.memberId)}
-                />
-              ))}
-            </ul>
           )}
+
+          <PhoneNumberFallback />
         </div>
       )}
-
-      <PhoneNumberFallback />
     </div>
   );
 };
@@ -109,7 +132,7 @@ const MemberRow = ({
           {member.name}
         </span>
         <span className="font-caption-normal text-text-sub2 truncate">
-          {member.nickname ?? `회원 #${member.memberId}`}
+          {member.nickname ?? member.name}
         </span>
       </div>
     </div>
@@ -124,11 +147,11 @@ const MemberRow = ({
   </li>
 );
 
-/* 전화번호로 친구 추가 (검색이 안 될 때) — 숫자/하이픈을 String 으로 유지해 앞 0 보존 */
+/* 전화번호로 친구 추가 (검색이 안 될 때). 숫자/하이픈을 String 으로 유지해 앞 0 보존 */
 const PhoneNumberFallback = () => {
   const [value, setValue] = useState('');
   const { mutate, isPending } = useRequestFriendByPhoneMutation();
-  // 하이픈 제거한 순수 숫자 — 휴대폰 번호는 보통 10~11자리.
+  // 하이픈 제거한 순수 숫자. 휴대폰 번호는 보통 10~11자리.
   const digits = value.replace(/[^0-9]/g, '');
   const isValid = digits.length >= 9 && digits.length <= 11;
 

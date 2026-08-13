@@ -18,6 +18,14 @@ const FriendshipSchema = z.object({
   requesterProfileImageUrl: z.string().nullable(),
   addresseeName: z.string().nullable(),
   addresseeProfileImageUrl: z.string().nullable(),
+  myTurn: z.boolean().optional(),
+  lastActivity: z
+    .object({
+      occurredAt: z.string(),
+      type: z.string(),
+    })
+    .nullable()
+    .optional(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -90,6 +98,16 @@ const ChallengeInviteResultSchema = z.object({
   shareToken: z.string(),
   status: InviteStatusSchema,
   challengeId: z.number(),
+  opponentName: z.string().optional(),
+  viewerRole: z.enum(['INVITER', 'INVITEE']).optional(),
+  openDuelCount: z.number().int().nonnegative().optional(),
+  headToHead: z
+    .object({
+      win: z.number().int().nonnegative(),
+      lose: z.number().int().nonnegative(),
+      draw: z.number().int().nonnegative(),
+    })
+    .optional(),
   outcome: z.enum(['WIN', 'LOSE', 'BOTH_WRONG', 'BOTH_CORRECT']).nullable(),
   myCorrect: z.boolean().nullable(),
   opponentCorrect: z.boolean().nullable(),

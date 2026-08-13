@@ -35,6 +35,8 @@ const COURSE = {
 const FRIENDS = {
   INDEX: '/friends',
   DETAIL: (friendId: number) => `/friends/${friendId}`,
+  // 대결 결과 전용 화면(D-10-4). 팝업 대신 앱바+사이드바를 가진 정식 페이지로 뜬다.
+  CHALLENGE_RESULT: (token: string) => `/friends/challenge/${token}/result`,
 } as const;
 
 /* ─────────────────────────────────────────────────────

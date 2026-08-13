@@ -24,11 +24,30 @@ export const SUBJECT_LABEL: Record<string, string> = {
   OTHER: '기타',
 };
 
+const SERVER_ENUM_CODE = /^[A-Z][A-Z0-9_]*$/;
+
+/**
+ * 화면 표시용 과목명.
+ *
+ * 사전에 있는 서버 코드는 한글로 바꾸고, 이미 번역된 표시명은 보존한다.
+ * 사전에 없는 서버 enum은 내부 식별자를 노출하지 않도록 null을 반환한다.
+ */
+export const subjectDisplayLabel = (
+  subject: string | null | undefined
+): string | null => {
+  const normalized = subject?.trim();
+  if (!normalized) return null;
+
+  const mapped = SUBJECT_LABEL[normalized.toUpperCase()];
+  if (mapped) return mapped;
+
+  return SERVER_ENUM_CODE.test(normalized) ? null : normalized;
+};
+
 /**
  * 과목 코드를 한글로 바꾼다.
  * 사전에 없는 코드는 raw enum 문자열을 그대로 노출하지 않고 `기타`로 접는다.
  */
 export const subjectLabel = (subject: string | null | undefined): string => {
-  if (!subject) return '기타';
-  return SUBJECT_LABEL[subject] ?? '기타';
+  return subjectDisplayLabel(subject) ?? '기타';
 };

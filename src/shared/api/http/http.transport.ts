@@ -18,8 +18,17 @@ const privateHttp = axios.create({
 });
 
 // NOTE: 공개 요청 전용 (기본은 쿠키 미포함, 비로그인 상태에서도 가능)
+// 결함(2026-08-12, 회장 실측): 클라이언트에서 이 인스턴스가 백엔드 주소로
+// 직접 요청해 브라우저가 크로스오리진으로 막았다(apidev.d-edu.site가 dev
+// 환경 CORS를 안 열어줌 — 운영도 프론트/백엔드 호스트가 갈려 동일 문제).
+// privateHttp와 같은 원칙을 따른다: 브라우저에서는 항상 앱 자신의
+// /api/v1 프록시(app/api/v1/[...path]/route.ts)를 거친다. 그 프록시는
+// 쿠키 유무와 무관하게 모든 경로를 백엔드로 그대로 전달하므로 공개
+// 엔드포인트도 문제없이 통과한다.
 const publicHttp = axios.create({
-  baseURL: env.backendApiUrl,
+  // MAJOR 21 보류: 같은 출처 BFF가 인증 쿠키를 전달하지 않게 하려면 프록시
+  // 계약 변경이 필요하다. 백엔드/BFF 별건이라 이번 프론트 화면 수정에서는 유지한다.
+  baseURL: isServer ? env.backendApiUrl : '/api/v1',
   withCredentials: false,
   headers: {
     'Content-Type': 'application/json',

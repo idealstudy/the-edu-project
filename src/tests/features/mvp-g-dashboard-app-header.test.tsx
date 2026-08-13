@@ -83,6 +83,12 @@ vi.mock('@/features/social', () => ({
   FriendsTutorial: () => <button type="button">친구 튜토리얼</button>,
 }));
 
+// 이 테스트는 전역 헤더의 h1 중복만 검증한다. LearningClient의 데이터 요청은
+// 범위 밖이므로 실제 네트워크를 열지 않아 stderr를 회귀 신호로 깨끗하게 둔다.
+vi.mock('@/features/learning', () => ({
+  LearningClient: () => <div data-testid="learning-content" />,
+}));
+
 vi.mock('@/features/point/components/point-wallet-client', () => ({
   PointWalletClient: () => <div data-testid="point-wallet-content" />,
 }));
@@ -289,7 +295,10 @@ describe('MVP-G 공통 앱 헤더', () => {
     // 이 화면은 조회 도구를 실제로 쓰므로 공용 래퍼로 감싼다.
     renderWithProviders(
       <>
-        <DashboardAppHeader role="ROLE_STUDENT" initialMemberName="김서준" />
+        <DashboardAppHeader
+          role="ROLE_STUDENT"
+          initialMemberName="김서준"
+        />
         <LearningPage />
       </>
     );
@@ -301,28 +310,31 @@ describe('MVP-G 공통 앱 헤더', () => {
     ['/tree', '약점 트리', TreePage],
     ['/friends', '친구', FriendsPage],
     ['/points', '포인트', PointsPage],
-  ])('%s에서 전역 헤더만 표시하고 요약 쿼리 3종을 호출하지 않는다', (pathname, title, Page) => {
-    mocks.pathname = pathname;
+  ])(
+    '%s에서 전역 헤더만 표시하고 요약 쿼리 3종을 호출하지 않는다',
+    (pathname, title, Page) => {
+      mocks.pathname = pathname;
 
-    const { container } = render(
-      <>
-        <DashboardAppHeader
-          role="ROLE_STUDENT"
-          initialMemberName="김서준"
-        />
-        <Page />
-      </>
-    );
+      const { container } = render(
+        <>
+          <DashboardAppHeader
+            role="ROLE_STUDENT"
+            initialMemberName="김서준"
+          />
+          <Page />
+        </>
+      );
 
-    expect(
-      container.querySelectorAll('[data-dashboard-app-header]')
-    ).toHaveLength(1);
-    expect(screen.getByRole('heading', { name: title })).toBeVisible();
-    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
-    expect(mocks.growthQuery).not.toHaveBeenCalled();
-    expect(mocks.wrongAnswersQuery).not.toHaveBeenCalled();
-    expect(mocks.pointWalletQuery).not.toHaveBeenCalled();
-  });
+      expect(
+        container.querySelectorAll('[data-dashboard-app-header]')
+      ).toHaveLength(1);
+      expect(screen.getByRole('heading', { name: title })).toBeVisible();
+      expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+      expect(mocks.growthQuery).not.toHaveBeenCalled();
+      expect(mocks.wrongAnswersQuery).not.toHaveBeenCalled();
+      expect(mocks.pointWalletQuery).not.toHaveBeenCalled();
+    }
+  );
 
   it('스터디룸 상세 숫자 ID에만 상세 서브타이틀을 표시하고 new는 목록 요약을 유지한다', () => {
     mocks.pathname = '/study-rooms/new';
@@ -334,7 +346,9 @@ describe('MVP-G 공통 앱 헤더', () => {
     );
 
     expect(screen.getByText('스터디룸 2개 · 학생 2명')).toBeVisible();
-    expect(screen.queryByText('수업 상세 · 학생 화면 관리')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('수업 상세 · 학생 화면 관리')
+    ).not.toBeInTheDocument();
 
     mocks.pathname = '/study-rooms/123/manage';
     rerender(

@@ -39,7 +39,15 @@ const RecommendedChallengeSchema = z.object({
 
 const ChallengeDetailSchema = z.object({
   id: z.string(),
+  /** 화면에 그대로 찍는 한글 이름(예: 수학). 서버에 되돌려 보내면 안 된다. */
   subject: z.string(),
+  /**
+   * 서버가 아는 과목 코드(MATH 등). 2026-08-12 신설.
+   * 왜: 대결 결과 화면이 추천을 부를 때 위 `subject`(한글 표시값)를 그대로 넘겨
+   * `recommended?subject=수학` 이 400 으로 거부됐고, 추천이 화면 표시 없이 조용히 실패했다.
+   * 표시용 값과 서버에 보낼 값은 쓰임이 다르므로 필드를 나눈다.
+   */
+  subjectCode: ChallengeSubjectSchema,
   topic: z.string(),
   questionNumber: z.number(),
   questionText: z.string(),

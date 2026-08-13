@@ -47,11 +47,13 @@ export const useOpenChallengeListQuery = (params: ChallengeListParams = {}) =>
   });
 
 export const useRecommendedChallengesQuery = (
-  params: RecommendedChallengeParams = {}
+  params: RecommendedChallengeParams = {},
+  options?: { enabled?: boolean }
 ) =>
   useQuery({
     queryKey: openChallengeKeys.recommended(params),
     queryFn: () => repository.getRecommended(params),
+    enabled: options?.enabled,
   });
 
 export const useOpenChallengeDetailQuery = (

@@ -41,8 +41,12 @@ export const authHandlers = [
     );
   }),
 
+  // 결함1 수정(2026-08-12)으로 공개(publicHttp) 요청이 브라우저에서는
+  // 절대경로(env.backendApiUrl)가 아니라 앱 자신의 상대경로(/api/v1)를
+  // 탄다. jsdom 테스트 환경도 window가 있어 상대경로를 탄다 — 두 형태를
+  // 다 잡도록 origin 무관 와일드카드(`*`)로 매칭한다.
   http.post<never, CheckEmailDuplicateBody>(
-    env.backendApiUrl + '/public/email-verifications/check-duplicate',
+    '*/public/email-verifications/check-duplicate',
     async ({ request }) => {
       const body = await request.json();
 
@@ -55,7 +59,7 @@ export const authHandlers = [
   ),
 
   http.post<never, VerifyCodeBody>(
-    env.backendApiUrl + '/public/email-verifications/verify-code',
+    '*/public/email-verifications/verify-code',
     async ({ request }) => {
       const body = await request.json();
 

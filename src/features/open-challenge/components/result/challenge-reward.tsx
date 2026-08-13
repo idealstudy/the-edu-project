@@ -108,7 +108,7 @@ export const ChallengeReward = ({
 
         {provocation}
 
-        {/* 실수치 보상 배지 — reward 있을 때만 표시 */}
+        {/* 실수치 보상 배지. reward 있을 때만 표시 */}
         {reward && (
           <div
             className="flex flex-wrap gap-2"
@@ -124,7 +124,7 @@ export const ChallengeReward = ({
             )}
             {reward.streakKept && reward.streakDays > 0 && (
               <span
-                className="rounded-full bg-amber-50 px-3 py-1 text-sm font-semibold text-amber-600"
+                className="bg-orange-1 text-orange-10 rounded-full px-3 py-1 text-sm font-semibold"
                 data-testid="reward-streak-badge"
               >
                 🔥 {reward.streakDays}일 연속
@@ -133,16 +133,20 @@ export const ChallengeReward = ({
             {reward.treeNodeName &&
               reward.masteryBefore !== reward.masteryAfter && (
                 <span
-                  className="rounded-full bg-green-50 px-3 py-1 text-sm font-semibold text-green-600"
+                  className="bg-system-success-alt text-system-success-text rounded-full px-3 py-1 text-sm font-semibold"
                   data-testid="reward-mastery-badge"
                 >
                   🌿 {reward.treeNodeName} {reward.masteryBefore}→
                   {reward.masteryAfter}
                 </span>
               )}
+            {/* 2026-08-13 디자인 QA 지적 해소: 여기 있던 보라(violet-50/600)와
+                파랑(blue-50/600)은 Tailwind 기본색이라 우리 토큰 어디에도 없었다.
+                디자인시스템은 파랑을 금지한다(DESIGN.md §12). 정복은 완료를 뜻하므로
+                성공 초록, 레벨업은 성장 강조라 대표 오렌지로 옮긴다. */}
             {reward.conquered && (
               <span
-                className="rounded-full bg-violet-50 px-3 py-1 text-sm font-semibold text-violet-600"
+                className="bg-system-success-alt text-system-success-text rounded-full px-3 py-1 text-sm font-semibold"
                 data-testid="reward-conquered-badge"
               >
                 🏆 정복!
@@ -150,7 +154,7 @@ export const ChallengeReward = ({
             )}
             {reward.leveledUp && (
               <span
-                className="rounded-full bg-blue-50 px-3 py-1 text-sm font-semibold text-blue-600"
+                className="bg-background-orange text-key-color-primary rounded-full px-3 py-1 text-sm font-semibold"
                 data-testid="reward-levelup-badge"
               >
                 ⬆️ Lv.{reward.level} 달성!
@@ -199,7 +203,7 @@ export const ChallengeReward = ({
       {reward && reward.streakKept && reward.streakDays > 0 && (
         <div className="flex flex-wrap gap-2">
           <span
-            className="rounded-full bg-amber-50 px-3 py-1 text-sm font-semibold text-amber-600"
+            className="bg-orange-1 text-orange-10 rounded-full px-3 py-1 text-sm font-semibold"
             data-testid="reward-streak-badge"
           >
             🔥 {reward.streakDays}일 연속

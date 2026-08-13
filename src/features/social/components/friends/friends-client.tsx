@@ -1,11 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 import { type Friendship } from '@/entities/social';
 import { useSession } from '@/providers';
 import { Button, StatusBadge } from '@/shared/components/ui';
 import { PRIVATE, PUBLIC } from '@/shared/constants/route';
+import { cn } from '@/shared/lib';
 import { ChevronRight, Flame, UserPlus, Users } from 'lucide-react';
 
 import {
@@ -14,6 +16,7 @@ import {
   useFriendTurnSummaryQuery,
   useMyFriendsQuery,
 } from '../../hooks';
+import { ChallengeShareButton } from '../challenge-invite/challenge-share-button';
 import { FriendRequestForm } from './friend-request-form';
 
 /* ─────────────────────────────────────────────────────
@@ -40,9 +43,51 @@ const otherIdentity = (friendship: Friendship, myId: number): OtherIdentity =>
         profileImageUrl: friendship.requesterProfileImageUrl,
       };
 
+const LAST_ACTIVITY_LABELS: Partial<
+  Record<NonNullable<Friendship['lastActivity']>['type'], string>
+> = {
+  FRIEND_REQUESTED: '친구 요청이 생겼어요',
+  FRIENDSHIP_ACCEPTED: '친구가 됐어요',
+  INVITE_SENT: '도전장을 보냈어요',
+  INVITE_ACCEPTED: '도전장을 수락했어요',
+  VIEWER_SUBMITTED: '내가 풀이를 냈어요',
+  OPPONENT_SUBMITTED: '상대가 풀이를 냈어요',
+  DUEL_COMPLETED: '대결 결과가 나왔어요',
+};
+
+const formatLastActivity = (
+  activity: Friendship['lastActivity']
+): string | null => {
+  if (!activity) return null;
+  const activityLabel = LAST_ACTIVITY_LABELS[activity.type];
+  if (!activityLabel) return null;
+
+  const occurredAt = new Date(activity.occurredAt);
+  const timeLabel = Number.isNaN(occurredAt.getTime())
+    ? null
+    : new Intl.DateTimeFormat('ko-KR', {
+        month: 'numeric',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(occurredAt);
+
+  return timeLabel ? `${activityLabel} · ${timeLabel}` : activityLabel;
+};
+
 export const FriendsClient = () => {
   const { member } = useSession();
+  const searchParams = useSearchParams();
   const myId = member?.id ?? -1;
+  const challengeIdValue = searchParams.get('challengeId');
+  const unitNodeIdValue = searchParams.get('unitNodeId');
+  const challengeId = challengeIdValue ? Number(challengeIdValue) : null;
+  const selectionQuery = new URLSearchParams();
+  if (challengeId != null && Number.isFinite(challengeId)) {
+    selectionQuery.set('challengeId', String(challengeId));
+  }
+  if (unitNodeIdValue) selectionQuery.set('unitNodeId', unitNodeIdValue);
+  const selectionSuffix = selectionQuery.size > 0 ? `?${selectionQuery}` : '';
 
   const { data: friends, isLoading, isError, refetch } = useMyFriendsQuery();
   const { data: turnSummary } = useFriendTurnSummaryQuery();
@@ -57,6 +102,8 @@ export const FriendsClient = () => {
       (item) => item.state === 'PENDING' && item.requesterId === myId
     ) ?? [];
   const accepted = friends?.filter((item) => item.state === 'ACCEPTED') ?? [];
+  const acceptedMyTurn = accepted.filter((item) => item.myTurn === true);
+  const acceptedWaiting = accepted.filter((item) => item.myTurn !== true);
 
   return (
     <div className="flex flex-col gap-6">
@@ -92,6 +139,18 @@ export const FriendsClient = () => {
 
       <FriendRequestForm />
 
+      {challengeId != null && Number.isFinite(challengeId) && (
+        <div className="border-orange-7 bg-orange-1 rounded-card border px-4 py-3">
+          <strong className="text-text-main block text-sm">
+            도전장을 보낼 친구를 고르세요
+          </strong>
+          <span className="text-text-sub1 mt-1 block text-xs">
+            친구를 누르면 선택한 문제 맥락을 유지한 채 공유 링크를 만들 수
+            있어요.
+          </span>
+        </div>
+      )}
+
       {isLoading && <FriendsSkeleton />}
 
       {isError && (
@@ -110,23 +169,42 @@ export const FriendsClient = () => {
       )}
 
       {!isLoading && !isError && (
-        <>
-          {/* 받은 요청 */}
-          {incomingRequests.length > 0 && (
-            <section className="flex flex-col gap-3">
-              <h2 className="font-body1-heading text-text-main">
-                받은 요청{' '}
-                <span className="text-key-color-primary tabular-nums">
-                  {incomingRequests.length}
-                </span>
-              </h2>
-              <ul className="flex flex-col gap-2">
-                {incomingRequests.map((item) => (
-                  <li
-                    key={item.id}
-                    className="border-line-line2 rounded-card flex items-center justify-between gap-3 border bg-white px-4 py-3"
-                  >
-                    <FriendIdentityLink {...otherIdentity(item, myId)} />
+        <section className="flex flex-col gap-3">
+          <h2 className="font-body1-heading text-text-main">
+            친구{' '}
+            <span className="text-key-color-primary tabular-nums">
+              {accepted.length}
+            </span>
+          </h2>
+
+          {/* 시안(§4)은 "친구"와 "요청"을 나눈 목록이 아니라 사람 한 줄기로
+              합쳐 보여준다. 서버 myTurn=true인 친구를 목록 맨 위에 두고,
+              받은 요청 → 나머지 친구 → 보낸 요청 순으로 이어 붙인다. */}
+          {incomingRequests.length === 0 &&
+          outgoingRequests.length === 0 &&
+          accepted.length === 0 ? (
+            <EmptyFriends challengeId={challengeId} />
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {acceptedMyTurn.map((item) => (
+                <AcceptedFriendListItem
+                  key={`friend-${item.id}`}
+                  friendship={item}
+                  myId={myId}
+                  selectionSuffix={selectionSuffix}
+                />
+              ))}
+
+              {incomingRequests.map((item) => (
+                <li
+                  key={`incoming-${item.id}`}
+                  className="border-key-color-primary bg-orange-1 rounded-card flex items-center justify-between gap-3 border px-4 py-3"
+                >
+                  <FriendIdentityLink {...otherIdentity(item, myId)} />
+                  <div className="flex shrink-0 items-center gap-2">
+                    <span className="text-orange-10 text-ui-choice font-bold whitespace-nowrap">
+                      친구 요청
+                    </span>
                     <Button
                       size="xsmall"
                       disabled={isAccepting}
@@ -134,61 +212,64 @@ export const FriendsClient = () => {
                     >
                       수락
                     </Button>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+                  </div>
+                </li>
+              ))}
 
-          {/* 보낸 요청 */}
-          {outgoingRequests.length > 0 && (
-            <section className="flex flex-col gap-3">
-              <h2 className="font-body1-heading text-text-main">보낸 요청</h2>
-              <ul className="flex flex-col gap-2">
-                {outgoingRequests.map((item) => (
-                  <li
-                    key={item.id}
-                    className="border-line-line2 rounded-card flex items-center justify-between gap-3 border bg-white px-4 py-3"
-                  >
-                    <FriendIdentityLink {...otherIdentity(item, myId)} />
-                    <StatusBadge
-                      variant="default"
-                      label="수락 대기"
-                    />
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+              {acceptedWaiting.map((item) => (
+                <AcceptedFriendListItem
+                  key={`friend-${item.id}`}
+                  friendship={item}
+                  myId={myId}
+                  selectionSuffix={selectionSuffix}
+                />
+              ))}
 
-          {/* 친구 목록 */}
-          <section className="flex flex-col gap-3">
-            <h2 className="font-body1-heading text-text-main">
-              내 친구{' '}
-              <span className="text-key-color-primary tabular-nums">
-                {accepted.length}
-              </span>
-            </h2>
-            {accepted.length > 0 ? (
-              <ul className="flex flex-col gap-2">
-                {accepted.map((item) => (
-                  <li
-                    key={item.id}
-                    className="border-line-line2 rounded-card flex items-center justify-between gap-3 border bg-white px-4 py-3"
-                  >
-                    <AcceptedFriendRow {...otherIdentity(item, myId)} />
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <EmptyFriends />
-            )}
-          </section>
-        </>
+              {outgoingRequests.map((item) => (
+                <li
+                  key={`outgoing-${item.id}`}
+                  className="border-line-line2 rounded-card flex items-center justify-between gap-3 border bg-white px-4 py-3 opacity-70"
+                >
+                  <FriendIdentityLink {...otherIdentity(item, myId)} />
+                  <StatusBadge
+                    variant="default"
+                    label="수락 대기"
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       )}
     </div>
   );
 };
+
+const AcceptedFriendListItem = ({
+  friendship,
+  myId,
+  selectionSuffix,
+}: {
+  friendship: Friendship;
+  myId: number;
+  selectionSuffix: string;
+}) => (
+  <li
+    className={cn(
+      'rounded-card flex items-center justify-between gap-3 border px-4 py-3',
+      friendship.myTurn
+        ? 'border-orange-7 bg-orange-1'
+        : 'border-line-line2 bg-white'
+    )}
+  >
+    <AcceptedFriendRow
+      {...otherIdentity(friendship, myId)}
+      myTurn={friendship.myTurn}
+      lastActivity={friendship.lastActivity}
+      selectionSuffix={selectionSuffix}
+    />
+  </li>
+);
 
 const FriendIdentityLink = ({
   memberId,
@@ -211,39 +292,66 @@ const FriendIdentityLink = ({
 /**
  * 수락된 친구 행.
  *
- * 목적지가 둘이라 링크를 두 개로 나눈다(링크 안에 링크를 넣을 수 없다).
- *  - 이름·사진: 상대 프로필(회장 R-07 요청). 친구가 되기 전에는 요청 행에서
- *    프로필로 갈 수 있는데 친구가 되고 나면 갈 길이 사라졌던 것을 여기서 연다.
- *  - 전적·화살표 영역: 그 친구와의 대결 기록(기존 동선 유지).
+ * D-11 확정에 따라 행 전체의 주 목적지는 그 친구와의 대결 기록이다.
+ * 전적 조회가 실패해도 링크는 보존하고 전적 영역만 재시도 상태로 바꾼다.
  */
-const AcceptedFriendRow = (identity: OtherIdentity) => {
-  const { data: summary } = useFriendSummaryQuery(identity.memberId);
+const AcceptedFriendRow = ({
+  selectionSuffix,
+  myTurn,
+  lastActivity,
+  ...identity
+}: OtherIdentity & {
+  selectionSuffix: string;
+  myTurn: boolean | undefined;
+  lastActivity: Friendship['lastActivity'];
+}) => {
+  // 결함(2026-08-13, QA 관찰): 이전엔 로딩 중과 에러를 같은 문구
+  // "대결 기록 불러오는 중"으로 묶어, 조회가 실패해도 영원히 로딩처럼
+  // 보였다(record가 계속 undefined). isError를 분리해 실패는 실패로
+  // 보여주고 재시도 길을 준다. curl로 백엔드 단독 호출은 200으로 빠르게
+  // 응답함을 확인했다(관찰됨). 실패는 개별 요청 실패·네트워크 순간
+  // 장애 쪽일 가능성이 높아, 재시도 버튼으로 그 케이스를 흡수한다.
+  const {
+    data: summary,
+    isError,
+    isLoading,
+    refetch,
+  } = useFriendSummaryQuery(identity.memberId);
   const record = summary?.record;
   const displayName = identity.name ?? '이름 미설정 회원';
+  const recordLabel = record
+    ? `${record.win}승 ${record.lose}패 ${record.draw}무`
+    : isLoading
+      ? '전적 불러오는 중'
+      : isError
+        ? '전적을 불러오지 못했어요'
+        : '전적 없음';
+  const activityLabel = formatLastActivity(lastActivity);
 
   return (
-    <div className="flex min-w-0 flex-1 items-center gap-3">
+    <div className="flex min-w-0 flex-1 items-center gap-2">
       <Link
-        href={PUBLIC.PROFILE.STUDENT(identity.memberId)}
-        aria-label={`${displayName} 프로필 보기`}
-        className="focus-visible:ring-key-color-primary min-w-0 rounded-lg focus-visible:ring-2 focus-visible:outline-none"
-      >
-        <FriendIdentity {...identity} />
-      </Link>
-      <Link
-        href={PRIVATE.FRIENDS.DETAIL(identity.memberId)}
+        href={`${PRIVATE.FRIENDS.DETAIL(identity.memberId)}${selectionSuffix}`}
         aria-label={`${displayName}님과의 대결 기록 보기`}
-        className="focus-visible:ring-key-color-primary ml-auto flex shrink-0 items-center gap-3 rounded-lg focus-visible:ring-2 focus-visible:outline-none"
+        className="focus-visible:ring-key-color-primary flex min-w-0 flex-1 items-center gap-3 rounded-lg focus-visible:ring-2 focus-visible:outline-none"
       >
-        <span className="hidden shrink-0 text-right sm:block">
-          <span className="text-text-main block text-xs font-bold">
-            {record
-              ? `${record.win}승 ${record.lose}패 ${record.draw}무`
-              : '대결 기록 불러오는 중'}
+        <FriendIdentity
+          {...identity}
+          activityLabel={activityLabel}
+          mobileRecordLabel={recordLabel}
+        />
+        <span className="ml-auto hidden shrink-0 text-right sm:block">
+          <span
+            className={cn(
+              'block text-xs font-bold',
+              isError ? 'text-system-warning-text' : 'text-text-main'
+            )}
+          >
+            {recordLabel}
           </span>
-          {record && record.myTurn > 0 && (
+          {myTurn && (
             <span className="text-orange-10 text-ui-choice font-bold">
-              내 차례 {record.myTurn}건
+              내 차례
             </span>
           )}
         </span>
@@ -252,11 +360,29 @@ const AcceptedFriendRow = (identity: OtherIdentity) => {
           size={18}
         />
       </Link>
+      {isError && (
+        <Button
+          variant="outlined"
+          size="xsmall"
+          className="shrink-0"
+          onClick={() => refetch()}
+        >
+          전적 다시 불러오기
+        </Button>
+      )}
     </div>
   );
 };
 
-const FriendIdentity = ({ name, profileImageUrl }: OtherIdentity) => (
+const FriendIdentity = ({
+  name,
+  profileImageUrl,
+  activityLabel,
+  mobileRecordLabel,
+}: OtherIdentity & {
+  activityLabel?: string | null;
+  mobileRecordLabel?: string;
+}) => (
   <div className="flex min-w-0 items-center gap-3">
     {profileImageUrl ? (
       // eslint-disable-next-line @next/next/no-img-element -- presigned S3 URL, next/image 도메인 미등록
@@ -274,19 +400,44 @@ const FriendIdentity = ({ name, profileImageUrl }: OtherIdentity) => (
       <span className="font-body2-heading text-text-main truncate">
         {name ?? '이름 미설정 회원'}
       </span>
+      {activityLabel && (
+        <span className="font-caption-normal text-text-sub1 truncate">
+          {mobileRecordLabel && (
+            <span className="sm:hidden">{mobileRecordLabel} · </span>
+          )}
+          {activityLabel}
+        </span>
+      )}
     </div>
   </div>
 );
 
-const EmptyFriends = () => (
+const EmptyFriends = ({ challengeId }: { challengeId: number | null }) => (
   <div className="border-line-line2 rounded-card flex flex-col items-center gap-2 border border-dashed bg-white p-10 text-center">
     <span className="bg-orange-1 text-key-color-primary flex size-12 items-center justify-center rounded-full">
       <UserPlus size={24} />
     </span>
     <p className="font-body2-heading text-text-main">아직 친구가 없어요</p>
     <p className="font-caption-normal text-text-sub2 text-balance">
-      방금 푼 문제를 친구에게 보내면 누가 더 잘 푸는지 겨룰 수 있어요.
+      방금 푼 문제를 친구에게 보내면 누가 더 잘 푸는지 겨룰 수 있어요. 친구가
+      회원이 아니어도 풀 수 있습니다.
     </p>
+    {challengeId != null && Number.isFinite(challengeId) ? (
+      <ChallengeShareButton
+        challengeId={challengeId}
+        variant="primary"
+        size="large"
+        label="이 문제로 도전장 보내기"
+      />
+    ) : (
+      <Button
+        variant="primary"
+        size="large"
+        asChild
+      >
+        <Link href={PUBLIC.OPEN_CHALLENGE.LIST}>문제 골라 도전장 보내기</Link>
+      </Button>
+    )}
   </div>
 );
 

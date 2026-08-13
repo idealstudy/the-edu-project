@@ -35,6 +35,8 @@ const toFriendship = (raw: unknown): Friendship => {
     requesterProfileImageUrl: parsed.requesterProfileImageUrl ?? null,
     addresseeName: parsed.addresseeName ?? null,
     addresseeProfileImageUrl: parsed.addresseeProfileImageUrl ?? null,
+    myTurn: parsed.myTurn,
+    lastActivity: parsed.lastActivity,
   });
 };
 
@@ -99,6 +101,10 @@ const toInviteResult = (raw: unknown): ChallengeInviteResult => {
   const parsed = dto.challengeInviteResult.parse(raw);
   return domain.challengeInviteResult.parse({
     ...parsed,
+    opponentName: parsed.opponentName,
+    viewerRole: parsed.viewerRole,
+    openDuelCount: parsed.openDuelCount,
+    headToHead: parsed.headToHead,
     myCorrect: parsed.myCorrect ?? null,
     opponentCorrect: parsed.opponentCorrect ?? null,
     outcome: parsed.outcome ?? null,
