@@ -52,20 +52,21 @@ const StudentSummaryChips = ({ memberName }: { memberName: string }) => {
   const streakDays = growthQuery.data?.streakDays ?? 0;
   const level = growthQuery.data?.level ?? 0;
   const pointBalance = pointQuery.data?.balance ?? 0;
+  // 시안 v23 `.chip`(HTML:510-513, `hideM`): 연속·레벨 칩은 모바일에서 숨기고
+  // 오답·포인트만 남긴다(좁은 화면 칩 과다노출 방지). 레벨은 라벨 없이 "Lv.7"만.
   const chips = [
-    ['내 오답', `${wrongAnswerCount}개`],
-    ['연속', `${streakDays}일`],
-    // 시안 v23 `.chip`(HTML:512): 레벨 칩은 라벨 없이 "Lv.7"만 보인다.
-    [null, `Lv.${level}`],
-    ['포인트', `${pointBalance.toLocaleString('ko-KR')}P`],
+    ['내 오답', `${wrongAnswerCount}개`, false],
+    ['연속', `${streakDays}일`, true],
+    [null, `Lv.${level}`, true],
+    ['포인트', `${pointBalance.toLocaleString('ko-KR')}P`, false],
   ] as const;
 
   return (
     <div className="gap-inline-gap flex flex-wrap items-center justify-end">
-      {chips.map(([label, value]) => (
+      {chips.map(([label, value, hideOnMobile]) => (
         <span
           key={label ?? value}
-          className="bg-gray-1 text-gray-9 text-ui-choice min-h-chip-min rounded-pill px-button-chip-x inline-flex items-center font-bold"
+          className={`bg-gray-1 text-gray-9 text-ui-choice min-h-chip-min rounded-pill px-button-chip-x items-center font-bold ${hideOnMobile ? 'hidden tablet:inline-flex' : 'inline-flex'}`}
         >
           {label && `${label} `}
           <b className="text-gray-12 ml-1 tabular-nums">{value}</b>
