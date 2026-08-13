@@ -1,5 +1,5 @@
 import { renderWithProviders } from '@/tests/utils';
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, screen, within } from '@testing-library/react';
 import { AxiosError, AxiosHeaders } from 'axios';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
@@ -169,10 +169,11 @@ describe('ChallengeResultScreen', () => {
     expect(resultSummary).not.toHaveClass('border', 'rounded-section', 'p-6');
     expect(resultSummary.querySelector('svg')).toBeNull();
     expect(
-      screen.getByText(
-        '조성진은 4번, 나는 5번을 골랐어요. (2,2)를 세었는지가 갈린 지점입니다.'
-      )
+      screen.getByText('조성진은 4번, 나는 5번을 골랐어요.')
     ).toBeInTheDocument();
+    expect(screen.getByTestId('divergence-reason')).toHaveTextContent(
+      '(2,2)를 세었는지가 갈린 지점입니다.'
+    );
     expect(resultSummary).toContainElement(screen.getByText('이 문제 오답률'));
     expect(screen.getByText('확률과 통계 28번')).toBeInTheDocument();
     expect(screen.getByText('조성진과 통산 3승 2패 1무')).toBeInTheDocument();
@@ -444,6 +445,7 @@ describe('ChallengeResultScreen', () => {
     expect(
       screen.getByText('조성진은 4번, 나는 5번을 골랐어요.')
     ).toBeInTheDocument();
+    expect(screen.queryByTestId('divergence-reason')).not.toBeInTheDocument();
   });
 
   test.each([
@@ -845,7 +847,7 @@ describe('ChallengeResultScreen', () => {
     expect(mutate).toHaveBeenCalledWith('tok');
   });
 
-  test('손풀이 이미지가 있으면 카드 안에 렌더된다', () => {
+  test('정답·오답 손풀이가 있으면 시안의 머리, 풀이 라벨, 읽는 법을 각각 렌더한다', () => {
     mockUseInviteResultQuery.mockReturnValue({
       data: {
         ...baseResult,
@@ -888,6 +890,27 @@ describe('ChallengeResultScreen', () => {
       'src',
       'https://s3.example.com/opp-solution.png'
     );
+
+    const myCard = within(screen.getByTestId('vs-column-나'));
+    const opponentCard = within(screen.getByTestId('vs-column-조성진'));
+    expect(myCard.getByText('정답')).toHaveClass(
+      'bg-system-success-alt',
+      'text-system-success-text'
+    );
+    expect(opponentCard.getByText('오답')).toHaveClass(
+      'bg-orange-1',
+      'text-orange-10'
+    );
+    expect(myCard.getByText('✓ 맞은 풀이')).toBeInTheDocument();
+    expect(myCard.getByText('이 순서를 따라가면 됩니다')).toBeInTheDocument();
+    expect(opponentCard.getByText('✗ 틀린 풀이')).toBeInTheDocument();
+    expect(
+      opponentCard.getByText('따라 하지 말고, 갈린 지점만 보세요')
+    ).toBeInTheDocument();
+    expect(myCard.getByText(/에 제출$/)).toBeInTheDocument();
+    expect(opponentCard.getByText(/에 제출$/)).toBeInTheDocument();
+    expect(screen.queryByText('푼 시각')).not.toBeInTheDocument();
+    expect(screen.queryByText('교시')).not.toBeInTheDocument();
   });
 
   test('풀이를 아예 올리지 않았으면(solutionShared=false) 왜 없는지 한 줄로 안내한다', () => {
@@ -996,10 +1019,11 @@ describe('ChallengeResultScreen', () => {
       screen.getByText(/줄 주석 데이터는 아직 없어요/)
     ).toBeInTheDocument();
     expect(
-      screen.getByText(
-        '조성진은 4번, 나는 5번을 골랐어요. (2,2)를 세었는지가 갈린 지점입니다.'
-      )
+      screen.getByText('조성진은 4번, 나는 5번을 골랐어요.')
     ).toBeInTheDocument();
+    expect(screen.getByTestId('divergence-reason')).toHaveTextContent(
+      '(2,2)를 세었는지가 갈린 지점입니다.'
+    );
   });
 
   test('맥락 띠는 도전 발송 시각과 상대 제출 시각을 구분하고 완료일 때만 둘 다 냈다고 말한다', () => {

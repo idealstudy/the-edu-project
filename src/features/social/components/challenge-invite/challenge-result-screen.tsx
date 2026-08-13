@@ -18,7 +18,7 @@ import {
   extractErrorMessage,
 } from '@/shared/lib/bff/utils.message';
 import { AxiosError } from 'axios';
-import { Check, Compass, Search, Swords, User, X } from 'lucide-react';
+import { Compass, Search, Swords, User } from 'lucide-react';
 
 import {
   useCreateRematchMutation,
@@ -86,11 +86,7 @@ const buildResultSummary = (
 
   const opponentName = getOpponentName(result);
   const answerSummary = `${withKoreanParticle(opponentName, '은/는')} ${formatSelectedAnswer(opponentAnswer)}, 나는 ${formatSelectedAnswer(myAnswer)}을 골랐어요.`;
-  const divergenceReason = result.divergence?.reason?.trim();
-
-  return divergenceReason
-    ? `${answerSummary} ${divergenceReason}`
-    : answerSummary;
+  return answerSummary;
 };
 
 const formatDateTime = (iso: string | null | undefined): string | null => {
@@ -130,7 +126,7 @@ export const ChallengeResultScreen = ({ token }: { token: string }) => {
     usePublicInvitePreviewQuery(token);
 
   return (
-    <main className="tablet:px-8 mx-auto flex w-full max-w-220 flex-col gap-5 px-4 py-6">
+    <main className="tablet:px-room-page-pad gap-section-gap px-section-gap py-section-gap mx-auto flex w-full max-w-220 flex-col">
       {result && <ContextBar result={result} />}
 
       {(isLoading || (isCunningGuardBlocked && isInvitePreviewLoading)) && (
@@ -380,11 +376,12 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
   if (!outcome) return null;
   const copy = OUTCOME_COPY[outcome];
   const resultSummary = buildResultSummary(result, copy.sub);
+  const divergenceReason = result.divergence?.reason?.trim();
   const iWon = outcome === 'WIN';
   const showSplitBanner = outcome === 'LOSE' || outcome === 'BOTH_WRONG';
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="gap-block-gap flex flex-col">
       {/* 승인 시안의 결과 머리: 별도 카드나 아이콘 배지 없이 제목, 실제 답
           비교 설명, 통계 칩이 한 흐름으로 이어진다. */}
       <section
@@ -394,7 +391,14 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
         {/* font-headline1-heading = 24/700(DESIGN.md). 시안 제목은 800이라
             디자인시스템 토큰만으로는 안 닿는다. 임의 px·hex 대신 Tailwind
             표준 굵기 유틸(font-extrabold=800)만 얹는다. */}
-        <h2 className="font-headline1-heading text-text-main font-extrabold">
+        <h2
+          className={cn(
+            'text-text-main font-extrabold',
+            copy.tone === 'lose'
+              ? 'font-headline2-heading'
+              : 'font-headline1-heading'
+          )}
+        >
           {copy.title}
         </h2>
         <p className="font-body2-normal text-text-sub1 text-balance">
@@ -448,8 +452,9 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
         </div>
       )}
 
-      {/* 좌우 비교. 정답여부·고른답·소요시간·푼시각·손풀이를 같은 순서로. */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {/* 좌우 비교. 머리·고른 답·소요 시간·손풀이를 같은 순서로 둔다.
+          제출 시각은 승인 시안대로 각 카드 머리의 이름 아래에 둔다. */}
+      <div className="gap-column-gap grid grid-cols-1 sm:grid-cols-2">
         <VsColumn
           label="나"
           data={result.myAttempt}
@@ -463,6 +468,21 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
           won={outcome === 'LOSE'}
         />
       </div>
+
+      {divergenceReason && (
+        <div
+          data-testid="divergence-reason"
+          className="border-system-warning bg-system-warning-alt rounded-card gap-content-gap px-card-pad py-content-gap flex items-start border"
+        >
+          <Search
+            size={16}
+            className="text-system-warning-text shrink-0"
+          />
+          <p className="font-caption-heading text-system-warning-text text-break-safe">
+            {divergenceReason}
+          </p>
+        </div>
+      )}
 
       {/* 다음 카드. 승/패로 제목·버튼 구성이 다르다(D-10-4). */}
       <Card className="bg-gray-1 items-start gap-2 text-left">
@@ -766,35 +786,35 @@ const VsColumn = ({
     <Card
       data-testid={`vs-column-${label}`}
       className={cn(
-        'flex flex-col gap-3 text-left',
+        'gap-block-gap flex flex-col text-left',
         won && 'border-key-color-primary'
       )}
     >
-      <div className="flex items-center gap-2">
-        <span
-          className={cn(
-            'flex size-9 items-center justify-center rounded-full',
-            correct
-              ? 'bg-system-success/10 text-system-success'
-              : 'bg-gray-white text-system-warning-text'
-          )}
-        >
-          {correct ? <Check size={20} /> : <X size={20} />}
+      <div className="gap-content-gap flex items-start">
+        <span className="border-line-line1 bg-gray-1 text-gray-11 flex size-9 shrink-0 items-center justify-center rounded-full border font-bold">
+          {label.slice(0, 1)}
         </span>
         <div className="min-w-0 flex-1">
           <b className="text-single-line block text-sm font-bold">{label}</b>
-          <span
-            className={cn(
-              'font-caption-heading',
-              correct ? 'text-system-success' : 'text-system-warning-text'
-            )}
-          >
-            {correct ? '정답' : '오답'}
-          </span>
+          {submittedAt && (
+            <span className="font-caption-normal text-gray-9 numeric-tabular text-single-line mt-inline-gap-xs block">
+              {submittedAt}에 제출
+            </span>
+          )}
         </div>
+        <span
+          className={cn(
+            'text-ui-compact min-h-badge-min rounded-pill inline-flex shrink-0 items-center border px-2.5 font-extrabold',
+            correct
+              ? 'border-system-success-line bg-system-success-alt text-system-success-text'
+              : 'border-orange-3 bg-orange-1 text-orange-10'
+          )}
+        >
+          {correct ? '정답' : '오답'}
+        </span>
       </div>
 
-      <dl className="flex flex-col gap-1 text-sm">
+      <dl className="gap-row-gap flex flex-col text-sm">
         {data?.selectedAnswer && (
           <div className="flex justify-between">
             <dt className="text-text-sub2">고른 답</dt>
@@ -807,18 +827,14 @@ const VsColumn = ({
             <dd className="text-text-main tabular-nums">{timeLabel}</dd>
           </div>
         )}
-        {submittedAt && (
-          <div className="flex justify-between">
-            <dt className="text-text-sub2">푼 시각</dt>
-            <dd className="text-text-main">{submittedAt}에 제출</dd>
-          </div>
-        )}
       </dl>
 
+      {/* 결과 API AttemptSummary에는 교시 필드가 없다. 없는 값을 지어내지
+          않고, 계약에 필드가 생기기 전까지 행 자체를 렌더하지 않는다. */}
+
       {/* 결함 수정(2026-08-13, 실제 렌더 확인): 이 안내가 <span>(인라인)이라
-          위아래 padding이 문서 흐름에 반영되지 않아 바로 위 dl의 "푼 시각"
-          줄과 겹쳐 보였다(after-lose-web.png에서 직접 관찰). div(block)로
-          바꿔 Card의 flex flex-col 흐름에 정상으로 끼게 한다. */}
+          위아래 padding이 문서 흐름에 반영되지 않았다. div(block)로 바꿔
+          Card의 flex flex-col 흐름에 정상으로 끼게 한다. */}
       {data?.solutionWithdrawn && (
         <div className="bg-gray-white text-text-sub1 rounded-lg px-2 py-4 text-center text-xs">
           {label === '나' ? '내가 풀이를 내렸어요' : '상대가 풀이를 내렸어요'}
@@ -835,15 +851,34 @@ const VsColumn = ({
         </div>
       )}
       {!data?.solutionWithdrawn && data?.solutionImageUrl && (
-        // eslint-disable-next-line @next/next/no-img-element -- presigned S3 URL, next/image 도메인 미등록
-        <img
-          src={data.solutionImageUrl}
-          alt={`${label} 풀이 이미지`}
-          className={cn(
-            'border-line-line2 rounded-button h-32 w-full border object-cover',
-            !correct && 'border-system-warning'
-          )}
-        />
+        <div className="gap-row-gap flex flex-col">
+          <div className="gap-content-gap flex items-baseline justify-between">
+            <span
+              className={cn(
+                'font-caption-heading shrink-0',
+                correct
+                  ? 'text-system-success-text'
+                  : 'text-system-warning-text'
+              )}
+            >
+              {correct ? '✓ 맞은 풀이' : '✗ 틀린 풀이'}
+            </span>
+            <span className="font-caption-normal text-gray-9 text-right">
+              {correct
+                ? '이 순서를 따라가면 됩니다'
+                : '따라 하지 말고, 갈린 지점만 보세요'}
+            </span>
+          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element -- presigned S3 URL, next/image 도메인 미등록 */}
+          <img
+            src={data.solutionImageUrl}
+            alt={`${label} 풀이 이미지`}
+            className={cn(
+              'border-line-line2 rounded-button h-24 w-full border object-cover',
+              !correct && 'border-system-warning'
+            )}
+          />
+        </div>
       )}
     </Card>
   );
