@@ -8,6 +8,9 @@ const mockUseMyFriendsQuery = vi.fn();
 const mockUseFriendTurnSummaryQuery = vi.fn<() => { data: unknown }>(() => ({
   data: undefined,
 }));
+const mockUseMyChallengeInvitesQuery = vi.fn<() => { data: unknown }>(() => ({
+  data: undefined,
+}));
 const mockUseFriendSummaryQuery = vi.fn<
   () => {
     data: unknown;
@@ -25,7 +28,9 @@ const mockUseFriendSummaryQuery = vi.fn<
 // FriendRequestForm 은 이 테스트 대상(상대방 이름·아바타 표시)과 무관 — 별도 아이콘
 // 마크업이 jsdom 파서와 충돌하는 기존 이슈가 있어 여기서는 스텁으로 대체한다.
 vi.mock('./friend-request-form', () => ({
-  FriendRequestForm: () => null,
+  FriendRequestForm: () => (
+    <div data-testid="friend-request-entry">친구 추가하고 도전장 보내기</div>
+  ),
 }));
 
 vi.mock('@/providers', async (importOriginal) => {
@@ -42,6 +47,7 @@ vi.mock('../../hooks', async (importOriginal) => {
     ...actual,
     useMyFriendsQuery: () => mockUseMyFriendsQuery(),
     useFriendTurnSummaryQuery: () => mockUseFriendTurnSummaryQuery(),
+    useMyChallengeInvitesQuery: () => mockUseMyChallengeInvitesQuery(),
     useFriendSummaryQuery: () => mockUseFriendSummaryQuery(),
     useAcceptFriendMutation: () => ({ mutate: vi.fn(), isPending: false }),
     useRequestFriendMutation: () => ({ mutate: vi.fn(), isPending: false }),
@@ -62,6 +68,7 @@ describe('FriendsClient', () => {
     cleanup();
     vi.clearAllMocks();
     mockUseFriendTurnSummaryQuery.mockReturnValue({ data: undefined });
+    mockUseMyChallengeInvitesQuery.mockReturnValue({ data: undefined });
     mockUseFriendSummaryQuery.mockReturnValue({
       data: undefined,
       isError: false,
@@ -169,6 +176,91 @@ describe('FriendsClient', () => {
 
     expect(screen.getByText('내 차례인 대결 2건')).toBeInTheDocument();
     expect(screen.getByText(/철수님과의/)).toBeInTheDocument();
+  });
+
+  test('내 차례인 대결이 없으면 상단 강조 띠를 표시하지 않는다', () => {
+    mockUseFriendTurnSummaryQuery.mockReturnValue({
+      data: { myTurnCount: 0, oldest: null },
+    });
+    mockUseMyFriendsQuery.mockReturnValue({
+      data: [],
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(),
+    });
+
+    renderWithProviders(<FriendsClient />);
+
+    expect(screen.queryByText(/내 차례인 대결/)).not.toBeInTheDocument();
+  });
+
+  test('상단 요약이 비어도 기존 도전 목록 데이터의 실제 내 차례 건수로 띠를 복구한다', () => {
+    mockUseFriendTurnSummaryQuery.mockReturnValue({ data: undefined });
+    mockUseMyChallengeInvitesQuery.mockReturnValue({
+      data: [
+        {
+          id: 90,
+          inviterId: 1,
+          inviteeId: 3,
+          challengeId: 10,
+          shareToken: 'oldest-token',
+          status: 'ACCEPTED',
+          regDate: '2026-08-11T21:12:00',
+          challengeTitle: '확률과 통계 28번',
+          subject: '수학',
+          unitName: '확률과 통계',
+          viewerCompleted: false,
+          opponentName: '철수',
+          opponentSolvedAt: '2026-08-11T21:14:00',
+        },
+        {
+          id: 91,
+          inviterId: 4,
+          inviteeId: 1,
+          challengeId: 11,
+          shareToken: 'newer-token',
+          status: 'ACCEPTED',
+          regDate: '2026-08-12T21:12:00',
+          challengeTitle: '수열 14번',
+          subject: '수학',
+          unitName: '수열',
+          viewerCompleted: false,
+          opponentName: '민지',
+          opponentSolvedAt: '2026-08-12T21:14:00',
+        },
+      ],
+    });
+    mockUseMyFriendsQuery.mockReturnValue({
+      data: [
+        {
+          id: 9,
+          requesterId: 1,
+          addresseeId: 3,
+          state: 'ACCEPTED',
+          regDate: null,
+          requesterName: '나',
+          requesterProfileImageUrl: null,
+          addresseeName: '철수',
+          addresseeProfileImageUrl: null,
+          myTurn: true,
+          lastActivity: {
+            occurredAt: '2026-08-11T21:12:00',
+            type: 'OPPONENT_SUBMITTED',
+          },
+        },
+      ],
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(),
+    });
+
+    renderWithProviders(<FriendsClient />);
+
+    expect(screen.getByText('내 차례인 대결 2건')).toBeInTheDocument();
+    expect(screen.getByText(/철수님과의 확률과 통계 28번/)).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: /내 차례인 대결 2건/ })
+    ).toHaveAttribute('href', '/invite/challenge/oldest-token');
   });
 
   test('받은 요청과 친구가 섹션 분리 없이 한 목록에 이어 붙는다', () => {
@@ -429,5 +521,43 @@ describe('FriendsClient', () => {
     expect(
       screen.getByRole('link', { name: '문제 골라 도전장 보내기' })
     ).toHaveAttribute('href', '/');
+  });
+
+  test('친구 추가 진입은 사람 목록 다음, 하단 안내 문구 앞에 놓인다', () => {
+    mockUseMyFriendsQuery.mockReturnValue({
+      data: [
+        {
+          id: 40,
+          requesterId: 1,
+          addresseeId: 3,
+          state: 'ACCEPTED',
+          regDate: null,
+          requesterName: '나',
+          requesterProfileImageUrl: null,
+          addresseeName: '철수',
+          addresseeProfileImageUrl: null,
+        },
+      ],
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(),
+    });
+
+    renderWithProviders(<FriendsClient />);
+
+    const friendRow = screen.getByRole('listitem');
+    const addFriendEntry = screen.getByTestId('friend-request-entry');
+    const quota = screen.getByText(
+      '한 친구와 동시에 열 수 있는 대결은 3건까지입니다'
+    );
+
+    expect(
+      friendRow.compareDocumentPosition(addFriendEntry) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+    expect(
+      addFriendEntry.compareDocumentPosition(quota) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
   });
 });

@@ -329,13 +329,35 @@ describe('MVP-G 공통 앱 헤더', () => {
       expect(
         container.querySelectorAll('[data-dashboard-app-header]')
       ).toHaveLength(1);
-      expect(screen.getByRole('heading', { name: title })).toBeVisible();
+      expect(
+        screen.getByRole('heading', { name: title, level: 1 })
+      ).toBeVisible();
       expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
       expect(mocks.growthQuery).not.toHaveBeenCalled();
       expect(mocks.wrongAnswersQuery).not.toHaveBeenCalled();
       expect(mocks.pointWalletQuery).not.toHaveBeenCalled();
     }
   );
+
+  it('/friends는 사람 목록만 조합하고 문제 단위 내 도전 기록을 렌더하지 않는다', () => {
+    mocks.pathname = '/friends';
+
+    render(
+      <>
+        <DashboardAppHeader
+          role="ROLE_STUDENT"
+          initialMemberName="김서준"
+        />
+        <FriendsPage />
+      </>
+    );
+
+    expect(screen.getByTestId('friends-content')).toBeVisible();
+    expect(
+      screen.queryByTestId('challenge-invites-content')
+    ).not.toBeInTheDocument();
+    expect(screen.getAllByRole('heading', { name: '친구' })).toHaveLength(1);
+  });
 
   it('스터디룸 상세 숫자 ID에만 상세 서브타이틀을 표시하고 new는 목록 요약을 유지한다', () => {
     mocks.pathname = '/study-rooms/new';

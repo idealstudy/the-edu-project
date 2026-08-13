@@ -129,8 +129,8 @@ const FriendTurnSummaryDtoSchema = z.object({
   oldest: z
     .object({
       shareToken: z.string(),
-      opponentName: z.string(),
-      challengeTitle: z.string(),
+      opponentName: z.string().nullable(),
+      challengeTitle: z.string().nullable(),
       receivedAt: z.string(),
     })
     .nullable(),

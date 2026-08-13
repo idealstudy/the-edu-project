@@ -1,5 +1,7 @@
 'use client';
 
+import { type ReactNode } from 'react';
+
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
@@ -14,6 +16,7 @@ import {
   useAcceptFriendMutation,
   useFriendSummaryQuery,
   useFriendTurnSummaryQuery,
+  useMyChallengeInvitesQuery,
   useMyFriendsQuery,
 } from '../../hooks';
 import { ChallengeShareButton } from '../challenge-invite/challenge-share-button';
@@ -75,7 +78,7 @@ const formatLastActivity = (
   return timeLabel ? `${activityLabel} · ${timeLabel}` : activityLabel;
 };
 
-export const FriendsClient = () => {
+export const FriendsClient = ({ footer }: { footer?: ReactNode }) => {
   const { member } = useSession();
   const searchParams = useSearchParams();
   const myId = member?.id ?? -1;
@@ -91,6 +94,7 @@ export const FriendsClient = () => {
 
   const { data: friends, isLoading, isError, refetch } = useMyFriendsQuery();
   const { data: turnSummary } = useFriendTurnSummaryQuery();
+  const { data: challengeInvites } = useMyChallengeInvitesQuery();
   const { mutate: accept, isPending: isAccepting } = useAcceptFriendMutation();
 
   const incomingRequests =
@@ -104,12 +108,44 @@ export const FriendsClient = () => {
   const accepted = friends?.filter((item) => item.state === 'ACCEPTED') ?? [];
   const acceptedMyTurn = accepted.filter((item) => item.myTurn === true);
   const acceptedWaiting = accepted.filter((item) => item.myTurn !== true);
+  const fallbackMyTurnInvites = (challengeInvites ?? [])
+    .filter((invite) => invite.status === 'ACCEPTED' && !invite.viewerCompleted)
+    .toSorted((left, right) =>
+      (left.regDate ?? '').localeCompare(right.regDate ?? '')
+    );
+  const fallbackOldest = fallbackMyTurnInvites[0];
+  const apiTurnPrompt =
+    turnSummary && turnSummary.myTurnCount > 0 && turnSummary.oldest
+      ? {
+          count: turnSummary.myTurnCount,
+          href: PUBLIC.CORE.INVITE.CHALLENGE(turnSummary.oldest.shareToken),
+          description: `가장 오래 기다린 것은 ${
+            turnSummary.oldest.opponentName
+              ? `${withKoreanParticle(
+                  `${turnSummary.oldest.opponentName}님`,
+                  '와/과'
+                )}의`
+              : '상대와의'
+          } ${turnSummary.oldest.challengeTitle ?? '대결'}입니다`,
+        }
+      : null;
+  const fallbackTurnPrompt = fallbackOldest
+    ? {
+        count: fallbackMyTurnInvites.length,
+        href: PUBLIC.CORE.INVITE.CHALLENGE(fallbackOldest.shareToken),
+        description: `가장 오래 기다린 것은 ${withKoreanParticle(
+          `${fallbackOldest.opponentName ?? '상대'}님`,
+          '와/과'
+        )}의 ${fallbackOldest.challengeTitle ?? '대결'}입니다`,
+      }
+    : null;
+  const turnPrompt = apiTurnPrompt ?? fallbackTurnPrompt;
 
   return (
     <div className="flex flex-col gap-6">
-      {turnSummary && turnSummary.myTurnCount > 0 && turnSummary.oldest && (
+      {turnPrompt && (
         <Link
-          href={`${PUBLIC.CORE.INVITE.CHALLENGE(turnSummary.oldest.shareToken)}`}
+          href={turnPrompt.href}
           className="border-orange-7 bg-orange-1 focus-visible:ring-key-color-primary flex items-center gap-3 rounded-r-xl border-l-4 px-4 py-4 focus-visible:ring-2 focus-visible:outline-none"
         >
           <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white">
@@ -120,13 +156,10 @@ export const FriendsClient = () => {
           </span>
           <span className="min-w-0 flex-1">
             <strong className="text-text-main block text-sm">
-              내 차례인 대결 {turnSummary.myTurnCount}건
+              내 차례인 대결 {turnPrompt.count}건
             </strong>
             <span className="text-text-sub1 block truncate text-xs">
-              {`가장 오래 기다린 것은 ${withKoreanParticle(
-                `${turnSummary.oldest.opponentName}님`,
-                '와/과'
-              )}의 ${turnSummary.oldest.challengeTitle}입니다`}
+              {turnPrompt.description}
             </span>
           </span>
           <span className="text-orange-10 hidden shrink-0 text-xs font-bold sm:block">
@@ -138,8 +171,6 @@ export const FriendsClient = () => {
           />
         </Link>
       )}
-
-      <FriendRequestForm />
 
       {challengeId != null && Number.isFinite(challengeId) && (
         <div className="border-orange-7 bg-orange-1 rounded-card border px-4 py-3">
@@ -187,62 +218,70 @@ export const FriendsClient = () => {
           accepted.length === 0 ? (
             <EmptyFriends challengeId={challengeId} />
           ) : (
-            <ul className="flex flex-col gap-2">
-              {acceptedMyTurn.map((item) => (
-                <AcceptedFriendListItem
-                  key={`friend-${item.id}`}
-                  friendship={item}
-                  myId={myId}
-                  selectionSuffix={selectionSuffix}
-                />
-              ))}
-
-              {incomingRequests.map((item) => (
-                <li
-                  key={`incoming-${item.id}`}
-                  className="border-key-color-primary bg-orange-1 rounded-card flex items-center justify-between gap-3 border px-4 py-3"
-                >
-                  <FriendIdentityLink {...otherIdentity(item, myId)} />
-                  <div className="flex shrink-0 items-center gap-2">
-                    <span className="text-orange-10 text-ui-choice font-bold whitespace-nowrap">
-                      친구 요청
-                    </span>
-                    <Button
-                      size="xsmall"
-                      disabled={isAccepting}
-                      onClick={() => accept(item.id)}
-                    >
-                      수락
-                    </Button>
-                  </div>
-                </li>
-              ))}
-
-              {acceptedWaiting.map((item) => (
-                <AcceptedFriendListItem
-                  key={`friend-${item.id}`}
-                  friendship={item}
-                  myId={myId}
-                  selectionSuffix={selectionSuffix}
-                />
-              ))}
-
-              {outgoingRequests.map((item) => (
-                <li
-                  key={`outgoing-${item.id}`}
-                  className="border-line-line2 rounded-card flex items-center justify-between gap-3 border bg-white px-4 py-3 opacity-70"
-                >
-                  <FriendIdentityLink {...otherIdentity(item, myId)} />
-                  <StatusBadge
-                    variant="default"
-                    label="수락 대기"
+            <div className="gap-content-gap flex flex-col">
+              <ul className="gap-row-gap flex flex-col">
+                {acceptedMyTurn.map((item) => (
+                  <AcceptedFriendListItem
+                    key={`friend-${item.id}`}
+                    friendship={item}
+                    myId={myId}
+                    selectionSuffix={selectionSuffix}
                   />
-                </li>
-              ))}
-            </ul>
+                ))}
+
+                {incomingRequests.map((item) => (
+                  <li
+                    key={`incoming-${item.id}`}
+                    className="border-key-color-primary bg-orange-1 rounded-card flex items-center justify-between gap-3 border px-4 py-3"
+                  >
+                    <FriendIdentityLink {...otherIdentity(item, myId)} />
+                    <div className="flex shrink-0 items-center gap-2">
+                      <span className="text-orange-10 text-ui-choice font-bold whitespace-nowrap">
+                        친구 요청
+                      </span>
+                      <Button
+                        size="xsmall"
+                        disabled={isAccepting}
+                        onClick={() => accept(item.id)}
+                      >
+                        수락
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+
+                {acceptedWaiting.map((item) => (
+                  <AcceptedFriendListItem
+                    key={`friend-${item.id}`}
+                    friendship={item}
+                    myId={myId}
+                    selectionSuffix={selectionSuffix}
+                  />
+                ))}
+
+                {outgoingRequests.map((item) => (
+                  <li
+                    key={`outgoing-${item.id}`}
+                    className="border-line-line2 rounded-card flex items-center justify-between gap-3 border bg-white px-4 py-3 opacity-70"
+                  >
+                    <FriendIdentityLink {...otherIdentity(item, myId)} />
+                    <StatusBadge
+                      variant="default"
+                      label="수락 대기"
+                    />
+                  </li>
+                ))}
+              </ul>
+              <FriendRequestForm />
+              <p className="font-caption-normal text-text-sub2 px-card-pad">
+                한 친구와 동시에 열 수 있는 대결은 3건까지입니다
+              </p>
+            </div>
           )}
         </section>
       )}
+
+      {footer && <div className="flex justify-end">{footer}</div>}
     </div>
   );
 };

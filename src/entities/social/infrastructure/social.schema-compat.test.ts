@@ -33,6 +33,27 @@ const legacyFriendship = {
 };
 
 describe('social response schema compatibility', () => {
+  test('내 차례 요약의 상대와 문제 표시값이 null이어도 띠 데이터 전체를 버리지 않는다', () => {
+    const response = {
+      myTurnCount: 1,
+      oldest: {
+        shareToken: 'token',
+        opponentName: null,
+        challengeTitle: null,
+        receivedAt: '2026-08-11T21:12:00',
+      },
+    };
+
+    const parsedDto = dto.friendTurnSummary.parse(response);
+    const parsedDomain = domain.friendTurnSummary.parse(parsedDto);
+
+    expect(parsedDomain.oldest).toMatchObject({
+      shareToken: 'token',
+      opponentName: null,
+      challengeTitle: null,
+    });
+  });
+
   test('신규 대결 결과 필드와 친구 활동 필드가 있는 응답을 유지한다', () => {
     const result = {
       ...legacyResult,

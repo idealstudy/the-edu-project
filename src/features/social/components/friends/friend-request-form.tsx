@@ -17,12 +17,9 @@ import {
  *  - 디바운스 검색 + 4상태(빈/로딩/없음/결과)
  *  - 회원 번호 직접 입력은 폴백으로 유지.
  *
- * 시안(mvp-e-v1.1.0-디자인허브-v3-opus5.html §4)에는 이 검색 UI가 없다.
- * 화면의 주인공은 "사람 한 줄(전적·최근활동)"이다. 그렇다고 검색·전화번호
- * 추가 기능을 통째로 지우면 실제로 쓰는 길이 사라진다. 그래서 기본은
- * 접어두고(제목 줄만 노출) 필요할 때 펴는 형태로 바꿨다. 화면 상단 절반을
- * 차지하던 것을 한 줄로 줄인다. 이건 시안에 없는 화면에 대한 판단이라
- * ⛔ 회수 필요로 병행 보고한다(코드 리뷰/회장 확인 대상).
+ * 시안(mvp-e-v1.1.0-디자인허브-v3-opus5.html §4)의 목록 마지막 행을
+ * 진입점으로 쓴다. 기존 이름·전화번호 요청 기능은 삭제하지 않고 행을 펼쳤을
+ * 때만 노출해 사람 목록의 정보 위계를 보존한다.
  * ────────────────────────────────────────────────────*/
 export const FriendRequestForm = () => {
   const [expanded, setExpanded] = useState(false);
@@ -47,27 +44,39 @@ export const FriendRequestForm = () => {
   };
 
   return (
-    <div className="border-line-line2 rounded-card border bg-white">
-      <button
+    <div className="border-line-line2 rounded-card bg-gray-1 border border-dashed">
+      <Button
         type="button"
+        variant="unstyled"
+        size="none"
         onClick={() => setExpanded((prev) => !prev)}
         aria-expanded={expanded}
-        className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left"
+        className="min-h-row-min rounded-card px-card-pad flex w-full cursor-pointer items-center justify-between gap-3 text-left"
       >
-        <span className="flex min-w-0 flex-col gap-0.5">
-          <span className="font-body2-heading text-text-main">친구 찾기</span>
-          <span className="font-caption-normal text-text-sub2">
-            이름·닉네임 검색 또는 전화번호로 추가
+        <span className="flex min-w-0 items-center gap-3">
+          <span className="border-line-line2 flex size-10 shrink-0 items-center justify-center rounded-full border bg-white">
+            <UserPlus
+              size={18}
+              className="text-text-main"
+            />
+          </span>
+          <span className="flex min-w-0 flex-col">
+            <span className="font-body2-heading text-text-main">
+              친구 추가하고 도전장 보내기
+            </span>
+            <span className="font-caption-normal text-text-sub2 text-single-line">
+              링크만 보내도 상대가 회원이 아니어도 풀 수 있습니다
+            </span>
           </span>
         </span>
         <ChevronDown
           size={18}
           className={`text-text-sub2 shrink-0 transition-transform ${expanded ? 'rotate-180' : ''}`}
         />
-      </button>
+      </Button>
 
       {expanded && (
-        <div className="border-line-line2 flex flex-col gap-4 border-t p-5 pt-4">
+        <div className="border-line-line2 p-card-pad flex flex-col gap-4 border-t bg-white">
           <SearchInput
             value={keyword}
             onChange={setKeyword}
