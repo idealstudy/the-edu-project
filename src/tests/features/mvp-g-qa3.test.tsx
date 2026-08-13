@@ -70,7 +70,10 @@ describe('MVP-G QA 3차 회귀', () => {
 
     render(
       <QueryClientProvider client={queryClient}>
-        <WrongAnswerReview wrongAnswerId={2909} />
+        <WrongAnswerReview
+          wrongAnswerId={2909}
+          startWithQuestion
+        />
       </QueryClientProvider>
     );
 
@@ -78,5 +81,6 @@ describe('MVP-G QA 3차 회귀', () => {
     expect(comment).toBeVisible();
     expect(comment).toHaveTextContent('선생님 코멘트');
     expect(comment).toHaveTextContent(teacherComment);
+    expect(screen.getByLabelText('선생님께 남길 질문')).toBeVisible();
   });
 });

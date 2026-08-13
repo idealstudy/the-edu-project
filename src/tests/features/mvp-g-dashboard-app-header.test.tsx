@@ -17,47 +17,47 @@ const mocks = vi.hoisted(() => ({
       data: { streakDays: 12, level: 7 },
     })
   ),
-  wrongAnswersQuery: vi.fn(
-    (): { data?: { totalCount?: number | null } } => ({
-      data: { totalCount: 6 },
+  wrongAnswersQuery: vi.fn((): { data?: { totalCount?: number | null } } => ({
+    data: { totalCount: 6 },
+  })),
+  pointWalletQuery: vi.fn((): { data?: { balance?: number | null } } => ({
+    data: { balance: 320 },
+  })),
+  teacherRoomsQuery: vi.fn(
+    (): {
+      data?: Array<{
+        id: number;
+        studentName: string | null;
+        todoCount: number;
+      }>;
+      isPending: boolean;
+    } => ({
+      data: [
+        { id: 1, studentName: '김서준', todoCount: 4 },
+        { id: 2, studentName: '박하윤', todoCount: 3 },
+      ],
+      isPending: false,
     })
   ),
-  pointWalletQuery: vi.fn(
-    (): { data?: { balance?: number | null } } => ({
-      data: { balance: 320 },
+  parentReportQuery: vi.fn(
+    (): {
+      data?: {
+        studyNews: number;
+        waitingInquiries: number;
+        answeredInquiries: number;
+        myStudentCount: number;
+      };
+      isPending: boolean;
+    } => ({
+      data: {
+        studyNews: 12,
+        waitingInquiries: 1,
+        answeredInquiries: 2,
+        myStudentCount: 1,
+      },
+      isPending: false,
     })
   ),
-  teacherRoomsQuery: vi.fn((): {
-    data?: Array<{
-      id: number;
-      studentName: string | null;
-      todoCount: number;
-    }>;
-    isPending: boolean;
-  } => ({
-    data: [
-      { id: 1, studentName: '김서준', todoCount: 4 },
-      { id: 2, studentName: '박하윤', todoCount: 3 },
-    ],
-    isPending: false,
-  })),
-  parentReportQuery: vi.fn((): {
-    data?: {
-      studyNews: number;
-      waitingInquiries: number;
-      answeredInquiries: number;
-      myStudentCount: number;
-    };
-    isPending: boolean;
-  } => ({
-    data: {
-      studyNews: 12,
-      waitingInquiries: 1,
-      answeredInquiries: 2,
-      myStudentCount: 1,
-    },
-    isPending: false,
-  })),
 }));
 
 vi.mock('next/navigation', () => ({
@@ -81,6 +81,7 @@ vi.mock('@/features/weakness-tree/components/weakness-tree-client', () => ({
 vi.mock('@/features/social', () => ({
   FriendsClient: () => <div data-testid="friends-content" />,
   FriendsTutorial: () => <button type="button">친구 튜토리얼</button>,
+  MyChallengeInvites: () => <div data-testid="challenge-invites-content" />,
 }));
 
 // 이 테스트는 전역 헤더의 h1 중복만 검증한다. LearningClient의 데이터 요청은

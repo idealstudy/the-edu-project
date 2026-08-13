@@ -29,12 +29,7 @@ import {
 import { Toggle } from '@/shared/components/ui/toggle';
 import { PRIVATE } from '@/shared/constants';
 import { formatMMDDWeekday } from '@/shared/lib';
-import {
-  BookOpenText,
-  GraduationCap,
-  Settings2,
-  UserRound,
-} from 'lucide-react';
+import { BookOpenText, GraduationCap, Settings2 } from 'lucide-react';
 
 const NOTIFICATION_ROWS: Array<{
   category: NotificationCategory;
@@ -561,19 +556,6 @@ export const StudentMyPage = () => (
       className="gap-section-gap flex flex-col"
       data-testid="student-my-page"
     >
-      <PageLayout.Header className="items-end justify-between">
-        <div>
-          <h2 className="text-gray-12 font-headline1-heading">마이페이지</h2>
-          <p className="text-gray-9 font-caption-normal mt-inline-gap-xs">
-            내 정보와 학습 활동을 한곳에서 확인해요.
-          </p>
-        </div>
-        <UserRound
-          className="text-orange-9 size-6"
-          aria-hidden
-        />
-      </PageLayout.Header>
-
       <div className="desktop:grid-split-profile gap-section-gap desktop:grid-cols-2 grid grid-cols-1 items-start">
         <div className="gap-block-gap grid min-w-0">
           <StudentProfileSummary />

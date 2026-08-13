@@ -6,6 +6,7 @@ import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
+  dailyProblems: vi.fn(),
   detail: vi.fn(),
   library: vi.fn(),
   lookBack: vi.fn(),
@@ -22,6 +23,7 @@ vi.mock('@/features/dashboard/hooks/use-retrospect-query', () => ({
 }));
 
 vi.mock('@/features/dashboard/hooks/use-wrong-answer-query', () => ({
+  useDailyProblemsQuery: mocks.dailyProblems,
   useWrongAnswersQuery: mocks.wrongAnswers,
 }));
 
@@ -35,6 +37,17 @@ vi.mock('@/features/unit-note/hooks/use-unit-note-query', () => ({
 
 describe('MVP-G v22 상태 계약', () => {
   beforeEach(() => {
+    mocks.dailyProblems.mockReturnValue({
+      data: {
+        backlogCount: 0,
+        handoff: { origin: 'DAILY_PROBLEM', returnUrl: '/dashboard/student' },
+        items: [],
+        onboarding: false,
+        queueDate: '2026-08-14',
+      },
+      isError: false,
+      isPending: false,
+    });
     mocks.lookBack.mockReturnValue({
       data: { calendar: [], coachMessage: null, retrospects: [] },
       isError: false,
@@ -124,6 +137,122 @@ describe('MVP-G v22 상태 계약', () => {
       name: '오늘의 문제 풀러 가기',
     });
     expect(action).toHaveAttribute('href', '/dashboard/student');
+  });
+
+  it('오답 회독 메인은 오늘 큐의 첫 오답 1건만 보여준다', () => {
+    mocks.dailyProblems.mockReturnValue({
+      data: {
+        backlogCount: 12,
+        handoff: { origin: 'DAILY_PROBLEM', returnUrl: '/dashboard/student' },
+        items: [
+          {
+            badge: '선생님 출제',
+            challengeId: 4012,
+            difficulty: 'HIGH',
+            kind: 'WRONG_ANSWER',
+            nationalWrongRate: 51,
+            position: 1,
+            provider: 'TEACHER',
+            reason: '오늘 회독 대상',
+            solvedStatus: 'PENDING',
+            stampsFilled: 2,
+            stampsTotal: 5,
+            wrongAnswerId: 101,
+          },
+        ],
+        onboarding: false,
+        queueDate: '2026-08-14',
+      },
+      isError: false,
+      isPending: false,
+    });
+    mocks.wrongAnswers.mockReturnValue({
+      data: {
+        items: [
+          {
+            challengeAttemptId: 501,
+            challengeId: 4012,
+            commentedAt: '2026-08-13T21:12:00',
+            commentedByTeacherId: 42,
+            difficulty: 'HIGH',
+            examAnswerId: null,
+            graduatedAt: null,
+            hintFreeSolveCount: 1,
+            id: 101,
+            lastReviewCorrect: false,
+            nationalWrongRate: 51,
+            nextReviewAt: null,
+            questionImageUrl: null,
+            questionSnapshot: { unit: '수열의 합' },
+            questionText: '첫째항부터 제10항까지의 합을 구하시오.',
+            reviewCount: 2,
+            sourceType: 'EXAM',
+            status: 'ACTIVE',
+            studentId: 7,
+            studentName: '김서준',
+            studentQuestion: null,
+            studentQuestionAt: null,
+            teacherComment: '항 번호를 꼭 적어놓고 풀어.',
+            title: '6월 모의고사 12번',
+            treeNodeId: 10,
+            wrongAgainCount: 0,
+          },
+          {
+            challengeAttemptId: 502,
+            challengeId: 4013,
+            commentedAt: null,
+            commentedByTeacherId: null,
+            difficulty: 'MEDIUM',
+            examAnswerId: null,
+            graduatedAt: null,
+            hintFreeSolveCount: 0,
+            id: 102,
+            lastReviewCorrect: null,
+            nationalWrongRate: 44,
+            nextReviewAt: null,
+            questionImageUrl: null,
+            questionSnapshot: { unit: '등비수열' },
+            questionText: '공비를 구하시오.',
+            reviewCount: 0,
+            sourceType: 'SELF_REVIEW',
+            status: 'ACTIVE',
+            studentId: 7,
+            studentName: '김서준',
+            studentQuestion: null,
+            studentQuestionAt: null,
+            teacherComment: null,
+            title: '쌓여 있는 다른 오답',
+            treeNodeId: 11,
+            wrongAgainCount: 0,
+          },
+        ],
+        totalCount: 2,
+      },
+      isError: false,
+      isPending: false,
+      isSuccess: true,
+    });
+
+    render(<WrongAnswerWarehouse />);
+
+    expect(
+      screen.getByText('오늘 1문제 회독. 5회독 도장, 하루 1회독.')
+    ).toBeVisible();
+    expect(screen.getByText('6월 모의고사 12번')).toBeVisible();
+    expect(screen.queryByText('쌓여 있는 다른 오답')).toBeNull();
+    expect(screen.queryByText(/밀린 오답/)).toBeNull();
+    expect(screen.getByText('항 번호를 꼭 적어놓고 풀어.')).toBeVisible();
+    expect(screen.getByRole('link', { name: '확인했어요' })).toHaveAttribute(
+      'href',
+      '/dashboard/student/wrong-answers/101'
+    );
+    expect(screen.getByRole('link', { name: '질문 남기기' })).toHaveAttribute(
+      'href',
+      '/dashboard/student/wrong-answers/101?question=1'
+    );
+    expect(
+      screen.getByRole('link', { name: '3회독 풀이 쓰기' })
+    ).toHaveAttribute('href', '/dashboard/student/wrong-answers/101');
   });
 
   it('단권화 상세 로드 실패 시 입력을 잠그고 복구 행동을 보인다', () => {
