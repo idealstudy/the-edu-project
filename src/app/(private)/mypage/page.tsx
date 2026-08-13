@@ -1,8 +1,12 @@
 import MyColumnList from '@/features/mypage/column/components/my-column-list';
+import {
+  MypageDefaultView,
+  MypageProfileView,
+} from '@/features/mypage/components/mypage-role-view';
 import MyInquiryList from '@/features/mypage/inquiry/components/my-inquiry-list';
 import ReceivedInquiryList from '@/features/mypage/inquiry/components/received-inquiry-list';
 import { MyOpenChallengeList } from '@/features/mypage/open-challenge/components/my-open-challenge-list';
-import ProfileMain from '@/features/mypage/profile/components/profile-main';
+import { PageLayout } from '@/layout';
 
 export default async function MypagePage({
   searchParams,
@@ -12,17 +16,37 @@ export default async function MypagePage({
   const { tab } = await searchParams;
 
   // TEACHER, STUDENT, PARENT
-  if (tab === 'profile') return <ProfileMain />;
+  if (tab === 'profile') return <MypageProfileView />;
 
   // TEACHER, STUDENT, PARENT
-  if (tab === 'open-challenges') return <MyOpenChallengeList />;
+  if (tab === 'open-challenges')
+    return (
+      <PageLayout>
+        <MyOpenChallengeList />
+      </PageLayout>
+    );
 
   // STUDENT, PARENT
-  if (tab === 'inquiries') return <MyInquiryList />;
+  if (tab === 'inquiries')
+    return (
+      <PageLayout>
+        <MyInquiryList />
+      </PageLayout>
+    );
 
   // TEACHER_ONLY
-  if (tab === 'columns') return <MyColumnList />;
-  if (tab === 'received-inquiries') return <ReceivedInquiryList />;
+  if (tab === 'columns')
+    return (
+      <PageLayout>
+        <MyColumnList />
+      </PageLayout>
+    );
+  if (tab === 'received-inquiries')
+    return (
+      <PageLayout>
+        <ReceivedInquiryList />
+      </PageLayout>
+    );
 
-  return null;
+  return <MypageDefaultView />;
 }

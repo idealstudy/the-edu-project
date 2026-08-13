@@ -20,6 +20,8 @@ type LevelBadgeProps = {
   expToNextLevel?: number;
   /** 로딩 상태(게이지·숫자를 placeholder로) */
   isLoading?: boolean;
+  /** 조회 실패 시 실제 값처럼 보이는 기본 레벨을 만들지 않는다. */
+  isError?: boolean;
 };
 
 export const LevelBadge = ({
@@ -27,6 +29,7 @@ export const LevelBadge = ({
   progressPercent = 0,
   expToNextLevel = 0,
   isLoading = false,
+  isError = false,
 }: LevelBadgeProps) => {
   const ratio = Math.min(100, Math.max(0, Math.round(progressPercent)));
 
@@ -48,24 +51,26 @@ export const LevelBadge = ({
             레벨 · 성장 지표
           </span>
           <span className="font-body1-heading text-text-main tabular-nums">
-            {isLoading ? 'Lv.-' : `Lv.${level}`}
+            {isLoading ? 'Lv.-' : isError ? '집계 없음' : `Lv.${level}`}
           </span>
         </div>
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <div className="bg-gray-1 h-2 w-full overflow-hidden rounded-full">
-          <div
-            className="bg-orange-7 h-full rounded-full transition-[width] duration-500 motion-reduce:transition-none"
-            style={{ width: `${isLoading ? 0 : ratio}%` }}
-          />
-        </div>
+        <progress
+          value={isLoading || isError ? 0 : ratio}
+          max={100}
+          aria-label={
+            isError ? '레벨 진행률 집계 없음' : `레벨 진행률 ${ratio}%`
+          }
+          className="accent-orange-7 bg-gray-1 rounded-pill h-2 w-full overflow-hidden"
+        />
         <div className="flex items-center justify-between">
           <span className="font-caption-normal text-text-sub2">
             다음 레벨까지
           </span>
           <span className="font-caption-heading text-text-sub1 tabular-nums">
-            {isLoading
+            {isLoading || isError
               ? '- XP'
               : `${expToNextLevel.toLocaleString('ko-KR')} XP`}
           </span>

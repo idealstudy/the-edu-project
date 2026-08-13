@@ -8,6 +8,7 @@ import { useTeacherDashboardStudyRoomListQuery } from '@/features/dashboard/hook
 import { useInvitationQuery } from '@/features/study-rooms/hooks/use-invitation-query';
 import { useToggleInvitation } from '@/features/study-rooms/hooks/use-toggle-invitation';
 import { PageLayout } from '@/layout';
+import { Button, Card } from '@/shared/components/ui';
 import { showBottomToast } from '@/shared/components/ui/bottom-toast';
 import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { PRIVATE } from '@/shared/constants';
@@ -65,25 +66,22 @@ const TeacherInviteCodeCard = () => {
   };
 
   return (
-    <section
-      className="border-gray-3 rounded-xl border bg-white p-5"
-      data-testid="teacher-invite-code-card"
-    >
-      <div className="mb-3">
-        <h2 className="font-extrabold">학생 초대 코드</h2>
-        <p className="text-gray-8 text-xs">
+    <Card data-testid="teacher-invite-code-card">
+      <div className="mb-block-gap">
+        <h2 className="font-body2-heading">학생 초대 코드</h2>
+        <p className="text-gray-8 font-caption-normal">
           학생이 이 코드를 넣으면 고른 수업에 바로 들어옵니다
         </p>
       </div>
 
       {roomList.length > 1 && (
-        <label className="text-gray-8 mb-3 block text-xs font-bold">
+        <label className="text-gray-8 font-caption-heading mb-block-gap block">
           코드를 발행할 수업
           <select
             value={activeRoomId ?? ''}
             onChange={(event) => setSelectedRoomId(Number(event.target.value))}
             data-testid="teacher-invite-code-room"
-            className="border-gray-3 text-gray-12 mt-1 min-h-11 w-full rounded-lg border px-3 text-sm font-bold"
+            className="border-gray-3 text-gray-12 mt-inline-gap-xs min-h-control-sm rounded-input px-button-compact-x w-full border text-sm font-bold"
           >
             {roomList.map((room) => (
               <option
@@ -99,12 +97,12 @@ const TeacherInviteCodeCard = () => {
 
       {roomList.length === 0 ? (
         <>
-          <div className="border-orange-4 text-orange-11 rounded-lg border border-dashed p-4 text-center text-xs font-bold">
+          <div className="border-orange-4 text-orange-11 rounded-row p-card-pad border border-dashed text-center text-xs font-bold">
             수업이 아직 없어서 코드를 만들 수 없습니다
           </div>
           <Link
             href={PRIVATE.DASHBOARD.TEACHER}
-            className="mt-3 block rounded-md border py-2 text-center text-xs font-bold"
+            className="border-gray-3 min-h-control-sm rounded-button px-button-compact-x mt-block-gap flex items-center justify-center border text-center text-xs font-bold"
           >
             수업 만들러 가기
           </Link>
@@ -112,14 +110,14 @@ const TeacherInviteCodeCard = () => {
       ) : (
         <>
           <div
-            className="border-orange-4 text-orange-11 rounded-lg border border-dashed p-4 text-center text-sm font-extrabold tracking-widest break-all"
+            className="border-orange-4 text-orange-11 rounded-row p-card-pad border border-dashed text-center text-sm font-extrabold tracking-widest break-all"
             data-testid="teacher-invite-code-value"
           >
             {invitation.isPending
               ? '코드를 불러오는 중입니다'
               : (token ?? '이 수업의 초대 코드가 꺼져 있습니다')}
           </div>
-          <div className="mt-3 flex gap-2">
+          <div className="mt-block-gap gap-content-gap flex">
             <UnstyledButton
               variant="unstyled"
               size="none"
@@ -127,7 +125,7 @@ const TeacherInviteCodeCard = () => {
               onClick={copyCode}
               disabled={!token}
               data-testid="teacher-invite-code-copy"
-              className="min-h-11 flex-1 cursor-pointer rounded-md border text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40"
+              className="border-gray-3 min-h-control-sm rounded-button flex-1 cursor-pointer border text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40"
             >
               코드 복사
             </UnstyledButton>
@@ -138,12 +136,12 @@ const TeacherInviteCodeCard = () => {
               onClick={shareLink}
               disabled={!inviteLink}
               data-testid="teacher-invite-code-share"
-              className="min-h-11 flex-1 cursor-pointer rounded-md border text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40"
+              className="border-gray-3 min-h-control-sm rounded-button flex-1 cursor-pointer border text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40"
             >
               링크로 보내기
             </UnstyledButton>
           </div>
-          <p className="text-gray-8 text-ui-choice mt-2">
+          <p className="text-gray-8 text-ui-choice mt-content-gap">
             학생은 초대 코드 넣기 화면(/invite)에 이 코드를 붙여넣거나, 보낸
             링크를 눌러 들어옵니다.
           </p>
@@ -155,106 +153,118 @@ const TeacherInviteCodeCard = () => {
               onClick={() => toggleInvitation.mutate(true)}
               disabled={toggleInvitation.isPending}
               data-testid="teacher-invite-code-enable"
-              className="border-orange-4 text-orange-11 mt-2 min-h-11 w-full cursor-pointer rounded-md border text-xs font-bold"
+              className="border-orange-4 text-orange-11 mt-content-gap min-h-control-sm rounded-button w-full cursor-pointer border text-xs font-bold"
             >
               {toggleInvitation.isPending ? '켜는 중' : '초대 코드 켜기'}
             </UnstyledButton>
           )}
         </>
       )}
-    </section>
+    </Card>
   );
 };
 
 export const TeacherMyPage = ({ memberName }: { memberName: string }) => (
   <div className="bg-system-background min-h-screen w-full">
     <PageLayout
-      className="gap-block-gap lg:grid-split-legacy grid items-start"
+      width="content"
+      className="gap-section-gap desktop:grid-cols-2 grid grid-cols-1 items-start"
       data-testid="teacher-my-page"
     >
-      <h1 className="col-span-full text-xl font-extrabold">마이페이지</h1>
-      <div className="space-y-4">
-        <section className="border-gray-3 rounded-xl border bg-white p-5">
-          <div className="mb-4 flex items-center">
-            <h2 className="font-extrabold">내 정보</h2>
-            <Link
-              href={`${PRIVATE.MYPAGE}?tab=profile`}
-              className="ml-auto rounded-md border px-2 py-1 text-xs font-bold"
+      <div className="col-span-full">
+        <h1 className="text-gray-12 font-headline1-heading">마이페이지</h1>
+        <p className="text-gray-9 font-caption-normal mt-inline-gap-xs">
+          내 정보와 학생 초대, 알림 설정을 한곳에서 관리합니다.
+        </p>
+      </div>
+      <div className="gap-block-gap grid min-w-0">
+        <Card>
+          <Card.Header>
+            <div>
+              <Card.Title>내 정보</Card.Title>
+              <Card.Description>
+                서버가 확인한 현재 계정 정보만 표시합니다.
+              </Card.Description>
+            </div>
+            <Button
+              asChild
+              variant="outlined"
+              size="xsmall"
             >
-              수정
-            </Link>
-          </div>
-          <dl className="grid grid-cols-[80px_1fr] gap-y-3 text-sm">
-            <dt className="text-gray-8">이름</dt>
-            <dd className="font-bold">{memberName}</dd>
-            <dt className="text-gray-8">과목</dt>
-            <dd className="font-bold">수학</dd>
-            <dt className="text-gray-8">대상</dt>
-            <dd className="font-bold">중3 ~ 고3</dd>
-          </dl>
-        </section>
+              <Link href={`${PRIVATE.MYPAGE}?tab=profile`}>수정</Link>
+            </Button>
+          </Card.Header>
+          <Card.Content>
+            <dl className="gap-content-gap flex items-center text-sm">
+              <dt className="text-gray-8">이름</dt>
+              <dd className="text-gray-12 font-bold">{memberName}</dd>
+            </dl>
+            <p className="text-gray-8 font-caption-normal mt-card-pad">
+              과목과 지도 대상은 현재 교사 기본 정보 계약에 없어 표시하지
+              않습니다.
+            </p>
+          </Card.Content>
+        </Card>
         <TeacherInviteCodeCard />
       </div>
-      <div className="space-y-4">
-        <section className="border-gray-3 rounded-xl border bg-white p-5">
-          <div className="mb-3">
-            <h2 className="font-extrabold">알림</h2>
-            <p className="text-gray-8 text-xs">받을 것만 켜 둡니다</p>
-          </div>
-          <Setting
-            label="학생이 질문을 남겼을 때"
-            detail="즉시"
-            enabled
-          />
-          <Setting
-            label="오답이 3일 넘게 방치될 때"
-            detail="하루 한 번 모아서"
-            enabled
-          />
-          <Setting
-            label="학생이 시험을 제출했을 때"
-            detail="즉시"
-          />
-        </section>
-        <section className="border-gray-3 rounded-xl border bg-white p-5">
-          <div className="mb-3 flex items-center">
-            <h2 className="font-extrabold">이번 주 사용 시간</h2>
-            <span className="text-gray-8 ml-auto text-xs">목표 주당 30분</span>
-          </div>
-          <b className="text-2xl">0분</b>
-          <div className="bg-gray-2 mt-3 h-2 overflow-hidden rounded-full">
-            <i className="bg-orange-7 block h-full w-0" />
-          </div>
-          <p className="text-gray-8 mt-3 text-xs">
-            스터디룸 안에서 손볼 것을 카드 단위로 닫는 구조라 시간을 아낄 수
-            있습니다.
-          </p>
-        </section>
+      <div className="gap-block-gap grid min-w-0">
+        <Card>
+          <Card.Header>
+            <div>
+              <Card.Title>알림 설정</Card.Title>
+              <Card.Description>
+                받는 알림의 실제 상태는 설정 화면에서 관리합니다.
+              </Card.Description>
+            </div>
+          </Card.Header>
+          <Card.Content>
+            <Setting
+              label="학생이 질문을 남겼을 때"
+              detail="질문·답변 알림"
+            />
+            <Setting
+              label="새 수업노트 활동이 생겼을 때"
+              detail="수업노트 알림"
+            />
+            <Setting
+              label="학생이 시험을 제출했을 때"
+              detail="서비스 알림"
+            />
+          </Card.Content>
+        </Card>
+        <Card data-testid="teacher-weekly-usage-empty">
+          <Card.Header>
+            <div>
+              <Card.Title>이번 주 사용 시간</Card.Title>
+              <Card.Description>교사 활동 시간 집계</Card.Description>
+            </div>
+          </Card.Header>
+          <Card.Content className="border-gray-3 bg-gray-2 rounded-row p-card-pad border border-dashed text-center">
+            <b className="text-gray-12 block text-sm">
+              사용 시간 집계가 아직 연결되지 않았습니다
+            </b>
+            <p className="text-gray-8 font-caption-normal mt-content-gap">
+              현재 교사 응답에는 사용 시간 필드가 없어 숫자를 만들지 않습니다.
+            </p>
+          </Card.Content>
+        </Card>
       </div>
     </PageLayout>
   </div>
 );
 
-const Setting = ({
-  label,
-  detail,
-  enabled = false,
-}: {
-  label: string;
-  detail: string;
-  enabled?: boolean;
-}) => (
-  <div className="border-gray-2 flex items-center border-t py-3 first:border-t-0">
+const Setting = ({ label, detail }: { label: string; detail: string }) => (
+  <div className="border-gray-2 min-h-row-min gap-content-gap flex items-center border-t py-3 first:border-t-0">
     <div>
       <b className="block text-sm">{label}</b>
       <small className="text-gray-8">{detail}</small>
     </div>
     <Link
       href={PRIVATE.SETTINGS}
-      className={`ml-auto rounded-md border px-2 py-1 text-xs font-bold ${enabled ? 'border-orange-4 text-orange-11' : ''}`}
+      className="border-gray-3 text-gray-11 min-h-control-sm rounded-button px-button-compact-x ml-auto inline-flex items-center border text-xs font-bold"
       aria-label={`${label} 알림 설정 열기`}
     >
-      {enabled ? '켜짐' : '꺼짐'}
+      설정 열기
     </Link>
   </div>
 );

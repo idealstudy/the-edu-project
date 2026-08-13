@@ -734,13 +734,19 @@ body {
   grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
 }
 
+/* DESIGN.md §13.1. 학생 마이페이지의 프로필 열과 활동 열 비율. */
+@utility grid-split-profile {
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+}
+
 @utility top-column-sticky {
   top: calc(var(--spacing-header-height) + var(--spacing-control-xs));
 }
 
 @utility max-h-screen-content {
   max-height: calc(
-    100vh - var(--spacing-header-height) - var(--spacing-room-page-pad-mobile) * 2
+    100vh - var(--spacing-header-height) - var(--spacing-room-page-pad-mobile) *
+      2
   );
 }
 

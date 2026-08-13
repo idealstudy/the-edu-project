@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 
 import { DashboardSidebar } from '@/features/dashboard/components/dashboard-sidebar';
 import { DashboardAppHeader } from '@/features/dashboard/components/header/dashboard-app-header';
+import { StudentBottomNavigation } from '@/features/dashboard/components/student/student-bottom-navigation';
 import { ImpersonationBanner } from '@/features/impersonation/components/impersonation-banner';
 import { SessionGuard } from '@/providers/session/session-guard';
 import { fetchMemberRole } from '@/shared/lib/server';
@@ -32,7 +33,7 @@ export default async function DashboardLayout({
   return (
     <SessionGuard>
       <main
-        className="bg-system-background md:pl-sidebar-width flex min-h-screen flex-col"
+        className={`bg-system-background md:pl-sidebar-width flex min-h-screen flex-col ${session.status === 'authenticated' && session.role === 'ROLE_STUDENT' ? 'pb-control-xl md:pb-0' : ''}`}
         data-private-app-shell
       >
         <DashboardSidebar />
@@ -49,6 +50,8 @@ export default async function DashboardLayout({
           />
         )}
         <div className="w-full">{children}</div>
+        {session.status === 'authenticated' &&
+          session.role === 'ROLE_STUDENT' && <StudentBottomNavigation />}
       </main>
     </SessionGuard>
   );

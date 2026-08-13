@@ -296,6 +296,7 @@ export const MyChallengeInvites = () => {
     refetch,
   } = useMyChallengeInvitesQuery();
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
+  const [showAll, setShowAll] = useState(false);
 
   const toggleGroup = (challengeId: number) => {
     setExpandedIds((prev) => {
@@ -310,6 +311,7 @@ export const MyChallengeInvites = () => {
   };
 
   const groups = invites ? groupInvitesByChallenge(invites) : [];
+  const visibleGroups = showAll ? groups : groups.slice(0, 6);
 
   return (
     <section className="flex flex-col gap-3">
@@ -345,7 +347,7 @@ export const MyChallengeInvites = () => {
         <>
           {groups.length > 0 ? (
             <ul className="flex flex-col gap-2">
-              {groups.map((group) => (
+              {visibleGroups.map((group) => (
                 <InviteGroupRow
                   key={group.challengeId}
                   group={group}
@@ -363,6 +365,16 @@ export const MyChallengeInvites = () => {
                 문제를 풀고 결과 화면에서 친구에게 도전장을 보내보세요.
               </p>
             </div>
+          )}
+          {groups.length > 6 && (
+            <Button
+              variant="ghost"
+              size="small"
+              onClick={() => setShowAll((current) => !current)}
+              className="self-end"
+            >
+              {showAll ? '최근 6건만 보기' : `전체 ${groups.length}건 보기`}
+            </Button>
           )}
         </>
       )}

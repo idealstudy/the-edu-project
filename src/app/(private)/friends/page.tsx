@@ -1,4 +1,9 @@
-import { FriendsClient, FriendsTutorial } from '@/features/social';
+import {
+  FriendsClient,
+  FriendsTutorial,
+  MyChallengeInvites,
+} from '@/features/social';
+import { PageLayout } from '@/layout';
 
 export const metadata = {
   title: '친구',
@@ -8,13 +13,22 @@ export const metadata = {
 export default function FriendsPage() {
   return (
     <div className="bg-system-background min-h-screen w-full">
-      <div className="mx-auto w-full max-w-shell px-4 pt-8 pb-16 md:px-8 lg:px-12">
-        <div className="mb-6">
+      <PageLayout width="content">
+        <PageLayout.Header className="items-end justify-between">
+          <div>
+            <h2 className="text-gray-12 font-headline1-heading">친구</h2>
+            <p className="text-gray-9 font-caption-normal mt-inline-gap-xs">
+              순위보다 함께 푼 기록과 지금 내 차례에 집중해요.
+            </p>
+          </div>
           <FriendsTutorial />
-        </div>
+        </PageLayout.Header>
 
-        <FriendsClient />
-      </div>
+        <div className="gap-section-gap desktop:grid-cols-2 grid grid-cols-1 items-start">
+          <FriendsClient />
+          <MyChallengeInvites />
+        </div>
+      </PageLayout>
     </div>
   );
 }
