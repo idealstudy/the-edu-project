@@ -37,10 +37,12 @@ import { ReviewStamps } from './review-stamps';
  */
 const TeacherCommentQuestion = ({
   wrongAnswer,
+  startOpen,
 }: {
   wrongAnswer: WrongAnswerItem;
+  startOpen: boolean;
 }) => {
-  const [isWriting, setIsWriting] = useState(false);
+  const [isWriting, setIsWriting] = useState(startOpen);
   const [question, setQuestion] = useState('');
   const askTeacher = useAskTeacherOnWrongAnswer();
 
@@ -137,10 +139,12 @@ const TeacherCommentQuestion = ({
 
 type WrongAnswerReviewProps = {
   wrongAnswerId: number;
+  startWithQuestion?: boolean;
 };
 
 type ReviewFormProps = {
   wrongAnswer: WrongAnswerItem;
+  startWithQuestion: boolean;
 };
 
 type ReviewResultProps = {
@@ -263,7 +267,7 @@ const ReviewResult = ({
   </section>
 );
 
-const ReviewForm = ({ wrongAnswer }: ReviewFormProps) => {
+const ReviewForm = ({ wrongAnswer, startWithQuestion }: ReviewFormProps) => {
   const [solveOpen, setSolveOpen] = useState(false);
   const [usedHint, setUsedHint] = useState(false);
   const [usedAi, setUsedAi] = useState(false);
@@ -372,7 +376,10 @@ const ReviewForm = ({ wrongAnswer }: ReviewFormProps) => {
             {wrongAnswer.teacherComment}
           </p>
           {/* 승인 디자인 v22 `sReviewOk` 3219 `질문 남기기` */}
-          <TeacherCommentQuestion wrongAnswer={wrongAnswer} />
+          <TeacherCommentQuestion
+            wrongAnswer={wrongAnswer}
+            startOpen={startWithQuestion}
+          />
         </section>
       )}
 
@@ -499,6 +506,7 @@ const ReviewForm = ({ wrongAnswer }: ReviewFormProps) => {
 
 export const WrongAnswerReview = ({
   wrongAnswerId,
+  startWithQuestion = false,
 }: WrongAnswerReviewProps) => {
   const wrongAnswersQuery = useWrongAnswersQuery();
 
@@ -576,7 +584,12 @@ export const WrongAnswerReview = ({
                 );
               }
 
-              return <ReviewForm wrongAnswer={wrongAnswer} />;
+              return (
+                <ReviewForm
+                  wrongAnswer={wrongAnswer}
+                  startWithQuestion={startWithQuestion}
+                />
+              );
             })()}
         </div>
       </main>
