@@ -5,8 +5,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 import type { RetrospectMood } from '@/entities/retrospect';
-import { useWeeklyRetrospectQuery } from '@/features/dashboard/hooks/use-retrospect-query';
 import { useLookBackQuery } from '@/features/dashboard/hooks/use-look-back-query';
+import { useWeeklyRetrospectQuery } from '@/features/dashboard/hooks/use-retrospect-query';
 import { useUnitNoteLibraryQuery } from '@/features/unit-note/hooks/use-unit-note-query';
 import { PageLayout, SplitLayout } from '@/layout';
 import { Card } from '@/shared/components/ui';
@@ -113,7 +113,7 @@ export const LookBackPage = () => {
     : allCalendar;
 
   const weeks = period === 'MONTH' ? weeklyRollup(allCalendar) : [];
-  // v22 `sLookMonth` 2528 `이 달 정리한 단원` — 노트가 실제로 있는 단원만
+  // v22 `sLookMonth` 2528 `이 달 정리한 단원`: 노트가 실제로 있는 단원만
   const touchedUnits = (unitNoteQuery.data?.nodes ?? [])
     .filter((node) => node.pageCount > 0)
     .slice(0, 6);
@@ -192,7 +192,7 @@ export const LookBackPage = () => {
                     AI가 씀
                   </span>
                 )}
-                {/* v22 `coachMsg` 2456 `다시 받기` — 코치 메시지를 서버에 다시 요청한다. */}
+                {/* v22 `coachMsg` 2456 `다시 받기`: 코치 메시지를 서버에 다시 요청한다. */}
                 <UnstyledButton
                   variant="unstyled"
                   size="none"
@@ -221,7 +221,7 @@ export const LookBackPage = () => {
                   <div>
                     <h2 className="font-extrabold">주간 회고</h2>
                     <p className="text-gray-8 mt-1 text-xs">
-                      {formatMonthDay(weeklyRetro.weekOf)}–
+                      {formatMonthDay(weeklyRetro.weekOf)}~
                       {formatMonthDay(weeklyRetro.weekEnd)} ·{' '}
                       {weeklyRetro.writtenDays}/7일 기록
                     </p>
@@ -364,6 +364,32 @@ export const LookBackPage = () => {
                 {onlyWithRetrospect &&
                   ' 지금은 회고가 있는 날만 보고 있습니다.'}
               </p>
+              {period === 'WEEK' && (
+                <div
+                  className="gap-content-gap mt-3 grid grid-cols-3"
+                  data-testid="look-back-weekly-stats"
+                >
+                  {['푼 문제', '해설 없이 맞힘', '정리한 단원'].map((label) => (
+                    <div
+                      key={label}
+                      className="border-gray-3 rounded-row p-content-gap border text-center"
+                    >
+                      <strong className="text-gray-10 font-label-heading block">
+                        집계 전
+                      </strong>
+                      <span className="text-gray-9 text-ui-choice mt-1 block">
+                        {label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {period === 'WEEK' && (
+                <p className="text-gray-8 text-ui-choice mt-2 leading-5">
+                  기간별 문제 풀이, 자력 정답, 단권화 집계는 현재 응답에 없어
+                  숫자를 만들지 않습니다.
+                </p>
+              )}
             </Card>
 
             {/* v22 `sLookMonth` 2513 주별 완료 + `그 주 보기` */}

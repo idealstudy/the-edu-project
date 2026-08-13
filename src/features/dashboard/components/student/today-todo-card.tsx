@@ -45,9 +45,9 @@ const SUPPLY_LABEL: Record<TodoSupply, string> = {
 };
 
 const SUPPLY_STYLE: Record<TodoSupply, string> = {
-  TEACHER: 'bg-green-50 text-green-800',
-  EXAM_HALL: 'bg-orange-1 text-orange-10',
-  OPEN_CHALLENGE: 'bg-gray-2 text-gray-9',
+  TEACHER: 'border-orange-3 bg-orange-2 text-orange-10 border',
+  EXAM_HALL: 'border-orange-3 bg-orange-1 text-orange-10 border',
+  OPEN_CHALLENGE: 'border-gray-3 bg-gray-2 text-gray-9 border',
   STUDENT: 'border-gray-4 bg-white text-gray-7 border',
 };
 
@@ -263,7 +263,7 @@ export const TodayTodoCard = ({
           >
             오늘 할 일
             <span className="font-body2-normal text-gray-7 ml-2">
-              {formatMonthDay(summary.weekOf)}–{formatMonthDay(summary.weekEnd)}
+              {formatMonthDay(summary.weekOf)}~{formatMonthDay(summary.weekEnd)}
             </span>
           </h3>
           <p className="font-caption-normal text-gray-8 mt-1">

@@ -119,7 +119,7 @@ export const UnitNoteRoom = ({ rootNodeId }: UnitNoteRoomProps) => {
       [...concepts].sort((left, right) => right.pageCount - left.pageCount)[0],
     [concepts]
   );
-  /** v22 `sNoteUnits` :2726 `최근에 쓴 정리` 3행 — 노트가 많은 단원 순 */
+  /** v22 `sNoteUnits` :2726 `최근에 쓴 정리` 3행: 노트가 많은 단원 순 */
   const recentConcepts = useMemo(
     () =>
       [...concepts]

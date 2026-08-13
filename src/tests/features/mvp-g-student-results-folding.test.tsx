@@ -181,6 +181,33 @@ describe('학생 성과 학습 지도 대량 데이터 접기', () => {
     expect(screen.queryByText('1과목')).not.toBeInTheDocument();
   });
 
+  it('성과 빈 상태에 v22 이번 주 요약 3칸을 보인다', () => {
+    mocks.tree.mockReturnValue({
+      data: {
+        groups: [],
+        mastery: {
+          total: 0,
+          mastered: 0,
+          inProgress: 0,
+          weak: 0,
+          untested: 0,
+          averageScore: 0,
+        },
+      },
+      isError: false,
+      refetch: vi.fn(),
+    });
+
+    render(<StudentResultsPage />);
+
+    const summary = screen.getByTestId('student-results-empty-weekly-summary');
+    expect(summary).toBeVisible();
+    expect(summary).toHaveTextContent('이번 주 요약');
+    expect(summary).toHaveTextContent('푼 문제');
+    expect(summary).toHaveTextContent('해설 안 보고 맞힘');
+    expect(summary).toHaveTextContent('연속 일수');
+  });
+
   it('오늘의 문제는 단원과 메타만 남기고 공통 핸드오프를 한 번만 보인다', () => {
     render(<TodayProblemsSection />);
 

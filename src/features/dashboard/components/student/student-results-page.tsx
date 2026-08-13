@@ -97,6 +97,50 @@ export const StudentResultsPage = () => {
 
   return (
     <PageLayout className="gap-block-gap flex flex-col">
+      {!treeQuery.isError && isEmpty && (
+        <Card data-testid="student-results-empty-weekly-summary">
+          <div className="mb-3 flex items-center gap-2">
+            <h2 className="text-gray-12 text-base font-extrabold">
+              이번 주 요약
+            </h2>
+            <span className="text-gray-9 text-xs">첫 기록을 기다리는 중</span>
+          </div>
+          <div className="gap-content-gap grid grid-cols-3">
+            <MapStat
+              value={0}
+              label="푼 문제"
+            />
+            <MapStat
+              value={0}
+              label="해설 안 보고 맞힘"
+            />
+            <MapStat
+              value={growthQuery.data?.streakDays ?? 0}
+              label="연속 일수"
+            />
+          </div>
+          <div
+            className="gap-content-gap mt-4 grid grid-cols-7"
+            aria-label="이번 주 풀이 기록"
+          >
+            {['월', '화', '수', '목', '금', '토', '일'].map((day) => (
+              <div
+                key={day}
+                className="text-center"
+              >
+                <span className="bg-gray-3 mx-auto block h-1 w-full rounded-full" />
+                <span className="text-gray-8 text-ui-choice mt-1 block">
+                  {day}
+                </span>
+              </div>
+            ))}
+          </div>
+          <p className="text-gray-9 text-ui-choice mt-3 leading-5">
+            막대가 하나도 없는 것이 지금 상태입니다. 한 문제만 풀어도 오늘
+            칸부터 올라옵니다.
+          </p>
+        </Card>
+      )}
       <Card data-testid="learning-map">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <h2 className="text-gray-12 text-base font-extrabold">

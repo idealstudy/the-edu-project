@@ -1,3 +1,4 @@
+import { AgendaFlowCard } from '@/features/dashboard/components/student/agenda-flow-card';
 import { TodayTodoCard } from '@/features/dashboard/components/student/today-todo-card';
 import DashboardTeacher from '@/features/dashboard/components/teacher';
 import { LearningInboxCard } from '@/features/dashboard/components/teacher/learning-inbox-card';
@@ -284,6 +285,22 @@ describe('MVP-G 죽은 버튼 회귀', () => {
         onError: expect.any(Function),
         onSuccess: expect.any(Function),
       })
+    );
+  });
+
+  it('학생 홈에서 주간 회고를 제거하고 돌아보기 실라우트를 유지한다', () => {
+    render(<AgendaFlowCard />);
+
+    expect(screen.getByTestId('student-agenda-flow-card')).toHaveTextContent(
+      '오늘 할 일'
+    );
+    expect(screen.queryByText('오늘을 한 줄로 닫기')).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('student-retrospect-card')
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '돌아보기 ›' })).toHaveAttribute(
+      'href',
+      '/dashboard/student/look-back'
     );
   });
 
