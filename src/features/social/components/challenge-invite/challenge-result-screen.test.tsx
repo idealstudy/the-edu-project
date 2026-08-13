@@ -208,6 +208,44 @@ describe('ChallengeResultScreen', () => {
     ).toHaveAttribute('href', '/open-challenge/100');
   });
 
+  test('숫자로 끝나는 상대 이름의 조사도 결과 화면 전체에서 끝소리에 맞춘다', () => {
+    mockUseInviteResultQuery.mockReturnValue({
+      data: {
+        ...baseResult,
+        opponentName: 'E2E학생2',
+        outcome: 'WIN',
+      },
+      error: null,
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(),
+    });
+    mockUseCreateRematchMutation.mockReturnValue({
+      mutate: vi.fn(),
+      isPending: false,
+      data: undefined,
+      error: null,
+    });
+    mockUseOpenChallengeDetailQuery.mockReturnValue({
+      data: challengeDetailWithPrimaryUnit,
+    });
+    mockUseRecommendedChallengesQuery.mockReturnValue({
+      data: [recommendedCandidate, secondRecommendedCandidate],
+      isLoading: false,
+    });
+
+    renderWithProviders(<ChallengeResultScreen token="tok" />);
+
+    expect(screen.getByText(/E2E학생2는 4번/)).toBeInTheDocument();
+    expect(screen.getByText('E2E학생2와의 대결')).toBeInTheDocument();
+    expect(screen.getByText('E2E학생2와 통산 3승 2패 1무')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'E2E학생2와 다시 붙기' })
+    ).toBeInTheDocument();
+    expect(screen.getByText(/E2E학생2와 진행 중인 대결/)).toBeInTheDocument();
+    expect(screen.queryByText(/E2E학생2과/)).not.toBeInTheDocument();
+  });
+
   test('서버 과목 코드는 기존 한글 표시명으로 바꾸고 원문 코드는 숨긴다', () => {
     mockUseInviteResultQuery.mockReturnValue({
       data: { ...baseResult, outcome: 'WIN' },

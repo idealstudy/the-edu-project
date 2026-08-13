@@ -11,7 +11,7 @@ import {
 } from '@/features/open-challenge/hooks/use-open-challenge';
 import { Button, Card } from '@/shared/components/ui';
 import { PRIVATE, PUBLIC, subjectDisplayLabel } from '@/shared/constants';
-import { cn } from '@/shared/lib';
+import { cn, withKoreanParticle } from '@/shared/lib';
 import { trackVersusView } from '@/shared/lib/analytics';
 import {
   extractErrorCode,
@@ -85,7 +85,7 @@ const buildResultSummary = (
   }
 
   const opponentName = getOpponentName(result);
-  const answerSummary = `${opponentName}은 ${formatSelectedAnswer(opponentAnswer)}, 나는 ${formatSelectedAnswer(myAnswer)}을 골랐어요.`;
+  const answerSummary = `${withKoreanParticle(opponentName, '은/는')} ${formatSelectedAnswer(opponentAnswer)}, 나는 ${formatSelectedAnswer(myAnswer)}을 골랐어요.`;
   const divergenceReason = result.divergence?.reason?.trim();
 
   return divergenceReason
@@ -276,7 +276,7 @@ const ContextBar = ({ result }: { result: ChallengeInviteResult }) => {
       </span>
       <div className="min-w-0 flex-1">
         <b className="text-text-main text-single-line block text-sm font-bold">
-          {opponentName}과의 대결
+          {withKoreanParticle(opponentName, '와/과')}의 대결
         </b>
         <span className="text-text-sub2 text-single-line block text-xs">
           {stateDetail}
@@ -418,8 +418,9 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
             {result.headToHead && (
               <span className="border-line-line2 rounded-full border bg-white px-3 py-1.5 text-xs">
                 <b className="text-text-main">
-                  {opponentName}과 통산 {result.headToHead.win}승{' '}
-                  {result.headToHead.lose}패 {result.headToHead.draw}무
+                  {withKoreanParticle(opponentName, '와/과')} 통산{' '}
+                  {result.headToHead.win}승 {result.headToHead.lose}패{' '}
+                  {result.headToHead.draw}무
                 </b>
               </span>
             )}
@@ -508,7 +509,7 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
               >
                 {rematch.isPending
                   ? '문제 고르는 중…'
-                  : `${opponentName}과 다시 붙기`}
+                  : `${withKoreanParticle(opponentName, '와/과')} 다시 붙기`}
               </Button>
               <Button
                 variant="outlined"
@@ -556,14 +557,14 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
               >
                 {rematch.isPending
                   ? '문제 고르는 중…'
-                  : `${opponentName}과 다시 붙기`}
+                  : `${withKoreanParticle(opponentName, '와/과')} 다시 붙기`}
               </Button>
             </>
           )}
         </Card.Footer>
         {result.openDuelCount != null && (
           <p className="font-caption-normal text-text-sub2 mt-content-gap">
-            {opponentName}과 진행 중인 대결{' '}
+            {withKoreanParticle(opponentName, '와/과')} 진행 중인 대결{' '}
             <b className="text-text-main">{result.openDuelCount}건</b> · 한
             친구와 동시에 3건까지 열 수 있어요
           </p>
@@ -662,7 +663,7 @@ const NoCandidateCard = ({
             <span className="text-text-sub2 mt-0.5 block text-xs">
               {otherUnitChallenge
                 ? otherUnitChallenge.recommendReason
-                : `${opponentName}과 둘 다 정복 중인 다른 단원에서 새 문제가 들어오면 알려 드려요.`}
+                : `${withKoreanParticle(opponentName, '와/과')} 둘 다 정복 중인 다른 단원에서 새 문제가 들어오면 알려 드려요.`}
             </span>
             <Button
               variant="primary"
@@ -717,8 +718,8 @@ const NoCandidateCard = ({
               다른 친구에게 도전장 보내기
             </b>
             <span className="text-text-sub2 mt-0.5 block text-xs">
-              {opponentName}과는 이 단원을 웬만큼 훑었어요. 다른 친구와 새로
-              겨뤄보세요.
+              {withKoreanParticle(opponentName, '와/과')}는 이 단원을 웬만큼
+              훑었어요. 다른 친구와 새로 겨뤄보세요.
             </span>
             <Button
               variant="ghost"

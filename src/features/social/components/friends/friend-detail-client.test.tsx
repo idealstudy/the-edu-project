@@ -132,6 +132,24 @@ describe('FriendDetailClient', () => {
     expect(mocks.requestFriend).toHaveBeenCalledWith({ addresseeId: 7 });
   });
 
+  test('받침 없는 친구 이름 뒤 조사도 전적과 상세 문구에서 맞춘다', () => {
+    mocks.summary.mockReturnValue({
+      ...friendSummary,
+      data: { ...friendSummary.data, displayName: '민서' },
+    });
+
+    renderWithProviders(<FriendDetailClient friendId={7} />);
+
+    expect(screen.getByText('민서가 이김')).toBeInTheDocument();
+    expect(screen.getByText('민서님과 한 대결')).toBeInTheDocument();
+    expect(
+      screen.getByText('민서님과는 아직 붙어본 적이 없어요')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/민서님은 아직 푼 문제가 적어요/)
+    ).toBeInTheDocument();
+  });
+
   test('대결과 양쪽 정복 지도 오류를 감추지 않고 각 재시도를 제공한다', () => {
     mocks.duels.mockReturnValue({
       data: undefined,

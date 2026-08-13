@@ -10,7 +10,7 @@ import { useRecommendedChallengesQuery } from '@/features/open-challenge/hooks/u
 import { useMyTreeQuery } from '@/features/weakness-tree/hooks/use-tree';
 import { Button, showBottomToast } from '@/shared/components/ui';
 import { PRIVATE, PUBLIC } from '@/shared/constants';
-import { cn } from '@/shared/lib';
+import { cn, withKoreanParticle } from '@/shared/lib';
 import {
   ArrowLeft,
   Flag,
@@ -159,7 +159,7 @@ const RecordBar = ({
   <section className="border-line-line1 grid grid-cols-4 overflow-hidden rounded-xl border bg-white">
     {[
       ['내가 이김', record.win],
-      [`${name}이 이김`, record.lose],
+      [`${withKoreanParticle(name, '이/가')} 이김`, record.lose],
       ['비김', record.draw],
       ['내 차례', record.myTurn],
     ].map(([label, value], index) => (
@@ -233,7 +233,7 @@ const DuelHistory = ({
   return (
     <section className="border-line-line1 rounded-xl border bg-white p-5">
       <h2 className="font-body1-heading text-text-main mb-3">
-        {friendName}님과 한 대결
+        {withKoreanParticle(`${friendName}님`, '와/과')} 한 대결
       </h2>
       {isLoading && <div className="bg-gray-1 h-28 animate-pulse rounded-lg" />}
       {isError && (
@@ -253,7 +253,8 @@ const DuelHistory = ({
       {!isLoading && !isError && visibleItems.length === 0 && (
         <div className="py-8 text-center">
           <p className="text-text-main font-bold">
-            {friendName}님과는 아직 붙어본 적이 없어요
+            {withKoreanParticle(`${friendName}님`, '와/과')}는 아직 붙어본 적이
+            없어요
           </p>
           <p className="text-text-sub1 mt-1 text-sm">
             둘 다 정복 중인 단원에서 첫 문제를 보내보세요.
@@ -538,8 +539,8 @@ const ConquestMap = ({
         <div className="bg-gray-1 h-32 animate-pulse rounded-lg" />
       ) : sorted.length === 0 ? (
         <p className="text-text-sub1 py-8 text-center text-sm">
-          {friendName}님은 아직 푼 문제가 적어요. 비어 있는 것은 못한다는 뜻이
-          아니라 아직 안 갔다는 뜻이에요.
+          {withKoreanParticle(`${friendName}님`, '은/는')} 아직 푼 문제가
+          적어요. 비어 있는 것은 못한다는 뜻이 아니라 아직 안 갔다는 뜻이에요.
         </p>
       ) : (
         <div className="flex flex-col gap-5">

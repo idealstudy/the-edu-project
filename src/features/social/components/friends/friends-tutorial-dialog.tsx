@@ -13,7 +13,7 @@ import {
   UserPlus,
 } from 'lucide-react';
 
-const STORAGE_KEY = 'dedu:friends-tutorial-seen';
+import { useMyFriendsQuery } from '../../hooks';
 
 type TutorialStep = {
   icon: LucideIcon;
@@ -143,36 +143,33 @@ const FriendsTutorialDialog = ({
 
 /* ─────────────────────────────────────────────────────
  * 친구 튜토리얼 런처
- *  - 첫 진입 시 자동 1회 노출(localStorage 플래그)
+ *  - 친구 목록 로딩 완료 후 수락된 친구가 0명일 때 자동 노출
  *  - "튜토리얼 다시 보기" 버튼으로 언제든 재생
  * ────────────────────────────────────────────────────*/
 export const FriendsTutorial = () => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    try {
-      const seen = window.localStorage.getItem(STORAGE_KEY);
-      if (!seen) setIsOpen(true);
-    } catch {
-      // localStorage 접근 불가(프라이빗 모드 등) — 자동 노출만 건너뛴다.
-    }
-  }, []);
+  const { data: friends, isLoading } = useMyFriendsQuery();
+  const [isManuallyOpen, setIsManuallyOpen] = useState(false);
+  const [isAutoDismissed, setIsAutoDismissed] = useState(false);
+  const acceptedFriendCount =
+    friends?.filter((friendship) => friendship.state === 'ACCEPTED').length ??
+    0;
+  const shouldAutoOpen =
+    !isLoading &&
+    friends !== undefined &&
+    acceptedFriendCount === 0 &&
+    !isAutoDismissed;
+  const isOpen = isManuallyOpen || shouldAutoOpen;
 
   const handleClose = () => {
-    setIsOpen(false);
-    try {
-      window.localStorage.setItem(STORAGE_KEY, '1');
-    } catch {
-      // 저장 실패해도 닫기 동작은 유지.
-    }
+    setIsManuallyOpen(false);
+    setIsAutoDismissed(true);
   };
 
   return (
     <>
       <button
         type="button"
-        onClick={() => setIsOpen(true)}
+        onClick={() => setIsManuallyOpen(true)}
         className="text-orange-7 hover:text-orange-8 font-body2-normal w-fit cursor-pointer underline-offset-2 hover:underline"
       >
         같이 풀기 튜토리얼 다시 보기

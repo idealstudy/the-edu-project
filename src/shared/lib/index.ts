@@ -9,3 +9,4 @@ export * from './get-api-error';
 export * from './to-plain-text';
 export * from './has-non-text-content';
 export * from './create-id';
+export * from './korean-particle';

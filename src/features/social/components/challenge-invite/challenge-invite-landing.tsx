@@ -9,6 +9,7 @@ import { useOpenChallengeDetailQuery } from '@/features/open-challenge/hooks/use
 import { useSession } from '@/providers';
 import { Button, StatusBadge, showBottomToast } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
+import { withKoreanParticle } from '@/shared/lib';
 import { trackOcLand } from '@/shared/lib/analytics';
 import { Swords } from 'lucide-react';
 
@@ -151,7 +152,8 @@ export const ChallengeInviteLanding = ({ token }: { token: string }) => {
             <Swords size={26} />
           </span>
           <h1 className="font-headline1-heading text-text-main text-balance">
-            {preview.inviterName ?? '친구'}님이 도전장을 보냈어요
+            {withKoreanParticle(`${preview.inviterName ?? '친구'}님`, '이/가')}{' '}
+            도전장을 보냈어요
           </h1>
           <p className="font-body2-normal text-text-sub1 text-balance">
             {preview.sentAt

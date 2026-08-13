@@ -7,7 +7,7 @@ import { type Friendship } from '@/entities/social';
 import { useSession } from '@/providers';
 import { Button, StatusBadge } from '@/shared/components/ui';
 import { PRIVATE, PUBLIC } from '@/shared/constants/route';
-import { cn } from '@/shared/lib';
+import { cn, withKoreanParticle } from '@/shared/lib';
 import { ChevronRight, Flame, UserPlus, Users } from 'lucide-react';
 
 import {
@@ -123,8 +123,10 @@ export const FriendsClient = () => {
               내 차례인 대결 {turnSummary.myTurnCount}건
             </strong>
             <span className="text-text-sub1 block truncate text-xs">
-              가장 오래 기다린 것은 {turnSummary.oldest.opponentName}님과의{' '}
-              {turnSummary.oldest.challengeTitle}입니다
+              {`가장 오래 기다린 것은 ${withKoreanParticle(
+                `${turnSummary.oldest.opponentName}님`,
+                '와/과'
+              )}의 ${turnSummary.oldest.challengeTitle}입니다`}
             </span>
           </span>
           <span className="text-orange-10 hidden shrink-0 text-xs font-bold sm:block">
@@ -332,7 +334,7 @@ const AcceptedFriendRow = ({
     <div className="flex min-w-0 flex-1 items-center gap-2">
       <Link
         href={`${PRIVATE.FRIENDS.DETAIL(identity.memberId)}${selectionSuffix}`}
-        aria-label={`${displayName}님과의 대결 기록 보기`}
+        aria-label={`${withKoreanParticle(`${displayName}님`, '와/과')}의 대결 기록 보기`}
         className="focus-visible:ring-key-color-primary flex min-w-0 flex-1 items-center gap-3 rounded-lg focus-visible:ring-2 focus-visible:outline-none"
       >
         <FriendIdentity
