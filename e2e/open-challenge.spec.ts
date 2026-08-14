@@ -253,6 +253,13 @@ test.describe('오픈챌린지 풀이 → 결과', () => {
 test.describe('AI 코치 — 손글씨 풀이 캡처', () => {
   test.setTimeout(60_000);
 
+  test.beforeEach(async ({}, testInfo) => {
+    test.skip(
+      testInfo.project.name !== 'devremote',
+      '실제 apidev 시도 상태를 쓰는 코치 검사는 devremote 전용 프로젝트에서만 실행한다.'
+    );
+  });
+
   test.afterEach(async ({ page }) => {
     await abandonActiveAttempt(page, 4000);
   });
@@ -405,6 +412,13 @@ test.describe('AI 코치 — 손글씨 풀이 캡처', () => {
 // 때야말로 코치가 필요한데 바로 그때 막히던 구조다. 그 회귀를 여기서 지킨다.
 test.describe('AI 코치 — 이어하기', () => {
   test.setTimeout(90_000);
+
+  test.beforeEach(async ({}, testInfo) => {
+    test.skip(
+      testInfo.project.name !== 'devremote',
+      '실제 apidev 시도 상태를 쓰는 코치 검사는 devremote 전용 프로젝트에서만 실행한다.'
+    );
+  });
 
   test('코치를 켜고 나갔다 돌아와도 하던 대화가 그대로 이어진다', async ({
     page,

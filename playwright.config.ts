@@ -9,7 +9,8 @@ const useRemoteWeb = Boolean(process.env.E2E_BASE_URL);
 
 // mvp-e v1.1 스펙은 playwright.devremote.config.ts 의 session 준비 단계(로그인 상태 파일 생성)와
 // 전용 fixture 환경변수를 전제로 한다. 기본 설정으로 딸려 들어오면 준비 단계가 없어 전건 실패한다.
-const DEVREMOTE_ONLY_SPECS = /mvp-e-v11\.spec\.ts/;
+const DEVREMOTE_ONLY_SPECS =
+  /mvp-e-(?:v11\.spec|auth-gate\.spec|session\.setup)\.ts/;
 
 // 실제 서버 로그인을 수행해 QA 계정 세션을 점유하는 스펙 목록(파일 단위 실행 순서가 곧 배열 순서).
 const SHARED_ACCOUNT_SPECS = [

@@ -512,6 +512,63 @@ test.describe(`${TAG} dev 실환경 릴리즈 관문`, () => {
     }
   });
 
+  test('회원가입→로그인→첫 문제→결과·보상→약점 나무→학습→dataLayer', async ({
+    browser,
+  }, testInfo) => {
+    const fixture = loadMvpEFixture();
+    const context = await newDevContext(browser);
+    const page = await context.newPage();
+    try {
+      await page.addInitScript(() => {
+        window.dataLayer = [];
+      });
+      await registerFreshRematchStudent(page, 1);
+
+      await page.goto(`/open-challenge/${fixture.share.challengeId}?src=release_qa`);
+      await expect(page.getByTestId('challenge-submit-button')).toBeVisible();
+      await page.getByTestId('choice-option-0').click();
+      await page.getByTestId('challenge-submit-button').click();
+      await page.waitForURL(/\/open-challenge\/[^/]+\/result$/);
+      const reward = page.getByTestId('challenge-reward');
+      await expect(reward).toBeVisible();
+
+      const events = await page.evaluate(() =>
+        window.dataLayer
+          .map((entry) => entry.event)
+          .filter((event): event is string => typeof event === 'string')
+      );
+      expect(events).toEqual(
+        expect.arrayContaining([
+          'oc_start',
+          'oc_submit',
+          'oc_complete',
+          'reward_shown',
+        ])
+      );
+      await page.screenshot({
+        path: testInfo.outputPath('core-path-result-reward.png'),
+        fullPage: true,
+      });
+
+      await reward.getByRole('link', { name: /약점 나무/ }).click();
+      await expect(page).toHaveURL(/\/tree$/);
+      await expectApi(
+        await page.request.get('/api/v1/common/tree'),
+        [200],
+        '핵심 경로 약점 나무'
+      );
+      await page.goto('/learning');
+      await expect(page).toHaveURL(/\/learning$/);
+      await expectApi(
+        await page.request.get('/api/v1/common/me/challenges?page=0&size=1'),
+        [200],
+        '핵심 경로 학습 기록'
+      );
+    } finally {
+      await context.close();
+    }
+  });
+
   for (const outcome of [
     'WIN',
     'LOSE',
@@ -525,17 +582,34 @@ test.describe(`${TAG} dev 실환경 릴리즈 관문`, () => {
       const response = await page.request.get(
         `/api/v1/common/challenge-invites/${item.shareToken}/result`
       );
-      const body = unwrap<{ outcome: string }>(
+      const body = unwrap<{
+        outcome: string;
+        divergence: {
+          hasData: boolean;
+          wrongType: string | null;
+          reason: string | null;
+        };
+      }>(
         await expectApi(response, [200], `${outcome} 결과 API`)
       );
       expect(body.outcome).toBe(outcome);
+      if (body.divergence.hasData) {
+        expect(body.divergence.wrongType?.trim()).toBeTruthy();
+        expect(body.divergence.reason?.trim()).toBeTruthy();
+      } else {
+        expect(body.divergence.wrongType).toBeNull();
+        expect(body.divergence.reason).toBeNull();
+      }
+      console.log(
+        `[mvp-e-divergence] outcome=${outcome} hasData=${body.divergence.hasData} reason=${body.divergence.reason ? 'present' : 'absent'}`
+      );
       await page.goto(`/friends/${item.friendId}`);
-      const row = page
-        .getByText(item.challengeTitle, { exact: false })
-        .first()
-        .locator('..')
-        .locator('..');
-      await row.getByRole('button', { name: '결과 보기' }).click();
+      // 같은 문제로 대결한 이력이 여러 건이면 제목 기준 first()는 아직 상대 제출을
+      // 기다리는 옛 행을 집을 수 있다. 방금 만든 도전장의 shareToken 링크를 눌러
+      // 실제 친구 목록 동선을 유지하면서 결과 행을 정확히 특정한다.
+      await page
+        .locator(`a[href="/friends/challenge/${item.shareToken}/result"]`)
+        .click();
       // 화면 문구 정본 = challenge-result-dialog.tsx 의 OUTCOME_COPY.
       // 이전 값('내가 이겼어요'·'아쉽게 졌어요')은 실제 화면에 없는 문구였다(2026-08-07 dev 실측).
       const expected = {
@@ -546,32 +620,33 @@ test.describe(`${TAG} dev 실환경 릴리즈 관문`, () => {
       }[outcome];
       await expect(page.getByText(expected, { exact: false })).toBeVisible();
 
-      // 회장 확정(2026-08-09): 이미 대결한 문제는 친구와 다시 붙는 게 아니라
-      // 본인이 오답으로 혼자 다시 푼다. 그래서 내가 틀린 대결이면 그 문제로 돌아가는
-      // 버튼이 주 동작이어야 한다. 예전에는 두 버튼이 모두 새 문제로 새 대결을 만들어,
-      // 정작 틀린 그 문제로 돌아갈 길이 화면에 없었다(R-05).
+      // 회장 확정(2026-08-09): 내가 틀린 대결은 방금 문제를 혼자 다시 푸는 링크가
+      // 주 동작이고, 이긴 대결은 새 문제로 다시 붙는 동작이 주 버튼이다.
       const iWasWrong = outcome === 'LOSE' || outcome === 'BOTH_WRONG';
       if (iWasWrong) {
-        const retryLink = page.getByRole('link', { name: '이 문제 다시 풀기' });
+        const retryLink = page.getByRole('link', {
+          name: '갈린 자리 다시 풀기',
+        });
         await expect(retryLink).toBeVisible();
         await expect(retryLink).toHaveAttribute(
           'href',
           new RegExp(`/open-challenge/\\d+$`)
         );
       } else {
-        // 내가 맞힌 대결은 새 문제로 겨루는 것이 주 동작이다. 이름도 하는 일 그대로여야
-        // 한다. 옛 이름 '다시 붙기'는 같은 문제 재풀이로 읽혀 오해를 낳았다.
+        // 내가 맞힌 대결은 같은 문제가 아닌 새 문제를 고르는 rematch가 주 동작이다.
         await expect(
-          page.getByRole('button', { name: '새 문제로 겨루기' })
+          page.getByRole('button', { name: /다시 붙기$/ })
         ).toBeVisible();
         await expect(
-          page.getByRole('button', { name: '다시 붙기', exact: true })
+          page.getByRole('link', { name: '갈린 자리 다시 풀기' })
         ).toHaveCount(0);
       }
     });
   }
 
-  test('다시 붙기 성공·대기 3건 상한·후보 없음', async ({ browser }) => {
+  test('다시 붙기 성공·대기 3건 상한·후보 없음', async ({
+    browser,
+  }, testInfo) => {
     const fixture = loadMvpEFixture();
     const first = await newDevContext(browser);
     const second = await newDevContext(browser);
@@ -635,6 +710,33 @@ test.describe(`${TAG} dev 실환경 릴리즈 관문`, () => {
         );
         if (expectedCode) {
           expect(JSON.stringify(body)).toContain(expectedCode);
+          if (kind === 'noCandidate') {
+            await firstPage.goto(
+              `/friends/challenge/${noCandidate.shareToken}/result`
+            );
+            await firstPage
+              .getByRole('button', { name: /다시 붙기$/ })
+              .click();
+            await expect(
+              firstPage.getByText('이 단원에서 둘 다 안 푼 문제가 없어요')
+            ).toBeVisible();
+            for (const viewport of [
+              { width: 390, height: 844 },
+              { width: 1024, height: 768 },
+              { width: 1440, height: 900 },
+            ]) {
+              await firstPage.setViewportSize(viewport);
+              await expect(
+                firstPage.getByText('이 단원에서 둘 다 안 푼 문제가 없어요')
+              ).toBeVisible();
+              await firstPage.screenshot({
+                path: testInfo.outputPath(
+                  `rematch-no-candidate-${viewport.width}.png`
+                ),
+                fullPage: true,
+              });
+            }
+          }
         } else {
           const rematch = unwrap<{
             challengeId: number;
@@ -800,14 +902,14 @@ test.describe(`${TAG} dev 실환경 릴리즈 관문`, () => {
     ).toBe(true);
 
     // 화면에도 실제 값이 뜨는지 확인한다. 서버만 맞고 화면이 0%면 회장이 본 증상 그대로다.
-    // 목록 화면은 '/' 가 아니라 '/challenges' 다('/' 는 공개 포털 홈).
+    // 현재 공개 문제 목록 정본은 '/challenges' 이며 카드의 표기명은 '통과율'이다.
     // 화면이 어느 문제를 어떤 순서로 보여줄지는 목록 정책에 달렸으므로 특정 문제의
     // 값을 콕 집어 비교하지 않는다. 대신 ①0% 고착이 아닌지 ②화면 값이 서버가 계산할
     // 수 있는 값 범위 안에 있는지를 본다.
     await page.goto('/challenges');
-    await expect(page.getByText(/정답률 \d+%/).first()).toBeVisible();
-    const shownRates = (await page.getByText(/정답률 \d+%/).allInnerTexts())
-      .map((text) => Number(/정답률 (\d+)%/.exec(text)?.[1]))
+    await expect(page.getByText(/통과율 \d+%/).first()).toBeVisible();
+    const shownRates = (await page.getByText(/통과율 \d+%/).allInnerTexts())
+      .map((text) => Number(/통과율 (\d+)%/.exec(text)?.[1]))
       .filter((value) => Number.isFinite(value));
 
     expect(shownRates.length, '화면에 정답률 표기가 있어야 한다').toBeGreaterThan(

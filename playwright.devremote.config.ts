@@ -7,6 +7,7 @@ loadE2eSecrets();
 
 process.env.BACKEND_API_URL ??= 'https://apidev.d-edu.site/api';
 process.env.NEXT_PUBLIC_BACKEND_API_URL ??= 'https://apidev.d-edu.site/api';
+const devOrigin = process.env.E2E_BASE_URL?.trim() || 'https://dev.d-edu.site';
 const reportScope = process.env.E2E_REPORT_SCOPE ?? 'manual';
 
 export default defineConfig({
@@ -34,7 +35,7 @@ export default defineConfig({
   outputDir: `test-results-devremote-${reportScope}`,
   expect: { timeout: 15_000 },
   use: {
-    baseURL: 'https://dev.d-edu.site',
+    baseURL: devOrigin,
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure',
     video: 'retain-on-failure',

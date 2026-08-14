@@ -12,7 +12,8 @@ type TestResponse = {
   text(): Promise<string>;
 };
 
-const DEV_ORIGIN = 'https://dev.d-edu.site';
+const DEV_ORIGIN =
+  process.env.E2E_BASE_URL?.trim() || 'https://dev.d-edu.site';
 
 // 화면의 공개 API(api.public)는 BFF 를 거치지 않고 백엔드로 직접 간다
 // (shared/api/http/http.transport.ts 의 publicHttp baseURL = env.backendApiUrl).

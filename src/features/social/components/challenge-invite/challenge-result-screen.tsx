@@ -379,6 +379,7 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
   const divergenceReason = result.divergence?.reason?.trim();
   const iWon = outcome === 'WIN';
   const showSplitBanner = outcome === 'LOSE' || outcome === 'BOTH_WRONG';
+  const shouldRetryFirst = showSplitBanner;
 
   return (
     <div className="gap-block-gap flex flex-col">
@@ -489,7 +490,7 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
         <Card.Header>
           <div className="min-w-0">
             <Card.Title>
-              {iWon
+              {!shouldRetryFirst
                 ? `${opponentName}에게 다시 붙자고 할까요?`
                 : '지금은 이 유형을 한 번 더 보는 게 낫습니다'}
             </Card.Title>
@@ -505,7 +506,7 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
                   길을 피한다. 진 화면의 주 버튼("갈린 자리 다시 풀기")은
                   추천 API와 무관하게 항상 방금 틀린 그 문제로 보낸다
                   (retryDivergedHref, 시안 확정 문구). */}
-              {iWon
+              {!shouldRetryFirst
                 ? '같은 문제는 다시 보내지 않습니다. 둘 다 약한 단원에서 다음 문제를 골라요.'
                 : '같은 자리에서 또 걸리지 않게 방금 그 문제로 먼저 돌아가요. 다시 붙기는 그다음에 해도 늦지 않습니다.'}
             </Card.Description>
@@ -518,7 +519,7 @@ const ResultBody = ({ result }: { result: ChallengeInviteResult }) => {
           </Card.Content>
         )}
         <Card.Footer className="flex-col sm:flex-row">
-          {iWon ? (
+          {!shouldRetryFirst ? (
             <>
               <Button
                 variant="primary"
