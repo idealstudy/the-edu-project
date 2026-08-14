@@ -37,9 +37,7 @@ async function drawDiagonalStroke(page: Page, canvas: Locator) {
 
   // 획이 실제로 기록됐는지 여기서 확인한다. 이 단언이 없으면 획이 안 들어간 채로
   // 뒤 단계가 진행돼, 원인이 "이미지가 안 실렸다"로 잘못 보고된다.
-  await expect(
-    canvas.getByText('펜슬로 풀이를 적어보세요')
-  ).toBeHidden();
+  await expect(canvas.getByText('펜슬로 풀이를 적어보세요')).toBeHidden();
 }
 
 function readPngSize(buffer: Buffer): { width: number; height: number } {
@@ -67,8 +65,8 @@ async function abandonActiveAttempt(page: Page, challengeId: number) {
   const body = await res.json().catch(() => null);
   const attemptId = body?.data?.attemptId;
   if (!attemptId) return;
-  await page
-    .request.patch(`/api/v1/common/challenge-attempts/${attemptId}/abandon`)
+  await page.request
+    .patch(`/api/v1/common/challenge-attempts/${attemptId}/abandon`)
     .catch(() => {
       // 정리 실패가 검사 결과를 가리지 않게 한다 — 다음 실행에서 다시 시도된다.
     });
@@ -127,15 +125,20 @@ async function ensureFreshAttempt(page: Page, challengeId: number) {
   ).toBeLessThan(300);
 
   attempt = await createAttempt();
-  expect(
-    attempt.status,
-    '정리 후에도 새 시도가 진행 중 상태가 아니다'
-  ).toBe('IN_PROGRESS');
+  expect(attempt.status, '정리 후에도 새 시도가 진행 중 상태가 아니다').toBe(
+    'IN_PROGRESS'
+  );
 }
 
+/**
+ * AI 코치는 더 이상 시작 버튼으로 여는 게 아니라, 문제 화면 진입과 동시에 이미
+ * 열려 있다(회장 요청 R-09 "코치 진입 즉시 대화"). `ai-coach-start-button` 은
+ * 제품에서 완전히 제거됐다(단위테스트 `ai-coach-panel.test.tsx` 도 부재를 단언)
+ * — 조건부로 남겨두면 다시는 안 탈 죽은 분기라 아예 지운다.
+ *
+ * 맞춤 설정 창은 여전히 조건부(계정에 저장된 설정 유무)라 그 분기만 남긴다.
+ */
 async function startAiCoach(page: Page) {
-  await page.getByTestId('ai-coach-start-button').click();
-
   // 맞춤 설정 창이 뜨면 건너뛴다. 이미 설정을 저장해둔 계정이면 창 없이 바로 시작한다.
   // 대기 시간을 3초로 두면 전체 스위트를 이어 돌릴 때 창이 뜨기 전에 포기하고,
   // 그 뒤 입력창을 못 찾아 "코치가 안 열린다"로 잘못 보고된다(2026-08-09 실측).
@@ -233,7 +236,9 @@ test.describe('오픈챌린지 풀이 → 결과', () => {
     // 문구를 정확히 지정하지 않는 이유: 정답이면 "내 약점 나무 보기", 오답이면
     // "약점 나무에서 채우기"로 갈리는데 이 검사는 정답 여부를 고정하지 않는다.
     await expect(
-      page.getByTestId('challenge-reward').getByRole('link', { name: /약점 나무/ })
+      page
+        .getByTestId('challenge-reward')
+        .getByRole('link', { name: /약점 나무/ })
     ).toBeVisible();
 
     // 게이미피케이션 지표 페이지가 풀이 후에도 정상 렌더되는지 스모크.
