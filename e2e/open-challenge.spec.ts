@@ -255,8 +255,8 @@ test.describe('AI 코치 — 손글씨 풀이 캡처', () => {
 
   test.beforeEach(async ({}, testInfo) => {
     test.skip(
-      testInfo.project.name !== 'devremote',
-      '실제 apidev 시도 상태를 쓰는 코치 검사는 devremote 전용 프로젝트에서만 실행한다.'
+      !['devremote', 'coach'].includes(testInfo.project.name),
+      '실제 API 시도 상태를 쓰는 코치 검사는 격리된 coach 또는 devremote 프로젝트에서만 실행한다.'
     );
   });
 
@@ -415,8 +415,8 @@ test.describe('AI 코치 — 이어하기', () => {
 
   test.beforeEach(async ({}, testInfo) => {
     test.skip(
-      testInfo.project.name !== 'devremote',
-      '실제 apidev 시도 상태를 쓰는 코치 검사는 devremote 전용 프로젝트에서만 실행한다.'
+      !['devremote', 'coach'].includes(testInfo.project.name),
+      '실제 API 시도 상태를 쓰는 코치 검사는 격리된 coach 또는 devremote 프로젝트에서만 실행한다.'
     );
   });
 

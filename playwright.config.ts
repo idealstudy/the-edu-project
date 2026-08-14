@@ -81,6 +81,16 @@ export default defineConfig({
       fullyParallel: false,
       dependencies: index === 0 ? [] : [`shared-account-${index}`],
     })),
+    {
+      // 일반 PR에서도 실제 코치 경로를 필수 실행한다. 같은 학생 계정을 쓰는 기존
+      // 스펙이 모두 끝난 뒤 전용 문제 번호와 직렬 worker로 실행해 상태 간섭을 막는다.
+      name: 'coach',
+      use: { ...devices['Desktop Chrome'] },
+      testMatch: /open-challenge\.spec\.ts/,
+      grep: /AI 코치/,
+      fullyParallel: false,
+      dependencies: [`shared-account-${SHARED_ACCOUNT_SPECS.length}`],
+    },
 
     // {
     //   name: 'webkit',
