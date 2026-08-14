@@ -4,8 +4,12 @@ import { loadE2eSecrets } from './e2e/helpers/load-e2e-secrets';
 
 loadE2eSecrets();
 
-const e2eBaseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-const useRemoteWeb = Boolean(process.env.E2E_BASE_URL);
+const configuredBaseURL = process.env.E2E_BASE_URL?.trim();
+const e2eWebPort = process.env.E2E_WEB_PORT?.trim() || '3000';
+const localE2eURL = `http://localhost:${e2eWebPort}`;
+const e2eBaseURL = configuredBaseURL || localE2eURL;
+const useRemoteWeb = Boolean(configuredBaseURL);
+process.env.E2E_BASE_URL = e2eBaseURL;
 
 // mvp-e v1.1 스펙은 playwright.devremote.config.ts 의 session 준비 단계(로그인 상태 파일 생성)와
 // 전용 fixture 환경변수를 전제로 한다. 기본 설정으로 딸려 들어오면 준비 단계가 없어 전건 실패한다.
@@ -127,8 +131,10 @@ export default defineConfig({
   webServer: useRemoteWeb
     ? undefined
     : {
-        command: 'npm run dev',
-        url: 'http://localhost:3000',
-        reuseExistingServer: !process.env.CI,
+        command: `npm run dev -- --hostname 127.0.0.1 --port ${e2eWebPort}`,
+        url: localE2eURL,
+        // 다른 worktree의 앱을 제품 서버로 오인하지 않는다. 포트가 겹치면 즉시 실패시키고
+        // 호출자가 E2E_WEB_PORT로 격리 포트를 명시한다.
+        reuseExistingServer: false,
       },
 });

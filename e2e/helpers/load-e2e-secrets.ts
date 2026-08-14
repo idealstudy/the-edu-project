@@ -13,6 +13,8 @@ import path from 'node:path';
  *   2) 현재 체크아웃과 그 상위 디렉터리들의 .local-secrets/
  *   3) git worktree 인 경우 메인 체크아웃의 .local-secrets/
  * 이미 process.env 에 있는 값은 dotenv 기본 동작대로 덮어쓰지 않는다.
+ * 가까운 디렉터리에 fixture 전용 파일만 있어도 탐색을 끝내지 않고, 뒤 디렉터리에서
+ * 아직 비어 있는 계정 변수를 채운다.
  */
 const secretsDirCandidates = (): string[] => {
   const dirs: string[] = [];
@@ -37,25 +39,25 @@ const secretsDirCandidates = (): string[] => {
 };
 
 /**
- * `.env.local` 과 `.local-secrets/*.env` 를 순서대로 읽어 process.env 를 채운다.
+ * `.env.local` 과 `.local-secrets/{dev-qa,e2e}*.env` 를 순서대로 읽어 process.env 를 채운다.
  * 모든 Playwright 설정이 이 함수를 쓴다. 설정마다 로직이 갈라지면
  * 계정 변수가 없는 설정에서 스위트 전체가 조용히 skip 된다.
  */
 export const loadE2eSecrets = (): void => {
-  dotenv.config({ path: '.env.local' });
+  dotenv.config({ path: '.env.local', quiet: true });
 
   const explicit = process.env.E2E_SECRETS_FILE?.trim();
   if (explicit) {
-    if (fs.existsSync(explicit)) dotenv.config({ path: explicit });
+    if (fs.existsSync(explicit)) dotenv.config({ path: explicit, quiet: true });
     return;
   }
   for (const dir of secretsDirCandidates()) {
     if (!fs.existsSync(dir)) continue;
     const files = fs
       .readdirSync(dir)
-      .filter((name) => name.endsWith('.env'))
+      .filter((name) => /^(?:dev-qa|e2e)[\w.-]*\.env$/i.test(name))
+      .sort()
       .map((name) => path.join(dir, name));
-    for (const file of files) dotenv.config({ path: file });
-    if (files.length > 0) return;
+    for (const file of files) dotenv.config({ path: file, quiet: true });
   }
 };
