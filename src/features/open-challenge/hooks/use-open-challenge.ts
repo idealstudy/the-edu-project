@@ -410,16 +410,21 @@ export const useCreateAiCoachingSessionMutation = () => {
   });
 };
 
-export const useSendAiCoachingMessageMutation = (sessionId: string) => {
+export const useSendAiCoachingMessageMutation = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
 
   return useMutation({
-    mutationFn: (params: SendAiCoachingMessagePayload) =>
-      repository.sendAiCoachingMessage(sessionId, params),
-    onSuccess: () => {
+    mutationFn: ({
+      sessionId,
+      params,
+    }: {
+      sessionId: string;
+      params: SendAiCoachingMessagePayload;
+    }) => repository.sendAiCoachingMessage(sessionId, params),
+    onSuccess: (_response, variables) => {
       queryClient.invalidateQueries({
-        queryKey: openChallengeKeys.aiCoachingMessages(sessionId),
+        queryKey: openChallengeKeys.aiCoachingMessages(variables.sessionId),
       });
     },
     onError: (error) => {

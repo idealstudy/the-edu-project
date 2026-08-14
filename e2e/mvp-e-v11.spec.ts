@@ -531,6 +531,10 @@ test.describe(`${TAG} dev 실환경 릴리즈 관문`, () => {
       await page.waitForURL(/\/open-challenge\/[^/]+\/result$/);
       const reward = page.getByTestId('challenge-reward');
       await expect(reward).toBeVisible();
+      await page.waitForLoadState('networkidle');
+      await expect(page.getByText('진행 중인 attempt가 아닙니다.')).toHaveCount(
+        0
+      );
 
       const events = await page.evaluate(() =>
         window.dataLayer
@@ -726,14 +730,38 @@ test.describe(`${TAG} dev 실환경 릴리즈 관문`, () => {
               { width: 1440, height: 900 },
             ]) {
               await firstPage.setViewportSize(viewport);
-              await expect(
-                firstPage.getByText('이 단원에서 둘 다 안 푼 문제가 없어요')
-              ).toBeVisible();
+              const rematchButton = firstPage
+                .getByRole('button', { name: /다시 붙기$/ })
+                .first();
+              await rematchButton.evaluate((element) =>
+                element.scrollIntoView({ block: 'center' })
+              );
+              await expect(rematchButton).toBeVisible();
+              await rematchButton.click({ trial: true });
+
+              if (viewport.width === 390) {
+                const bottomNavigation = firstPage.getByTestId(
+                  'student-bottom-navigation'
+                );
+                await expect(bottomNavigation).toBeVisible();
+                const [buttonBox, navigationBox] = await Promise.all([
+                  rematchButton.boundingBox(),
+                  bottomNavigation.boundingBox(),
+                ]);
+                expect(buttonBox, '390px 다시 붙기 CTA 위치').not.toBeNull();
+                expect(
+                  navigationBox,
+                  '390px 학생 하단 내비 위치'
+                ).not.toBeNull();
+                expect(buttonBox!.y + buttonBox!.height).toBeLessThanOrEqual(
+                  navigationBox!.y
+                );
+              }
+
               await firstPage.screenshot({
                 path: testInfo.outputPath(
                   `rematch-no-candidate-${viewport.width}.png`
                 ),
-                fullPage: true,
               });
             }
           }

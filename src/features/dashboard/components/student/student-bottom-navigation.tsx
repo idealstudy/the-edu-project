@@ -52,7 +52,7 @@ export const StudentBottomNavigation = () => {
   return (
     <nav
       aria-label="학생 모바일 주요 메뉴"
-      className="border-gray-3 bg-gray-white min-h-control-xl fixed right-0 bottom-0 left-0 z-(--z-layer-chrome) grid grid-cols-5 border-t md:hidden"
+      className="border-gray-3 bg-gray-white min-h-control-xl fixed right-0 bottom-0 left-0 z-(--z-layer-chrome) grid grid-cols-5 border-t pb-[env(safe-area-inset-bottom)] md:hidden"
       data-testid="student-bottom-navigation"
     >
       {ITEMS.map((item) => {

@@ -33,7 +33,7 @@ export default async function DashboardLayout({
   return (
     <SessionGuard>
       <main
-        className={`bg-system-background md:pl-sidebar-width flex min-h-screen flex-col ${session.status === 'authenticated' && session.role === 'ROLE_STUDENT' ? 'pb-control-xl md:pb-0' : ''}`}
+        className={`bg-system-background md:pl-sidebar-width flex min-h-screen flex-col ${session.status === 'authenticated' && session.role === 'ROLE_STUDENT' ? 'pb-[calc(var(--spacing-control-xl)+var(--spacing-section-gap-mobile)+env(safe-area-inset-bottom))] md:pb-0' : ''}`}
         data-private-app-shell
       >
         <DashboardSidebar />

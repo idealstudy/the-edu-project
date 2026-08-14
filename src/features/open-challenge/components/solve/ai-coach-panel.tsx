@@ -392,7 +392,6 @@ export const AiCoachPanel = ({
   const [settings, setSettings] = useState<AiCoachSettings | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [sessionId, setSessionId] = useState('');
-  const [sessionGeneration, setSessionGeneration] = useState(0);
   const [isSolutionWarningOpen, setIsSolutionWarningOpen] = useState(false);
   const [hasViewedSolution, setHasViewedSolution] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -407,7 +406,7 @@ export const AiCoachPanel = ({
   const startAttemptMutation = useStartChallengeAttemptMutation();
   const updatePreferenceMutation = useUpdateMyAiCoachingPreferenceMutation();
   const createSessionMutation = useCreateAiCoachingSessionMutation();
-  const sendMessageMutation = useSendAiCoachingMessageMutation(sessionId);
+  const sendMessageMutation = useSendAiCoachingMessageMutation();
   const abandonSessionMutation = useAbandonAiCoachingSessionMutation();
   const solutionMutation = useChallengeSolutionMutation();
   const { uploadDrawingAsync, isUploading: isUploadingDrawing } =
@@ -482,7 +481,7 @@ export const AiCoachPanel = ({
   const startCoach = async (
     nextSettings: AiCoachSettings,
     options: { persistPreference?: boolean } = {}
-  ) => {
+  ): Promise<string | null> => {
     try {
       setSettings(nextSettings);
       if (!nextSettings.skipped && options.persistPreference !== false) {
@@ -545,35 +544,13 @@ export const AiCoachPanel = ({
       );
       setStatus(session.status === 'READY' ? 'WAITING_ANSWER' : session.status);
       setIsSettingsOpen(false);
+      return String(session.sessionId);
     } catch {
       // mutation hook에서 공통 API 에러 처리를 수행한다.
+      hasStartedSessionRef.current = false;
+      return null;
     }
   };
-
-  const startCoachRef = useRef(startCoach);
-  startCoachRef.current = startCoach;
-
-  useEffect(() => {
-    if (!isLoggedIn || !hasLoadedSettings || hasStartedSessionRef.current) {
-      return;
-    }
-
-    // 로컬 첫 인사와 입력창을 먼저 그린 뒤 DB 세션만 생성하거나 이어 연다.
-    // 실제 AI provider 호출은 학생이 메시지를 보내는 POST /messages 시점에만 발생한다.
-    hasStartedSessionRef.current = true;
-    const initialSettings =
-      settings ??
-      (myPreferenceQuery.data
-        ? toSettings(myPreferenceQuery.data)
-        : DEFAULT_AI_COACH_SETTINGS);
-    void startCoachRef.current(initialSettings, { persistPreference: false });
-  }, [
-    hasLoadedSettings,
-    isLoggedIn,
-    myPreferenceQuery.data,
-    sessionGeneration,
-    settings,
-  ]);
 
   const handleSettingsSubmit = async (nextSettings: AiCoachSettings) => {
     if (status === 'READY') {
@@ -611,8 +588,27 @@ export const AiCoachPanel = ({
     sendOptions: { skipSolutionImage?: boolean } = {}
   ) => {
     const trimmedMessage = rawMessage.trim();
-    if (!trimmedMessage || status === 'READY' || isSending || !sessionId)
-      return;
+    if (!trimmedMessage || status === 'READY' || isSending) return;
+
+    let activeSessionId: string | null = sessionId || null;
+    if (!activeSessionId) {
+      if (!isLoggedIn || !hasLoadedSettings || hasStartedSessionRef.current) {
+        return;
+      }
+
+      // 승인 FDD F-01: 첫 인사와 입력창은 읽기 전용이다. 학생이 실제로
+      // 메시지를 보낸 이 시점에만 attempt -> session 순서로 만든다.
+      hasStartedSessionRef.current = true;
+      const initialSettings =
+        settings ??
+        (myPreferenceQuery.data
+          ? toSettings(myPreferenceQuery.data)
+          : DEFAULT_AI_COACH_SETTINGS);
+      activeSessionId = await startCoach(initialSettings, {
+        persistPreference: false,
+      });
+      if (!activeSessionId) return;
+    }
 
     // 풀이 이미지 업로드를 메시지 전송보다 먼저 확정한다. 실패 시 사용자
     // 확인(재시도/이미지 없이 진행) 전에는 AI를 조용히 부르지 않는다(A-2).
@@ -649,7 +645,14 @@ export const AiCoachPanel = ({
     onMessageSent?.();
 
     sendMessageMutation.mutate(
-      { message: trimmedMessage, studentSolutionImageMediaId, intent },
+      {
+        sessionId: activeSessionId,
+        params: {
+          message: trimmedMessage,
+          studentSolutionImageMediaId,
+          intent,
+        },
+      },
       {
         onSuccess: (response) => {
           setMessages((previousMessages) => [
@@ -743,7 +746,6 @@ export const AiCoachPanel = ({
     setStatus('WAITING_ANSWER');
     onAttemptCleared();
     hasStartedSessionRef.current = false;
-    setSessionGeneration((generation) => generation + 1);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -930,7 +932,7 @@ export const AiCoachPanel = ({
               <button
                 type="button"
                 onClick={() => sendMessage(CONCEPT_PROMPT, 'concept')}
-                disabled={!sessionId || isSending}
+                disabled={!hasLoadedSettings || isSending}
                 className="border-orange-3 bg-orange-1 text-orange-7 hover:bg-orange-2 flex h-11 flex-1 cursor-pointer items-center justify-center rounded-xl border text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40"
               >
                 개념 보기
@@ -938,7 +940,7 @@ export const AiCoachPanel = ({
               <button
                 type="button"
                 onClick={() => sendMessage(HINT_PROMPT, 'hint')}
-                disabled={!sessionId || isSending}
+                disabled={!hasLoadedSettings || isSending}
                 className="border-orange-3 bg-orange-1 text-orange-7 hover:bg-orange-2 flex h-11 flex-1 cursor-pointer items-center justify-center rounded-xl border text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40"
               >
                 힌트 보기
@@ -966,9 +968,7 @@ export const AiCoachPanel = ({
               placeholder={
                 status === 'COACHING'
                   ? 'AI 코치가 생각 중이에요...'
-                  : !sessionId
-                    ? '코치와 연결 중이에요...'
-                    : '메시지를 입력하세요...'
+                  : '메시지를 입력하세요...'
               }
               className="placeholder:text-gray-6 font-body2-normal flex-1 outline-none disabled:cursor-not-allowed"
               data-testid="ai-coach-message-input"
@@ -977,7 +977,7 @@ export const AiCoachPanel = ({
               type="button"
               onClick={handleSendMessage}
               disabled={
-                !sessionId ||
+                !hasLoadedSettings ||
                 !inputMessage.trim() ||
                 status === 'COACHING' ||
                 isBusy

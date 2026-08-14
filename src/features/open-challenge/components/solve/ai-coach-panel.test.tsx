@@ -74,7 +74,7 @@ vi.mock('@/shared/lib/analytics', () => ({
   trackOcSolutionView: vi.fn(),
 }));
 
-describe('AiCoachPanel 자동 대화 시작', () => {
+describe('AiCoachPanel 지연 대화 시작', () => {
   beforeEach(() => {
     coachMocks.startAttemptAsync.mockResolvedValue({
       attemptId: 'attempt-1',
@@ -111,7 +111,9 @@ describe('AiCoachPanel 자동 대화 시작', () => {
     vi.restoreAllMocks();
   });
 
-  test('진입 즉시 첫 인사와 입력창을 열고, 학생이 보낸 때만 메시지 mutation을 호출한다', async () => {
+  // Regression: REL-E-CORE-PATH-01. 화면 진입 시 자동 세션 생성이 답 제출과
+  // 경합해 완료된 attempt에 세션을 만들며 오류 토스트를 노출했다.
+  test('첫 사용자 메시지 전에는 attempt와 세션을 만들지 않는다', async () => {
     const onMessageSent = vi.fn();
 
     renderWithProviders(
@@ -131,15 +133,13 @@ describe('AiCoachPanel 자동 대화 시작', () => {
       screen.queryByTestId('ai-coach-start-button')
     ).not.toBeInTheDocument();
     expect(screen.getByTestId('ai-coach-message-input')).toBeInTheDocument();
+    expect(
+      await screen.findByText('어디서 막혔는지 말해 줘.')
+    ).toBeInTheDocument();
+    expect(coachMocks.startAttemptAsync).not.toHaveBeenCalled();
+    expect(coachMocks.createSessionAsync).not.toHaveBeenCalled();
     expect(coachMocks.sendMessage).not.toHaveBeenCalled();
-
-    await waitFor(() => {
-      expect(coachMocks.createSessionAsync).toHaveBeenCalledWith({
-        challengeAttemptId: 'attempt-1',
-      });
-    });
     expect(coachMocks.updatePreferenceAsync).not.toHaveBeenCalled();
-    expect(coachMocks.sendMessage).not.toHaveBeenCalled();
 
     await userEvent.type(
       screen.getByTestId('ai-coach-message-input'),
@@ -147,17 +147,28 @@ describe('AiCoachPanel 자동 대화 시작', () => {
     );
     await userEvent.click(screen.getByTestId('ai-coach-send-button'));
 
-    expect(coachMocks.sendMessage).toHaveBeenCalledWith(
-      expect.objectContaining({
-        message: '경우의 수를 모르겠어',
-        intent: 'chat',
-      }),
-      expect.objectContaining({ onSuccess: expect.any(Function) })
-    );
+    await waitFor(() => {
+      expect(coachMocks.startAttemptAsync).toHaveBeenCalledWith({
+        challengeId: '42',
+      });
+      expect(coachMocks.createSessionAsync).toHaveBeenCalledWith({
+        challengeAttemptId: 'attempt-1',
+      });
+      expect(coachMocks.sendMessage).toHaveBeenCalledWith(
+        {
+          sessionId: 'session-1',
+          params: expect.objectContaining({
+            message: '경우의 수를 모르겠어',
+            intent: 'chat',
+          }),
+        },
+        expect.objectContaining({ onSuccess: expect.any(Function) })
+      );
+    });
     expect(onMessageSent).toHaveBeenCalledTimes(1);
   });
 
-  test('기존 세션이 있는 문제로 재진입하면 지난 대화를 이어서 그린다', async () => {
+  test('기존 attempt는 첫 메시지에 세션을 이어 열고 지난 대화를 복원한다', async () => {
     vi.mocked(repository.getAiCoachingMessages).mockResolvedValue([
       {
         role: 'ASSISTANT',
@@ -180,10 +191,21 @@ describe('AiCoachPanel 자동 대화 시작', () => {
       />
     );
 
+    expect(coachMocks.createSessionAsync).not.toHaveBeenCalled();
+
+    await userEvent.type(
+      screen.getByTestId('ai-coach-message-input'),
+      '그다음은 어떻게 세어?'
+    );
+    await userEvent.click(screen.getByTestId('ai-coach-send-button'));
+
     expect(
       await screen.findByText('어느 부분부터 세어 볼까?')
     ).toBeInTheDocument();
     expect(screen.getByText('16가지까지는 세었어')).toBeInTheDocument();
+    expect(coachMocks.createSessionAsync).toHaveBeenCalledWith({
+      challengeAttemptId: 'attempt-1',
+    });
     expect(coachMocks.startAttemptAsync).not.toHaveBeenCalled();
   });
 });
