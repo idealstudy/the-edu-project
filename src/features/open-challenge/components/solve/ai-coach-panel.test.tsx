@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { AiCoachPanel } from './ai-coach-panel';
 
 const coachMocks = vi.hoisted(() => ({
-  startAttemptAsync: vi.fn(),
+  ensureAttempt: vi.fn(),
   createSessionAsync: vi.fn(),
   sendMessage: vi.fn(),
   abandonSessionAsync: vi.fn(),
@@ -20,10 +20,6 @@ vi.mock('../../hooks/use-open-challenge', () => ({
     data: null,
     isFetched: true,
     isError: false,
-  })),
-  useStartChallengeAttemptMutation: vi.fn(() => ({
-    mutateAsync: coachMocks.startAttemptAsync,
-    isPending: false,
   })),
   useUpdateMyAiCoachingPreferenceMutation: vi.fn(() => ({
     mutateAsync: coachMocks.updatePreferenceAsync,
@@ -76,10 +72,7 @@ vi.mock('@/shared/lib/analytics', () => ({
 
 describe('AiCoachPanel 지연 대화 시작', () => {
   beforeEach(() => {
-    coachMocks.startAttemptAsync.mockResolvedValue({
-      attemptId: 'attempt-1',
-      status: 'IN_PROGRESS',
-    });
+    coachMocks.ensureAttempt.mockResolvedValue('attempt-1');
     coachMocks.createSessionAsync.mockResolvedValue({
       sessionId: 'session-1',
       status: 'WAITING_ANSWER',
@@ -122,7 +115,7 @@ describe('AiCoachPanel 지연 대화 시작', () => {
         attemptId={null}
         isLoggedIn
         openingMessage="어디서 막혔는지 말해 줘."
-        onAttemptCreated={vi.fn()}
+        ensureAttempt={coachMocks.ensureAttempt}
         onAttemptCleared={vi.fn()}
         onSessionChange={vi.fn()}
         onMessageSent={onMessageSent}
@@ -136,7 +129,7 @@ describe('AiCoachPanel 지연 대화 시작', () => {
     expect(
       await screen.findByText('어디서 막혔는지 말해 줘.')
     ).toBeInTheDocument();
-    expect(coachMocks.startAttemptAsync).not.toHaveBeenCalled();
+    expect(coachMocks.ensureAttempt).not.toHaveBeenCalled();
     expect(coachMocks.createSessionAsync).not.toHaveBeenCalled();
     expect(coachMocks.sendMessage).not.toHaveBeenCalled();
     expect(coachMocks.updatePreferenceAsync).not.toHaveBeenCalled();
@@ -148,9 +141,7 @@ describe('AiCoachPanel 지연 대화 시작', () => {
     await userEvent.click(screen.getByTestId('ai-coach-send-button'));
 
     await waitFor(() => {
-      expect(coachMocks.startAttemptAsync).toHaveBeenCalledWith({
-        challengeId: '42',
-      });
+      expect(coachMocks.ensureAttempt).toHaveBeenCalledTimes(1);
       expect(coachMocks.createSessionAsync).toHaveBeenCalledWith({
         challengeAttemptId: 'attempt-1',
       });
@@ -186,7 +177,7 @@ describe('AiCoachPanel 지연 대화 시작', () => {
         challengeId="42"
         attemptId="attempt-1"
         isLoggedIn
-        onAttemptCreated={vi.fn()}
+        ensureAttempt={coachMocks.ensureAttempt}
         onAttemptCleared={vi.fn()}
       />
     );
@@ -206,6 +197,6 @@ describe('AiCoachPanel 지연 대화 시작', () => {
     expect(coachMocks.createSessionAsync).toHaveBeenCalledWith({
       challengeAttemptId: 'attempt-1',
     });
-    expect(coachMocks.startAttemptAsync).not.toHaveBeenCalled();
+    expect(coachMocks.ensureAttempt).not.toHaveBeenCalled();
   });
 });

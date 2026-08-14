@@ -102,7 +102,19 @@ vi.mock('@/shared/lib/analytics', async (importOriginal) => {
 });
 
 vi.mock('./ai-coach-panel', () => ({
-  AiCoachPanel: () => null,
+  AiCoachPanel: ({
+    ensureAttempt,
+  }: {
+    ensureAttempt: () => Promise<string>;
+  }) => (
+    <button
+      type="button"
+      data-testid="mock-coach-ensure-attempt"
+      onClick={() => void ensureAttempt()}
+    >
+      코치 시도 시작
+    </button>
+  ),
 }));
 
 const CHALLENGE_ID = '4167';
@@ -317,5 +329,48 @@ describe('ChallengeSolveClient (오픈챌린지 풀이 화면 가드)', () => {
         '{}'
     ) as { drawingShareFailure?: { mediaAssetId?: number } };
     expect(stored.drawingShareFailure?.mediaAssetId).toBe(88);
+  });
+
+  test('코치 첫 메시지와 답 제출이 겹쳐도 attempt 생성 요청은 하나를 공유한다', async () => {
+    const user = userEvent.setup();
+    vi.mocked(useOpenChallengeDetailQuery).mockReturnValue({
+      data: baseChallenge,
+      isLoading: false,
+      isError: false,
+    } as never);
+    let resolveAttempt!: (value: { attemptId: string }) => void;
+    solveMocks.startAttemptAsync.mockReturnValue(
+      new Promise((resolve) => {
+        resolveAttempt = resolve;
+      })
+    );
+    solveMocks.submitAnswerAsync.mockResolvedValue({
+      isCorrect: true,
+      correctAnswer: '1',
+      passRate: 70,
+      participantCount: 10,
+    });
+
+    renderWithProviders(
+      <ChallengeSolveClient
+        challengeId={CHALLENGE_ID}
+        isLoggedIn
+      />
+    );
+
+    await user.click(screen.getByTestId('mock-coach-ensure-attempt'));
+    await user.click(screen.getByTestId('choice-option-0'));
+    await user.click(screen.getByTestId('challenge-submit-button'));
+
+    expect(solveMocks.startAttemptAsync).toHaveBeenCalledTimes(1);
+    resolveAttempt({ attemptId: 'shared-attempt' });
+
+    await waitFor(() => {
+      expect(solveMocks.submitAnswerAsync).toHaveBeenCalledWith({
+        attemptId: 'shared-attempt',
+        params: { selectedAnswer: '1' },
+      });
+    });
+    expect(solveMocks.startAttemptAsync).toHaveBeenCalledTimes(1);
   });
 });

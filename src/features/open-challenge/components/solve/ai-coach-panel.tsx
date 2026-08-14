@@ -35,7 +35,6 @@ import {
   useGuestCoachMessageMutation,
   useMyAiCoachingPreferenceQuery,
   useSendAiCoachingMessageMutation,
-  useStartChallengeAttemptMutation,
   useUpdateMyAiCoachingPreferenceMutation,
 } from '../../hooks/use-open-challenge';
 import {
@@ -70,7 +69,7 @@ type AiCoachPanelProps = {
   isLoggedIn: boolean;
   hasGuestSession?: boolean;
   openingMessage?: string;
-  onAttemptCreated: (attemptId: string) => void;
+  ensureAttempt: () => Promise<string>;
   onAttemptCleared: () => void;
   onSessionChange?: (sessionId: string | null) => void;
   // 학생이 풀이 공간에 쓴 손글씨 strokes. 메시지 전송 시 스냅샷을 업로드해
@@ -372,7 +371,7 @@ export const AiCoachPanel = ({
   isLoggedIn,
   hasGuestSession,
   openingMessage,
-  onAttemptCreated,
+  ensureAttempt,
   onAttemptCleared,
   onSessionChange,
   drawingStrokes = [],
@@ -403,7 +402,6 @@ export const AiCoachPanel = ({
   const myPreferenceQuery = useMyAiCoachingPreferenceQuery({
     enabled: isLoggedIn,
   });
-  const startAttemptMutation = useStartChallengeAttemptMutation();
   const updatePreferenceMutation = useUpdateMyAiCoachingPreferenceMutation();
   const createSessionMutation = useCreateAiCoachingSessionMutation();
   const sendMessageMutation = useSendAiCoachingMessageMutation();
@@ -428,7 +426,6 @@ export const AiCoachPanel = ({
   const hasLoadedSettings =
     !isLoggedIn || myPreferenceQuery.isFetched || myPreferenceQuery.isError;
   const isBusy =
-    startAttemptMutation.isPending ||
     updatePreferenceMutation.isPending ||
     createSessionMutation.isPending ||
     sendMessageMutation.isPending ||
@@ -490,17 +487,7 @@ export const AiCoachPanel = ({
         );
       }
 
-      const currentAttemptId =
-        attemptId ??
-        (
-          await startAttemptMutation.mutateAsync({
-            challengeId,
-          })
-        ).attemptId;
-
-      if (!attemptId) {
-        onAttemptCreated(currentAttemptId);
-      }
+      const currentAttemptId = attemptId ?? (await ensureAttempt());
 
       const session = await createSessionMutation.mutateAsync({
         challengeAttemptId: currentAttemptId,

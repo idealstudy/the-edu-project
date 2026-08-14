@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -105,6 +105,8 @@ export const ChallengeSolveClient = ({
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [aiAttemptId, setAiAttemptId] = useState<string | null>(null);
   const [aiSessionId, setAiSessionId] = useState<string | null>(null);
+  const aiAttemptIdRef = useRef<string | null>(null);
+  const startAttemptPromiseRef = useRef<Promise<string> | null>(null);
   // 게스트 무료 풀이(클라 채점 맛보기) 상태
   const [guestGradeResult, setGuestGradeResult] = useState<boolean | null>(
     null
@@ -155,6 +157,28 @@ export const ChallengeSolveClient = ({
     !!challengeHistory &&
     (challengeHistory.attempts.length > 0 ||
       challengeHistory.reviews.length > 0);
+
+  const ensureAttempt = useCallback((): Promise<string> => {
+    if (aiAttemptIdRef.current) {
+      return Promise.resolve(aiAttemptIdRef.current);
+    }
+    if (startAttemptPromiseRef.current) {
+      return startAttemptPromiseRef.current;
+    }
+
+    const pending = startAttemptMutation
+      .mutateAsync({ challengeId })
+      .then(({ attemptId }) => {
+        aiAttemptIdRef.current = attemptId;
+        setAiAttemptId(attemptId);
+        return attemptId;
+      })
+      .finally(() => {
+        startAttemptPromiseRef.current = null;
+      });
+    startAttemptPromiseRef.current = pending;
+    return pending;
+  }, [challengeId, startAttemptMutation]);
 
   // AI 코치 패널 폭 — 마지막으로 쓰던 값을 기억한다(브라우저별 저장).
   useEffect(() => {
@@ -297,9 +321,7 @@ export const ChallengeSolveClient = ({
     }
 
     try {
-      const attemptId =
-        aiAttemptId ??
-        (await startAttemptMutation.mutateAsync({ challengeId })).attemptId;
+      const attemptId = await ensureAttempt();
 
       if (aiSessionId) {
         try {
@@ -394,6 +416,8 @@ export const ChallengeSolveClient = ({
   };
 
   const handleAiAttemptCleared = () => {
+    aiAttemptIdRef.current = null;
+    startAttemptPromiseRef.current = null;
     setAiAttemptId(null);
     setAiSessionId(null);
   };
@@ -464,7 +488,7 @@ export const ChallengeSolveClient = ({
           isLoggedIn={isLoggedIn}
           hasGuestSession={hasGuestSession}
           openingMessage={coachOpening?.message}
-          onAttemptCreated={setAiAttemptId}
+          ensureAttempt={ensureAttempt}
           onAttemptCleared={handleAiAttemptCleared}
           onSessionChange={setAiSessionId}
           drawingStrokes={drawingStrokes}
@@ -782,7 +806,7 @@ export const ChallengeSolveClient = ({
               isLoggedIn={isLoggedIn}
               hasGuestSession={hasGuestSession}
               openingMessage={coachOpening?.message}
-              onAttemptCreated={setAiAttemptId}
+              ensureAttempt={ensureAttempt}
               onAttemptCleared={handleAiAttemptCleared}
               onSessionChange={setAiSessionId}
               drawingStrokes={drawingStrokes}
