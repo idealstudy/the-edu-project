@@ -2,7 +2,6 @@ import { PRIVATE, PUBLIC } from '@/shared/constants';
 import { type Locator, type Page, expect, test } from '@playwright/test';
 
 import { loginAsStudent } from './helpers/auth';
-import { BACKEND_ORIGIN } from './helpers/mvp-e-devremote';
 
 /* ─────────────────────────────────────────────────────
  * AI 코치 손글씨 캡처 헬퍼
@@ -99,7 +98,7 @@ async function ensureFreshAttempt(page: Page, challengeId: number) {
   type AttemptCreated = { attemptId: number; status: string };
   const createAttempt = async (): Promise<AttemptCreated> => {
     const response = await page.request.post(
-      `${BACKEND_ORIGIN}/common/challenge-attempts`,
+      '/api/v1/common/challenge-attempts',
       { data: { challengeId } }
     );
     expect(
@@ -116,7 +115,7 @@ async function ensureFreshAttempt(page: Page, challengeId: number) {
   // 코칭 중으로 남은 시도가 있으면 제출해 닫는다. 안 닫으면 "이어 풀기" 규칙이 그
   // 시도를 계속 돌려주고, 코치 세션은 진행 중 시도만 받으므로 영원히 못 연다.
   const submitted = await page.request.post(
-    `${BACKEND_ORIGIN}/common/challenge-attempts/${attempt.attemptId}/submit`,
+    `/api/v1/common/challenge-attempts/${attempt.attemptId}/submit`,
     { data: { selectedAnswer: '1' } }
   );
   expect(
@@ -383,7 +382,7 @@ test.describe('AI 코치 — 손글씨 풀이 캡처', () => {
     // 무음 삼킴 금지(A-2) — 실패 토스트가 노출된다.
     await expect(
       page.getByText('풀이 이미지 전송에 실패했어요. 다시 시도해 주세요.')
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 20_000 });
 
     // 이미지 없이 AI를 조용히 부르지 않는다 — 명시 확인(재시도/스킵) UI가 뜬다.
     await expect(
@@ -451,10 +450,17 @@ test.describe('AI 코치 — 이어하기', () => {
     await page.goto(PUBLIC.CHALLENGES.LIST);
     await page.goto(PUBLIC.CHALLENGES.DETAIL(RESUME_CHALLENGE_ID));
 
-    // 코치가 다시 열려야 하고(예전에는 여기서 막혔다),
+    // 승인 FDD F-01은 재진입만으로 기존 세션 상태를 읽지 않는다. 첫 마디는
+    // 시도·세션을 만들지 않는 읽기 전용 조회이므로, 과거 대화도 아직 보이면 안 된다.
     await startAiCoach(page);
-    // 내가 아까 쓴 말이 그대로 남아 있어야 한다. 마지막 코치 한 마디만 뜨면
-    // 학생 눈에는 대화가 사라진 것이라 "이어하기"가 아니다.
+    await expect(page.getByText(mark)).toBeHidden();
+
+    // 학생이 실제 메시지를 보낸 뒤에만 기존 활성 세션을 이어 열고 history를
+    // 복원한다. 이 시점에는 내가 아까 쓴 말이 다시 보여야 한다.
+    await page
+      .getByTestId('ai-coach-message-input')
+      .fill(`이어서 질문 ${Date.now()}`);
+    await page.getByTestId('ai-coach-send-button').click();
     await expect(page.getByText(mark)).toBeVisible({ timeout: 20_000 });
   });
 });
