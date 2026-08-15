@@ -47,6 +47,10 @@ test.describe('소셜 - 전화번호 친구추가', () => {
     });
     await page.goto(PRIVATE.FRIENDS.INDEX);
 
+    await page
+      .getByRole('button', { name: /친구 추가하고 도전장 보내기/ })
+      .click();
+
     // "전화번호로 친구를 추가" 입력(앞 0 보존 - String e2e)
     await page
       .getByLabel('친구 요청 대상 전화번호')
