@@ -159,6 +159,46 @@ describe('AiCoachPanel 지연 대화 시작', () => {
     expect(onMessageSent).toHaveBeenCalledTimes(1);
   });
 
+  test('첫 session 생성 실패 시 입력을 보존하고 같은 문장으로 재시도한다', async () => {
+    coachMocks.createSessionAsync.mockRejectedValueOnce(
+      new Error('temporary session create failure')
+    );
+    renderWithProviders(
+      <AiCoachPanel
+        challengeId="42"
+        attemptId={null}
+        isLoggedIn
+        ensureAttempt={coachMocks.ensureAttempt}
+        onAttemptCleared={vi.fn()}
+      />
+    );
+    const input = screen.getByTestId('ai-coach-message-input');
+    await userEvent.type(input, '경우의 수를 모르겠어');
+    await userEvent.click(screen.getByTestId('ai-coach-send-button'));
+
+    await waitFor(() => {
+      expect(coachMocks.createSessionAsync).toHaveBeenCalledTimes(1);
+    });
+    expect(input).toHaveValue('경우의 수를 모르겠어');
+    expect(coachMocks.sendMessage).not.toHaveBeenCalled();
+
+    await userEvent.click(screen.getByTestId('ai-coach-send-button'));
+
+    await waitFor(() => {
+      expect(coachMocks.createSessionAsync).toHaveBeenCalledTimes(2);
+      expect(coachMocks.sendMessage).toHaveBeenCalledWith(
+        {
+          sessionId: 'session-1',
+          params: expect.objectContaining({
+            message: '경우의 수를 모르겠어',
+          }),
+        },
+        expect.objectContaining({ onSuccess: expect.any(Function) })
+      );
+      expect(input).toHaveValue('');
+    });
+  });
+
   test('기존 attempt는 첫 메시지에 세션을 이어 열고 지난 대화를 복원한다', async () => {
     vi.mocked(repository.getAiCoachingMessages).mockResolvedValue([
       {

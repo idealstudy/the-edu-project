@@ -615,6 +615,12 @@ export const AiCoachPanel = ({
     }
     pendingMessageRef.current = null;
 
+    // 지연 session 생성이 실패한 동안에는 사용자가 쓴 문장을 입력창에 남긴다.
+    // 전송 단계에 실제 진입한 경우에만 같은 draft를 지우고, 대기 중 새로 쓴 문장은 보존한다.
+    setInputMessage((current) =>
+      current.trim() === trimmedMessage ? '' : current
+    );
+
     setMessages((previousMessages) => [
       ...previousMessages,
       {
@@ -667,7 +673,6 @@ export const AiCoachPanel = ({
   const handleSendMessage = () => {
     if (!inputMessage.trim()) return;
     sendMessage(inputMessage);
-    setInputMessage('');
   };
 
   // 풀이 이미지 업로드 실패 다이얼로그. "다시 시도"는 이미지 재업로드부터,
