@@ -20,6 +20,7 @@ import {
   useMyFriendsQuery,
 } from '../../hooks';
 import { ChallengeShareButton } from '../challenge-invite/challenge-share-button';
+import { MyChallengeInvites } from '../challenge-invite/my-challenge-invites';
 import { FriendRequestForm } from './friend-request-form';
 
 /* ─────────────────────────────────────────────────────
@@ -202,6 +203,7 @@ export const FriendsClient = ({ footer }: { footer?: ReactNode }) => {
       )}
 
       {!isLoading && !isError && (
+        <div className="gap-content-gap grid grid-cols-1 lg:grid-cols-2">
         <section className="flex flex-col gap-3">
           <h2 className="font-body1-heading text-text-main">
             친구{' '}
@@ -279,6 +281,8 @@ export const FriendsClient = ({ footer }: { footer?: ReactNode }) => {
             </div>
           )}
         </section>
+        <MyChallengeInvites />
+        </div>
       )}
 
       {footer && <div className="flex justify-end">{footer}</div>}
