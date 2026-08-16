@@ -11,16 +11,6 @@ const TEACHER_MEMBER = {
   role: 'ROLE_TEACHER',
 };
 
-const EMPTY_INBOX = {
-  recentExamCount: 0,
-  recentExam: [],
-  stuckAfterGraduationCount: 0,
-  stuckAfterGraduation: [],
-  neglectedCount: 0,
-  neglected: [],
-  neglectedThresholdDays: 3,
-};
-
 const EMPTY_RECOMMENDATIONS = {
   weekOf: '2026-08-03',
   weekEnd: '2026-08-09',
@@ -59,7 +49,6 @@ async function setupTeacherDashboard(page: Page) {
   await setAuthCookie(page);
   await mockMemberInfo(page, TEACHER_MEMBER);
   await routeGet(page, '**/api/v1/teacher/dashboard/study-rooms', []);
-  await routeGet(page, '**/api/v1/teacher/inbox', EMPTY_INBOX);
   await routeGet(
     page,
     '**/api/v1/teacher/todos/recommendations',
@@ -87,16 +76,19 @@ test.describe('선생님 v22 대시보드 계약', () => {
     ).toHaveAttribute('href', PRIVATE.DASHBOARD.TEACHER_MY);
   });
 
-  test('수업이 있으면 학생 카드와 손볼 것 수를 보인다', async ({ page }) => {
+  test('수업이 있으면 학생 카드와 승인된 큰 손볼 것 수를 보인다', async ({
+    page,
+  }) => {
     await routeGet(page, '**/api/v1/teacher/dashboard/study-rooms', [
       room(11, '김서준', 4),
     ]);
 
     await page.goto(PRIVATE.DASHBOARD.TEACHER);
 
-    const rooms = page.getByTestId('teacher-rooms-list');
-    await expect(rooms).toContainText('김서준');
-    await expect(rooms).toContainText('손볼 것 4건');
+    const roomCard = page.getByTestId('teacher-room-card-11');
+    await expect(roomCard).toBeVisible();
+    await expect(roomCard.getByText('4', { exact: true })).toBeVisible();
+    await expect(roomCard.getByText('손볼 것', { exact: true })).toBeVisible();
   });
 
   test('수업 카드는 손볼 것 많은 순으로 정렬한다', async ({ page }) => {
@@ -107,19 +99,25 @@ test.describe('선생님 v22 대시보드 계약', () => {
 
     await page.goto(PRIVATE.DASHBOARD.TEACHER);
 
-    const cards = page.getByTestId('teacher-rooms-list').locator('a');
-    await expect(cards.nth(0)).toContainText('김서준');
-    await expect(cards.nth(1)).toContainText('박하윤');
+    const cards = page
+      .getByTestId('teacher-rooms-list')
+      .getByTestId(/^teacher-room-card-/);
+    await expect(cards).toHaveCount(2);
+    expect(
+      await cards.evaluateAll((nodes) =>
+        nodes.map((node) => node.getAttribute('data-testid'))
+      )
+    ).toEqual(['teacher-room-card-11', 'teacher-room-card-12']);
   });
 
-  test('상단 수업 만들기는 실제 생성 경로로 간다', async ({ page }) => {
+  test('상단 스터디룸 만들기는 실제 생성 경로로 간다', async ({ page }) => {
     await routeGet(page, '**/api/v1/teacher/dashboard/study-rooms', [
       room(11, '김서준', 4),
     ]);
     await page.goto(PRIVATE.DASHBOARD.TEACHER);
 
     await expect(
-      page.getByRole('link', { name: '수업 만들기' })
+      page.getByRole('link', { name: '스터디룸 만들기' })
     ).toHaveAttribute('href', PRIVATE.ROOM.CREATE);
   });
 
@@ -135,73 +133,88 @@ test.describe('선생님 v22 대시보드 계약', () => {
     await page.goto(PRIVATE.DASHBOARD.TEACHER);
 
     await expect(page.getByTestId('teacher-onboarding')).toHaveCount(0);
-    await expect(page.getByText('학생별 수업')).toBeVisible();
+    await expect(page.getByRole('heading', { name: '내 수업' })).toBeVisible();
   });
 
-  test('처리할 항목이 없으면 처리함 0 상태를 보인다', async ({ page }) => {
+  test('처리할 항목이 없어도 제거된 전역 처리함을 다시 노출하지 않는다', async ({
+    page,
+  }) => {
     await routeGet(page, '**/api/v1/teacher/dashboard/study-rooms', [
       room(11, '김서준', 0),
     ]);
     await page.goto(PRIVATE.DASHBOARD.TEACHER);
 
-    await expect(page.getByRole('heading', { name: '처리함' })).toBeVisible();
-    await expect(
-      page.getByText('지금 확인할 방치 오답이나 5회독 실패 신호가 없어요.')
-    ).toBeVisible();
+    await expect(page.getByTestId('teacher-rooms-list')).toBeVisible();
+    await expect(page.getByTestId('teacher-learning-inbox')).toHaveCount(0);
   });
 
-  test('시험 오답이 있으면 처리함에 직접 쓰기를 보인다', async ({ page }) => {
+  test('손볼 것 내역은 해당 스터디룸 학습 관리로 연결한다', async ({
+    page,
+  }) => {
     await routeGet(page, '**/api/v1/teacher/dashboard/study-rooms', [
       room(11, '김서준', 1),
     ]);
-    await routeGet(page, '**/api/v1/teacher/inbox', {
-      ...EMPTY_INBOX,
-      recentExamCount: 1,
-      recentExam: [
-        {
-          id: 71,
-          studentId: 2,
-          sourceType: 'EXAM',
-          challengeId: null,
-          challengeAttemptId: null,
-          examAnswerId: 91,
-          questionSnapshot: { sourceText: 'v22 시험' },
-          treeNodeId: 14,
-          status: 'ACTIVE',
-          reviewCount: 1,
-          hintFreeSolveCount: 0,
-          lastReviewCorrect: false,
-          wrongAgainCount: 0,
-          nextReviewAt: null,
-          graduatedAt: null,
-          teacherComment: null,
-          commentedByTeacherId: null,
-          commentedAt: null,
-          difficulty: null,
-          nationalWrongRate: null,
-          title: '수열 12번',
-          questionText: '수열의 합을 구하세요.',
-          questionImageUrl: null,
-        },
-      ],
-    });
-
+    await routeGet(
+      page,
+      '**/api/v1/teacher/study-rooms/11/learning-management',
+      {
+        noteRows: [],
+        todoRows: [],
+        feedbackRows: [
+          {
+            wrongAnswerId: 71,
+            studentId: 31,
+            studentName: '김서준',
+            title: '수열 12번',
+            reason: '회독이 멈춰 있습니다',
+            sourceLabel: '오답',
+            teacherComment: null,
+            studentQuestion: null,
+          },
+        ],
+        pendingCount: 1,
+      }
+    );
     await page.goto(PRIVATE.DASHBOARD.TEACHER);
 
-    await expect(page.getByTestId('teacher-learning-inbox')).toBeVisible();
-    await expect(page.getByRole('button', { name: '직접 쓰기' })).toBeVisible();
+    const roomCard = page.getByTestId('teacher-room-card-11');
+    await expect(roomCard).toContainText(
+      '피드백 달 것 1 · 할 일 승인 0 · 못했어요 사유 0 · 미확인 제출 0'
+    );
+    const manageLink = roomCard.getByRole('link', { name: '학습 관리 열기' });
+    await expect(manageLink).toHaveAttribute('href', PRIVATE.ROOM.MANAGE(11));
+    await manageLink.click();
+    await expect(page).toHaveURL(PRIVATE.ROOM.MANAGE(11), { timeout: 15_000 });
+
+    const feedbackRow = page.getByTestId('learning-management-feedback-row-71');
+    await expect(feedbackRow).toContainText('김서준 · 수열 12번');
+    await feedbackRow.getByRole('button', { name: '코멘트 쓰기' }).click();
+    await feedbackRow
+      .getByLabel('오답 코멘트')
+      .fill('풀이 첫 줄에서 공식을 다시 확인해보자');
+    const commentRequest = page.waitForRequest(
+      (request) =>
+        request.method() === 'POST' &&
+        request.url().includes('/teacher/inbox/wrong-answers/71/comments')
+    );
+    await feedbackRow.getByRole('button', { name: '저장' }).click();
+    expect((await commentRequest).postDataJSON()).toEqual({
+      comment: '풀이 첫 줄에서 공식을 다시 확인해보자',
+    });
   });
 
-  test('수업 카드는 기존 스터디룸 노트 경로를 유지한다', async ({ page }) => {
+  test('손볼 것이 없는 수업은 기존 스터디룸 경로를 유지한다', async ({
+    page,
+  }) => {
     await routeGet(page, '**/api/v1/teacher/dashboard/study-rooms', [
-      room(11, '김서준', 4),
+      room(11, '김서준', 0),
     ]);
 
     await page.goto(PRIVATE.DASHBOARD.TEACHER);
 
-    await expect(page.getByRole('link', { name: /김서준/ })).toHaveAttribute(
-      'href',
-      '/study-rooms/11/note'
-    );
+    const roomLink = page.getByRole('link', { name: '스터디룸 열기' });
+    await expect(roomLink).toHaveAttribute('href', PRIVATE.ROOM.DETAIL(11));
+    await roomLink.click();
+    await expect(page).toHaveURL(PRIVATE.ROOM.DETAIL(11), { timeout: 15_000 });
   });
 });

@@ -142,7 +142,7 @@ test.describe('MVP-G 3단계 1024×768 첫 화면', () => {
     ).toBeVisible();
   });
 
-  test('선생님 내 수업 카드가 손볼 것 내역을 한 줄로 보인다', async ({
+  test('선생님 내 수업 카드가 손볼 것 내역만 한 줄로 보인다', async ({
     page,
   }) => {
     await baseApi(page, TEACHER);
@@ -158,24 +158,12 @@ test.describe('MVP-G 3단계 1024×768 첫 화면', () => {
     );
     await page.goto('/dashboard/teacher');
     const roomList = page.getByTestId('teacher-rooms-list');
-    const inbox = page.getByTestId('teacher-learning-inbox-after-rooms');
     await expect(roomList).toBeVisible();
     await expect(page.getByText('피드백 달 것').first()).toBeVisible();
     await expect(page.getByText('미확인 제출').first()).toBeVisible();
-    await expect
-      .poll(async () =>
-        roomList.evaluate(
-          (element, inboxElement) => {
-            if (!(inboxElement instanceof Node)) return false;
-            return Boolean(
-              element.compareDocumentPosition(inboxElement) &
-                Node.DOCUMENT_POSITION_FOLLOWING
-            );
-          },
-          await inbox.elementHandle()
-        )
-      )
-      .toBe(true);
+    await expect(
+      page.getByTestId('teacher-learning-inbox-after-rooms')
+    ).toHaveCount(0);
     await page.screenshot({
       path: 'test-results/mvp-g-stage3/t-rooms-ok-1024x768.png',
       fullPage: true,

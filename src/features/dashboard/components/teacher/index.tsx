@@ -311,6 +311,7 @@ const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
                 <article
                   key={`${room.id}-${room.studentName ?? 'empty'}`}
                   className="border-gray-3 p-card-pad rounded-card relative flex flex-col border bg-white"
+                  data-testid={`teacher-room-card-${room.id}`}
                 >
                   <div className="flex items-start gap-2">
                     <div className="min-w-0 flex-1">
@@ -426,7 +427,11 @@ const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
                       학생 화면에 넣을 내용을 확인합니다
                     </span>
                     <Link
-                      href={`/study-rooms/${room.id}/note`}
+                      href={
+                        room.todoCount > 0
+                          ? PRIVATE.ROOM.MANAGE(room.id)
+                          : PRIVATE.ROOM.DETAIL(room.id)
+                      }
                       className={cn(
                         'min-h-control-sm rounded-button px-button-compact-x inline-flex items-center justify-center border text-xs font-bold',
                         room.todoCount > 0

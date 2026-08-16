@@ -2,7 +2,10 @@
 
 import Link from 'next/link';
 
-import type { WrongAnswerItem } from '@/entities/wrong-answer';
+import type {
+  DailyProblemItem,
+  WrongAnswerItem,
+} from '@/entities/wrong-answer';
 import { Skeleton } from '@/shared/components/loading';
 import { Button } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants';
@@ -53,6 +56,31 @@ const getPreviousReviewText = (item: WrongAnswerItem) => {
   }
 
   return '직전 회독 결과가 아직 기록되지 않았어요.';
+};
+
+const findTodayWrongAnswer = (
+  queueItems: DailyProblemItem[],
+  wrongAnswers: WrongAnswerItem[]
+): WrongAnswerItem | undefined => {
+  const orderedQueue = [...queueItems].sort(
+    (left, right) => left.position - right.position
+  );
+
+  for (const problem of orderedQueue) {
+    if (problem.kind !== 'WRONG_ANSWER' || problem.wrongAnswerId === null) {
+      continue;
+    }
+
+    const wrongAnswer = wrongAnswers.find(
+      (item) =>
+        item.id === problem.wrongAnswerId &&
+        item.status === 'ACTIVE' &&
+        item.reviewCount < 5
+    );
+    if (wrongAnswer) return wrongAnswer;
+  }
+
+  return undefined;
 };
 
 const ReviewLoading = () => (
@@ -220,19 +248,9 @@ export const WrongAnswerWarehouse = () => {
   const isPending = dailyProblemsQuery.isPending || wrongAnswersQuery.isPending;
   const isError = dailyProblemsQuery.isError || wrongAnswersQuery.isError;
 
-  const todayWrongAnswerIds = new Set(
-    (dailyProblemsQuery.data?.items ?? [])
-      .filter(
-        (problem) =>
-          problem.kind === 'WRONG_ANSWER' && problem.wrongAnswerId !== null
-      )
-      .map((problem) => problem.wrongAnswerId)
-  );
-  const todayWrongAnswer = wrongAnswersQuery.data?.items.find(
-    (item) =>
-      todayWrongAnswerIds.has(item.id) &&
-      item.status === 'ACTIVE' &&
-      item.reviewCount < 5
+  const todayWrongAnswer = findTodayWrongAnswer(
+    dailyProblemsQuery.data?.items ?? [],
+    wrongAnswersQuery.data?.items ?? []
   );
 
   return (

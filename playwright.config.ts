@@ -33,6 +33,12 @@ const SHARED_ACCOUNT_SPECS = [
 // 실행: --project=widths-v8-4 --workers=1
 const WIDTHS_SPEC = /mvp-g-v8-4-widths\.spec\.ts/;
 
+// 검색 입력 폭 회귀는 실제 관리자 로그인을 쓰지만 다른 스펙의
+// 사전 성공을 필요로 하지 않는 독립 검사다. dependency chain에 넣으면
+// 무관한 앞 스펙 실패 시 이 회귀 검사도 did not run이 된다.
+// CI에서는 전역 workers=1이 공유 관리자 계정의 동시 로그인을 막는다.
+const ADMIN_WIDTH_SPEC = /mvp-g-search-input-width\.spec\.ts/;
+
 // import path from 'path';
 // dotenv.config({ path: path.resolve(__dirname, '.env') });
 
@@ -66,13 +72,26 @@ export default defineConfig({
       // 실제 서버 로그인을 쓰지 않는 스펙. 계정을 공유하지 않으므로 병렬로 안전하다.
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
-      testIgnore: [DEVREMOTE_ONLY_SPECS, WIDTHS_SPEC, ...SHARED_ACCOUNT_SPECS],
+      testIgnore: [
+        DEVREMOTE_ONLY_SPECS,
+        WIDTHS_SPEC,
+        ADMIN_WIDTH_SPEC,
+        ...SHARED_ACCOUNT_SPECS,
+      ],
     },
     {
       name: 'widths-v8-4',
       use: { ...devices['Desktop Chrome'] },
       testMatch: WIDTHS_SPEC,
       fullyParallel: false,
+    },
+    {
+      // 무관한 shared-account 스펙이 실패해도 반드시 독립 실행한다.
+      name: 'admin-width-regression',
+      use: { ...devices['Desktop Chrome'] },
+      testMatch: ADMIN_WIDTH_SPEC,
+      fullyParallel: false,
+      workers: 1,
     },
     // 아래는 같은 QA 계정으로 실제 서버 로그인을 하는 스펙들이다.
     // 백엔드가 회원 1명당 refresh token 을 1개만 보관하기 때문에(RefreshTokenRepositoryImpl),

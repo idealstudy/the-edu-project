@@ -19,6 +19,31 @@ const STUDENT_MEMBER = {
 
 const WRONG_ANSWER_ITEMS = [
   {
+    id: 102,
+    studentId: 7,
+    sourceType: 'EXAM',
+    challengeId: 202,
+    challengeAttemptId: 302,
+    examAnswerId: 502,
+    questionSnapshot: { sourceText: '3월 학평 19번' },
+    treeNodeId: 402,
+    status: 'ACTIVE',
+    reviewCount: 2,
+    hintFreeSolveCount: 1,
+    lastReviewCorrect: true,
+    wrongAgainCount: 0,
+    nextReviewAt: null,
+    graduatedAt: null,
+    teacherComment: null,
+    commentedByTeacherId: null,
+    commentedAt: null,
+    difficulty: 'MIDDLE',
+    nationalWrongRate: 46,
+    title: '로그 방정식',
+    questionText: '진수 조건을 확인한 뒤 로그 방정식의 해를 구하시오.',
+    questionImageUrl: null,
+  },
+  {
     id: 101,
     studentId: 7,
     sourceType: 'TEACHER',
@@ -44,31 +69,6 @@ const WRONG_ANSWER_ITEMS = [
     nationalWrongRate: 89,
     title: '역수형 점화식',
     questionText: '수열 {aₙ}의 점화식을 이용하여 a₅의 값을 구하시오.',
-    questionImageUrl: null,
-  },
-  {
-    id: 102,
-    studentId: 7,
-    sourceType: 'EXAM',
-    challengeId: 202,
-    challengeAttemptId: 302,
-    examAnswerId: 502,
-    questionSnapshot: { sourceText: '3월 학평 19번' },
-    treeNodeId: 402,
-    status: 'ACTIVE',
-    reviewCount: 2,
-    hintFreeSolveCount: 1,
-    lastReviewCorrect: true,
-    wrongAgainCount: 0,
-    nextReviewAt: null,
-    graduatedAt: null,
-    teacherComment: null,
-    commentedByTeacherId: null,
-    commentedAt: null,
-    difficulty: 'MIDDLE',
-    nationalWrongRate: 46,
-    title: '로그 방정식',
-    questionText: '진수 조건을 확인한 뒤 로그 방정식의 해를 구하시오.',
     questionImageUrl: null,
   },
   {
@@ -336,7 +336,9 @@ test.describe('MVP-G 학생 대시보드 코어', () => {
     await none.screenshot({ path: '/tmp/mvp-g-stage5-s-grade-none.png' });
   });
 
-  test('오늘의 문제 3장과 졸업 제외 오답 창고를 렌더한다', async ({ page }) => {
+  test('오답 응답 순서와 무관하게 오늘 큐 position 1의 한 문제를 렌더한다', async ({
+    page,
+  }) => {
     await setupDashboardApi(page);
 
     await page.goto('/dashboard/student');
@@ -349,13 +351,13 @@ test.describe('MVP-G 학생 대시보드 코어', () => {
 
     await page.goto('/dashboard/student/wrong-answers');
 
-    await expect(page.getByTestId('wrong-answer-card-101')).toBeVisible();
-    await expect(page.getByTestId('wrong-answer-card-102')).toBeVisible();
-    await expect(page.getByTestId('wrong-answer-card-103')).toHaveCount(0);
+    await expect(page.getByTestId('wrong-answer-today-review')).toBeVisible();
+    await expect(page.getByTestId('wrong-answer-review-101')).toBeVisible();
+    await expect(page.getByTestId('wrong-answer-review-102')).toHaveCount(0);
     await expect(page.getByText('졸업한 문제')).toHaveCount(0);
 
     await page.screenshot({
-      path: '/tmp/mvp-g-wrong-answer-warehouse.png',
+      path: '/tmp/mvp-g-wrong-answer-today-review.png',
       fullPage: true,
     });
   });

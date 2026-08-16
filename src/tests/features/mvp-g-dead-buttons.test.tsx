@@ -162,18 +162,50 @@ describe('MVP-G 죽은 버튼 회귀', () => {
     });
   });
 
-  it('선생님 대시보드가 기존 수업 목록을 렌더한다(처리함 워크플로우는 시안맞춤 v23.5로 제거됨)', () => {
+  it('손볼 것이 있는 수업은 내역과 실제 학습 관리 진입점을 함께 보인다', () => {
     render(<DashboardTeacher initialMemberName="한지원" />);
 
     const roomList = screen.getByTestId('teacher-rooms-list');
     expect(roomList).toBeVisible();
     expect(screen.getByText(/김서준 수업/)).toBeVisible();
+    expect(roomList).toHaveTextContent(
+      '피드백 달 것 1 · 할 일 승인 0 · 못했어요 사유 0 · 미확인 제출 0'
+    );
     expect(screen.getByTestId('teacher-rooms-summary')).toHaveTextContent(
       '오늘 학생 화면에 넣어줄 것 1건이 위 한 수업에 몰려 있습니다.'
     );
     expect(
-      screen.queryByTestId('teacher-learning-inbox-after-rooms')
-    ).not.toBeInTheDocument();
+      screen.getByRole('link', { name: '학습 관리 열기' })
+    ).toHaveAttribute('href', '/study-rooms/41/manage');
+  });
+
+  it('손볼 것이 없는 수업은 기존 스터디룸 화면으로 들어간다', () => {
+    mocks.teacherRooms.mockReturnValue({
+      data: [
+        {
+          id: 41,
+          name: '김서준 수업',
+          studentName: '김서준',
+          state: 'ACTIVE',
+          enrollmentStatus: 'OPERATING',
+          todoCount: 0,
+          todoBreakdown: {
+            commentNeeded: 0,
+            todoApproval: 0,
+            notDoneReason: 0,
+            unreadSubmission: 0,
+          },
+        },
+      ],
+      isPending: false,
+    });
+
+    render(<DashboardTeacher initialMemberName="한지원" />);
+
+    expect(screen.getByRole('link', { name: '스터디룸 열기' })).toHaveAttribute(
+      'href',
+      '/study-rooms/41/note'
+    );
   });
 
   it('수업 0 빈 상태는 승인된 두 복구 행동만 첫 화면에 둔다', () => {
