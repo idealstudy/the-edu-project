@@ -22,6 +22,8 @@ type LevelBadgeProps = {
   isLoading?: boolean;
   /** 조회 실패 시 실제 값처럼 보이는 기본 레벨을 만들지 않는다. */
   isError?: boolean;
+  /** 잔액 카드 안에서 레벨 숫자만 보이는 작은 보조 배지 */
+  compact?: boolean;
 };
 
 export const LevelBadge = ({
@@ -30,8 +32,23 @@ export const LevelBadge = ({
   expToNextLevel = 0,
   isLoading = false,
   isError = false,
+  compact = false,
 }: LevelBadgeProps) => {
   const ratio = Math.min(100, Math.max(0, Math.round(progressPercent)));
+
+  if (compact) {
+    return (
+      <div
+        className="border-orange-3 rounded-card px-card-pad py-content-gap flex shrink-0 flex-col items-end border bg-white"
+        aria-label="학습 레벨"
+      >
+        <span className="font-body1-heading text-orange-10 tabular-nums">
+          {isLoading ? 'Lv.-' : isError ? '집계 없음' : `Lv. ${level}`}
+        </span>
+        <span className="font-caption-normal text-gray-9">학습 레벨</span>
+      </div>
+    );
+  }
 
   return (
     <section

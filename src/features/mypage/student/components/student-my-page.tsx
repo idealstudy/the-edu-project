@@ -29,7 +29,7 @@ import {
 import { Toggle } from '@/shared/components/ui/toggle';
 import { PRIVATE } from '@/shared/constants';
 import { formatMMDDWeekday } from '@/shared/lib';
-import { BookOpenText, GraduationCap, Settings2 } from 'lucide-react';
+import { BookOpenText, GraduationCap } from 'lucide-react';
 
 const NOTIFICATION_ROWS: Array<{
   category: NotificationCategory;
@@ -37,14 +37,9 @@ const NOTIFICATION_ROWS: Array<{
   description: string;
 }> = [
   {
-    category: 'ALL',
-    label: '서비스 알림 전체',
-    description: '내 학습 활동과 관련된 알림을 한 번에 관리해요.',
-  },
-  {
     category: 'TEACHING_NOTE',
     label: '수업노트 알림',
-    description: '새 수업노트와 관련 활동을 알려드려요.',
+    description: '새 수업노트를 받으면 알려드려요.',
   },
   {
     category: 'QNA',
@@ -127,16 +122,6 @@ const StudentProfileSummary = () => {
             '아직 학습 목표가 없어요. 한 문장으로 다음 목표를 정해보세요.'}
         </p>
       </Card.Content>
-      <Card.Footer>
-        <Button
-          asChild
-          variant="outlined"
-          size="small"
-          className="ml-auto"
-        >
-          <Link href={`${PRIVATE.MYPAGE}?tab=profile`}>프로필 수정</Link>
-        </Button>
-      </Card.Footer>
     </Card>
   );
 };
@@ -152,19 +137,13 @@ const AccountSettingsList = () => {
       setting.enabled,
     ])
   );
-  const serviceEnabled = settingsMap.get('ALL') ?? false;
-
   return (
     <Card data-testid="student-account-settings">
       <Card.Header>
         <div>
           <Card.Title>계정과 설정</Card.Title>
-          <Card.Description>내가 직접 관리하는 정보예요.</Card.Description>
+          <Card.Description>내가 직접 관리</Card.Description>
         </div>
-        <Settings2
-          className="text-gray-8 size-5"
-          aria-hidden
-        />
       </Card.Header>
       <Card.Content>
         {basicInfo.data && (
@@ -199,7 +178,6 @@ const AccountSettingsList = () => {
           </div>
         ) : (
           NOTIFICATION_ROWS.map((row) => {
-            const isSubSetting = row.category !== 'ALL';
             const isUpdatingThis =
               updateNotification.isPending &&
               updateNotification.variables?.category === row.category;
@@ -209,11 +187,7 @@ const AccountSettingsList = () => {
                 label={row.label}
                 description={row.description}
                 checked={settingsMap.get(row.category) ?? false}
-                disabled={
-                  notificationSettings.isLoading ||
-                  isUpdatingThis ||
-                  (isSubSetting && !serviceEnabled)
-                }
+                disabled={notificationSettings.isLoading || isUpdatingThis}
                 onCheckedChange={(checked) =>
                   updateNotification.mutate({
                     category: row.category,
@@ -556,6 +530,22 @@ export const StudentMyPage = () => (
       className="gap-section-gap flex flex-col"
       data-testid="student-my-page"
     >
+      <PageLayout.Header className="items-end justify-between">
+        <div>
+          <h2 className="text-gray-12 font-headline1-heading">마이페이지</h2>
+          <p className="text-gray-9 font-caption-normal mt-inline-gap-xs">
+            내 정보와 학습 활동을 한곳에서 확인해요.
+          </p>
+        </div>
+        <Button
+          asChild
+          variant="outlined"
+          size="small"
+        >
+          <Link href={`${PRIVATE.MYPAGE}?tab=profile`}>프로필 수정</Link>
+        </Button>
+      </PageLayout.Header>
+
       <div className="desktop:grid-split-profile gap-section-gap desktop:grid-cols-2 grid grid-cols-1 items-start">
         <div className="gap-block-gap grid min-w-0">
           <StudentProfileSummary />

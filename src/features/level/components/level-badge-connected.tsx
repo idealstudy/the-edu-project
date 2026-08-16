@@ -10,7 +10,11 @@ import { useMyLevelQuery } from '../hooks/use-level';
  *  - 에러 시에도 형태는 유지(레벨 Lv.1·게이지 0)하여 레이아웃이 깨지지 않게.
  *  레벨=성장 지표(포인트와 별개 축)라는 UI 원칙은 LevelBadge가 유지.
  * ────────────────────────────────────────────────────*/
-export const LevelBadgeConnected = () => {
+export const LevelBadgeConnected = ({
+  compact = false,
+}: {
+  compact?: boolean;
+}) => {
   const { data, isLoading, isError } = useMyLevelQuery();
 
   return (
@@ -20,6 +24,7 @@ export const LevelBadgeConnected = () => {
       expToNextLevel={data?.expToNextLevel}
       isLoading={isLoading}
       isError={isError}
+      compact={compact}
     />
   );
 };

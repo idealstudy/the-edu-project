@@ -11,7 +11,6 @@ import { PRIVATE } from '@/shared/constants';
 import {
   ArrowDownRight,
   ArrowUpRight,
-  BookOpenCheck,
   CheckCircle2,
   Flame,
   TriangleAlert,
@@ -142,11 +141,11 @@ export const PointWalletClient = () => {
 
   return (
     <div className="gap-section-gap flex flex-col">
-      <div className="desktop:grid-split-v22 gap-section-gap desktop:grid-cols-2 grid grid-cols-1">
-        <Card
-          className="border-orange-3 bg-orange-1 gap-content-gap flex flex-col"
-          aria-label="포인트 잔액"
-        >
+      <Card
+        className="border-orange-3 bg-orange-1 gap-content-gap flex items-center justify-between"
+        aria-label="포인트 잔액"
+      >
+        <div className="min-w-0">
           <div className="gap-content-gap flex items-center">
             <Wallet
               size={18}
@@ -157,18 +156,17 @@ export const PointWalletClient = () => {
               사용 가능한 포인트
             </span>
           </div>
-          <p className="font-title-heading text-text-main tabular-nums">
+          <p className="font-title-heading text-text-main mt-content-gap tabular-nums">
             {balance.toLocaleString('ko-KR')}
             <span className="font-headline1-heading text-orange-7 ml-1">P</span>
           </p>
-          <p className="font-caption-normal text-text-sub1 leading-relaxed">
+          <p className="font-caption-normal text-text-sub1 mt-content-gap leading-relaxed">
             포인트는 학습 노력의 기록이며 성취도나 실력 등급이 아닙니다.
-            자력으로 정답을 맞히거나 연속으로 학습하면 쌓여요.
           </p>
-        </Card>
+        </div>
 
-        <LevelBadgeConnected />
-      </div>
+        <LevelBadgeConnected compact />
+      </Card>
 
       <div className="gap-section-gap desktop:grid-cols-2 grid grid-cols-1">
         <Card data-testid="point-spend-places">
@@ -180,10 +178,10 @@ export const PointWalletClient = () => {
               </Card.Description>
             </div>
           </Card.Header>
-          <Card.Content className="gap-block-gap tablet:grid-cols-2 desktop:grid-cols-1 grid grid-cols-1">
+          <Card.Content className="gap-block-gap tablet:grid-cols-2 grid grid-cols-1">
             <article className="border-gray-3 rounded-card gap-content-gap p-card-pad flex flex-col border">
               <div>
-                <b className="text-gray-12 block text-sm">정답 해설 1회 열람</b>
+                <b className="text-gray-12 block text-sm">해설 1회 열람</b>
                 <span className="text-orange-10 font-body1-heading mt-inline-gap-xs block tabular-nums">
                   {solutionCost.isLoading
                     ? '비용 확인 중'
@@ -251,18 +249,13 @@ export const PointWalletClient = () => {
           <Card.Content>
             <EarningRow
               icon={<CheckCircle2 size={18} />}
-              title="자력 정답"
-              description="정답 해설을 보기 전에 스스로 맞히면 적립"
+              title="혼자 다시 풀어 정답"
+              description="오답을 스스로 고치면 적립"
             />
             <EarningRow
               icon={<Flame size={18} />}
               title="연속 학습"
               description="학습 흐름을 이어가면 적립"
-            />
-            <EarningRow
-              icon={<BookOpenCheck size={18} />}
-              title="가입 보너스"
-              description="처음 학습을 시작할 때 한 번 적립"
             />
           </Card.Content>
         </Card>

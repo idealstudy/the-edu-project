@@ -149,11 +149,18 @@ describe('MVP-G 학생 마이와 포인트 계약', () => {
   it('학생 마이페이지는 실제 계정과 학습 데이터를 모두 표시한다', () => {
     render(<StudentMyPage />);
 
+    expect(screen.getByRole('heading', { name: '마이페이지' })).toBeVisible();
+    expect(screen.getByRole('link', { name: '프로필 수정' })).toHaveAttribute(
+      'href',
+      '/mypage?tab=profile'
+    );
     expect(screen.getByText('김서준')).toBeVisible();
     expect(screen.getByText('이번 주 오답 5개 다시 풀기')).toBeVisible();
     expect(screen.getByText('수열 점화식 정리')).toBeVisible();
     expect(screen.getByText('고2 수학')).toBeVisible();
     expect(screen.getByLabelText('과제 완료율 80%')).toBeVisible();
+    expect(screen.queryByText('서비스 알림 전체')).not.toBeInTheDocument();
+    expect(screen.getByText('새 수업노트를 받으면 알려드려요.')).toBeVisible();
   });
 
   it('프로필 공개 토글은 기존 계정 값을 보존해 실제 변경 함수를 호출한다', async () => {
@@ -172,8 +179,15 @@ describe('MVP-G 학생 마이와 포인트 계약', () => {
   it('포인트 화면은 잔액과 실제 해설 비용을 분리해 표시하고 학습 경로를 연결한다', () => {
     render(<PointWalletClient />);
 
-    expect(screen.getByText('120')).toBeVisible();
+    const balanceCard = screen.getByLabelText('포인트 잔액');
+    expect(balanceCard).toHaveTextContent('120');
+    expect(balanceCard).toContainElement(screen.getByTestId('level-badge'));
     expect(screen.getByText('30P')).toBeVisible();
+    expect(screen.getByText('해설 1회 열람')).toBeVisible();
+    expect(screen.getByText('혼자 다시 풀어 정답')).toBeVisible();
+    expect(screen.getByText('오답을 스스로 고치면 적립')).toBeVisible();
+    expect(screen.queryByText('가입 보너스')).not.toBeInTheDocument();
+    expect(screen.queryByText('자력 정답')).not.toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: '문제 보러 가기' })
     ).toHaveAttribute('href', '/dashboard/student/wrong-answers');
