@@ -18,12 +18,15 @@ import {
 } from '@/shared/components/drawing';
 import { BackButton, Button, Dialog } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
+import { cn } from '@/shared/lib';
 import { trackOcStart, trackOcSubmit } from '@/shared/lib/analytics';
 import {
   Bot,
   ChevronDown,
   ChevronUp,
   ChevronsLeftRight,
+  Maximize2,
+  Minimize2,
   Pencil,
   X,
 } from 'lucide-react';
@@ -55,6 +58,20 @@ const RESULT_STORAGE_KEY_PREFIX = 'open-challenge-result';
 // FDD F-14: 도전장 링크당 한 문제를 가입 없이 풀 수 있다.
 const GUEST_FREE_LIMIT = 1;
 const GUEST_SOLVED_COUNT_KEY = 'oc-guest-solved-count';
+
+// 집중 모드: 손풀이 칸 높이. 기본은 현행 440(SolutionDrawingPad 기본값)을 유지하고,
+// 집중 모드를 켜면 크게 키운다. 시안 v2가 정한 웹 400 / 태블릿 600 목표를 하나의 값으로
+// 근사한다(반응형 height prop을 새로 만들지 않고 기존 기본값보다 확실히 커지는 선을 택함).
+const DRAWING_PAD_HEIGHT_DEFAULT = 440;
+const DRAWING_PAD_HEIGHT_FOCUS = 640;
+
+// 문제 카드는 문제와 답 고르기를 붙여 sticky로 고정한다(회장 결정). 문항 본문이 아주 길면
+// 카드가 화면을 다 먹어 손풀이 칸을 누를 수 있으므로, 문제 본문 스크롤 영역에 상한을 둔다.
+// 근거: tasks/mvp-e-solve-spec-v2-2026-08-18.output 자가심문 항목(WEAKEST_LINE) — build 전
+// 정해야 한다고 명시된 값. 뷰포트의 38%로 캡을 두면 배지·답 고르기·제출 바가 항상 보이는
+// 여유가 남는다(문제 카드 자체 sticky 높이 상한이 아니라, 그 안 "문제 본문"만 스크롤시켜
+// 카드 전체 높이를 제어하는 방식 — 답 고르기가 카드 밖으로 밀려나지 않게 하기 위함).
+const QUESTION_BODY_MAX_HEIGHT = '38vh';
 
 // AI 코치 패널 폭 — 고정 380px 대신 드래그 리사이즈 + 좁게/넓게 2단 토글을 함께 제공한다.
 const AI_PANEL_WIDTH_KEY = 'oc-ai-panel-width';
@@ -117,6 +134,12 @@ export const ChallengeSolveClient = ({
   const [signupTrigger, setSignupTrigger] = useState<
     'limit-reached' | 'correct-answer'
   >('correct-answer');
+  // 집중 모드(회장 결정) — 켜면 전역 사이드바·코치 칸을 접어 손풀이 칸을 넓힌다.
+  // 자동으로 켜지지 않는다. 켜는 주체는 항상 학생이다(시안 v2 §4 규칙 1).
+  const [isFocusMode, setIsFocusMode] = useState(false);
+  // 집중 모드에서 접힌 코치를 다시 부르면 레일 옆에 겹쳐 연다(레이아웃은 그대로 두고
+  // 코치만 얹는다). 웹/태블릿 전용 — 모바일은 원래 코치가 별도 모달이라 대상이 아니다.
+  const [isFocusCoachOpen, setIsFocusCoachOpen] = useState(false);
   const choiceSectionRef = useRef<HTMLDivElement>(null);
   const hasClaimedGuestRef = useRef(false);
   // 계측 보조 refs (D2)
@@ -244,6 +267,30 @@ export const ChallengeSolveClient = ({
       return next;
     });
   };
+
+  const handleToggleFocusMode = useCallback(() => {
+    setIsFocusMode((current) => {
+      const next = !current;
+      if (next) {
+        // 모바일 집중 모드: 문제 본문을 기본 접어 손풀이 자리를 확보(FINDING-001 반영).
+        // 태블릿/웹은 같은 상태를 공유해도 아이콘 레일 접기로 이미 자리가 나므로 무해하다.
+        setIsQuestionOpen(false);
+      } else {
+        setIsFocusCoachOpen(false);
+      }
+      return next;
+    });
+  }, []);
+
+  // 끄기: 상단 "집중 모드 끄기" 버튼과 Esc. 둘 다 항상 동작해야 한다(시안 v2 §4 규칙 3).
+  useEffect(() => {
+    if (!isFocusMode) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') handleToggleFocusMode();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isFocusMode, handleToggleFocusMode]);
 
   // oc_start: 문제 데이터가 처음 로드됐을 때 1회 발화
   useEffect(() => {
@@ -466,54 +513,164 @@ export const ChallengeSolveClient = ({
     );
   }
 
+  // 두 곳(기본/집중모드 오버레이)에서 같은 코치 패널을 그리므로 props를 한 곳에 모은다.
+  const aiCoachPanelProps = {
+    challengeId,
+    attemptId: aiAttemptId,
+    isLoggedIn,
+    hasGuestSession,
+    openingMessage: coachOpening?.message,
+    ensureAttempt,
+    onAttemptCleared: handleAiAttemptCleared,
+    onSessionChange: setAiSessionId,
+    drawingStrokes,
+    onSolutionViewed: () => {
+      solutionViewedRef.current = true;
+    },
+    onMessageSent: () => {
+      messageCountRef.current += 1;
+    },
+  };
+
+  // 오답률·등급대 정답률·배점 배지 — 값이 없으면 그 칩만 뺀다(전부 숨기지 않는다).
+  const statBadges = [
+    challenge.wrongAnswerRate != null && {
+      key: 'wrong-rate',
+      label: `오답률 ${challenge.wrongAnswerRate}%`,
+      className: 'bg-orange-1 text-orange-8',
+    },
+    challenge.passRate != null && {
+      key: 'pass-rate',
+      label: `3~5등급 정답률 ${challenge.passRate}%`,
+      className: 'bg-system-success-alt text-system-success-text',
+    },
+    challenge.points != null && {
+      key: 'points',
+      label: `배점 ${challenge.points}점`,
+      className: 'bg-gray-1 text-text-main',
+    },
+  ].filter(Boolean) as { key: string; label: string; className: string }[];
+
+  const answerPicker = isShortAnswer ? (
+    <ShortAnswerInput
+      value={selectedAnswer ?? ''}
+      onChange={handleAnswerSelect}
+    />
+  ) : (
+    <ChoiceList
+      choices={challenge.choices}
+      selected={selectedAnswer}
+      onSelect={handleAnswerSelect}
+    />
+  );
+
   return (
     <div className="flex h-[calc(100vh-var(--spacing-header-height,64px))] overflow-hidden">
-      {/* AI 코치 — 모바일에서 숨김. 폭은 드래그 핸들 또는 좁게/넓게 토글로 조절한다. */}
+      {/* AI 코치 — 모바일에서 숨김. 평소엔 폭 드래그/토글, 집중 모드에선 48px 레일 + 겹침 오버레이 */}
       <aside
-        className="border-line-line1 relative hidden shrink-0 border-r p-4 lg:block"
-        style={{ width: aiPanelWidth }}
+        className={cn(
+          'border-line-line1 relative hidden shrink-0 border-r bg-white lg:block',
+          isFocusMode ? 'lg:w-12' : 'p-4'
+        )}
+        style={isFocusMode ? undefined : { width: aiPanelWidth }}
       >
-        <button
-          type="button"
-          onClick={handleToggleAiPanelWidth}
-          className="border-line-line1 text-gray-7 hover:bg-gray-1 absolute top-4 right-2 z-10 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border bg-white shadow-sm"
-          aria-label="AI 코치 패널 폭 전환 (좁게/넓게)"
-          data-testid="ai-panel-width-toggle"
-        >
-          <ChevronsLeftRight size={14} />
-        </button>
-        <AiCoachPanel
-          challengeId={challengeId}
-          attemptId={aiAttemptId}
-          isLoggedIn={isLoggedIn}
-          hasGuestSession={hasGuestSession}
-          openingMessage={coachOpening?.message}
-          ensureAttempt={ensureAttempt}
-          onAttemptCleared={handleAiAttemptCleared}
-          onSessionChange={setAiSessionId}
-          drawingStrokes={drawingStrokes}
-          onSolutionViewed={() => {
-            solutionViewedRef.current = true;
-          }}
-          onMessageSent={() => {
-            messageCountRef.current += 1;
-          }}
-        />
-        {/* 드래그 리사이즈 핸들 */}
-        <div
-          onMouseDown={handleAiPanelResizeStart}
-          role="separator"
-          aria-orientation="vertical"
-          aria-label="AI 코치 패널 폭 조절"
-          data-testid="ai-panel-resize-handle"
-          className="hover:bg-orange-3 absolute top-0 right-0 z-10 h-full w-1.5 -translate-x-1/2 cursor-col-resize"
-        />
+        {isFocusMode ? (
+          <>
+            <button
+              type="button"
+              onClick={() => setIsFocusCoachOpen((open) => !open)}
+              aria-expanded={isFocusCoachOpen}
+              aria-label="AI 코치 열기"
+              data-testid="focus-coach-rail-toggle"
+              className="text-gray-7 hover:bg-gray-1 flex h-full w-12 flex-col items-center justify-center gap-2"
+            >
+              <Bot size={18} />
+              <span className="text-xs font-semibold tracking-wide [writing-mode:vertical-rl]">
+                코치
+              </span>
+            </button>
+            {isFocusCoachOpen && (
+              <div
+                className="border-line-line1 shadow-popover absolute top-0 left-12 z-30 h-full overflow-hidden border-r bg-white p-4"
+                style={{ width: aiPanelWidth }}
+              >
+                <button
+                  type="button"
+                  onClick={() => setIsFocusCoachOpen(false)}
+                  aria-label="AI 코치 닫기"
+                  className="border-line-line1 text-gray-7 hover:bg-gray-1 absolute top-4 right-2 z-10 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border bg-white shadow-sm"
+                >
+                  <X size={14} />
+                </button>
+                <AiCoachPanel {...aiCoachPanelProps} />
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={handleToggleAiPanelWidth}
+              className="border-line-line1 text-gray-7 hover:bg-gray-1 absolute top-4 right-2 z-10 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border bg-white shadow-sm"
+              aria-label="AI 코치 패널 폭 전환 (좁게/넓게)"
+              data-testid="ai-panel-width-toggle"
+            >
+              <ChevronsLeftRight size={14} />
+            </button>
+            <AiCoachPanel {...aiCoachPanelProps} />
+            {/* 드래그 리사이즈 핸들 */}
+            <div
+              onMouseDown={handleAiPanelResizeStart}
+              role="separator"
+              aria-orientation="vertical"
+              aria-label="AI 코치 패널 폭 조절"
+              data-testid="ai-panel-resize-handle"
+              className="hover:bg-orange-3 absolute top-0 right-0 z-10 h-full w-1.5 -translate-x-1/2 cursor-col-resize"
+            />
+          </>
+        )}
       </aside>
 
       <div className="flex flex-1 flex-col overflow-hidden">
+        {/* 집중 모드 컨트롤 — 항상 보인다(스크롤 밖). 켜기 전=칩, 켜진 후=검은 띠 끄기 버튼 */}
+        {isFocusMode ? (
+          <div className="bg-gray-12 flex shrink-0 items-center justify-between gap-3 px-4 py-2 sm:px-6">
+            <span className="text-sm font-semibold text-white max-sm:hidden">
+              집중 모드
+            </span>
+            <Button
+              type="button"
+              variant="outlined"
+              onClick={handleToggleFocusMode}
+              data-testid="focus-mode-off-button"
+              className="ml-auto h-8 gap-1.5 border-white/30 bg-transparent px-3 text-xs text-white hover:bg-white/10"
+            >
+              <Minimize2 size={14} />
+              집중 모드 끄기
+            </Button>
+          </div>
+        ) : (
+          <div className="flex shrink-0 justify-end px-4 pt-3 sm:px-6">
+            <button
+              type="button"
+              onClick={handleToggleFocusMode}
+              data-testid="focus-mode-on-button"
+              className="border-line-line1 text-text-main hover:bg-gray-1 rounded-pill flex h-8 items-center gap-1.5 border bg-white px-3 text-xs font-semibold"
+            >
+              <Maximize2 size={14} />
+              집중 모드
+            </button>
+          </div>
+        )}
+
         {/* 문제 + 선택지 + 풀이 에디터 */}
         <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-8">
-          <div className="mb-5 flex items-center justify-between gap-3">
+          <div
+            className={cn(
+              'mb-5 flex items-center justify-between gap-3',
+              isFocusMode && 'max-lg:hidden'
+            )}
+          >
             <BackButton />
             {isLoggedIn && (
               <ChallengeShareButton
@@ -524,7 +681,12 @@ export const ChallengeSolveClient = ({
             )}
           </div>
 
-          <div className="text-gray-8 mb-3 flex min-w-0 items-center gap-2 text-sm">
+          <div
+            className={cn(
+              'text-gray-8 mb-3 flex min-w-0 items-center gap-2 text-sm',
+              isFocusMode && 'max-lg:hidden'
+            )}
+          >
             <span>{challenge.subject}</span>
             <span>›</span>
             <span className="text-text-main truncate font-semibold">
@@ -618,7 +780,12 @@ export const ChallengeSolveClient = ({
             </div>
           )}
 
-          <div className="border-line-line1 mb-5 overflow-hidden rounded-xl border bg-white">
+          {/*
+            문제 카드: 제목 + 통계 배지 + 문제 본문(접기 가능, 높이 상한) + 답 고르기를
+            한 카드에 붙이고 스크롤 상단에 고정한다(회장 결정 — 답 고르기를 문제 밑 붙박이로).
+            손풀이 칸을 아무리 내려도 문제와 답 선택이 같이 따라온다.
+          */}
+          <div className="border-line-line1 sticky top-0 z-10 mb-5 overflow-hidden rounded-xl border bg-white">
             <button
               type="button"
               onClick={() =>
@@ -634,21 +801,45 @@ export const ChallengeSolveClient = ({
                   {challenge.topic}
                 </p>
               </div>
-              {isQuestionOpen ? (
-                <ChevronUp
-                  size={20}
-                  className="text-gray-7 shrink-0"
-                />
-              ) : (
-                <ChevronDown
-                  size={20}
-                  className="text-gray-7 shrink-0"
-                />
-              )}
+              <span className="text-gray-7 flex shrink-0 items-center gap-1">
+                {isFocusMode && (
+                  <span className="text-xs font-semibold lg:hidden">
+                    {isQuestionOpen ? '문제 접기' : '문제 보기'}
+                  </span>
+                )}
+                {isQuestionOpen ? (
+                  <ChevronUp size={20} />
+                ) : (
+                  <ChevronDown size={20} />
+                )}
+              </span>
             </button>
 
+            {statBadges.length > 0 && (
+              <div className="flex flex-wrap items-center gap-1.5 px-5 pb-3 sm:px-6">
+                {statBadges.map((badge) => (
+                  <span
+                    key={badge.key}
+                    data-testid={`challenge-stat-badge-${badge.key}`}
+                    className={cn(
+                      'rounded-pill px-2.5 py-1 text-xs font-semibold',
+                      badge.className
+                    )}
+                  >
+                    {badge.label}
+                  </span>
+                ))}
+              </div>
+            )}
+
             {isQuestionOpen && (
-              <div className="border-line-line1 border-t px-5 py-5 sm:px-6">
+              <div
+                className={cn(
+                  'border-line-line1 overflow-y-auto border-t px-5 py-5 sm:px-6',
+                  isFocusMode && 'max-lg:hidden'
+                )}
+                style={{ maxHeight: QUESTION_BODY_MAX_HEIGHT }}
+              >
                 <p className="text-text-main text-lg leading-relaxed whitespace-pre-line">
                   {challenge.questionText}
                 </p>
@@ -665,9 +856,40 @@ export const ChallengeSolveClient = ({
                 )}
               </div>
             )}
+
+            <div
+              ref={choiceSectionRef}
+              tabIndex={-1}
+              className="border-line-line1 flex scroll-mt-6 flex-col gap-3 border-t px-5 py-5 outline-none sm:px-6"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-body1-heading text-text-main">
+                  답을 직접 선택해 주세요
+                </p>
+                <Button
+                  type="button"
+                  variant="outlined"
+                  onClick={() => setIsMobileAiOpen(true)}
+                  className="h-9 px-3 text-sm lg:hidden"
+                >
+                  <Bot
+                    size={16}
+                    className="mr-1"
+                  />
+                  AI 힌트
+                </Button>
+              </div>
+              {answerPicker}
+              {submitError && (
+                <p className="text-system-warning text-sm font-semibold">
+                  {submitError}
+                </p>
+              )}
+            </div>
           </div>
 
-          {/* 풀이 순서: 문제 → 손풀이 → 답 입력 (CD-E-01, fdd rev.7 §2.0) */}
+          {/* 풀이 순서: 문제 → 답 고르기(붙박이) → 손풀이 → 제출 (회장 결정. fdd CD-E-01 문구는
+              구 순서 "문제 → 손풀이 → 답 입력" 그대로라 어긋난다 — 아래 회수 항목 참조) */}
           <div className="mb-5 flex flex-col gap-3">
             <div className="flex flex-wrap items-center gap-2">
               <Pencil
@@ -683,53 +905,22 @@ export const ChallengeSolveClient = ({
             <SolutionDrawingPad
               onStrokesChange={setDrawingStrokes}
               persistKey={`open-challenge-solve:${challengeId}`}
+              height={
+                isFocusMode
+                  ? DRAWING_PAD_HEIGHT_FOCUS
+                  : DRAWING_PAD_HEIGHT_DEFAULT
+              }
             />
-            <div className="border-orange-3 bg-orange-1 text-text-main rounded-xl border px-4 py-3 text-sm leading-relaxed">
+            <div
+              className={cn(
+                'border-orange-3 bg-orange-1 text-text-main rounded-xl border px-4 py-3 text-sm leading-relaxed',
+                isFocusMode && 'max-lg:hidden'
+              )}
+            >
               이 손풀이는 이 문제를 푼 사람들에게 내 이름과 함께 보여요. 맞든
               틀리든 올라가고, 언제든 내릴 수 있어요. 내리면 30일 뒤 이미지가
               완전히 삭제돼요.
             </div>
-          </div>
-
-          <div
-            ref={choiceSectionRef}
-            tabIndex={-1}
-            className="mb-5 flex scroll-mt-6 flex-col gap-3 outline-none"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <p className="font-body1-heading text-text-main">
-                답을 직접 선택해 주세요
-              </p>
-              <Button
-                type="button"
-                variant="outlined"
-                onClick={() => setIsMobileAiOpen(true)}
-                className="h-9 px-3 text-sm lg:hidden"
-              >
-                <Bot
-                  size={16}
-                  className="mr-1"
-                />
-                AI 힌트
-              </Button>
-            </div>
-            {isShortAnswer ? (
-              <ShortAnswerInput
-                value={selectedAnswer ?? ''}
-                onChange={handleAnswerSelect}
-              />
-            ) : (
-              <ChoiceList
-                choices={challenge.choices}
-                selected={selectedAnswer}
-                onSelect={handleAnswerSelect}
-              />
-            )}
-            {submitError && (
-              <p className="text-system-warning text-sm font-semibold">
-                {submitError}
-              </p>
-            )}
           </div>
 
           {!isLoggedIn && guestGradeResult !== null && (
@@ -749,20 +940,22 @@ export const ChallengeSolveClient = ({
           )}
         </div>
 
-        {/* 하단 제출 바 */}
-        <div className="border-line-line1 flex items-center justify-end gap-3 border-t bg-white px-4 py-2 sm:px-6">
-          <Button
-            type="button"
-            variant="outlined"
-            onClick={() => setIsMobileAiOpen(true)}
-            className="mr-auto h-9 px-3 text-sm lg:hidden"
-          >
-            <Bot
-              size={16}
-              className="mr-1"
-            />
-            AI 힌트
-          </Button>
+        {/* 하단 제출 바 — 답 고르기가 문제 카드로 올라갔으니 이 바는 고른 답 표시 + 제출,
+            두 조각만 남긴다(회장 결정). 되돌릴 수 있는 선택은 위에서, 되돌릴 수 없는 확정은
+            아래에서 — 최저 56px로 얇게. */}
+        <div className="border-line-line1 flex min-h-14 items-center gap-3 border-t bg-white px-4 py-2 sm:px-6">
+          <p className="text-gray-8 min-w-0 flex-1 truncate text-sm">
+            {selectedAnswer ? (
+              <>
+                <span className="text-text-main font-semibold">
+                  {selectedAnswer}
+                </span>
+                {' 선택함'}
+              </>
+            ) : (
+              '아직 답을 고르지 않았어요'
+            )}
+          </p>
           <Button
             onClick={handleSubmit}
             disabled={
@@ -771,9 +964,13 @@ export const ChallengeSolveClient = ({
               (!isLoggedIn && guestGradeResult !== null)
             }
             data-testid="challenge-submit-button"
-            className="h-9 px-5 text-sm"
+            className="h-9 shrink-0 px-5 text-sm"
           >
-            {isSubmitting ? '제출 중...' : '제출하기'}
+            {isSubmitting
+              ? '제출 중...'
+              : selectedAnswer
+                ? '제출하기'
+                : '답 먼저 고르기'}
           </Button>
         </div>
       </div>

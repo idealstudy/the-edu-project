@@ -51,9 +51,16 @@ export const FriendSafetyMenu = ({
         aria-label="차단·신고 메뉴 열기"
         aria-expanded={menuOpen}
         onClick={() => setMenuOpen((value) => !value)}
-        className="hover:bg-gray-1 flex size-9 items-center justify-center rounded-lg"
+        // 승인 시안 v4 §5-2 는 안전 조작을 아이콘이 아니라 "차단·신고" 글자 버튼으로 둔다.
+        // 괴롭힘 상황에서 차단을 찾는 단계를 하나 줄이는 것이 이 버튼의 목적이라,
+        // 점 세 개 아이콘 뒤에 숨기면 결정 취지가 사라진다(회장 2026-08-17 "시안대로 해").
+        className="hover:bg-gray-1 text-gray-6 flex h-9 items-center justify-center gap-1 rounded-lg px-2.5 text-sm whitespace-nowrap"
       >
-        <MoreVertical size={18} />
+        <MoreVertical
+          size={16}
+          aria-hidden
+        />
+        차단·신고
       </Button>
 
       {menuOpen && (

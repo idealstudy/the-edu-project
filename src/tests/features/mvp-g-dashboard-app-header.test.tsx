@@ -356,7 +356,15 @@ describe('MVP-G 공통 앱 헤더', () => {
     expect(
       screen.queryByTestId('challenge-invites-content')
     ).not.toBeInTheDocument();
-    expect(screen.getAllByRole('heading', { name: '친구' })).toHaveLength(1);
+    // 2026-08-18: PR #521(mvp-g 친구 좌우 열 정합)이 친구 페이지 본문에 h2 "친구" 를 추가했다.
+    // 그래서 앱 헤더 h1 과 본문 h2 로 같은 이름의 제목이 둘이 된다.
+    // 이 테스트의 원래 의도는 "친구 화면에 문제 단위 도전 기록이 섞이지 않는다" 이고
+    // 제목 개수는 그 의도의 대리 지표였으므로, 의도가 유지되도록 레벨로 나눠 확인한다.
+    // 같은 이름 제목이 둘 보이는 것이 옳은지는 그 화면을 소유한 라인이 판단할 일이라 여기서 정하지 않는다.
+    expect(
+      screen.getByRole('heading', { name: '친구', level: 1 })
+    ).toBeVisible();
+    expect(screen.getAllByRole('heading', { name: '친구' })).toHaveLength(2);
   });
 
   it('스터디룸 상세 숫자 ID에만 상세 서브타이틀을 표시하고 new는 목록 요약을 유지한다', () => {

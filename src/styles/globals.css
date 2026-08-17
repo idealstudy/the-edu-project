@@ -422,6 +422,8 @@ body {
   /* Spacing */
   --spacing-header-height: 60px;
   --spacing-sidebar-width: 260px;
+  /* 태블릿(768~1199px) 전역 사이드바 = 아이콘 레일(흐름 안, 본문 안 덮음). 근거: mvp-e-v1.1.0-풀이화면-v2 시안, Material 3 navigation-rail guideline */
+  --spacing-sidebar-rail-width: 72px;
   --spacing-grid-margin: 20px;
 
   /* ========================================

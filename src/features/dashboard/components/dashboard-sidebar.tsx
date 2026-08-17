@@ -42,7 +42,11 @@ export const DashboardSidebar = () => {
 
   return (
     <Sidebar>
-      <div className="text-orange-9 px-2 pt-1 pb-3 text-sm font-extrabold tracking-[-0.045em]">
+      {/* 태블릿(md~desktop 미만) 아이콘 레일에서는 'D' 만, desktop 이상만 전체 로고 텍스트 */}
+      <div className="text-orange-9 desktop:hidden block px-2 pt-1 pb-3 text-center text-sm font-extrabold tracking-[-0.045em]">
+        D
+      </div>
+      <div className="text-orange-9 desktop:block hidden px-2 pt-1 pb-3 text-sm font-extrabold tracking-[-0.045em]">
         D-EDU
         <small className="text-gray-8 text-ui-compact mt-0.5 block font-semibold tracking-normal">
           {role === 'ROLE_TEACHER'
@@ -87,7 +91,7 @@ export const DashboardSidebar = () => {
 
           {primaryRoom && (
             <>
-              <div className="text-gray-8 text-ui-compact px-2 pt-4 pb-1 font-extrabold">
+              <div className="text-gray-8 text-ui-compact desktop:block hidden px-2 pt-4 pb-1 font-extrabold">
                 소속
               </div>
               <Sidebar.Item
@@ -105,7 +109,7 @@ export const DashboardSidebar = () => {
             </>
           )}
 
-          <div className="text-gray-8 text-ui-compact px-2 pt-4 pb-1 font-extrabold">
+          <div className="text-gray-8 text-ui-compact desktop:block hidden px-2 pt-4 pb-1 font-extrabold">
             더 보기
           </div>
 
@@ -193,7 +197,7 @@ export const DashboardSidebar = () => {
 
       {role === 'ROLE_STUDENT' && (
         <>
-          <div className="text-gray-8 text-ui-compact px-2 pt-4 pb-1 font-extrabold">
+          <div className="text-gray-8 text-ui-compact desktop:block hidden px-2 pt-4 pb-1 font-extrabold">
             오픈챌린지에서 열립니다
           </div>
           <Sidebar.Item

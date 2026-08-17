@@ -242,7 +242,11 @@ describe('ChallengeSolveClient (오픈챌린지 풀이 화면 가드)', () => {
     expect(screen.getByTestId('choice-option-0')).toBeInTheDocument();
   });
 
-  test('풀이 순서는 문제 다음 손풀이, 그다음 답 입력이다(CD-E-01)', () => {
+  // 풀이 순서 개정(mvp-e-v1.1.0-풀이화면-v2 시안, 회장 결정): 답 고르기를 문제 카드
+  // 바로 아래 붙박이로 올렸다. 새 순서는 "문제 → 답 고르기(붙박이) → 손풀이 → 제출"이며,
+  // 옛 계약 문구(fdd CD-E-01 "문제 → 손풀이 → 답 입력")는 아직 개정 전이다
+  // (tasks/mvp-e-solve-build-2026-08-18.output 회수 항목 참조).
+  test('풀이 순서는 문제 다음 답 고르기(붙박이), 그다음 손풀이다(회장 결정, 구 CD-E-01 문구 갱신 전)', () => {
     vi.mocked(useOpenChallengeDetailQuery).mockReturnValue({
       data: baseChallenge,
       isLoading: false,
@@ -256,10 +260,10 @@ describe('ChallengeSolveClient (오픈챌린지 풀이 화면 가드)', () => {
       />
     );
 
-    const drawingHeading = screen.getByText('풀이 공간');
     const choiceHeading = screen.getByText('답을 직접 선택해 주세요');
+    const drawingHeading = screen.getByText('풀이 공간');
     expect(
-      drawingHeading.compareDocumentPosition(choiceHeading) &
+      choiceHeading.compareDocumentPosition(drawingHeading) &
         Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy();
   });
@@ -411,5 +415,117 @@ describe('ChallengeSolveClient (오픈챌린지 풀이 화면 가드)', () => {
       });
     });
     expect(solveMocks.startAttemptAsync).toHaveBeenCalledTimes(1);
+  });
+
+  // 시안 v2 §회장 결정 2: 오답률·3~5등급 정답률·배점 배지. 값이 없으면 그 칩만 빠진다.
+  test('통계 배지는 값이 있는 것만 보여주고 없는 항목은 뺀다', () => {
+    vi.mocked(useOpenChallengeDetailQuery).mockReturnValue({
+      data: { ...baseChallenge, wrongAnswerRate: 41, points: 2 },
+      isLoading: false,
+      isError: false,
+    } as never);
+
+    renderWithProviders(
+      <ChallengeSolveClient
+        challengeId={CHALLENGE_ID}
+        isLoggedIn={false}
+      />
+    );
+
+    expect(
+      screen.getByTestId('challenge-stat-badge-wrong-rate')
+    ).toHaveTextContent('오답률 41%');
+    expect(screen.getByTestId('challenge-stat-badge-points')).toHaveTextContent(
+      '배점 2점'
+    );
+    // passRate 를 안 준 문제 — 3~5등급 정답률 칩만 없고 나머지 둘은 그대로 보인다.
+    expect(
+      screen.queryByTestId('challenge-stat-badge-pass-rate')
+    ).not.toBeInTheDocument();
+  });
+
+  test('통계 데이터가 전혀 없는 문제는 배지 자체를 렌더하지 않는다', () => {
+    vi.mocked(useOpenChallengeDetailQuery).mockReturnValue({
+      data: baseChallenge,
+      isLoading: false,
+      isError: false,
+    } as never);
+
+    renderWithProviders(
+      <ChallengeSolveClient
+        challengeId={CHALLENGE_ID}
+        isLoggedIn={false}
+      />
+    );
+
+    expect(
+      screen.queryByTestId('challenge-stat-badge-wrong-rate')
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('challenge-stat-badge-pass-rate')
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('challenge-stat-badge-points')
+    ).not.toBeInTheDocument();
+  });
+
+  // 시안 v2 §회장 결정 4: 집중 모드. 켜면 문제 본문을 기본 접어(FINDING-001) 자리를 만들고,
+  // 끄기 버튼은 항상 보인다. 답 고르기·제출은 집중 모드와 무관하게 항상 남는다.
+  test('집중 모드를 켜면 끄기 버튼으로 바뀌고 문제 본문이 기본 접힌다', async () => {
+    const user = userEvent.setup();
+    vi.mocked(useOpenChallengeDetailQuery).mockReturnValue({
+      data: baseChallenge,
+      isLoading: false,
+      isError: false,
+    } as never);
+
+    renderWithProviders(
+      <ChallengeSolveClient
+        challengeId={CHALLENGE_ID}
+        isLoggedIn={false}
+      />
+    );
+
+    // 켜기 전: 문제 본문이 기본으로 펼쳐져 있다.
+    expect(screen.getByText(baseChallenge.questionText)).toBeInTheDocument();
+    expect(screen.queryByTestId('focus-mode-off-button')).toBeNull();
+
+    await user.click(screen.getByTestId('focus-mode-on-button'));
+
+    expect(screen.getByTestId('focus-mode-off-button')).toBeInTheDocument();
+    expect(screen.queryByTestId('focus-mode-on-button')).toBeNull();
+    // 문제 본문은 기본 접힘 — 답 고르기·제출은 여전히 있어야 한다.
+    expect(
+      screen.queryByText(baseChallenge.questionText)
+    ).not.toBeInTheDocument();
+    expect(screen.getByTestId('choice-option-0')).toBeInTheDocument();
+    expect(screen.getByTestId('challenge-submit-button')).toBeInTheDocument();
+
+    // 끄기: 다시 칩으로 돌아온다.
+    await user.click(screen.getByTestId('focus-mode-off-button'));
+    expect(screen.getByTestId('focus-mode-on-button')).toBeInTheDocument();
+  });
+
+  test('집중 모드 켜짐 상태에서 Esc를 누르면 꺼진다', async () => {
+    const user = userEvent.setup();
+    vi.mocked(useOpenChallengeDetailQuery).mockReturnValue({
+      data: baseChallenge,
+      isLoading: false,
+      isError: false,
+    } as never);
+
+    renderWithProviders(
+      <ChallengeSolveClient
+        challengeId={CHALLENGE_ID}
+        isLoggedIn={false}
+      />
+    );
+
+    await user.click(screen.getByTestId('focus-mode-on-button'));
+    expect(screen.getByTestId('focus-mode-off-button')).toBeInTheDocument();
+
+    await user.keyboard('{Escape}');
+
+    expect(screen.getByTestId('focus-mode-on-button')).toBeInTheDocument();
   });
 });

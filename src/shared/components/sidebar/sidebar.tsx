@@ -53,7 +53,10 @@ const SidebarRoot = ({ children }: { children: ReactNode }) => {
       data-dashboard-sidebar
       className={cn('fixed top-0 left-0 z-40 hidden h-dvh flex-col', 'md:flex')}
     >
-      <aside className="border-gray-3 px-sidebar-pad-x py-sidebar-pad-y w-sidebar-width relative flex flex-1 flex-col overflow-hidden border-r bg-white">
+      <aside
+        data-sidebar-mode="rail-until-desktop"
+        className="border-gray-3 px-sidebar-pad-x py-sidebar-pad-y w-sidebar-rail-width desktop:w-sidebar-width relative flex flex-1 flex-col overflow-hidden border-r bg-white"
+      >
         {children}
       </aside>
     </div>
@@ -92,7 +95,7 @@ const SidebarItem = ({
       href={href}
       prefetch={prefetch}
       className={cn(
-        'min-h-touch-min rounded-button px-button-compact-x flex items-center gap-2 text-sm font-semibold',
+        'min-h-touch-min rounded-button px-button-compact-x desktop:justify-start flex items-center justify-center gap-2 text-sm font-semibold',
         isActive ? 'bg-orange-1 text-orange-9' : 'hover:bg-gray-1',
         isCreatePage && 'h-9 w-9 justify-center gap-0 bg-transparent px-0',
         className
@@ -246,7 +249,12 @@ const SidebarItemText = ({
   children: ReactNode;
   className?: string;
 }) => {
-  return <span className={cn('relative', className)}>{children}</span>;
+  // 태블릿(md~desktop 미만)은 아이콘 레일이라 라벨을 감춘다. desktop 이상만 라벨을 보여준다.
+  return (
+    <span className={cn('desktop:inline relative hidden', className)}>
+      {children}
+    </span>
+  );
 };
 
 const Sidebar = ({ children }: { children: ReactNode }) => (
