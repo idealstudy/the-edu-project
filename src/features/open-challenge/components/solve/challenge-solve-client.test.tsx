@@ -242,6 +242,45 @@ describe('ChallengeSolveClient (오픈챌린지 풀이 화면 가드)', () => {
     expect(screen.getByTestId('choice-option-0')).toBeInTheDocument();
   });
 
+  test('풀이 순서는 문제 다음 손풀이, 그다음 답 입력이다(CD-E-01)', () => {
+    vi.mocked(useOpenChallengeDetailQuery).mockReturnValue({
+      data: baseChallenge,
+      isLoading: false,
+      isError: false,
+    } as never);
+
+    renderWithProviders(
+      <ChallengeSolveClient
+        challengeId={CHALLENGE_ID}
+        isLoggedIn={false}
+      />
+    );
+
+    const drawingHeading = screen.getByText('풀이 공간');
+    const choiceHeading = screen.getByText('답을 직접 선택해 주세요');
+    expect(
+      drawingHeading.compareDocumentPosition(choiceHeading) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+  });
+
+  test('손풀이 안내에 30일 뒤 실물 파기 고지가 있다(CD-E-05)', () => {
+    vi.mocked(useOpenChallengeDetailQuery).mockReturnValue({
+      data: baseChallenge,
+      isLoading: false,
+      isError: false,
+    } as never);
+
+    renderWithProviders(
+      <ChallengeSolveClient
+        challengeId={CHALLENGE_ID}
+        isLoggedIn={false}
+      />
+    );
+
+    expect(screen.getByText(/30일 뒤 이미지가/)).toBeInTheDocument();
+  });
+
   test('손풀이 공유가 실패해도 결과를 저장하고 결과 화면 재시도 정보를 남긴다', async () => {
     const user = userEvent.setup();
     vi.mocked(useOpenChallengeDetailQuery).mockReturnValue({

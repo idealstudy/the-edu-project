@@ -216,6 +216,18 @@ const MemberSearchResultDtoSchema = z.object({
   nickname: NullableString,
 });
 
+const MemberBlockResultDtoSchema = z.object({
+  memberId: z.number(),
+  blocked: z.boolean(),
+  blockedAt: NullableString,
+});
+
+const MemberReportResultDtoSchema = z.object({
+  reportId: z.number(),
+  status: z.enum(['PENDING', 'REVIEWING', 'RESOLVED', 'DISMISSED']),
+  createdAt: z.string(),
+});
+
 export const dto = {
   friendship: FriendshipDtoSchema,
   challengeInvite: ChallengeInviteDtoSchema,
@@ -230,6 +242,8 @@ export const dto = {
   guestClaim: GuestClaimDtoSchema,
   memberSearchResult: MemberSearchResultDtoSchema,
   memberSearchResults: z.array(MemberSearchResultDtoSchema),
+  memberBlockResult: MemberBlockResultDtoSchema,
+  memberReportResult: MemberReportResultDtoSchema,
 };
 
 /* ─────────────────────────────────────────────────────
@@ -257,10 +271,28 @@ const MemberSearchQuerySchema = z.object({
   q: z.string().trim().min(1),
 });
 
+// OTHER 는 detail 필수, 그 외는 선택 — trim 뒤 1~500자(api-contract §4.11).
+const MemberReportCreatePayloadSchema = z
+  .object({
+    reason: z.enum([
+      'HARASSMENT',
+      'INAPPROPRIATE_PROFILE',
+      'CHEATING_OR_FRAUD',
+      'SPAM',
+      'OTHER',
+    ]),
+    detail: z.string().trim().max(500).optional(),
+  })
+  .refine(
+    (value) => value.reason !== 'OTHER' || (value.detail?.length ?? 0) > 0,
+    { message: '기타 사유는 상세 내용을 입력해 주세요.', path: ['detail'] }
+  );
+
 export const payload = {
   friendRequest: FriendRequestPayloadSchema,
   friendRequestByPhone: FriendRequestByPhonePayloadSchema,
   createChallengeInvite: CreateChallengeInvitePayloadSchema,
   createGuestSession: CreateGuestSessionPayloadSchema,
   memberSearchQuery: MemberSearchQuerySchema,
+  memberReportCreate: MemberReportCreatePayloadSchema,
 };

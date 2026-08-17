@@ -222,6 +222,38 @@ const MemberSearchResultSchema = z.object({
   nickname: z.string().nullable(),
 });
 
+/* ─────────────────────────────────────────────────────
+ * 친구 차단 / 신고 (F-18) Domain
+ *  POST·DELETE /api/common/friends/{friendId}/block
+ *  POST /api/common/friends/{friendId}/reports
+ * ────────────────────────────────────────────────────*/
+const MemberBlockResultSchema = z.object({
+  memberId: z.number(),
+  blocked: z.boolean(),
+  blockedAt: z.string().nullable(),
+});
+
+const MemberReportReasonSchema = z.enum([
+  'HARASSMENT',
+  'INAPPROPRIATE_PROFILE',
+  'CHEATING_OR_FRAUD',
+  'SPAM',
+  'OTHER',
+]);
+
+const MemberReportStatusSchema = z.enum([
+  'PENDING',
+  'REVIEWING',
+  'RESOLVED',
+  'DISMISSED',
+]);
+
+const MemberReportResultSchema = z.object({
+  reportId: z.number(),
+  status: MemberReportStatusSchema,
+  createdAt: z.string(),
+});
+
 export const domain = {
   friendshipState: FriendshipStateSchema,
   friendship: FriendshipSchema,
@@ -238,4 +270,8 @@ export const domain = {
   guestSession: GuestSessionSchema,
   guestClaim: GuestClaimSchema,
   memberSearchResult: MemberSearchResultSchema,
+  memberBlockResult: MemberBlockResultSchema,
+  memberReportReason: MemberReportReasonSchema,
+  memberReportStatus: MemberReportStatusSchema,
+  memberReportResult: MemberReportResultSchema,
 };

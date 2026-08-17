@@ -28,6 +28,7 @@ import {
   useRequestFriendMutation,
 } from '../../hooks';
 import { ChallengeShareButton } from '../challenge-invite/challenge-share-button';
+import { FriendSafetyMenu } from './friend-safety-menu';
 
 type Duel = FriendDuels['items'][number];
 
@@ -85,31 +86,41 @@ export const FriendDetailClient = ({ friendId }: { friendId: number }) => {
                 : ''}
             </p>
           </div>
-          {isStranger ? (
-            <Button
-              size="small"
-              disabled={requestFriend.isPending || requestFriend.isSuccess}
-              onClick={() => requestFriend.mutate({ addresseeId: friendId })}
-            >
-              {requestFriend.isSuccess ? '친구 요청 보냄' : '친구 요청 보내기'}
-            </Button>
-          ) : challengeId != null && Number.isFinite(challengeId) ? (
-            <ChallengeShareButton
-              challengeId={challengeId}
-              variant="primary"
-              size="small"
-              label="이 문제로 도전장 보내기"
-            />
-          ) : (
-            <Button
-              size="small"
-              asChild
-            >
-              <Link href={PUBLIC.OPEN_CHALLENGE.LIST}>
-                문제 골라 도전장 보내기
-              </Link>
-            </Button>
-          )}
+          <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:items-center">
+            {isStranger ? (
+              <Button
+                size="small"
+                disabled={requestFriend.isPending || requestFriend.isSuccess}
+                onClick={() => requestFriend.mutate({ addresseeId: friendId })}
+              >
+                {requestFriend.isSuccess
+                  ? '친구 요청 보냄'
+                  : '친구 요청 보내기'}
+              </Button>
+            ) : challengeId != null && Number.isFinite(challengeId) ? (
+              <ChallengeShareButton
+                challengeId={challengeId}
+                variant="primary"
+                size="small"
+                label="이 문제로 도전장 보내기"
+              />
+            ) : (
+              <Button
+                size="small"
+                asChild
+              >
+                <Link href={PUBLIC.OPEN_CHALLENGE.LIST}>
+                  문제 골라 도전장 보내기
+                </Link>
+              </Button>
+            )}
+            <div className="flex justify-end sm:justify-start">
+              <FriendSafetyMenu
+                friendId={friendId}
+                friendName={friend.displayName}
+              />
+            </div>
+          </div>
         </section>
 
         {isStranger ? (

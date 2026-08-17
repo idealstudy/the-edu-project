@@ -26,6 +26,11 @@ export type GuestClaim = z.infer<typeof domain.guestClaim>;
 
 export type MemberSearchResult = z.infer<typeof domain.memberSearchResult>;
 
+export type MemberBlockResult = z.infer<typeof domain.memberBlockResult>;
+export type MemberReportReason = z.infer<typeof domain.memberReportReason>;
+export type MemberReportStatus = z.infer<typeof domain.memberReportStatus>;
+export type MemberReportResult = z.infer<typeof domain.memberReportResult>;
+
 /* ─────────────────────────────────────────────────────
  * Payload Type
  * ────────────────────────────────────────────────────*/
@@ -40,3 +45,6 @@ export type CreateGuestSessionPayload = z.infer<
   typeof payload.createGuestSession
 >;
 export type MemberSearchQuery = z.infer<typeof payload.memberSearchQuery>;
+export type MemberReportCreatePayload = z.infer<
+  typeof payload.memberReportCreate
+>;

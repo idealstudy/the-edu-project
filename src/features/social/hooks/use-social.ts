@@ -5,6 +5,7 @@ import {
   type CreateGuestSessionPayload,
   type FriendRequestByPhonePayload,
   type FriendRequestPayload,
+  type MemberReportCreatePayload,
   repository,
   socialKeys,
 } from '@/entities/social';
@@ -119,6 +120,83 @@ export const useAcceptFriendMutation = () => {
     },
   });
 };
+
+/* ─────────────────────────────────────────────────────
+ * 친구 차단 / 신고 (F-18)
+ * ────────────────────────────────────────────────────*/
+export const useBlockFriendMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (friendId: number) => repository.blockFriend(friendId),
+    onSuccess: (_result, friendId) => {
+      queryClient.invalidateQueries({ queryKey: socialKeys.friends() });
+      queryClient.invalidateQueries({
+        queryKey: socialKeys.friendSummary(friendId),
+      });
+      showBottomToast('차단했어요. 서로 도전장·기록이 보이지 않아요.');
+    },
+    onError: (error) => {
+      const apiError = getApiError(error);
+      if (apiError?.code === 'MEMBER_SAFETY_CONTEXT_REQUIRED') {
+        showBottomToast('친구이거나 대결한 적이 있는 상대만 차단할 수 있어요.');
+        return;
+      }
+      showBottomToast(
+        apiError?.message ?? '차단에 실패했어요. 잠시 후 다시 시도해 주세요.'
+      );
+    },
+  });
+};
+
+export const useUnblockFriendMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (friendId: number) => repository.unblockFriend(friendId),
+    onSuccess: (_result, friendId) => {
+      queryClient.invalidateQueries({ queryKey: socialKeys.friends() });
+      queryClient.invalidateQueries({
+        queryKey: socialKeys.friendSummary(friendId),
+      });
+      showBottomToast('차단을 해제했어요.');
+    },
+    onError: () => {
+      showBottomToast('차단 해제에 실패했어요. 잠시 후 다시 시도해 주세요.');
+    },
+  });
+};
+
+export const useReportFriendMutation = () =>
+  useMutation({
+    mutationFn: ({
+      friendId,
+      body,
+    }: {
+      friendId: number;
+      body: MemberReportCreatePayload;
+    }) => repository.reportFriend(friendId, body),
+    onSuccess: () => {
+      showBottomToast('신고를 접수했어요. 검토 후 조치할게요.');
+    },
+    onError: (error) => {
+      const apiError = getApiError(error);
+      if (apiError?.code === 'MEMBER_REPORT_RATE_LIMITED') {
+        showBottomToast(
+          '신고를 너무 많이 접수했어요. 1시간 뒤 다시 시도해 주세요.'
+        );
+        return;
+      }
+      if (apiError?.code === 'MEMBER_REPORT_CONTEXT_REQUIRED') {
+        showBottomToast('친구이거나 대결한 적이 있는 상대만 신고할 수 있어요.');
+        return;
+      }
+      showBottomToast(
+        apiError?.message ??
+          '신고 접수에 실패했어요. 잠시 후 다시 시도해 주세요.'
+      );
+    },
+  });
 
 /* ─────────────────────────────────────────────────────
  * 도전장

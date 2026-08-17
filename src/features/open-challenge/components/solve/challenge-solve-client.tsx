@@ -667,6 +667,30 @@ export const ChallengeSolveClient = ({
             )}
           </div>
 
+          {/* 풀이 순서: 문제 → 손풀이 → 답 입력 (CD-E-01, fdd rev.7 §2.0) */}
+          <div className="mb-5 flex flex-col gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <Pencil
+                size={18}
+                className="text-orange-7"
+              />
+              <p className="font-body1-heading text-text-main">풀이 공간</p>
+              <span className="text-gray-7 text-sm">
+                펜으로 자유롭게 풀어보세요 (선택)
+              </span>
+            </div>
+
+            <SolutionDrawingPad
+              onStrokesChange={setDrawingStrokes}
+              persistKey={`open-challenge-solve:${challengeId}`}
+            />
+            <div className="border-orange-3 bg-orange-1 text-text-main rounded-xl border px-4 py-3 text-sm leading-relaxed">
+              이 손풀이는 이 문제를 푼 사람들에게 내 이름과 함께 보여요. 맞든
+              틀리든 올라가고, 언제든 내릴 수 있어요. 내리면 30일 뒤 이미지가
+              완전히 삭제돼요.
+            </div>
+          </div>
+
           <div
             ref={choiceSectionRef}
             tabIndex={-1}
@@ -706,28 +730,6 @@ export const ChallengeSolveClient = ({
                 {submitError}
               </p>
             )}
-          </div>
-
-          <div className="mb-5 flex flex-col gap-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <Pencil
-                size={18}
-                className="text-orange-7"
-              />
-              <p className="font-body1-heading text-text-main">풀이 공간</p>
-              <span className="text-gray-7 text-sm">
-                펜으로 자유롭게 풀어보세요 (선택)
-              </span>
-            </div>
-
-            <SolutionDrawingPad
-              onStrokesChange={setDrawingStrokes}
-              persistKey={`open-challenge-solve:${challengeId}`}
-            />
-            <div className="border-orange-3 bg-orange-1 text-text-main rounded-xl border px-4 py-3 text-sm leading-relaxed">
-              이 손풀이는 이 문제를 푼 사람들에게 내 이름과 함께 보여요. 맞든
-              틀리든 올라가고, 언제든 내릴 수 있어요.
-            </div>
           </div>
 
           {!isLoggedIn && guestGradeResult !== null && (

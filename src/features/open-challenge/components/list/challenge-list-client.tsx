@@ -64,10 +64,21 @@ export const ChallengeListClient = ({
 
   // 오늘의 추천 1문제 — 로그인 등급 정보가 없으면 grade 미지정(오답률순) 호출.
   // 현재 화면엔 과목 필터 UI가 없어 전체 과목으로 추천을 받는다.
-  const { data: recommended } = useRecommendedChallengesQuery({
+  // F-17 fallback: 빈 목록·요청 오류는 카드 대신 전체 문제 탐색 동작으로 대체한다.
+  // 자동 무한 재시도는 금지(FDD F-17) — 재시도는 수동 버튼으로만.
+  const {
+    data: recommended,
+    isLoading: isRecommendedLoading,
+    isError: isRecommendedError,
+    refetch: refetchRecommended,
+  } = useRecommendedChallengesQuery({
     subject: 'ALL',
   });
   const topRecommended = recommended?.[0];
+  const showRecommendedEmptyState =
+    !isRecommendedLoading &&
+    !isRecommendedError &&
+    (recommended?.length ?? 0) === 0;
 
   const totalPages = Math.ceil((challenges?.length ?? 0) / PAGE_SIZE);
   const visibleChallenges = (challenges ?? []).slice(
@@ -94,6 +105,12 @@ export const ChallengeListClient = ({
         ) : (
           <RecommendedChallengeCard challenge={topRecommended} />
         ))}
+      {page === 1 && isRecommendedError && (
+        <RecommendedChallengeErrorState onRetry={refetchRecommended} />
+      )}
+      {page === 1 && showRecommendedEmptyState && (
+        <RecommendedChallengeEmptyState />
+      )}
       {isLoading ? (
         <ChallengeListSkeleton />
       ) : (
@@ -136,6 +153,61 @@ export const ChallengeListClient = ({
     </>
   );
 };
+
+/**
+ * F-17 fallback 1: 유효한 추천 후보가 0건일 때. 카드 대신 전체 문제 탐색으로
+ * 안내한다(아래 목록이 이미 전체 문제 탐색 동작이라 별도 이동 없이 스크롤만
+ * 유도).
+ */
+const RecommendedChallengeEmptyState = () => (
+  <section
+    aria-label="오늘의 추천 문제"
+    className="border-line-line1 mb-8 flex flex-col items-center gap-2 rounded-2xl border bg-white py-12 text-center"
+    data-testid="recommended-empty-state"
+  >
+    <Inbox
+      size={32}
+      className="text-gray-6"
+    />
+    <p className="font-body1-heading text-text-main">
+      지금 추천할 문제가 없어요.
+    </p>
+    <p className="text-gray-8 text-sm">
+      아래 전체 문제 목록에서 직접 골라 풀어보세요.
+    </p>
+  </section>
+);
+
+/**
+ * F-17 fallback 2: 추천 요청 자체가 실패했을 때. 오류 설명 + 수동 재시도만
+ * 제공한다(자동 무한 재시도 금지).
+ */
+const RecommendedChallengeErrorState = ({
+  onRetry,
+}: {
+  onRetry: () => void;
+}) => (
+  <section
+    aria-label="오늘의 추천 문제"
+    className="border-line-line1 mb-8 flex flex-col items-center gap-3 rounded-2xl border bg-white py-12 text-center"
+    data-testid="recommended-error-state"
+  >
+    <p className="font-body1-heading text-text-main">
+      추천 문제를 불러오지 못했어요.
+    </p>
+    <p className="text-gray-8 text-sm">
+      아래 전체 문제 목록에서 직접 골라 풀 수 있어요.
+    </p>
+    <Button
+      type="button"
+      variant="outlined"
+      size="small"
+      onClick={onRetry}
+    >
+      다시 시도
+    </Button>
+  </section>
+);
 
 /**
  * 비로그인 방문자는 추천 API가 내려준 실제 통계로만 첫 문제의 난도를 체감한다.

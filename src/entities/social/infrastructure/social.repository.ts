@@ -13,6 +13,9 @@ import {
   type Friendship,
   type GuestClaim,
   type GuestSession,
+  type MemberBlockResult,
+  type MemberReportCreatePayload,
+  type MemberReportResult,
   type MemberSearchResult,
   type Rematch,
 } from '@/entities/social/types';
@@ -210,6 +213,48 @@ const getFriendDuels = async (
 };
 
 /* ─────────────────────────────────────────────────────
+ * 친구 차단 / 신고 API (F-18)
+ * ────────────────────────────────────────────────────*/
+const blockFriend = async (friendId: number): Promise<MemberBlockResult> => {
+  const response = await api.private.post(`/common/friends/${friendId}/block`);
+  return domain.memberBlockResult.parse(
+    unwrapEnvelope(response, dto.memberBlockResult)
+  );
+};
+
+const unblockFriend = async (friendId: number): Promise<MemberBlockResult> => {
+  const response = await api.private.delete(
+    `/common/friends/${friendId}/block`
+  );
+  return domain.memberBlockResult.parse(
+    unwrapEnvelope(response, dto.memberBlockResult)
+  );
+};
+
+// 서버는 재사용 안전한(멱등) 신고를 요구한다(api-contract §4.11) — 요청마다
+// 새 키를 만들면 실수로 두 번 눌러도 서버가 같은 신고로 합쳐 준다.
+const createIdempotencyKey = (): string =>
+  typeof crypto !== 'undefined' && 'randomUUID' in crypto
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+const reportFriend = async (
+  friendId: number,
+  body: MemberReportCreatePayload,
+  idempotencyKey: string = createIdempotencyKey()
+): Promise<MemberReportResult> => {
+  const validated = payload.memberReportCreate.parse(body);
+  const response = await api.private.post(
+    `/common/friends/${friendId}/reports`,
+    validated,
+    { headers: { 'Idempotency-Key': idempotencyKey } }
+  );
+  return domain.memberReportResult.parse(
+    unwrapEnvelope(response, dto.memberReportResult)
+  );
+};
+
+/* ─────────────────────────────────────────────────────
  * 도전장 API
  * ────────────────────────────────────────────────────*/
 const createInvite = async (
@@ -285,6 +330,9 @@ export const repository = {
   getFriendSummary,
   getFriendMastery,
   getFriendDuels,
+  blockFriend,
+  unblockFriend,
+  reportFriend,
   createInvite,
   getMyInvites,
   acceptInvite,
