@@ -314,7 +314,7 @@ export const MyChallengeInvites = () => {
   const visibleGroups = showAll ? groups : groups.slice(0, 6);
 
   return (
-    <section className="flex flex-col gap-3">
+    <section className="border-gray-3 bg-gray-white rounded-card p-card-pad flex flex-col gap-3 border">
       <h2 className="font-body1-heading text-text-main">내 도전 기록</h2>
 
       {isLoading && (

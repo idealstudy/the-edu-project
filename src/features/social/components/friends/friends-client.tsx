@@ -204,7 +204,7 @@ export const FriendsClient = ({ footer }: { footer?: ReactNode }) => {
 
       {!isLoading && !isError && (
         <div className="gap-content-gap grid grid-cols-1 lg:grid-cols-2">
-        <section className="flex flex-col gap-3">
+        <section className="border-gray-3 bg-gray-white rounded-card p-card-pad flex flex-col gap-3 border">
           <h2 className="font-body1-heading text-text-main">
             친구{' '}
             <span className="text-key-color-primary tabular-nums">
