@@ -140,10 +140,8 @@ const AccountSettingsList = () => {
   return (
     <Card data-testid="student-account-settings">
       <Card.Header>
-        <div>
-          <Card.Title>계정과 설정</Card.Title>
-          <Card.Description>내가 직접 관리</Card.Description>
-        </div>
+        <Card.Title>계정과 설정</Card.Title>
+        <Card.Description className="shrink-0">내가 직접 관리</Card.Description>
       </Card.Header>
       <Card.Content>
         {basicInfo.data && (
