@@ -171,12 +171,10 @@ export const PointWalletClient = () => {
       <div className="gap-section-gap desktop:grid-cols-2 grid grid-cols-1">
         <Card data-testid="point-spend-places">
           <Card.Header>
-            <div>
-              <Card.Title>포인트 사용처</Card.Title>
-              <Card.Description>
-                차감 전에 비용과 잔액을 확인해요.
-              </Card.Description>
-            </div>
+            <Card.Title>포인트 사용처</Card.Title>
+            <Card.Description className="shrink-0">
+              결제 전 잔액 확인
+            </Card.Description>
           </Card.Header>
           <Card.Content className="gap-block-gap tablet:grid-cols-2 grid grid-cols-1">
             <article className="border-gray-3 rounded-card gap-content-gap p-card-pad flex flex-col border">
@@ -239,12 +237,10 @@ export const PointWalletClient = () => {
 
         <Card data-testid="point-earning-actions">
           <Card.Header>
-            <div>
-              <Card.Title>포인트 모으기</Card.Title>
-              <Card.Description>
-                실제 학습 행동으로만 적립돼요.
-              </Card.Description>
-            </div>
+            <Card.Title>포인트 모으기</Card.Title>
+            <Card.Description className="shrink-0">
+              실제 학습 행동
+            </Card.Description>
           </Card.Header>
           <Card.Content>
             <EarningRow
@@ -263,23 +259,23 @@ export const PointWalletClient = () => {
 
       <Card aria-label="포인트 적립·사용 내역">
         <Card.Header>
-          <div>
-            <Card.Title>최근 적립·사용 내역</Card.Title>
+          <Card.Title>최근 적립·사용 내역</Card.Title>
+          <div className="gap-content-gap flex shrink-0 items-center">
             <Card.Description>
               {transactions.length === 0
                 ? '내역 없음'
                 : `전체 ${transactions.length}건`}
             </Card.Description>
+            {transactions.length > 6 && (
+              <Button
+                variant="ghost"
+                size="xsmall"
+                onClick={() => setShowAllTransactions((current) => !current)}
+              >
+                {showAllTransactions ? '최근 6건만' : '전체 내역'}
+              </Button>
+            )}
           </div>
-          {transactions.length > 6 && (
-            <Button
-              variant="ghost"
-              size="xsmall"
-              onClick={() => setShowAllTransactions((current) => !current)}
-            >
-              {showAllTransactions ? '최근 6건만' : '전체 내역'}
-            </Button>
-          )}
         </Card.Header>
 
         {transactions.length === 0 ? (
