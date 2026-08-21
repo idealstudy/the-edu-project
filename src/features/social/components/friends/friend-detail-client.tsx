@@ -8,8 +8,9 @@ import { useSearchParams } from 'next/navigation';
 import { type FriendDuels } from '@/entities/social';
 import { useRecommendedChallengesQuery } from '@/features/open-challenge/hooks/use-open-challenge';
 import { useMyTreeQuery } from '@/features/weakness-tree/hooks/use-tree';
-import { Button, showBottomToast } from '@/shared/components/ui';
+import { Button, Dialog, showBottomToast } from '@/shared/components/ui';
 import { PRIVATE, PUBLIC } from '@/shared/constants';
+import { useMediaQuery } from '@/shared/hooks';
 import { cn, withKoreanParticle } from '@/shared/lib';
 import {
   ArrowLeft,
@@ -134,13 +135,6 @@ export const FriendDetailClient = ({ friendId }: { friendId: number }) => {
               />
             )}
             {friend.brag && <BragBar brag={friend.brag} />}
-            <DuelHistory
-              friendName={friend.displayName}
-              items={duels.data?.items ?? []}
-              isLoading={duels.isLoading}
-              isError={duels.isError}
-              onRetry={() => duels.refetch()}
-            />
             <ConquestMap
               friendName={friend.displayName}
               friendUnits={mastery.data?.units ?? []}
@@ -152,6 +146,13 @@ export const FriendDetailClient = ({ friendId }: { friendId: number }) => {
               myTreeError={myTree.isError}
               onRetryFriend={() => mastery.refetch()}
               onRetryMine={() => myTree.refetch()}
+            />
+            <DuelHistory
+              friendName={friend.displayName}
+              items={duels.data?.items ?? []}
+              isLoading={duels.isLoading}
+              isError={duels.isError}
+              onRetry={() => duels.refetch()}
             />
           </>
         )}
@@ -277,6 +278,7 @@ const DuelHistory = ({
           <DuelRow
             key={duel.shareToken}
             duel={duel}
+            friendName={friendName}
             onHide={() => hideDuel(duel.shareToken)}
           />
         ))}
@@ -285,8 +287,17 @@ const DuelHistory = ({
   );
 };
 
-const DuelRow = ({ duel, onHide }: { duel: Duel; onHide: () => void }) => {
+const DuelRow = ({
+  duel,
+  friendName,
+  onHide,
+}: {
+  duel: Duel;
+  friendName: string;
+  onHide: () => void;
+}) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const isMobileMenu = useMediaQuery('(max-width: 767px)');
   // "결과 보기"도 팝업이 아니라 전용 결과 페이지로 이동한다(D-10-4).
   const action =
     duel.status === 'OPEN'
@@ -364,14 +375,29 @@ const DuelRow = ({ duel, onHide }: { duel: Duel; onHide: () => void }) => {
       {menuOpen && (
         <DuelMenu
           duel={duel}
+          friendName={friendName}
+          isMobile={isMobileMenu}
           onHide={onHide}
+          onClose={() => setMenuOpen(false)}
         />
       )}
     </div>
   );
 };
 
-const DuelMenu = ({ duel, onHide }: { duel: Duel; onHide: () => void }) => {
+const DuelMenu = ({
+  duel,
+  friendName,
+  isMobile,
+  onHide,
+  onClose,
+}: {
+  duel: Duel;
+  friendName: string;
+  isMobile: boolean;
+  onHide: () => void;
+  onClose: () => void;
+}) => {
   const canViewResult = duel.viewerCompleted && duel.opponentSolvedAt !== null;
   const canNotify =
     duel.status !== 'COMPLETED' &&
@@ -394,8 +420,8 @@ const DuelMenu = ({ duel, onHide }: { duel: Duel; onHide: () => void }) => {
     showBottomToast('상대에게 다시 보낼 링크를 복사했어요.');
   };
 
-  return (
-    <div className="border-line-line1 shadow-popover absolute top-14 right-0 z-20 w-56 rounded-xl border bg-white p-2">
+  const menuItems = (
+    <>
       <Button
         type="button"
         variant="ghost"
@@ -405,28 +431,37 @@ const DuelMenu = ({ duel, onHide }: { duel: Duel; onHide: () => void }) => {
             `${window.location.origin}${PUBLIC.CORE.INVITE.CHALLENGE(duel.shareToken)}`
           )
         }
-        className="w-full justify-start"
+        className={cn('w-full justify-start', isMobile && 'min-h-touch-min')}
       >
         도전장 링크 복사하기
       </Button>
       {canViewResult ? (
         <Link
           href={PRIVATE.FRIENDS.CHALLENGE_RESULT(duel.shareToken)}
-          className="hover:bg-gray-1 text-text-main block rounded-lg px-3 py-2 text-xs"
+          className={cn(
+            'hover:bg-gray-1 text-text-main flex items-center rounded-lg px-3 py-2 text-xs',
+            isMobile && 'min-h-touch-min'
+          )}
         >
           이 대결 자세히
         </Link>
       ) : (
         <Link
           href={PUBLIC.CORE.INVITE.CHALLENGE(duel.shareToken)}
-          className="hover:bg-gray-1 text-text-main block rounded-lg px-3 py-2 text-xs"
+          className={cn(
+            'hover:bg-gray-1 text-text-main flex items-center rounded-lg px-3 py-2 text-xs',
+            isMobile && 'min-h-touch-min'
+          )}
         >
           이 대결 자세히
         </Link>
       )}
       <Link
         href={PUBLIC.OPEN_CHALLENGE.DETAIL(duel.challengeId)}
-        className="hover:bg-gray-1 text-text-main block rounded-lg px-3 py-2 text-xs"
+        className={cn(
+          'hover:bg-gray-1 text-text-main flex items-center rounded-lg px-3 py-2 text-xs',
+          isMobile && 'min-h-touch-min'
+        )}
       >
         이 문제 혼자 다시 풀기
       </Link>
@@ -438,6 +473,7 @@ const DuelMenu = ({ duel, onHide }: { duel: Duel; onHide: () => void }) => {
         onClick={shareReminder}
         className={cn(
           'w-full justify-start',
+          isMobile && 'min-h-touch-min',
           !canNotify && 'text-text-inactive'
         )}
       >
@@ -446,7 +482,10 @@ const DuelMenu = ({ duel, onHide }: { duel: Duel; onHide: () => void }) => {
       {canRequestCancellation ? (
         <a
           href={`mailto:the.edu.devs@gmail.com?subject=${encodeURIComponent('도전장 취소 요청')}&body=${encodeURIComponent(`도전장 ${duel.shareToken} 취소를 요청합니다.`)}`}
-          className="hover:bg-gray-1 text-text-main block rounded-lg px-3 py-2 text-xs"
+          className={cn(
+            'hover:bg-gray-1 text-text-main flex items-center rounded-lg px-3 py-2 text-xs',
+            isMobile && 'min-h-touch-min'
+          )}
         >
           보낸 도전장 취소 요청하기
         </a>
@@ -456,7 +495,10 @@ const DuelMenu = ({ duel, onHide }: { duel: Duel; onHide: () => void }) => {
           variant="ghost"
           size="xsmall"
           disabled
-          className="text-text-inactive w-full justify-start"
+          className={cn(
+            'text-text-inactive w-full justify-start',
+            isMobile && 'min-h-touch-min'
+          )}
         >
           보낸 도전장 취소 요청하기 (수락 전만 가능)
         </Button>
@@ -466,16 +508,48 @@ const DuelMenu = ({ duel, onHide }: { duel: Duel; onHide: () => void }) => {
         variant="ghost"
         size="xsmall"
         onClick={onHide}
-        className="w-full justify-start"
+        className={cn('w-full justify-start', isMobile && 'min-h-touch-min')}
       >
         목록에서 숨기기
       </Button>
       <a
         href={`mailto:the.edu.devs@gmail.com?subject=${encodeURIComponent('도전장 신고')}&body=${encodeURIComponent(`신고할 도전장: ${duel.shareToken}`)}`}
-        className="text-system-warning-text hover:bg-gray-1 block rounded-lg px-3 py-2 text-xs"
+        className={cn(
+          'text-system-warning-text hover:bg-gray-1 flex items-center rounded-lg px-3 py-2 text-xs',
+          isMobile && 'min-h-touch-min'
+        )}
       >
         신고하기
       </a>
+    </>
+  );
+
+  if (isMobile) {
+    return (
+      <Dialog
+        isOpen
+        onOpenChange={(open) => {
+          if (!open) onClose();
+        }}
+      >
+        <Dialog.Content className="rounded-section top-auto right-0 bottom-0 left-0 w-full max-w-none translate-x-0 translate-y-0 gap-0 rounded-b-none p-2 pb-4">
+          <Dialog.Header className="border-line-line1 border-b px-3 py-3">
+            <Dialog.Title className="font-body2-heading text-text-main">
+              {duel.challengeTitle}
+            </Dialog.Title>
+            <Dialog.Description className="text-text-sub1 text-xs">
+              {friendName}님과의 대결 메뉴
+            </Dialog.Description>
+          </Dialog.Header>
+          <div className="pt-2">{menuItems}</div>
+        </Dialog.Content>
+      </Dialog>
+    );
+  }
+
+  return (
+    <div className="border-line-line1 shadow-popover absolute top-14 right-0 z-20 w-56 rounded-xl border bg-white p-2">
+      {menuItems}
     </div>
   );
 };
