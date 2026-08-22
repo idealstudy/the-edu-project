@@ -1,370 +1,102 @@
-<testsuites id="" name="" tests="82" failures="0" skipped="82" errors="0" time="0.7983739999999998">
-<testsuite name="mvp-e-auth-gate.spec.ts" timestamp="2026-08-08T12:26:22.168Z" hostname="auth-gate" tests="1" failures="0" skipped="1" time="0" errors="0">
-<testcase name="MVP-E dev UI 로그인·로그아웃 인증 관문" classname="mvp-e-auth-gate.spec.ts" time="0">
-<skipped>
-</skipped>
+<testsuites id="" name="" tests="4" failures="0" skipped="0" errors="0" time="44.460246">
+<testsuite name="mvp-e-auth-gate.spec.ts" timestamp="2026-08-20T18:01:08.058Z" hostname="auth-gate" tests="1" failures="0" skipped="0" time="6.742" errors="0">
+<testcase name="MVP-E dev UI 로그인·로그아웃 인증 관문" classname="mvp-e-auth-gate.spec.ts" time="6.742">
 </testcase>
 </testsuite>
-<testsuite name="mvp-e-session.setup.ts" timestamp="2026-08-08T12:26:22.168Z" hostname="session" tests="1" failures="0" skipped="1" time="0" errors="0">
-<testcase name="학생 세션 상태 저장" classname="mvp-e-session.setup.ts" time="0">
-<skipped>
-</skipped>
+<testsuite name="mvp-e-session.setup.ts" timestamp="2026-08-20T18:01:08.058Z" hostname="session" tests="1" failures="0" skipped="0" time="8.591" errors="0">
+<testcase name="학생 세션 상태 저장" classname="mvp-e-session.setup.ts" time="8.591">
 </testcase>
 </testsuite>
-<testsuite name="courses.spec.ts" timestamp="2026-08-08T12:26:22.168Z" hostname="devremote" tests="1" failures="0" skipped="1" time="0" errors="0">
-<testcase name="코스 목록 › 공개 코스 목록에 데모 코스가 노출된다" classname="courses.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-</testsuite>
-<testsuite name="homework.spec.ts" timestamp="2026-08-08T12:26:22.168Z" hostname="devremote" tests="4" failures="0" skipped="4" time="0" errors="0">
-<testcase name="과제 - 선생님 › 과제 만들기 버튼을 통해 생성 페이지로 이동할 수 있다" classname="homework.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="과제 - 선생님 › 필수 입력값이 하나라도 없으면 저장 버튼이 비활성화된다." classname="homework.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="과제 - 선생님 › 과제 정보를 모두 입력한 후 과제를 생성하고 확인할 수 있다" classname="homework.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="과제 - 학생 › 과제 URL 직접 접근 시 수업노트로 이동한다" classname="homework.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-</testsuite>
-<testsuite name="learning.spec.ts" timestamp="2026-08-08T12:26:22.168Z" hostname="devremote" tests="4" failures="0" skipped="4" time="0" errors="0">
-<testcase name="학생 학습 허브 렌더 › 내 학습(/learning) 페이지가 정상 렌더된다" classname="learning.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="학생 학습 허브 렌더 › 약점 트리(/tree) 페이지가 정상 렌더된다" classname="learning.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="학생 학습 허브 렌더 › 포인트(/points) 페이지가 정상 렌더된다" classname="learning.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="학생 학습 허브 렌더 › 친구(/friends) 페이지가 정상 렌더된다" classname="learning.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-</testsuite>
-<testsuite name="login.spec.ts" timestamp="2026-08-08T12:26:22.168Z" hostname="devremote" tests="3" failures="0" skipped="3" time="0" errors="0">
-<testcase name="로그인 - 선생님 › 이메일/비밀번호로 로그인할 수 있다" classname="login.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="로그인 - 선생님 › 잘못된 비밀번호 입력 시 에러 메시지가 표시된다" classname="login.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="로그인 - 학생 › 이메일/비밀번호로 로그인할 수 있다" classname="login.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-</testsuite>
-<testsuite name="mvp-e-v11.spec.ts" timestamp="2026-08-08T12:26:22.168Z" hostname="devremote" tests="10" failures="0" skipped="10" time="0" errors="0">
-<testcase name="@mvp-e-v1.1-devremote dev 실환경 릴리즈 관문 › guest-session BFF 경로가 배포돼 있다" classname="mvp-e-v11.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="@mvp-e-v1.1-devremote dev 실환경 릴리즈 관문 › 손풀이 공유 → 타계정 이름 노출 → 본인 내리기 → 상대 소실, 학습 기록 불변" classname="mvp-e-v11.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="@mvp-e-v1.1-devremote dev 실환경 릴리즈 관문 › 비회원 도전장 → 즉시 채점 → 실제 가입 → 기록 claim" classname="mvp-e-v11.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="@mvp-e-v1.1-devremote dev 실환경 릴리즈 관문 › 대결 결과 WIN를 서버와 화면이 동일하게 표시한다" classname="mvp-e-v11.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="@mvp-e-v1.1-devremote dev 실환경 릴리즈 관문 › 대결 결과 LOSE를 서버와 화면이 동일하게 표시한다" classname="mvp-e-v11.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="@mvp-e-v1.1-devremote dev 실환경 릴리즈 관문 › 대결 결과 BOTH_CORRECT를 서버와 화면이 동일하게 표시한다" classname="mvp-e-v11.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="@mvp-e-v1.1-devremote dev 실환경 릴리즈 관문 › 대결 결과 BOTH_WRONG를 서버와 화면이 동일하게 표시한다" classname="mvp-e-v11.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="@mvp-e-v1.1-devremote dev 실환경 릴리즈 관문 › 다시 붙기 성공·대기 3건 상한·후보 없음" classname="mvp-e-v11.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="@mvp-e-v1.1-devremote dev 실환경 릴리즈 관문 › 친구 아닌 사용자의 정복 지도는 API 403, 화면 잠금" classname="mvp-e-v11.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="@mvp-e-v1.1-devremote dev 실환경 릴리즈 관문 › 단답형(주관식) 문제는 답 입력칸으로 풀고 서버 채점이 반영된다" classname="mvp-e-v11.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-</testsuite>
-<testsuite name="mvp-g-dashboard.spec.ts" timestamp="2026-08-08T12:26:22.168Z" hostname="devremote" tests="6" failures="0" skipped="6" time="0" errors="0">
-<testcase name="MVP-G 학생 대시보드 코어 › 시험이 없고 채점 풀이가 충분하면 시험 아닌 참고 등급을 실제 화면에 표시한다" classname="mvp-g-dashboard.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G 학생 대시보드 코어 › 근거가 없으면 실제 화면의 내 위치 영역에 숫자를 표시하지 않는다" classname="mvp-g-dashboard.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G 학생 대시보드 코어 › 오늘의 문제 3장과 졸업 제외 오답 창고를 렌더한다" classname="mvp-g-dashboard.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G 학생 대시보드 코어 › 정오답·힌트 사용을 회독 POST로 보내고 결과 도장을 보여준다" classname="mvp-g-dashboard.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G 학생 대시보드 코어 › 하루 1회독 409를 코드 없이 사용자 문장으로 노출한다" classname="mvp-g-dashboard.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G 학생 대시보드 코어 › 예상등급 범위·약점 3개·추정 근거를 분석 화면에 표시한다" classname="mvp-g-dashboard.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-</testsuite>
-<testsuite name="mvp-g-qa8-performance.spec.ts" timestamp="2026-08-08T12:26:22.168Z" hostname="devremote" tests="2" failures="0" skipped="2" time="0" errors="0">
-<testcase name="학생 대시보드 production build 냉시작 LCP p95가 2초 미만이다" classname="mvp-g-qa8-performance.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="캐시된 약점 나무 노드 클릭에서 세부 트리 표시까지 p95가 300ms 미만이다" classname="mvp-g-qa8-performance.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-</testsuite>
-<testsuite name="mvp-g-qa8-roundtrip.spec.ts" timestamp="2026-08-08T12:26:22.168Z" hostname="devremote" tests="5" failures="0" skipped="5" time="0" errors="0">
-<testcase name="MVP-G QA8 화면 왕복 5건 › R1-T9 단권화와 내 학습 지도에 같은 단원 숙련도가 표시된다" classname="mvp-g-qa8-roundtrip.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G QA8 화면 왕복 5건 › R2-U9 관리자 화면에서 초대 가입 선생님의 가입 정보와 상세를 왕복한다" classname="mvp-g-qa8-roundtrip.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G QA8 화면 왕복 5건 › E9 교사 노트는 학생 화면에 삭제 동작이 없고 API도 403이다" classname="mvp-g-qa8-roundtrip.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G QA8 화면 왕복 5건 › E11 미완료 오픈챌린지에 재진입하면 같은 문항이 열린다" classname="mvp-g-qa8-roundtrip.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G QA8 화면 왕복 5건 › RG7 공개 문제를 제출하고 결과를 본 뒤 문제 화면으로 복귀한다" classname="mvp-g-qa8-roundtrip.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-</testsuite>
-<testsuite name="mvp-g-stage3-visual.spec.ts" timestamp="2026-08-08T12:26:22.168Z" hostname="devremote" tests="6" failures="0" skipped="6" time="0" errors="0">
-<testcase name="MVP-G 3단계 1024×768 첫 화면 › 학생 내 성과는 읽기 전용 학습 지도가 첫 카드다" classname="mvp-g-stage3-visual.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G 3단계 1024×768 첫 화면 › 학생 돌아보기는 코치가 보낸 말이 첫 카드다" classname="mvp-g-stage3-visual.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G 3단계 1024×768 첫 화면 › 학생 돌아보기 기록 0은 코치 말을 지어내지 않는다" classname="mvp-g-stage3-visual.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G 3단계 1024×768 첫 화면 › 선생님 내 수업 카드가 손볼 것 내역을 한 줄로 보인다" classname="mvp-g-stage3-visual.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G 3단계 1024×768 첫 화면 › 선생님 내 수업 0개는 첫 스터디룸과 초대 코드 행동을 보인다" classname="mvp-g-stage3-visual.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G 3단계 1024×768 첫 화면 › 선생님 마이페이지는 두 번째 전역 화면이다" classname="mvp-g-stage3-visual.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-</testsuite>
-<testsuite name="mvp-g-unit-note.spec.ts" timestamp="2026-08-08T12:26:22.168Z" hostname="devremote" tests="2" failures="0" skipped="2" time="0" errors="0">
-<testcase name="MVP-G 단권화 › 전체 트리에서 수열 방을 열고 개념 지층을 본다" classname="mvp-g-unit-note.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G 단권화 › 이미지 한 장을 업로드해 현재 소단원 끝에 append한다" classname="mvp-g-unit-note.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-</testsuite>
-<testsuite name="mvp-g-v2-remote.spec.ts" timestamp="2026-08-08T12:26:22.168Z" hostname="devremote" tests="6" failures="0" skipped="6" time="0" errors="0">
-<testcase name="MVP-G v2.0 원격 릴리즈 게이트 › health와 401 문구 비노출을 관찰한다" classname="mvp-g-v2-remote.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G v2.0 원격 릴리즈 게이트 › 학생은 관리자 화면을 볼 수 없고 관리자 5메뉴는 모두 실제 화면을 연다" classname="mvp-g-v2-remote.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G v2.0 원격 릴리즈 게이트 › R1 선생님 시험 생성부터 학생 제출, 오답, 코멘트 확인까지 상태를 잇는다" classname="mvp-g-v2-remote.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G v2.0 원격 릴리즈 게이트 › 관리자 실측 등급컷으로 4등급, 6등급, 9등급 경계를 고정 검증한다" classname="mvp-g-v2-remote.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G v2.0 원격 릴리즈 게이트 › R2 기본 격리와 공개 응시장 원본 화면을 관찰한다" classname="mvp-g-v2-remote.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G v2.0 원격 릴리즈 게이트 › 승인 프로토타입과 실제 핵심 화면을 같은 뷰포트로 캡처한다" classname="mvp-g-v2-remote.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-</testsuite>
-<testsuite name="mvp-g-v8-fixture-controls.spec.ts" timestamp="2026-08-08T12:26:22.168Z" hostname="devremote" tests="5" failures="0" skipped="5" time="0" errors="0">
-<testcase name="MVP-G TC35 제어 fixture › E1: 오늘의 문제 한 원천만 실패해도 나머지 대시보드 블록은 남는다" classname="mvp-g-v8-fixture-controls.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G TC35 제어 fixture › E12: 교사 결과 0 문제은행은 승인된 복구 행동 두 가지를 제공한다" classname="mvp-g-v8-fixture-controls.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G TC35 제어 fixture › E20: 관리자 문항 0건은 단원 문항 올리기 안내 한 가지를 제공한다" classname="mvp-g-v8-fixture-controls.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G TC35 제어 fixture › E13: 시험 저장 API만 실패하면 담은 문항이 남고 같은 문항으로 재시도한다" classname="mvp-g-v8-fixture-controls.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="MVP-G TC35 제어 fixture › E14 범위 가드: v22 승인 범위는 PDF 진입 카드까지다" classname="mvp-g-v8-fixture-controls.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-</testsuite>
-<testsuite name="onboarding-student.spec.ts" timestamp="2026-08-08T12:26:22.168Z" hostname="devremote" tests="5" failures="0" skipped="5" time="0" errors="0">
-<testcase name="학생 v22 대시보드 계약 › 첫 화면은 과거 온보딩 대신 지금 내 상태와 오늘 할 것을 보인다" classname="onboarding-student.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="학생 v22 대시보드 계약 › 근거가 없으면 등급 숫자를 만들지 않고 응시장 행동을 보인다" classname="onboarding-student.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="학생 v22 대시보드 계약 › 시험과 수업 데이터가 없어도 오늘의 문제 빈 상태를 보인다" classname="onboarding-student.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="학생 v22 대시보드 계약 › 단권화 진입은 과거 수업노트 온보딩과 무관하게 항상 보인다" classname="onboarding-student.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="학생 v22 대시보드 계약 › 돌아보기는 오늘 할 일과 회고 카드에서 직접 연다" classname="onboarding-student.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-</testsuite>
-<testsuite name="onboarding-teacher.spec.ts" timestamp="2026-08-08T12:26:22.168Z" hostname="devremote" tests="9" failures="0" skipped="9" time="0" errors="0">
-<testcase name="선생님 v22 대시보드 계약 › 수업 0개는 첫 스터디룸과 학생 초대 코드 행동을 보인다" classname="onboarding-teacher.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="선생님 v22 대시보드 계약 › 수업이 있으면 학생 카드와 손볼 것 수를 보인다" classname="onboarding-teacher.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="선생님 v22 대시보드 계약 › 수업 카드는 손볼 것 많은 순으로 정렬한다" classname="onboarding-teacher.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="선생님 v22 대시보드 계약 › 상단 수업 만들기는 실제 생성 경로로 간다" classname="onboarding-teacher.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="선생님 v22 대시보드 계약 › 마이페이지는 초대 코드와 사용 시간을 보인다" classname="onboarding-teacher.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="선생님 v22 대시보드 계약 › 과거 온보딩 컴포넌트를 다시 노출하지 않는다" classname="onboarding-teacher.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="선생님 v22 대시보드 계약 › 처리할 항목이 없으면 처리함 0 상태를 보인다" classname="onboarding-teacher.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="선생님 v22 대시보드 계약 › 시험 오답이 있으면 처리함에 직접 쓰기를 보인다" classname="onboarding-teacher.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="선생님 v22 대시보드 계약 › 수업 카드는 기존 스터디룸 노트 경로를 유지한다" classname="onboarding-teacher.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-</testsuite>
-<testsuite name="open-challenge.spec.ts" timestamp="2026-08-08T12:26:22.168Z" hostname="devremote" tests="5" failures="0" skipped="5" time="0" errors="0">
-<testcase name="로그인 redirect 보존 › redirect 파라미터가 있으면 로그인 후 해당 경로로 복귀한다" classname="open-challenge.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="로그인 redirect 보존 › redirect 가 외부 URL이면 무시하고 역할 기본 경로로 이동한다(오픈 리다이렉트 가드)" classname="open-challenge.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="오픈챌린지 풀이 → 결과 › 문제를 선택·제출하면 결과 화면으로 이동하고 학습 허브가 렌더된다" classname="open-challenge.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="AI 코치 — 손글씨 풀이 캡처 › 드로잉 후 메시지를 보내면 studentSolutionImageMediaId가 실리고, 업로드 이미지 종횡비가 캔버스 실측과 일치한다" classname="open-challenge.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="AI 코치 — 손글씨 풀이 캡처 › 풀이 이미지 업로드가 실패하면 조용히 넘어가지 않고 재시도/스킵을 물어본다" classname="open-challenge.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-</testsuite>
-<testsuite name="social.spec.ts" timestamp="2026-08-08T12:26:22.168Z" hostname="devremote" tests="1" failures="0" skipped="1" time="0" errors="0">
-<testcase name="소셜 - 전화번호 친구추가 › 전화번호로 친구 요청을 보내면 친구 목록/요청에 반영된다" classname="social.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-</testsuite>
-<testsuite name="study-note.spec.ts" timestamp="2026-08-08T12:26:22.168Z" hostname="devremote" tests="3" failures="0" skipped="3" time="0" errors="0">
-<testcase name="스터디노트 CRUD › 제목, 내용, 공개범위를 입력하여 스터디노트를 생성할 수 있다" classname="study-note.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="스터디노트 CRUD › 스터디노트 제목을 수정할 수 있다" classname="study-note.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="스터디노트 CRUD › 스터디노트를 삭제하면 목록으로 이동한다" classname="study-note.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-</testsuite>
-<testsuite name="study-room.spec.ts" timestamp="2026-08-08T12:26:22.168Z" hostname="devremote" tests="3" failures="0" skipped="3" time="0" errors="0">
-<testcase name="스터디룸 CRUD › 기본 정보와 교육 프로필을 입력하여 스터디룸을 생성할 수 있다" classname="study-room.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="스터디룸 CRUD › 스터디룸 이름을 수정할 수 있다" classname="study-room.spec.ts" time="0">
-<skipped>
-</skipped>
-</testcase>
-<testcase name="스터디룸 CRUD › 스터디룸을 삭제하면 대시보드로 이동한다" classname="study-room.spec.ts" time="0">
-<skipped>
-</skipped>
+<testsuite name="_tmp-qa-f02.spec.ts" timestamp="2026-08-20T18:01:08.058Z" hostname="devremote" tests="2" failures="0" skipped="0" time="16.622" errors="0">
+<testcase name="F02-05 font-family + F02-07 em-dash scan" classname="_tmp-qa-f02.spec.ts" time="8.557">
+<system-out>
+<![CDATA[BODY_FONT: "Wanted Sans Variable", pretendard, "pretendard Fallback", "Pretendard Variable", system-ui, sans-serif
+COACH_FONT: "Wanted Sans Variable", pretendard, "pretendard Fallback", "Pretendard Variable", system-ui, sans-serif
+EM_DASH_COUNT: 0
+]]>
+</system-out>
+</testcase>
+<testcase name="F02-04 empty stroke submit confirm" classname="_tmp-qa-f02.spec.ts" time="8.065">
+<system-out>
+<![CDATA[AFTER_EMPTY_SUBMIT_URL: https://dev.d-edu.site/open-challenge/4001
+AFTER_EMPTY_SUBMIT_BODY: 오픈챌린지
+코스
+대표 멘토
+상담소
+게시판
+포인트
+1,325
+P
+알림
+학생
+D-EDU
+내 학습
+내 학습
+내 성과
+돌아보기
+소속
+QA-MVPG-V21-1786008553364-ROOM
+더 보기
+오답 회독
+응시장
+친구
+포인트
+마이페이지
+오픈챌린지에서 열립니다
+약점 나무 ↗
+로그아웃
+AI 코치
+답변 대기
+
+2027학년도 6월 모의평가 · 함수의 극한과 연속 2번. 나는 답을 안 알려줘. 대신 네가 막힌 지점을 같이 볼게. 먼저 읽어봐.
+
+개념 보기
+힌트 보기
+정답 해설 보기 (−30P)
+집중 모드
+이전으로
+도전장 보내기
+수학
+›
+2027학년도 6월 모의평가 · 함수의 극한과 연속
+
+전에 도전했던 문제예요.
+
+이전 답안과 공유한 풀이를 다시 확인할 수 있어요.
+
+도전 내역 보기
+
+2027학년도 6월 모의평가 · 함수의 극한과 연속
+
+오답률 10%
+3~5등급 정답률 21%
+
+문제 이미지를 보고 답을 선택해 주세요.
+
+답을 직접 선택해 주세요
+
+1
+2
+3
+4
+5
+
+풀이 공간
+
+펜으로 자유롭게 풀어보세요 (선택)
+
+펜슬로 풀이를 적어보세요
+
+펜
+지우개
+저장됨 오전 03:01
+이 손풀이는 이 문제를 푼 사람들에게 내 이름과 함께 보여요. 맞든 틀리든 올라가고, 언제든 내릴 수 있어요. 내리면 30일 뒤 이미지가 완전히 삭제돼요.
+
+1 선택함
+
+제출 중...
+]]>
+</system-out>
 </testcase>
 </testsuite>
 </testsuites>

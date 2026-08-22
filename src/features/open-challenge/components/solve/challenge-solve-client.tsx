@@ -16,7 +16,7 @@ import {
   exportStrokesToDataURL,
   useDrawingUpload,
 } from '@/shared/components/drawing';
-import { BackButton, Button, Dialog } from '@/shared/components/ui';
+import { BackButton, Button, Dialog, Prompt } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import { trackOcStart, trackOcSubmit } from '@/shared/lib/analytics';
@@ -117,6 +117,8 @@ export const ChallengeSolveClient = ({
   const [isQuestionOpen, setIsQuestionOpen] = useState(true);
   const [isInviteContextOpen, setIsInviteContextOpen] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [isEmptyDrawingPromptOpen, setIsEmptyDrawingPromptOpen] =
+    useState(false);
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const [isMobileAiOpen, setIsMobileAiOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
@@ -180,6 +182,12 @@ export const ChallengeSolveClient = ({
     !!challengeHistory &&
     (challengeHistory.attempts.length > 0 ||
       challengeHistory.reviews.length > 0);
+  const isInviteResultUnlocked =
+    invitePreview?.opponentSolvedAt != null &&
+    (challengeHistory?.attempts.some(
+      (attempt) => attempt.status === 'COMPLETED'
+    ) ??
+      false);
 
   const ensureAttempt = useCallback((): Promise<string> => {
     if (aiAttemptIdRef.current) {
@@ -351,12 +359,7 @@ export const ChallengeSolveClient = ({
     }
   };
 
-  const handleSubmit = async () => {
-    if (!isLoggedIn) {
-      await handleGuestSubmit();
-      return;
-    }
-
+  const submitSelectedAnswer = async () => {
     if (!selectedAnswer) {
       setSubmitError('답을 먼저 선택해 주세요.');
       choiceSectionRef.current?.scrollIntoView({
@@ -364,6 +367,11 @@ export const ChallengeSolveClient = ({
         block: 'center',
       });
       choiceSectionRef.current?.focus();
+      return;
+    }
+
+    if (!isLoggedIn) {
+      await handleGuestSubmit();
       return;
     }
 
@@ -454,6 +462,30 @@ export const ChallengeSolveClient = ({
     } catch {
       // mutation hook에서 공통 API 에러 처리를 수행한다.
     }
+  };
+
+  const handleSubmit = () => {
+    if (!selectedAnswer) {
+      setSubmitError('답을 먼저 선택해 주세요.');
+      choiceSectionRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+      choiceSectionRef.current?.focus();
+      return;
+    }
+
+    if (drawingStrokes.length === 0) {
+      setIsEmptyDrawingPromptOpen(true);
+      return;
+    }
+
+    void submitSelectedAnswer();
+  };
+
+  const handleEmptyDrawingSubmit = () => {
+    setIsEmptyDrawingPromptOpen(false);
+    void submitSelectedAnswer();
   };
 
   const handleAnswerSelect = (answer: string) => {
@@ -716,7 +748,11 @@ export const ChallengeSolveClient = ({
                   </span>
                 </span>
                 <span className="text-orange-10 text-xs font-bold">
-                  도전 기록 {isInviteContextOpen ? '접기' : '보기'}
+                  {isInviteContextOpen
+                    ? '도전 기록 접기'
+                    : isInviteResultUnlocked
+                      ? '결과가 열렸습니다'
+                      : '도전 기록 보기'}
                 </span>
               </button>
               {isInviteContextOpen && (
@@ -1026,6 +1062,27 @@ export const ChallengeSolveClient = ({
         isOpen={isHistoryOpen}
         onOpenChange={setIsHistoryOpen}
       />
+
+      <Prompt
+        isOpen={isEmptyDrawingPromptOpen}
+        onOpenChange={setIsEmptyDrawingPromptOpen}
+      >
+        <Prompt.Content>
+          <Prompt.Header>
+            <Prompt.Title>손풀이 없이 제출할까요?</Prompt.Title>
+            <Prompt.Description className="text-text-sub1 text-center text-sm">
+              풀이 공간에 쓴 내용이 없어요. 실수로 비운 것은 아닌지 한 번 확인해
+              주세요.
+            </Prompt.Description>
+          </Prompt.Header>
+          <Prompt.Footer>
+            <Prompt.Cancel>계속 풀기</Prompt.Cancel>
+            <Prompt.Action onClick={handleEmptyDrawingSubmit}>
+              손풀이 없이 제출
+            </Prompt.Action>
+          </Prompt.Footer>
+        </Prompt.Content>
+      </Prompt>
 
       <SignupSheet
         isOpen={isSignupSheetOpen}

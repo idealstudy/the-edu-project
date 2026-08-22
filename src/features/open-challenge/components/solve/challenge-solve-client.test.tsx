@@ -7,6 +7,8 @@ import { useOpenChallengeDetailQuery } from '../../hooks/use-open-challenge';
 import { ChallengeSolveClient } from './challenge-solve-client';
 
 const solveMocks = vi.hoisted(() => ({
+  invitePreview: vi.fn(),
+  challengeHistory: vi.fn(),
   startAttemptAsync: vi.fn(),
   submitAnswerAsync: vi.fn(),
   createReviewAsync: vi.fn(),
@@ -21,7 +23,7 @@ const solveMocks = vi.hoisted(() => ({
 vi.mock('../../hooks/use-open-challenge', () => ({
   useOpenChallengeDetailQuery: vi.fn(),
   useCoachOpeningQuery: vi.fn(() => ({ data: undefined })),
-  useMyOpenChallengeDetailQuery: vi.fn(() => ({ data: undefined })),
+  useMyOpenChallengeDetailQuery: vi.fn(() => solveMocks.challengeHistory()),
   useStartChallengeAttemptMutation: vi.fn(() => ({
     mutateAsync: solveMocks.startAttemptAsync,
     isPending: false,
@@ -44,7 +46,7 @@ vi.mock('../../hooks/use-open-challenge', () => ({
 }));
 
 vi.mock('@/features/social/hooks', () => ({
-  usePublicInvitePreviewQuery: vi.fn(() => ({ data: undefined })),
+  usePublicInvitePreviewQuery: vi.fn(() => solveMocks.invitePreview()),
   useClaimGuestSessionMutation: vi.fn(() => ({
     mutate: vi.fn(),
     isPending: false,
@@ -132,6 +134,8 @@ describe('ChallengeSolveClient (오픈챌린지 풀이 화면 가드)', () => {
   beforeEach(() => {
     window.sessionStorage.clear();
     Object.values(solveMocks).forEach((mock) => mock.mockReset());
+    solveMocks.invitePreview.mockReturnValue({ data: undefined });
+    solveMocks.challengeHistory.mockReturnValue({ data: undefined });
   });
   afterEach(() => cleanup());
 
@@ -285,6 +289,91 @@ describe('ChallengeSolveClient (오픈챌린지 풀이 화면 가드)', () => {
     expect(screen.getByText(/30일 뒤 이미지가/)).toBeInTheDocument();
   });
 
+  test('획 0개 제출은 확인을 한 번 거친 뒤에만 정상 제출한다', async () => {
+    const user = userEvent.setup();
+    vi.mocked(useOpenChallengeDetailQuery).mockReturnValue({
+      data: baseChallenge,
+      isLoading: false,
+      isError: false,
+    } as never);
+    solveMocks.startAttemptAsync.mockResolvedValue({ attemptId: 'attempt-0' });
+    solveMocks.submitAnswerAsync.mockResolvedValue({
+      isCorrect: true,
+      correctAnswer: '1',
+      passRate: 70,
+      participantCount: 10,
+    });
+
+    renderWithProviders(
+      <ChallengeSolveClient
+        challengeId={CHALLENGE_ID}
+        isLoggedIn
+      />
+    );
+
+    await user.click(screen.getByTestId('choice-option-0'));
+    await user.click(screen.getByTestId('challenge-submit-button'));
+
+    expect(
+      screen.getByRole('alertdialog', { name: '손풀이 없이 제출할까요?' })
+    ).toBeVisible();
+    expect(solveMocks.startAttemptAsync).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole('button', { name: '손풀이 없이 제출' }));
+
+    await waitFor(() => {
+      expect(solveMocks.submitAnswerAsync).toHaveBeenCalledWith({
+        attemptId: 'attempt-0',
+        params: { selectedAnswer: '1' },
+      });
+    });
+    expect(solveMocks.startAttemptAsync).toHaveBeenCalledTimes(1);
+  });
+
+  test('둘 다 제출한 도전 기록은 접힌 채 결과가 열렸다는 문구만 보여준다', async () => {
+    const user = userEvent.setup();
+    vi.mocked(useOpenChallengeDetailQuery).mockReturnValue({
+      data: baseChallenge,
+      isLoading: false,
+      isError: false,
+    } as never);
+    solveMocks.invitePreview.mockReturnValue({
+      data: {
+        inviterName: '철수',
+        opponentSolvedAt: '2026-08-21T12:00:00Z',
+        sentAt: '2026-08-20T12:00:00Z',
+        lockedFieldCount: 0,
+        lockReason: null,
+      },
+    });
+    solveMocks.challengeHistory.mockReturnValue({
+      data: {
+        attempts: [{ status: 'COMPLETED' }],
+        reviews: [],
+      },
+    });
+
+    renderWithProviders(
+      <ChallengeSolveClient
+        challengeId={CHALLENGE_ID}
+        isLoggedIn
+      />
+    );
+
+    const collapsedStatus = screen.getByText('결과가 열렸습니다');
+    expect(collapsedStatus).toBeVisible();
+    expect(collapsedStatus.closest('button')).toHaveAttribute(
+      'aria-expanded',
+      'false'
+    );
+    expect(screen.queryByText('보낸 시각')).not.toBeInTheDocument();
+
+    await user.click(collapsedStatus);
+
+    expect(screen.getByText('도전 기록 접기')).toBeVisible();
+    expect(screen.getByText('보낸 시각')).toBeVisible();
+  });
+
   test('손풀이 공유가 실패해도 결과를 저장하고 결과 화면 재시도 정보를 남긴다', async () => {
     const user = userEvent.setup();
     vi.mocked(useOpenChallengeDetailQuery).mockReturnValue({
@@ -402,6 +491,7 @@ describe('ChallengeSolveClient (오픈챌린지 풀이 화면 가드)', () => {
     );
 
     await user.click(screen.getByTestId('mock-coach-ensure-attempt'));
+    await user.click(screen.getByTestId('mock-draw-stroke'));
     await user.click(screen.getByTestId('choice-option-0'));
     await user.click(screen.getByTestId('challenge-submit-button'));
 

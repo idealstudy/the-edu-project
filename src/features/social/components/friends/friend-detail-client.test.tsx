@@ -76,9 +76,27 @@ const friendSummary = {
   refetch: vi.fn(),
 };
 
+const setMediaQueryMatches = (matches: boolean) => {
+  Object.defineProperty(window, 'matchMedia', {
+    configurable: true,
+    writable: true,
+    value: vi.fn().mockImplementation(() => ({
+      matches,
+      media: '(max-width: 767px)',
+      onchange: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  });
+};
+
 describe('FriendDetailClient', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    setMediaQueryMatches(false);
     mocks.summary.mockReturnValue(friendSummary);
     mocks.duels.mockReturnValue({
       data: { items: [], nextCursor: null },
@@ -261,5 +279,53 @@ describe('FriendDetailClient', () => {
     const opponentComplete = screen.getAllByLabelText('철수 정복도 90%')[0];
     expect(opponentInProgress).toHaveClass('accent-gray-8');
     expect(opponentComplete).toHaveClass('accent-gray-10');
+  });
+
+  test('친구 상세는 자랑거리 다음에 정복 지도를 먼저, 대결 목록을 그다음에 둔다', () => {
+    renderWithProviders(<FriendDetailClient friendId={7} />);
+
+    const conquestMapHeading = screen.getByRole('heading', {
+      name: '정복 지도',
+    });
+    const duelHistoryHeading = screen.getByRole('heading', {
+      name: '철수님과 한 대결',
+    });
+
+    expect(
+      conquestMapHeading.compareDocumentPosition(duelHistoryHeading) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+  });
+
+  test('모바일 대결 메뉴는 대상 대결 이름이 있는 하단 모달 시트로 연다', async () => {
+    setMediaQueryMatches(true);
+    mocks.duels.mockReturnValue({
+      data: {
+        items: [
+          {
+            shareToken: 'share-1',
+            status: 'COMPLETED',
+            viewerCompleted: true,
+            opponentSolvedAt: '2026-08-21T12:00:00Z',
+            challengeId: 21,
+            challengeTitle: '21. 함수의 극한과 연속',
+            outcome: 'WIN',
+            sentAt: '2026-08-20T12:00:00Z',
+          },
+        ],
+        nextCursor: null,
+      },
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(),
+    });
+
+    renderWithProviders(<FriendDetailClient friendId={7} />);
+    fireEvent.click(screen.getByRole('button', { name: '대결 메뉴 열기' }));
+
+    const sheet = await screen.findByRole('dialog');
+    expect(sheet).toHaveTextContent('21. 함수의 극한과 연속');
+    expect(sheet).toHaveTextContent('철수님과의 대결 메뉴');
+    expect(sheet).toHaveClass('bottom-0');
   });
 });
