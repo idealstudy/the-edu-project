@@ -123,5 +123,8 @@
     "extends": [
       "plugin:storybook/recommended"
     ]
+  },
+  "overrides": {
+    "import-in-the-middle": "3.0.0"
   }
 }

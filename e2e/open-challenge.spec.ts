@@ -225,6 +225,15 @@ test.describe('오픈챌린지 풀이 → 결과', () => {
     await page.getByTestId('choice-option-0').click();
     await page.getByTestId('challenge-submit-button').click();
 
+    // 손풀이 없이 제출하면 확인 대화가 먼저 뜬다(2026-08 도입). 이 검사는 손풀이를
+    // 그리지 않으므로 항상 뜬다. 대화를 넘겨야 제출이 실제로 진행된다.
+    const noDrawingConfirm = page.getByRole('button', {
+      name: '손풀이 없이 제출',
+    });
+    if (await noDrawingConfirm.isVisible().catch(() => false)) {
+      await noDrawingConfirm.click();
+    }
+
     await page.waitForURL(/\/open-challenge\/[^/]+\/result$/);
     await expect(page).toHaveURL(/\/result$/);
 
