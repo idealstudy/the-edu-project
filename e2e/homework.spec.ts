@@ -1,6 +1,7 @@
 import { Page, expect, test } from '@playwright/test';
 
 import {
+  ensureStudentEnrolled,
   findJoinedStudyRoomId,
   findOwnedStudyRoomId,
   loginAsStudent,
@@ -15,6 +16,8 @@ async function goToTeacherHomeworkCreatePage(page: Page) {
 
   await loginAsTeacher(page);
   const studyRoomId = await findOwnedStudyRoomId(page);
+  // 과제는 학생을 지정해야 만들 수 있다. 씨앗 데이터에 기대지 않고 여기서 보장한다.
+  await ensureStudentEnrolled(page, studyRoomId);
   await page.goto(`/study-rooms/${studyRoomId}/homework`);
   await page.getByTestId('homework-create-button').click();
   await page.waitForURL(`/study-rooms/${studyRoomId}/homework/new`);
@@ -122,6 +125,24 @@ test.describe('과제 - 선생님', () => {
 // student account
 test.describe('과제 - 학생', () => {
   test.setTimeout(60000);
+
+  // 학생이 어느 방에도 안 들어가 있는 환경이 있다(CI 실측: 소속 0개).
+  // 선생님으로 붙여두되 **별도 세션**에서 한다. 같은 page 에서 선생님으로 로그인하면
+  // 그 세션이 남아 이어지는 학생 로그인이 먹지 않는다(2026-08-24 실측: 학생 검사가
+  // 선생님 화면을 보고 실패했다).
+  test.beforeAll(async ({ browser }) => {
+    const context = await browser.newContext();
+    const teacherPage = await context.newPage();
+    try {
+      await loginAsTeacher(teacherPage);
+      await ensureStudentEnrolled(
+        teacherPage,
+        await findOwnedStudyRoomId(teacherPage)
+      );
+    } finally {
+      await context.close();
+    }
+  });
 
   test('과제 URL 직접 접근 시 수업노트로 이동한다', async ({ page }) => {
     await loginAsStudent(page);
