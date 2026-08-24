@@ -98,8 +98,11 @@ test.describe('MVP-G TC35 제어 fixture', () => {
     await expect(
       page.getByRole('heading', { name: '단권화 노트' })
     ).toBeVisible();
+    // 제목은 2026-08-13 시안 정합(커밋 09b302b26)에서 "오늘 할 일과 회고" -> "오늘 할 일"
+    // 로 바뀌었는데 이 검사만 옛 문구를 보고 있었다. 그때부터 계속 빨간불이었다.
+    // 제품은 정상이고 검사가 낡은 것이다.
     await expect(
-      page.getByRole('heading', { name: '오늘 할 일과 회고' })
+      page.getByRole('heading', { name: '오늘 할 일' })
     ).toBeVisible();
     await expect(page.getByText('서버 오류가 발생했습니다.')).toBeVisible();
     await expect(page.getByText('401')).toHaveCount(0);
