@@ -3,8 +3,9 @@ import { AdminMemberList } from '@/features/admin-member/components/admin-member
 import { AdminConsultations } from '@/features/admin-operations/components/admin-consultations';
 import { AdminPublicHall } from '@/features/admin-operations/components/admin-public-hall';
 import { AdminStudyRooms } from '@/features/admin-operations/components/admin-study-rooms';
+import { AdminQuestionBank } from '@/features/admin-question-bank/components/admin-question-bank';
 import { renderWithProviders } from '@/tests/utils';
-import { cleanup, fireEvent, screen } from '@testing-library/react';
+import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, test, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
@@ -13,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   hall: vi.fn(),
   rooms: vi.fn(),
   consultations: vi.fn(),
+  questionBank: vi.fn(),
 }));
 
 vi.mock('@/features/admin-member/hooks/use-admin-members', () => ({
@@ -44,6 +46,11 @@ vi.mock('@/features/admin-operations/hooks/use-admin-operations', () => ({
 
 vi.mock('@/features/exam/hooks/use-exam-query', () => ({
   useAdminExamsQuery: () => ({ data: [] }),
+  useAdminQuestionBankQuery: mocks.questionBank,
+}));
+
+vi.mock('@/features/exam/hooks/use-exam-mutation', () => ({
+  useUpsertGradeCutoff: () => ({ mutate: vi.fn(), isPending: false }),
 }));
 
 vi.mock('@/shared/components/ui', async (importOriginal) => {
@@ -54,16 +61,21 @@ vi.mock('@/shared/components/ui', async (importOriginal) => {
     SearchInput: ({
       value,
       onChange,
+      onSearch,
       placeholder,
     }: {
       value: string;
       onChange: (value: string) => void;
+      onSearch: (value: string) => void;
       placeholder: string;
     }) => (
       <input
         aria-label={placeholder}
         value={value}
         onChange={(event) => onChange(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') onSearch(value);
+        }}
       />
     ),
   };
@@ -101,25 +113,60 @@ describe('MVP-G 관리자 4단계 프로토타입 상태', () => {
     expect(screen.getByText(/학생 초대 결과를 확인합니다/)).toBeInTheDocument();
   });
 
-  test('a-members empty와 error를 각각 표시한다', () => {
+  test('a-members-empty는 검색 후 선생님 탭과 교차 검색 2 CTA를 표시한다', async () => {
     mocks.members.mockReturnValue({
       data: { content: [], totalElements: 0 },
       isPending: false,
       isError: false,
     });
-    const view = renderWithProviders(<AdminMemberList />);
-    expect(screen.getByText('등록된 학생이 없어요')).toBeInTheDocument();
-    view.unmount();
+    renderWithProviders(<AdminMemberList />);
+    const search = screen.getByLabelText('이름 또는 이메일로 검색');
+    fireEvent.change(search, { target: { value: '박' } });
+    fireEvent.keyDown(search, { key: 'Enter' });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('member-tab-teacher')).toHaveClass(
+        'text-orange-11'
+      )
+    );
+    expect(screen.getByText('"박"으로 찾은 선생님이 없어요')).toBeVisible();
+    expect(
+      screen.getByRole('button', { name: '학생 탭에서 "박" 찾기' })
+    ).toBeVisible();
+    expect(
+      screen.getByRole('button', { name: '검색어 지우고 전체 보기' })
+    ).toBeVisible();
+  });
+
+  test('a-members-error는 토큰 기반 통합 경고와 최근 조치 이력을 표시한다', () => {
     mocks.members.mockReturnValue({
       isPending: false,
       isError: true,
       refetch: vi.fn(),
     });
     renderWithProviders(<AdminMemberList />);
+    const warning = screen.getByTestId('admin-members-error');
+    expect(warning).toHaveClass('border-system-warning');
+    expect(warning).toHaveClass('bg-system-warning-alt');
     expect(
       screen.getByText('회원 목록을 불러오지 못했어요')
     ).toBeInTheDocument();
     expect(screen.getByText('최근 조치 이력')).toBeInTheDocument();
+  });
+
+  test('a-bank-empty는 문항 없음 안내만 남기고 우측 운영 패널을 제거한다', () => {
+    mocks.questionBank.mockReturnValue({
+      data: { content: [], totalElements: 0, page: 0, size: 20 },
+      isPending: false,
+      isError: false,
+    });
+
+    renderWithProviders(<AdminQuestionBank />);
+
+    expect(screen.getByText('이 단원에는 아직 문항이 없어요')).toBeVisible();
+    expect(screen.queryByText('검수 대기 0개')).not.toBeInTheDocument();
+    expect(screen.queryByText('등급 기준표 등록')).not.toBeInTheDocument();
+    expect(screen.queryByText('일괄 올리기')).not.toBeInTheDocument();
   });
 
   test('a-member는 대리 로그인 버튼 없이 계정, 조치 이력, 권한 회수를 표시한다', () => {
@@ -181,6 +228,12 @@ describe('MVP-G 관리자 4단계 프로토타입 상태', () => {
     expect(
       screen.getByText('지금 게시 중인 시험이 없어요')
     ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: '새로 게시' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: '6월 학력평가로 게시하기' })
+    ).toBeVisible();
   });
 
   test('a-rooms 관계 목록을 표시하고 학습 데이터 링크를 만들지 않는다', () => {
@@ -257,6 +310,15 @@ describe('MVP-G 관리자 4단계 프로토타입 상태', () => {
     renderWithProviders(<AdminConsultations />);
     expect(screen.getByText('받은 문의가 없어요')).toBeInTheDocument();
     expect(screen.getByText('평균 첫 응답')).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('admin-consultations-chip-RECEIVED')
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('admin-consultations-delayed-chip')
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText('이름, 내용으로 검색')
+    ).not.toBeInTheDocument();
   });
 
   /*

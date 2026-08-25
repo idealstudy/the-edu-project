@@ -30,6 +30,7 @@ export const AdminPublicHall = () => {
   );
   const [openAt, setOpenAt] = useState('');
   const [closeAt, setCloseAt] = useState('');
+  const isHallEmpty = hall.data?.postings.length === 0;
 
   const publish = () => {
     if (!examId || !openAt) return;
@@ -54,13 +55,15 @@ export const AdminPublicHall = () => {
         <span className="text-gray-8 text-xs">
           수업을 듣지 않는 학생에게 시험을 여는 자리입니다.
         </span>
-        <Button
-          size="small"
-          className="ml-auto"
-          onClick={() => setShowForm((value) => !value)}
-        >
-          새로 게시
-        </Button>
+        {!isHallEmpty && (
+          <Button
+            size="small"
+            className="ml-auto"
+            onClick={() => setShowForm((value) => !value)}
+          >
+            새로 게시
+          </Button>
+        )}
       </div>
       {showForm && (
         <section

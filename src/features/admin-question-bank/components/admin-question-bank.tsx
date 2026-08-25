@@ -104,6 +104,7 @@ export const AdminQuestionBank = () => {
     !question.hasCorrectAnswer || question.treeNodeId === null;
   const pendingCount = allContent.filter(needsReview).length;
   const content = reviewOnly ? allContent.filter(needsReview) : allContent;
+  const isBankEmpty = questionBank.data != null && allContent.length === 0;
 
   return (
     <div
@@ -116,15 +117,23 @@ export const AdminQuestionBank = () => {
           <span className="text-gray-9 text-xs">
             선생님 시험 열기가 여기 데이터를 그대로 먹습니다.
           </span>
-          <Button
-            size="small"
-            className="ml-auto"
-          >
-            일괄 올리기
-          </Button>
+          {!isBankEmpty && (
+            <Button
+              size="small"
+              className="ml-auto"
+            >
+              일괄 올리기
+            </Button>
+          )}
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+        <div
+          className={
+            isBankEmpty
+              ? 'grid gap-4'
+              : 'grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]'
+          }
+        >
           <section className="border-gray-3 rounded-xl border bg-white p-4">
             <div className="mb-3 flex items-baseline justify-between gap-2">
               <h2 className="text-gray-12 text-sm font-extrabold">문항</h2>
@@ -262,143 +271,145 @@ export const AdminQuestionBank = () => {
             )}
           </section>
 
-          <aside>
-            {/* v22 `aBankOk` 4082 검수 대기 카드 + `검수 시작` */}
-            <section className="border-gray-3 mb-4 rounded-xl border bg-white p-4">
-              <h2 className="text-gray-12 text-sm font-extrabold">
-                검수 대기 {pendingCount}개
-              </h2>
-              <p className="text-gray-9 mt-3 text-xs leading-6">
-                공개하기 전에 정답과 단원을 사람이 확인합니다. 검수 안 된 문항은
-                선생님 시험 열기 목록에 뜨지 않습니다.
-              </p>
-              <Button
-                size="small"
-                className="mt-3 w-full"
-                disabled={pendingCount === 0}
-                data-testid="admin-question-bank-start-review"
-                onClick={() => {
-                  setReviewOnly(true);
-                  const first = allContent.find(needsReview);
-                  setOpenedQuestionId(first ? first.challengeId : null);
-                }}
-              >
-                검수 시작
-              </Button>
-              {pendingCount === 0 && (
-                <p className="text-ui-choice text-gray-9 mt-2">
-                  이 과목에 검수 대기 문항이 없습니다.
+          {!isBankEmpty && (
+            <aside>
+              {/* v22 `aBankOk` 4082 검수 대기 카드 + `검수 시작` */}
+              <section className="border-gray-3 mb-4 rounded-xl border bg-white p-4">
+                <h2 className="text-gray-12 text-sm font-extrabold">
+                  검수 대기 {pendingCount}개
+                </h2>
+                <p className="text-gray-9 mt-3 text-xs leading-6">
+                  공개하기 전에 정답과 단원을 사람이 확인합니다. 검수 안 된
+                  문항은 선생님 시험 열기 목록에 뜨지 않습니다.
                 </p>
-              )}
-            </section>
-
-            <section className="border-gray-3 rounded-xl border bg-white p-4">
-              <h2 className="text-gray-12 text-sm font-extrabold">
-                일괄 올리기
-              </h2>
-              <p className="text-gray-9 mt-3 text-xs leading-6">
-                단원은 <b>이름으로 맞춥니다.</b> 못 찾은 이름은 올리기 전에
-                목록으로 보여주고 사람이 지정합니다. 이미 있는 문항은
-                건너뜁니다.
-              </p>
-              <div className="text-ui-choice border-gray-3 bg-gray-1 text-gray-10 mt-3 rounded-lg border p-3 leading-5">
-                <b>마지막 올리기</b>
-                <br />
-                6월 학력평가 30문항 · 신규 30 · 건너뜀 0 · 단원 미매칭 0
-              </div>
-            </section>
-
-            <form
-              className="border-gray-3 mt-4 rounded-xl border bg-white p-4"
-              onSubmit={handleSubmit(onSubmit)}
-            >
-              <h2 className="text-gray-12 text-sm font-extrabold">
-                등급 기준표 등록
-              </h2>
-              <p className="text-ui-choice text-gray-9 mt-1 leading-5">
-                기준표가 붙으면 학생에게 실측 등급과 표준점수가 표시됩니다.
-              </p>
-              <Select
-                value={examId ? String(examId) : ''}
-                onValueChange={(value) =>
-                  setValue('examId', Number(value), { shouldValidate: true })
-                }
-              >
-                <Select.Trigger
+                <Button
+                  size="small"
                   className="mt-3 w-full"
-                  data-testid="grade-cutoff-exam"
-                  aria-label="등급 기준표 시험 선택"
+                  disabled={pendingCount === 0}
+                  data-testid="admin-question-bank-start-review"
+                  onClick={() => {
+                    setReviewOnly(true);
+                    const first = allContent.find(needsReview);
+                    setOpenedQuestionId(first ? first.challengeId : null);
+                  }}
                 >
-                  시험 선택
-                </Select.Trigger>
-                <Select.Content>
-                  {(exams.data ?? []).map((exam) => (
-                    <Select.Option
-                      key={exam.examId}
-                      value={String(exam.examId)}
-                    >
-                      {exam.title}
-                    </Select.Option>
-                  ))}
-                </Select.Content>
-              </Select>
-              <Input
-                className="mt-2"
-                placeholder="출처: EBSi 2027 6월 모의평가"
-                {...register('source')}
-              />
-              <p className="text-ui-choice text-gray-10 mt-3 leading-5 font-bold">
-                1등급부터 8등급까지 원점수 하한
-              </p>
-              <div className="mt-2 grid grid-cols-2 gap-2">
-                {([1, 2, 3, 4, 5, 6, 7, 8] as const).map((grade) => (
-                  <Input
-                    key={grade}
-                    aria-label={`${grade}등급 원점수 하한`}
-                    placeholder={`${grade}등급`}
-                    {...register(`grade${grade}`)}
-                  />
-                ))}
-              </div>
-              <div className="mt-2 grid grid-cols-2 gap-2">
-                <Input
-                  placeholder="평균 선택"
-                  {...register('mean')}
-                />
-                <Input
-                  placeholder="표준편차 선택"
-                  {...register('stdDev')}
-                />
-              </div>
-              {(errors.root?.message ||
-                errors.examId?.message ||
-                errors.source?.message) && (
-                <p
-                  className="text-system-warning-text mt-2 text-xs font-bold"
-                  role="alert"
-                >
-                  {errors.root?.message ??
-                    errors.examId?.message ??
-                    errors.source?.message}
+                  검수 시작
+                </Button>
+                {pendingCount === 0 && (
+                  <p className="text-ui-choice text-gray-9 mt-2">
+                    이 과목에 검수 대기 문항이 없습니다.
+                  </p>
+                )}
+              </section>
+
+              <section className="border-gray-3 rounded-xl border bg-white p-4">
+                <h2 className="text-gray-12 text-sm font-extrabold">
+                  일괄 올리기
+                </h2>
+                <p className="text-gray-9 mt-3 text-xs leading-6">
+                  단원은 <b>이름으로 맞춥니다.</b> 못 찾은 이름은 올리기 전에
+                  목록으로 보여주고 사람이 지정합니다. 이미 있는 문항은
+                  건너뜁니다.
                 </p>
-              )}
-              {cutoffMutation.isSuccess && (
-                <p
-                  className="text-system-success-text mt-2 text-xs font-bold"
-                  role="status"
-                >
-                  등급 기준표를 등록했습니다.
-                </p>
-              )}
-              <Button
-                type="submit"
-                className="mt-3 w-full"
-                disabled={cutoffMutation.isPending}
+                <div className="text-ui-choice border-gray-3 bg-gray-1 text-gray-10 mt-3 rounded-lg border p-3 leading-5">
+                  <b>마지막 올리기</b>
+                  <br />
+                  6월 학력평가 30문항 · 신규 30 · 건너뜀 0 · 단원 미매칭 0
+                </div>
+              </section>
+
+              <form
+                className="border-gray-3 mt-4 rounded-xl border bg-white p-4"
+                onSubmit={handleSubmit(onSubmit)}
               >
-                기준표 저장
-              </Button>
-            </form>
-          </aside>
+                <h2 className="text-gray-12 text-sm font-extrabold">
+                  등급 기준표 등록
+                </h2>
+                <p className="text-ui-choice text-gray-9 mt-1 leading-5">
+                  기준표가 붙으면 학생에게 실측 등급과 표준점수가 표시됩니다.
+                </p>
+                <Select
+                  value={examId ? String(examId) : ''}
+                  onValueChange={(value) =>
+                    setValue('examId', Number(value), { shouldValidate: true })
+                  }
+                >
+                  <Select.Trigger
+                    className="mt-3 w-full"
+                    data-testid="grade-cutoff-exam"
+                    aria-label="등급 기준표 시험 선택"
+                  >
+                    시험 선택
+                  </Select.Trigger>
+                  <Select.Content>
+                    {(exams.data ?? []).map((exam) => (
+                      <Select.Option
+                        key={exam.examId}
+                        value={String(exam.examId)}
+                      >
+                        {exam.title}
+                      </Select.Option>
+                    ))}
+                  </Select.Content>
+                </Select>
+                <Input
+                  className="mt-2"
+                  placeholder="출처: EBSi 2027 6월 모의평가"
+                  {...register('source')}
+                />
+                <p className="text-ui-choice text-gray-10 mt-3 leading-5 font-bold">
+                  1등급부터 8등급까지 원점수 하한
+                </p>
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  {([1, 2, 3, 4, 5, 6, 7, 8] as const).map((grade) => (
+                    <Input
+                      key={grade}
+                      aria-label={`${grade}등급 원점수 하한`}
+                      placeholder={`${grade}등급`}
+                      {...register(`grade${grade}`)}
+                    />
+                  ))}
+                </div>
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  <Input
+                    placeholder="평균 선택"
+                    {...register('mean')}
+                  />
+                  <Input
+                    placeholder="표준편차 선택"
+                    {...register('stdDev')}
+                  />
+                </div>
+                {(errors.root?.message ||
+                  errors.examId?.message ||
+                  errors.source?.message) && (
+                  <p
+                    className="text-system-warning-text mt-2 text-xs font-bold"
+                    role="alert"
+                  >
+                    {errors.root?.message ??
+                      errors.examId?.message ??
+                      errors.source?.message}
+                  </p>
+                )}
+                {cutoffMutation.isSuccess && (
+                  <p
+                    className="text-system-success-text mt-2 text-xs font-bold"
+                    role="status"
+                  >
+                    등급 기준표를 등록했습니다.
+                  </p>
+                )}
+                <Button
+                  type="submit"
+                  className="mt-3 w-full"
+                  disabled={cutoffMutation.isPending}
+                >
+                  기준표 저장
+                </Button>
+              </form>
+            </aside>
+          )}
         </div>
       </div>
     </div>

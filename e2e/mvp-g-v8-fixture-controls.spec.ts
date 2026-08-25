@@ -256,9 +256,13 @@ test.describe('MVP-G TC35 제어 fixture', () => {
     await page.getByRole('button', { name: '시험 내기' }).click();
 
     await expect(page.getByTestId('exam-create-error')).toBeVisible();
-    await expect(page.getByTestId('question-bank-item-1052')).toContainText(
-      '담김'
-    );
+    await expect(
+      page.getByRole('heading', { name: '담은 문항 1개' })
+    ).toBeVisible();
+    await expect(
+      page.getByText('그대로 남아 있습니다', { exact: true })
+    ).toBeVisible();
+    await expect(page.getByText('담김', { exact: true })).toBeVisible();
   });
 
   test('E14 범위 가드: v22 승인 범위는 PDF 진입 카드까지다', async ({

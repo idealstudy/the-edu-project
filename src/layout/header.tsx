@@ -42,8 +42,8 @@ import { useMemberStore } from '@/store';
 /* 포인트 칩(R-13) — "내 학습" 셸(친구·트리·학습)엔 이미 상시 노출되는데
  * 오픈챌린지 랜딩 셸(이 GNB)만 없었다. QA 정합표(docs/qa/design-conformance-matrix.md
  * D-10-4·R-13 행)가 확정한 갭. 로그인 상태에서만 조회·노출한다. */
-const HeaderPointChip = () => {
-  const { data: wallet } = useMyPointWalletQuery();
+const HeaderPointChip = ({ enabled }: { enabled: boolean }) => {
+  const { data: wallet } = useMyPointWalletQuery({ enabled });
   if (wallet == null) return null;
 
   return (
@@ -166,7 +166,7 @@ export const Header = () => {
 
         {session && (
           <div className="desktop:gap-4 flex items-center gap-1">
-            <HeaderPointChip />
+            <HeaderPointChip enabled={session.role !== 'ROLE_ADMIN'} />
             <NotificationPopover />
 
             <DropdownMenu>

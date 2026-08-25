@@ -44,6 +44,7 @@ export const ExamCreate = ({
   const [startedAt] = useState(() => Date.now());
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [message, setMessage] = useState<string | null>(null);
+  const [draftMessage, setDraftMessage] = useState<string | null>(null);
   const pdfMethodRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -67,13 +68,21 @@ export const ExamCreate = ({
   const selectedRoom = roomsQuery.data?.find((room) => room.id === studyRoomId);
   const elapsed = `${Math.floor(elapsedSeconds / 60)}분 ${elapsedSeconds % 60}초`;
   const isPending = createExam.isPending || assignExam.isPending;
+  const hasPublishError = message?.startsWith('시험이 저장되지') ?? false;
 
   const toggleQuestion = (question: QuestionBankItem) => {
     setMessage(null);
+    setDraftMessage(null);
     setSelected((current) =>
       current.some((item) => item.challengeId === question.challengeId)
         ? current.filter((item) => item.challengeId !== question.challengeId)
         : [...current, question]
+    );
+  };
+
+  const keepDraft = () => {
+    setDraftMessage(
+      `담은 문항 ${selected.length}개를 이 화면에 임시 보관했습니다.`
     );
   };
 
@@ -169,182 +178,279 @@ export const ExamCreate = ({
         </div>
       </div>
 
-      {message?.startsWith('시험이 저장되지') && (
+      {hasPublishError && (
         <div
-          className="border-red-3 bg-red-1 text-red-10 mb-4 rounded-lg border p-4 text-xs leading-6"
+          className="border-system-warning bg-system-warning-alt text-system-warning-text mb-4 rounded-lg border p-4 text-xs leading-6"
           role="alert"
           data-testid="exam-create-error"
         >
           <b className="block text-sm">시험이 저장되지 않았어요</b>
-          {message.replace('시험이 저장되지 않았어요. ', '')}
+          {message?.replace('시험이 저장되지 않았어요. ', '')}
+          <div className="mt-3 flex flex-wrap gap-2">
+            <UnstyledButton
+              variant="unstyled"
+              size="none"
+              type="button"
+              className="border-system-warning text-system-warning-text min-h-11 rounded-lg border bg-white px-3.5 text-xs font-extrabold"
+              disabled={isPending}
+              onClick={() => void handlePublish()}
+            >
+              다시 내기
+            </UnstyledButton>
+            <UnstyledButton
+              variant="unstyled"
+              size="none"
+              type="button"
+              className="border-system-warning text-system-warning-text min-h-11 rounded-lg border bg-white px-3.5 text-xs font-extrabold"
+              onClick={keepDraft}
+            >
+              임시 보관함에 넣어두기
+            </UnstyledButton>
+          </div>
+          {draftMessage && (
+            <p
+              className="mt-2 font-bold"
+              role="status"
+            >
+              {draftMessage}
+            </p>
+          )}
         </div>
       )}
 
-      <ExamWizardLayout>
-        <div className="border-gray-3 rounded-xl border p-4">
-          <div className="mb-3 flex items-baseline justify-between gap-2">
-            <h3 className="text-gray-12 text-sm font-extrabold">문항 고르기</h3>
-            <span className="text-gray-8 text-xs">문제은행 276문항</span>
-          </div>
-          <div className="mb-3 flex flex-wrap gap-2">
-            <Select
-              value={subject}
-              onValueChange={(value) => {
-                setSubject(value as QuestionBankSubject);
-                setTreeNodeIds([]);
-                setSelected([]);
-              }}
-            >
-              <Select.Trigger
-                className="h-9 w-28 text-xs"
-                data-testid="exam-subject-filter"
-                aria-label="과목 필터"
+      {hasPublishError ? (
+        <ExamWizardLayout>
+          <div className="border-gray-3 rounded-xl border p-4">
+            <div className="mb-3 flex items-baseline justify-between gap-2">
+              <h3 className="text-gray-12 text-sm font-extrabold">
+                담은 문항 {selected.length}개
+              </h3>
+              <span className="text-gray-8 text-xs">그대로 남아 있습니다</span>
+            </div>
+            {selected.slice(0, 3).map((question, index) => (
+              <div
+                key={question.challengeId}
+                className="border-gray-2 bg-orange-1 grid grid-cols-[36px_1fr_auto] items-center gap-3 border-b py-3 last:border-b-0"
               >
-                과목 {SUBJECT_TO_KOREAN[subject]}
-              </Select.Trigger>
-              <Select.Content>
-                {SUBJECT_OPTIONS.map(([value, label]) => (
-                  <Select.Option
-                    key={value}
-                    value={value}
-                  >
-                    {label}
-                  </Select.Option>
-                ))}
-              </Select.Content>
-            </Select>
-            <TreeNodePicker
-              value={treeNodeIds}
-              onChange={setTreeNodeIds}
-            />
-            <Select
-              value={difficulty ?? 'ALL'}
-              onValueChange={(value) =>
-                setDifficulty(
-                  value === 'ALL'
-                    ? undefined
-                    : (value as 'LOW' | 'MID' | 'HIGH')
-                )
-              }
-            >
-              <Select.Trigger
-                className="h-9 w-28 text-xs"
-                data-testid="exam-difficulty-filter"
-              >
-                난이도{' '}
-                {difficulty === 'LOW'
-                  ? '하'
-                  : difficulty === 'HIGH'
-                    ? '상'
-                    : difficulty === 'MID'
-                      ? '중'
-                      : '전체'}
-              </Select.Trigger>
-              <Select.Content>
-                <Select.Option value="ALL">전체</Select.Option>
-                <Select.Option value="LOW">하</Select.Option>
-                <Select.Option value="MID">중</Select.Option>
-                <Select.Option value="HIGH">상</Select.Option>
-              </Select.Content>
-            </Select>
+                <span className="text-gray-10 text-center text-xs font-extrabold tabular-nums">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <span className="text-gray-12 text-coach min-w-0 leading-5 font-semibold">
+                  {question.questionText ?? question.title}
+                  <small className="text-gray-8 text-ui-choice mt-1 block truncate font-normal">
+                    {question.treeNodePath}
+                  </small>
+                </span>
+                <span className="border-orange-7 bg-orange-7 rounded-md border px-3 py-2 text-xs font-bold text-white">
+                  담김
+                </span>
+              </div>
+            ))}
+            <p className="text-gray-8 mt-3 text-xs">
+              나머지 {Math.max(0, selected.length - 3)}문항도 유지됩니다.
+              처음부터 다시 고르지 않아도 됩니다.
+            </p>
           </div>
-          <QuestionBankPicker
-            subject={subject}
-            treeNodeIds={treeNodeIds}
-            difficulty={difficulty}
-            selected={selected}
-            onToggle={toggleQuestion}
-            onClearDifficulty={() => setDifficulty(undefined)}
-            onChoosePdfPath={() => {
-              pdfMethodRef.current?.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center',
-              });
-              pdfMethodRef.current?.focus();
-            }}
-          />
-        </div>
-
-        <aside className="border-orange-4 bg-orange-1 h-fit rounded-xl border p-4 lg:sticky lg:top-4">
-          <p className="text-orange-11 text-xs font-extrabold">담은 문항</p>
-          <p className="text-orange-7 mt-1 text-4xl font-black tabular-nums">
-            {selected.length}
-            <em className="ml-1 text-xs font-bold not-italic">문항</em>
-          </p>
-          <div className="border-orange-4 text-gray-10 mt-3 rounded-lg border bg-white p-3 text-xs leading-6">
-            <b>자동으로 채워진 것</b>
-            <br />
-            정답{' '}
-            <span className="text-system-success font-extrabold">
-              {selected.length} / {selected.length}
-            </span>{' '}
-            · 단원{' '}
-            <span className="text-system-success font-extrabold">
-              {selected.filter((item) => item.treeNodeId).length} /{' '}
+          <aside className="border-orange-4 bg-orange-1 h-fit rounded-xl border p-4">
+            <p className="text-orange-11 text-xs font-extrabold">담은 문항</p>
+            <p className="text-orange-7 mt-1 text-4xl font-black tabular-nums">
               {selected.length}
-            </span>{' '}
-            · 배점{' '}
-            <span className="text-system-success font-extrabold">
-              {selected.length} / {selected.length}
-            </span>
-          </div>
-          <div className="border-system-success bg-system-success-alt text-system-success mt-2 rounded-lg border p-3 text-xs font-bold">
-            이 화면에서 타이핑한 횟수 <b>0회</b>
-          </div>
-          <div className="mt-4">
-            <p className="text-orange-11 mb-2 text-xs font-extrabold">
-              어느 수업에 낼까요
+              <em className="ml-1 text-xs font-bold not-italic">문항</em>
             </p>
-            <Select
-              value={studyRoomId ? String(studyRoomId) : ''}
-              onValueChange={(value) => setStudyRoomId(Number(value))}
+            <div className="border-orange-4 text-gray-10 mt-3 rounded-lg border bg-white p-3 text-xs leading-6">
+              <b>자동으로 채워진 것</b>
+              <br />
+              정답{' '}
+              <span className="text-system-success font-extrabold">
+                {selected.length} / {selected.length}
+              </span>{' '}
+              · 단원{' '}
+              <span className="text-system-success font-extrabold">
+                {selected.filter((item) => item.treeNodeId).length} /{' '}
+                {selected.length}
+              </span>
+            </div>
+            <UnstyledButton
+              variant="unstyled"
+              size="none"
+              type="button"
+              className="border-orange-10 bg-orange-7 mt-4 w-full rounded-lg border px-4 py-3 text-sm font-extrabold text-white"
+              disabled={isPending}
+              onClick={() => void handlePublish()}
             >
-              <Select.Trigger
-                className="min-h-14 w-full bg-white text-left"
-                data-testid="teacher-exam-room"
-                aria-label="시험을 배정할 수업"
+              다시 내기
+            </UnstyledButton>
+          </aside>
+        </ExamWizardLayout>
+      ) : (
+        <ExamWizardLayout>
+          <div className="border-gray-3 rounded-xl border p-4">
+            <div className="mb-3 flex items-baseline justify-between gap-2">
+              <h3 className="text-gray-12 text-sm font-extrabold">
+                문항 고르기
+              </h3>
+              <span className="text-gray-8 text-xs">문제은행 276문항</span>
+            </div>
+            <div className="mb-3 flex flex-wrap gap-2">
+              <Select
+                value={subject}
+                onValueChange={(value) => {
+                  setSubject(value as QuestionBankSubject);
+                  setTreeNodeIds([]);
+                  setSelected([]);
+                }}
               >
-                {selectedRoom?.name ?? '수업 고르기'}
-              </Select.Trigger>
-              <Select.Content>
-                {(roomsQuery.data ?? []).map((room) => (
-                  <Select.Option
-                    key={room.id}
-                    value={String(room.id)}
-                  >
-                    {room.name}
-                  </Select.Option>
-                ))}
-              </Select.Content>
-            </Select>
-            <p className="text-gray-8 text-ui-choice mt-2 leading-5">
-              이 수업에서 열어 미리 골라졌습니다
-            </p>
+                <Select.Trigger
+                  className="h-9 w-28 text-xs"
+                  data-testid="exam-subject-filter"
+                  aria-label="과목 필터"
+                >
+                  과목 {SUBJECT_TO_KOREAN[subject]}
+                </Select.Trigger>
+                <Select.Content>
+                  {SUBJECT_OPTIONS.map(([value, label]) => (
+                    <Select.Option
+                      key={value}
+                      value={value}
+                    >
+                      {label}
+                    </Select.Option>
+                  ))}
+                </Select.Content>
+              </Select>
+              <TreeNodePicker
+                value={treeNodeIds}
+                onChange={setTreeNodeIds}
+              />
+              <Select
+                value={difficulty ?? 'ALL'}
+                onValueChange={(value) =>
+                  setDifficulty(
+                    value === 'ALL'
+                      ? undefined
+                      : (value as 'LOW' | 'MID' | 'HIGH')
+                  )
+                }
+              >
+                <Select.Trigger
+                  className="h-9 w-28 text-xs"
+                  data-testid="exam-difficulty-filter"
+                >
+                  난이도{' '}
+                  {difficulty === 'LOW'
+                    ? '하'
+                    : difficulty === 'HIGH'
+                      ? '상'
+                      : difficulty === 'MID'
+                        ? '중'
+                        : '전체'}
+                </Select.Trigger>
+                <Select.Content>
+                  <Select.Option value="ALL">전체</Select.Option>
+                  <Select.Option value="LOW">하</Select.Option>
+                  <Select.Option value="MID">중</Select.Option>
+                  <Select.Option value="HIGH">상</Select.Option>
+                </Select.Content>
+              </Select>
+            </div>
+            <QuestionBankPicker
+              subject={subject}
+              treeNodeIds={treeNodeIds}
+              difficulty={difficulty}
+              selected={selected}
+              onToggle={toggleQuestion}
+              onClearDifficulty={() => setDifficulty(undefined)}
+              onChoosePdfPath={() => {
+                pdfMethodRef.current?.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'center',
+                });
+                pdfMethodRef.current?.focus();
+              }}
+            />
           </div>
-          <UnstyledButton
-            variant="unstyled"
-            size="none"
-            type="button"
-            className="border-orange-10 bg-orange-7 disabled:border-gray-3 disabled:bg-gray-3 disabled:text-gray-8 mt-4 w-full cursor-pointer rounded-lg border px-4 py-3 text-sm font-extrabold text-white disabled:cursor-not-allowed"
-            disabled={isPending || !studyRoomId || selected.length === 0}
-            onClick={() => void handlePublish()}
-            data-testid="teacher-exam-assign-button"
-          >
-            {isPending ? '시험을 내는 중입니다' : '시험 내기'}
-          </UnstyledButton>
-          <p className="text-gray-8 text-ui-choice mt-2 text-center">
-            내면 그 학생 응시장에 <b>우리 수업</b> 배지로 바로 뜹니다
-          </p>
-          {message && !message.startsWith('시험이 저장되지') && (
-            <p
-              className="text-gray-10 mt-3 text-center text-xs font-bold"
-              role="status"
-            >
-              {message}
+
+          <aside className="border-orange-4 bg-orange-1 h-fit rounded-xl border p-4 lg:sticky lg:top-4">
+            <p className="text-orange-11 text-xs font-extrabold">담은 문항</p>
+            <p className="text-orange-7 mt-1 text-4xl font-black tabular-nums">
+              {selected.length}
+              <em className="ml-1 text-xs font-bold not-italic">문항</em>
             </p>
-          )}
-        </aside>
-      </ExamWizardLayout>
+            <div className="border-orange-4 text-gray-10 mt-3 rounded-lg border bg-white p-3 text-xs leading-6">
+              <b>자동으로 채워진 것</b>
+              <br />
+              정답{' '}
+              <span className="text-system-success font-extrabold">
+                {selected.length} / {selected.length}
+              </span>{' '}
+              · 단원{' '}
+              <span className="text-system-success font-extrabold">
+                {selected.filter((item) => item.treeNodeId).length} /{' '}
+                {selected.length}
+              </span>{' '}
+              · 배점{' '}
+              <span className="text-system-success font-extrabold">
+                {selected.length} / {selected.length}
+              </span>
+            </div>
+            <div className="border-system-success bg-system-success-alt text-system-success mt-2 rounded-lg border p-3 text-xs font-bold">
+              이 화면에서 타이핑한 횟수 <b>0회</b>
+            </div>
+            <div className="mt-4">
+              <p className="text-orange-11 mb-2 text-xs font-extrabold">
+                어느 수업에 낼까요
+              </p>
+              <Select
+                value={studyRoomId ? String(studyRoomId) : ''}
+                onValueChange={(value) => setStudyRoomId(Number(value))}
+              >
+                <Select.Trigger
+                  className="min-h-14 w-full bg-white text-left"
+                  data-testid="teacher-exam-room"
+                  aria-label="시험을 배정할 수업"
+                >
+                  {selectedRoom?.name ?? '수업 고르기'}
+                </Select.Trigger>
+                <Select.Content>
+                  {(roomsQuery.data ?? []).map((room) => (
+                    <Select.Option
+                      key={room.id}
+                      value={String(room.id)}
+                    >
+                      {room.name}
+                    </Select.Option>
+                  ))}
+                </Select.Content>
+              </Select>
+              <p className="text-gray-8 text-ui-choice mt-2 leading-5">
+                이 수업에서 열어 미리 골라졌습니다
+              </p>
+            </div>
+            <UnstyledButton
+              variant="unstyled"
+              size="none"
+              type="button"
+              className="border-orange-10 bg-orange-7 disabled:border-gray-3 disabled:bg-gray-3 disabled:text-gray-8 mt-4 w-full cursor-pointer rounded-lg border px-4 py-3 text-sm font-extrabold text-white disabled:cursor-not-allowed"
+              disabled={isPending || !studyRoomId || selected.length === 0}
+              onClick={() => void handlePublish()}
+              data-testid="teacher-exam-assign-button"
+            >
+              {isPending ? '시험을 내는 중입니다' : '시험 내기'}
+            </UnstyledButton>
+            <p className="text-gray-8 text-ui-choice mt-2 text-center">
+              내면 그 학생 응시장에 <b>우리 수업</b> 배지로 바로 뜹니다
+            </p>
+            {message && !hasPublishError && (
+              <p
+                className="text-gray-10 mt-3 text-center text-xs font-bold"
+                role="status"
+              >
+                {message}
+              </p>
+            )}
+          </aside>
+        </ExamWizardLayout>
+      )}
     </section>
   );
 };
