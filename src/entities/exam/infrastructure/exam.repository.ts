@@ -55,7 +55,11 @@ const getTeacherExams = async () => {
 
 const createExam = async (input: CreateExamPayload) => {
   const validated = payload.create.parse(input);
-  const response = await api.private.post('/teacher/exams', validated);
+  // 시험 열기 화면은 실패 시 인라인 보존 카드로 안내한다(exam-create.tsx).
+  // 전역 토스트까지 함께 뜨면 같은 오류가 두 번 겹쳐 보인다.
+  const response = await api.private.post('/teacher/exams', validated, {
+    suppressGlobalErrorToast: true,
+  });
   return unwrapEnvelope(response, dto.created);
 };
 
@@ -63,7 +67,8 @@ const assignExam = async (examId: number, input: AssignExamPayload) => {
   const validated = payload.assign.parse(input);
   const response = await api.private.post(
     `/teacher/exams/${examId}/assignments`,
-    validated
+    validated,
+    { suppressGlobalErrorToast: true }
   );
   return unwrapEnvelope(response, dto.assigned);
 };

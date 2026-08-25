@@ -82,56 +82,62 @@ export const AdminMemberList = () => {
         </span>
       </div>
 
-      <div className="border-gray-3 mb-3 flex border-b">
-        {ROLE_TABS.map((tab) => (
-          <UnstyledButton
-            variant="unstyled"
-            size="none"
-            key={tab.value}
-            type="button"
-            className={cn(
-              'min-h-11 border-b-2 px-5 text-xs font-bold',
-              role === tab.value
-                ? 'text-orange-11 border-orange-10'
-                : 'text-gray-8 border-transparent'
-            )}
-            onClick={() => selectRole(tab.value)}
-            data-testid={`member-tab-${tab.value.toLowerCase()}`}
-          >
-            {tab.label}
-          </UnstyledButton>
-        ))}
-      </div>
+      {!query.isError && (
+        <>
+          <div className="border-gray-3 mb-3 flex border-b">
+            {ROLE_TABS.map((tab) => (
+              <UnstyledButton
+                variant="unstyled"
+                size="none"
+                key={tab.value}
+                type="button"
+                className={cn(
+                  'min-h-11 border-b-2 px-5 text-xs font-bold',
+                  role === tab.value
+                    ? 'text-orange-11 border-orange-10'
+                    : 'text-gray-8 border-transparent'
+                )}
+                onClick={() => selectRole(tab.value)}
+                data-testid={`member-tab-${tab.value.toLowerCase()}`}
+              >
+                {tab.label}
+              </UnstyledButton>
+            ))}
+          </div>
 
-      <div className="mb-3 flex flex-wrap gap-2">
-        <SearchInput
-          className="min-w-45 flex-1 bg-white"
-          value={searchValue}
-          onChange={setSearchValue}
-          onSearch={(value) => {
-            setKeyword(value.trim());
-            setPage(1);
-          }}
-          placeholder="이름 또는 이메일로 검색"
-        />
-        <span className="border-gray-3 text-gray-11 flex min-h-10.5 items-center gap-2 rounded-lg border bg-white px-3 text-xs font-bold">
-          가입일 <b>최근 7일</b>
-        </span>
-        {role === 'STUDENT' && (
-          <label className="border-gray-3 text-gray-8 flex min-h-10.5 items-center gap-2 rounded-lg border bg-white px-3 text-xs">
-            점검용 계정 포함
-            <Toggle
-              checked={includeQaAccount}
-              onCheckedChange={(checked) => {
-                setIncludeQaAccount(checked);
+          <div className="mb-3 flex flex-wrap gap-2">
+            <SearchInput
+              className="min-w-45 flex-1 bg-white"
+              value={searchValue}
+              onChange={setSearchValue}
+              onSearch={(value) => {
+                setKeyword(value.trim());
                 setPage(1);
               }}
-              aria-label="점검용 계정 포함"
+              placeholder="이름 또는 이메일로 검색"
             />
-            <b className="text-gray-12">{includeQaAccount ? '켜짐' : '꺼짐'}</b>
-          </label>
-        )}
-      </div>
+            <span className="border-gray-3 text-gray-11 flex min-h-10.5 items-center gap-2 rounded-lg border bg-white px-3 text-xs font-bold">
+              가입일 <b>최근 7일</b>
+            </span>
+            {role === 'STUDENT' && (
+              <label className="border-gray-3 text-gray-8 flex min-h-10.5 items-center gap-2 rounded-lg border bg-white px-3 text-xs">
+                점검용 계정 포함
+                <Toggle
+                  checked={includeQaAccount}
+                  onCheckedChange={(checked) => {
+                    setIncludeQaAccount(checked);
+                    setPage(1);
+                  }}
+                  aria-label="점검용 계정 포함"
+                />
+                <b className="text-gray-12">
+                  {includeQaAccount ? '켜짐' : '꺼짐'}
+                </b>
+              </label>
+            )}
+          </div>
+        </>
+      )}
 
       {query.isPending && (
         <div className="border-gray-3 text-gray-8 rounded-xl border bg-white p-10 text-center text-xs">

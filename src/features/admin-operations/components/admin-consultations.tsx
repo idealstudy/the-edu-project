@@ -88,6 +88,10 @@ export const AdminConsultations = () => {
   const summary = useAdminSummary();
   const update = useUpdateAdminConsultation();
   const selectedCase = selected ?? query.data?.content[0] ?? null;
+  // 칩·검색창을 숨기는 건 "진짜 초기 빈 상태"(필터도 검색어도 없이 받은 문의 자체가
+  // 0건일 때)뿐이다. 지연 칩, 상태 탭(처리중/답변완료), 검색어로 걸러서 0건이 된
+  // 경우엔 칩·검색창을 그대로 둔다. 안 그러면 그 필터·검색어를 지우고 원래 목록으로
+  // 돌아갈 방법이 화면에서 사라져 사용자가 갇힌다.
   const isInitialEmpty =
     query.data?.content.length === 0 && status === undefined && !keyword;
 
