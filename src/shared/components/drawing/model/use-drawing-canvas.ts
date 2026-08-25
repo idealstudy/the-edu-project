@@ -591,9 +591,6 @@ export function useDrawingCanvas({
   const handlePointerDownRef = useRef(handlePointerDown);
   handlePointerDownRef.current = handlePointerDown;
 
-  const handlePointerMoveRef = useRef(handlePointerMove);
-  handlePointerMoveRef.current = handlePointerMove;
-
   const eraseAtPointRef = useRef(eraseAtPoint);
   eraseAtPointRef.current = eraseAtPoint;
 
@@ -606,17 +603,17 @@ export function useDrawingCanvas({
   const renderLiveStrokeRef = useRef(renderLiveStroke);
   renderLiveStrokeRef.current = renderLiveStroke;
 
-  /** React 합성 이벤트 대신 캡처 단계 네이티브 — 펜 down/move 인식 지연 완화 */
+  /** React 합성 이벤트 대신 캡처 단계 네이티브. 펜 down/move 인식 지연 완화 */
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const onPointerDown = (e: PointerEvent) => {
-      if (e.pointerType === 'pen' || e.pointerType === 'mouse') {
+      if (e.pointerType === 'pen') {
         e.preventDefault();
         window.getSelection()?.removeAllRanges();
+        handlePointerDownRef.current(e);
       }
-      handlePointerDownRef.current(e);
     };
 
     const onPointerMove = (e: PointerEvent) => {
@@ -636,10 +633,6 @@ export function useDrawingCanvas({
         appendFromEventRef.current(e);
         renderLiveStrokeRef.current();
         return;
-      }
-
-      if (e.pointerType === 'mouse') {
-        handlePointerMoveRef.current(e);
       }
     };
 

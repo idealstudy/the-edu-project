@@ -5,7 +5,10 @@ import { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 import { http } from './http.transport';
 
-type RetryableConfig = InternalAxiosRequestConfig & { _retry?: boolean };
+type RetryableConfig = InternalAxiosRequestConfig & {
+  _retry?: boolean;
+  suppressGlobalErrorToast?: boolean;
+};
 
 function getStatus(e: AxiosError) {
   return e.response?.status;
@@ -50,6 +53,7 @@ export const installHttpInterceptors = () => {
 
       // 2. 서버 장애
       if (getStatus(error)! >= 500) {
+        if (cfg.suppressGlobalErrorToast) throw error;
         ShowErrorToast('SERVER_ERROR', '서버 오류가 발생했습니다.');
         throw error;
       }

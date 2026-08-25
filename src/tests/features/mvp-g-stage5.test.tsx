@@ -1,7 +1,7 @@
 import { payload } from '@/entities/exam';
 import { ExamHallCard } from '@/features/dashboard/components/student/exam-hall-card';
 import { ExamCreate } from '@/features/exam/components/exam-create';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -10,6 +10,8 @@ const mocks = vi.hoisted(() => ({
   examAnalysis: vi.fn(),
   studentReport: vi.fn(),
   questionBank: vi.fn(),
+  createExam: vi.fn(),
+  assignExam: vi.fn(),
 }));
 
 vi.mock('@/features/exam/hooks/use-exam-query', () => ({
@@ -29,8 +31,8 @@ vi.mock('@/features/dashboard/hooks/use-teacher-dashboard-query', () => ({
 }));
 
 vi.mock('@/features/exam/hooks/use-exam-mutation', () => ({
-  useCreateExam: () => ({ isPending: false, mutateAsync: vi.fn() }),
-  useAssignExam: () => ({ isPending: false, mutateAsync: vi.fn() }),
+  useCreateExam: () => ({ isPending: false, mutateAsync: mocks.createExam }),
+  useAssignExam: () => ({ isPending: false, mutateAsync: mocks.assignExam }),
 }));
 
 vi.mock('@/features/exam/components/tree-node-picker', () => ({
@@ -48,6 +50,63 @@ const emptyReport = {
 describe('MVP-G 5단계 회장 결정 보정', () => {
   afterEach(() => {
     vi.clearAllMocks();
+  });
+
+  it('t-exam-error는 상단 경고와 2 CTA, 담은 10문항 요약을 유지한다', async () => {
+    const user = userEvent.setup();
+    mocks.createExam.mockResolvedValue({ examId: 501 });
+    mocks.assignExam.mockRejectedValue(new Error('배정 API 실패'));
+    mocks.questionBank.mockReturnValue({
+      data: {
+        content: Array.from({ length: 10 }, (_, index) => ({
+          challengeId: index + 1,
+          title: `문항 ${index + 1}`,
+          questionText: `시험 문항 ${index + 1}`,
+          treeNodeId: index + 100,
+          treeNodePath: '수학 > 수열',
+          sourceText: '6월 학력평가',
+          difficulty: 'MID',
+          wrongAnswerRate: 30,
+          hasCorrectAnswer: true,
+          questionImageUrl: null,
+        })),
+        totalElements: 10,
+        page: 0,
+        size: 20,
+      },
+      isPending: false,
+      isError: false,
+    });
+
+    render(<ExamCreate />);
+    for (const button of screen.getAllByRole('button', { name: '담기' })) {
+      await user.click(button);
+    }
+    await user.click(screen.getByTestId('teacher-exam-assign-button'));
+
+    const warning = await screen.findByTestId('exam-create-error');
+    expect(within(warning).getByText('시험이 저장되지 않았어요')).toBeVisible();
+    expect(
+      within(warning).getByRole('button', { name: '다시 내기' })
+    ).toBeVisible();
+    expect(
+      within(warning).getByRole('button', { name: '임시 보관함에 넣어두기' })
+    ).toBeVisible();
+    expect(
+      screen.getByRole('heading', { name: '담은 문항 10개' })
+    ).toBeVisible();
+    expect(
+      screen.getByText(
+        /\uB098\uBA38\uC9C0 7\uBB38\uD56D\uB3C4 \uC720\uC9C0\uB429\uB2C8\uB2E4/
+      )
+    ).toBeVisible();
+
+    await user.click(
+      within(warning).getByRole('button', { name: '임시 보관함에 넣어두기' })
+    );
+    expect(within(warning).getByRole('status')).toHaveTextContent(
+      '담은 문항 10개를 이 화면에 임시 보관했습니다.'
+    );
   });
 
   it('시험이 없고 채점 풀이가 충분하면 시험 아님 참고 등급과 근거 세 줄을 표시한다', () => {
@@ -152,6 +211,9 @@ describe('MVP-G 5단계 회장 결정 보정', () => {
     });
 
     render(<ExamCreate />);
+    await waitFor(() =>
+      expect(screen.getByTestId('teacher-exam-assign-button')).toBeDisabled()
+    );
     await user.click(screen.getByRole('button', { name: 'PDF로 직접 올리기' }));
 
     expect(screen.getByTestId('teacher-exam-pdf-method')).toHaveFocus();

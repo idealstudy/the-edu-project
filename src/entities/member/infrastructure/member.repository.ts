@@ -62,7 +62,10 @@ const withdraw = async (): Promise<void> => {
 const getAdminMembers = async (
   params: AdminMemberListParams
 ): Promise<AdminMemberList> => {
-  const response = await api.private.get('/admin/members', { params });
+  const response = await api.private.get('/admin/members', {
+    params,
+    suppressGlobalErrorToast: true,
+  });
   return dto.adminListResponse.parse(response).data;
 };
 

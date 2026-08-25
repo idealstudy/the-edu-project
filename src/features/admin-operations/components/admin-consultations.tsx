@@ -88,6 +88,12 @@ export const AdminConsultations = () => {
   const summary = useAdminSummary();
   const update = useUpdateAdminConsultation();
   const selectedCase = selected ?? query.data?.content[0] ?? null;
+  // 칩·검색창을 숨기는 건 "진짜 초기 빈 상태"(필터도 검색어도 없이 받은 문의 자체가
+  // 0건일 때)뿐이다. 지연 칩, 상태 탭(처리중/답변완료), 검색어로 걸러서 0건이 된
+  // 경우엔 칩·검색창을 그대로 둔다. 안 그러면 그 필터·검색어를 지우고 원래 목록으로
+  // 돌아갈 방법이 화면에서 사라져 사용자가 갇힌다.
+  const isInitialEmpty =
+    query.data?.content.length === 0 && status === undefined && !keyword;
 
   const updateCase = (nextStatus: 'IN_PROGRESS' | 'ANSWERED') => {
     if (!selectedCase || (nextStatus === 'ANSWERED' && !answer.trim())) return;
@@ -118,67 +124,71 @@ export const AdminConsultations = () => {
           않습니다.
         </span>
       </div>
-      <div className="mb-3 flex flex-wrap gap-2">
-        {states.map(([value, label]) => (
+      {!isInitialEmpty && (
+        <div className="mb-3 flex flex-wrap gap-2">
+          {states.map(([value, label]) => (
+            <UnstyledButton
+              variant="unstyled"
+              size="none"
+              key={value}
+              type="button"
+              data-testid={`admin-consultations-chip-${value}`}
+              aria-pressed={
+                (status === undefined && value === 'RECEIVED') ||
+                status === value
+              }
+              className={cn(
+                // 좁은 폭에서 "답변 / 완료" 처럼 칩 안 문구가 쪼개지지 않게 한다.
+                'flex min-h-10.5 shrink-0 items-center gap-2 rounded-lg border px-3 text-xs font-bold whitespace-nowrap',
+                (status === undefined && value === 'RECEIVED') ||
+                  status === value
+                  ? 'bg-orange-1 text-orange-11 border-orange-10'
+                  : 'border-gray-3 text-gray-11 bg-white'
+              )}
+              onClick={() => {
+                setStatus(value);
+                setSelected(null);
+              }}
+            >
+              {label}{' '}
+              <b className="tabular-nums">
+                {query.data?.statusCounts[value] ?? 0}
+              </b>
+            </UnstyledButton>
+          ))}
           <UnstyledButton
             variant="unstyled"
             size="none"
-            key={value}
             type="button"
-            data-testid={`admin-consultations-chip-${value}`}
-            aria-pressed={
-              (status === undefined && value === 'RECEIVED') || status === value
-            }
+            data-testid="admin-consultations-delayed-chip"
+            aria-pressed={status === DELAYED}
             className={cn(
-              // 좁은 폭에서 "답변 / 완료" 처럼 칩 안 문구가 쪼개지지 않게 한다.
+              // 배지 안에서 "지 / 연" 으로 쪼개지던 것을 막는다.
               'flex min-h-10.5 shrink-0 items-center gap-2 rounded-lg border px-3 text-xs font-bold whitespace-nowrap',
-              (status === undefined && value === 'RECEIVED') || status === value
-                ? 'bg-orange-1 text-orange-11 border-orange-10'
-                : 'border-gray-3 text-gray-11 bg-white'
+              status === DELAYED
+                ? 'border-red-10 bg-red-1 text-red-10'
+                : // 안 눌린 상태라도 지연이 남아 있으면 눈에 걸리게 둔다.
+                  // 다른 칩과 같은 회색이면 1200건이 쌓여도 그냥 지나친다.
+                  (query.data?.delayedCount ?? 0) > 0
+                  ? 'border-red-4 text-red-10 bg-white'
+                  : 'border-gray-3 text-gray-11 bg-white'
             )}
             onClick={() => {
-              setStatus(value);
+              setStatus(DELAYED);
               setSelected(null);
             }}
           >
-            {label}{' '}
-            <b className="tabular-nums">
-              {query.data?.statusCounts[value] ?? 0}
-            </b>
+            지연 <b className="tabular-nums">{query.data?.delayedCount ?? 0}</b>
           </UnstyledButton>
-        ))}
-        <UnstyledButton
-          variant="unstyled"
-          size="none"
-          type="button"
-          data-testid="admin-consultations-delayed-chip"
-          aria-pressed={status === DELAYED}
-          className={cn(
-            // 배지 안에서 "지 / 연" 으로 쪼개지던 것을 막는다.
-            'flex min-h-10.5 shrink-0 items-center gap-2 rounded-lg border px-3 text-xs font-bold whitespace-nowrap',
-            status === DELAYED
-              ? 'border-red-10 bg-red-1 text-red-10'
-              : // 안 눌린 상태라도 지연이 남아 있으면 눈에 걸리게 둔다.
-                // 다른 칩과 같은 회색이면 1200건이 쌓여도 그냥 지나친다.
-                (query.data?.delayedCount ?? 0) > 0
-                ? 'border-red-4 text-red-10 bg-white'
-                : 'border-gray-3 text-gray-11 bg-white'
-          )}
-          onClick={() => {
-            setStatus(DELAYED);
-            setSelected(null);
-          }}
-        >
-          지연 <b className="tabular-nums">{query.data?.delayedCount ?? 0}</b>
-        </UnstyledButton>
-        <SearchInput
-          className="min-w-45 flex-1 bg-white"
-          value={searchValue}
-          onChange={setSearchValue}
-          onSearch={(value) => setKeyword(value.trim())}
-          placeholder="이름, 내용으로 검색"
-        />
-      </div>
+          <SearchInput
+            className="min-w-45 flex-1 bg-white"
+            value={searchValue}
+            onChange={setSearchValue}
+            onSearch={(value) => setKeyword(value.trim())}
+            placeholder="이름, 내용으로 검색"
+          />
+        </div>
+      )}
       {query.isPending && (
         <section className="border-gray-3 text-gray-8 rounded-xl border bg-white p-10 text-center text-xs">
           문의를 불러오는 중입니다.

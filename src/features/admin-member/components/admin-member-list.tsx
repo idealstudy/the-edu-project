@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import Link from 'next/link';
 
@@ -61,6 +61,13 @@ export const AdminMemberList = () => {
     setPage(1);
   };
 
+  useEffect(() => {
+    if (keyword && role === 'STUDENT' && query.data?.content.length === 0) {
+      setRole('TEACHER');
+      setPage(1);
+    }
+  }, [keyword, query.data?.content.length, role]);
+
   return (
     <PageLayout
       width="fluid"
@@ -75,56 +82,62 @@ export const AdminMemberList = () => {
         </span>
       </div>
 
-      <div className="border-gray-3 mb-3 flex border-b">
-        {ROLE_TABS.map((tab) => (
-          <UnstyledButton
-            variant="unstyled"
-            size="none"
-            key={tab.value}
-            type="button"
-            className={cn(
-              'min-h-11 border-b-2 px-5 text-xs font-bold',
-              role === tab.value
-                ? 'text-orange-11 border-orange-10'
-                : 'text-gray-8 border-transparent'
-            )}
-            onClick={() => selectRole(tab.value)}
-            data-testid={`member-tab-${tab.value.toLowerCase()}`}
-          >
-            {tab.label}
-          </UnstyledButton>
-        ))}
-      </div>
+      {!query.isError && (
+        <>
+          <div className="border-gray-3 mb-3 flex border-b">
+            {ROLE_TABS.map((tab) => (
+              <UnstyledButton
+                variant="unstyled"
+                size="none"
+                key={tab.value}
+                type="button"
+                className={cn(
+                  'min-h-11 border-b-2 px-5 text-xs font-bold',
+                  role === tab.value
+                    ? 'text-orange-11 border-orange-10'
+                    : 'text-gray-8 border-transparent'
+                )}
+                onClick={() => selectRole(tab.value)}
+                data-testid={`member-tab-${tab.value.toLowerCase()}`}
+              >
+                {tab.label}
+              </UnstyledButton>
+            ))}
+          </div>
 
-      <div className="mb-3 flex flex-wrap gap-2">
-        <SearchInput
-          className="min-w-45 flex-1 bg-white"
-          value={searchValue}
-          onChange={setSearchValue}
-          onSearch={(value) => {
-            setKeyword(value.trim());
-            setPage(1);
-          }}
-          placeholder="이름 또는 이메일로 검색"
-        />
-        <span className="border-gray-3 text-gray-11 flex min-h-10.5 items-center gap-2 rounded-lg border bg-white px-3 text-xs font-bold">
-          가입일 <b>최근 7일</b>
-        </span>
-        {role === 'STUDENT' && (
-          <label className="border-gray-3 text-gray-8 flex min-h-10.5 items-center gap-2 rounded-lg border bg-white px-3 text-xs">
-            점검용 계정 포함
-            <Toggle
-              checked={includeQaAccount}
-              onCheckedChange={(checked) => {
-                setIncludeQaAccount(checked);
+          <div className="mb-3 flex flex-wrap gap-2">
+            <SearchInput
+              className="min-w-45 flex-1 bg-white"
+              value={searchValue}
+              onChange={setSearchValue}
+              onSearch={(value) => {
+                setKeyword(value.trim());
                 setPage(1);
               }}
-              aria-label="점검용 계정 포함"
+              placeholder="이름 또는 이메일로 검색"
             />
-            <b className="text-gray-12">{includeQaAccount ? '켜짐' : '꺼짐'}</b>
-          </label>
-        )}
-      </div>
+            <span className="border-gray-3 text-gray-11 flex min-h-10.5 items-center gap-2 rounded-lg border bg-white px-3 text-xs font-bold">
+              가입일 <b>최근 7일</b>
+            </span>
+            {role === 'STUDENT' && (
+              <label className="border-gray-3 text-gray-8 flex min-h-10.5 items-center gap-2 rounded-lg border bg-white px-3 text-xs">
+                점검용 계정 포함
+                <Toggle
+                  checked={includeQaAccount}
+                  onCheckedChange={(checked) => {
+                    setIncludeQaAccount(checked);
+                    setPage(1);
+                  }}
+                  aria-label="점검용 계정 포함"
+                />
+                <b className="text-gray-12">
+                  {includeQaAccount ? '켜짐' : '꺼짐'}
+                </b>
+              </label>
+            )}
+          </div>
+        </>
+      )}
 
       {query.isPending && (
         <div className="border-gray-3 text-gray-8 rounded-xl border bg-white p-10 text-center text-xs">
@@ -135,13 +148,13 @@ export const AdminMemberList = () => {
       {query.isError && (
         <>
           <section
-            className="border-red-3 bg-red-1 rounded-row border p-4"
+            className="border-system-warning bg-system-warning-alt rounded-row border p-4"
             data-testid="admin-members-error"
           >
-            <h2 className="text-red-10 text-coach font-extrabold">
+            <h2 className="text-system-warning-text text-coach font-extrabold">
               회원 목록을 불러오지 못했어요
             </h2>
-            <p className="text-red-10 mt-1.5 text-xs leading-[1.65]">
+            <p className="text-system-warning-text mt-1.5 text-xs leading-[1.65]">
               회원 조회 서버가 응답하지 않습니다. 목록만 못 여는 상태이고 계정
               데이터는 그대로입니다. 권한 회수처럼 급한 조치가 필요하면 아래로
               바로 갈 수 있습니다.
@@ -151,7 +164,7 @@ export const AdminMemberList = () => {
                 variant="unstyled"
                 size="none"
                 type="button"
-                className="text-red-10 border-red-8 min-h-11 rounded-lg border bg-white px-3.5 text-xs font-extrabold"
+                className="text-system-warning-text border-system-warning min-h-11 rounded-lg border bg-white px-3.5 text-xs font-extrabold"
                 onClick={() => query.refetch()}
               >
                 다시 불러오기
@@ -160,7 +173,7 @@ export const AdminMemberList = () => {
                 variant="unstyled"
                 size="none"
                 type="button"
-                className="text-red-10 border-red-8 min-h-11 rounded-lg border bg-white px-3.5 text-xs font-extrabold"
+                className="text-system-warning-text border-system-warning min-h-11 rounded-lg border bg-white px-3.5 text-xs font-extrabold"
                 onClick={() =>
                   document.querySelector<HTMLInputElement>('input')?.focus()
                 }
