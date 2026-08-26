@@ -26,17 +26,21 @@ const STUDENT_TITLE_BY_PATH: Array<[RegExp, string]> = [
   [/^\/dashboard\/student\/exam-hall\/?$/, '응시장'],
   [/^\/dashboard\/student\/exams(\/.*)?$/, '시험 응시'],
   [/^\/tree\/?$/, '약점 트리'],
+  [/^\/dashboard\/connections\/?$/, '친구'],
   [/^\/friends\/challenge\/.+\/result\/?$/, '대결 결과'],
-  [/^\/friends\/?$/, '친구'],
+  [/^\/dashboard\/qna(\/.*)?$/, '질문'],
   [/^\/points\/?$/, '포인트'],
   [/^\/mypage(\/.*)?$/, '마이페이지'],
+  [/^\/settings\/?$/, '환경설정'],
 ];
 
 const STUDENT_PATHS_WITHOUT_SUMMARY = [
   /^\/tree\/?$/,
-  /^\/friends\/?$/,
+  /^\/dashboard\/connections\/?$/,
   /^\/friends\/challenge\/.+\/result\/?$/,
+  /^\/dashboard\/qna(\/.*)?$/,
   /^\/points\/?$/,
+  /^\/settings\/?$/,
 ];
 
 export const studentAppBarTitle = (pathname: string): string => {

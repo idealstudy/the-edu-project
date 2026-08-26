@@ -1,8 +1,8 @@
 'use client';
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
+import { PageLayout } from '@/layout';
 
-import { MoreContentsHeader } from '../more-contents-header';
 import { QnAList } from './qna-list';
 
 export const QnA = () => {
@@ -10,12 +10,15 @@ export const QnA = () => {
   const isTeacher = member?.role === 'ROLE_TEACHER';
 
   return (
-    <div className="flex min-h-[calc(100vh-var(--spacing-header-height))] w-full flex-col">
-      <MoreContentsHeader
-        isTeacher={isTeacher}
-        kind="QNA"
-      />
+    <PageLayout>
+      <PageLayout.Header>
+        <p className="font-body2-normal text-gray-8">
+          {isTeacher
+            ? '답변이 필요한 질문만 확인해보세요'
+            : '답변 받은 질문만 확인해보세요'}
+        </p>
+      </PageLayout.Header>
       <QnAList isTeacher={isTeacher} />
-    </div>
+    </PageLayout>
   );
 };

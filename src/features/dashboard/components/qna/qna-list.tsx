@@ -8,7 +8,6 @@ import { useStudentDashboardQnaListQuery } from '@/features/dashboard/hooks/use-
 import { useTeacherDashboardQnaListQuery } from '@/features/dashboard/hooks/use-teacher-dashboard-query';
 import { Pagination } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants';
-import { cn } from '@/shared/lib';
 
 export const QnAList = ({ isTeacher }: { isTeacher: boolean }) => {
   const [page, setPage] = useState(1);
@@ -31,12 +30,7 @@ export const QnAList = ({ isTeacher }: { isTeacher: boolean }) => {
   const totalPages = data?.totalPages ?? 0;
 
   return (
-    <div
-      className={cn(
-        'bg-gray-white flex flex-1 flex-col items-center gap-3 px-4.5 pt-8 pb-3',
-        'tablet:pt-12 tablet:pb-9 tablet:px-36'
-      )}
-    >
+    <div className="flex flex-1 flex-col items-center gap-3">
       <div className="flex w-full flex-col gap-8">
         {items.length === 0 ? (
           <div className="flex h-22 w-full items-center justify-center">

@@ -9,7 +9,7 @@ import type {
 import { Skeleton } from '@/shared/components/loading';
 import { Button } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants';
-import { ArrowLeft, Inbox, RefreshCw } from 'lucide-react';
+import { Inbox, RefreshCw } from 'lucide-react';
 
 import {
   useDailyProblemsQuery,
@@ -256,28 +256,7 @@ export const WrongAnswerWarehouse = () => {
   return (
     <div className="bg-system-background min-h-screen">
       <main className="p-section-gap-mobile tablet:p-section-gap w-full">
-        <Button
-          asChild
-          size="xsmall"
-          variant="outlined"
-        >
-          <Link href={PRIVATE.DASHBOARD.STUDENT}>
-            <ArrowLeft
-              className="size-4"
-              aria-hidden
-            />
-            대시보드
-          </Link>
-        </Button>
-
-        <header className="mt-section-gap">
-          <h1 className="font-headline1-heading text-gray-12">오답 회독</h1>
-          <p className="font-body2-normal text-gray-8 mt-inline-gap">
-            오늘 1문제 회독. 5회독 도장, 하루 1회독.
-          </p>
-        </header>
-
-        <div className="mt-section-gap">
+        <div>
           {isPending && <ReviewLoading />}
 
           {isError && (
