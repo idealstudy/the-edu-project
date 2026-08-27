@@ -611,7 +611,7 @@ feature 단위 컴포넌트(코드 실재 기준, `@/features/<도메인>` 아�
 | 단계 | 새 토큰과 값 | Tailwind 목적지 | 쓰는 화면 |
 | ---- | ------------ | --------------- | --------- |
 | 넓은 셸 | `--container-shell-wide: 1440px` | `max-w-shell-wide` | 커뮤니티, 게시판, 상담, 문의, 관리자 목록과 상세 |
-| 표준 셸 | `--container-shell: 1200px` | `max-w-shell` | 학습, 약점 트리, 친구, 포인트, 학부모, 코스 |
+| 표준 셸 | `--container-shell: 1200px` | `max-w-shell` | 학습, 약점 트리, 친구, 포인트, 학부모, 코스, 응시장, 오답 회독, 질문(본문), 환경설정 (학생 대시보드 전 화면 통일, 2026-08-27) |
 | 페이지 | `--container-page: 1180px` | `max-w-page` | 공용 `PageLayout` 기본 폭 |
 | 본문 | `--container-content: 1100px` | `max-w-content` | `PageLayout width="content"` |
 | 읽기 열 | `--container-reading: 740px` | `max-w-reading` | 스터디룸, 과제, Q&A, 학습노트의 오른쪽 읽기 열 |
