@@ -9,17 +9,19 @@ export const metadata = {
 export default function PointsPage() {
   return (
     <div className="bg-system-background min-h-screen w-full">
-      <PageLayout width="content">
-        <PageLayout.Header>
-          <div>
-            <h2 className="text-gray-12 font-headline1-heading">포인트</h2>
-            <p className="text-gray-9 font-caption-normal mt-inline-gap-xs">
+      {/* DESIGN.md §4.2: 포인트 = 표준 셸(max-w-shell, 1200px). content(1100px)는 오적용이었다. */}
+      <div className="mx-auto w-full max-w-shell">
+        <PageLayout width="fluid">
+          {/* design.md §14.8-2: 앱바가 이미 "포인트" 제목을 표시하므로 본문 H1은
+              중복이다. 안내 문구만 첫 섹션 보조 설명으로 남긴다. */}
+          <PageLayout.Header>
+            <p className="text-gray-9 font-caption-normal">
               공부한 노력으로 모으고 필요한 학습 행동에 사용해요.
             </p>
-          </div>
-        </PageLayout.Header>
-        <PointWalletClient />
-      </PageLayout>
+          </PageLayout.Header>
+          <PointWalletClient />
+        </PageLayout>
+      </div>
     </div>
   );
 }
