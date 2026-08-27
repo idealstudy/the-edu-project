@@ -26,8 +26,12 @@ const STUDENT_TITLE_BY_PATH: Array<[RegExp, string]> = [
   [/^\/dashboard\/student\/exam-hall\/?$/, '응시장'],
   [/^\/dashboard\/student\/exams(\/.*)?$/, '시험 응시'],
   [/^\/tree\/?$/, '약점 트리'],
-  [/^\/dashboard\/connections\/?$/, '친구'],
+  // 실제 친구 화면은 `/friends`(및 하위 상세)다. `/dashboard/connections`는 쓰이지
+  // 않는 스텁이라 이 규칙에 걸리지 않았고, 그 결과 `/friends`가 앱바 폴백값
+  // "내 학습"으로 오표기됐다(2026-08-27). 더 구체적인 대결 결과 규칙을 먼저 둬
+  // 순서 우선으로 겹치지 않게 한다.
   [/^\/friends\/challenge\/.+\/result\/?$/, '대결 결과'],
+  [/^\/friends(\/.*)?$/, '친구'],
   [/^\/dashboard\/qna(\/.*)?$/, '질문'],
   [/^\/points\/?$/, '포인트'],
   [/^\/mypage(\/.*)?$/, '마이페이지'],
@@ -36,8 +40,7 @@ const STUDENT_TITLE_BY_PATH: Array<[RegExp, string]> = [
 
 const STUDENT_PATHS_WITHOUT_SUMMARY = [
   /^\/tree\/?$/,
-  /^\/dashboard\/connections\/?$/,
-  /^\/friends\/challenge\/.+\/result\/?$/,
+  /^\/friends(\/.*)?$/,
   /^\/dashboard\/qna(\/.*)?$/,
   /^\/points\/?$/,
   /^\/settings\/?$/,

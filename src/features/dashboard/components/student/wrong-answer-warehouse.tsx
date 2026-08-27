@@ -255,7 +255,8 @@ export const WrongAnswerWarehouse = () => {
 
   return (
     <div className="bg-system-background min-h-screen">
-      <main className="p-section-gap-mobile tablet:p-section-gap w-full">
+      {/* DESIGN.md §4.2: 학생 대시보드 = 표준 셸(max-w-shell, 1200px) 통일. */}
+      <main className="p-section-gap-mobile tablet:p-section-gap mx-auto w-full max-w-shell">
         <div>
           {isPending && <ReviewLoading />}
 
