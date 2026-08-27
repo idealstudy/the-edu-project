@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { env } from '@/shared/constants/api';
 import { decodeJwt } from 'jose';
 
 // CORS
@@ -33,9 +32,6 @@ const PUBLIC_PATHS = new Set<string>([
 // next.js 인프라 내부로의 요청인지 판단
 function isInfraRequest(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
-  req.headers.forEach((value, key) => {
-    console.log(`[MW] headers: ${key}=${value}`);
-  });
 
   return (
     // req.method === 'OPTIONS' ||
@@ -93,10 +89,6 @@ function isPublicCourseLessonsRequest(req: NextRequest) {
 // 미들웨어 메인함수
 export function middleware(req: NextRequest) {
   const { pathname, origin } = req.nextUrl;
-
-  console.log('env', env);
-
-  console.log(req);
 
   if (req.method === 'OPTIONS') {
     const reqOrigin = req.headers.get('origin') || origin;
