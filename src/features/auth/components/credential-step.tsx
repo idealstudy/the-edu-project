@@ -2,17 +2,14 @@
 
 import { useEffect, useState } from 'react';
 
-import Link from 'next/link';
-
 import { useRegisterFormContext } from '@/features/auth/components/register-form-context-provider';
 import { Button } from '@/shared/components/ui/button';
-import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
-import { link } from '@/shared/constants/link';
 import { useCountdown } from '@/shared/hooks/use-countdown';
 
 import { useCheckEmailDuplicate, useVerifyCode } from '../services/query';
+import { TermsAgreement } from './terms-agreement';
 
 const RESEND_COUNTDOWN = 30;
 const VERIFICATION_CODE_LENGTH = 6;
@@ -196,67 +193,11 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
           {form.formState.errors.confirmPassword?.message}
         </Form.ErrorMessage>
       </Form.Item>
-      <Checkbox.Group className="border-line-line1 flex flex-col gap-6 border-y py-6">
-        <Checkbox.Label className="flex-1">
-          <Checkbox
-            checked={termsCheckboxGroup.isAllChecked}
-            onCheckedChange={termsCheckboxGroup.toggleAll}
-          />
-          전체 약관 동의
-        </Checkbox.Label>
-        <div className="flex items-center">
-          <Checkbox.Label className="flex-1">
-            <Checkbox {...termsCheckboxGroup.getCheckboxProps('terms')} />
-            디에듀 이용약관 동의 [필수]
-          </Checkbox.Label>
-          <Link
-            href={link.terms}
-            aria-label="이용약관 전문 보기"
-            target="_blank"
-          >
-            <ChevronRightIcon />
-          </Link>
-        </div>
-        <div className="flex items-center">
-          <Checkbox.Label className="flex-1">
-            <Checkbox {...termsCheckboxGroup.getCheckboxProps('privacy')} />
-            개인정보 수집 및 이용방침 동의 [필수]
-          </Checkbox.Label>
-          <Link
-            href={link.privacy}
-            target="_blank"
-            aria-label="개인정보 수집 및 이용방침 전문 보기"
-          >
-            <ChevronRightIcon />
-          </Link>
-        </div>
-        <div className="flex items-center">
-          <Checkbox.Label className="flex-1">
-            <Checkbox {...termsCheckboxGroup.getCheckboxProps('ageCheck')} />만
-            14세 이상입니다 [필수]
-          </Checkbox.Label>
-          <Link
-            href={link.ageCheck}
-            target="_blank"
-            aria-label="만 14세 이상 이용 안내 보기"
-          >
-            <ChevronRightIcon />
-          </Link>
-        </div>
-        <div className="flex items-center">
-          <Checkbox.Label className="flex-1">
-            <Checkbox {...termsCheckboxGroup.getCheckboxProps('marketing')} />
-            혜택 및 이벤트 정보 수신 동의 [선택]
-          </Checkbox.Label>
-          <Link
-            href={link.marketing}
-            target="_blank"
-            aria-label="혜택 및 이벤트 정보 수신 동의 전문 보기"
-          >
-            <ChevronRightIcon />
-          </Link>
-        </div>
-      </Checkbox.Group>
+      <TermsAgreement
+        isAllChecked={termsCheckboxGroup.isAllChecked}
+        toggleAll={termsCheckboxGroup.toggleAll}
+        getCheckboxProps={termsCheckboxGroup.getCheckboxProps}
+      />
       <Button
         size="large"
         onClick={onNextButtonClick}
@@ -265,34 +206,5 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
         계속
       </Button>
     </div>
-  );
-};
-
-const ChevronRightIcon = () => {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-    >
-      <g clipPath="url(#clip0_80_364)">
-        <path
-          d="M8.27148 2.27197L18.0216 12.0221L8.27148 21.7722"
-          stroke="black"
-          strokeWidth="2"
-        />
-      </g>
-      <defs>
-        <clipPath id="clip0_80_364">
-          <rect
-            width="24"
-            height="24"
-            fill="white"
-          />
-        </clipPath>
-      </defs>
-    </svg>
   );
 };

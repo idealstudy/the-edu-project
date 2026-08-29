@@ -1,3 +1,10 @@
+import { StudentTeacherInviteCard } from '@/features/teacher-invite/components/student-teacher-invite-card';
+import { PageLayout } from '@/layout';
+
 export default function ConnectionListPage() {
-  return <main>연결 관리</main>;
+  return (
+    <PageLayout width="fluid">
+      <StudentTeacherInviteCard />
+    </PageLayout>
+  );
 }

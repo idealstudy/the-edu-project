@@ -1,3 +1,36 @@
+---
+name: d-edu
+version: 1.4.2
+release_candidate: mvp-g-v2.0.2
+canonical_prototype: prototypes/mvp-g-3역할-hub-v24.2-gpt-codex-20260829-1054.html
+tokens:
+  colors:
+    background: "#ffffff"
+    surface: "#ffffff"
+    text_primary: "#222222"
+    text_secondary: "#5f5f5f"
+    brand: "#ff4805"
+    brand_filled: "var(--orange-9)"
+    border: "var(--gray-5)"
+    success: "var(--system-safe)"
+    warning: "var(--warning)"
+    danger: "var(--red-9)"
+  typography:
+    body: "Wanted Sans Variable, Pretendard Variable, sans-serif"
+    display: "Wanted Sans Variable, Pretendard Variable, sans-serif"
+    body_size: "14px"
+    body_line_height: "1.6"
+  spacing: [4, 8, 12, 16, 24, 32, 48]
+  radius:
+    control: "8px"
+    card: "12px"
+    pill: "999px"
+  layout:
+    mobile: "390px, 1 column"
+    tablet: "1024px, sidebar 260px"
+    desktop: "1280px, sidebar 260px"
+---
+
 # 디에듀 디자인 시스템 (정본)
 
 > 이 문서가 프론트엔드 디자인 시스템의 **유일한 정본**이다.
@@ -6,22 +39,56 @@
 
 | 항목        | 값                                                                                                                                                        |
 | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 버전        | v1.3.0                                                                                                                                                    |
-| 갱신        | 2026-08-14                                                                                                                                                |
+| 버전        | v1.4.2                                                                                                                                                    |
+| 갱신        | 2026-08-29                                                                                                                                                |
 | 작성자      | product-designer (gpt-codex)                                                                                                                              |
-| 변경        | v1.3.0 학생 마이페이지, 친구, 포인트 3화면 패턴 추가. v23 학생 셸과 기존 토큰만 사용하며 프로필 설정, 내 차례 도전, 포인트 원장, 정상·빈·로딩·오류·과다 상태 계약을 §13에 고정. 기준 시안은 `prototypes/mvp-g-학생-마이친구포인트-v1-gpt-codex.html`. |
+| 출고 후보   | MVP-G v2.0.2                                                                                                                                               |
+| 변경        | v1.4.2 MVP-G v24.2 RETAKE. 관리자 문제은행 모바일을 실제 1열로 잠그고 문항 본문 읽기 폭, 44px 행동, 자동 줄바꿈 계약을 추가. YAML 토큰과 표준 8절 라우팅을 추가. |
 | 코드 정본   | `mvp-front/src/styles/globals.css`                                                                                                                        |
-| 통합한 문서 | `docs/design-system-2.0.md`(2.0 톤·컴포넌트) · `docs/ui-guidelines.md §7`(색 우선순위) · `docs/mvp-g/design-spec-v22.md §1·§3`(승인 프로토타입 실측 규격) |
+| 디자인 정본 | `prototypes/mvp-g-3역할-hub-v24.2-gpt-codex-20260829-1054.html`                                                                                          |
+| 통합한 문서 | `docs/design-system-2.0.md`(2.0 톤·컴포넌트) · `docs/ui-guidelines.md §7`(색 우선순위) · `docs/mvp-g/design-spec-v24.2-gpt-codex-20260829-1054.md`(현행 수치 규격) |
+| 관련        | `docs/ui-guidelines.md`(UI 코딩 규칙) · `wiki/5-hubs/hub-design/design-system.md`(디자인 조직 관점 요약)                                                |
+| 코드 갭     | `docs/mvp-g/design-system-conformance-gap.md`(과거 정합 갭 이력)                                                                                         |
 
 > **정본 위치 (2026-08-11 단일화)**
 > 같은 기간에 두 세션이 각자 디자인 시스템을 통합해 `DESIGN.md` 가 두 곳에 생겼다(레포 루트 · 여기).
 > 정본이 둘이면 서로 다른 값을 보고 개발하게 되므로 **이 파일 하나로 합쳤다.**
 > 레포 루트 `DESIGN.md` 는 이 파일을 가리키는 포인터로 축소했다.
 > 이 파일에 없던 절(개요·착수 순서·레이아웃·높이와 겹침 순서·해야 할 것과 하지 말 것)은 루트본에서 그대로 옮겼다.
-| 관련        | `docs/ui-guidelines.md`(UI 코딩 규칙, 이 문서와 역할이 다름) · `wiki/5-hubs/hub-design/design-system.md`(디자인 조직 관점 요약)                           |
-| 코드 갭     | `docs/mvp-g/design-system-conformance-gap.md`(문서↔코드↔프로토타입 3자 불일치 + 코드 수정 작업지시)                                                     |
 
 > **v1.2.0 정합 감사 (2026-08-11).** globals.css 810줄과 `src/` 실사용을 전수 대조해 문서를 코드 현행에 맞췄다. 바뀐 것: ①시스템 색에 `--system-safe`·`--system-dim`·`--surface-coach-*` 추가 §2.5 ②2.0 시맨틱 색 토큰(`--color-text-*`·`--color-line-*`·`--color-background-*`·`--color-key-color-*`)을 §2.6으로 명시(전엔 §1이 존재만 언급) ③간격 토큰 전량 수록 §4.2(전엔 약 20개만) ④모서리에 `--radius-control-compact`·`--radius-section` 추가 ⑤레이아웃 컴포넌트 import 경로 `@/layout` 명시 ⑥feature 컴포넌트 목록을 코드 실재와 대조해 정정 §6.5. 미해소 불일치는 갭 문서로 이관.
+
+## Overview
+
+브랜드는 진중한, 동기부여형, 정직한 세 형용사를 쓴다. 진중함은 흰 표면과 절제된 경계로, 동기부여는 오렌지 주 행동 하나로, 정직함은 필터 문맥과 실제 결과 수를 함께 표시하는 방식으로 구현한다. 상세 원칙과 용어는 `## 0. 개요`, `## D-EDU 고정값`, `## 8. 톤과 안티룰`이 소유한다.
+
+## Colors
+
+YAML의 역할 토큰이 빠른 파싱 정본이고 실제 값은 `src/styles/globals.css`가 이긴다. 전체 단계와 의미색 적용은 `## 2. 색`에 있다. 오렌지는 주 행동과 정복 상태에만 쓰고, 성공·경고·위험은 의미가 있을 때만 쓴다.
+
+## Typography
+
+본문과 디스플레이는 Wanted Sans Variable과 Pretendard Variable을 사용한다. 크기, 굵기, 행간의 전체 단계와 실제 utility 대응은 `## 3. 타이포`가 소유한다. 한국어 본문은 `word-break: keep-all`과 `overflow-wrap: break-word`를 함께 써 어절을 보존한다.
+
+## Layout
+
+390px은 1열, 1024px과 1280px은 260px 사이드바 다음에 본문이 오는 `flex-row`다. 8pt 계열 간격과 상세 그리드는 `## 4. 간격`, `## 7. 반응형`, `## 10. 레이아웃`이 소유한다. 관리자 문제은행의 보조 패널도 390px에서는 문항 목록 다음의 1열로 접어야 하며 inline 열 정의로 모바일 규칙을 덮지 않는다.
+
+## Elevation & Depth
+
+기본 카드는 경계로 층을 나누고 그림자는 강조 팝오버와 고정 내비게이션에만 사용한다. 레이어와 z-index 전체 계약은 `## 5. 모서리와 그림자`, `## 11. 높이와 겹침 순서`가 소유한다.
+
+## Shapes
+
+컨트롤 8px, 카드 12px, 배지와 칩 999px을 사용한다. 전체 radius와 border 조합은 `## 5. 모서리와 그림자`와 부록 `## 4. 형태`가 소유한다.
+
+## Components
+
+버튼, 입력, 카드, 모달·시트, 목록 행, 빈 상태, 토스트·알림, 앱 셸의 토큰과 상태는 `## 6. 공용 부품 규격`이 소유한다. 문제은행 모바일 문항 행은 `26px 번호 + minmax(0,1fr) 본문` 1열 그리드이며 상태·보기 행동은 본문 아래로 접고 모든 버튼은 최소 44px이다.
+
+## Do's and Don'ts
+
+한 화면 한 주 행동, 실제 도메인 수치, 필터 문맥과 결과 수 일치를 지킨다. 보라 그라디언트, 장식 blob, 의미 없는 3카드, 대상 없는 CTA, `HIGH_3` 문제은행 필터, inline 데스크톱 열로 모바일 1열을 덮는 패턴을 금지한다. 전체 목록은 `## 12. 해야 할 것과 하지 말 것`, `### 13.5 금지 패턴`이 소유한다.
 
 **왜 파일 이름에 버전을 안 붙였나.** 기존에 `design-system-2.0.md` 가 정본이었는데 `ui-guidelines.md` 가 "3.0 우선"을 선언하면서 존재하지 않는 3.0 문서를 가리켰다. 파일 이름에 세대를 박으면 세대가 오를 때마다 정본이 갈라진다. 이제 파일은 하나로 고정하고, 세대 차이는 문서 **안**의 절로 다룬다.
 
@@ -64,7 +131,7 @@
 - 등급을 시각화하는 모든 부품(예상 등급 게이지·등급 범위 막대·눈금 라벨)은 **1~9 전 구간**을 그린다. 눈금은 `1 2 3 4 5 6 7 8 9` 아홉 칸.
 - 등급은 항상 **범위(low~high)** 로 말한다. 단일 등급 단정 금지(문항 수가 단일 등급을 보증하지 못함).
 - 게이지 규격은 §6.3.1.
-- **알려진 오류(코드 수정 대기)**: `features/dashboard/components/student/exam-hall-card.tsx` 의 `GRADE_MAX = 5` 로 눈금이 1~5만 그려진다. 6~9등급 학생의 범위가 막대 밖으로 잘린다. `GRADE_MAX = 9` 로 고쳐야 한다(다음 build 단계 code-builder 담당). 갭 문서 §오류-G1.
+- **해결됨(2026-08-29 확인)**: `features/dashboard/components/student/exam-hall-card.tsx`는 `GRADE_MAX = 9`와 9칸 눈금을 사용한다. 승인 v22의 1~5 표기는 v24에서 1~9로 승격했다.
 
 ### 용어 잠금
 
@@ -76,22 +143,6 @@
 | 미진단 · 약점 · 진행 · 정복 | 약점 트리의 고정 4단계 | 임의의 5단계나 다른 단계명 |
 | 모의 | 모의고사 자기신고분에 붙이는 작은 태그 | 별도 색이나 빗금 상태 |
 | AI 코치 | 답을 바로 주지 않고 사고를 돕는 코치 | 챗봇, 정답 봇과 혼용 |
-
-> 이 문서가 프론트엔드 디자인 시스템의 **유일한 정본**이다.
-> 코드 정본은 `mvp-front/src/styles/globals.css`(CSS 변수 + Tailwind v4 `@theme`)이고, 이 문서는 그 값의 뜻과 쓰는 법을 적는다.
-> 값이 서로 다르면 `globals.css` 가 이긴다. 발견 즉시 이 문서를 고친다.
-
-| 항목        | 값                                                                                                                                                        |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 버전        | v1.2.2                                                                                                                                                    |
-| 갱신        | 2026-08-12                                                                                                                                                |
-| 코드 정본   | `mvp-front/src/styles/globals.css`                                                                                                                        |
-| 통합한 문서 | `mvp-front/docs/design-system-2.0.md`(2.0 톤·컴포넌트) · `mvp-front/docs/ui-guidelines.md §7`(색 우선순위) · `docs/mvp-g/design-spec-v22.md §1·§3`(과거 승인 프로토타입 실측 규격) |
-| 관련        | `mvp-front/docs/ui-guidelines.md`(UI 코딩 규칙, 이 문서와 역할이 다름) · `wiki/5-hubs/hub-design/design-system.md`(디자인 조직 관점 요약)                           |
-
-**왜 파일 이름에 버전을 안 붙였나.** 기존에 `design-system-2.0.md` 가 정본이었는데 `ui-guidelines.md` 가 "3.0 우선"을 선언하면서 존재하지 않는 3.0 문서를 가리켰다. 파일 이름에 세대를 박으면 세대가 오를 때마다 정본이 갈라진다. 이제 파일은 하나로 고정하고, 세대 차이는 문서 **안**의 절로 다룬다.
-
----
 
 ## 목차
 
@@ -244,7 +295,7 @@
 오답 종이 계열은 "틀린 풀이 표현" 전용이다. 경고 칩·경고 문구에는 `--system-warning-*` 을 쓴다.
 불러오는 중 자리표시는 두 색을 좌우로 흘려 한 덩어리로 쓴다. 화면마다 각자 회색을 정하지 않는다.
 
-### 2.6 2.0 시맨틱 색 토큰 (의미 계층 — 유지)
+### 2.6 2.0 시맨틱 색 토큰 (의미 계층, 유지)
 
 3.0 원시 스케일 위에 얹힌 **의미 이름** 층이다. 코드 850+회 사용 중이라 유지한다. 새 코드는 의미가 분명하면 이쪽(예: `text-text-main`)을, 아니면 원시 스케일(`text-gray-12`)을 쓴다. 값은 원시 스케일을 가리키는 별칭이다.
 
@@ -498,6 +549,7 @@ feature 단위 컴포넌트(코드 실재 기준, `@/features/<도메인>` 아�
 | 온보딩 스텝    | ✅ `app/(private)/onboarding`(전용 컴포넌트 아닌 페이지 내부)     |
 | 포인트 원장    | ⚠️ `PointLedger`라는 컴포넌트 없음(포인트 도메인 내 산재). 갭 K-1 |
 | 풀이 공유 목록 | ⚠️ `SolutionShareList` 없음. 갭 K-1                               |
+| 대신 보기 띠   | ✅ `features/impersonation/components/impersonation-banner.tsx`  |
 
 > 문서상 이름(`CoachChat`·`PointLedger`·`SolutionShareList`)은 코드에 그대로 존재하지 않는다. 개념명으로만 두고, 실제 조립 지점은 갭 문서 §K에 매핑한다.
 
@@ -515,6 +567,46 @@ feature 단위 컴포넌트(코드 실재 기준, `@/features/<도메인>` 아�
 이 부품들은 `@/layout` 에 있다(`src/layout/`: `page-layout.tsx` · `split-layout.tsx` · `column-layout.tsx` · `collection-layout.tsx` · `exam-layout.tsx`, 배럴 `index.ts`). `@/shared/components/ui` 가 아니다. 3역할 hub(학생·선생님·관리자)는 이 부품 위에 셸(`app-shell` · `sidebar` · admin-shell)을 얹어 구성한다. 역할별 셸 분기는 globals.css의 `[data-admin-shell]` · `[data-study-room-shell]` · `[data-private-app-shell]` 속성 선택자가 소유한다(사이드바 표시·헤더 숨김·패딩).
 
 레이아웃 부품의 자식은 항상 `min-width:0`을 상속한다. 따라서 긴 텍스트와 이미지가 열 너비를 밀어내지 않는다. 화면은 이 비율과 최대 폭을 임의 class로 다시 선언하지 않는다.
+
+### 6.7 MVP-G 상태 집중 패턴 (v2.0.2 출고 후보)
+
+정상 화면의 설명과 제어를 오류·빈 상태에 그대로 남기지 않는다. 상태마다 사용자가 지금 판단해야 하는 것만 남긴다.
+
+| 상태 | 남기는 것 | 숨기는 것 | 주 행동 |
+| --- | --- | --- | --- |
+| 시험 저장 오류 | 실패한 작업, 담은 문항 보존 여부, 다시 내기, 임시 보관 | 정상 단계 바, 입력 방식 카드 | `다시 내기` |
+| 회원 검색 빈 결과 | 현재 탭, 검색어, 다른 역할 탭의 결과 유무 | 결과와 무관한 최근 가입 보조 필터 | 다른 탭에서 같은 검색어 찾기 |
+| 문제은행 자산 빈 상태 | 선택한 단원·학년, 빈 이유, 선생님 시험 열기에 미치는 영향 | 전체 문항 요약, 검수 수치, 일괄 올리기 보조 패널 | 이 단원 문항 올리기 |
+
+오류와 빈 상태에서도 전역 내비게이션과 계정 문맥은 유지한다. 교사 헤더는 시험 오류 본문과 겹치지 않도록 일반 흐름(`relative z-10`)에 두며, 학생 헤더만 학습 화면의 문맥 보존을 위해 `sticky top-0 z-30`을 유지한다.
+
+문제은행 학년 필터는 `HIGH_1`과 `HIGH_2`만 허용한다. 화면 라벨과 허용 과목은 다음 계약을 함께 쓴다.
+
+| 값 | 화면 라벨 | 허용 과목 | 선택 변경 시 | 수치 표기 |
+| --- | --- | --- | --- | --- |
+| `HIGH_1` | 고1 | 공통수학1, 공통수학2 | 이전 단원 선택을 비우고 허용 과목 안에서 다시 선택 | 선택 학년, 단원, 난이도를 적용한 결과 수 |
+| `HIGH_2` | 고2 | 대수, 미적분Ⅰ, 확률과 통계 | 이전 단원 선택을 비우고 허용 과목 안에서 다시 선택 | 선택 학년, 단원, 난이도를 적용한 결과 수 |
+
+금지: `HIGH_3` 또는 고3 필터, 고1과 대수 조합, 고2와 공통수학1 조합, 전체 자산 수와 필터 결과 수를 같은 결과 제목으로 표시. 빈 상태는 `0개`와 선택한 학년, 단원, 난이도를 함께 읽을 수 있어야 한다.
+
+세 패턴의 승인 정본은 `prototypes/mvp-g-3역할-hub-v24.2-gpt-codex-20260829-1054.html`이고, 1280×800·1024×768·390×844 실제 CSS viewport에서 같은 요소 순서와 열 전환을 검증한다. 관리자 문제은행은 모바일에서 `.bankcols`를 한 열로 계산하고, 문항 본문은 최소 200px 읽기 폭, 문항 행은 최소 300px, 행동은 최소 44px을 확보한다.
+
+### 6.8 관리자 대신 보기
+
+2026-08-05 eng-design 승인 로그의 후속 결정인 `대신보기 존치, 감사로그 기각`을 적용한다. 학생, 선생님, 관리자 3역할 범위는 바뀌지 않는다. 관리자가 대상 회원의 기존 역할 셸로 임시 전환하는 운영 상태다.
+
+| 요소 | 계약 |
+| --- | --- |
+| 진입 | 회원 목록 행과 회원 상세 지원 카드에 `대신 보기`를 둔다 |
+| 상단 띠 | `sticky top-0 z-50`, 최소 높이 48px, `bg-orange-600`, 흰 글자, 가로 가운데 정렬과 줄바꿈 |
+| 필수 표시 | `회원명님의 화면을 보고 있습니다`, 최대 30분, 남은 시간 |
+| 복귀 | 흰 배경의 `관리자로 돌아가기` 버튼. 성공 시 관리자 회원 목록으로 이동 |
+| 만료 | 시작 후 30분. 만료 또는 인증 복구 실패 시 로그인으로 안전하게 이동 |
+| 로딩 | 버튼을 비활성화하고 `대신 보는 중`으로 표시. 중복 실행 금지 |
+| 오류 | 회원 상세를 유지하고 원인과 다시 시도 행동을 표시 |
+| 제외 | 대신 보기 감사로그 전용 메뉴, 탭, 목록 화면 |
+
+대신 보기 띠는 대상 역할의 앱 헤더보다 위에 둔다. 화면 콘텐츠와 내비게이션은 대상 역할의 기존 구조를 바꾸지 않는다. 휴대폰에서는 회원명, 시간, 복귀 버튼이 여러 줄로 접혀도 44px 행동 영역과 문구 순서를 유지한다.
 
 ---
 
@@ -545,7 +637,7 @@ feature 단위 컴포넌트(코드 실재 기준, `@/features/<도메인>` 아�
 - 이모지 남발. 기능적으로 필요한 1~2개만.
 - 근거 없는 격려 카피. 숫자와 함께 쓴다.
 - 과한 그림자·네온·셀레브레이션.
-- em dash(`—`) 를 UI 문구에 넣는 것.
+- Unicode U+2014 문자를 UI 문구에 넣는 것.
 - 또래 비교, 연속 일수 리셋 강조, 잠금·해금 게이트. 셋 다 벤치마크 조사로 명시 거부됐다 (`docs/mvp-g/design-spec-v22.md §5.1`).
 
 ---
@@ -704,7 +796,8 @@ z-index는 같은 stacking context 안에서만 비교된다. 부모의 `transfo
 | `z-1` | 1 | 기본 헤더 내부 장식 | 내부 강조 |
 | `z-10` | 24 | 카드 배지, 편집기 도구, sticky 보조영역 | 내부 강조. 실제 셸에 붙은 것은 떠 있는 셸 |
 | `z-20` | 7 | 학생 헤더, 드로잉 패널, 카드 오버레이 | 학생 헤더는 떠 있는 셸, 나머지는 내부 강조 |
-| `z-30` | 3 | 교사 헤더, 코스 sticky 바, 트리 선택기 | 헤더와 sticky 바는 떠 있는 셸, 선택기는 펼침 |
+| `z-30` | 2 | 학생 헤더, 코스 sticky 바 | 학생 문맥과 학습 제어를 스크롤 중 유지 |
+| `z-10` 역할 예외 | 교사 헤더 1 | 시험 오류·스터디룸 본문과 겹치지 않는 일반 흐름 | `relative z-10`, sticky 금지 |
 | `z-40` | 1 | 사이드바 | 떠 있는 셸 |
 | `z-50` | 26 | 공용 Dialog, DropdownMenu, Popover, Select, 태그 메뉴, 앱 헤더 | 메뉴류는 펼침, Dialog·Prompt는 대화상자, 헤더·배너는 떠 있는 셸 |
 | `z-[60]` | 0, `z-(--z-layer-dialog)` 4 | 체크포인트 Dialog, 삭제 확인, 드로잉 확인 2종 | 대화상자 |
@@ -742,16 +835,16 @@ z-index는 같은 stacking context 안에서만 비교된다. 부모의 `transfo
 
 ## 0. 한 줄 (memorable thing)
 
-**"제대로 풀면 내 지도가 오렌지로 채워진다."** — 노력이 눈에 보이는 것. Thesis("많이가 아니라 제대로 풀어야 오른다")의 시각화. 모든 결정은 이걸 섬긴다.
+**"제대로 풀면 내 지도가 오렌지로 채워진다."** 노력이 눈에 보이는 것. Thesis("많이가 아니라 제대로 풀어야 오른다")의 시각화다. 모든 결정은 이걸 섬긴다.
 
 ## 1. 톤 = B+A 블렌드
 
 - **B 골격(동기부여)**: 연속(streak)·포인트·레벨, "바로 시작" 히어로 CTA, 채울수록 진해지는 약점 트리, 코치 칩.
 - **A 톤(절제)**: 여백, 타입 스케일 준수, 이모지 절제, "공부 앱"의 진중함. 게임기처럼 보이지 않게.
 - **C에서(정직)**: 오답률·자력정답률 등 숫자를 보여 신뢰. "막연한 격려" 금지.
-- 타깃: 고등 3~5등급, 태블릿+펜슬. **동기부여 강하게(듀오링고처럼)** — 홈에 큰 스트릭·레벨·셀레브레이션. 단 오렌지·Pretendard 시스템 안에서, 유치하지 않게(여전히 공부 앱). [사용자 확정: 동기 강하게]
+- 타깃: 고등 3~5등급, 태블릿+펜슬. **동기부여 강하게(듀오링고처럼).** 홈에 큰 스트릭·레벨·셀레브레이션. 단 오렌지·Pretendard 시스템 안에서, 유치하지 않게(여전히 공부 앱). [사용자 확정: 동기 강하게]
 
-## 2. 색 (시스템 토큰만 — 새 팔레트 금지)
+## 2. 색 (시스템 토큰만, 새 팔레트 금지)
 
 브랜드색은 **오렌지 하나**. 파랑·네이비·임의색 금지.
 | 역할 | 토큰 | 값 |
@@ -775,7 +868,7 @@ z-index는 같은 stacking context 안에서만 비교된다. 부모의 `transfo
 ```
 
 - **% 항상 표시**(노드마다 정복도 숫자). 자력 정답 기반.
-- 모의고사 자기신고분은 색 단계는 같되 작은 **"모의" 태그**로 구분(빗금 폐기 — 노이즈).
+- 모의고사 자기신고분은 색 단계는 같되 작은 **"모의" 태그**로 구분한다. 빗금은 노이즈가 커서 폐기했다.
 - 반복 막힘 = **⚠ 마커**(warning #ff4040), 노드 색은 안 바꿈.
 - "채운다 = 오렌지가 뜨거워진다" = memorable thing과 직결.
 
@@ -798,7 +891,7 @@ Pretendard. line-height 135% 기준.
 
 - radius: 버튼/인풋 **8px**, 카드 **12px**, (B 모티프 카드 14~16px), 칩/뱃지 **999px**.
 - 카드: `bg-white` + `border 1px #e0e0e0` + radius 12. 그림자 절제(A 톤).
-- B 액센트 버튼: 큰 오렌지 CTA에 `box-shadow 0 5px 0 var(--orange-10)`(눌리는 느낌) — 주요 CTA 한정.
+- B 액센트 버튼: 큰 오렌지 CTA에 `box-shadow 0 5px 0 var(--orange-10)`(눌리는 느낌). 주요 CTA에 한정한다.
 
 ## 5. 컴포넌트
 
@@ -839,11 +932,11 @@ Button(primary=orange-7) · Input · TextField · Textarea · Select · Checkbox
 8. **풀이공유**(`/open-challenge/[id]/solutions`): SolutionShareList, 컨닝가드.
 9. **포인트 지갑**(`/points`): PointLedger + LevelBadge(축 분리).
 
-## 7.5 반응형 우선순위 — 태블릿 퍼스트 (중요)
+## 7.5 반응형 우선순위: 태블릿 퍼스트 (중요)
 
 설계 기준 순서: **① 태블릿(베이스) → ② 웹/데스크톱 → ③ 모바일(마지막).** 1순위 기기가 태블릿+펜슬이라 mobile-first가 아니라 **tablet-first**로 짠다.
 
-- **① 태블릿(베이스, ~768–1024)**: 모든 화면의 기본 레이아웃을 여기서 확정. **가로 태블릿+펜슬이 히어로 케이스.** 문제 상세=2단(좌 문제+드로잉 캔버스 / 우 코치)이 기본형. 리스트·트리·결과·온보딩도 태블릿 폭(여백·2열 그리드)에 맞춰 디자인. 펜슬 타깃 ≥44px.
+- **① 태블릿(베이스, 768~1024)**: 모든 화면의 기본 레이아웃을 여기서 확정. **가로 태블릿+펜슬이 히어로 케이스.** 문제 상세=2단(좌 문제+드로잉 캔버스 / 우 코치)이 기본형. 리스트·트리·결과·온보딩도 태블릿 폭(여백·2열 그리드)에 맞춰 디자인. 펜슬 타깃 ≥44px.
 - **② 웹/데스크톱(≥1200)**: 태블릿 레이아웃을 넓히고 좌측 사이드바 네비 + 컨테이너 max-width 센터링. 트리/리스트는 더 넓은 그리드.
 - **③ 모바일(<768, 마지막)**: 단일 컬럼 스택. 드로잉 캔버스 풀폭, 코치는 하단 시트(bottom sheet), 동기 헤더 압축. 깨지지 않게 graceful 다운.
 - CSS: base = 태블릿 스타일, `@media (min-width:1200px)` 데스크톱, `@media (max-width:767px)` 모바일. (기존 globals.css 브레이크포인트 768/1200 재사용)
@@ -852,13 +945,13 @@ Button(primary=orange-7) · Input · TextField · Textarea · Select · Checkbox
 ## 7.6 빌드 전 확정한 개선점 (1차 목업 검수 결과)
 
 1. **일관성 셸**: 공통 상단 동기 헤더(streak·포인트·레벨) + 하단 탭/사이드바 + 카드 패딩·버튼 규격 단일화. 9화면이 한 앱처럼.
-2. **수식 렌더**: KaTeX(또는 MathJax)로 수식 렌더 — 평문 금지(수학 앱 필수).
+2. **수식 렌더**: KaTeX(또는 MathJax)로 수식을 렌더한다. 평문은 금지한다(수학 앱 필수).
 3. **상태 전부**: 빈(신규=전부 회색 트리)·로딩(코치/리스트 스켈레톤)·에러·0건(공유/포인트) 상태 정의. 해피패스만 금지.
 4. **태블릿 퍼스트**: §7.5대로.
 5. **트리 가독성**: 오렌지 5단계 대비 강화(작은 노드도 구분), 자력/모의 구분은 빗금 대신 작은 "모의" 태그.
 6. **동기 vs 진중함**: streak·포인트가 실제 문제 위에서 과하게 떠들지 않게(A 절제). "정답 해설" 버튼은 코치보다 덜 눈에 띄게(코치 사용 유도).
 
-### 7.6.1 design-review 추가 (목업 게이트 결과 — AI slop A−/design B+)
+### 7.6.1 design-review 추가 (목업 게이트 결과: AI slop A-, design B+)
 
 7. **트리 4단계 [확정]**: 미진단/약점/진행/정복 4단계 + % 항상 노출. 자력/모의는 "모의" 태그(빗금 폐기). 작은 노드에서도 한눈에 구분.
 8. **터치 타깃 ≥44px**: 필터 칩·트리 노드·코치 칩 전부 펜슬/터치 기준 충족.
@@ -868,9 +961,9 @@ Button(primary=orange-7) · Input · TextField · Textarea · Select · Checkbox
 ## 8. 안티-룰 (하지 말 것)
 
 - 시스템에 없는 색(파랑·네이비·임의 그라데이션) 금지. 트리도 오렌지 강도만.
-- 타입 임의 px 금지 — 스케일 유틸만.
+- 타입 임의 px 금지. 스케일 유틸만 쓴다.
 - 이모지 남발 금지(A 톤). 🔥 streak 등 기능적 1~2개만.
-- "막연한 격려" 카피 금지 — 숫자/근거와 함께.
+- "막연한 격려" 카피 금지. 숫자와 근거를 함께 쓴다.
 - 게임기처럼 과한 그림자·네온·셀레브레이션 금지(진중함 유지).
 
 ## 13. 학생 마이페이지·친구·포인트
@@ -968,10 +1061,29 @@ Button(primary=orange-7) · Input · TextField · Textarea · Select · Checkbox
 - 관련 wiki의 마이페이지 `DROPPED` 표기는 현재 구현과 2026-08-14 지시에 어긋난다. 기술설계 전 wiki 상태를 다시 열어 정정해야 한다.
 - 결제·구독 라우트와 친구 도전장 포인트 차감 거래 유형은 현재 없다. 기술설계 합의 전 구현 범위에 넣지 않는다.
 
-SKILLS_USED: design-html 로컬 패키지의 멀티뷰 허브와 design-review 로컬 패키지의 상태·넘침·터치타깃 평가 항목.
+SKILLS_USED: 없음. 현재 런타임의 사용 가능 스킬 목록에 제품 화면 디자인 검수 스킬이 없어 `/Users/sj/.claude/standards/design.md` §14의 루브릭을 직접 적용했다.
 
-SKILLS_SKIPPED: 공식 design-html·design-review Skill 호출은 런타임 도구 미노출로 수행하지 못했다. 로컬 패키지 원문을 읽고 동일 평가 항목을 적용했다.
+SKILLS_SKIPPED: imagegen은 기존 구현과 프로토타입의 정합 감사에 래스터 생성이 필요하지 않아 사용하지 않았다. 마케팅 및 콘텐츠 스킬은 제품 UI 정본화 범위와 무관하다.
 
-SOURCES: `prototypes/mvp-g-학생hub-교정-v23-opus.html`, 현재 mypage·friends·points 구현, Duolingo Friends Quests, Khan Academy energy points, ClassDojo student account and point notes.
+SOURCES:
 
-MODEL: gpt-codex/GPT-5
+- `prototypes/mvp-g-3역할-hub-v24.2-gpt-codex-20260829-1054.html`
+- `docs/mvp-g/design-spec-v24.2-gpt-codex-20260829-1054.md`
+- `docs/mvp-g/mvp-g-design-v24.1-independent-review-v1-gpt-codex-20260829-1051.md`
+- `docs/qa/design-conformance-mvp-g-v2.0.1.md`
+- `mvp-front/src/styles/globals.css`
+- `mvp-front/src/features/dashboard/components/student/exam-hall-card.tsx`
+- `mvp-back/src/main/java/com/example/demo/domain/exam/QuestionBankGrade.java`
+- `mvp-front/src/entities/exam/infrastructure/exam.dto.ts`
+- `mvp-front/src/features/exam/components/exam-create.tsx`
+- `mvp-front/src/features/admin-question-bank/components/admin-question-bank.tsx`
+- [Google Labs DESIGN.md spec](https://github.com/google-labs-code/design.md/blob/main/docs/spec.md)
+- [Playwright screenshots](https://playwright.dev/docs/screenshots)
+
+MODEL: gpt-codex/gpt-5.6-sol
+
+STAMP: line=mvp-g | version=v1.4.2 | release_candidate=v2.0.2 | generated=2026-08-29 10:54 KST | agent=product-designer | basis=PRD v2.4.2+v24.1+independent review C+ | decision=mobile one-column and clean-export contract correction
+
+RUBRIC_SCORE: clarity=5/5 action=5/5 linebreak=5/5 tone=4/5 slop=5/5 total=24/25
+
+WEAKEST_LINE: "학년은 유지한 채 난이도나 단원 조건을 바꿔 다시 찾아보세요.": 다음 행동은 분명하지만 난이도와 단원 중 무엇을 먼저 바꿀지는 사용자가 판단해야 한다.

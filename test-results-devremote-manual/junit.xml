@@ -1,100 +1,16 @@
-<testsuites id="" name="" tests="4" failures="0" skipped="0" errors="0" time="44.460246">
-<testsuite name="mvp-e-auth-gate.spec.ts" timestamp="2026-08-20T18:01:08.058Z" hostname="auth-gate" tests="1" failures="0" skipped="0" time="6.742" errors="0">
-<testcase name="MVP-E dev UI 로그인·로그아웃 인증 관문" classname="mvp-e-auth-gate.spec.ts" time="6.742">
+<testsuites id="" name="" tests="3" failures="0" skipped="0" errors="0" time="80.348449">
+<testsuite name="mvp-e-auth-gate.spec.ts" timestamp="2026-08-27T14:52:59.197Z" hostname="auth-gate" tests="1" failures="0" skipped="0" time="12.828" errors="0">
+<testcase name="MVP-E dev UI 로그인·로그아웃 인증 관문" classname="mvp-e-auth-gate.spec.ts" time="12.828">
 </testcase>
 </testsuite>
-<testsuite name="mvp-e-session.setup.ts" timestamp="2026-08-20T18:01:08.058Z" hostname="session" tests="1" failures="0" skipped="0" time="8.591" errors="0">
-<testcase name="학생 세션 상태 저장" classname="mvp-e-session.setup.ts" time="8.591">
+<testsuite name="mvp-e-session.setup.ts" timestamp="2026-08-27T14:52:59.197Z" hostname="session" tests="1" failures="0" skipped="0" time="11.086" errors="0">
+<testcase name="학생 세션 상태 저장" classname="mvp-e-session.setup.ts" time="11.086">
 </testcase>
 </testsuite>
-<testsuite name="_tmp-qa-f02.spec.ts" timestamp="2026-08-20T18:01:08.058Z" hostname="devremote" tests="2" failures="0" skipped="0" time="16.622" errors="0">
-<testcase name="F02-05 font-family + F02-07 em-dash scan" classname="_tmp-qa-f02.spec.ts" time="8.557">
+<testsuite name="zz-prod-verify.spec.ts" timestamp="2026-08-27T14:52:59.197Z" hostname="devremote" tests="1" failures="0" skipped="0" time="13.808" errors="0">
+<testcase name="운영 학생 화면 확인" classname="zz-prod-verify.spec.ts" time="13.808">
 <system-out>
-<![CDATA[BODY_FONT: "Wanted Sans Variable", pretendard, "pretendard Fallback", "Pretendard Variable", system-ui, sans-serif
-COACH_FONT: "Wanted Sans Variable", pretendard, "pretendard Fallback", "Pretendard Variable", system-ui, sans-serif
-EM_DASH_COUNT: 0
-]]>
-</system-out>
-</testcase>
-<testcase name="F02-04 empty stroke submit confirm" classname="_tmp-qa-f02.spec.ts" time="8.065">
-<system-out>
-<![CDATA[AFTER_EMPTY_SUBMIT_URL: https://dev.d-edu.site/open-challenge/4001
-AFTER_EMPTY_SUBMIT_BODY: 오픈챌린지
-코스
-대표 멘토
-상담소
-게시판
-포인트
-1,325
-P
-알림
-학생
-D-EDU
-내 학습
-내 학습
-내 성과
-돌아보기
-소속
-QA-MVPG-V21-1786008553364-ROOM
-더 보기
-오답 회독
-응시장
-친구
-포인트
-마이페이지
-오픈챌린지에서 열립니다
-약점 나무 ↗
-로그아웃
-AI 코치
-답변 대기
-
-2027학년도 6월 모의평가 · 함수의 극한과 연속 2번. 나는 답을 안 알려줘. 대신 네가 막힌 지점을 같이 볼게. 먼저 읽어봐.
-
-개념 보기
-힌트 보기
-정답 해설 보기 (−30P)
-집중 모드
-이전으로
-도전장 보내기
-수학
-›
-2027학년도 6월 모의평가 · 함수의 극한과 연속
-
-전에 도전했던 문제예요.
-
-이전 답안과 공유한 풀이를 다시 확인할 수 있어요.
-
-도전 내역 보기
-
-2027학년도 6월 모의평가 · 함수의 극한과 연속
-
-오답률 10%
-3~5등급 정답률 21%
-
-문제 이미지를 보고 답을 선택해 주세요.
-
-답을 직접 선택해 주세요
-
-1
-2
-3
-4
-5
-
-풀이 공간
-
-펜으로 자유롭게 풀어보세요 (선택)
-
-펜슬로 풀이를 적어보세요
-
-펜
-지우개
-저장됨 오전 03:01
-이 손풀이는 이 문제를 푼 사람들에게 내 이름과 함께 보여요. 맞든 틀리든 올라가고, 언제든 내릴 수 있어요. 내리면 30일 뒤 이미지가 완전히 삭제돼요.
-
-1 선택함
-
-제출 중...
+<![CDATA[운영 대시보드 컨테이너폭=1200
 ]]>
 </system-out>
 </testcase>

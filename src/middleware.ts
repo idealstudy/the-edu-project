@@ -32,7 +32,6 @@ const PUBLIC_PATHS = new Set<string>([
 // next.js 인프라 내부로의 요청인지 판단
 function isInfraRequest(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
-
   return (
     // req.method === 'OPTIONS' ||
     req.headers.get('next-router-prefetch') === '1' ||

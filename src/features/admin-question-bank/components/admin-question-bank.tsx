@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
+
+import Link from 'next/link';
 
 import type { QuestionBankParams } from '@/entities/exam';
 import { SUBJECT_TO_KOREAN } from '@/entities/study-room-preview';
@@ -10,12 +12,18 @@ import {
   useAdminExamsQuery,
   useAdminQuestionBankQuery,
 } from '@/features/exam/hooks/use-exam-query';
+import { useMyTreeQuery } from '@/features/weakness-tree/hooks/use-tree';
 import { Button, Input, Select } from '@/shared/components/ui';
+import { PRIVATE } from '@/shared/constants/route';
 import { handleApiError } from '@/shared/lib/errors/error-handler';
 import { classifyExamError } from '@/shared/lib/errors/errors';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { type GradeCutoffForm, GradeCutoffFormSchema } from '../schema/schema';
+import {
+  isQuestionBankSubjectAllowed,
+  type QuestionBankGrade,
+} from '@/features/exam/lib/question-bank-grade';
 
 type QuestionBankSubject = NonNullable<QuestionBankParams['subject']>;
 
@@ -25,6 +33,20 @@ const SUBJECT_OPTIONS = Object.entries(SUBJECT_TO_KOREAN) as Array<
 
 export const AdminQuestionBank = () => {
   const [subject, setSubject] = useState<QuestionBankSubject>('MATH');
+  const [grade, setGrade] = useState<QuestionBankGrade>('HIGH_2');
+  const [treeNodeId, setTreeNodeId] = useState<number | null>(null);
+  const tree = useMyTreeQuery();
+  const unitOptions = useMemo(
+    () =>
+      (tree.data?.groups ?? [])
+        .filter((group) => isQuestionBankSubjectAllowed(grade, group.subject))
+        .flatMap((group) => group.nodes)
+        .filter((node) => node.depth > 0),
+    [grade, tree.data]
+  );
+  const selectedUnit = unitOptions.find(
+    (node) => Number(node.nodeId) === treeNodeId
+  );
   /**
    * 승인 디자인 v22 `aBankOk` 4083 `검수 시작`.
    * v22 는 "공개하기 전에 정답과 단원을 사람이 확인합니다"라고 검수의 뜻을 적어 두었다.
@@ -34,7 +56,8 @@ export const AdminQuestionBank = () => {
   const [openedQuestionId, setOpenedQuestionId] = useState<number | null>(null);
   const questionBank = useAdminQuestionBankQuery({
     subject,
-    treeNodeIds: [],
+    grade,
+    treeNodeIds: treeNodeId ? [treeNodeId] : [],
     excludeChallengeIds: [],
     page: 0,
     size: 20,
@@ -114,15 +137,18 @@ export const AdminQuestionBank = () => {
       <div className="mx-auto max-w-295">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <h1 className="text-gray-12 text-xl font-extrabold">문제은행</h1>
-          <span className="text-gray-9 text-xs">
-            선생님 시험 열기가 여기 데이터를 그대로 먹습니다.
-          </span>
+          {!isBankEmpty && (
+            <span className="text-gray-9 text-xs">
+              선생님 시험 열기가 여기 데이터를 그대로 먹습니다.
+            </span>
+          )}
           {!isBankEmpty && (
             <Button
+              asChild
               size="small"
               className="ml-auto"
             >
-              일괄 올리기
+              <Link href={PRIVATE.ADMIN.OPEN_CHALLENGE.NEW}>일괄 올리기</Link>
             </Button>
           )}
         </div>
@@ -134,52 +160,107 @@ export const AdminQuestionBank = () => {
               : 'grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]'
           }
         >
-          <section className="border-gray-3 rounded-xl border bg-white p-4">
-            <div className="mb-3 flex items-baseline justify-between gap-2">
-              <h2 className="text-gray-12 text-sm font-extrabold">문항</h2>
-              <span className="text-gray-9 text-xs">
-                {questionBank.data?.totalElements ?? 0}개 · 검수 완료{' '}
-                {allContent.length - pendingCount} · 검수 대기 {pendingCount}
-              </span>
-            </div>
+          <section
+            className={
+              isBankEmpty ? '' : 'border-gray-3 rounded-xl border bg-white p-4'
+            }
+          >
+            {!isBankEmpty && (
+              <div className="mb-3 flex items-baseline justify-between gap-2">
+                <h2 className="text-gray-12 text-sm font-extrabold">문항</h2>
+                <span className="text-gray-9 text-xs">
+                  {questionBank.data?.totalElements ?? 0}개 · 검수 완료{' '}
+                  {allContent.length - pendingCount} · 검수 대기 {pendingCount}
+                </span>
+              </div>
+            )}
             <div className="text-gray-10 mb-3 flex flex-wrap gap-2 text-xs font-bold">
-              <Select
-                value={subject}
-                onValueChange={(value) =>
-                  setSubject(value as QuestionBankSubject)
-                }
-              >
-                <Select.Trigger
-                  className="border-orange-4 bg-orange-1 h-9 w-28 text-xs"
-                  data-testid="admin-question-bank-subject-filter"
-                  aria-label="과목 필터"
+              <>
+                <Select
+                  value={subject}
+                  onValueChange={(value) => {
+                    setSubject(value as QuestionBankSubject);
+                    setTreeNodeId(null);
+                  }}
                 >
-                  과목 {SUBJECT_TO_KOREAN[subject]}
-                </Select.Trigger>
-                <Select.Content>
-                  {SUBJECT_OPTIONS.map(([value, label]) => (
-                    <Select.Option
-                      key={value}
-                      value={value}
-                    >
-                      {label}
-                    </Select.Option>
-                  ))}
-                </Select.Content>
-              </Select>
-              <button
-                type="button"
-                aria-pressed={reviewOnly}
-                onClick={() => setReviewOnly((current) => !current)}
-                data-testid="admin-question-bank-review-filter"
-                className={`cursor-pointer rounded-md border px-3 py-2 ${
-                  reviewOnly
-                    ? 'border-orange-4 bg-orange-1 text-orange-11'
-                    : 'border-gray-3'
-                }`}
-              >
-                검수 상태 {reviewOnly ? '검수 대기' : '전체'}
-              </button>
+                  <Select.Trigger
+                    className="border-orange-4 bg-orange-1 h-9 w-28 text-xs"
+                    data-testid="admin-question-bank-subject-filter"
+                    aria-label="과목 필터"
+                  >
+                    과목 {SUBJECT_TO_KOREAN[subject]}
+                  </Select.Trigger>
+                  <Select.Content>
+                    {SUBJECT_OPTIONS.map(([value, label]) => (
+                      <Select.Option
+                        key={value}
+                        value={value}
+                      >
+                        {label}
+                      </Select.Option>
+                    ))}
+                  </Select.Content>
+                </Select>
+                <Select
+                  value={treeNodeId ? String(treeNodeId) : 'ALL'}
+                  onValueChange={(value) =>
+                    setTreeNodeId(value === 'ALL' ? null : Number(value))
+                  }
+                >
+                  <Select.Trigger
+                    className="border-orange-4 bg-orange-1 h-9 min-w-36 text-xs"
+                    data-testid="admin-question-bank-unit-filter"
+                    aria-label="단원 필터"
+                  >
+                    단원 {selectedUnit?.displayName ?? '전체'}
+                  </Select.Trigger>
+                  <Select.Content>
+                    <Select.Option value="ALL">전체 단원</Select.Option>
+                    {unitOptions.map((node) => (
+                      <Select.Option
+                        key={node.nodeId}
+                        value={String(node.nodeId)}
+                      >
+                        {node.displayName}
+                      </Select.Option>
+                    ))}
+                  </Select.Content>
+                </Select>
+                <Select
+                  value={grade}
+                  onValueChange={(value) => {
+                    setGrade(value as QuestionBankGrade);
+                    setTreeNodeId(null);
+                  }}
+                >
+                  <Select.Trigger
+                    className="border-orange-4 bg-orange-1 h-9 w-24 text-xs"
+                    data-testid="admin-question-bank-grade-filter"
+                    aria-label="학년 필터"
+                  >
+                    학년 {grade === 'HIGH_1' ? '고1' : '고2'}
+                  </Select.Trigger>
+                  <Select.Content>
+                    <Select.Option value="HIGH_1">고1</Select.Option>
+                    <Select.Option value="HIGH_2">고2</Select.Option>
+                  </Select.Content>
+                </Select>
+                {!isBankEmpty && (
+                  <button
+                    type="button"
+                    aria-pressed={reviewOnly}
+                    onClick={() => setReviewOnly((current) => !current)}
+                    data-testid="admin-question-bank-review-filter"
+                    className={`cursor-pointer rounded-md border px-3 py-2 ${
+                      reviewOnly
+                        ? 'border-orange-4 bg-orange-1 text-orange-11'
+                        : 'border-gray-3'
+                    }`}
+                  >
+                    검수 상태 {reviewOnly ? '검수 대기' : '전체'}
+                  </button>
+                )}
+              </>
             </div>
 
             {questionBank.isPending ? (
@@ -187,7 +268,10 @@ export const AdminQuestionBank = () => {
                 문항을 불러오는 중입니다
               </p>
             ) : content.length === 0 ? (
-              <div className="border-gray-3 bg-gray-1 rounded-lg border px-6 py-12 text-center">
+              <div
+                className="border-gray-3 rounded-row border border-dashed bg-white px-6 py-9.5 text-center"
+                data-testid="admin-question-bank-empty"
+              >
                 <h3 className="text-gray-12 text-sm font-extrabold">
                   이 단원에는 아직 문항이 없어요
                 </h3>
@@ -196,10 +280,17 @@ export const AdminQuestionBank = () => {
                   그쪽도 막힙니다.
                 </p>
                 <Button
+                  asChild
                   size="small"
                   className="mt-4"
                 >
-                  이 단원 문항 올리기
+                  <Link
+                    href={`${PRIVATE.ADMIN.OPEN_CHALLENGE.NEW}?grade=${grade}${
+                      treeNodeId ? `&treeNodeId=${treeNodeId}` : ''
+                    }`}
+                  >
+                    {SUBJECT_TO_KOREAN[subject]} 문항 올리기
+                  </Link>
                 </Button>
               </div>
             ) : (

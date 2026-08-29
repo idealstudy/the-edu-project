@@ -591,6 +591,9 @@ export function useDrawingCanvas({
   const handlePointerDownRef = useRef(handlePointerDown);
   handlePointerDownRef.current = handlePointerDown;
 
+  const handlePointerMoveRef = useRef(handlePointerMove);
+  handlePointerMoveRef.current = handlePointerMove;
+
   const eraseAtPointRef = useRef(eraseAtPoint);
   eraseAtPointRef.current = eraseAtPoint;
 
@@ -603,20 +606,23 @@ export function useDrawingCanvas({
   const renderLiveStrokeRef = useRef(renderLiveStroke);
   renderLiveStrokeRef.current = renderLiveStroke;
 
-  /** React 합성 이벤트 대신 캡처 단계 네이티브. 펜 down/move 인식 지연 완화 */
+  /** React 합성 이벤트 대신 네이티브 pointer 경로를 단일 진실원으로 사용한다. */
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const onPointerDown = (e: PointerEvent) => {
-      if (e.pointerType === 'pen') {
-        e.preventDefault();
-        window.getSelection()?.removeAllRanges();
-        handlePointerDownRef.current(e);
-      }
+      if (!isDrawablePointer(e)) return;
+      e.preventDefault();
+      window.getSelection()?.removeAllRanges();
+      handlePointerDownRef.current(e);
     };
 
     const onPointerMove = (e: PointerEvent) => {
+      if (e.pointerType === 'mouse') {
+        handlePointerMoveRef.current(e);
+        return;
+      }
       if (e.pointerType === 'pen') {
         if (toolRef.current === 'eraser') {
           if (!isPenContact(e)) return;

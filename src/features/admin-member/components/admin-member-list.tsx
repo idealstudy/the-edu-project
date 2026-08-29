@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 
 import { type AdminMemberRole } from '@/entities/member';
+import { useImpersonateMember } from '@/features/impersonation/hooks/use-impersonation';
 import { PageLayout } from '@/layout';
 import { Pagination, SearchInput, Toggle } from '@/shared/components/ui';
 import { Button as UnstyledButton } from '@/shared/components/ui/button';
@@ -23,6 +24,7 @@ const ROLE_LABEL = { STUDENT: '학생', TEACHER: '선생님', PARENT: '학부모
 const SIGNUP_LABEL = {
   SELF: '직접 가입',
   TEACHER_INVITE: '학생 초대',
+  STUDENT_INVITE: '학생 초대',
   OPEN_CHALLENGE: '오픈챌린지',
 };
 
@@ -54,6 +56,7 @@ export const AdminMemberList = () => {
     [includeQaAccount, keyword, page, role]
   );
   const query = useAdminMembers(params);
+  const impersonate = useImpersonateMember();
   const totalPages = Math.ceil((query.data?.totalElements ?? 0) / PAGE_SIZE);
 
   const selectRole = (next: AdminMemberRole) => {
@@ -116,9 +119,11 @@ export const AdminMemberList = () => {
               }}
               placeholder="이름 또는 이메일로 검색"
             />
-            <span className="border-gray-3 text-gray-11 flex min-h-10.5 items-center gap-2 rounded-lg border bg-white px-3 text-xs font-bold">
-              가입일 <b>최근 7일</b>
-            </span>
+            {query.data?.content.length !== 0 && (
+              <span className="border-gray-3 text-gray-11 flex min-h-10.5 items-center gap-2 rounded-lg border bg-white px-3 text-xs font-bold">
+                가입일 <b>최근 7일</b>
+              </span>
+            )}
             {role === 'STUDENT' && (
               <label className="border-gray-3 text-gray-8 flex min-h-10.5 items-center gap-2 rounded-lg border bg-white px-3 text-xs">
                 점검용 계정 포함
@@ -318,12 +323,29 @@ export const AdminMemberList = () => {
                       </span>
                     </td>
                     <td className="border-gray-1 border-b px-2.5 py-3 text-right">
-                      <Link
-                        className="border-gray-3 inline-grid min-h-11 place-items-center rounded-lg border px-3 text-xs font-extrabold"
-                        href={PRIVATE.ADMIN.MEMBERS.DETAIL(member.memberId)}
-                      >
-                        상세
-                      </Link>
+                      <span className="inline-flex flex-wrap justify-end gap-2">
+                        <UnstyledButton
+                          variant="unstyled"
+                          size="none"
+                          type="button"
+                          className="border-orange-4 text-orange-11 inline-grid min-h-11 place-items-center rounded-lg border px-3 text-xs font-extrabold disabled:opacity-60"
+                          disabled={impersonate.isPending || member.revoked}
+                          onClick={() =>
+                            impersonate.mutate({
+                              memberId: member.memberId,
+                              name: member.name || member.email,
+                            })
+                          }
+                        >
+                          {impersonate.isPending ? '대신 보는 중' : '대신 보기'}
+                        </UnstyledButton>
+                        <Link
+                          className="border-gray-3 inline-grid min-h-11 place-items-center rounded-lg border px-3 text-xs font-extrabold"
+                          href={PRIVATE.ADMIN.MEMBERS.DETAIL(member.memberId)}
+                        >
+                          상세
+                        </Link>
+                      </span>
                     </td>
                   </tr>
                 ))}

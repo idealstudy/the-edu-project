@@ -18,7 +18,9 @@ export default async function DashboardLayout({
 }>) {
   const session = await fetchMemberRole();
   const cookieJar = await cookies();
-  const isImpersonating = cookieJar.has('admin-impersonating');
+  const impersonatingCookie = cookieJar.get('admin-impersonating');
+  const impersonationExpiresAt = Number(impersonatingCookie?.value ?? 0);
+  const isImpersonating = impersonationExpiresAt > Date.now();
 
   const isSessionRoleMember =
     session.status === 'authenticated' && session.role === 'ROLE_MEMBER';
@@ -42,6 +44,7 @@ export default async function DashboardLayout({
           memberName={
             session.status === 'authenticated' ? session.name : '대상 회원'
           }
+          expiresAt={impersonationExpiresAt}
         />
         {session.status === 'authenticated' && (
           <DashboardAppHeader

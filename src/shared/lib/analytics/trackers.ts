@@ -403,6 +403,40 @@ export const trackStudentInviteFail = (
   track(GA4_EVENTS.STUDENT_INVITE_FAIL, withUserType(params, role));
 };
 
+export const trackTeacherInviteBannerImpression = () => {
+  track(
+    GA4_EVENTS.TEACHER_INVITE_IMPRESSION,
+    withUserType({ surface: 'student_home' }, 'ROLE_STUDENT')
+  );
+};
+
+export const trackTeacherInviteIssueSuccess = (
+  surface: 'student_home' | 'connections'
+) => {
+  track(
+    GA4_EVENTS.TEACHER_INVITE_ISSUE_SUCCESS,
+    withUserType({ surface }, 'ROLE_STUDENT')
+  );
+};
+
+export const trackTeacherInviteAcceptSuccess = (
+  mode: 'SIGN_UP' | 'EXISTING_ACCOUNT'
+) => {
+  track(
+    GA4_EVENTS.TEACHER_INVITE_ACCEPT_SUCCESS,
+    withUserType({ account_mode: mode }, 'ROLE_TEACHER')
+  );
+};
+
+export const trackTeacherInviteSnooze = (
+  mode: 'THREE_DAYS' | 'SEVEN_DAYS' | 'FOREVER' | 'RESET'
+) => {
+  track(
+    GA4_EVENTS.TEACHER_INVITE_SNOOZE,
+    withUserType({ mode, surface: 'student_home' }, 'ROLE_STUDENT')
+  );
+};
+
 export const trackStudentRemoveConfirmed = (
   roomId: number,
   studentId: number,

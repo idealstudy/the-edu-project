@@ -6,16 +6,25 @@ import { useMyTreeQuery } from '@/features/weakness-tree/hooks/use-tree';
 import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib';
 
+import {
+  isQuestionBankSubjectAllowed,
+  type QuestionBankGrade,
+} from '../lib/question-bank-grade';
+
 type TreeNodePickerProps = {
   value: number[];
+  grade: QuestionBankGrade;
   onChange: (nodeIds: number[]) => void;
 };
 
-export const TreeNodePicker = ({ value, onChange }: TreeNodePickerProps) => {
+export const TreeNodePicker = ({ value, grade, onChange }: TreeNodePickerProps) => {
   const treeQuery = useMyTreeQuery();
   const nodes = useMemo(
-    () => treeQuery.data?.groups.flatMap((group) => group.nodes) ?? [],
-    [treeQuery.data]
+    () =>
+      (treeQuery.data?.groups ?? [])
+        .filter((group) => isQuestionBankSubjectAllowed(grade, group.subject))
+        .flatMap((group) => group.nodes),
+    [grade, treeQuery.data]
   );
   const selected = nodes.filter((node) => value.includes(Number(node.nodeId)));
 

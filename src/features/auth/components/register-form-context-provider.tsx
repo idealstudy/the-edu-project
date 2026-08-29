@@ -17,22 +17,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { RegisterForm } from '../schemas/register';
 import { useSignUp } from '../services/query';
-
-const TERMS = [
-  {
-    value: 'terms',
-    required: true,
-  },
-  {
-    value: 'privacy',
-    required: true,
-  },
-  { value: 'ageCheck', required: true },
-  {
-    value: 'marketing',
-    required: false,
-  },
-] as const;
+import { TERMS } from './terms-agreement';
 
 type RegisterFormContextValue = {
   form: ReturnType<typeof useForm<RegisterForm>>;

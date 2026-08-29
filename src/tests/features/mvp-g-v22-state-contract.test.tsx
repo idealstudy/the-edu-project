@@ -249,9 +249,8 @@ describe('MVP-G v22 상태 계약', () => {
 
     render(<WrongAnswerWarehouse />);
 
-    expect(
-      screen.getByText('오늘 1문제 회독. 5회독 도장, 하루 1회독.')
-    ).toBeVisible();
+    expect(screen.getByText('회독 · 하루 한 번')).toBeVisible();
+    expect(screen.getByLabelText('5회독 중 2회 완료')).toBeVisible();
     expect(screen.getByText('6월 모의고사 12번')).toBeVisible();
     expect(screen.queryByText('쌓여 있는 다른 오답')).toBeNull();
     expect(screen.queryByText(/밀린 오답/)).toBeNull();

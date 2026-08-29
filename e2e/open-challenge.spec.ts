@@ -12,27 +12,130 @@ import { loginAsStudent } from './helpers/auth';
  *    "나중에 할게요"로 건너뛴다(이미 설정을 저장해둔 계정이면 안 뜬다).
  * ────────────────────────────────────────────────────*/
 async function drawDiagonalStroke(page: Page, canvas: Locator) {
-  // 풀이 공간은 문제 카드·선택지 아래라 기본 뷰포트에서 화면 밖에 있을 수 있다.
-  // toBeVisible 은 뷰포트 안인지 검사하지 않으므로, 스크롤 없이 절대좌표로 마우스를
-  // 쏘면 획이 캔버스에 닿지 않고 조용히 무시된다. 반드시 먼저 뷰포트로 끌어온다.
+  // 문제 카드가 sticky-expanded 상태면 아래 풀이 캔버스를 덮는다. 실제 사용자가
+  // 풀이 공간을 쓰기 위해 문제를 접는 것처럼, 열린 카드만 명시적으로 접는다.
+  const expandedProblemCard = page.locator('button[aria-expanded="true"]').last();
+  if (await expandedProblemCard.isVisible().catch(() => false)) {
+    await expandedProblemCard.click();
+  }
+
+  // 풀이 공간 앞의 문제 카드는 sticky 이다. scrollIntoViewIfNeeded 만 호출하면
+  // 캔버스의 DOM 좌표는 뷰포트 안이어도 실제 hit target 은 문제 카드일 수 있다.
+  // 브라우저 hit test 로 캔버스가 직접 포인터를 받는 두 점을 고른 뒤 그 사이를 긋는다.
   const drawingCanvas = canvas.locator('canvas');
   await expect(drawingCanvas).toBeVisible();
-  await drawingCanvas.scrollIntoViewIfNeeded();
-  const box = await drawingCanvas.boundingBox();
-  if (!box) throw new Error('드로잉 캔버스 영역을 찾지 못했습니다.');
-
-  const startX = box.x + box.width * 0.15;
-  const startY = box.y + box.height * 0.15;
-  const endX = box.x + box.width * 0.85;
-  const endY = box.y + box.height * 0.85;
-
-  await page.mouse.move(startX, startY);
-  await page.mouse.down();
-  await page.mouse.move((startX + endX) / 2, (startY + endY) / 2, {
-    steps: 5,
+  await drawingCanvas.evaluate((element) => {
+    for (const eventName of ['pointerdown', 'pointermove', 'pointerup']) {
+      element.addEventListener(
+        eventName,
+        (event) => {
+          const pointerEvent = event as PointerEvent;
+          const previous = element.getAttribute('data-pointer-diagnostic') ?? '';
+          element.setAttribute(
+            'data-pointer-diagnostic',
+            `${previous}${eventName}:${pointerEvent.pointerId}:${pointerEvent.buttons}|`
+          );
+        },
+        { capture: true }
+      );
+    }
   });
-  await page.mouse.move(endX, endY, { steps: 5 });
+  const strokePath = await drawingCanvas.evaluate(async (element) => {
+    const findScrollParent = () => {
+      let current = element.parentElement;
+      while (current) {
+        const { overflowY } = window.getComputedStyle(current);
+        if (
+          /(auto|scroll)/.test(overflowY) &&
+          current.scrollHeight > current.clientHeight
+        ) {
+          return current;
+        }
+        current = current.parentElement;
+      }
+      return document.scrollingElement;
+    };
+
+    const findUncoveredPath = () => {
+      const rect = element.getBoundingClientRect();
+      const visibleTop = Math.max(rect.top, 0) + 16;
+      const visibleBottom = Math.min(rect.bottom, window.innerHeight) - 16;
+      const availablePoints: Array<{ x: number; y: number }> = [];
+
+      for (let y = visibleTop; y <= visibleBottom; y += 16) {
+        for (let ratio = 0.15; ratio <= 0.85; ratio += 0.1) {
+          const x = rect.left + rect.width * ratio;
+          if (document.elementFromPoint(x, y) === element) {
+            availablePoints.push({ x, y });
+          }
+        }
+      }
+
+      const start = availablePoints[0];
+      const end = availablePoints.at(-1);
+      if (!start || !end || Math.hypot(end.x - start.x, end.y - start.y) < 32) {
+        return null;
+      }
+      return {
+        startX: start.x,
+        startY: start.y,
+        endX: end.x,
+        endY: end.y,
+      };
+    };
+
+    element.scrollIntoView({ block: 'end', inline: 'nearest' });
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+    );
+
+    let path = findUncoveredPath();
+    if (path) return path;
+
+    const scrollParent = findScrollParent();
+    if (scrollParent) scrollParent.scrollTop = scrollParent.scrollHeight;
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+    );
+    path = findUncoveredPath();
+    if (path) return path;
+
+    // 끝까지 내리면 440px 캔버스의 윗부분이 고정 헤더 밑으로 들어가는 레이아웃도 있다.
+    // 약간 되올려 실제 그리기 영역을 헤더 아래에 놓고 다시 hit test 한다.
+    if (scrollParent) scrollParent.scrollTop = Math.max(0, scrollParent.scrollTop - 160);
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+    );
+    path = findUncoveredPath();
+    if (path) return path;
+
+    const rect = element.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = Math.max(0, Math.min(window.innerHeight - 1, rect.top + 1));
+    const blocker = document.elementFromPoint(centerX, centerY);
+    throw new Error(
+      `캔버스가 포인터를 받을 수 없습니다. rect=${JSON.stringify({
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        left: rect.left,
+      })}, blocker=${blocker?.tagName ?? 'none'}:${blocker?.getAttribute('data-testid') ?? blocker?.className ?? ''}`
+    );
+  });
+
+  await page.mouse.move(strokePath.startX, strokePath.startY);
+  await page.mouse.down();
+  await page.mouse.move(
+    (strokePath.startX + strokePath.endX) / 2,
+    (strokePath.startY + strokePath.endY) / 2,
+    { steps: 5 }
+  );
+  await page.mouse.move(strokePath.endX, strokePath.endY, { steps: 5 });
   await page.mouse.up();
+
+  console.log(
+    `POINTER_DIAGNOSTIC ${await drawingCanvas.getAttribute('data-pointer-diagnostic')}`
+  );
 
   // 획이 실제로 기록됐는지 여기서 확인한다. 이 단언이 없으면 획이 안 들어간 채로
   // 뒤 단계가 진행돼, 원인이 "이미지가 안 실렸다"로 잘못 보고된다.
@@ -259,7 +362,9 @@ test.describe('오픈챌린지 풀이 → 결과', () => {
 
 // ─── AI 코치 — 손글씨 풀이 캡처(§ai-coach-improvement-plan Phase 1b A-1/A-2) ───
 test.describe('AI 코치 — 손글씨 풀이 캡처', () => {
-  test.setTimeout(60_000);
+  // 로컬 Turbopack 첫 컴파일과 dev API 로그인이 각각 수십 초 걸릴 수 있다.
+  // 전역 devremote 제한(180초)보다 짧게 덮어써 제품 assertion 전에 끊지 않는다.
+  test.setTimeout(180_000);
 
   test.beforeEach(async ({}, testInfo) => {
     test.skip(
@@ -269,13 +374,18 @@ test.describe('AI 코치 — 손글씨 풀이 캡처', () => {
   });
 
   test.afterEach(async ({ page }) => {
-    await abandonActiveAttempt(page, 4000);
+    await abandonActiveAttempt(page, COACH_CHALLENGE_ID);
   });
 
   test('드로잉 후 메시지를 보내면 studentSolutionImageMediaId가 실리고, 업로드 이미지 종횡비가 캔버스 실측과 일치한다', async ({
     page,
   }) => {
     await loginAsStudent(page);
+    await expect
+      .poll(async () => (await page.request.get('/api/v1/member/info')).status(), {
+        timeout: 30_000,
+      })
+      .toBe(200);
     await ensureFreshAttempt(page, COACH_CHALLENGE_ID);
     await page.goto(PUBLIC.CHALLENGES.DETAIL(COACH_CHALLENGE_ID));
     await expect(page.getByTestId('solution-drawing-surface')).toBeVisible();
@@ -313,6 +423,8 @@ test.describe('AI 코치 — 손글씨 풀이 캡처', () => {
 
     const surface = page.getByTestId('solution-drawing-surface');
     await expect(surface).toBeVisible();
+    const aiMessages = page.getByTestId('ai-coach-message-ai');
+    const aiMessageCountBeforeSend = await aiMessages.count();
 
     await drawDiagonalStroke(page, surface);
 
@@ -334,6 +446,9 @@ test.describe('AI 코치 — 손글씨 풀이 캡처', () => {
       .poll(() => messagesRequest.body, { timeout: 15_000 })
       .not.toBeNull();
     expect(messagesRequest.body?.studentSolutionImageMediaId).toBeTruthy();
+    await expect
+      .poll(() => aiMessages.count(), { timeout: 30_000 })
+      .toBeGreaterThan(aiMessageCountBeforeSend);
 
     await expect
       .poll(() => uploadedPngBuffer, { timeout: 15_000 })
@@ -354,6 +469,11 @@ test.describe('AI 코치 — 손글씨 풀이 캡처', () => {
     page,
   }) => {
     await loginAsStudent(page);
+    await expect
+      .poll(async () => (await page.request.get('/api/v1/member/info')).status(), {
+        timeout: 30_000,
+      })
+      .toBe(200);
     await ensureFreshAttempt(page, COACH_CHALLENGE_ID);
     await page.goto(PUBLIC.CHALLENGES.DETAIL(COACH_CHALLENGE_ID));
     await expect(page.getByTestId('solution-drawing-surface')).toBeVisible();

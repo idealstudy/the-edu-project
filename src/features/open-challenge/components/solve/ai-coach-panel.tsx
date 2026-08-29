@@ -830,6 +830,7 @@ export const AiCoachPanel = ({
             {messages.map((message) => (
               <div
                 key={message.id}
+                data-testid={`ai-coach-message-${message.role}`}
                 className={cn(
                   'flex',
                   message.role === 'user' ? 'justify-end' : 'items-start gap-2'

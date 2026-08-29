@@ -135,6 +135,19 @@ export const DashboardSidebar = () => {
             <Sidebar.Text>응시장</Sidebar.Text>
           </Sidebar.Item>
 
+          {studentRooms.isSuccess && !primaryRoom && (
+            <Sidebar.Item
+              href={PRIVATE.DASHBOARD.CONNECTIONS}
+              matchPath={PRIVATE.DASHBOARD.CONNECTIONS}
+            >
+              <Users
+                size={20}
+                className="shrink-0"
+              />
+              <Sidebar.Text>선생님 연결</Sidebar.Text>
+            </Sidebar.Item>
+          )}
+
           <Sidebar.Item
             href={PRIVATE.FRIENDS.INDEX}
             matchPath={PRIVATE.FRIENDS.INDEX}

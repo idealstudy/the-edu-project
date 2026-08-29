@@ -43,8 +43,25 @@ describe('clear-session 쿠키 정리', () => {
       )
     ).toBe(true);
     // 폴백 삭제 대상이 전부 포함된다
-    for (const name of ['Authorization', 'refresh', 'refresh-token', 'sid']) {
+    for (const name of [
+      'Authorization',
+      'admin-return',
+      'admin-impersonating',
+      'refresh',
+      'refresh-token',
+      'sid',
+    ]) {
       expect(cookies.some((c) => c.startsWith(`${name}=`))).toBe(true);
+    }
+    for (const path of ['/', '/api/v1/admin', '/api/admin']) {
+      expect(
+        cookies.some(
+          (cookie) =>
+            cookie.startsWith('admin-return=') &&
+            cookie.includes(`Path=${path}`) &&
+            cookie.includes('Max-Age=0')
+        )
+      ).toBe(true);
     }
   });
 });
