@@ -8,6 +8,10 @@ import { applySetCookies } from '@/shared/lib';
 // (AuthController.java 의 logout 응답과 동일).
 const SESSION_COOKIES = [
   { name: 'Authorization', path: '/' },
+  { name: 'admin-return', path: '/' },
+  { name: 'admin-return', path: '/api/v1/admin' },
+  { name: 'admin-return', path: '/api/admin' },
+  { name: 'admin-impersonating', path: '/' },
   { name: 'refresh', path: '/' },
   // 로그인 시 BFF 가 Path 를 /api/v1/auth/refresh 로 바꿔 심으므로 그 경로로 만료시킨다.
   // 예전 경로로 심긴 쿠키가 남아 있을 수 있어 둘 다 만료시킨다.

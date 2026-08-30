@@ -17,6 +17,7 @@ const CORE = {
     SUCCESS: (studyRoomId: number) =>
       `/invite/success?studyRoomId=${studyRoomId}`,
     CHALLENGE: (token: string) => `/invite/challenge/${token}`,
+    TEACHER: (token: string) => `/invite/teacher/${token}`,
   },
 } as const;
 

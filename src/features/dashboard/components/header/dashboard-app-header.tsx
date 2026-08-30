@@ -75,7 +75,7 @@ const StudentSummaryChips = ({ memberName }: { memberName: string }) => {
       {chips.map(([label, value, hideOnMobile]) => (
         <span
           key={label ?? value}
-          className={`bg-gray-1 text-gray-9 text-ui-choice min-h-chip-min rounded-pill px-button-chip-x items-center font-bold ${hideOnMobile ? 'hidden tablet:inline-flex' : 'inline-flex'}`}
+          className={`bg-gray-1 text-gray-9 text-ui-choice min-h-chip-min rounded-pill px-button-chip-x items-center font-bold ${hideOnMobile ? 'tablet:inline-flex hidden' : 'inline-flex'}`}
         >
           {label && `${label} `}
           <b className="text-gray-12 ml-1 tabular-nums">{value}</b>
@@ -244,7 +244,8 @@ export const DashboardAppHeader = ({
       data-dashboard-app-header
       data-dashboard-role={role}
       className={cn(
-        'border-gray-3 bg-gray-white sticky top-0 z-30 w-full border-b',
+        'border-gray-3 bg-gray-white w-full border-b',
+        role === 'ROLE_TEACHER' ? 'relative z-10' : 'sticky top-0 z-30',
         role === 'ROLE_PARENT'
           ? 'bg-system-background px-section-gap tablet:px-room-page-pad tablet:pt-19 pt-8 pb-3'
           : 'min-h-header-height px-appbar-pad-x py-appbar-pad-y flex items-center'

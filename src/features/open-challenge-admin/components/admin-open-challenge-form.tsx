@@ -49,6 +49,10 @@ import {
 
 type AdminOpenChallengeFormProps = {
   challenge?: AdminChallengeDetail;
+  prefill?: {
+    grade?: 'HIGH_1' | 'HIGH_2';
+    treeNodeId?: number;
+  };
 };
 
 const SUBJECT_OPTIONS: Array<{ value: AdminChallengeSubject; label: string }> =
@@ -79,6 +83,7 @@ const DEFAULT_VALUES: AdminChallengeForm = {
   choices: [{ value: '' }, { value: '' }, { value: '' }, { value: '' }],
   correctChoiceIndex: 0,
   type: '',
+  treeNodeId: null,
 };
 
 const stripChoiceLabel = (value: string) =>
@@ -93,8 +98,16 @@ const findCorrectChoiceIndex = (choices: string[], correctAnswer: string) => {
   return index >= 0 ? index : 0;
 };
 
-const toFormValues = (challenge?: AdminChallengeDetail): AdminChallengeForm => {
-  if (!challenge) return DEFAULT_VALUES;
+const toFormValues = (
+  challenge?: AdminChallengeDetail,
+  prefill?: AdminOpenChallengeFormProps['prefill']
+): AdminChallengeForm => {
+  if (!challenge) {
+    return {
+      ...DEFAULT_VALUES,
+      treeNodeId: prefill?.treeNodeId ?? null,
+    };
+  }
 
   return {
     subject: challenge.subject,
@@ -112,6 +125,7 @@ const toFormValues = (challenge?: AdminChallengeDetail): AdminChallengeForm => {
       challenge.correctAnswer
     ),
     type: challenge.type,
+    treeNodeId: null,
   };
 };
 
@@ -131,11 +145,13 @@ const toPayload = (data: AdminChallengeForm): AdminChallengePayload => {
     choices,
     correctAnswer: choices[data.correctChoiceIndex] ?? '',
     type: data.type.trim() || null,
+    treeNodeId: data.treeNodeId,
   };
 };
 
 export const AdminOpenChallengeForm = ({
   challenge,
+  prefill,
 }: AdminOpenChallengeFormProps) => {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -165,7 +181,7 @@ export const AdminOpenChallengeForm = ({
     formState: { errors, isDirty },
   } = useForm<AdminChallengeForm>({
     resolver: zodResolver(AdminChallengeFormSchema),
-    defaultValues: toFormValues(challenge),
+    defaultValues: toFormValues(challenge, prefill),
   });
   const { fields, append, remove } = useFieldArray({
     control,
@@ -181,10 +197,10 @@ export const AdminOpenChallengeForm = ({
     (isQuestionImageRemoved ? null : challenge?.questionImageUrl);
 
   useEffect(() => {
-    reset(toFormValues(challenge));
+    reset(toFormValues(challenge, prefill));
     setQuestionImagePreviewUrl(null);
     setIsQuestionImageRemoved(false);
-  }, [challenge, reset]);
+  }, [challenge, prefill, reset]);
 
   useEffect(() => {
     return () => {
@@ -330,6 +346,16 @@ export const AdminOpenChallengeForm = ({
           </Button>
         </div>
       </div>
+
+      {!isEditMode && prefill?.grade && (
+        <p
+          className="border-orange-4 bg-orange-1 text-gray-10 rounded-md border px-4 py-3 text-sm"
+          data-testid="admin-question-bank-prefill"
+        >
+          문제은행에서 선택한 {prefill.grade === 'HIGH_1' ? '고1' : '고2'}
+          {prefill.treeNodeId ? ` 단원 ${prefill.treeNodeId}` : ''} 맥락을 적용했습니다.
+        </p>
+      )}
 
       {errors.root?.message && (
         <p className="border-system-warning bg-system-warning-alt text-system-warning rounded-lg border px-4 py-3 text-sm">

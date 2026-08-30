@@ -424,6 +424,7 @@ const AdminChallengePayloadSchema = z.object({
   choices: z.array(z.string().min(1)).min(1),
   correctAnswer: z.string().min(1),
   type: z.string().nullable(),
+  treeNodeId: z.number().int().positive().nullable(),
 });
 
 /* ─────────────────────────────────────────────────────

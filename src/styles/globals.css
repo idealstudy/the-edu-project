@@ -1,6 +1,7 @@
 /* Wanted Sans는 layout <head>의 stylesheet로 로드한다.
    로드 실패 시 로컬 Pretendard가 앱 글꼴의 안전한 폴백이다. */
-@import 'tailwindcss';
+@import 'tailwindcss' source(none);
+@source '../';
 
 :root {
   /* ========================================

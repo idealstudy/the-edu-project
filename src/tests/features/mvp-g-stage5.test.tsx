@@ -1,7 +1,14 @@
 import { payload } from '@/entities/exam';
 import { ExamHallCard } from '@/features/dashboard/components/student/exam-hall-card';
 import { ExamCreate } from '@/features/exam/components/exam-create';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -53,7 +60,6 @@ describe('MVP-G 5단계 회장 결정 보정', () => {
   });
 
   it('t-exam-error는 상단 경고와 2 CTA, 담은 10문항 요약을 유지한다', async () => {
-    const user = userEvent.setup();
     mocks.createExam.mockResolvedValue({ examId: 501 });
     mocks.assignExam.mockRejectedValue(new Error('배정 API 실패'));
     mocks.questionBank.mockReturnValue({
@@ -79,10 +85,12 @@ describe('MVP-G 5단계 회장 결정 보정', () => {
     });
 
     render(<ExamCreate />);
-    for (const button of screen.getAllByRole('button', { name: '담기' })) {
-      await user.click(button);
-    }
-    await user.click(screen.getByTestId('teacher-exam-assign-button'));
+    act(() => {
+      for (const button of screen.getAllByRole('button', { name: '담기' })) {
+        button.click();
+      }
+    });
+    fireEvent.click(screen.getByTestId('teacher-exam-assign-button'));
 
     const warning = await screen.findByTestId('exam-create-error');
     expect(within(warning).getByText('시험이 저장되지 않았어요')).toBeVisible();
@@ -100,8 +108,10 @@ describe('MVP-G 5단계 회장 결정 보정', () => {
         /\uB098\uBA38\uC9C0 7\uBB38\uD56D\uB3C4 \uC720\uC9C0\uB429\uB2C8\uB2E4/
       )
     ).toBeVisible();
+    expect(screen.queryByText('3 담은 문항 확인')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('teacher-exam-pdf-method')).toBeNull();
 
-    await user.click(
+    fireEvent.click(
       within(warning).getByRole('button', { name: '임시 보관함에 넣어두기' })
     );
     expect(within(warning).getByRole('status')).toHaveTextContent(
@@ -174,7 +184,11 @@ describe('MVP-G 5단계 회장 결정 보정', () => {
     expect(none.textContent).not.toContain('--등급');
   });
 
-  it('시험 만들기의 학년 자리를 기존 과목 파라미터로 교체한다', () => {
+  it('TC-API-002 시험 만들기가 고1·고2 학년을 실제 문제은행 필터로 보낸다', async () => {
+    Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
+      configurable: true,
+      value: vi.fn(),
+    });
     mocks.questionBank.mockReturnValue({
       data: { content: [], totalElements: 0, page: 0, size: 20 },
       isPending: false,
@@ -184,18 +198,41 @@ describe('MVP-G 5단계 회장 결정 보정', () => {
     render(<ExamCreate />);
 
     expect(screen.getByTestId('exam-subject-filter')).toHaveTextContent('수학');
+    expect(screen.getByText('3 담은 문항 확인')).toBeVisible();
+    expect(screen.getByTestId('teacher-exam-pdf-method')).toBeVisible();
     expect(screen.getByLabelText('과목 필터')).toBeVisible();
-    expect(screen.queryByTestId('exam-grade-filter')).toBeNull();
+    expect(screen.getByTestId('exam-grade-filter')).toHaveTextContent('고2');
+    expect(mocks.questionBank).toHaveBeenCalledWith(
+      expect.objectContaining({ grade: 'HIGH_2' })
+    );
+
+    fireEvent.click(screen.getByTestId('exam-grade-filter'));
+    expect(screen.queryByRole('option', { name: '고3' })).toBeNull();
+    fireEvent.click(await screen.findByRole('option', { name: '고1' }));
+    await waitFor(() =>
+      expect(mocks.questionBank).toHaveBeenCalledWith(
+        expect.objectContaining({ grade: 'HIGH_1', treeNodeIds: [] })
+      )
+    );
 
     const parsed = payload.questionBankParams.parse({
       subject: 'ENGLISH',
+      grade: 'HIGH_1',
       treeNodeIds: [],
       excludeChallengeIds: [],
       page: 0,
       size: 20,
     });
     expect(parsed.subject).toBe('ENGLISH');
-    expect(parsed).not.toHaveProperty('grade');
+    expect(parsed.grade).toBe('HIGH_1');
+    expect(() =>
+      payload.questionBankParams.parse({
+        subject: 'MATH',
+        grade: 'HIGH_3',
+        treeNodeIds: [],
+        excludeChallengeIds: [],
+      })
+    ).toThrow();
   });
 
   it('빈 문제은행에서 PDF 직접 올리기를 누르면 PDF 경로 카드로 이동한다', async () => {

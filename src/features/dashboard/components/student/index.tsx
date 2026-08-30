@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 
 import { useAssignedExamsQuery } from '@/features/exam/hooks/use-exam-query';
+import { StudentTeacherInviteCard } from '@/features/teacher-invite/components/student-teacher-invite-card';
 import { UnitNoteEntryCard } from '@/features/unit-note/components/unit-note-entry-card';
 import { PageLayout } from '@/layout';
 import { Card } from '@/shared/components/ui';
@@ -10,6 +11,7 @@ import { PRIVATE } from '@/shared/constants/route';
 import { useMemberStore } from '@/store';
 
 import { useReceivedConnectionList } from '../../connect/hooks/use-connection';
+import { useStudentDashboardStudyRoomListQuery } from '../../hooks/use-student-dashboard-query';
 import { AgendaFlowCard } from './agenda-flow-card';
 import { ConfirmParentRequestDialog } from './confirm-dialog';
 import { ExamHallCard } from './exam-hall-card';
@@ -20,6 +22,7 @@ const DashboardStudent = () => {
   const [isParentRequestDialogOpen, setIsParentRequestDialogOpen] =
     useState(false);
   const assignedExams = useAssignedExamsQuery();
+  const studyRooms = useStudentDashboardStudyRoomListQuery();
   const inProgressExam = assignedExams.data?.find(
     (exam) => exam.status === 'IN_PROGRESS'
   );
@@ -47,14 +50,17 @@ const DashboardStudent = () => {
   }, [receivedParentRequest]);
 
   return (
-    <div className="mx-auto flex w-full max-w-shell flex-col">
+    <div className="max-w-shell mx-auto flex w-full flex-col">
       {/*
         v22 §1.3: 구획 패딩 16px(--gap-section) · 카드 간 간격 12px(--gap-block).
         DESIGN.md §4.2: 학생 대시보드는 표준 셸(max-w-shell, 1200px)로 통일한다.
         본문 폭은 위 mx-auto max-w-shell 이 잡으므로 PageLayout 은 width="fluid" 로
         중첩 제한(1180px)을 걸지 않는다.
       */}
-      <PageLayout width="fluid" className="gap-block-gap relative flex flex-col">
+      <PageLayout
+        width="fluid"
+        className="gap-block-gap relative flex flex-col"
+      >
         {/* v22 §4 구획 머리줄(:1194-1198): 하단 2px 선, 구획 제목이 카드 제목보다 크다 */}
         <div className="border-gray-12 flex items-baseline gap-2 border-b-2 pb-2">
           <h2 className="text-gray-12 text-lg font-extrabold">지금 내 상태</h2>
@@ -68,6 +74,9 @@ const DashboardStudent = () => {
         </div>
         <TodayProblemsSection />
         <AgendaFlowCard />
+        {!studyRooms.isPending && studyRooms.data?.length === 0 && (
+          <StudentTeacherInviteCard compact />
+        )}
         {inProgressExam && (
           <Card>
             <div className="flex flex-wrap items-center gap-3">

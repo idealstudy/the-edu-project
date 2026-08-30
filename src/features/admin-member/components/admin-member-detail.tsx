@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import { useImpersonateMember } from '@/features/impersonation/hooks/use-impersonation';
 import { PageLayout } from '@/layout';
 import { Button, Textarea } from '@/shared/components/ui';
 import { Button as UnstyledButton } from '@/shared/components/ui/button';
@@ -17,6 +18,7 @@ const ROLE_LABEL = { STUDENT: '학생', TEACHER: '선생님', PARENT: '학부모
 const SIGNUP_LABEL = {
   SELF: '직접 가입',
   TEACHER_INVITE: '학생 초대',
+  STUDENT_INVITE: '학생 초대',
   OPEN_CHALLENGE: '오픈챌린지',
 };
 
@@ -35,6 +37,7 @@ export const AdminMemberDetail = ({ memberId }: { memberId: number }) => {
   const query = useAdminMember(memberId);
   const revoke = useRevokeAdminMember(memberId);
   const restore = useRestoreAdminMember(memberId);
+  const impersonate = useImpersonateMember();
   const [reason, setReason] = useState('');
   const [showReason, setShowReason] = useState(false);
 
@@ -153,13 +156,22 @@ export const AdminMemberDetail = ({ memberId }: { memberId: number }) => {
           <section className="border-gray-3 mb-3 rounded-xl border bg-white p-4">
             <h2 className="mb-3 text-sm font-extrabold">지원</h2>
             <p className="text-gray-8 text-xs leading-7">
-              문제를 재현해야 하면 선생님에게 화면 녹화를 요청합니다.{' '}
-              <b className="text-gray-12">
-                대리 로그인은 이번 판에서 뺐습니다.
-              </b>{' '}
-              지금은 대표 혼자 쓰는 단계라 남의 계정으로 들어가는 기능이 필요
-              없고, 감사 로그를 읽는 화면까지 같이 유지하는 비용이 더 큽니다.
+              회원이 보는 화면을 최대 30분 동안 대신 확인할 수 있습니다. 화면
+              상단의 복귀 띠에서 언제든 관리자 회원 목록으로 돌아옵니다.
             </p>
+            <Button
+              type="button"
+              size="small"
+              className="mt-3 w-full"
+              disabled={member.revoked || impersonate.isPending}
+              onClick={() =>
+                impersonate.mutate({ memberId, name: displayName })
+              }
+            >
+              {impersonate.isPending
+                ? '대신 보는 중'
+                : `${displayName}님 화면 대신 보기`}
+            </Button>
             <a
               className="border-gray-3 mt-3 grid min-h-11 w-full place-items-center rounded-lg border text-xs font-extrabold"
               href={`mailto:${member.email}`}

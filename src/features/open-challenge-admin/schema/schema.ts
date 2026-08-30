@@ -26,6 +26,7 @@ export const AdminChallengeFormSchema = z
       .max(5, '선지는 최대 5개까지 등록할 수 있습니다.'),
     correctChoiceIndex: z.number().int().min(0, '정답을 선택해주세요.'),
     type: z.string(),
+    treeNodeId: z.number().int().positive().nullable(),
   })
   .superRefine((value, context) => {
     if (!value.questionText.trim() && !value.questionMediaId.trim()) {

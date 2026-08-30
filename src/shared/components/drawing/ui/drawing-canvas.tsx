@@ -40,8 +40,6 @@ export function DrawingCanvas({
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const {
-    handlePointerDown,
-    handlePointerMove,
     handlePointerUp,
     handlePointerCancel,
     handlePointerLeave,
@@ -98,16 +96,6 @@ export function DrawingCanvas({
         width: pageSize.width,
         height: pageSize.height,
         touchAction: 'none',
-      }}
-      onPointerDown={(e) => {
-        if (e.pointerType !== 'mouse') return;
-        e.preventDefault();
-        window.getSelection()?.removeAllRanges();
-        handlePointerDown(e.nativeEvent);
-      }}
-      onPointerMove={(e) => {
-        if (e.pointerType !== 'mouse') return;
-        handlePointerMove(e.nativeEvent);
       }}
       onPointerUp={(e) => handlePointerUp(e.nativeEvent)}
       onPointerCancel={(e) => handlePointerCancel(e.nativeEvent)}

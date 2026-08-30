@@ -7,6 +7,7 @@ import { cn } from '@/shared/lib';
 
 type QuestionBankPickerProps = {
   subject: NonNullable<QuestionBankParams['subject']>;
+  grade: NonNullable<QuestionBankParams['grade']>;
   treeNodeIds: number[];
   difficulty?: 'LOW' | 'MID' | 'HIGH';
   selected: QuestionBankItem[];
@@ -17,6 +18,7 @@ type QuestionBankPickerProps = {
 
 export const QuestionBankPicker = ({
   subject,
+  grade,
   treeNodeIds,
   difficulty,
   selected,
@@ -27,6 +29,7 @@ export const QuestionBankPicker = ({
   const selectedIds = selected.map((item) => item.challengeId);
   const query = useQuestionBankQuery({
     subject,
+    grade,
     treeNodeIds,
     difficulty,
     excludeChallengeIds: [],

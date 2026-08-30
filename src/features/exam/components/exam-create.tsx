@@ -16,6 +16,7 @@ import { cn } from '@/shared/lib';
 
 import { QuestionBankPicker } from './question-bank-picker';
 import { TreeNodePicker } from './tree-node-picker';
+import type { QuestionBankGrade } from '../lib/question-bank-grade';
 
 type ExamCreateProps = {
   className?: string;
@@ -37,6 +38,7 @@ export const ExamCreate = ({
   const [studyRoomId, setStudyRoomId] = useState<number | null>(null);
   const [treeNodeIds, setTreeNodeIds] = useState<number[]>([]);
   const [subject, setSubject] = useState<QuestionBankSubject>('MATH');
+  const [grade, setGrade] = useState<QuestionBankGrade>('HIGH_2');
   const [difficulty, setDifficulty] = useState<
     'LOW' | 'MID' | 'HIGH' | undefined
   >('MID');
@@ -137,46 +139,50 @@ export const ExamCreate = ({
         </span>
       </div>
 
-      <div className="border-gray-2 bg-gray-1 text-gray-8 mb-4 flex flex-wrap items-center gap-2 rounded-lg border px-3 py-2 text-xs font-bold">
-        <span className="text-orange-7">✓ 수업 고르기</span>
-        <span>›</span>
-        <span className="text-orange-7">✓ 문항 고르기</span>
-        <span>›</span>
-        <span className="bg-orange-7 rounded-full px-3 py-1 text-white">
-          3 담은 문항 확인
-        </span>
-        <span className="ml-auto">여기까지 {elapsed} 걸렸습니다</span>
-      </div>
+      {!hasPublishError && (
+        <>
+          <div className="border-gray-2 bg-gray-1 text-gray-8 mb-4 flex flex-wrap items-center gap-2 rounded-lg border px-3 py-2 text-xs font-bold">
+            <span className="text-orange-7">✓ 수업 고르기</span>
+            <span>›</span>
+            <span className="text-orange-7">✓ 문항 고르기</span>
+            <span>›</span>
+            <span className="bg-orange-7 rounded-full px-3 py-1 text-white">
+              3 담은 문항 확인
+            </span>
+            <span className="ml-auto">여기까지 {elapsed} 걸렸습니다</span>
+          </div>
 
-      <div className="mb-4 grid gap-2 md:grid-cols-3">
-        <div className="border-orange-7 bg-orange-1 rounded-lg border-2 p-3">
-          <p className="text-orange-11 text-sm font-extrabold">
-            문제은행에서 고르기
-          </p>
-          <p className="text-gray-8 mt-1 text-xs">
-            정답과 단원이 따라옵니다 · 2~3분
-          </p>
-        </div>
-        <div
-          ref={pdfMethodRef}
-          tabIndex={-1}
-          data-testid="teacher-exam-pdf-method"
-          className="border-gray-3 focus:border-orange-7 focus:ring-orange-3 rounded-lg border p-3 focus:ring-2 focus:outline-none"
-        >
-          <p className="text-gray-11 text-sm font-extrabold">
-            게시된 시험 복제
-          </p>
-          <p className="text-gray-8 mt-1 text-xs">
-            관리자가 올린 시험을 내 것으로 · 1분
-          </p>
-        </div>
-        <div className="border-gray-3 rounded-lg border p-3">
-          <p className="text-gray-11 text-sm font-extrabold">PDF 올리기</p>
-          <p className="text-gray-8 mt-1 text-xs">
-            정답을 직접 입력해야 합니다 · 10분 이상
-          </p>
-        </div>
-      </div>
+          <div className="mb-4 grid gap-2 md:grid-cols-3">
+            <div className="border-orange-7 bg-orange-1 rounded-lg border-2 p-3">
+              <p className="text-orange-11 text-sm font-extrabold">
+                문제은행에서 고르기
+              </p>
+              <p className="text-gray-8 mt-1 text-xs">
+                정답과 단원이 따라옵니다 · 2~3분
+              </p>
+            </div>
+            <div
+              ref={pdfMethodRef}
+              tabIndex={-1}
+              data-testid="teacher-exam-pdf-method"
+              className="border-gray-3 focus:border-orange-7 focus:ring-orange-3 rounded-lg border p-3 focus:ring-2 focus:outline-none"
+            >
+              <p className="text-gray-11 text-sm font-extrabold">
+                게시된 시험 복제
+              </p>
+              <p className="text-gray-8 mt-1 text-xs">
+                관리자가 올린 시험을 내 것으로 · 1분
+              </p>
+            </div>
+            <div className="border-gray-3 rounded-lg border p-3">
+              <p className="text-gray-11 text-sm font-extrabold">PDF 올리기</p>
+              <p className="text-gray-8 mt-1 text-xs">
+                정답을 직접 입력해야 합니다 · 10분 이상
+              </p>
+            </div>
+          </div>
+        </>
+      )}
 
       {hasPublishError && (
         <div
@@ -318,8 +324,29 @@ export const ExamCreate = ({
                   ))}
                 </Select.Content>
               </Select>
+              <Select
+                value={grade}
+                onValueChange={(value) => {
+                  setGrade(value as QuestionBankGrade);
+                  setTreeNodeIds([]);
+                  setSelected([]);
+                }}
+              >
+                <Select.Trigger
+                  className="h-9 w-24 text-xs"
+                  data-testid="exam-grade-filter"
+                  aria-label="학년 필터"
+                >
+                  {grade === 'HIGH_1' ? '고1' : '고2'}
+                </Select.Trigger>
+                <Select.Content>
+                  <Select.Option value="HIGH_1">고1</Select.Option>
+                  <Select.Option value="HIGH_2">고2</Select.Option>
+                </Select.Content>
+              </Select>
               <TreeNodePicker
                 value={treeNodeIds}
+                grade={grade}
                 onChange={setTreeNodeIds}
               />
               <Select
@@ -355,6 +382,7 @@ export const ExamCreate = ({
             </div>
             <QuestionBankPicker
               subject={subject}
+              grade={grade}
               treeNodeIds={treeNodeIds}
               difficulty={difficulty}
               selected={selected}

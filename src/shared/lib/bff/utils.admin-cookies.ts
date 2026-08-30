@@ -18,8 +18,9 @@ const adaptAdminCookieForBff = (cookie: string) => {
 
 // admin-impersonating 쿠키 문자열을 직접 만든다(cookies.set 사용 금지 사유는 아래 주석).
 const buildAdminImpersonatingCookie = (expired: boolean) => {
+  const expiresAt = expired ? '' : String(Date.now() + 30 * 60 * 1000);
   const parts = [
-    `admin-impersonating=${expired ? '' : '1'}`,
+    `admin-impersonating=${expiresAt}`,
     'Path=/',
     'HttpOnly',
     'SameSite=Lax',

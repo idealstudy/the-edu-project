@@ -4,9 +4,10 @@ import { AdminConsultations } from '@/features/admin-operations/components/admin
 import { AdminPublicHall } from '@/features/admin-operations/components/admin-public-hall';
 import { AdminStudyRooms } from '@/features/admin-operations/components/admin-study-rooms';
 import { AdminQuestionBank } from '@/features/admin-question-bank/components/admin-question-bank';
+import { AdminOpenChallengeForm } from '@/features/open-challenge-admin/components/admin-open-challenge-form';
 import { renderWithProviders } from '@/tests/utils';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   members: vi.fn(),
@@ -15,6 +16,7 @@ const mocks = vi.hoisted(() => ({
   rooms: vi.fn(),
   consultations: vi.fn(),
   questionBank: vi.fn(),
+  impersonate: vi.fn(),
 }));
 
 vi.mock('@/features/admin-member/hooks/use-admin-members', () => ({
@@ -22,6 +24,13 @@ vi.mock('@/features/admin-member/hooks/use-admin-members', () => ({
   useAdminMember: mocks.member,
   useRevokeAdminMember: () => ({ mutate: vi.fn(), isPending: false }),
   useRestoreAdminMember: () => ({ mutate: vi.fn(), isPending: false }),
+}));
+
+vi.mock('@/features/impersonation/hooks/use-impersonation', () => ({
+  useImpersonateMember: () => ({
+    mutate: mocks.impersonate,
+    isPending: false,
+  }),
 }));
 
 vi.mock('@/features/admin-operations/hooks/use-admin-operations', () => ({
@@ -51,6 +60,36 @@ vi.mock('@/features/exam/hooks/use-exam-query', () => ({
 
 vi.mock('@/features/exam/hooks/use-exam-mutation', () => ({
   useUpsertGradeCutoff: () => ({ mutate: vi.fn(), isPending: false }),
+}));
+
+vi.mock('@/features/weakness-tree/hooks/use-tree', () => ({
+  useMyTreeQuery: () => ({
+    data: {
+      groups: [
+        {
+          subject: 'ALGEBRA',
+          nodes: [
+            {
+              nodeId: '10',
+              displayName: '수열',
+              depth: 1,
+            },
+          ],
+        },
+        {
+          subject: 'COMMON_MATH_1',
+          nodes: [
+            {
+              nodeId: '20',
+              displayName: '공통수학 다항식',
+              depth: 1,
+            },
+          ],
+        },
+      ],
+    },
+    isPending: false,
+  }),
 }));
 
 vi.mock('@/shared/components/ui', async (importOriginal) => {
@@ -95,6 +134,13 @@ const member = {
 };
 
 describe('MVP-G 관리자 4단계 프로토타입 상태', () => {
+  beforeEach(() => {
+    Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
+      configurable: true,
+      value: vi.fn(),
+    });
+  });
+
   afterEach(() => {
     cleanup();
     vi.clearAllMocks();
@@ -109,6 +155,8 @@ describe('MVP-G 관리자 4단계 프로토타입 상태', () => {
     renderWithProviders(<AdminMemberList />);
     expect(screen.getByText('회원 관리')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '상세' })).toBeInTheDocument();
+    expect(screen.getByText('최근 7일')).toBeVisible();
+    expect(screen.getByRole('button', { name: '대신 보기' })).toBeVisible();
     fireEvent.click(screen.getByTestId('member-tab-teacher'));
     expect(screen.getByText(/학생 초대 결과를 확인합니다/)).toBeInTheDocument();
   });
@@ -136,6 +184,7 @@ describe('MVP-G 관리자 4단계 프로토타입 상태', () => {
     expect(
       screen.getByRole('button', { name: '검색어 지우고 전체 보기' })
     ).toBeVisible();
+    expect(screen.queryByText('최근 7일')).not.toBeInTheDocument();
   });
 
   test('a-members-error는 토큰 기반 통합 경고와 최근 조치 이력을 표시한다', () => {
@@ -154,7 +203,7 @@ describe('MVP-G 관리자 4단계 프로토타입 상태', () => {
     expect(screen.getByText('최근 조치 이력')).toBeInTheDocument();
   });
 
-  test('a-bank-empty는 문항 없음 안내만 남기고 우측 운영 패널을 제거한다', () => {
+  test('a-bank-empty는 과목 선택과 실제 업로드 CTA를 보존한다', async () => {
     mocks.questionBank.mockReturnValue({
       data: { content: [], totalElements: 0, page: 0, size: 20 },
       isPending: false,
@@ -167,9 +216,102 @@ describe('MVP-G 관리자 4단계 프로토타입 상태', () => {
     expect(screen.queryByText('검수 대기 0개')).not.toBeInTheDocument();
     expect(screen.queryByText('등급 기준표 등록')).not.toBeInTheDocument();
     expect(screen.queryByText('일괄 올리기')).not.toBeInTheDocument();
+    expect(
+      screen.getByTestId('admin-question-bank-subject-filter')
+    ).toBeVisible();
+    expect(screen.getByTestId('admin-question-bank-unit-filter')).toBeVisible();
+    expect(
+      screen.getByTestId('admin-question-bank-grade-filter')
+    ).toHaveTextContent('고2');
+    fireEvent.click(screen.getByTestId('admin-question-bank-unit-filter'));
+    expect(await screen.findByRole('option', { name: '수열' })).toBeVisible();
+    expect(screen.queryByRole('option', { name: '공통수학 다항식' })).toBeNull();
+    fireEvent.click(screen.getByRole('option', { name: '수열' }));
+    expect(screen.getByTestId('admin-question-bank-unit-filter')).toHaveTextContent(
+      '수열'
+    );
+    expect(mocks.questionBank).toHaveBeenCalledWith(
+      expect.objectContaining({ grade: 'HIGH_2', treeNodeIds: [] })
+    );
+    fireEvent.click(screen.getByTestId('admin-question-bank-grade-filter'));
+    fireEvent.click(await screen.findByRole('option', { name: '고1' }));
+    await waitFor(() =>
+      expect(mocks.questionBank).toHaveBeenCalledWith(
+        expect.objectContaining({ grade: 'HIGH_1', treeNodeIds: [] })
+      )
+    );
+    expect(screen.getByTestId('admin-question-bank-unit-filter')).toHaveTextContent(
+      '전체'
+    );
+    fireEvent.click(screen.getByTestId('admin-question-bank-unit-filter'));
+    expect(
+      await screen.findByRole('option', { name: '공통수학 다항식' })
+    ).toBeVisible();
+    expect(screen.queryByRole('option', { name: '수열' })).toBeNull();
+    fireEvent.click(screen.getByRole('option', { name: '전체 단원' }));
+    expect(
+      screen.queryByTestId('admin-question-bank-review-filter')
+    ).toBeNull();
+    expect(screen.queryByText(/0개 · 검수 완료/)).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: '수학 문항 올리기' })
+    ).toHaveAttribute('href', '/admin/open-challenge/new?grade=HIGH_1');
+    expect(screen.getByTestId('admin-question-bank-empty')).toHaveClass(
+      'border-dashed',
+      'bg-white'
+    );
   });
 
-  test('a-member는 대리 로그인 버튼 없이 계정, 조치 이력, 권한 회수를 표시한다', () => {
+  test('TC-API-002 문제은행 CTA의 고2·단원 맥락을 신규 문항 폼이 prefill한다', () => {
+    renderWithProviders(
+      <AdminOpenChallengeForm
+        prefill={{ grade: 'HIGH_2', treeNodeId: 10 }}
+      />
+    );
+
+    expect(screen.getByTestId('admin-question-bank-prefill')).toHaveTextContent(
+      '고2 단원 10 맥락을 적용했습니다.'
+    );
+  });
+
+  test('[BUG-QA-06 거절] 문제은행에 문항이 있으면 기존 운영 필터와 통계행을 보존한다', () => {
+    mocks.questionBank.mockReturnValue({
+      data: {
+        content: [
+          {
+            challengeId: 4000,
+            title: '등차수열 문항',
+            questionText: '첫째항과 공차를 구하시오.',
+            treeNodeId: 10,
+            treeNodePath: '수학Ⅰ > 수열',
+            sourceText: '6월 학력평가',
+            difficulty: 'MID',
+            wrongAnswerRate: 30,
+            hasCorrectAnswer: true,
+            questionImageUrl: null,
+          },
+        ],
+        totalElements: 1,
+        page: 0,
+        size: 20,
+      },
+      isPending: false,
+      isError: false,
+    });
+
+    renderWithProviders(<AdminQuestionBank />);
+
+    expect(
+      screen.getByTestId('admin-question-bank-subject-filter')
+    ).toBeVisible();
+    expect(
+      screen.getByTestId('admin-question-bank-review-filter')
+    ).toBeVisible();
+    expect(screen.getByText(/1개 · 검수 완료 1 · 검수 대기 0/)).toBeVisible();
+    expect(screen.queryByTestId('admin-question-bank-empty')).toBeNull();
+  });
+
+  test('a-member는 30분 제한 대리 보기 실행 버튼을 제공한다', () => {
     mocks.member.mockReturnValue({
       data: {
         ...member,
@@ -188,9 +330,13 @@ describe('MVP-G 관리자 4단계 프로토타입 상태', () => {
     expect(screen.getByText('계정')).toBeInTheDocument();
     expect(screen.getByText('조치 이력')).toBeInTheDocument();
     expect(screen.getByText('권한 회수')).toBeInTheDocument();
-    expect(
-      screen.queryByRole('button', { name: /이 사람 화면 보기/ })
-    ).not.toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole('button', { name: '박하윤님 화면 대신 보기' })
+    );
+    expect(mocks.impersonate).toHaveBeenCalledWith({
+      memberId: 11,
+      name: '박하윤',
+    });
   });
 
   test('a-hall ok와 empty를 각각 표시한다', () => {

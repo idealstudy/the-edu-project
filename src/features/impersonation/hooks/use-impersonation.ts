@@ -8,6 +8,12 @@ import { z } from 'zod';
 
 const ERROR_REDIRECT_DELAY_MS = 1500;
 
+export const clearExpiredImpersonationSession = () => {
+  window.location.assign(
+    '/api/v1/auth/clear-session?reason=impersonation-expired'
+  );
+};
+
 const impersonationTargetSchema = z.object({
   memberId: z.number().int().positive(),
   name: z.string().min(1),
@@ -43,7 +49,9 @@ export const useExitImpersonation = () => {
   const router = useRouter();
 
   return useMutation({
-    mutationFn: repository.admin.exitImpersonation,
+    mutationFn: async () => {
+      await repository.admin.exitImpersonation();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: memberKeys.all });
       queryClient.clear();

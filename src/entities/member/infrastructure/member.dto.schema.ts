@@ -31,7 +31,9 @@ const AdminMemberListItemSchema = z.object({
   name: z.string().nullable(),
   email: z.string().email(),
   role: AdminMemberRoleSchema,
-  signupPath: z.enum(['SELF', 'TEACHER_INVITE', 'OPEN_CHALLENGE']).nullable(),
+  signupPath: z
+    .enum(['SELF', 'TEACHER_INVITE', 'STUDENT_INVITE', 'OPEN_CHALLENGE'])
+    .nullable(),
   signupAt: z.string().nullable(),
   studyRoomCount: z.number().int().nonnegative(),
   lastActiveAt: z.string().nullable(),
@@ -68,7 +70,9 @@ const AdminMemberDetailSchema = z.object({
   name: z.string().nullable(),
   email: z.string().email(),
   role: AdminMemberRoleSchema,
-  signupPath: z.enum(['SELF', 'TEACHER_INVITE', 'OPEN_CHALLENGE']).nullable(),
+  signupPath: z
+    .enum(['SELF', 'TEACHER_INVITE', 'STUDENT_INVITE', 'OPEN_CHALLENGE'])
+    .nullable(),
   signupAt: z.string().nullable(),
   lastActiveAt: z.string().nullable(),
   isQaAccount: z.boolean(),

@@ -12,6 +12,7 @@ const coachMocks = vi.hoisted(() => ({
   sendMessage: vi.fn(),
   abandonSessionAsync: vi.fn(),
   updatePreferenceAsync: vi.fn(),
+  uploadDrawing: vi.fn(),
 }));
 
 vi.mock('../../hooks/use-open-challenge', () => ({
@@ -59,7 +60,7 @@ vi.mock('@/shared/components/drawing', async (importOriginal) => {
   return {
     ...actual,
     useDrawingUpload: vi.fn(() => ({
-      uploadDrawingAsync: vi.fn(),
+      uploadDrawingAsync: coachMocks.uploadDrawing,
       isUploading: false,
     })),
   };
@@ -77,6 +78,7 @@ describe('AiCoachPanel 지연 대화 시작', () => {
       sessionId: 'session-1',
       status: 'WAITING_ANSWER',
     });
+    coachMocks.uploadDrawing.mockResolvedValue({ mediaId: 'solution-media-1' });
     coachMocks.sendMessage.mockImplementation(
       (
         _payload: unknown,
@@ -238,5 +240,103 @@ describe('AiCoachPanel 지연 대화 시작', () => {
       challengeAttemptId: 'attempt-1',
     });
     expect(coachMocks.ensureAttempt).not.toHaveBeenCalled();
+  });
+
+  test('[PW-201-C01 정상] 손글씨가 있으면 업로드 mediaId를 AI 메시지에 싣고 응답을 그린다', async () => {
+    renderWithProviders(
+      <AiCoachPanel
+        challengeId="42"
+        attemptId={null}
+        isLoggedIn
+        ensureAttempt={coachMocks.ensureAttempt}
+        onAttemptCleared={vi.fn()}
+        drawingStrokes={[
+          {
+            id: 'stroke-1',
+            pageNumber: 0,
+            points: [
+              { x: 0.1, y: 0.1, pressure: 0.5 },
+              { x: 0.8, y: 0.8, pressure: 0.5 },
+            ],
+            color: '#1a1a1a',
+            size: 5,
+            tool: 'pen',
+            layoutWidth: 640,
+            layoutHeight: 440,
+          },
+        ]}
+      />
+    );
+
+    await userEvent.type(
+      screen.getByTestId('ai-coach-message-input'),
+      '이 문제 힌트 줘'
+    );
+    await userEvent.click(screen.getByTestId('ai-coach-send-button'));
+
+    await waitFor(() => {
+      expect(coachMocks.uploadDrawing).toHaveBeenCalledTimes(1);
+      expect(coachMocks.sendMessage).toHaveBeenCalledWith(
+        {
+          sessionId: 'session-1',
+          params: expect.objectContaining({
+            message: '이 문제 힌트 줘',
+            studentSolutionImageMediaId: 'solution-media-1',
+          }),
+        },
+        expect.objectContaining({ onSuccess: expect.any(Function) })
+      );
+    });
+    expect(await screen.findByText('개념부터 짚어볼게요.')).toBeVisible();
+  });
+
+  test('[PW-201-C01 거절] 손글씨 업로드 실패 시 AI 전송을 막고 명시적 스킵 뒤에만 보낸다', async () => {
+    coachMocks.uploadDrawing.mockRejectedValueOnce(new Error('upload failed'));
+    renderWithProviders(
+      <AiCoachPanel
+        challengeId="42"
+        attemptId={null}
+        isLoggedIn
+        ensureAttempt={coachMocks.ensureAttempt}
+        onAttemptCleared={vi.fn()}
+        drawingStrokes={[
+          {
+            id: 'stroke-1',
+            pageNumber: 0,
+            points: [
+              { x: 0.1, y: 0.1, pressure: 0.5 },
+              { x: 0.8, y: 0.8, pressure: 0.5 },
+            ],
+            color: '#1a1a1a',
+            size: 5,
+            tool: 'pen',
+            layoutWidth: 640,
+            layoutHeight: 440,
+          },
+        ]}
+      />
+    );
+
+    await userEvent.type(
+      screen.getByTestId('ai-coach-message-input'),
+      '이 문제 힌트 줘'
+    );
+    await userEvent.click(screen.getByTestId('ai-coach-send-button'));
+
+    expect(
+      await screen.findByTestId('ai-coach-send-without-image-button')
+    ).toBeVisible();
+    expect(coachMocks.sendMessage).not.toHaveBeenCalled();
+
+    await userEvent.click(
+      screen.getByTestId('ai-coach-send-without-image-button')
+    );
+    await waitFor(() =>
+      expect(coachMocks.sendMessage).toHaveBeenCalledTimes(1)
+    );
+    expect(
+      coachMocks.sendMessage.mock.calls[0]?.[0].params
+        .studentSolutionImageMediaId
+    ).toBeUndefined();
   });
 });

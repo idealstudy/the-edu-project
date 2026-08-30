@@ -23,7 +23,7 @@ describe('admin-return BFF cookie adaptation', () => {
     expect(
       cookies.some(
         (cookie) =>
-          cookie.includes('admin-impersonating=1') && cookie.includes('Path=/')
+          /admin-impersonating=\d+/.test(cookie) && cookie.includes('Path=/')
       )
     ).toBe(true);
   });

@@ -258,6 +258,7 @@ const questionBankParams = z.object({
       'OTHER',
     ])
     .optional(),
+  grade: z.enum(['HIGH_1', 'HIGH_2']).optional(),
   treeNodeIds: z.array(z.number().int().positive()).default([]),
   difficulty: z.enum(['LOW', 'MID', 'HIGH']).optional(),
   excludeChallengeIds: z.array(z.number().int().positive()).default([]),
