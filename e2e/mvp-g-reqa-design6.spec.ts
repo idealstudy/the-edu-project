@@ -1,6 +1,6 @@
 // 재QA: v2.0.0 핫픽스(a8eea8ef1) 후 dev 배포본에서 6개 빈/오류 상태 재캡처.
 // mock은 상태 주입(500/빈배열/검색결과0)에만 쓴다 — 판정은 실제 dev 렌더 화면.
-import { type Page, expect, test } from '@playwright/test';
+import { type Browser, type Page, expect, test } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -41,75 +41,96 @@ async function shot(page: Page, name: string, vp: string) {
   });
 }
 
-test.describe('mvp-g reqa design6', () => {
-  for (const vp of VIEWPORTS) {
-    test(`admin empty/error states @${vp.name}`, async ({ browser }) => {
-      const context = await browser.newContext({
-        viewport: { width: vp.width, height: vp.height },
-      });
-      const page = await context.newPage();
-      await login(
-        page,
-        envValue('E2E_ADMIN_EMAIL'),
-        envValue('E2E_ADMIN_PASSWORD')
-      );
+async function openAdminPage(
+  browser: Browser,
+  viewport: (typeof VIEWPORTS)[number],
+  prepare?: (page: Page) => Promise<void>
+) {
+  const context = await browser.newContext({
+    viewport: { width: viewport.width, height: viewport.height },
+  });
+  const page = await context.newPage();
+  await prepare?.(page);
+  await login(
+    page,
+    envValue('E2E_ADMIN_EMAIL'),
+    envValue('E2E_ADMIN_PASSWORD')
+  );
+  return { context, page };
+}
 
-      // 1) a-members-empty: 검색으로 0건
-      await page.goto('/admin/members');
-      await page.waitForLoadState('networkidle');
+test.describe('mvp-g reqa design6', () => {
+  // 이 파일은 같은 관리자·선생님 계정을 반복 사용한다. 백엔드가 회원별 refresh
+  // token 하나만 유지하므로 fullyParallel 전역값을 상속하면 서로의 세션을 끊는다.
+  test.describe.configure({ mode: 'serial' });
+
+  for (const vp of VIEWPORTS) {
+    test(`a-members-empty @${vp.name}`, async ({ browser }) => {
+      test.setTimeout(60_000);
+      const { context, page } = await openAdminPage(browser, vp);
+      await expect(page).toHaveURL(/\/admin\/members(?:\?|$)/);
       const memberSearch = page.getByPlaceholder('이름 또는 이메일로 검색');
+      await expect(memberSearch).toBeVisible();
       await memberSearch.fill('zzzzzz없는값');
       await memberSearch.press('Enter');
-      await expect(page.getByText('불러오는 중입니다')).toHaveCount(0, {
-        timeout: 20_000,
-      });
-      await page.waitForTimeout(400);
+      await expect(page.getByTestId('admin-members-empty')).toBeVisible();
       await shot(page, 'a-members-empty', vp.name);
+      await context.close();
+    });
 
-      // 2) a-members-error: GET /admin/members 500 주입
-      await page.route('**/api/v1/admin/members**', (route) =>
-        route.fulfill({
-          status: 500,
-          contentType: 'application/json',
-          body: JSON.stringify({ message: 'internal error' }),
-        })
+    test(`a-members-error @${vp.name}`, async ({ browser }) => {
+      test.setTimeout(60_000);
+      let routeHits = 0;
+      const { context, page } = await openAdminPage(
+        browser,
+        vp,
+        async (adminPage) => {
+          await adminPage.route('**/api/v1/admin/members**', (route) => {
+            routeHits += 1;
+            return route.fulfill({
+              status: 500,
+              contentType: 'application/json',
+              body: JSON.stringify({ message: 'internal error' }),
+            });
+          });
+        }
       );
-      await page.goto('/admin/members', { waitUntil: 'load' });
-      await page.waitForLoadState('networkidle');
+      await expect(page).toHaveURL(/\/admin\/members(?:\?|$)/);
       await expect(
-        page.getByRole('heading', { name: '회원 관리' })
-      ).toBeVisible({ timeout: 20_000 });
-      await expect(page.getByText('불러오는 중입니다')).toHaveCount(0, {
-        timeout: 20_000,
-      });
-      await page.waitForTimeout(600);
+        page.getByText('회원 목록을 불러오는 중입니다.')
+      ).toHaveCount(0, { timeout: 45_000 });
+      await expect(page.getByTestId('admin-members-error')).toBeVisible();
+      expect(routeHits).toBeGreaterThan(0);
       await shot(page, 'a-members-error', vp.name);
-      await page.unroute('**/api/v1/admin/members**');
+      await context.close();
+    });
 
-      // 3) a-bank-empty: content=[] totalElements=0 주입
-      await page.route('**/api/v1/admin/question-bank**', (route) =>
-        route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            status: 200,
-            data: { content: [], totalElements: 0, page: 0, size: 20 },
-          }),
-        })
+    test(`a-bank-empty @${vp.name}`, async ({ browser }) => {
+      const { context, page } = await openAdminPage(
+        browser,
+        vp,
+        async (adminPage) => {
+          await adminPage.route('**/api/v1/admin/question-bank**', (route) =>
+            route.fulfill({
+              status: 200,
+              contentType: 'application/json',
+              body: JSON.stringify({
+                status: 200,
+                data: { content: [], totalElements: 0, page: 0, size: 20 },
+              }),
+            })
+          );
+        }
       );
       await page.goto('/admin/question-bank', { waitUntil: 'load' });
-      await expect(
-        page.getByRole('heading', { name: '문제은행' })
-      ).toBeVisible({ timeout: 20_000 });
-      await expect(page.getByText('문항을 불러오는 중입니다')).toHaveCount(
-        0,
-        { timeout: 20_000 }
-      );
-      await page.waitForTimeout(400);
+      await expect(page.getByTestId('admin-question-bank-empty')).toBeVisible();
       await shot(page, 'a-bank-empty', vp.name);
-      await page.unroute('**/api/v1/admin/question-bank**');
+      await context.close();
+    });
 
-      // 4) a-consult-empty: 필터·검색어 없는 "진짜 초기 빈 상태"(content=[] 응답 주입).
+    test(`a-consult-empty @${vp.name}`, async ({ browser }) => {
+      const { context, page } = await openAdminPage(browser, vp);
+      // 필터·검색어 없는 "진짜 초기 빈 상태"(content=[] 응답 주입).
       // 검색어로 0건을 만들면 검색창이 남아 있는 채(가둠 방지)라 시안의 zero-data
       // 빈 상태(칩·검색창까지 숨긴 카드)와 다른 조건을 대조하게 된다. 그래서 응답
       // 자체를 빈 배열로 주입해 필터·검색 없는 기본 진입 상태를 만든다.
@@ -129,15 +150,15 @@ test.describe('mvp-g reqa design6', () => {
         })
       );
       await page.goto('/admin/consultations');
-      await page.waitForLoadState('networkidle');
       await expect(page.getByText('받은 문의가 없어요')).toBeVisible({
         timeout: 20_000,
       });
-      await page.waitForTimeout(400);
       await shot(page, 'a-consult-empty', vp.name);
-      await page.unroute('**/api/v1/admin/consultation-cases**');
+      await context.close();
+    });
 
-      // 5) a-hall-empty: postings=[] 주입
+    test(`a-hall-empty @${vp.name}`, async ({ browser }) => {
+      const { context, page } = await openAdminPage(browser, vp);
       await page.route('**/api/v1/admin/public-exams**', (route) =>
         route.fulfill({
           status: 200,
@@ -149,13 +170,10 @@ test.describe('mvp-g reqa design6', () => {
         })
       );
       await page.goto('/admin/public-exams', { waitUntil: 'load' });
-      await expect(
-        page.getByText('지금 게시 중인 시험이 없어요')
-      ).toBeVisible({ timeout: 20_000 });
-      await page.waitForTimeout(400);
+      await expect(page.getByText('지금 게시 중인 시험이 없어요')).toBeVisible({
+        timeout: 20_000,
+      });
       await shot(page, 'a-hall-empty', vp.name);
-      await page.unroute('**/api/v1/admin/public-exams**');
-
       await context.close();
     });
 
@@ -182,7 +200,6 @@ test.describe('mvp-g reqa design6', () => {
       });
 
       await page.goto('/dashboard/teacher/exams');
-      await page.waitForLoadState('networkidle');
       const firstToggle = page
         .locator('[data-testid^="question-bank-item-"] button')
         .first();

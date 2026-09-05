@@ -1,7 +1,7 @@
 import { StudentBottomNavigation } from '@/features/dashboard/components/student/student-bottom-navigation';
 import { StudentMyPage } from '@/features/mypage/student/components/student-my-page';
 import { PointWalletClient } from '@/features/point/components/point-wallet-client';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -210,28 +210,37 @@ describe('MVP-G 학생 마이와 포인트 계약', () => {
 
 describe('MVP-G 학생 모바일 내비게이션', () => {
   it('다섯 화면의 실제 라우트와 현재 화면 상태를 제공한다', () => {
-    mocks.pathname = '/friends';
+    mocks.pathname = '/dashboard/student/results';
     render(<StudentBottomNavigation />);
 
-    expect(screen.getByRole('link', { name: '학습' })).toHaveAttribute(
-      'href',
-      '/dashboard/student'
-    );
-    expect(screen.getByRole('link', { name: '친구' })).toHaveAttribute(
-      'aria-current',
-      'page'
-    );
-    expect(screen.getByRole('link', { name: '오답' })).toHaveAttribute(
-      'href',
-      '/dashboard/student/wrong-answers'
-    );
-    expect(screen.getByRole('link', { name: '포인트' })).toHaveAttribute(
-      'href',
-      '/points'
-    );
-    expect(screen.getByRole('link', { name: '마이' })).toHaveAttribute(
-      'href',
-      '/mypage'
-    );
+    const links = within(
+      screen.getByRole('navigation', { name: '학생 모바일 주요 메뉴' })
+    ).getAllByRole('link');
+
+    expect(
+      links.map((link) => ({
+        name: link.getAttribute('aria-label'),
+        href: link.getAttribute('href'),
+        current: link.getAttribute('aria-current'),
+      }))
+    ).toEqual([
+      { name: '내 학습', href: '/dashboard/student', current: null },
+      {
+        name: '내 성과',
+        href: '/dashboard/student/results',
+        current: 'page',
+      },
+      {
+        name: '돌아보기',
+        href: '/dashboard/student/look-back',
+        current: null,
+      },
+      {
+        name: '오답 회독',
+        href: '/dashboard/student/wrong-answers',
+        current: null,
+      },
+      { name: '마이페이지', href: '/mypage', current: null },
+    ]);
   });
 });

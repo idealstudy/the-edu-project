@@ -132,9 +132,12 @@ describe('MVP-G 학부모 hub v23 정합', () => {
 
   it('학부모 사이드바는 정본 6항목만 순서대로 노출하고 클릭을 기존 라우트에 연결한다', async () => {
     const user = userEvent.setup();
-    render(<DashboardSidebar />);
+    const { container } = render(<DashboardSidebar />);
 
     const links = screen.getAllByRole('link');
+    expect(
+      container.querySelector('[data-sidebar-mode="rail-until-desktop"]')
+    ).toHaveClass('w-sidebar-rail-width');
     expect(links.map((link) => link.textContent)).toEqual([
       '홈',
       '학습 소식',

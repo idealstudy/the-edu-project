@@ -6,6 +6,7 @@ import { note } from '@/entities/study-note';
 import { room } from '@/entities/study-room';
 import { dashboard } from '@/features/dashboard';
 import { api } from '@/shared/api/http';
+import { reportSafeServerError } from '@/shared/lib/observability/server-event';
 import axios from 'axios';
 
 type DashboardRole = 'teacher' | 'student';
@@ -125,11 +126,14 @@ export async function GET() {
       });
     }
 
-    // 예측 못 한 에러
-    console.error('[dashboard BFF] unexpected error', error);
+    // 원본 error 객체는 sink로 보내지 않고 허용된 분류값만 기록한다.
+    const correlationId = reportSafeServerError(
+      'DASHBOARD_BFF_UNEXPECTED_ERROR',
+      error
+    );
     return NextResponse.json(
       { message: 'Internal Server Error', status: 500 },
-      { status: 500 }
+      { status: 500, headers: { 'x-correlation-id': correlationId } }
     );
   }
 }

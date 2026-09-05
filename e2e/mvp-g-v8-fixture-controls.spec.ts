@@ -177,15 +177,43 @@ test.describe('MVP-G TC35 제어 fixture', () => {
         body: okBody([]),
       })
     );
+    await page.route('**/api/v1/common/tree', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: okBody({
+          nodes: [
+            {
+              nodeId: 10,
+              parentId: null,
+              subject: 'ALGEBRA',
+              unit: 'SEQUENCES',
+              displayName: '수열',
+              depth: 1,
+              masteryScore: 0,
+              diagnosedScore: null,
+              attemptCount: 0,
+              correctCount: 0,
+              unitNotePageCount: 0,
+            },
+          ],
+        }),
+      })
+    );
 
     await page.goto('/admin/question-bank');
 
     await expect(
       page.getByRole('heading', { name: '이 단원에는 아직 문항이 없어요' })
     ).toBeVisible();
+    await page.getByTestId('admin-question-bank-unit-filter').click();
+    await page.getByRole('option', { name: '수열' }).click();
     await expect(
-      page.getByRole('button', { name: '이 단원 문항 올리기' })
-    ).toHaveCount(1);
+      page.getByRole('link', { name: '이 단원 문항 올리기' })
+    ).toHaveAttribute(
+      'href',
+      '/admin/open-challenge/new?grade=HIGH_2&treeNodeId=10'
+    );
   });
 
   test('E13: 시험 저장 API만 실패하면 담은 문항이 남고 같은 문항으로 재시도한다', async ({

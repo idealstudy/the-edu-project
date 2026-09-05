@@ -8,7 +8,7 @@ import type { TreeSubjectGroup } from '@/entities/tree';
 import { useStudentGrowthQuery } from '@/features/dashboard/hooks/use-growth-query';
 import { useMyPointWalletQuery } from '@/features/point/hooks/use-point';
 import { useMyTreeQuery } from '@/features/weakness-tree/hooks/use-tree';
-import { PageLayout, SplitLayout } from '@/layout';
+import { PageLayout } from '@/layout';
 import { Button, Card } from '@/shared/components/ui';
 import { Button as UnstyledButton } from '@/shared/components/ui/button';
 import { subjectLabel } from '@/shared/constants';
@@ -96,52 +96,14 @@ export const StudentResultsPage = () => {
   ).length;
 
   return (
-    <PageLayout className="gap-block-gap flex flex-col">
-      {!treeQuery.isError && isEmpty && (
-        <Card data-testid="student-results-empty-weekly-summary">
-          <div className="mb-3 flex items-center gap-2">
-            <h2 className="text-gray-12 text-base font-extrabold">
-              이번 주 요약
-            </h2>
-            <span className="text-gray-9 text-xs">첫 기록을 기다리는 중</span>
-          </div>
-          <div className="gap-content-gap grid grid-cols-3">
-            <MapStat
-              value={0}
-              label="푼 문제"
-            />
-            <MapStat
-              value={0}
-              label="해설 안 보고 맞힘"
-            />
-            <MapStat
-              value={growthQuery.data?.streakDays ?? 0}
-              label="연속 일수"
-            />
-          </div>
-          <div
-            className="gap-content-gap mt-4 grid grid-cols-7"
-            aria-label="이번 주 풀이 기록"
-          >
-            {['월', '화', '수', '목', '금', '토', '일'].map((day) => (
-              <div
-                key={day}
-                className="text-center"
-              >
-                <span className="bg-gray-3 mx-auto block h-1 w-full rounded-full" />
-                <span className="text-gray-8 text-ui-choice mt-1 block">
-                  {day}
-                </span>
-              </div>
-            ))}
-          </div>
-          <p className="text-gray-9 text-ui-choice mt-3 leading-5">
-            막대가 하나도 없는 것이 지금 상태입니다. 한 문제만 풀어도 오늘
-            칸부터 올라옵니다.
-          </p>
-        </Card>
-      )}
-      <Card data-testid="learning-map">
+    <PageLayout
+      width="fluid"
+      className="gap-block-gap max-w-shell flex flex-col"
+    >
+      <Card
+        data-testid="learning-map"
+        className="p-content-gap tablet:p-card-pad"
+      >
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <h2 className="text-gray-12 text-base font-extrabold">
             내 학습 지도
@@ -150,7 +112,7 @@ export const StudentResultsPage = () => {
             {groups.length}과목 {nodes.length}단원 · 지금까지 채운 것
           </span>
           <span className="border-gray-3 text-gray-10 text-ui-choice ml-auto rounded-md border px-2 py-1 font-bold">
-            진행 중 과목 먼저
+            최근 바뀐 순
           </span>
         </div>
 
@@ -168,7 +130,10 @@ export const StudentResultsPage = () => {
           </div>
         ) : (
           <>
-            <div className="bg-gray-1 mb-5 grid grid-cols-2 gap-2 rounded-lg p-3 md:grid-cols-4">
+            <div
+              data-testid="learning-map-summary"
+              className="bg-orange-1 border-orange-3 tablet:grid-cols-[repeat(3,minmax(0,1fr))_minmax(15rem,2fr)] mb-5 grid grid-cols-3 gap-2 rounded-lg border p-3"
+            >
               <MapStat
                 value={tree?.mastery.mastered ?? 0}
                 label="정복한 단원"
@@ -181,7 +146,7 @@ export const StudentResultsPage = () => {
                 value={tree?.mastery.untested ?? 0}
                 label="미진단"
               />
-              <div>
+              <div className="tablet:col-span-1 col-span-3">
                 <p className="text-gray-9 mb-2 text-xs">
                   지도 전체가{' '}
                   <b className="text-gray-12 tabular-nums">
@@ -283,7 +248,23 @@ export const StudentResultsPage = () => {
               })}
             </div>
 
-            <p className="bg-gray-1 text-gray-10 mt-4 rounded-lg p-3 text-xs leading-5">
+            <div className="text-gray-9 text-ui-choice mt-4 flex flex-wrap gap-3">
+              {[
+                ['bg-orange-7', '정복 80% 이상'],
+                ['bg-orange-4', '진행 60~79%'],
+                ['bg-orange-2', '약함 60% 미만'],
+                ['bg-gray-1 border border-gray-3', '미진단'],
+              ].map(([tone, label]) => (
+                <span
+                  key={label}
+                  className="flex items-center gap-1.5"
+                >
+                  <i className={`${tone} size-2.5 rounded-sm`} />
+                  {label}
+                </span>
+              ))}
+            </div>
+            <p className="bg-gray-1 text-gray-10 mt-3 rounded-lg p-3 text-xs leading-5">
               칸을 누르면 그 단원 <b>단권화 노트</b>로 갑니다. 여기서는 보기만
               하고 고치지 않습니다. 숙련도 값은 <b>오픈챌린지</b>에서
               가져옵니다. 풀이 또는 정복도 기록이 있는 과목은 모두 펼치고,
@@ -311,125 +292,168 @@ export const StudentResultsPage = () => {
         )}
       </Card>
 
-      <SplitLayout>
-        {!isEmpty && (
-          <Card>
-            <div className="mb-3 flex items-center gap-2">
-              <h2 className="text-gray-12 text-base font-extrabold">
-                약한 단원
-              </h2>
-              <span className="text-gray-9 text-xs">
-                지도에서 가장 덜 찬 곳 셋
-              </span>
-            </div>
-            {weakUnits.map((unit) => (
-              <div
-                key={unit.nodeId}
-                className="border-gray-2 min-h-row-min flex min-w-0 items-center gap-3 border-t py-2 first:border-t-0"
-              >
-                <div className="min-w-0 flex-1">
-                  <b className="text-gray-12 block truncate text-sm">
-                    {unit.displayName}
-                  </b>
-                  <small className="text-gray-9">
-                    노트 {unit.unitNotePageCount}장
-                  </small>
-                </div>
-                <div className="flex w-48 items-center gap-2">
-                  <span className="bg-gray-2 h-2 flex-1 overflow-hidden rounded-full">
-                    <i
-                      className="bg-orange-7 block h-full"
-                      style={{ width: `${unit.masteryScore}%` }}
-                    />
-                  </span>
-                  <b className="text-gray-10 w-11 text-right text-xs tabular-nums">
-                    {unit.masteryScore}%
-                  </b>
-                </div>
-                <Button
-                  asChild
-                  size="xsmall"
-                  variant="outlined"
-                >
-                  <Link
-                    href={PRIVATE.DASHBOARD.UNIT_NOTE_ROOM(Number(unit.nodeId))}
-                  >
-                    정리하기
-                  </Link>
-                </Button>
-              </div>
-            ))}
-          </Card>
-        )}
-        <Card>
-          <div className="mb-4 flex items-center gap-2">
-            <h2 className="text-gray-12 text-base font-extrabold">
-              뱃지 · 포인트 · 레벨
-            </h2>
+      {!isEmpty && (
+        <Card data-testid="student-results-weak-units">
+          <div className="mb-3 flex items-center gap-2">
+            <h2 className="text-gray-12 text-base font-extrabold">약한 단원</h2>
             <span className="text-gray-9 text-xs">
-              오픈챌린지와 같은 계정에서 쌓입니다
+              지도에서 가장 덜 찬 곳 셋
             </span>
           </div>
-          <div className="bg-gray-1 rounded-lg p-4">
-            <div className="flex items-end justify-between">
-              <b className="text-gray-12 text-xl">
-                Lv.{growthQuery.data?.level ?? 0}
-              </b>
-              <span className="text-gray-9 text-xs">
-                다음 레벨까지 {growthQuery.data?.xpToNextLevel ?? 0}포인트
-              </span>
+          {weakUnits.map((unit) => (
+            <div
+              key={unit.nodeId}
+              className="border-gray-2 min-h-row-min flex min-w-0 items-center gap-3 border-t py-2 first:border-t-0"
+            >
+              <div className="min-w-0 flex-1">
+                <b className="text-gray-12 block truncate text-sm">
+                  {unit.displayName}
+                </b>
+                <small className="text-gray-9">
+                  노트 {unit.unitNotePageCount}장
+                </small>
+              </div>
+              <div className="flex w-48 items-center gap-2">
+                <span className="bg-gray-2 h-2 flex-1 overflow-hidden rounded-full">
+                  <i
+                    className="bg-orange-7 block h-full"
+                    style={{ width: `${unit.masteryScore}%` }}
+                  />
+                </span>
+                <b className="text-gray-10 w-11 text-right text-xs tabular-nums">
+                  {unit.masteryScore}%
+                </b>
+              </div>
+              <Button
+                asChild
+                size="xsmall"
+                variant="outlined"
+              >
+                <Link
+                  href={PRIVATE.DASHBOARD.UNIT_NOTE_ROOM(Number(unit.nodeId))}
+                >
+                  정리하기
+                </Link>
+              </Button>
             </div>
-            <div className="bg-gray-2 h-level-bar rounded-pill mt-3 overflow-hidden">
-              <i
-                className="bg-orange-7 block h-full"
-                style={{
-                  width: `${growthQuery.data ? Math.min(100, Math.round((growthQuery.data.xp / growthQuery.data.xpToNextLevel) * 100)) : 0}%`,
-                }}
-              />
-            </div>
-          </div>
-          <div className="border-gray-2 my-4 flex items-center border-y py-3">
-            <span className="text-gray-12 text-sm">쓸 수 있는 포인트</span>
-            <b className="text-orange-10 ml-auto text-xl tabular-nums">
-              {pointQuery.data?.balance ?? 0}P
-            </b>
+          ))}
+        </Card>
+      )}
+
+      {!treeQuery.isError && (
+        <Card data-testid="student-results-weekly-summary">
+          <div className="mb-3 flex items-center gap-2">
+            <h2 className="text-gray-12 text-base font-extrabold">
+              이번 주 요약
+            </h2>
+            <span className="text-gray-9 text-xs">
+              {isEmpty ? '첫 기록을 기다리는 중' : '현재 제공되는 성장 기록'}
+            </span>
           </div>
           <div className="gap-content-gap grid grid-cols-3">
-            {[
-              ['첫 정복', (tree?.mastery.mastered ?? 0) >= 1],
-              ['7일 연속', (growthQuery.data?.streakDays ?? 0) >= 7],
-              ['오답 10개 정리', false],
-              ['해설 없이 10문항', false],
-              ['30일 연속', (growthQuery.data?.streakDays ?? 0) >= 30],
-              ['단원 정복 5개', (tree?.mastery.mastered ?? 0) >= 5],
-            ].map(([label, earned]) => (
-              <div
-                key={String(label)}
-                className="border-gray-3 rounded-card p-content-gap min-w-0 border text-center"
-              >
-                <span
-                  className={`block text-lg ${earned ? 'text-orange-7' : 'text-gray-5'}`}
-                >
-                  {earned ? '★' : '☆'}
-                </span>
-                <b className="text-gray-12 font-caption-heading text-heading-wrap block">
-                  {label}
-                </b>
-                {!earned && (
-                  <small className="text-gray-9 text-ui-compact block">
-                    잠김
-                  </small>
-                )}
-              </div>
-            ))}
+            <MapStat
+              value="집계 미지원"
+              label="푼 문제"
+            />
+            <MapStat
+              value="집계 미지원"
+              label="해설 안 보고 맞힘"
+            />
+            <MapStat
+              value={growthQuery.data?.streakDays ?? '확인 중'}
+              label="연속 일수"
+            />
           </div>
+          <div
+            className="border-gray-3 bg-gray-1 mt-4 flex items-center justify-between gap-3 rounded-lg border p-3"
+            data-testid="student-results-weekly-timeline-unsupported"
+          >
+            <span className="text-gray-10 text-ui-choice font-bold">
+              일별 풀이 추이
+            </span>
+            <span className="text-gray-9 text-ui-choice">집계 미지원</span>
+          </div>
+          <p className="text-gray-9 text-ui-choice mt-3 leading-5">
+            푼 문제 수와 해설 없이 맞힌 수는 현재 성장 응답에서 제공하지
+            않습니다. 연속 일수는 실제 성장 기록을 표시합니다.
+          </p>
         </Card>
-      </SplitLayout>
+      )}
+
+      <Card data-testid="student-results-rewards">
+        <div className="mb-4 flex items-center gap-2">
+          <h2 className="text-gray-12 text-base font-extrabold">
+            뱃지 · 포인트 · 레벨
+          </h2>
+          <span className="text-gray-9 text-xs">
+            오픈챌린지와 같은 계정에서 쌓입니다
+          </span>
+        </div>
+        <div className="bg-gray-1 rounded-lg p-4">
+          <div className="flex items-end justify-between">
+            <b className="text-gray-12 text-xl">
+              Lv.{growthQuery.data?.level ?? 0}
+            </b>
+            <span className="text-gray-9 text-xs">
+              다음 레벨까지 {growthQuery.data?.xpToNextLevel ?? 0}포인트
+            </span>
+          </div>
+          <div className="bg-gray-2 h-level-bar rounded-pill mt-3 overflow-hidden">
+            <i
+              className="bg-orange-7 block h-full"
+              style={{
+                width: `${growthQuery.data ? Math.min(100, Math.round((growthQuery.data.xp / growthQuery.data.xpToNextLevel) * 100)) : 0}%`,
+              }}
+            />
+          </div>
+        </div>
+        <div className="border-gray-2 my-4 flex items-center border-y py-3">
+          <span className="text-gray-12 text-sm">쓸 수 있는 포인트</span>
+          <b className="text-orange-10 ml-auto text-xl tabular-nums">
+            {pointQuery.data?.balance ?? 0}P
+          </b>
+        </div>
+        <div className="gap-content-gap grid grid-cols-3">
+          {[
+            ['첫 정복', (tree?.mastery.mastered ?? 0) >= 1],
+            ['7일 연속', (growthQuery.data?.streakDays ?? 0) >= 7],
+            ['오답 10개 정리', false],
+            ['해설 없이 10문항', false],
+            ['30일 연속', (growthQuery.data?.streakDays ?? 0) >= 30],
+            ['단원 정복 5개', (tree?.mastery.mastered ?? 0) >= 5],
+          ].map(([label, earned]) => (
+            <div
+              key={String(label)}
+              className="border-gray-3 rounded-card p-content-gap min-w-0 border text-center"
+            >
+              <span
+                className={`block text-lg ${earned ? 'text-orange-7' : 'text-gray-5'}`}
+              >
+                {earned ? '★' : '☆'}
+              </span>
+              <b className="text-gray-12 font-caption-heading text-heading-wrap block">
+                {label}
+              </b>
+              {!earned && (
+                <small className="text-gray-9 text-ui-compact block">
+                  잠김
+                </small>
+              )}
+            </div>
+          ))}
+        </div>
+      </Card>
     </PageLayout>
   );
 };
 
-const MapStat = ({ value, label }: { value: number; label: string }) => (
+const MapStat = ({
+  value,
+  label,
+}: {
+  value: number | string;
+  label: string;
+}) => (
   <div className="text-center">
     <strong className="text-gray-12 block text-xl tabular-nums">{value}</strong>
     <span className="text-gray-9 text-ui-choice">{label}</span>

@@ -166,6 +166,35 @@ describe('학생 성과 학습 지도 대량 데이터 접기', () => {
       screen.getByTestId('learning-map-group-toggle-COMMON_MATH_1')
     ).toHaveAttribute('aria-expanded', 'false');
     expect(screen.getByText('1과목')).toBeVisible();
+    expect(screen.getByText('최근 바뀐 순')).toBeVisible();
+    expect(screen.getByText('정복 80% 이상')).toBeVisible();
+    expect(screen.getByTestId('learning-map-summary')).toHaveClass(
+      'grid-cols-3',
+      'tablet:grid-cols-[repeat(3,minmax(0,1fr))_minmax(15rem,2fr)]'
+    );
+
+    const learningMap = screen.getByTestId('learning-map');
+    const weakUnits = screen.getByTestId('student-results-weak-units');
+    const weeklySummary = screen.getByTestId('student-results-weekly-summary');
+    const rewards = screen.getByTestId('student-results-rewards');
+    expect(
+      learningMap.compareDocumentPosition(weakUnits) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+    expect(
+      weakUnits.compareDocumentPosition(weeklySummary) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+    expect(
+      weeklySummary.compareDocumentPosition(rewards) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+    expect(weeklySummary).toHaveTextContent('집계 미지원');
+    expect(weeklySummary).toHaveTextContent('2');
+    expect(
+      screen.getByTestId('student-results-weekly-timeline-unsupported')
+    ).toHaveTextContent('일별 풀이 추이집계 미지원');
+    expect(screen.queryByLabelText('이번 주 풀이 기록')).toBeNull();
   });
 
   it('기록이 없어 접힌 과목도 눌러서 펼칠 수 있다', () => {
@@ -181,7 +210,7 @@ describe('학생 성과 학습 지도 대량 데이터 접기', () => {
     expect(screen.queryByText('1과목')).not.toBeInTheDocument();
   });
 
-  it('성과 빈 상태에 v22 이번 주 요약 3칸을 보인다', () => {
+  it('성과 빈 상태도 지도 다음에 실제 성장값과 미지원 주간 지표를 보인다', () => {
     mocks.tree.mockReturnValue({
       data: {
         groups: [],
@@ -200,12 +229,29 @@ describe('학생 성과 학습 지도 대량 데이터 접기', () => {
 
     render(<StudentResultsPage />);
 
-    const summary = screen.getByTestId('student-results-empty-weekly-summary');
+    const learningMap = screen.getByTestId('learning-map');
+    const summary = screen.getByTestId('student-results-weekly-summary');
+    const rewards = screen.getByTestId('student-results-rewards');
     expect(summary).toBeVisible();
     expect(summary).toHaveTextContent('이번 주 요약');
     expect(summary).toHaveTextContent('푼 문제');
     expect(summary).toHaveTextContent('해설 안 보고 맞힘');
     expect(summary).toHaveTextContent('연속 일수');
+    expect(summary).toHaveTextContent('집계 미지원');
+    expect(summary).toHaveTextContent('2');
+    expect(
+      screen.getByTestId('student-results-weekly-timeline-unsupported')
+    ).toHaveTextContent('일별 풀이 추이집계 미지원');
+    expect(screen.queryByLabelText('이번 주 풀이 기록')).toBeNull();
+    expect(
+      learningMap.compareDocumentPosition(summary) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+    expect(
+      summary.compareDocumentPosition(rewards) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+    expect(screen.queryByTestId('student-results-weak-units')).toBeNull();
   });
 
   it('오늘의 문제는 단원과 메타만 남기고 공통 핸드오프를 한 번만 보인다', () => {

@@ -62,8 +62,9 @@ vi.mock('@/features/exam/hooks/use-exam-mutation', () => ({
   useUpsertGradeCutoff: () => ({ mutate: vi.fn(), isPending: false }),
 }));
 
-vi.mock('@/features/weakness-tree/hooks/use-tree', () => ({
-  useMyTreeQuery: () => ({
+vi.mock('@/features/weakness-tree/hooks/use-tree', () => {
+  // 관리자 문제은행은 admin 전용 트리 훅을 쓴다(옵션 A). 공용 훅도 유지.
+  const treeStub = () => ({
     data: {
       groups: [
         {
@@ -89,8 +90,12 @@ vi.mock('@/features/weakness-tree/hooks/use-tree', () => ({
       ],
     },
     isPending: false,
-  }),
-}));
+  });
+  return {
+    useAdminTreeQuery: treeStub,
+    useMyTreeQuery: treeStub,
+  };
+});
 
 vi.mock('@/shared/components/ui', async (importOriginal) => {
   const actual =
@@ -225,13 +230,23 @@ describe('MVP-G 관리자 4단계 프로토타입 상태', () => {
     ).toHaveTextContent('고2');
     fireEvent.click(screen.getByTestId('admin-question-bank-unit-filter'));
     expect(await screen.findByRole('option', { name: '수열' })).toBeVisible();
-    expect(screen.queryByRole('option', { name: '공통수학 다항식' })).toBeNull();
+    expect(
+      screen.queryByRole('option', { name: '공통수학 다항식' })
+    ).toBeNull();
     fireEvent.click(screen.getByRole('option', { name: '수열' }));
-    expect(screen.getByTestId('admin-question-bank-unit-filter')).toHaveTextContent(
-      '수열'
+    expect(
+      screen.getByTestId('admin-question-bank-unit-filter')
+    ).toHaveTextContent('수열');
+    await waitFor(() =>
+      expect(mocks.questionBank).toHaveBeenCalledWith(
+        expect.objectContaining({ grade: 'HIGH_2', treeNodeIds: [10] })
+      )
     );
-    expect(mocks.questionBank).toHaveBeenCalledWith(
-      expect.objectContaining({ grade: 'HIGH_2', treeNodeIds: [] })
+    expect(
+      screen.getByRole('link', { name: '이 단원 문항 올리기' })
+    ).toHaveAttribute(
+      'href',
+      '/admin/open-challenge/new?grade=HIGH_2&treeNodeId=10'
     );
     fireEvent.click(screen.getByTestId('admin-question-bank-grade-filter'));
     fireEvent.click(await screen.findByRole('option', { name: '고1' }));
@@ -240,9 +255,9 @@ describe('MVP-G 관리자 4단계 프로토타입 상태', () => {
         expect.objectContaining({ grade: 'HIGH_1', treeNodeIds: [] })
       )
     );
-    expect(screen.getByTestId('admin-question-bank-unit-filter')).toHaveTextContent(
-      '전체'
-    );
+    expect(
+      screen.getByTestId('admin-question-bank-unit-filter')
+    ).toHaveTextContent('전체');
     fireEvent.click(screen.getByTestId('admin-question-bank-unit-filter'));
     expect(
       await screen.findByRole('option', { name: '공통수학 다항식' })
@@ -254,7 +269,7 @@ describe('MVP-G 관리자 4단계 프로토타입 상태', () => {
     ).toBeNull();
     expect(screen.queryByText(/0개 · 검수 완료/)).not.toBeInTheDocument();
     expect(
-      screen.getByRole('link', { name: '수학 문항 올리기' })
+      screen.getByRole('link', { name: '이 단원 문항 올리기' })
     ).toHaveAttribute('href', '/admin/open-challenge/new?grade=HIGH_1');
     expect(screen.getByTestId('admin-question-bank-empty')).toHaveClass(
       'border-dashed',
@@ -264,9 +279,7 @@ describe('MVP-G 관리자 4단계 프로토타입 상태', () => {
 
   test('TC-API-002 문제은행 CTA의 고2·단원 맥락을 신규 문항 폼이 prefill한다', () => {
     renderWithProviders(
-      <AdminOpenChallengeForm
-        prefill={{ grade: 'HIGH_2', treeNodeId: 10 }}
-      />
+      <AdminOpenChallengeForm prefill={{ grade: 'HIGH_2', treeNodeId: 10 }} />
     );
 
     expect(screen.getByTestId('admin-question-bank-prefill')).toHaveTextContent(

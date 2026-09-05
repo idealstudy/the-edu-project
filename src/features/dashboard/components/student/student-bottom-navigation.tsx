@@ -7,39 +7,44 @@ import { PRIVATE } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import {
   BookOpenCheck,
+  ChartNoAxesCombined,
   GraduationCap,
-  Handshake,
+  History,
   UserRound,
-  Wallet,
 } from 'lucide-react';
 
 const ITEMS = [
   {
-    label: '학습',
+    label: '내 학습',
+    shortLabel: '학습',
     href: PRIVATE.DASHBOARD.STUDENT,
     match: /^\/dashboard\/student\/?$/,
     icon: GraduationCap,
   },
   {
-    label: '친구',
-    href: PRIVATE.FRIENDS.INDEX,
-    match: /^\/friends(?:\/.*)?$/,
-    icon: Handshake,
+    label: '내 성과',
+    shortLabel: '성과',
+    href: PRIVATE.DASHBOARD.STUDENT_RESULTS,
+    match: /^\/dashboard\/student\/results\/?$/,
+    icon: ChartNoAxesCombined,
   },
   {
-    label: '오답',
+    label: '돌아보기',
+    shortLabel: '회고',
+    href: PRIVATE.DASHBOARD.STUDENT_LOOK_BACK,
+    match: /^\/dashboard\/student\/look-back\/?$/,
+    icon: History,
+  },
+  {
+    label: '오답 회독',
+    shortLabel: '오답',
     href: PRIVATE.DASHBOARD.WRONG_ANSWERS,
     match: /^\/dashboard\/student\/wrong-answers(?:\/.*)?$/,
     icon: BookOpenCheck,
   },
   {
-    label: '포인트',
-    href: PRIVATE.POINTS.INDEX,
-    match: /^\/points\/?$/,
-    icon: Wallet,
-  },
-  {
-    label: '마이',
+    label: '마이페이지',
+    shortLabel: '나',
     href: PRIVATE.MYPAGE,
     match: /^\/mypage\/?$/,
     icon: UserRound,
@@ -62,6 +67,7 @@ export const StudentBottomNavigation = () => {
           <Link
             key={item.label}
             href={item.href}
+            aria-label={item.label}
             aria-current={active ? 'page' : undefined}
             className={cn(
               'min-h-control-xl gap-inline-gap-xs text-ui-compact flex flex-col items-center justify-center font-bold',
@@ -72,7 +78,12 @@ export const StudentBottomNavigation = () => {
               size={18}
               aria-hidden
             />
-            {item.label}
+            <span aria-hidden="true">
+              <b className="block leading-none">{item.shortLabel}</b>
+              <small className="mt-0.5 block leading-none font-semibold">
+                {item.label}
+              </small>
+            </span>
           </Link>
         );
       })}
