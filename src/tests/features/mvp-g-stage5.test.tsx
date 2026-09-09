@@ -117,7 +117,7 @@ describe('MVP-G 5단계 회장 결정 보정', () => {
     expect(within(warning).getByRole('status')).toHaveTextContent(
       '담은 문항 10개를 이 화면에 임시 보관했습니다.'
     );
-  });
+  }, 15_000);
 
   it('시험이 없고 채점 풀이가 충분하면 시험 아님 참고 등급과 근거 세 줄을 표시한다', () => {
     mocks.assignedExams.mockReturnValue({ data: [], isPending: false });

@@ -15,13 +15,20 @@ import { cn } from '@/shared/lib';
 interface SidebarContextValue {
   pathname: string | null;
   isStudyRoomSectionActive: boolean;
+  expandedAtTablet: boolean;
 }
 
 const SidebarContext = createContext<SidebarContextValue | undefined>(
   undefined
 );
 
-const SidebarProvider = ({ children }: { children: ReactNode }) => {
+const SidebarProvider = ({
+  children,
+  expandedAtTablet = false,
+}: {
+  children: ReactNode;
+  expandedAtTablet?: boolean;
+}) => {
   const pathname = usePathname();
   const isStudyRoomSectionActive =
     pathname?.startsWith('/dashboard/study-rooms') || false;
@@ -29,6 +36,7 @@ const SidebarProvider = ({ children }: { children: ReactNode }) => {
   const value = {
     pathname,
     isStudyRoomSectionActive,
+    expandedAtTablet,
   };
 
   return (
@@ -48,14 +56,21 @@ const useSidebarContext = () => {
  * Sidebar.Root
  * ────────────────────────────────────────────────────*/
 const SidebarRoot = ({ children }: { children: ReactNode }) => {
+  const { expandedAtTablet } = useSidebarContext();
+
   return (
     <div
       data-dashboard-sidebar
       className={cn('fixed top-0 left-0 z-40 hidden h-dvh flex-col', 'md:flex')}
     >
       <aside
-        data-sidebar-mode="rail-until-desktop"
-        className="border-gray-3 px-sidebar-pad-x py-sidebar-pad-y w-sidebar-rail-width desktop:w-sidebar-width relative flex flex-1 flex-col overflow-hidden border-r bg-white"
+        data-sidebar-mode={
+          expandedAtTablet ? 'full-from-tablet' : 'rail-until-desktop'
+        }
+        className={cn(
+          'border-gray-3 px-sidebar-pad-x py-sidebar-pad-y desktop:w-sidebar-width relative flex flex-1 flex-col overflow-hidden border-r bg-white',
+          expandedAtTablet ? 'w-sidebar-width' : 'w-sidebar-rail-width'
+        )}
       >
         {children}
       </aside>
@@ -83,7 +98,7 @@ const SidebarItem = ({
   isActive: propIsActive,
   matchPath,
 }: SidebarItemProps) => {
-  const { pathname } = useSidebarContext();
+  const { pathname, expandedAtTablet } = useSidebarContext();
   const isActive =
     propIsActive ??
     (matchPath ? pathname?.startsWith(matchPath) : pathname === href);
@@ -96,6 +111,7 @@ const SidebarItem = ({
       prefetch={prefetch}
       className={cn(
         'min-h-touch-min rounded-button px-button-compact-x desktop:justify-start flex items-center justify-center gap-2 text-sm font-semibold',
+        expandedAtTablet && 'tablet:justify-start',
         isActive ? 'bg-orange-1 text-orange-9' : 'hover:bg-gray-1',
         isCreatePage && 'h-9 w-9 justify-center gap-0 bg-transparent px-0',
         className
@@ -249,16 +265,29 @@ const SidebarItemText = ({
   children: ReactNode;
   className?: string;
 }) => {
+  const { expandedAtTablet } = useSidebarContext();
   // 태블릿(md~desktop 미만)은 아이콘 레일이라 라벨을 감춘다. desktop 이상만 라벨을 보여준다.
   return (
-    <span className={cn('desktop:inline relative hidden', className)}>
+    <span
+      className={cn(
+        'desktop:inline relative hidden',
+        expandedAtTablet && 'tablet:inline',
+        className
+      )}
+    >
       {children}
     </span>
   );
 };
 
-const Sidebar = ({ children }: { children: ReactNode }) => (
-  <Sidebar.Provider>
+const Sidebar = ({
+  children,
+  expandedAtTablet = false,
+}: {
+  children: ReactNode;
+  expandedAtTablet?: boolean;
+}) => (
+  <Sidebar.Provider expandedAtTablet={expandedAtTablet}>
     <Sidebar.Root>
       <nav className="flex h-full flex-1 flex-col">{children}</nav>
     </Sidebar.Root>

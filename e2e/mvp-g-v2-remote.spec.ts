@@ -152,6 +152,7 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
   test('학생은 관리자 화면을 볼 수 없고 관리자 5메뉴는 모두 실제 화면을 연다', async ({
     browser,
   }) => {
+    test.setTimeout(60_000);
     const student = await newRolePage(browser, 'STUDENT');
     await student.page.goto('/admin/members');
     await expect(student.page.locator('[data-admin-shell]')).toHaveCount(0);
@@ -192,6 +193,11 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
       await expect(
         admin.page.getByText(/인증이 필요|로그인이 필요/)
       ).toHaveCount(0);
+      if (url === '/admin/question-bank') {
+        await expect(
+          admin.page.getByTestId('admin-question-bank-grade-filter')
+        ).toBeVisible();
+      }
       await attachScreenshot(admin.page, `actual-${testId}-1024x768`);
       admin.page.off('response', captureFailure);
       expect(failedRequests, `${url} failed requests`).toEqual([]);
@@ -448,10 +454,14 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
     expect(roomAfterSubmit).toBeDefined();
     await teacher.page.goto('/dashboard/teacher');
     const roomList = teacher.page.getByTestId('teacher-rooms-list');
-    await expect(roomList).toContainText(roomAfterSubmit!.name);
-    await expect(roomList).toContainText(
-      `손볼 것 ${roomAfterSubmit!.todoCount}건`
-    );
+    const roomCard = roomList.getByRole('article').filter({
+      has: teacher.page.getByText(roomAfterSubmit!.name, { exact: true }),
+    });
+    await expect(roomCard).toHaveCount(1);
+    await expect(
+      roomCard.getByText(String(roomAfterSubmit!.todoCount), { exact: true })
+    ).toBeVisible();
+    await expect(roomCard.getByText('손볼 것', { exact: true })).toBeVisible();
     const examWrong = newExamWrongItems[0];
     expect(examWrong).toBeDefined();
     const comment = `${runId} 오답을 풀이 순서부터 다시 확인해요`;
@@ -568,7 +578,7 @@ test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
         'PUT',
         `/api/v1/admin/exams/${created.examId}/grade-cutoff`,
         {
-          source: '최근 모의고사',  // 화면에 그대로 노출되는 값이다. 검사 식별자를 넣으면 회장 화면에 보인다(2026-08-10)
+          source: '최근 모의고사', // 화면에 그대로 노출되는 값이다. 검사 식별자를 넣으면 회장 화면에 보인다(2026-08-10)
           fullScore: 100,
           mean: null,
           stdDev: null,

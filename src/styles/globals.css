@@ -121,6 +121,14 @@ body:has([data-study-room-shell]) [data-dashboard-sidebar] {
   display: none;
 }
 
+body:has([data-private-role='ROLE_STUDENT']) [data-global-header] {
+  display: none;
+}
+
+body:has([data-private-role='ROLE_STUDENT']) [data-root-content] {
+  margin-top: 0;
+}
+
 @media (min-width: 768px) {
   body:has([data-private-app-shell]) [data-global-header] {
     display: none;

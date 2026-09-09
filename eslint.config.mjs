@@ -36,7 +36,7 @@ const eslintConfig = [
       '@typescript-eslint/no-empty-object-type': 'off',
     },
   },
-  // api/v1/ 경로와 middleware에서 로깅 허용
+  // 인증·BFF 경로는 쿠키, 토큰, 요청 본문을 다루므로 console 출력을 금지한다.
   {
     files: [
       'src/app/api/v1/**/*.ts',
@@ -44,7 +44,7 @@ const eslintConfig = [
       'src/middleware.ts',
     ],
     rules: {
-      'no-console': 'off',
+      'no-console': 'error',
     },
   },
 

@@ -12,7 +12,11 @@ import {
   useAdminExamsQuery,
   useAdminQuestionBankQuery,
 } from '@/features/exam/hooks/use-exam-query';
-import { useMyTreeQuery } from '@/features/weakness-tree/hooks/use-tree';
+import {
+  type QuestionBankGrade,
+  isQuestionBankSubjectAllowed,
+} from '@/features/exam/lib/question-bank-grade';
+import { useAdminTreeQuery } from '@/features/weakness-tree/hooks/use-tree';
 import { Button, Input, Select } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants/route';
 import { handleApiError } from '@/shared/lib/errors/error-handler';
@@ -20,10 +24,6 @@ import { classifyExamError } from '@/shared/lib/errors/errors';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { type GradeCutoffForm, GradeCutoffFormSchema } from '../schema/schema';
-import {
-  isQuestionBankSubjectAllowed,
-  type QuestionBankGrade,
-} from '@/features/exam/lib/question-bank-grade';
 
 type QuestionBankSubject = NonNullable<QuestionBankParams['subject']>;
 
@@ -35,7 +35,7 @@ export const AdminQuestionBank = () => {
   const [subject, setSubject] = useState<QuestionBankSubject>('MATH');
   const [grade, setGrade] = useState<QuestionBankGrade>('HIGH_2');
   const [treeNodeId, setTreeNodeId] = useState<number | null>(null);
-  const tree = useMyTreeQuery();
+  const tree = useAdminTreeQuery();
   const unitOptions = useMemo(
     () =>
       (tree.data?.groups ?? [])
@@ -289,7 +289,7 @@ export const AdminQuestionBank = () => {
                       treeNodeId ? `&treeNodeId=${treeNodeId}` : ''
                     }`}
                   >
-                    {SUBJECT_TO_KOREAN[subject]} 문항 올리기
+                    이 단원 문항 올리기
                   </Link>
                 </Button>
               </div>

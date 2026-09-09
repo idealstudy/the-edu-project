@@ -1,7 +1,6 @@
 import { repository } from '@/entities/open-challenge';
 import { renderWithProviders } from '@/tests/utils';
-import { cleanup, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { AiCoachPanel } from './ai-coach-panel';
@@ -73,13 +72,19 @@ vi.mock('@/shared/lib/analytics', () => ({
 
 describe('AiCoachPanel 지연 대화 시작', () => {
   beforeEach(() => {
-    coachMocks.ensureAttempt.mockResolvedValue('attempt-1');
-    coachMocks.createSessionAsync.mockResolvedValue({
+    // Each render captures a fresh mutation function. If a timed-out test still
+    // has pending async work, its calls cannot leak into the next test's counts.
+    coachMocks.ensureAttempt = vi.fn().mockResolvedValue('attempt-1');
+    coachMocks.createSessionAsync = vi.fn().mockResolvedValue({
       sessionId: 'session-1',
       status: 'WAITING_ANSWER',
     });
-    coachMocks.uploadDrawing.mockResolvedValue({ mediaId: 'solution-media-1' });
-    coachMocks.sendMessage.mockImplementation(
+    coachMocks.abandonSessionAsync = vi.fn();
+    coachMocks.updatePreferenceAsync = vi.fn();
+    coachMocks.uploadDrawing = vi
+      .fn()
+      .mockResolvedValue({ mediaId: 'solution-media-1' });
+    coachMocks.sendMessage = vi.fn().mockImplementation(
       (
         _payload: unknown,
         options?: {
@@ -102,7 +107,6 @@ describe('AiCoachPanel 지연 대화 시작', () => {
 
   afterEach(() => {
     cleanup();
-    vi.clearAllMocks();
     vi.restoreAllMocks();
   });
 
@@ -136,11 +140,10 @@ describe('AiCoachPanel 지연 대화 시작', () => {
     expect(coachMocks.sendMessage).not.toHaveBeenCalled();
     expect(coachMocks.updatePreferenceAsync).not.toHaveBeenCalled();
 
-    await userEvent.type(
-      screen.getByTestId('ai-coach-message-input'),
-      '경우의 수를 모르겠어'
-    );
-    await userEvent.click(screen.getByTestId('ai-coach-send-button'));
+    fireEvent.change(screen.getByTestId('ai-coach-message-input'), {
+      target: { value: '경우의 수를 모르겠어' },
+    });
+    fireEvent.click(screen.getByTestId('ai-coach-send-button'));
 
     await waitFor(() => {
       expect(coachMocks.ensureAttempt).toHaveBeenCalledTimes(1);
@@ -175,8 +178,10 @@ describe('AiCoachPanel 지연 대화 시작', () => {
       />
     );
     const input = screen.getByTestId('ai-coach-message-input');
-    await userEvent.type(input, '경우의 수를 모르겠어');
-    await userEvent.click(screen.getByTestId('ai-coach-send-button'));
+    fireEvent.change(input, {
+      target: { value: '경우의 수를 모르겠어' },
+    });
+    fireEvent.click(screen.getByTestId('ai-coach-send-button'));
 
     await waitFor(() => {
       expect(coachMocks.createSessionAsync).toHaveBeenCalledTimes(1);
@@ -184,7 +189,7 @@ describe('AiCoachPanel 지연 대화 시작', () => {
     expect(input).toHaveValue('경우의 수를 모르겠어');
     expect(coachMocks.sendMessage).not.toHaveBeenCalled();
 
-    await userEvent.click(screen.getByTestId('ai-coach-send-button'));
+    fireEvent.click(screen.getByTestId('ai-coach-send-button'));
 
     await waitFor(() => {
       expect(coachMocks.createSessionAsync).toHaveBeenCalledTimes(2);
@@ -226,11 +231,10 @@ describe('AiCoachPanel 지연 대화 시작', () => {
 
     expect(coachMocks.createSessionAsync).not.toHaveBeenCalled();
 
-    await userEvent.type(
-      screen.getByTestId('ai-coach-message-input'),
-      '그다음은 어떻게 세어?'
-    );
-    await userEvent.click(screen.getByTestId('ai-coach-send-button'));
+    fireEvent.change(screen.getByTestId('ai-coach-message-input'), {
+      target: { value: '그다음은 어떻게 세어?' },
+    });
+    fireEvent.click(screen.getByTestId('ai-coach-send-button'));
 
     expect(
       await screen.findByText('어느 부분부터 세어 볼까?')
@@ -268,11 +272,10 @@ describe('AiCoachPanel 지연 대화 시작', () => {
       />
     );
 
-    await userEvent.type(
-      screen.getByTestId('ai-coach-message-input'),
-      '이 문제 힌트 줘'
-    );
-    await userEvent.click(screen.getByTestId('ai-coach-send-button'));
+    fireEvent.change(screen.getByTestId('ai-coach-message-input'), {
+      target: { value: '이 문제 힌트 줘' },
+    });
+    fireEvent.click(screen.getByTestId('ai-coach-send-button'));
 
     await waitFor(() => {
       expect(coachMocks.uploadDrawing).toHaveBeenCalledTimes(1);
@@ -317,20 +320,17 @@ describe('AiCoachPanel 지연 대화 시작', () => {
       />
     );
 
-    await userEvent.type(
-      screen.getByTestId('ai-coach-message-input'),
-      '이 문제 힌트 줘'
-    );
-    await userEvent.click(screen.getByTestId('ai-coach-send-button'));
+    fireEvent.change(screen.getByTestId('ai-coach-message-input'), {
+      target: { value: '이 문제 힌트 줘' },
+    });
+    fireEvent.click(screen.getByTestId('ai-coach-send-button'));
 
     expect(
       await screen.findByTestId('ai-coach-send-without-image-button')
     ).toBeVisible();
     expect(coachMocks.sendMessage).not.toHaveBeenCalled();
 
-    await userEvent.click(
-      screen.getByTestId('ai-coach-send-without-image-button')
-    );
+    fireEvent.click(screen.getByTestId('ai-coach-send-without-image-button'));
     await waitFor(() =>
       expect(coachMocks.sendMessage).toHaveBeenCalledTimes(1)
     );

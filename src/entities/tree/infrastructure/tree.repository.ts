@@ -142,8 +142,7 @@ const toNodeChallenge = (raw: unknown): NodeChallenge => {
  * [READ] 내 약점 트리 조회 (노드 + 정복도)
  *  GET /api/common/tree
  * ────────────────────────────────────────────────────*/
-const getMyTree = async (): Promise<TreeView> => {
-  const response = await api.private.get('/common/tree');
+const toTreeView = (response: unknown): TreeView => {
   const data = unwrapEnvelope(response, dto.tree);
   const nodes = data.nodes
     .map(toNodeView)
@@ -154,6 +153,22 @@ const getMyTree = async (): Promise<TreeView> => {
     groups: groupTreeNodesBySubject(nodes),
     mastery: summarize(nodes),
   };
+};
+
+const getMyTree = async (): Promise<TreeView> => {
+  const response = await api.private.get('/common/tree');
+  return toTreeView(response);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [READ] 관리자 전용 약점 트리 조회 (노드 + 정복도)
+ *  GET /api/admin/tree
+ *  v2.0 역할경계 분리(옵션 A): 관리자 화면은 공용 /common/tree 를 쓰지 않고
+ *  admin 전용 endpoint 를 쓴다. 응답 구조는 공용과 동일(TreeService 재사용).
+ * ────────────────────────────────────────────────────*/
+const getAdminTree = async (): Promise<TreeView> => {
+  const response = await api.private.get('/admin/tree');
+  return toTreeView(response);
 };
 
 /* ─────────────────────────────────────────────────────
@@ -171,5 +186,6 @@ const getNodeChallenges = async (nodeId: string): Promise<NodeChallenge[]> => {
  * ────────────────────────────────────────────────────*/
 export const repository = {
   getMyTree,
+  getAdminTree,
   getNodeChallenges,
 };

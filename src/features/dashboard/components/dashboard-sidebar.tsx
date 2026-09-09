@@ -1,7 +1,10 @@
 'use client';
 
+import type { WrongAnswerItem } from '@/entities/wrong-answer';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { useStudentDashboardStudyRoomListQuery } from '@/features/dashboard/hooks/use-student-dashboard-query';
+import { useWrongAnswersQuery } from '@/features/dashboard/hooks/use-wrong-answer-query';
+import { useAssignedExamsQuery } from '@/features/exam/hooks/use-exam-query';
 import { ListIcon } from '@/shared/components/icons';
 import { Sidebar } from '@/shared/components/sidebar';
 import { Button as UnstyledButton } from '@/shared/components/ui/button';
@@ -27,6 +30,35 @@ import {
   Users,
 } from 'lucide-react';
 
+export const countDueActiveWrongAnswers = (
+  items: WrongAnswerItem[],
+  now = Date.now()
+) =>
+  items.filter(
+    (item) =>
+      item.status === 'ACTIVE' &&
+      (!item.nextReviewAt || new Date(item.nextReviewAt).getTime() <= now)
+  ).length;
+
+const StudentSidebarCounts = ({ kind }: { kind: 'wrong' | 'exam' }) => {
+  const wrongAnswers = useWrongAnswersQuery();
+  const assignedExams = useAssignedExamsQuery();
+  const count =
+    kind === 'wrong'
+      ? countDueActiveWrongAnswers(wrongAnswers.data?.items ?? [])
+      : (assignedExams.data?.filter(
+          (exam) => exam.status === 'ASSIGNED' || exam.status === 'IN_PROGRESS'
+        ).length ?? 0);
+
+  if (count === 0) return null;
+
+  return (
+    <span className="bg-orange-9 text-gray-white tablet:inline-flex ml-auto hidden min-h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs font-extrabold tabular-nums">
+      {count}
+    </span>
+  );
+};
+
 export const DashboardSidebar = () => {
   const { role } = useRole();
   const { logout } = useAuth();
@@ -41,12 +73,16 @@ export const DashboardSidebar = () => {
   };
 
   return (
-    <Sidebar>
+    <Sidebar expandedAtTablet={role === 'ROLE_STUDENT'}>
       {/* 태블릿(md~desktop 미만) 아이콘 레일에서는 'D' 만, desktop 이상만 전체 로고 텍스트 */}
-      <div className="text-orange-9 desktop:hidden block px-2 pt-1 pb-3 text-center text-sm font-extrabold tracking-[-0.045em]">
+      <div
+        className={`text-orange-9 px-2 pt-1 pb-3 text-center text-sm font-extrabold tracking-[-0.045em] ${role === 'ROLE_STUDENT' ? 'tablet:hidden block' : 'desktop:hidden block'}`}
+      >
         D
       </div>
-      <div className="text-orange-9 desktop:block hidden px-2 pt-1 pb-3 text-sm font-extrabold tracking-[-0.045em]">
+      <div
+        className={`text-orange-9 px-2 pt-1 pb-3 text-sm font-extrabold tracking-[-0.045em] ${role === 'ROLE_STUDENT' ? 'tablet:block hidden' : 'desktop:block hidden'}`}
+      >
         D-EDU
         <small className="text-gray-8 text-ui-compact mt-0.5 block font-semibold tracking-normal">
           {role === 'ROLE_TEACHER'
@@ -91,7 +127,7 @@ export const DashboardSidebar = () => {
 
           {primaryRoom && (
             <>
-              <div className="text-gray-8 text-ui-compact desktop:block hidden px-2 pt-4 pb-1 font-extrabold">
+              <div className="text-gray-8 text-ui-compact tablet:block hidden px-2 pt-4 pb-1 font-extrabold">
                 소속
               </div>
               <Sidebar.Item
@@ -109,7 +145,7 @@ export const DashboardSidebar = () => {
             </>
           )}
 
-          <div className="text-gray-8 text-ui-compact desktop:block hidden px-2 pt-4 pb-1 font-extrabold">
+          <div className="text-gray-8 text-ui-compact tablet:block hidden px-2 pt-4 pb-1 font-extrabold">
             더 보기
           </div>
 
@@ -122,6 +158,7 @@ export const DashboardSidebar = () => {
               className="shrink-0"
             />
             <Sidebar.Text>오답 회독</Sidebar.Text>
+            <StudentSidebarCounts kind="wrong" />
           </Sidebar.Item>
 
           <Sidebar.Item
@@ -133,6 +170,7 @@ export const DashboardSidebar = () => {
               className="shrink-0"
             />
             <Sidebar.Text>응시장</Sidebar.Text>
+            <StudentSidebarCounts kind="exam" />
           </Sidebar.Item>
 
           {studentRooms.isSuccess && !primaryRoom && (
@@ -210,7 +248,7 @@ export const DashboardSidebar = () => {
 
       {role === 'ROLE_STUDENT' && (
         <>
-          <div className="text-gray-8 text-ui-compact desktop:block hidden px-2 pt-4 pb-1 font-extrabold">
+          <div className="text-gray-8 text-ui-compact tablet:block hidden px-2 pt-4 pb-1 font-extrabold">
             오픈챌린지에서 열립니다
           </div>
           <Sidebar.Item
