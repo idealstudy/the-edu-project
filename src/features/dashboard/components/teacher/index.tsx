@@ -505,24 +505,6 @@ const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
             )}
           </>
         )}
-        {rooms.length > 0 && (
-          // 시안 v23 `.foot`(HTML:434) 원문.
-          <p className="text-gray-9 text-xs leading-relaxed">
-            이 제품에서 선생님이 하는 일은{' '}
-            <b className="text-gray-11">
-              학생의 내 학습 화면을 대신 채워 주는 것
-            </b>
-            입니다(대표 확정 2026-08-05). 그래서 카드가 세는 것도 &ldquo;학생이
-            뭘 안 했나&rdquo;가 아니라{' '}
-            <b className="text-gray-11">내가 넣어줄 것이 몇 건인가</b>입니다. 각
-            카드가 그 내역(피드백 달 것 · 할 일 승인 · 못했어요 사유 · 미확인
-            제출)을 한 줄로 펼치고, 기본 정렬이 많은 순이라{' '}
-            <b className="text-gray-11">
-              맨 위 카드부터 눌러 내려가면 오늘 치가 끝납니다.
-            </b>{' '}
-            수업 20개가 되어도 하나씩 열어볼 일이 없습니다.
-          </p>
-        )}
       </PageLayout>
     </div>
   );
