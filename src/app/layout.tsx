@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import Script from 'next/script';
 
+import { PwaRegister } from '@/app/_components/pwa-register';
 import { SITE_CONFIG } from '@/config/site';
 import { Header } from '@/layout/header';
 import { GlobalProvider } from '@/providers';
@@ -14,6 +15,15 @@ export const metadata: Metadata = {
   title: 'THE EDU',
   description:
     'THE EDU는 과외와 일정 관리를 하나의 플랫폼에서 제공합니다. 실시간 피드백, 스케줄 조정 기능을 경험해보세요.',
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: '디에듀',
+  },
+  icons: {
+    apple: '/icons/apple-touch-icon-180.png',
+  },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
     other: {
@@ -93,6 +103,7 @@ export default function RootLayout({
             {children}
           </div>
         </GlobalProvider>
+        <PwaRegister />
       </body>
     </html>
   );
