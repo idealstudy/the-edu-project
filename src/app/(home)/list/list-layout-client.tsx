@@ -132,7 +132,7 @@ export default function ListLayoutClient({
     <main className="min-h-screen w-full">
       <div className="mb-4 min-h-screen w-full bg-white">
         <div className="bg-system-background w-full">
-          <div className="mx-auto max-w-shell-wide px-4 pt-8 md:px-8 lg:px-20">
+          <div className="max-w-shell-wide mx-auto px-4 pt-8 md:px-8 lg:px-20">
             {!isAuthenticated && <BackLink />}
 
             <div className="mt-4 mb-10">
@@ -185,11 +185,14 @@ export default function ListLayoutClient({
 
         {/* 하단 리스트 및 필터 영역 */}
         <div className="w-full bg-white">
-          <div className="mx-auto max-w-shell-wide px-4 py-8 md:px-8 lg:px-20">
-            {/* 정렬 필터 */}
-            <div className="mb-6 flex items-center justify-between gap-2">
+          <div className="max-w-shell-wide mx-auto px-4 py-8 md:px-8 lg:px-20">
+            {/* 정렬 필터. flex-wrap: 스터디룸 필터 3종+정렬 1종 합 4개 Select가
+             * 390px에서 한 줄에 다 안 들어가 정렬 버튼이 90px 오른쪽으로
+             * 넘치는 실측 결함(dev.d-edu.site 실데이터, 2026-09-25) 수정.
+             * 넘치면 다음 줄로 접히게 해 가로 스크롤 없이 전부 보이게 한다. */}
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
               {/* 왼쪽: 스터디룸 전용 필터 */}
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {isStudyRooms && (
                   <>
                     <Select

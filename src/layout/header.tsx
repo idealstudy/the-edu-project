@@ -221,7 +221,7 @@ export const Header = () => {
                 <button
                   type="button"
                   aria-label="햄버거 메뉴"
-                  className="desktop:hidden flex h-10 w-10 items-center justify-center rounded-lg transition-colors hover:bg-gray-800"
+                  className="desktop:hidden flex h-11 w-11 items-center justify-center rounded-lg transition-colors hover:bg-gray-800"
                   onClick={() => {
                     trackGnbMenuClick(session?.role ?? null);
                   }}

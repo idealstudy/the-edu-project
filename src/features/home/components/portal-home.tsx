@@ -372,7 +372,11 @@ function Consultation() {
           </Link>
         </Button>
       </div>
-      <div className="mt-4 grid gap-3 md:grid-cols-3">
+      {/* min-w-0: line-clamp-2 카드가 grid item 기본 min-width:auto 때문에
+       * 문단 전체 폭(unwrapped)을 최소 크기로 요구해 390px에서 775px로
+       * 넘치는 실측 결함(운영 dev.d-edu.site 2026-09-25) 수정. grid
+       * 컨테이너와 각 카드 모두에 min-w-0 필요(둘 중 하나만으로는 부족). */}
+      <div className="mt-4 grid min-w-0 gap-3 md:grid-cols-3">
         {isLoading && (
           <div className="col-span-full">
             <ModuleState message="공개 동의를 받은 사례를 확인하고 있습니다" />
@@ -395,7 +399,7 @@ function Consultation() {
           <Link
             key={item.caseId}
             href={PUBLIC.CONSULT.CASE_DETAIL(item.caseId)}
-            className="focus-ring border-orange-6 hover:bg-orange-1 rounded-xl border-l-4 bg-white p-5 shadow-sm"
+            className="focus-ring border-orange-6 hover:bg-orange-1 min-w-0 rounded-xl border-l-4 bg-white p-5 shadow-sm"
           >
             <p className="text-orange-8 text-xs font-bold">
               {item.category} · 익명 사례
