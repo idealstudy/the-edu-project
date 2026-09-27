@@ -18,6 +18,7 @@ const CORE = {
       `/invite/success?studyRoomId=${studyRoomId}`,
     CHALLENGE: (token: string) => `/invite/challenge/${token}`,
     TEACHER: (token: string) => `/invite/teacher/${token}`,
+    COHORT: (token: string) => `/invite/cohort/${token}`,
   },
 } as const;
 
