@@ -83,7 +83,9 @@ export function NotificationPopover() {
   const handleMarkAllRead = () => {
     if (!hasUnreadNotifications) return;
 
-    const unreadIds = unreadNotifications.map((notification) => notification.id);
+    const unreadIds = unreadNotifications.map(
+      (notification) => notification.id
+    );
     markAsRead.mutate(unreadIds);
   };
 
@@ -113,7 +115,7 @@ export function NotificationPopover() {
         <PopoverTrigger asChild>
           <button
             type="button"
-            className="relative flex size-6 cursor-pointer items-center justify-center outline-none"
+            className="relative flex size-11 cursor-pointer items-center justify-center outline-none"
             aria-label="알림 확인"
             onClick={() => {
               // GNB 알림 아이콘 클릭 이벤트 전송
