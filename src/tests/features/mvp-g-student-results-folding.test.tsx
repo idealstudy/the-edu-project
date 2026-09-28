@@ -195,6 +195,10 @@ describe('학생 성과 학습 지도 대량 데이터 접기', () => {
       screen.getByTestId('student-results-weekly-timeline-unsupported')
     ).toHaveTextContent('일별 풀이 추이집계 미지원');
     expect(screen.queryByLabelText('이번 주 풀이 기록')).toBeNull();
+    expect(
+      screen.queryByText(/오픈챌린지|응시장|포인트|학습 보상/)
+    ).toBeNull();
+    expect(rewards).not.toHaveTextContent('120');
   });
 
   it('기록이 없어 접힌 과목도 눌러서 펼칠 수 있다', () => {
@@ -267,16 +271,17 @@ describe('학생 성과 학습 지도 대량 데이터 접기', () => {
       screen.getByTestId('daily-problems-progress-badge')
     ).toHaveTextContent('0/2');
     expect(
-      screen.getByText('선생님이 준 문제가 먼저, 부족분만 오픈챌린지 추천')
+      screen.getByText('선생님이 준 문제가 먼저, 부족분은 추천 문제로 채워요')
     ).toBeVisible();
     expect(screen.queryByRole('link', { name: '오답 목록' })).toBeNull();
     expect(text).not.toContain('카드에서 제거할 문제 본문');
     expect(text).not.toContain('카드에서 제거할 선정 이유');
     expect(text).not.toContain('왜 이 문제?');
     expect(text).not.toContain('난이도·전국 오답률은');
-    expect(text.match(/오픈챌린지 라인의 풀이 화면/g)).toHaveLength(1);
+    expect(text.match(/문제 풀이 화면/g)).toHaveLength(1);
     expect(text).toContain(
-      '카드를 누르면 오픈챌린지 라인의 풀이 화면으로 넘어갑니다. 문제 본문, AI 코치, 손풀이, 채점, 해설은 그쪽 소관입니다. 다 풀면 결과만 이 화면으로 돌아옵니다.'
+      '카드를 누르면 문제 풀이 화면으로 넘어갑니다. 문제 본문, AI 코치, 손풀이, 채점, 해설을 확인하고 다 풀면 결과만 이 화면으로 돌아옵니다.'
     );
+    expect(text).not.toMatch(/오픈챌린지|응시장|포인트/);
   });
 });

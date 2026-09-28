@@ -7,6 +7,7 @@ import type {
   DailyProblemItem,
   WrongAnswerItem,
 } from '@/entities/wrong-answer';
+import { D034_STUDENT_COPY } from '@/features/dashboard/model/d034-visibility';
 import { useOpenChallengeDetailQuery } from '@/features/open-challenge/hooks/use-open-challenge';
 import { Skeleton } from '@/shared/components/loading';
 import { Button } from '@/shared/components/ui';
@@ -223,7 +224,8 @@ export const TodayProblemsSection = () => {
             오늘의 문제
           </h2>
           <p className="font-caption-normal text-gray-8 mt-1">
-            선생님이 준 문제가 먼저, 부족분만 오픈챌린지 추천
+            선생님이 준 문제가 먼저, 부족분은 {D034_STUDENT_COPY.openChallenge}
+            로 채워요
           </p>
         </div>
         {/*
@@ -266,10 +268,9 @@ export const TodayProblemsSection = () => {
 
       {/* 시안 v23 `.handoff`(HTML:660): 카드 공통 안내는 그리드 아래 한 번만 둔다. */}
       <p className="bg-gray-1 text-gray-9 font-caption-normal mt-3 rounded-lg px-3 py-2.5 leading-relaxed">
-        카드를 누르면{' '}
-        <b className="text-gray-11 font-bold">오픈챌린지 라인의 풀이 화면</b>
-        으로 넘어갑니다. 문제 본문, AI 코치, 손풀이, 채점, 해설은 그쪽
-        소관입니다. 다 풀면 결과만 이 화면으로 돌아옵니다.
+        카드를 누르면 <b className="text-gray-11 font-bold">문제 풀이 화면</b>
+        으로 넘어갑니다. 문제 본문, AI 코치, 손풀이, 채점, 해설을 확인하고 다
+        풀면 결과만 이 화면으로 돌아옵니다.
       </p>
     </section>
   );

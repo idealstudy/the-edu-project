@@ -7,9 +7,14 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { type MyChallengeListItem } from '@/entities/open-challenge';
+import {
+  D034_STUDENT_COPY,
+  isD034HiddenForRole,
+} from '@/features/dashboard/model/d034-visibility';
 import { MyOpenChallengeDetailDialog } from '@/features/mypage/open-challenge/components/my-open-challenge-detail-dialog';
 import { useMyOpenChallenges } from '@/features/mypage/open-challenge/hooks/use-my-open-challenges';
 import SectionContainer from '@/features/profile/components/section-container';
+import { useSession } from '@/providers/session/session-context';
 import { DropdownMenu, Pagination, StatusBadge } from '@/shared/components/ui';
 import { ListItem } from '@/shared/components/ui/list-item';
 import { PUBLIC } from '@/shared/constants';
@@ -29,6 +34,8 @@ const parsePage = (value?: string) => {
 };
 
 export const MyOpenChallengeList = () => {
+  const { member } = useSession();
+  const role = member?.role;
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -43,6 +50,9 @@ export const MyOpenChallengeList = () => {
     page: currentPage - 1,
   });
   const totalPages = data?.hasNext ? currentPage + 1 : currentPage;
+  const hideStudentChallengeEntry =
+    !role ||
+    isD034HiddenForRole(role, 'student.mypage.open-challenge-entry');
 
   const updatePage = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -57,18 +67,22 @@ export const MyOpenChallengeList = () => {
   return (
     <>
       <SectionContainer
-        title="내 오픈챌린지 답안"
+        title={
+          hideStudentChallengeEntry ? '내 문제 풀이 답안' : '내 오픈챌린지 답안'
+        }
         isLoading={isLoading}
         isError={isError}
         onRetry={refetch}
         isOwner
         action={
-          <Link
-            href={PUBLIC.OPEN_CHALLENGE.LIST}
-            className="font-label-normal text-key-color-primary hover:underline"
-          >
-            오픈챌린지 가기
-          </Link>
+          !hideStudentChallengeEntry && (
+            <Link
+              href={PUBLIC.OPEN_CHALLENGE.LIST}
+              className="font-label-normal text-key-color-primary hover:underline"
+            >
+              오픈챌린지 가기
+            </Link>
+          )
         }
       >
         {data && data.content.length > 0 ? (
@@ -91,29 +105,31 @@ export const MyOpenChallengeList = () => {
                 }
                 onClick={() => setSelectedChallenge(challenge)}
                 dropdown={
-                  <DropdownMenu>
-                    <DropdownMenu.Trigger asChild>
-                      <Image
-                        src="/studynotes/gray-kebab.svg"
-                        width={24}
-                        height={24}
-                        alt="더보기"
-                        className="hover:bg-gray-scale-gray-5 cursor-pointer rounded"
-                      />
-                    </DropdownMenu.Trigger>
-                    <DropdownMenu.Content className="w-33 justify-center">
-                      <DropdownMenu.Item asChild>
-                        <Link
-                          href={PUBLIC.OPEN_CHALLENGE.DETAIL(
-                            challenge.challengeId
-                          )}
-                          className="justify-center border-none focus:ring-0 focus:outline-none"
-                        >
-                          문제 보러가기
-                        </Link>
-                      </DropdownMenu.Item>
-                    </DropdownMenu.Content>
-                  </DropdownMenu>
+                  !hideStudentChallengeEntry && (
+                    <DropdownMenu>
+                      <DropdownMenu.Trigger asChild>
+                        <Image
+                          src="/studynotes/gray-kebab.svg"
+                          width={24}
+                          height={24}
+                          alt="더보기"
+                          className="hover:bg-gray-scale-gray-5 cursor-pointer rounded"
+                        />
+                      </DropdownMenu.Trigger>
+                      <DropdownMenu.Content className="w-33 justify-center">
+                        <DropdownMenu.Item asChild>
+                          <Link
+                            href={PUBLIC.OPEN_CHALLENGE.DETAIL(
+                              challenge.challengeId
+                            )}
+                            className="justify-center border-none focus:ring-0 focus:outline-none"
+                          >
+                            문제 보러가기
+                          </Link>
+                        </DropdownMenu.Item>
+                      </DropdownMenu.Content>
+                    </DropdownMenu>
+                  )
                 }
               />
             ))}
@@ -127,7 +143,11 @@ export const MyOpenChallengeList = () => {
           </>
         ) : (
           <p className="text-gray-5 py-10 text-center text-sm">
-            제출한 오픈챌린지 답안이 없습니다.
+            제출한{' '}
+            {hideStudentChallengeEntry
+              ? `${D034_STUDENT_COPY.openChallenge} 답안`
+              : '오픈챌린지 답안'}
+            이 없습니다.
           </p>
         )}
       </SectionContainer>

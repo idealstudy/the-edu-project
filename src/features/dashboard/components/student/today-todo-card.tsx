@@ -5,6 +5,10 @@ import { FormEvent, useState } from 'react';
 import Link from 'next/link';
 
 import type { TodoItem } from '@/entities/todo';
+import {
+  D034_STUDENT_COPY,
+  isD034HiddenForRole,
+} from '@/features/dashboard/model/d034-visibility';
 import { Skeleton } from '@/shared/components/loading';
 import { Button, Input, showBottomToast } from '@/shared/components/ui';
 import { Button as UnstyledButton } from '@/shared/components/ui/button';
@@ -39,8 +43,8 @@ const MAX_DAILY_TODOS = 20;
 
 const SUPPLY_LABEL: Record<TodoSupply, string> = {
   TEACHER: '선생님',
-  EXAM_HALL: '응시장',
-  OPEN_CHALLENGE: '오픈챌린지',
+  EXAM_HALL: D034_STUDENT_COPY.examHall,
+  OPEN_CHALLENGE: D034_STUDENT_COPY.openChallenge,
   STUDENT: '학생',
 };
 
@@ -117,6 +121,14 @@ export const TodayTodoCard = ({
   const [skipTodoId, setSkipTodoId] = useState<number | null>(null);
   const [skipReason, setSkipReason] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
+  const hideExamHallEntry = isD034HiddenForRole(
+    'ROLE_STUDENT',
+    'student.dashboard.todo-exam-hall-entry'
+  );
+  const hidePointRewards = isD034HiddenForRole(
+    'ROLE_STUDENT',
+    'student.dashboard.todo-point-rewards'
+  );
 
   if (todosQuery.isPending) {
     return <TodoCardLoading className={className} />;
@@ -267,7 +279,9 @@ export const TodayTodoCard = ({
             </span>
           </h3>
           <p className="font-caption-normal text-gray-8 mt-1">
-            선생님·응시장·오픈챌린지가 채워주고, 학생은 실행에 집중해요.
+            선생님·{D034_STUDENT_COPY.examHall}·
+            {D034_STUDENT_COPY.openChallenge}가 채워주고, 학생은 실행에
+            집중해요.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -367,8 +381,7 @@ export const TodayTodoCard = ({
             </div>
           )}
           <p className="font-caption-normal text-gray-7 mt-2">
-            학생이 직접 적은 할 일은 완료해도 포인트가 붙지 않습니다. 하루 최대
-            {MAX_DAILY_TODOS}개까지 등록할 수 있어요.
+            하루 최대 {MAX_DAILY_TODOS}개까지 등록할 수 있어요.
           </p>
         </form>
       )}
@@ -386,8 +399,8 @@ export const TodayTodoCard = ({
         />
       </div>
       <p className="font-caption-normal text-gray-7 mt-1.5 tabular-nums">
-        {summary.doneCount} / {summary.totalCount} 완료 · 다 끝내면 오늘 +
-        {totalRewardPoints}P
+        {summary.doneCount} / {summary.totalCount} 완료
+        {!hidePointRewards && ` · 다 끝내면 오늘 +${totalRewardPoints} 포인트`}
       </p>
 
       {items.length === 0 ? (
@@ -404,17 +417,19 @@ export const TodayTodoCard = ({
             오늘 배정된 할 일이 아직 없어요
           </p>
           <p className="font-caption-normal text-gray-8 mt-1 leading-relaxed">
-            선생님이 할 일을 배정하거나 시험·오픈챌린지 공급원이 연결되면 여기
-            쌓여요.
+            선생님이 할 일을 배정하거나 시험·{D034_STUDENT_COPY.openChallenge}
+            공급원이 연결되면 여기 쌓여요.
           </p>
-          <Button
-            asChild
-            className="mt-4"
-          >
-            <Link href={PRIVATE.DASHBOARD.EXAM_HALL}>
-              기출 1세트 풀고 오늘 할 일 채우기 (+20P)
-            </Link>
-          </Button>
+          {!hideExamHallEntry && (
+            <Button
+              asChild
+              className="mt-4"
+            >
+              <Link href={PRIVATE.DASHBOARD.EXAM_HALL}>
+                기출 1세트 풀고 오늘 할 일 채우기
+              </Link>
+            </Button>
+          )}
         </div>
       ) : (
         <ul
@@ -504,9 +519,12 @@ export const TodayTodoCard = ({
                   </div>
 
                   <div className="flex shrink-0 flex-col items-end gap-2">
-                    <span className="text-orange-7 text-xs font-extrabold tabular-nums">
-                      +{item.rewardPoints}P{item.status === 'DONE' ? ' ✓' : ''}
-                    </span>
+                    {!hidePointRewards && (
+                      <span className="text-orange-7 text-xs font-extrabold tabular-nums">
+                        포인트 +{item.rewardPoints}
+                        {item.status === 'DONE' ? ' ✓' : ''}
+                      </span>
+                    )}
                     {!isResolved && (
                       <Button
                         size="xsmall"
@@ -556,10 +574,13 @@ export const TodayTodoCard = ({
         </ul>
       )}
 
-      <p className="border-gray-3 bg-gray-1 font-caption-normal text-gray-8 mt-4 rounded-xl border p-3 leading-relaxed">
-        완료 포인트는 공급원별 저장값으로 적립됩니다. 선생님 15P · 응시장 20P ·
-        오픈챌린지 5P · 학생 직접 입력 0P가 기본값입니다.
-      </p>
+      {!hidePointRewards && (
+        <p className="border-gray-3 bg-gray-1 font-caption-normal text-gray-8 mt-4 rounded-xl border p-3 leading-relaxed">
+          완료 포인트는 공급원별 저장값으로 적립됩니다. 선생님 15 ·{' '}
+          {D034_STUDENT_COPY.examHall} 20 · {D034_STUDENT_COPY.openChallenge} 5 ·
+          학생 직접 입력 0이 기본값입니다.
+        </p>
+      )}
 
       {formError && (
         <p

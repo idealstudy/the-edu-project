@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
+import { isD034HiddenForRole } from '@/features/dashboard/model/d034-visibility';
 import { cn } from '@/shared/lib';
 
 type NavItem = { key: string; label: string };
@@ -29,7 +30,13 @@ const NAV_ITEMS: Partial<Record<string, NavItem[]>> = {
 export default function ProfileNav({ role }: { role: string }) {
   const searchParams = useSearchParams();
   const activeTab = searchParams.get('tab') ?? 'profile';
-  const items = NAV_ITEMS[role] ?? [];
+  const items = (NAV_ITEMS[role] ?? []).filter(
+    (item) =>
+      !(
+        item.key === 'open-challenges' &&
+        isD034HiddenForRole(role, 'student.mypage.open-challenge-entry')
+      )
+  );
 
   if (items.length === 0) return null;
 

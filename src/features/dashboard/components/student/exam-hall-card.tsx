@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 import { useStudentDashboardReportQuery } from '@/features/dashboard/hooks/use-student-dashboard-query';
+import { isD034HiddenForRole } from '@/features/dashboard/model/d034-visibility';
 import {
   useAssignedExamsQuery,
   useExamAnalysisQuery,
@@ -68,6 +69,14 @@ export const ExamHallCard = ({ className }: Props) => {
   const pendingExamCount =
     exams.data?.filter((exam) => exam.status !== 'ANALYZED').length ?? 0;
   const reference = !analyzedExam ? report.data?.referenceExpectedGrade : null;
+  const hideExamHallEntry = isD034HiddenForRole(
+    'ROLE_STUDENT',
+    'student.dashboard.exam-hall-entry'
+  );
+  const hideOpenChallengeListEntry = isD034HiddenForRole(
+    'ROLE_STUDENT',
+    'student.dashboard.open-challenge-list-entry'
+  );
 
   if (
     exams.isPending ||
@@ -218,61 +227,69 @@ export const ExamHallCard = ({ className }: Props) => {
             아직 등급을 계산할 자료가 없어요
           </p>
           <p className="text-gray-8 mt-2 text-xs leading-6">
-            추측으로 숫자를 만들지 않습니다. 아래 두 가지 중 하나만 하면 이
-            자리에 내 위치가 들어옵니다.
+            추측으로 숫자를 만들지 않습니다. 채점된 풀이가 쌓이면 이 자리에 내
+            위치가 들어옵니다.
           </p>
-          <div className="mt-4 space-y-2">
-            <Link
-              href={PUBLIC.OPEN_CHALLENGE.LIST}
-              className="border-gray-3 text-gray-12 min-h-touch-min p-card-pad rounded-row flex items-center gap-3 border text-xs font-bold"
-            >
-              <span className="flex-1">
-                문제를 풀어 내 위치 만들기
-                <small className="text-gray-8 mt-1 block font-normal">
-                  채점된 풀이가 쌓이면 참고 범위가 열려요
-                </small>
-              </span>
-              <span className="text-orange-7">시작하기</span>
-            </Link>
-            <Link
-              href={PRIVATE.DASHBOARD.EXAM_HALL}
-              className="border-gray-3 text-gray-12 min-h-touch-min p-card-pad rounded-row flex items-center gap-3 border text-xs font-bold"
-            >
-              <span className="flex-1">
-                공개 응시장에서 모의고사 응시
-                <small className="text-gray-8 mt-1 block font-normal">
-                  시험을 채점하면 시험 근거 범위가 열려요
-                </small>
-              </span>
-              <span className="text-orange-7">보러 가기</span>
-            </Link>
-          </div>
+          {(!hideOpenChallengeListEntry || !hideExamHallEntry) && (
+            <div className="mt-4 space-y-2">
+              {!hideOpenChallengeListEntry && (
+                <Link
+                  href={PUBLIC.OPEN_CHALLENGE.LIST}
+                  className="border-gray-3 text-gray-12 min-h-touch-min p-card-pad rounded-row flex items-center gap-3 border text-xs font-bold"
+                >
+                  <span className="flex-1">
+                    문제를 풀어 내 위치 만들기
+                    <small className="text-gray-8 mt-1 block font-normal">
+                      채점된 풀이가 쌓이면 참고 범위가 열려요
+                    </small>
+                  </span>
+                  <span className="text-orange-7">시작하기</span>
+                </Link>
+              )}
+              {!hideExamHallEntry && (
+                <Link
+                  href={PRIVATE.DASHBOARD.EXAM_HALL}
+                  className="border-gray-3 text-gray-12 min-h-touch-min p-card-pad rounded-row flex items-center gap-3 border text-xs font-bold"
+                >
+                  <span className="flex-1">
+                    모의고사 응시
+                    <small className="text-gray-8 mt-1 block font-normal">
+                      시험을 채점하면 시험 근거 범위가 열려요
+                    </small>
+                  </span>
+                  <span className="text-orange-7">보러 가기</span>
+                </Link>
+              )}
+            </div>
+          )}
         </div>
       )}
 
-      <Link
-        href={PRIVATE.DASHBOARD.EXAM_HALL}
-        className="border-orange-4 bg-orange-1 text-orange-11 p-card-pad min-h-touch-min rounded-button mt-5 flex items-center gap-3 border text-xs font-bold"
-      >
-        <span className="flex-1">
-          응시장 열기
-          {pendingExam ? (
-            <small className="text-gray-8 mt-1 block font-normal">
-              배정된 시험 · {pendingExam.title}
-            </small>
-          ) : (
-            <small className="text-gray-8 mt-1 block font-normal">
-              지금 볼 수 있는 시험을 확인합니다
-            </small>
-          )}
-        </span>
-        {pendingExamCount > 0 && (
-          <span className="bg-orange-7 flex h-6 min-w-6 items-center justify-center rounded-full px-2 text-white tabular-nums">
-            {pendingExamCount}
+      {!hideExamHallEntry && (
+        <Link
+          href={PRIVATE.DASHBOARD.EXAM_HALL}
+          className="border-orange-4 bg-orange-1 text-orange-11 p-card-pad min-h-touch-min rounded-button mt-5 flex items-center gap-3 border text-xs font-bold"
+        >
+          <span className="flex-1">
+            시험 확인하기
+            {pendingExam ? (
+              <small className="text-gray-8 mt-1 block font-normal">
+                배정된 시험 · {pendingExam.title}
+              </small>
+            ) : (
+              <small className="text-gray-8 mt-1 block font-normal">
+                지금 볼 수 있는 시험을 확인합니다
+              </small>
+            )}
           </span>
-        )}
-        <span>›</span>
-      </Link>
+          {pendingExamCount > 0 && (
+            <span className="bg-orange-7 flex h-6 min-w-6 items-center justify-center rounded-full px-2 text-white tabular-nums">
+              {pendingExamCount}
+            </span>
+          )}
+          <span>›</span>
+        </Link>
+      )}
     </section>
   );
 };

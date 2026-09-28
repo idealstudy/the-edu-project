@@ -6,6 +6,10 @@ import Link from 'next/link';
 
 import type { TreeSubjectGroup } from '@/entities/tree';
 import { useStudentGrowthQuery } from '@/features/dashboard/hooks/use-growth-query';
+import {
+  D034_STUDENT_COPY,
+  isD034HiddenForRole,
+} from '@/features/dashboard/model/d034-visibility';
 import { useMyPointWalletQuery } from '@/features/point/hooks/use-point';
 import { useMyTreeQuery } from '@/features/weakness-tree/hooks/use-tree';
 import { PageLayout } from '@/layout';
@@ -73,6 +77,10 @@ export const StudentResultsPage = () => {
   const treeQuery = useMyTreeQuery();
   const growthQuery = useStudentGrowthQuery();
   const pointQuery = useMyPointWalletQuery();
+  const hidePointRewards = isD034HiddenForRole(
+    'ROLE_STUDENT',
+    'student.results.point-rewards'
+  );
   const tree = treeQuery.data;
   const groups = useMemo(() => tree?.groups ?? [], [tree?.groups]);
   const nodes = groups.flatMap((group) => group.nodes);
@@ -266,9 +274,10 @@ export const StudentResultsPage = () => {
             </div>
             <p className="bg-gray-1 text-gray-10 mt-3 rounded-lg p-3 text-xs leading-5">
               칸을 누르면 그 단원 <b>단권화 노트</b>로 갑니다. 여기서는 보기만
-              하고 고치지 않습니다. 숙련도 값은 <b>오픈챌린지</b>에서
-              가져옵니다. 풀이 또는 정복도 기록이 있는 과목은 모두 펼치고,
-              기록이 없는 과목만 접습니다.
+              하고 고치지 않습니다. 숙련도 값은{' '}
+              <b>{D034_STUDENT_COPY.openChallenge}</b> 풀이 기록에서 가져옵니다.
+              풀이 또는 정복도 기록이 있는 과목은 모두 펼치고, 기록이 없는
+              과목만 접습니다.
               {foldedCount > 0 && (
                 <>
                   {' '}
@@ -383,10 +392,10 @@ export const StudentResultsPage = () => {
       <Card data-testid="student-results-rewards">
         <div className="mb-4 flex items-center gap-2">
           <h2 className="text-gray-12 text-base font-extrabold">
-            뱃지 · 포인트 · 레벨
+            뱃지 · 레벨
           </h2>
           <span className="text-gray-9 text-xs">
-            오픈챌린지와 같은 계정에서 쌓입니다
+            {D034_STUDENT_COPY.openChallenge}와 같은 계정에서 쌓입니다
           </span>
         </div>
         <div className="bg-gray-1 rounded-lg p-4">
@@ -395,7 +404,7 @@ export const StudentResultsPage = () => {
               Lv.{growthQuery.data?.level ?? 0}
             </b>
             <span className="text-gray-9 text-xs">
-              다음 레벨까지 {growthQuery.data?.xpToNextLevel ?? 0}포인트
+              다음 레벨까지 {growthQuery.data?.xpToNextLevel ?? 0} 성장치
             </span>
           </div>
           <div className="bg-gray-2 h-level-bar rounded-pill mt-3 overflow-hidden">
@@ -407,12 +416,14 @@ export const StudentResultsPage = () => {
             />
           </div>
         </div>
-        <div className="border-gray-2 my-4 flex items-center border-y py-3">
-          <span className="text-gray-12 text-sm">쓸 수 있는 포인트</span>
-          <b className="text-orange-10 ml-auto text-xl tabular-nums">
-            {pointQuery.data?.balance ?? 0}P
-          </b>
-        </div>
+        {!hidePointRewards && (
+          <div className="border-gray-2 my-4 flex items-center border-y py-3">
+            <span className="text-gray-12 text-sm">쓸 수 있는 포인트</span>
+            <b className="text-orange-10 ml-auto text-xl tabular-nums">
+              {pointQuery.data?.balance ?? 0}
+            </b>
+          </div>
+        )}
         <div className="gap-content-gap grid grid-cols-3">
           {[
             ['첫 정복', (tree?.mastery.mastered ?? 0) >= 1],

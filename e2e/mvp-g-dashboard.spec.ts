@@ -298,6 +298,12 @@ test.describe('MVP-G 학생 대시보드 코어', () => {
   test('시험이 없고 채점 풀이가 충분하면 시험 아닌 참고 등급을 실제 화면에 표시한다', async ({
     page,
   }) => {
+    const consoleErrors: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+    page.on('pageerror', (error) => consoleErrors.push(error.message));
+
     await setupDashboardApi(page, {
       assignedExams: [],
       report: REFERENCE_DASHBOARD_REPORT,
@@ -314,6 +320,20 @@ test.describe('MVP-G 학생 대시보드 코어', () => {
     await expect(
       reference.getByTestId('expected-grade-reference-evidence').locator('p')
     ).toHaveCount(3);
+    await expect(
+      page.locator('a[href="/dashboard/student/exam-hall"]')
+    ).toHaveCount(0);
+    for (const forbiddenText of ['오픈챌린지', '응시장', '포인트']) {
+      const matches = page.getByText(forbiddenText, { exact: true });
+      for (let index = 0; index < (await matches.count()); index += 1) {
+        await expect(matches.nth(index)).toBeHidden();
+      }
+    }
+    expect(consoleErrors).toEqual([]);
+    await page.screenshot({
+      path: '/tmp/d034-student-dashboard-full.png',
+      fullPage: true,
+    });
     await reference.screenshot({
       path: '/tmp/mvp-g-stage5-s-grade-reference.png',
     });

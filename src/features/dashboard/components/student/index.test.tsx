@@ -59,7 +59,12 @@ vi.mock('./today-problems-section', () => ({
 vi.mock('./exam-hall-card', () => ({
   ExamHallCard: () => {
     mocks.examHallCard();
-    return <div>응시장 열기</div>;
+    return (
+      <section data-testid="expected-grade-card">
+        <h3>내 위치 · 실측</h3>
+        <p>3~4등급</p>
+      </section>
+    );
   },
 }));
 
@@ -73,11 +78,12 @@ describe('D-034 학생 대시보드 가림 계약', () => {
     vi.clearAllMocks();
   });
 
-  test('D034-DASH-01 학생 대시보드에서 응시장 카드를 렌더하지 않는다', () => {
+  test('D034-DASH-01 학생 대시보드는 등급 위치 카드를 다시 렌더한다', () => {
     render(<DashboardStudent />);
 
     expect(screen.getByText('단권화 노트')).toBeVisible();
-    expect(screen.queryByText('응시장 열기')).toBeNull();
-    expect(mocks.examHallCard).not.toHaveBeenCalled();
+    expect(screen.getByText('내 위치 · 실측')).toBeVisible();
+    expect(screen.getByText('3~4등급')).toBeVisible();
+    expect(mocks.examHallCard).toHaveBeenCalledOnce();
   });
 });

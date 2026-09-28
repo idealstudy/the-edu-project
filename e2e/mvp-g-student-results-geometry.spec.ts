@@ -87,6 +87,10 @@ test.describe('MVP-G 학생 성과 chrome geometry', () => {
     test(`TC-SHELL-002 ${viewport.name}에서 chrome 순서와 비겹침을 지킨다`, async ({
       page,
     }, testInfo) => {
+      const consoleErrors: string[] = [];
+      page.on('console', (message) => {
+        if (message.type() === 'error') consoleErrors.push(message.text());
+      });
       await page.setViewportSize(viewport);
       await mockStudentResultsApi(page);
       await page.goto('/dashboard/student/results');
@@ -120,6 +124,9 @@ test.describe('MVP-G 학생 성과 chrome geometry', () => {
         path: screenshotPath,
         contentType: 'image/png',
       });
+      await expect(
+        page.getByTestId('student-results-rewards')
+      ).not.toContainText(/포인트|학습 보상|320/);
 
       const sidebar = page.locator('[data-dashboard-sidebar] aside');
       const bottomNavigation = page.getByTestId('student-bottom-navigation');
@@ -147,11 +154,11 @@ test.describe('MVP-G 학생 성과 chrome geometry', () => {
               links.map((link) => link.getAttribute('aria-label'))
             )
         ).resolves.toEqual([
-          '내 학습',
-          '내 성과',
-          '돌아보기',
-          '오답 회독',
-          '마이페이지',
+          '학습',
+          '성과',
+          '회고',
+          '오답',
+          '나',
         ]);
 
         await page
@@ -170,6 +177,7 @@ test.describe('MVP-G 학생 성과 chrome geometry', () => {
           viewport.height
         );
       }
+      expect(consoleErrors).toEqual([]);
     });
   }
 });

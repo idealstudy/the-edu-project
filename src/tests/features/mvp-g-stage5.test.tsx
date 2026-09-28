@@ -166,6 +166,8 @@ describe('MVP-G 5단계 회장 결정 보정', () => {
       within(reference).getByTestId('expected-grade-reference-evidence')
         .children
     ).toHaveLength(3);
+    expect(screen.queryByRole('link')).toBeNull();
+    expect(screen.queryByText(/오픈챌린지|응시장/)).toBeNull();
   });
 
   it('근거가 부족하면 등급 영역에 숫자와 자리표시자를 쓰지 않는다', () => {
@@ -182,6 +184,8 @@ describe('MVP-G 5단계 회장 결정 보정', () => {
     expect(none).toHaveTextContent('아직 등급을 계산할 자료가 없어요');
     expect(none.textContent).not.toMatch(/[0-9]/);
     expect(none.textContent).not.toContain('--등급');
+    expect(screen.queryByRole('link')).toBeNull();
+    expect(screen.queryByText(/오픈챌린지|응시장/)).toBeNull();
   });
 
   it('TC-API-002 시험 만들기가 고1·고2 학년을 실제 문제은행 필터로 보낸다', async () => {

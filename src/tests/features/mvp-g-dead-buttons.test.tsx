@@ -320,6 +320,48 @@ describe('MVP-G 죽은 버튼 회귀', () => {
     );
   });
 
+  it('D034-DASH-03 학생 할 일은 비코어 제품명과 보상 수치를 노출하지 않는다', async () => {
+    const user = userEvent.setup();
+    mocks.studentTodos.mockReturnValue({
+      data: {
+        ...EMPTY_TODOS,
+        totalCount: 1,
+        items: [
+          {
+            id: 999,
+            studentId: 1,
+            studentName: '학생',
+            title: '수열 복습',
+            subject: '수학',
+            book: '교재',
+            weekOf: '2026-08-03',
+            status: 'TODO',
+            skipReason: null,
+            assignerRole: 'TEACHER',
+            assignerId: 2,
+            source: 'TEACHER',
+            rewardPoints: 777,
+            approvalStatus: 'APPROVED',
+            notDoneReason: null,
+            completedAt: null,
+          },
+        ],
+      },
+      isError: false,
+      isPending: false,
+    });
+
+    render(<TodayTodoCard />);
+    await user.click(screen.getByTestId('student-todo-add-toggle'));
+
+    expect(
+      screen.queryByText(/오픈챌린지|응시장|포인트|학습 보상/)
+    ).toBeNull();
+    expect(screen.getByTestId('student-todos-card')).not.toHaveTextContent('777');
+    expect(screen.getAllByText(/추천 문제/).length).toBeGreaterThan(0);
+    expect(screen.queryByRole('link', { name: /기출 1세트/ })).toBeNull();
+  });
+
   it('학생 홈에서 주간 회고를 제거하고 돌아보기 실라우트를 유지한다', () => {
     render(<AgendaFlowCard />);
 
