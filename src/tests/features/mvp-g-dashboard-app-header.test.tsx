@@ -158,6 +158,7 @@ describe('MVP-G 공통 앱 헤더', () => {
     ).toHaveLength(1);
     expect(screen.getByRole('heading', { name: '내 학습' })).toBeVisible();
     expect(screen.getByText('내 오답')).toBeVisible();
+    expect(screen.getByText('포인트').closest('span')).toHaveClass('hidden');
 
     mocks.pathname = '/dashboard/student/results';
     rerender(
@@ -186,7 +187,7 @@ describe('MVP-G 공통 앱 헤더', () => {
     expect(screen.getByText('7건')).toBeVisible();
   });
 
-  it('학생 요약 데이터가 없으면 네 값을 0 단위로 표시한다', () => {
+  it('학생 요약 데이터가 없으면 포인트 데이터는 보존하되 칩은 숨긴다', () => {
     mocks.growthQuery.mockReturnValue({ data: undefined });
     mocks.wrongAnswersQuery.mockReturnValue({ data: undefined });
     mocks.pointWalletQuery.mockReturnValue({ data: undefined });
@@ -201,7 +202,7 @@ describe('MVP-G 공통 앱 헤더', () => {
     expect(screen.getByText('0개')).toBeVisible();
     expect(screen.getByText('0일')).toBeVisible();
     expect(screen.getByText('Lv.0')).toBeVisible();
-    expect(screen.getByText('0P')).toBeVisible();
+    expect(screen.getByText('0P').closest('span')).toHaveClass('hidden');
   });
 
   it('선생님 지표 데이터가 없으면 0건을 표시한다', () => {
@@ -397,7 +398,12 @@ describe('MVP-G 공통 앱 헤더', () => {
     );
 
     const header = container.querySelector('[data-dashboard-app-header]');
-    expect(header).toHaveClass('bg-gray-white', 'relative');
+    expect(header).toHaveClass(
+      'bg-gray-white',
+      'relative',
+      'h-header-height',
+      'shell:min-h-header-height'
+    );
     expect(header).not.toHaveClass('sticky', 'top-0');
   });
 
@@ -410,6 +416,12 @@ describe('MVP-G 공통 앱 헤더', () => {
     );
 
     const header = container.querySelector('[data-dashboard-app-header]');
-    expect(header).toHaveClass('bg-gray-white', 'sticky', 'top-0');
+    expect(header).toHaveClass(
+      'bg-gray-white',
+      'sticky',
+      'top-0',
+      'h-header-height',
+      'shell:min-h-header-height'
+    );
   });
 });

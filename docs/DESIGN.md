@@ -27,7 +27,7 @@ tokens:
     pill: "999px"
   layout:
     mobile: "390px, 1 column"
-    tablet: "1024px, sidebar 260px"
+    tablet: "1024px, sidebar 260px (`shell` breakpoint)"
     desktop: "1280px, sidebar 260px"
 ---
 
@@ -72,7 +72,7 @@ YAML의 역할 토큰이 빠른 파싱 정본이고 실제 값은 `src/styles/gl
 
 ## Layout
 
-390px은 1열, 1024px과 1280px은 260px 사이드바 다음에 본문이 오는 `flex-row`다. 8pt 계열 간격과 상세 그리드는 `## 4. 간격`, `## 7. 반응형`, `## 10. 레이아웃`이 소유한다. 관리자 문제은행의 보조 패널도 390px에서는 문항 목록 다음의 1열로 접어야 하며 inline 열 정의로 모바일 규칙을 덮지 않는다.
+390px은 1열, 1024px부터는 `shell` 브레이크포인트로 기존 사이드바와 본문을 복원하고 1280px에서는 같은 주축을 유지한다. 8pt 계열 간격과 상세 그리드는 `## 4. 간격`, `## 7. 반응형`, `## 10. 레이아웃`이 소유한다. 관리자 문제은행의 보조 패널도 390px에서는 문항 목록 다음의 1열로 접어야 하며 inline 열 정의로 모바일 규칙을 덮지 않는다.
 
 ## Elevation & Depth
 

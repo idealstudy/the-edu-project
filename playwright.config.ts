@@ -26,6 +26,7 @@ const SHARED_ACCOUNT_SPECS = [
   /mvp-g-qa8-roundtrip\.spec\.ts/,
   /mvp-g-qa8-performance\.spec\.ts/,
   /mvp-g-v8-3-delayed-filter\.spec\.ts/,
+  /web-mobile-v12-phase2\.spec\.ts/,
 ];
 
 // 폭별 전수 점검(v8-4)은 세 역할 계정을 모두 쓰고 실행 시간이 길다.

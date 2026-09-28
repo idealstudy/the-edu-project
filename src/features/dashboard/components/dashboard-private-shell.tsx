@@ -34,7 +34,7 @@ export const DashboardPrivateShell = ({
   return (
     <SessionGuard>
       <main
-        className={`bg-system-background desktop:pl-sidebar-width flex min-h-screen flex-col ${isStudent ? 'tablet:pl-sidebar-width pb-[calc(var(--spacing-control-xl)+var(--spacing-section-gap-mobile)+env(safe-area-inset-bottom))] md:pb-0' : 'tablet:pl-sidebar-rail-width'}`}
+        className={`bg-system-background desktop:pl-sidebar-width flex min-h-screen flex-col ${isStudent ? 'shell:pl-sidebar-width shell:pb-0 pb-[calc(var(--spacing-control-xl)+var(--spacing-section-gap-mobile)+env(safe-area-inset-bottom))]' : 'shell:pl-sidebar-rail-width'}`}
         data-private-app-shell
         data-private-role={role}
       >

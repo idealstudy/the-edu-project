@@ -121,6 +121,10 @@ body:has([data-study-room-shell]) [data-dashboard-sidebar] {
   display: none;
 }
 
+body:has([data-study-room-shell]) [data-private-app-shell] {
+  padding-left: 0;
+}
+
 body:has([data-private-role='ROLE_STUDENT']) [data-global-header] {
   display: none;
 }
@@ -137,9 +141,16 @@ body:has([data-private-role='ROLE_STUDENT']) [data-root-content] {
   body:has([data-private-app-shell]) [data-root-content] {
     margin-top: 0;
   }
+}
 
-  body:has([data-study-room-shell]) [data-private-app-shell] {
-    padding-left: 0;
+@media (max-width: 1023.98px) {
+  /* 개발 전용 TanStack Query 버튼이 학생 하단 탭의 `나`를 덮지 않게 한다.
+   * provider 설정은 건드리지 않고, v12 하단 탭 높이와 기기 안전 영역만큼 올린다. */
+  body:has([data-private-role='ROLE_STUDENT']) .tsqd-open-btn-container {
+    bottom: calc(
+      var(--spacing-control-xl) + var(--spacing-section-gap-mobile) +
+        env(safe-area-inset-bottom)
+    );
   }
 }
 
@@ -538,6 +549,7 @@ body {
 
   /* 브레이크포인트 */
   --breakpoint-tablet: 768px;
+  --breakpoint-shell: 1024px;
   --breakpoint-desktop: 1200px;
 
   /* 애니메이션 */

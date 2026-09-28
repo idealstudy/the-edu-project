@@ -71,8 +71,8 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
       value={{ selectedGroupId, setSelectedGroupId }}
     >
       <div data-study-room-shell>
-        <ColumnLayout className="items-start gap-5 md:flex-row md:px-4 md:py-4">
-          <ColumnLayout.Left className="md:sticky md:top-4 md:w-[360px]">
+        <ColumnLayout className="shell:flex-row shell:px-4 shell:py-4 items-start gap-5">
+          <ColumnLayout.Left className="shell:sticky shell:top-4 shell:w-room-aside">
             <StudyroomSidebar
               studyRoomId={studyRoomId}
               segment={segment}
@@ -80,7 +80,7 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
               onSelectGroup={setSelectedGroupId}
             />
           </ColumnLayout.Left>
-          <ColumnLayout.Right className="flex h-auto min-w-0 flex-1 flex-col gap-3 rounded-[12px] md:max-w-none md:px-0">
+          <ColumnLayout.Right className="rounded-card shell:max-w-none shell:px-0 flex h-auto min-w-0 flex-1 flex-col gap-3">
             <div>
               <StudyNoteTab
                 mode={role}

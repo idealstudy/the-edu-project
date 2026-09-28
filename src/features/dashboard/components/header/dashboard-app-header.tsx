@@ -61,21 +61,21 @@ const StudentSummaryChips = ({ memberName }: { memberName: string }) => {
   const streakDays = growthQuery.data?.streakDays ?? 0;
   const level = growthQuery.data?.level ?? 0;
   const pointBalance = pointQuery.data?.balance ?? 0;
-  // 시안 v23 `.chip`(HTML:510-513, `hideM`): 연속·레벨 칩은 모바일에서 숨기고
-  // 오답·포인트만 남긴다(좁은 화면 칩 과다노출 방지). 레벨은 라벨 없이 "Lv.7"만.
+  // v12 D-034는 포인트 기능과 데이터를 삭제하지 않고 학생 화면에서만 가린다.
+  // 연속·레벨 칩은 기존 계약대로 모바일에서만 숨기고, 포인트 칩은 모든 폭에서 숨긴다.
   const chips = [
-    ['내 오답', `${wrongAnswerCount}개`, false],
-    ['연속', `${streakDays}일`, true],
-    [null, `Lv.${level}`, true],
-    ['포인트', `${pointBalance.toLocaleString('ko-KR')}P`, false],
+    ['내 오답', `${wrongAnswerCount}개`, false, false],
+    ['연속', `${streakDays}일`, true, false],
+    [null, `Lv.${level}`, true, false],
+    ['포인트', `${pointBalance.toLocaleString('ko-KR')}P`, false, true],
   ] as const;
 
   return (
     <div className="gap-inline-gap flex flex-wrap items-center justify-end">
-      {chips.map(([label, value, hideOnMobile]) => (
+      {chips.map(([label, value, hideOnMobile, hideByD034]) => (
         <span
           key={label ?? value}
-          className={`bg-gray-1 text-gray-9 text-ui-choice min-h-chip-min rounded-pill px-button-chip-x items-center font-bold ${hideOnMobile ? 'tablet:inline-flex hidden' : 'inline-flex'}`}
+          className={`bg-gray-1 text-gray-9 text-ui-choice min-h-chip-min rounded-pill px-button-chip-x items-center font-bold ${hideByD034 ? 'hidden' : hideOnMobile ? 'tablet:inline-flex hidden' : 'inline-flex'}`}
         >
           {label && `${label} `}
           <b className="text-gray-12 ml-1 tabular-nums">{value}</b>
@@ -248,7 +248,7 @@ export const DashboardAppHeader = ({
         role === 'ROLE_TEACHER' ? 'relative z-10' : 'sticky top-0 z-30',
         role === 'ROLE_PARENT'
           ? 'bg-system-background px-section-gap tablet:px-room-page-pad tablet:pt-19 pt-8 pb-3'
-          : 'min-h-header-height px-appbar-pad-x py-appbar-pad-y flex items-center'
+          : 'h-header-height shell:h-auto shell:min-h-header-height shell:py-appbar-pad-y px-appbar-pad-x flex shrink-0 items-center'
       )}
     >
       {role === 'ROLE_STUDENT' && (
