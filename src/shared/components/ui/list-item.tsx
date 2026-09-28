@@ -16,6 +16,7 @@ type ListItemBaseProps = {
   rightSubTitle?: string;
   dataTestId?: string;
   titleTestId?: string;
+  mobileMultiline?: boolean;
 };
 
 const LIST_ITEM_CLASS =
@@ -31,6 +32,7 @@ const ListItemContent = ({
   dropdown,
   rightSubTitle,
   titleTestId,
+  mobileMultiline,
 }: Omit<ListItemBaseProps, 'id' | 'dataTestId'>) => {
   return (
     <>
@@ -45,13 +47,25 @@ const ListItemContent = ({
           <div className="flex max-w-full min-w-0 flex-row items-center gap-2">
             <p
               data-testid={titleTestId}
-              className="text-single-line mb-1"
+              className={cn(
+                'mb-1',
+                mobileMultiline
+                  ? 'text-three-lines shell:text-single-line'
+                  : 'text-single-line'
+              )}
             >
               {title}
             </p>
             {tag && tag}
           </div>
-          <p className="font-caption-normal text-gray-9 text-single-line max-w-full">
+          <p
+            className={cn(
+              'font-caption-normal text-gray-9 max-w-full',
+              mobileMultiline
+                ? 'text-two-lines shell:text-single-line'
+                : 'text-single-line'
+            )}
+          >
             {subtitle}
           </p>
         </div>
@@ -95,6 +109,7 @@ const ListItemRoot = ({
   rightSubTitle,
   dataTestId,
   titleTestId,
+  mobileMultiline,
 }: ListItemBaseProps & {
   href: string;
 }) => {
@@ -115,6 +130,7 @@ const ListItemRoot = ({
         dropdown={dropdown}
         rightSubTitle={rightSubTitle}
         titleTestId={titleTestId}
+        mobileMultiline={mobileMultiline}
       />
     </Link>
   );
@@ -132,6 +148,7 @@ const ListItemButton = ({
   rightSubTitle,
   dataTestId,
   titleTestId,
+  mobileMultiline,
   onClick,
 }: ListItemBaseProps & {
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
@@ -154,6 +171,7 @@ const ListItemButton = ({
         dropdown={dropdown}
         rightSubTitle={rightSubTitle}
         titleTestId={titleTestId}
+        mobileMultiline={mobileMultiline}
       />
     </button>
   );
