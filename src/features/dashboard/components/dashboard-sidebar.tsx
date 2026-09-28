@@ -73,7 +73,10 @@ export const DashboardSidebar = () => {
   };
 
   return (
-    <Sidebar expandedAtTablet={role === 'ROLE_STUDENT'}>
+    <Sidebar
+      expandedAtTablet={role === 'ROLE_STUDENT'}
+      visibleAtTablet={role === 'ROLE_TEACHER' || role === 'ROLE_PARENT'}
+    >
       {/* 태블릿(md~desktop 미만) 아이콘 레일에서는 'D' 만, desktop 이상만 전체 로고 텍스트 */}
       <div
         className={`text-orange-9 px-2 pt-1 pb-3 text-center text-sm font-extrabold tracking-[-0.045em] ${role === 'ROLE_STUDENT' ? 'tablet:hidden block' : 'desktop:hidden block'}`}

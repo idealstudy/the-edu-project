@@ -16,6 +16,7 @@ interface SidebarContextValue {
   pathname: string | null;
   isStudyRoomSectionActive: boolean;
   expandedAtTablet: boolean;
+  visibleAtTablet: boolean;
 }
 
 const SidebarContext = createContext<SidebarContextValue | undefined>(
@@ -25,9 +26,11 @@ const SidebarContext = createContext<SidebarContextValue | undefined>(
 const SidebarProvider = ({
   children,
   expandedAtTablet = false,
+  visibleAtTablet = false,
 }: {
   children: ReactNode;
   expandedAtTablet?: boolean;
+  visibleAtTablet?: boolean;
 }) => {
   const pathname = usePathname();
   const isStudyRoomSectionActive =
@@ -37,6 +40,7 @@ const SidebarProvider = ({
     pathname,
     isStudyRoomSectionActive,
     expandedAtTablet,
+    visibleAtTablet,
   };
 
   return (
@@ -56,12 +60,15 @@ const useSidebarContext = () => {
  * Sidebar.Root
  * ────────────────────────────────────────────────────*/
 const SidebarRoot = ({ children }: { children: ReactNode }) => {
-  const { expandedAtTablet } = useSidebarContext();
+  const { expandedAtTablet, visibleAtTablet } = useSidebarContext();
 
   return (
     <div
       data-dashboard-sidebar
-      className="shell:flex fixed top-0 left-0 z-40 hidden h-dvh flex-col"
+      className={cn(
+        'fixed top-0 left-0 z-40 hidden h-dvh flex-col',
+        visibleAtTablet ? 'tablet:flex' : 'shell:flex'
+      )}
     >
       <aside
         data-sidebar-mode={
@@ -283,11 +290,16 @@ const SidebarItemText = ({
 const Sidebar = ({
   children,
   expandedAtTablet = false,
+  visibleAtTablet = false,
 }: {
   children: ReactNode;
   expandedAtTablet?: boolean;
+  visibleAtTablet?: boolean;
 }) => (
-  <Sidebar.Provider expandedAtTablet={expandedAtTablet}>
+  <Sidebar.Provider
+    expandedAtTablet={expandedAtTablet}
+    visibleAtTablet={visibleAtTablet}
+  >
     <Sidebar.Root>
       <nav className="flex h-full flex-1 flex-col">{children}</nav>
     </Sidebar.Root>

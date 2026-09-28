@@ -27,15 +27,21 @@ import { cn } from '@/shared/lib';
  * 본문 랜드마크(`<main>`)는 각 페이지가 소유하므로 셸은 `<div>`로 감싼다(중첩 main 방지).
  */
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const { status } = useSession();
+  const { member, status } = useSession();
   const isAuthenticated = status === 'authenticated';
+  const role = member?.role;
 
   return (
     <div
       className={cn(
         'transition-all duration-300',
-        isAuthenticated &&
-          'tablet:pl-sidebar-rail-width desktop:pl-sidebar-width'
+        isAuthenticated && role === 'ROLE_STUDENT'
+          ? 'shell:pl-sidebar-width'
+          : isAuthenticated &&
+              (role === 'ROLE_TEACHER' || role === 'ROLE_PARENT')
+            ? 'tablet:pl-sidebar-rail-width desktop:pl-sidebar-width'
+            : isAuthenticated &&
+              'shell:pl-sidebar-rail-width desktop:pl-sidebar-width'
       )}
     >
       {isAuthenticated && <DashboardSidebar />}
