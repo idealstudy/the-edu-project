@@ -632,13 +632,13 @@ export function PortalHome() {
   return (
     <main className="mx-auto w-full max-w-310 px-4 py-7 sm:px-8 sm:py-10 lg:px-12">
       <PortalHero />
-      <div className="mt-10 grid gap-x-8 gap-y-10 lg:grid-cols-[minmax(0,1.55fr)_minmax(320px,.95fr)]">
-        <div className="space-y-10">
+      <div className="mt-10 grid grid-cols-[minmax(0,1fr)] gap-x-8 gap-y-10 lg:grid-cols-[minmax(0,1.55fr)_minmax(320px,.95fr)]">
+        <div className="min-w-0 space-y-10">
           <TodayChallenge />
           <Consultation />
           <EditorialAndNews />
         </div>
-        <aside className="space-y-10">
+        <aside className="min-w-0 space-y-10">
           <PopularPosts />
           <MentorAndCourses />
         </aside>
