@@ -1,6 +1,8 @@
+import { studentKeys } from '@/entities/student';
 import { StudentBottomNavigation } from '@/features/dashboard/components/student/student-bottom-navigation';
 import { StudentMyPage } from '@/features/mypage/student/components/student-my-page';
 import { PointWalletClient } from '@/features/point/components/point-wallet-client';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -209,9 +211,22 @@ describe('MVP-G 학생 마이와 포인트 계약', () => {
 });
 
 describe('MVP-G 학생 모바일 내비게이션', () => {
-  it('다섯 화면의 실제 라우트와 현재 화면 상태를 제공한다', () => {
+  const renderNavigation = (rooms: Array<{ id: number; name: string }>) => {
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    queryClient.setQueryData(studentKeys.dashboard.studyRoomList(), rooms);
+
+    return render(
+      <QueryClientProvider client={queryClient}>
+        <StudentBottomNavigation />
+      </QueryClientProvider>
+    );
+  };
+
+  it('스터디룸이 없으면 교무실 없이 다섯 화면의 실제 라우트와 현재 화면 상태를 제공한다', () => {
     mocks.pathname = '/dashboard/student/results';
-    render(<StudentBottomNavigation />);
+    renderNavigation([]);
 
     const links = within(
       screen.getByRole('navigation', { name: '학생 모바일 주요 메뉴' })
@@ -224,23 +239,66 @@ describe('MVP-G 학생 모바일 내비게이션', () => {
         current: link.getAttribute('aria-current'),
       }))
     ).toEqual([
-      { name: '내 학습', href: '/dashboard/student', current: null },
+      { name: '학습', href: '/dashboard/student', current: null },
       {
-        name: '내 성과',
+        name: '성과',
         href: '/dashboard/student/results',
         current: 'page',
       },
       {
-        name: '돌아보기',
+        name: '회고',
         href: '/dashboard/student/look-back',
         current: null,
       },
       {
-        name: '오답 회독',
+        name: '오답',
         href: '/dashboard/student/wrong-answers',
         current: null,
       },
-      { name: '마이페이지', href: '/mypage', current: null },
+      { name: '나', href: '/mypage', current: null },
+    ]);
+  });
+
+  it('스터디룸이 있으면 첫 방 교무실 링크를 포함한 여섯 화면을 제공한다', () => {
+    mocks.pathname = '/study-rooms/17/note';
+    renderNavigation([
+      { id: 17, name: '고2 수학' },
+      { id: 29, name: '수능 수학' },
+    ]);
+
+    const links = within(
+      screen.getByRole('navigation', { name: '학생 모바일 주요 메뉴' })
+    ).getAllByRole('link');
+
+    expect(
+      links.map((link) => ({
+        name: link.getAttribute('aria-label'),
+        href: link.getAttribute('href'),
+        current: link.getAttribute('aria-current'),
+      }))
+    ).toEqual([
+      { name: '학습', href: '/dashboard/student', current: null },
+      {
+        name: '교무실',
+        href: '/study-rooms/17/note',
+        current: 'page',
+      },
+      {
+        name: '성과',
+        href: '/dashboard/student/results',
+        current: null,
+      },
+      {
+        name: '회고',
+        href: '/dashboard/student/look-back',
+        current: null,
+      },
+      {
+        name: '오답',
+        href: '/dashboard/student/wrong-answers',
+        current: null,
+      },
+      { name: '나', href: '/mypage', current: null },
     ]);
   });
 });

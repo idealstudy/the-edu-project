@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import Script from 'next/script';
 
@@ -31,6 +31,13 @@ export const metadata: Metadata = {
         process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION ?? '',
     },
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#FF4805',
 };
 
 export default function RootLayout({

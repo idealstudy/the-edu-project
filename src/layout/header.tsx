@@ -39,6 +39,8 @@ import {
 } from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
 
+import { shouldShowMobileDiscoveryLinks } from './header-policy';
+
 /* 포인트 칩(R-13) — "내 학습" 셸(친구·트리·학습)엔 이미 상시 노출되는데
  * 오픈챌린지 랜딩 셸(이 GNB)만 없었다. QA 정합표(docs/qa/design-conformance-matrix.md
  * D-10-4·R-13 행)가 확정한 갭. 로그인 상태에서만 조회·노출한다. */
@@ -64,6 +66,9 @@ export const Header = () => {
   const profileImageSrc = getProfileImageSrc(
     profileImageData?.imageUrl,
     DEFAULT_PROFILE_IMAGE.HEADER
+  );
+  const showMobileDiscoveryLinks = shouldShowMobileDiscoveryLinks(
+    session?.role
   );
 
   const goToMypage = () => {
@@ -239,48 +244,42 @@ export const Header = () => {
                 className="w-[320px]"
               >
                 <PopoverNav>
-                  {/* 오픈챌린지 (사이트 메인) */}
-                  <PopoverLink
-                    href={PUBLIC.OPEN_CHALLENGE.LIST}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <HomeIcon />
-                    <span>오픈챌린지</span>
-                  </PopoverLink>
-
-                  {/* 코스 */}
-                  <PopoverLink
-                    href={PUBLIC.COURSE.LIST}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <span>코스</span>
-                  </PopoverLink>
-
-                  {/* 대표 멘토 */}
-                  <PopoverLink
-                    href={PUBLIC.TEACHERS.LIST}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <span>대표 멘토</span>
-                  </PopoverLink>
-
-                  {/* 상담소 */}
-                  <PopoverLink
-                    href={PUBLIC.CONSULT.INDEX}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <span>상담소</span>
-                  </PopoverLink>
-
-                  {/* 게시판 */}
-                  <PopoverLink
-                    href={PUBLIC.COMMUNITY.COLUMN.LIST}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <span>게시판</span>
-                  </PopoverLink>
-
-                  <PopoverSeparator />
+                  {showMobileDiscoveryLinks && (
+                    <>
+                      <PopoverLink
+                        href={PUBLIC.OPEN_CHALLENGE.LIST}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <HomeIcon />
+                        <span>오픈챌린지</span>
+                      </PopoverLink>
+                      <PopoverLink
+                        href={PUBLIC.COURSE.LIST}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <span>코스</span>
+                      </PopoverLink>
+                      <PopoverLink
+                        href={PUBLIC.TEACHERS.LIST}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <span>대표 멘토</span>
+                      </PopoverLink>
+                      <PopoverLink
+                        href={PUBLIC.CONSULT.INDEX}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <span>상담소</span>
+                      </PopoverLink>
+                      <PopoverLink
+                        href={PUBLIC.COMMUNITY.COLUMN.LIST}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <span>게시판</span>
+                      </PopoverLink>
+                      <PopoverSeparator />
+                    </>
+                  )}
 
                   {/* 프로필 정보 */}
                   <div className="flex items-center justify-between px-3 py-2">

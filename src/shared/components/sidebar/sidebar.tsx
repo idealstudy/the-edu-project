@@ -61,7 +61,7 @@ const SidebarRoot = ({ children }: { children: ReactNode }) => {
   return (
     <div
       data-dashboard-sidebar
-      className={cn('fixed top-0 left-0 z-40 hidden h-dvh flex-col', 'md:flex')}
+      className="shell:flex fixed top-0 left-0 z-40 hidden h-dvh flex-col"
     >
       <aside
         data-sidebar-mode={
