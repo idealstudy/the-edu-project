@@ -74,7 +74,7 @@ const DashboardSection = ({
           <Link
             href={isMoreHref}
             prefetch={isMorePrefetch}
-            className="text-gray-8 flex gap-1"
+            className="text-gray-8 min-h-touch-min tablet:min-h-0 flex items-center gap-1"
             onClick={onMoreClick}
           >
             <span className="font-body2-heading">
