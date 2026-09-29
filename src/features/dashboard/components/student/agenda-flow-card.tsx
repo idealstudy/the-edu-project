@@ -38,14 +38,14 @@ export const AgendaFlowCard = () => {
           <button
             type="button"
             onClick={() => setIsAdding(!isAdding)}
-            className="border-gray-4 text-gray-9 hover:border-orange-6 hover:text-orange-9 rounded-lg border px-3 py-2 text-xs font-bold"
+            className="border-gray-4 text-gray-9 hover:border-orange-6 hover:text-orange-9 min-h-touch-min inline-flex items-center rounded-lg border px-3 py-2 text-xs font-bold"
             data-testid="student-agenda-add-toggle"
           >
             ＋ 추가
           </button>
           <Link
             href={PRIVATE.DASHBOARD.STUDENT_LOOK_BACK}
-            className="border-gray-4 text-gray-9 hover:border-orange-6 hover:text-orange-9 rounded-lg border px-3 py-2 text-xs font-bold"
+            className="border-gray-4 text-gray-9 hover:border-orange-6 hover:text-orange-9 min-h-touch-min inline-flex items-center rounded-lg border px-3 py-2 text-xs font-bold"
           >
             돌아보기 ›
           </Link>

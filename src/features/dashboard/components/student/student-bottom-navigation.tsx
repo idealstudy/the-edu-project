@@ -88,7 +88,7 @@ export const StudentBottomNavigationView = ({
             aria-label={item.label}
             aria-current={active ? 'page' : undefined}
             className={cn(
-              'min-h-control-xl gap-inline-gap-xs text-ui-compact flex flex-col items-center justify-center font-bold',
+              'min-h-control-xl gap-inline-gap-xs text-ui-compact active:bg-orange-1 flex flex-col items-center justify-center font-bold transition-[color,background-color,opacity,transform] duration-100 active:opacity-90',
               active ? 'text-orange-9' : 'text-gray-8'
             )}
           >

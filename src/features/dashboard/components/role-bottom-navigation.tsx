@@ -107,7 +107,7 @@ const BottomNavigationItems = ({
         aria-label={item.label}
         aria-current={active ? 'page' : undefined}
         className={cn(
-          'min-h-control-xl gap-inline-gap-xs flex min-w-0 flex-col items-center justify-center px-0.5 text-center text-xs font-bold',
+          'min-h-control-xl gap-inline-gap-xs active:bg-orange-1 flex min-w-0 flex-col items-center justify-center px-0.5 text-center text-xs font-bold transition-[color,background-color,opacity,transform] duration-100 active:opacity-90',
           active ? 'text-orange-9' : 'text-gray-8'
         )}
       >

@@ -145,7 +145,7 @@ const PromptTrigger = ({ children, ...props }: PromptTriggerProps) => {
 const PromptClose = () => {
   return (
     <AlertDialogPrimitives.Cancel
-      className="top-prompt-close-top right-prompt-close-right absolute flex size-6 cursor-pointer items-center justify-center"
+      className="top-prompt-close-top right-prompt-close-right size-touch-min tablet:size-6 absolute flex cursor-pointer items-center justify-center"
       aria-label="닫기"
     >
       <XIcon />

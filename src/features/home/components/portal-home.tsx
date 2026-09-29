@@ -20,7 +20,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ArrowRight, ChevronRight, RefreshCw } from 'lucide-react';
 
 const cardClass =
-  'overflow-hidden rounded-section border border-gray-3 bg-white shadow-[0_3px_12px_rgba(26,26,26,0.06)] transition duration-200 hover:-translate-y-px hover:shadow-[0_9px_24px_rgba(26,26,26,0.12)]';
+  'overflow-hidden rounded-section border border-gray-3 bg-white shadow-[0_3px_12px_rgba(26,26,26,0.06)] transition duration-100 hover:-translate-y-px hover:shadow-[0_9px_24px_rgba(26,26,26,0.12)] active:translate-y-px active:opacity-90';
 
 function ModuleHeading({
   title,
@@ -43,7 +43,7 @@ function ModuleHeading({
       </div>
       <Link
         href={href}
-        className="focus-ring text-orange-8 inline-flex shrink-0 items-center gap-1 text-sm font-semibold"
+        className="focus-ring text-orange-8 min-h-touch-min tablet:min-h-0 font-label-heading tablet:px-0 inline-flex shrink-0 items-center gap-1 px-2"
       >
         {more}
         <ChevronRight
@@ -69,7 +69,7 @@ function ModuleState({
         <button
           type="button"
           onClick={retry}
-          className="focus-ring text-orange-8 hover:bg-orange-1 mt-4 inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm font-semibold"
+          className="focus-ring text-orange-8 hover:bg-orange-1 min-h-touch-min font-label-heading mt-4 inline-flex cursor-pointer items-center gap-2 rounded-lg px-3 active:opacity-90"
         >
           <RefreshCw
             size={16}

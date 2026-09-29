@@ -14,9 +14,9 @@ export type ButtonProps = React.ComponentPropsWithRef<'button'> &
 
 const buttonVariants = cva(
   cn(
-    'focus-ring inline-flex cursor-pointer items-center justify-center whitespace-nowrap rounded-button border font-label-heading transition-colors duration-150',
+    'focus-ring inline-flex cursor-pointer items-center justify-center whitespace-nowrap rounded-button border font-label-heading transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-100',
     'disabled:border-line-line2 disabled:bg-background-inactive disabled:text-text-inactive disabled:pointer-events-none',
-    'active:translate-y-px'
+    'active:translate-y-px active:opacity-90'
   ),
   {
     variants: {
