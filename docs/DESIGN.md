@@ -1,8 +1,8 @@
 ---
 name: d-edu
-version: 1.4.2
-release_candidate: mvp-g-v2.0.2
-canonical_prototype: prototypes/mvp-g-3역할-hub-v24.2-gpt-codex-20260829-1054.html
+version: 2.0.1
+release_candidate: mvp-g-v2.0.4
+canonical_prototype: ../../prototypes/mvp-g-3역할-hub-v2.0.1-gpt-codex.html
 tokens:
   colors:
     background: "#ffffff"
@@ -18,8 +18,11 @@ tokens:
   typography:
     body: "Wanted Sans Variable, Pretendard Variable, sans-serif"
     display: "Wanted Sans Variable, Pretendard Variable, sans-serif"
-    body_size: "14px"
-    body_line_height: "1.6"
+    body_size_phone: "16px"
+    body_size_tablet: "16px"
+    body_size_desktop: "16px"
+    body_line_height_phone: "1.5"
+    body_line_height_tablet_desktop: "1.35"
   spacing: [4, 8, 12, 16, 24, 32, 48]
   radius:
     control: "8px"
@@ -39,13 +42,13 @@ tokens:
 
 | 항목        | 값                                                                                                                                                        |
 | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 버전        | v1.4.2                                                                                                                                                    |
-| 갱신        | 2026-08-29                                                                                                                                                |
+| 버전        | v2.0.1                                                                                                                                                    |
+| 갱신        | 2026-09-30                                                                                                                                                |
 | 작성자      | product-designer (gpt-codex)                                                                                                                              |
-| 출고 후보   | MVP-G v2.0.2                                                                                                                                               |
-| 변경        | v1.4.2 MVP-G v24.2 RETAKE. 관리자 문제은행 모바일을 실제 1열로 잠그고 문항 본문 읽기 폭, 44px 행동, 자동 줄바꿈 계약을 추가. YAML 토큰과 표준 8절 라우팅을 추가. |
+| 출고 후보   | MVP-G v2.0.4                                                                                                                                               |
+| 변경        | v1.5.1 → v2.0.1: 릴리스 표준 §2.1 계열 번호 정렬, 내용 변경 없음. |
 | 코드 정본   | `mvp-front/src/styles/globals.css`                                                                                                                        |
-| 디자인 정본 | `prototypes/mvp-g-3역할-hub-v24.2-gpt-codex-20260829-1054.html`                                                                                          |
+| 디자인 정본 | `../../prototypes/mvp-g-3역할-hub-v2.0.1-gpt-codex.html`                                                                                               |
 | 통합한 문서 | `docs/design-system-2.0.md`(2.0 톤·컴포넌트) · `docs/ui-guidelines.md §7`(색 우선순위) · `docs/mvp-g/design-spec-v24.2-gpt-codex-20260829-1054.md`(현행 수치 규격) |
 | 관련        | `docs/ui-guidelines.md`(UI 코딩 규칙) · `wiki/5-hubs/hub-design/design-system.md`(디자인 조직 관점 요약)                                                |
 | 코드 갭     | `docs/mvp-g/design-system-conformance-gap.md`(과거 정합 갭 이력)                                                                                         |
@@ -80,7 +83,7 @@ YAML의 역할 토큰이 빠른 파싱 정본이고 실제 값은 `src/styles/gl
 
 ## Shapes
 
-컨트롤 8px, 카드 12px, 배지와 칩 999px을 사용한다. 전체 radius와 border 조합은 `## 5. 모서리와 그림자`와 부록 `## 4. 형태`가 소유한다.
+컨트롤 8px, 카드 12px, 배지와 칩 999px을 사용한다. 전체 radius와 border 조합은 `## 5. 모서리와 그림자`가 단독으로 소유한다. 부록 `## 4. 형태`는 이 결정의 배경만 보존한다.
 
 ## Components
 
@@ -321,31 +324,145 @@ YAML의 역할 토큰이 빠른 파싱 정본이고 실제 값은 `src/styles/gl
 
 ## 3. 타이포
 
-Wanted Sans Variable을 본문 1순위로 쓰고, 로컬 Pretendard를 대체 글꼴로 둔다. CDN이 차단되거나 오프라인이어도 Pretendard로 같은 굵기 계층을 유지한다. **임의 px 금지.** 아래 `@utility` 스케일로만 쓴다.
+Wanted Sans Variable을 본문 1순위로 쓰고, 로컬 Pretendard를 대체 글꼴로 둔다. CDN이 차단되거나 오프라인이어도 Pretendard로 같은 굵기 계층을 유지한다. **임의 px 금지.** 유틸 이름은 모든 폭에서 같고, CSS 변수가 768px과 1200px에서 값만 바꾼다. 휴대폰은 데스크톱 축소판이 아니라 별도 가독성 모드다.
 
-| 유틸                                | 크기 / 굵기   | 용도        |
-| ----------------------------------- | ------------- | ----------- |
-| `font-display-1` / `font-display-2` | 56 · 40 / 700 | 랜딩 히어로 |
-| `font-title-heading`                | 32 / 700      | 화면 타이틀 |
-| `font-headline1-heading`            | 24 / 700      | 섹션 헤딩   |
-| `font-headline2-heading`            | 20 / 600      | 하위 섹션   |
-| `font-body1-heading`                | 18 / 600      | 카드 제목   |
-| `font-body2-heading`                | 16 / 600      | 본문 강조   |
-| `font-label-heading`                | 14 / 600      | 라벨·버튼   |
-| `font-caption-heading`              | 12 / 500      | 캡션·메타   |
+| 유틸 | 휴대폰 `<768px` 크기 / 행간 / 자간 | 태블릿 `768~1199px` | 데스크톱 `≥1200px` | 굵기 | 용도 |
+| --- | --- | --- | --- | --- | --- |
+| `font-display-1` | 36px / 1.2 / -0.02em | 48px / 1.2 / -0.03em | 56px / 1.2 / -0.03em | 700 | 랜딩 최상위 히어로 |
+| `font-display-2` | 32px / 1.2 / -0.02em | 36px / 1.2 / -0.03em | 40px / 1.2 / -0.03em | 700 | 랜딩 보조 히어로 |
+| `font-title-heading` | 28px / 1.25 / -0.02em | 30px / 1.25 / -0.03em | 32px / 1.25 / -0.03em | 700 | 화면 타이틀 |
+| `font-headline1-heading` | 24px / 1.3 / -0.02em | 24px / 1.25 / -0.03em | 24px / 1.25 / -0.03em | 700 | 섹션 헤딩 |
+| `font-headline2-heading` | 20px / 1.35 / -0.01em | 20px / 1.25 / -0.03em | 20px / 1.25 / -0.03em | 600 | 하위 섹션 |
+| `font-body1-heading` | 18px / 1.5 / -0.01em | 18px / 1.35 / -0.015em | 18px / 1.35 / -0.015em | 600 | 카드 제목 |
+| `font-body2-heading` | 16px / 1.5 / -0.01em | 16px / 1.35 / -0.015em | 16px / 1.35 / -0.015em | 600 | 본문과 본문 강조 |
+| `font-label-heading` | 15px / 1.4 / 0 | 14px / 1.35 / -0.015em | 14px / 1.35 / -0.015em | 600 | 비행동 라벨 |
+| `font-caption-heading` | 13px / 1.45 / 0 | 12px / 1.35 / 0 | 12px / 1.35 / 0 | 500 | 캡션과 메타 |
+| `text-ui-compact` | 13px / 1.4 / 0 | 10.5px / 1.35 / 0 | 10.5px / 1.35 / 0 | 부품별 | 배지와 표 머리 |
+| `text-ui-choice` | 14px / 1.4 / 0 | 11.5px / 1.35 / 0 | 11.5px / 1.35 / 0 | 부품별 | 선택 칩 |
+| `text-coach` | 16px / 1.6 / -0.01em | 13.5px / 1.9 / -0.015em | 13.5px / 1.9 / -0.015em | 부품별 | 코치 말풍선 |
 
-v22가 부품 단위로 고정한 예외 글자 크기는 `text-ui-compact` 10.5px(배지·관리자 표 머리), `text-ui-choice` 11.5px(선택 칩), `text-coach` 13.5px(코치 말풍선) 세 개뿐이다. 일반 본문에 새 크기를 만들지 않는다.
+휴대폰 본문은 16px 아래로 내리지 않는다. 보조 정보는 13px이 하한이다. 행동 안의 글자는 §6.1 값이 우선하며 15px 이상이다. 10.5px, 11.5px, 12px 값은 태블릿과 데스크톱에서만 허용한다.
 
-추가 규칙 (승인 프로토타입 v22 §1.2):
+### 3.1 폭별 유틸 구현 계약
 
-- 자간: 제목 `-0.03em`, 본문 `-0.015em`, 캡션 `0`. 큰 숫자는 `-0.04em`~`-0.05em`.
-- 행간: 제목 1.25, 본문 1.35.
+화면마다 반응형 클래스를 덧붙이지 않는다. `globals.css`에서 아래처럼 변수만 전환하고 기존 `@utility` 이름을 유지한다. 이 스니펫은 다음 개발 판의 구현 계약이며 이번 디자인 판에서는 `src`를 수정하지 않는다.
+
+```css
+:root {
+  --font-display-1-size: 36px;
+  --font-display-2-size: 32px;
+  --font-title-size: 28px;
+  --font-headline-1-size: 24px;
+  --font-headline-2-size: 20px;
+  --font-body-1-size: 18px;
+  --font-body-2-size: 16px;
+  --font-label-size: 15px;
+  --font-caption-size: 13px;
+  --text-ui-compact: 13px;
+  --text-ui-choice: 14px;
+  --text-coach: 16px;
+  --leading-display: 1.2;
+  --leading-title: 1.25;
+  --leading-headline-1: 1.3;
+  --leading-headline-2: 1.35;
+  --leading-body: 1.5;
+  --leading-label: 1.4;
+  --leading-caption: 1.45;
+  --tracking-display: -0.02em;
+  --tracking-heading: -0.02em;
+  --tracking-body: -0.01em;
+  --tracking-label: 0;
+  --tracking-caption: 0;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --font-display-1-size: 48px;
+    --font-display-2-size: 36px;
+    --font-title-size: 30px;
+    --font-label-size: 14px;
+    --font-caption-size: 12px;
+    --text-ui-compact: 10.5px;
+    --text-ui-choice: 11.5px;
+    --text-coach: 13.5px;
+    --leading-headline-1: 1.25;
+    --leading-headline-2: 1.25;
+    --leading-body: 1.35;
+    --leading-label: 1.35;
+    --leading-caption: 1.35;
+    --tracking-display: -0.03em;
+    --tracking-heading: -0.03em;
+    --tracking-body: -0.015em;
+    --tracking-label: -0.015em;
+  }
+}
+
+@media (min-width: 1200px) {
+  :root {
+    --font-display-1-size: 56px;
+    --font-display-2-size: 40px;
+    --font-title-size: 32px;
+  }
+}
+
+@utility font-display-1 {
+  font-size: var(--font-display-1-size);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+}
+@utility font-display-2 {
+  font-size: var(--font-display-2-size);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+}
+@utility font-title-heading {
+  font-size: var(--font-title-size);
+  line-height: var(--leading-title);
+  letter-spacing: var(--tracking-heading);
+}
+@utility font-headline1-heading {
+  font-size: var(--font-headline-1-size);
+  line-height: var(--leading-headline-1);
+  letter-spacing: var(--tracking-heading);
+}
+@utility font-headline2-heading {
+  font-size: var(--font-headline-2-size);
+  line-height: var(--leading-headline-2);
+  letter-spacing: var(--tracking-heading);
+}
+@utility font-body1-heading {
+  font-size: var(--font-body-1-size);
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-body);
+}
+@utility font-body2-heading {
+  font-size: var(--font-body-2-size);
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-body);
+}
+@utility font-label-heading {
+  font-size: var(--font-label-size);
+  line-height: var(--leading-label);
+  letter-spacing: var(--tracking-label);
+}
+@utility font-caption-heading {
+  font-size: var(--font-caption-size);
+  line-height: var(--leading-caption);
+  letter-spacing: var(--tracking-caption);
+}
+```
+
+`font-*-normal`은 같은 크기, 행간, 자간 변수를 재사용하고 굵기만 400으로 유지한다. 따라서 개발은 각 화면을 순회하지 않고 유틸 정의 한 곳만 바꾼다.
+
+추가 규칙:
+
+- 큰 숫자는 `-0.04em`에서 `-0.05em`을 쓰되 휴대폰 24px 미만 숫자에는 적용하지 않는다.
 - 숫자(퍼센트·점수·건수)는 전부 `tabular-nums`.
 - 한국어 제목은 `word-break: keep-all`. 단어 중간에서 끊지 않는다.
 - 문제 본문은 `ui-serif, Georgia, serif` 로 본문 산세리프와 구분한다.
 - 학생 손풀이 미리보기처럼 실제 필기를 재현하는 영역만 `Nanum Pen Script` 22px / 행간 28px를 쓸 수 있다. 코치 말풍선에는 적용하지 않는다.
 
-### 3.1 텍스트 안전 유틸리티
+### 3.2 텍스트 안전 유틸리티
 
 | 유틸                | 계약                                                    | 쓰는 곳                |
 | ------------------- | ------------------------------------------------------- | ---------------------- |
@@ -389,6 +506,10 @@ v22가 부품 단위로 고정한 예외 글자 크기는 `text-ui-compact` 10.5
 | `--spacing-control-lg`         | 50px  | 큰 CTA 최소 높이            |                     |
 | `--spacing-chip-min`           | 32px  | 앱바 칩 최소 높이           |                     |
 | `--spacing-badge-min`          | 22px  | 배지 최소 높이              |                     |
+| `--spacing-control-lg-mobile`  | 52px  | 휴대폰 큰 CTA 최소 높이     |                     |
+| `--spacing-chip-min-mobile`    | 44px  | 휴대폰 행동 칩 최소 높이    |                     |
+| `--spacing-badge-min-mobile`   | 28px  | 휴대폰 비행동 배지 높이     |                     |
+| `--spacing-target-gap-mobile`  | 8px   | 휴대폰 인접 타깃 최소 간격  |                     |
 | `--spacing-row-min`            | 58px  | 목록 행 최소 높이           |                     |
 
 셸·부품 치수 토큰(위 표에 없던 나머지 전량). 화면이 이 값을 raw px로 다시 쓰지 않는다.
@@ -466,17 +587,34 @@ v22가 부품 단위로 고정한 예외 글자 크기는 `text-ui-compact` 10.5
 
 ### 6.1 버튼·칩·배지
 
-| 부품      | 최소 높이 | 패딩          | 모서리 | 글자                                |
-| --------- | --------- | ------------- | ------ | ----------------------------------- |
-| 작은 버튼 | 44px      | `0 13px`      | 8px    | 12px / 700                          |
-| 큰 CTA    | 50px      | `0 20px`      | 8px    | 14.5px / 800, 그림자 `--shadow-cta` |
-| 배지      | 22px      | `0 10px`      | 999px  | 10.5px / 800                        |
-| 앱바 칩   | 32px      | `6px 11px`    | 999px  | 12px / 600                          |
-| 선택 칩   | 44px      | `0 14px`      | 999px  | 11.5px / 700                        |
-| 알약 필터 | 38px      | `0 15px`      | 999px  |                                     |
-| 세그먼트  | 40~44px   | 트랙 패딩 4px |        | 선택된 칸만 흰 배경                 |
+| 부품 | 휴대폰 `<768px` | 태블릿·데스크톱 | 모서리 | 휴대폰 글자 |
+| --- | --- | --- | --- | --- |
+| 작은 버튼 | 최소 44px, `0 16px` | 최소 44px, `0 13px` | 8px | 15px / 700 |
+| 큰 CTA | 최소 52px, `0 20px`, 기본 `width:100%` | 최소 50px, `0 20px`, 문맥 폭 | 8px | 16px / 800 |
+| 비행동 배지 | 최소 28px, `0 10px` | 최소 22px, `0 10px` | 999px | 13px / 800 |
+| 앱바 칩 | 최소 44px, `0 14px` | 최소 32px, `6px 11px` | 999px | 14px / 600 |
+| 선택 칩 | 최소 44px, `0 14px` | 최소 44px, `0 14px` | 999px | 14px / 700 |
+| 알약 필터 | 최소 44px, `0 15px` | 최소 38px, `0 15px` | 999px | 14px / 700 |
+| 세그먼트 | 각 칸 최소 44px, 트랙 패딩 4px | 40px에서 44px | 8px | 14px / 700 |
+| 텍스트 링크 | `inline-flex`, 최소 높이 44px, 좌우 8px | 문맥 높이, 키보드 포커스 유지 | 8px | 15px / 700 |
+| 목록 행·카드 링크 | 최소 높이 44px, 카드 전체가 한 타깃 | 최소 44px | 카드 규격 | 본문 16px, 메타 13px |
 
-**버튼 안 텍스트 정렬**: `inline-flex` + `align-items:center` + `justify-content:center` + `line-height:1`. 상하 패딩만으로 중심을 잡지 않는다.
+**버튼 안 텍스트 정렬**: `inline-flex` + `align-items:center` + `justify-content:center` + `line-height:1`. 상하 패딩만으로 중심을 잡지 않는다. 휴대폰에서 큰 CTA가 둘 이상 이어지면 세로 전체 폭을 기본으로 하고, 한 줄 배치는 각 버튼의 실제 너비와 타깃 간격 8px을 확보할 때만 허용한다. 모든 인접 타깃의 시각 또는 투명 히트 영역 사이는 최소 8px이다.
+
+**눌림 반응**: 휴대폰에서 hover만 있는 행동은 상태가 없는 것으로 본다. 버튼, 링크, 클릭 카드, 탭, 목록 행 전부 `:active`를 제공한다. 기본은 `opacity:0.9`와 `transform:translateY(1px)`을 120ms 안에 적용하고, 그림자 CTA는 그림자 높이도 2px 줄인다. `prefers-reduced-motion: reduce`에서는 이동을 없애고 `opacity:0.9`만 유지한다. 비활성 요소에는 눌림 반응을 주지 않는다.
+
+```css
+:where(button, a, [role='button'], [role='tab'], .interactive-row):active {
+  opacity: 0.9;
+  transform: translateY(1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(button, a, [role='button'], [role='tab'], .interactive-row):active {
+    transform: none;
+  }
+}
+```
 
 ### 6.2 목록 행
 
@@ -589,7 +727,7 @@ feature 단위 컴포넌트(코드 실재 기준, `@/features/<도메인>` 아�
 
 금지: `HIGH_3` 또는 고3 필터, 고1과 대수 조합, 고2와 공통수학1 조합, 전체 자산 수와 필터 결과 수를 같은 결과 제목으로 표시. 빈 상태는 `0개`와 선택한 학년, 단원, 난이도를 함께 읽을 수 있어야 한다.
 
-세 패턴의 승인 정본은 `prototypes/mvp-g-3역할-hub-v24.2-gpt-codex-20260829-1054.html`이고, 1280×800·1024×768·390×844 실제 CSS viewport에서 같은 요소 순서와 열 전환을 검증한다. 관리자 문제은행은 모바일에서 `.bankcols`를 한 열로 계산하고, 문항 본문은 최소 200px 읽기 폭, 문항 행은 최소 300px, 행동은 최소 44px을 확보한다.
+세 패턴의 승인 정본은 `prototypes/mvp-g-3역할-hub-v2.0.1-gpt-codex.html`이고, 1280×800·1024×768·390×844 실제 CSS viewport에서 같은 요소 순서와 열 전환을 검증한다. 관리자 문제은행은 모바일에서 `.bankcols`를 한 열로 계산하고, 문항 본문은 최소 200px 읽기 폭, 문항 행은 최소 300px, 행동은 최소 44px을 확보한다.
 
 ### 6.8 관리자 대신 보기
 
@@ -612,15 +750,20 @@ feature 단위 컴포넌트(코드 실재 기준, `@/features/<도메인>` 아�
 
 ## 7. 반응형
 
-**태블릿 퍼스트**다. mobile-first 가 아니다. 1순위 기기가 태블릿 + 펜슬이기 때문이다.
+**태블릿 퍼스트**로 레이아웃을 설계하되, 휴대폰은 축소판이 아니다. 1순위 기기는 태블릿과 펜슬이지만 휴대폰에는 §3의 글자 값과 §6.1의 부품 값이 별도로 적용된다.
 
 | 순서              | 폭                                         | 기준                                                |
 | ----------------- | ------------------------------------------ | --------------------------------------------------- |
 | ① 태블릿 (베이스) | 1024 × 768 가로                            | 모든 화면의 기본 레이아웃을 여기서 확정한다         |
 | ② 데스크톱        | 1280 × 800 (`--breakpoint-desktop` 1200)   | 태블릿 레이아웃을 넓히고 사이드바 + 컨테이너 센터링 |
-| ③ 휴대폰          | 390 × 844 (`--breakpoint-tablet` 768 미만) | 단일 컬럼 스택. 하단 탭 5칸(최소 높이 52px)         |
+| ③ 휴대폰          | 390 × 844 (`--breakpoint-tablet` 768 미만) | 단일 컬럼, 폭별 타입, 44px 타깃, 하단 탭 최소 높이 56px |
 
-접힘선은 **768px** 다. 화면 위 두 칸은 접힘선 안에 넣고, 다음 구획 머리글은 일부러 살짝 걸쳐 스크롤 단서를 남긴다.
+접힘선은 **768px**다. 이 지점에서 레이아웃만 접는 것이 아니라 글자, 행간, 자간, 버튼, 칩, 배지, 텍스트 링크, 눌림 반응이 함께 전환된다. 화면 위 두 칸은 접힘선 안에 넣고, 다음 구획 머리글은 일부러 살짝 걸쳐 스크롤 단서를 남긴다.
+
+- 휴대폰: 본문 16px 이상, 메타 13px 이상, 타깃 44px 이상, 인접 타깃 간격 8px 이상, 모든 행동의 `:active` 제공.
+- 태블릿: 기존 정보 밀도와 2열 작업 흐름을 유지하되 펜 타깃 44px을 지킨다.
+- 데스크톱: 기존 1200px 이상 그리드와 밀도를 유지한다. 휴대폰 값을 역으로 확대해 적용하지 않는다.
+- 모든 폭: 긴 한글 제목, 영문 URL, 데이터 0건, 정상, 과다 상태에서 가로 오버플로 0을 확인한다.
 
 ---
 
@@ -748,15 +891,7 @@ feature 단위 컴포넌트(코드 실재 기준, `@/features/<도메인>` 아�
 
 ### 4.4 반응형
 
-**태블릿 퍼스트**다. 1순위 기기가 태블릿과 펜슬이기 때문이다.
-
-| 순서 | 폭 | 기준 |
-| ---- | -- | ---- |
-| ① 태블릿 베이스 | 1024 × 768 가로 | 모든 화면의 기본 레이아웃을 여기서 확정한다 |
-| ② 데스크톱 | 1280 × 800 (`--breakpoint-desktop` 1200) | 태블릿 레이아웃을 넓히고 사이드바와 컨테이너를 센터링한다 |
-| ③ 휴대폰 | 390 × 844 (`--breakpoint-tablet` 768 미만) | 단일 컬럼 스택, 하단 탭 5칸, 최소 높이 52px |
-
-접힘선은 **768px**다. 화면 위 두 칸은 접힘선 안에 넣고, 다음 구획 머리글은 일부러 살짝 걸쳐 스크롤 단서를 남긴다.
+반응형 값의 정본은 §7이다. 이 절은 그리드와 간격 관점의 포인터만 둔다. 768px 미만에서는 1열 전환과 함께 §3 폭별 타입, §6.1 휴대폰 부품 값을 반드시 같이 적용한다. 레이아웃만 접고 데스크톱 글자와 부품을 유지하는 구현은 금지한다.
 
 ---
 
@@ -872,34 +1007,30 @@ z-index는 같은 stacking context 안에서만 비교된다. 부모의 `transfo
 - 반복 막힘 = **⚠ 마커**(warning #ff4040), 노드 색은 안 바꿈.
 - "채운다 = 오렌지가 뜨거워진다" = memorable thing과 직결.
 
-## 3. 타이포 (globals.css @utility 그대로)
+## 3. 타이포 (이력 포인터)
 
-Pretendard. line-height 135% 기준.
-| 유틸 | 크기/굵기 | 용도 |
-|---|---|---|
-| `font-display-1/2` | 56·40 / 700 | 랜딩 히어로 |
-| `font-title-heading` | 32 / 700 | 화면 타이틀 |
-| `font-headline1-heading` | 24 / 700 | 섹션 헤딩 |
-| `font-body1-heading` | 18 / 600 | 카드 제목 |
-| `font-body2-heading` | 16 / 600 | 본문 강조 |
-| `font-label-heading` | 14 / 600 | 라벨·버튼 |
-| `font-caption-heading` | 12 / 500 | 캡션·메타 |
+> **현재 정본:** 본문 `## 3. 타이포`의 폭별 표와 `### 3.1 폭별 유틸 구현 계약`. 이 부록은 2.0 방향의 배경만 보존하며 크기, 굵기, 행간, 자간을 중복 정의하지 않는다. 같은 유틸 이름을 유지하되 휴대폰, 태블릿, 데스크톱 값은 본문 정본에서만 바꾼다.
 
-> 임의 px 금지. 위 스케일로만.
+- 2.0에서 정한 계층 의도는 랜딩 히어로, 화면 타이틀, 섹션 헤딩, 카드 제목, 본문, 라벨, 캡션 순이다.
+- 임의 px는 금지한다. 휴대폰 본문 16px 하한과 메타 13px 하한을 포함한 실제 값은 본문 §3만 따른다.
 
 ## 4. 형태
 
-- radius: 버튼/인풋 **8px**, 카드 **12px**, (B 모티프 카드 14~16px), 칩/뱃지 **999px**.
-- 카드: `bg-white` + `border 1px #e0e0e0` + radius 12. 그림자 절제(A 톤).
-- B 액센트 버튼: 큰 오렌지 CTA에 `box-shadow 0 5px 0 var(--orange-10)`(눌리는 느낌). 주요 CTA에 한정한다.
+> **현재 정본:** 본문 `## 5. 모서리와 그림자`. 이 부록은 2.0의 형태 의도만 보존하며 radius, border, shadow 수치를 중복 정의하지 않는다.
+
+- 버튼과 입력, 카드, 칩과 배지는 본문 §5의 역할별 radius를 재사용한다.
+- 카드는 흰 표면과 절제된 경계로 구분하고 장식 그림자를 쓰지 않는다.
+- 눌리는 오렌지 CTA는 본문 §5의 `--shadow-cta`와 §6.1의 눌림 반응을 함께 따른다.
 
 ## 5. 컴포넌트
 
-### 재사용 (shared/components/ui 28개)
+> **현재 정본:** 본문 `## 6. 공용 부품 규격`. 부품의 폭별 높이, 글자, 터치 영역, 상태와 현재 재사용 목록은 §6만 소유한다. 이 부록은 2.0에서 정한 재사용 우선순위와 feature 개념을 보존한다.
+
+### 재사용 (`shared/components/ui` 우선)
 
 Button(primary=orange-7) · Input · TextField · Textarea · Select · Checkbox · RadioGroup/RadioCard(답 선택·온보딩) · Dialog(코치 설정·해설 경고) · Accordion · DropdownMenu · Pagination · StatusBadge(상태 pill) · ListItem · Icon(lucide) · ProfileAvatar · Skeleton/MiniSpinner · BackButton.
 
-### 신규 (feature 단위, 오픈챌린지 패턴 복제)
+### feature 단위 개념 (오픈챌린지 패턴 계승)
 
 | 컴포넌트              | 역할         | 핵심                                                                                                                                                           |
 | --------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -932,15 +1063,14 @@ Button(primary=orange-7) · Input · TextField · Textarea · Select · Checkbox
 8. **풀이공유**(`/open-challenge/[id]/solutions`): SolutionShareList, 컨닝가드.
 9. **포인트 지갑**(`/points`): PointLedger + LevelBadge(축 분리).
 
-## 7.5 반응형 우선순위: 태블릿 퍼스트 (중요)
+## 7.5 반응형 우선순위: 태블릿 퍼스트 레이아웃, 휴대폰 별도 값
 
-설계 기준 순서: **① 태블릿(베이스) → ② 웹/데스크톱 → ③ 모바일(마지막).** 1순위 기기가 태블릿+펜슬이라 mobile-first가 아니라 **tablet-first**로 짠다.
+> **현재 정본:** 본문 `## 7. 반응형`. 접힘 폭과 폭별 글자, 부품, 터치 수치는 본문 §3, §6.1, §7만 소유한다. 이 부록은 태블릿 퍼스트라는 설계 순서와 화면군별 적응 의도만 보존한다.
 
-- **① 태블릿(베이스, 768~1024)**: 모든 화면의 기본 레이아웃을 여기서 확정. **가로 태블릿+펜슬이 히어로 케이스.** 문제 상세=2단(좌 문제+드로잉 캔버스 / 우 코치)이 기본형. 리스트·트리·결과·온보딩도 태블릿 폭(여백·2열 그리드)에 맞춰 디자인. 펜슬 타깃 ≥44px.
-- **② 웹/데스크톱(≥1200)**: 태블릿 레이아웃을 넓히고 좌측 사이드바 네비 + 컨테이너 max-width 센터링. 트리/리스트는 더 넓은 그리드.
-- **③ 모바일(<768, 마지막)**: 단일 컬럼 스택. 드로잉 캔버스 풀폭, 코치는 하단 시트(bottom sheet), 동기 헤더 압축. 깨지지 않게 graceful 다운.
-- CSS: base = 태블릿 스타일, `@media (min-width:1200px)` 데스크톱, `@media (max-width:767px)` 모바일. (기존 globals.css 브레이크포인트 768/1200 재사용)
-- 목업 보완: 1차 목업은 폰 프레임 위주였음 → **빌드 시 태블릿 베이스로 재구성**(특히 트리·리스트·결과·온보딩의 2열/와이드).
+- 설계 순서는 태블릿 베이스, 웹·데스크톱 확장, 휴대폰 재구성이다. 1순위 기기가 태블릿과 펜슬이므로 태블릿에서 작업 흐름을 먼저 확정한다.
+- 문제 상세의 태블릿 기본형은 문제와 드로잉 캔버스, 코치의 2단 구성이다. 데스크톱은 기존 사이드바와 넓은 그리드로 확장한다.
+- 휴대폰은 단일 컬럼, 풀폭 드로잉 캔버스, 코치 하단 시트, 압축 동기 헤더로 재구성한다. 본문 정본의 휴대폰 값을 적용하며 단순 축소하지 않는다.
+- 1차 목업의 폰 중심 구성을 빌드에서 태블릿 베이스로 재구성한다. 특히 트리, 리스트, 결과, 온보딩의 2열과 와이드 문맥을 보존한다.
 
 ## 7.6 빌드 전 확정한 개선점 (1차 목업 검수 결과)
 
@@ -1061,17 +1191,31 @@ Button(primary=orange-7) · Input · TextField · Textarea · Select · Checkbox
 - 관련 wiki의 마이페이지 `DROPPED` 표기는 현재 구현과 2026-08-14 지시에 어긋난다. 기술설계 전 wiki 상태를 다시 열어 정정해야 한다.
 - 결제·구독 라우트와 친구 도전장 포인트 차감 거래 유형은 현재 없다. 기술설계 합의 전 구현 범위에 넣지 않는다.
 
-SKILLS_USED: 없음. 현재 런타임의 사용 가능 스킬 목록에 제품 화면 디자인 검수 스킬이 없어 `/Users/sj/.claude/standards/design.md` §14의 루브릭을 직접 적용했다.
+## 부록 B. 모바일 사용성 벤치마크와 적용 판단
 
-SKILLS_SKIPPED: imagegen은 기존 구현과 프로토타입의 정합 감사에 래스터 생성이 필요하지 않아 사용하지 않았다. 마케팅 및 콘텐츠 스킬은 제품 UI 정본화 범위와 무관하다.
+| 근거 | 확인한 값 또는 원칙 | 차용 | 디에듀에서 변경하거나 거부한 것 |
+| --- | --- | --- | --- |
+| [Apple HIG Typography](https://developer.apple.com/design/human-interface-guidelines/typography) | iOS 기본 본문 17pt, Dynamic Type로 읽기 크기 조절 | 휴대폰 본문을 작은 데스크톱 라벨과 분리 | 웹 밀도와 한국어 카드 길이를 고려해 기본 본문은 16px로 두고 200% 확대 내구성을 함께 요구 |
+| [Apple HIG Buttons](https://developer.apple.com/design/human-interface-guidelines/buttons) | 44×44pt 히트 영역, 누른 상태 피드백 | 모든 휴대폰 행동에 44px 타깃과 `:active` 적용 | 비행동 배지는 28px 허용, 행동 배지는 44px로 승격 |
+| [Material 3 type scale](https://developer.android.com/develop/ui/compose/designsystems/material3) | body large 16/24, title large 22/28, display 57/64 계층 | 본문 16px와 역할 중심 타입 단계 | 작은 label 11px과 body small 12px은 운영형 학습 화면의 휴대폰 값으로 쓰지 않음 |
+| [WCAG 2.5.8 Target Size](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum) | AA 최소 24×24 CSS px 또는 충분한 간격 | 타깃 겹침과 인접 간격을 검증 | 디에듀는 손가락과 교실 이동 중 사용을 고려해 더 엄격한 44px과 8px 간격 채택 |
+| [WCAG 1.4.4 Resize Text](https://www.w3.org/WAI/WCAG21/Understanding/resize-text) | 200% 확대에서 기능과 정보 손실 금지 | 말줄임 남용 금지, 자연 확장과 가로 오버플로 0 | 고정 높이 카드에 글자를 끼워 맞추는 방식 거부 |
+| [토스 모바일 웹](https://toss.im/) | 390px 실측에서 히어로 40px, 보조 제목 24px, 설명 본문 14px, 가로 오버플로 0 | 큰 제목을 휴대폰에서 36px과 32px로 낮추고 명확한 단계 유지 | 토스의 14px 설명과 데모 내부 44px 미만 타깃은 디에듀의 반복 학습 조작에 복제하지 않음 |
+
+2026-09-29 토스 모바일 웹은 Playwright 390×844에서 실제 렌더를 측정했다. 마케팅 랜딩의 큰 제목 계층과 오버플로 제어만 참고했고, 작은 설명 글자와 데모 내부 컨트롤은 회장 실기기 지적과 §17 최소선에 맞지 않아 채택하지 않았다.
+
+SKILLS_USED: design-html은 승인 원본의 화면·문구·구조를 보존한 채 `.f.m` 범위에만 D-037 값을 적용하는 데 사용했다. design-review는 전 화면·상태의 3폭 렌더와 전후 수치 검수에 사용했다.
+
+SKILLS_SKIPPED: design-consultation과 design-shotgun은 새 방향이나 새 시각 요소를 정하지 않고 승인 v24.2 원본을 규격대로 교정하는 작업이라 사용하지 않았다. diagram은 흐름을 변경하지 않았고 imagegen은 새 이미지 자산이 없어 사용하지 않았다.
 
 SOURCES:
 
-- `prototypes/mvp-g-3역할-hub-v24.2-gpt-codex-20260829-1054.html`
+- `prototypes/mvp-g-3역할-hub-v2.0.1-gpt-codex.html`
 - `docs/mvp-g/design-spec-v24.2-gpt-codex-20260829-1054.md`
 - `docs/mvp-g/mvp-g-design-v24.1-independent-review-v1-gpt-codex-20260829-1051.md`
 - `docs/qa/design-conformance-mvp-g-v2.0.1.md`
 - `mvp-front/src/styles/globals.css`
+- `/Users/sj/.claude/standards/standard-design.md §17`
 - `mvp-front/src/features/dashboard/components/student/exam-hall-card.tsx`
 - `mvp-back/src/main/java/com/example/demo/domain/exam/QuestionBankGrade.java`
 - `mvp-front/src/entities/exam/infrastructure/exam.dto.ts`
@@ -1079,10 +1223,15 @@ SOURCES:
 - `mvp-front/src/features/admin-question-bank/components/admin-question-bank.tsx`
 - [Google Labs DESIGN.md spec](https://github.com/google-labs-code/design.md/blob/main/docs/spec.md)
 - [Playwright screenshots](https://playwright.dev/docs/screenshots)
+- [Apple HIG Typography](https://developer.apple.com/design/human-interface-guidelines/typography)
+- [Material 3 type scale](https://developer.android.com/develop/ui/compose/designsystems/material3)
+- [WCAG 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum)
+- [WCAG 1.4.4](https://www.w3.org/WAI/WCAG21/Understanding/resize-text)
+- [토스 모바일 웹](https://toss.im/)
 
-MODEL: gpt-codex/gpt-5.6-sol
+MODEL: gpt-codex/gpt-6.1-sol
 
-STAMP: line=mvp-g | version=v1.4.2 | release_candidate=v2.0.2 | generated=2026-08-29 10:54 KST | agent=product-designer | basis=PRD v2.4.2+v24.1+independent review C+ | decision=mobile one-column and clean-export contract correction
+STAMP: line=mvp-g | version=v2.0.1 | generated=2026-09-30 02:46 KST | agent=product-designer | basis=승인 v24.2 원본+D-037+standard-design.md §17+릴리스 표준 §2.1 | decision=revise the approved source and keep one canonical responsive prototype
 
 RUBRIC_SCORE: clarity=5/5 action=5/5 linebreak=5/5 tone=4/5 slop=5/5 total=24/25
 
