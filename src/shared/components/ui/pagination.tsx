@@ -25,7 +25,7 @@ const PaginationItem = ({ page, ...props }: PaginationItem) => {
   return (
     <button
       className={cn(
-        "text-text-sub1 hover:bg-gray-1 size-pagination-control rounded-control-compact after:size-touch-min relative flex shrink-0 cursor-pointer items-center justify-center bg-white after:absolute after:content-['']",
+        "text-text-sub1 hover:bg-gray-1 size-touch-min tablet:size-pagination-control rounded-control-compact after:size-touch-min relative flex shrink-0 cursor-pointer items-center justify-center bg-white after:absolute after:content-['']",
         isActive && 'text-key-color-primary bg-background-orange font-medium'
       )}
       aria-label="페이지 이동"
@@ -170,7 +170,7 @@ const Navigation = ({ className, children, ...props }: NavigationProps) => {
   return (
     <button
       className={cn(
-        "text-text-sub1 hover:bg-gray-1 size-pagination-control rounded-control-compact after:size-touch-min relative flex shrink-0 cursor-pointer items-center justify-center after:absolute after:content-['']",
+        "text-text-sub1 hover:bg-gray-1 size-touch-min tablet:size-pagination-control rounded-control-compact after:size-touch-min relative flex shrink-0 cursor-pointer items-center justify-center after:absolute after:content-['']",
         'disabled:text-text-inactive disabled:pointer-events-none',
         className
       )}
