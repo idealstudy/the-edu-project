@@ -296,7 +296,7 @@ export const LearningManagementTab = ({ studyRoomId }: Props) => {
             className="rounded-lg border p-3 text-left text-xs font-extrabold"
           >
             ＋ 개념 노트
-            <small className="text-gray-9 mt-1 block font-normal">
+            <small className="text-gray-9 max-tablet:text-xs mt-1 block font-normal">
               단권화에 넣기
             </small>
           </Link>
@@ -305,7 +305,7 @@ export const LearningManagementTab = ({ studyRoomId }: Props) => {
             className="rounded-lg border p-3 text-left text-xs font-extrabold"
           >
             ＋ 할 일
-            <small className="text-gray-9 mt-1 block font-normal">
+            <small className="text-gray-9 max-tablet:text-xs mt-1 block font-normal">
               오늘 할 일에 꽂기
             </small>
           </Link>
@@ -314,7 +314,7 @@ export const LearningManagementTab = ({ studyRoomId }: Props) => {
             className="rounded-lg border p-3 text-left text-xs font-extrabold"
           >
             ＋ 피드백
-            <small className="text-gray-9 mt-1 block font-normal">
+            <small className="text-gray-9 max-tablet:text-xs mt-1 block font-normal">
               오답에 코멘트
             </small>
           </Link>
@@ -358,7 +358,7 @@ export const LearningManagementTab = ({ studyRoomId }: Props) => {
               )}
               <Link
                 href={action.href}
-                className="border-orange-4 text-orange-11 h-fit rounded-md border px-3 py-2 text-xs font-bold"
+                className="border-orange-4 text-orange-11 max-tablet:min-h-touch-min inline-flex h-fit items-center rounded-md border px-3 py-2 text-xs font-bold"
               >
                 {action.button}
               </Link>
