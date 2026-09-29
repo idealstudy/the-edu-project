@@ -143,11 +143,11 @@ const TeacherHeaderContent = ({
     : `스터디룸 ${rooms.length}개 · 학생 ${studentCount}명`;
 
   return (
-    <div className="flex w-full items-center gap-3">
+    <div className="flex w-full min-w-0 flex-wrap items-center gap-3">
       <span className="bg-orange-9 text-gray-white rounded-pill flex size-8 shrink-0 items-center justify-center text-sm font-extrabold">
         {memberName.slice(0, 1)}
       </span>
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <b className="text-gray-12 text-single-line block text-sm font-extrabold">
           {teacherName}
         </b>
@@ -155,7 +155,7 @@ const TeacherHeaderContent = ({
           {subtitle}
         </small>
       </div>
-      <div className="ml-auto flex gap-5 text-right">
+      <div className="tablet:gap-5 ml-auto flex shrink-0 gap-3 text-right">
         <div>
           <small className="text-gray-9 text-ui-compact block font-bold">
             손볼 것 · 누르면 정렬

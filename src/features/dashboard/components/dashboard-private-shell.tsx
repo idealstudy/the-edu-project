@@ -2,7 +2,6 @@
 
 import type { ReactNode } from 'react';
 
-import { StudentBottomNavigation } from '@/features/dashboard/components/student/student-bottom-navigation';
 import { ImpersonationBanner } from '@/features/impersonation/components/impersonation-banner';
 import { useSession } from '@/providers/session/session-context';
 import { SessionGuard } from '@/providers/session/session-guard';
@@ -30,11 +29,12 @@ export const DashboardPrivateShell = ({
   const role = session.member?.role ?? initialRole;
   const memberName = session.member?.name ?? initialMemberName;
   const isStudent = role === 'ROLE_STUDENT';
+  const usesTabletRail = role === 'ROLE_TEACHER' || role === 'ROLE_PARENT';
 
   return (
     <SessionGuard>
       <main
-        className={`bg-system-background desktop:pl-sidebar-width flex min-h-screen flex-col ${isStudent ? 'shell:pl-sidebar-width shell:pb-0 pb-[calc(var(--spacing-control-xl)+var(--spacing-section-gap-mobile)+env(safe-area-inset-bottom))]' : 'shell:pl-sidebar-rail-width'}`}
+        className={`bg-system-background desktop:pl-sidebar-width flex min-h-screen flex-col ${isStudent ? 'shell:pl-sidebar-width' : usesTabletRail ? 'tablet:pl-sidebar-rail-width' : 'shell:pl-sidebar-rail-width'}`}
         data-private-app-shell
         data-private-role={role}
       >
@@ -51,7 +51,6 @@ export const DashboardPrivateShell = ({
           />
         )}
         <div className="w-full">{children}</div>
-        {isStudent && <StudentBottomNavigation />}
       </main>
     </SessionGuard>
   );

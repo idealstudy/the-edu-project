@@ -310,12 +310,12 @@ const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
               {activeRooms.map((room) => (
                 <article
                   key={`${room.id}-${room.studentName ?? 'empty'}`}
-                  className="border-gray-3 p-card-pad rounded-card relative flex flex-col border bg-white"
+                  className="border-gray-3 p-card-pad rounded-card relative flex min-w-0 flex-col border bg-white"
                   data-testid={`teacher-room-card-${room.id}`}
                 >
                   <div className="flex items-start gap-2">
                     <div className="min-w-0 flex-1">
-                      <h3 className="text-gray-12 text-single-line text-base font-extrabold">
+                      <h3 className="text-gray-12 text-three-lines text-base font-extrabold">
                         {room.studentName ?? room.name}
                       </h3>
                       {/*
@@ -396,7 +396,7 @@ const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
                   )}
                   <div
                     className={cn(
-                      'p-card-pad rounded-row mt-3 border',
+                      'p-card-pad rounded-row mt-3 min-w-0 border',
                       room.todoCount > 0
                         ? 'border-orange-3 bg-orange-1'
                         : 'border-gray-3 bg-system-background'
@@ -422,8 +422,8 @@ const DashboardTeacher: FC<{ initialMemberName?: string }> = () => {
                       {room.todoBreakdown.unreadSubmission}
                     </p>
                   </div>
-                  <div className="gap-inline-gap mt-3 flex items-center">
-                    <span className="text-gray-9 text-ui-compact text-single-line flex-1 font-semibold">
+                  <div className="gap-inline-gap mt-3 flex min-w-0 items-center">
+                    <span className="text-gray-9 text-ui-compact text-two-lines min-w-0 flex-1 font-semibold">
                       학생 화면에 넣을 내용을 확인합니다
                     </span>
                     <Link

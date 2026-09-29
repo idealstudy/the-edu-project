@@ -264,6 +264,7 @@ export const MyProblemsSection = () => {
                   id={Number(item.challengeId)}
                   title={item.questionText}
                   subtitle={buildSubtitle(item)}
+                  mobileMultiline
                   rightTitle={<ItemStatusBadge item={item} />}
                   tag={
                     <StatusBadge

@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { shouldShowMobileDiscoveryLinks } from './header-policy';
+import {
+  shouldShowDesktopDiscoveryLinks,
+  shouldShowMobileDiscoveryLinks,
+} from './header-policy';
 
 describe('Header D-034 모바일 메뉴', () => {
   it('MOB-MENU-01 일반 회원에게는 공개 탐색 메뉴를 유지한다', () => {
@@ -13,4 +16,10 @@ describe('Header D-034 모바일 메뉴', () => {
       expect(shouldShowMobileDiscoveryLinks(role)).toBe(false);
     }
   );
+
+  it('MOB-MENU-03 학생 헤더는 D-034 공개 탐색 항목을 모든 폭에서 숨긴다', () => {
+    expect(shouldShowDesktopDiscoveryLinks('ROLE_STUDENT')).toBe(false);
+    expect(shouldShowDesktopDiscoveryLinks('ROLE_TEACHER')).toBe(true);
+    expect(shouldShowDesktopDiscoveryLinks('ROLE_PARENT')).toBe(true);
+  });
 });

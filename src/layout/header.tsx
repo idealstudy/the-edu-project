@@ -39,14 +39,17 @@ import {
 } from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
 
-import { shouldShowMobileDiscoveryLinks } from './header-policy';
+import {
+  shouldShowDesktopDiscoveryLinks,
+  shouldShowMobileDiscoveryLinks,
+} from './header-policy';
 
 /* 포인트 칩(R-13) — "내 학습" 셸(친구·트리·학습)엔 이미 상시 노출되는데
  * 오픈챌린지 랜딩 셸(이 GNB)만 없었다. QA 정합표(docs/qa/design-conformance-matrix.md
  * D-10-4·R-13 행)가 확정한 갭. 로그인 상태에서만 조회·노출한다. */
 const HeaderPointChip = ({ enabled }: { enabled: boolean }) => {
   const { data: wallet } = useMyPointWalletQuery({ enabled });
-  if (wallet == null) return null;
+  if (!enabled || wallet == null) return null;
 
   return (
     <span className="border-gray-9 text-gray-white desktop:flex hidden items-center gap-1 rounded-full border px-3 py-1 text-xs font-bold">
@@ -70,6 +73,9 @@ export const Header = () => {
   const showMobileDiscoveryLinks = shouldShowMobileDiscoveryLinks(
     session?.role
   );
+  const showDesktopDiscoveryLinks = shouldShowDesktopDiscoveryLinks(
+    session?.role
+  );
 
   const goToMypage = () => {
     router.push('/mypage');
@@ -83,11 +89,11 @@ export const Header = () => {
 
   return (
     <header
-      className="h-header-height bg-gray-12 fixed top-0 right-0 left-0 z-50 flex items-center border-b border-gray-200 px-8"
+      className="h-header-height bg-gray-12 px-section-gap shell:px-8 fixed top-0 right-0 left-0 z-50 flex min-w-0 items-center border-b border-gray-200"
       data-global-header
     >
-      <div className="mx-auto flex w-full items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="mx-auto flex w-full min-w-0 items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-2">
           <Link
             href={PUBLIC.CORE.INDEX}
             onClick={() => {
@@ -100,7 +106,7 @@ export const Header = () => {
               alt="THE EDU 로고"
               width={79}
               height={22}
-              className="cursor-pointer"
+              className="shrink-0 cursor-pointer"
             />
           </Link>
           <Image
@@ -110,68 +116,74 @@ export const Header = () => {
             height={20}
           />
 
-          <div className="ml-5 flex gap-2">
-            <Link
-              href={PUBLIC.OPEN_CHALLENGE.LIST}
-              className={cn(
-                'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
-                pathname === '/' || pathname.startsWith('/open-challenge')
-                  ? 'bg-gray-11'
-                  : 'hover:bg-gray-11'
-              )}
-            >
-              오픈챌린지
-            </Link>
-            <Link
-              href={PUBLIC.COURSE.LIST}
-              className={cn(
-                'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
-                pathname.startsWith(PUBLIC.COURSE.LIST)
-                  ? 'bg-gray-11'
-                  : 'hover:bg-gray-11'
-              )}
-            >
-              코스
-            </Link>
-            <Link
-              href={PUBLIC.TEACHERS.LIST}
-              className={cn(
-                'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
-                pathname.startsWith(PUBLIC.TEACHERS.LIST)
-                  ? 'bg-gray-11'
-                  : 'hover:bg-gray-11'
-              )}
-            >
-              대표 멘토
-            </Link>
-            <Link
-              href={PUBLIC.CONSULT.INDEX}
-              className={cn(
-                'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
-                pathname.startsWith(PUBLIC.CONSULT.INDEX)
-                  ? 'bg-gray-11'
-                  : 'hover:bg-gray-11'
-              )}
-            >
-              상담소
-            </Link>
-            <Link
-              href={PUBLIC.COMMUNITY.COLUMN.LIST}
-              className={cn(
-                'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
-                pathname.startsWith(PUBLIC.COMMUNITY.BASE)
-                  ? 'bg-gray-11'
-                  : 'hover:bg-gray-11'
-              )}
-            >
-              게시판
-            </Link>
-          </div>
+          {showDesktopDiscoveryLinks && (
+            <div className="ml-5 flex min-w-0 gap-2">
+              <Link
+                href={PUBLIC.OPEN_CHALLENGE.LIST}
+                className={cn(
+                  'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
+                  pathname === '/' || pathname.startsWith('/open-challenge')
+                    ? 'bg-gray-11'
+                    : 'hover:bg-gray-11'
+                )}
+              >
+                오픈챌린지
+              </Link>
+              <Link
+                href={PUBLIC.COURSE.LIST}
+                className={cn(
+                  'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
+                  pathname.startsWith(PUBLIC.COURSE.LIST)
+                    ? 'bg-gray-11'
+                    : 'hover:bg-gray-11'
+                )}
+              >
+                코스
+              </Link>
+              <Link
+                href={PUBLIC.TEACHERS.LIST}
+                className={cn(
+                  'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
+                  pathname.startsWith(PUBLIC.TEACHERS.LIST)
+                    ? 'bg-gray-11'
+                    : 'hover:bg-gray-11'
+                )}
+              >
+                대표 멘토
+              </Link>
+              <Link
+                href={PUBLIC.CONSULT.INDEX}
+                className={cn(
+                  'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
+                  pathname.startsWith(PUBLIC.CONSULT.INDEX)
+                    ? 'bg-gray-11'
+                    : 'hover:bg-gray-11'
+                )}
+              >
+                상담소
+              </Link>
+              <Link
+                href={PUBLIC.COMMUNITY.COLUMN.LIST}
+                className={cn(
+                  'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
+                  pathname.startsWith(PUBLIC.COMMUNITY.BASE)
+                    ? 'bg-gray-11'
+                    : 'hover:bg-gray-11'
+                )}
+              >
+                게시판
+              </Link>
+            </div>
+          )}
         </div>
 
         {session && (
-          <div className="desktop:gap-4 flex items-center gap-1">
-            <HeaderPointChip enabled={session.role !== 'ROLE_ADMIN'} />
+          <div className="desktop:gap-4 flex shrink-0 items-center gap-1">
+            <HeaderPointChip
+              enabled={
+                session.role !== 'ROLE_ADMIN' && session.role !== 'ROLE_STUDENT'
+              }
+            />
             <NotificationPopover />
 
             <DropdownMenu>

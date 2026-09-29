@@ -4,6 +4,7 @@ import Script from 'next/script';
 
 import { PwaRegister } from '@/app/_components/pwa-register';
 import { SITE_CONFIG } from '@/config/site';
+import { GlobalRoleNavigationShell } from '@/features/dashboard/components/global-role-navigation-shell';
 import { Header } from '@/layout/header';
 import { GlobalProvider } from '@/providers';
 import '@/shared/components/editor/styles/text-editor.css';
@@ -103,12 +104,7 @@ export default function RootLayout({
         )}
         <GlobalProvider>
           <Header />
-          <div
-            className="mt-header-height flex flex-col"
-            data-root-content
-          >
-            {children}
-          </div>
+          <GlobalRoleNavigationShell>{children}</GlobalRoleNavigationShell>
         </GlobalProvider>
         <PwaRegister />
       </body>
