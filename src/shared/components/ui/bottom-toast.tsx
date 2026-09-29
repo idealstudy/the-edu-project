@@ -12,7 +12,7 @@ const CloseButton = ({ closeToast }: { closeToast?: () => void }) => {
     <button
       type="button"
       onClick={closeToast}
-      className="shrink-0 text-white hover:opacity-80"
+      className="size-touch-min tablet:size-6 inline-flex shrink-0 items-center justify-center text-white hover:opacity-80"
       aria-label="닫기"
     >
       <X

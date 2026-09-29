@@ -98,7 +98,9 @@ export function PdfPanel({
                 <p className="text-gray-3 truncate text-xs font-medium">
                   {pdfFile.name}
                 </p>
-                <p className="text-gray-6 text-[10px]">{totalPages} 페이지</p>
+                <p className="text-gray-6 text-ui-compact">
+                  {totalPages} 페이지
+                </p>
               </div>
               <button
                 onClick={onPdfRemove}

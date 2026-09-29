@@ -1110,7 +1110,7 @@ export function DrawingPanel({
 
         {saveStatus === 'error' && (
           <span
-            className="text-[10px] font-medium text-red-500"
+            className="text-ui-compact font-medium text-red-500"
             title="저장 실패. 2초 후 자동 재시도"
           >
             저장 실패
@@ -1173,7 +1173,7 @@ function PanelToolBtn({
       </span>
       <span
         className={cn(
-          'text-[10px] font-medium',
+          'text-ui-compact font-medium',
           active ? 'text-orange-500' : 'text-gray-400'
         )}
       >

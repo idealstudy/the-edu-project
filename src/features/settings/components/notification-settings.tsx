@@ -138,7 +138,7 @@ export default function NotificationSettings() {
             href={link.marketing}
             target="_blank"
             title="혜택 및 이벤트 정보 수신 동의 전문 보기"
-            className="font-caption-normal mt-2 ml-1 hover:underline"
+            className="font-caption-normal min-h-touch-min tablet:min-h-0 tablet:px-0 mt-2 ml-1 inline-flex items-center px-2 hover:underline"
           >
             혜택 및 이벤트 정보 수신 동의 전문 보기
           </Link>
