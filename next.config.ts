@@ -4,6 +4,7 @@ import { withSentryConfig } from '@sentry/nextjs';
 import { execFileSync } from 'node:child_process';
 
 import packageJson from './package.json';
+import { resolveAppEnvironment } from './src/config/app-environment';
 
 const resolveBuildCommit = () => {
   const vercelCommit = process.env.VERCEL_GIT_COMMIT_SHA?.trim();
@@ -23,8 +24,11 @@ const resolveBuildCommit = () => {
 const appVersion = packageJson.version;
 const buildCommit = resolveBuildCommit();
 const builtAt = new Date().toISOString();
-const appEnvironment =
-  process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? 'local';
+const appEnvironment = resolveAppEnvironment({
+  baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
+  projectProductionUrl: process.env.VERCEL_PROJECT_PRODUCTION_URL,
+  vercelEnv: process.env.VERCEL_ENV,
+});
 const appVersionIdentity = `${appVersion}+${buildCommit}`;
 
 const nextConfig: NextConfig = {
