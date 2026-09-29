@@ -1,9 +1,53 @@
 import type { NextConfig } from 'next';
 
 import { withSentryConfig } from '@sentry/nextjs';
+import { execFileSync } from 'node:child_process';
+
+import packageJson from './package.json';
+
+const resolveBuildCommit = () => {
+  const vercelCommit = process.env.VERCEL_GIT_COMMIT_SHA?.trim();
+
+  if (vercelCommit) return vercelCommit.slice(0, 7);
+
+  try {
+    return execFileSync('git', ['rev-parse', '--short', 'HEAD'], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+  } catch {
+    return 'local';
+  }
+};
+
+const appVersion = packageJson.version;
+const buildCommit = resolveBuildCommit();
+const builtAt = new Date().toISOString();
+const appEnvironment =
+  process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? 'local';
+const appVersionIdentity = `${appVersion}+${buildCommit}`;
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ['app.dev.the-edu.site', '*.dev.the-edu.site'],
+  env: {
+    NEXT_PUBLIC_APP_VERSION: appVersion,
+    NEXT_PUBLIC_APP_COMMIT: buildCommit,
+    NEXT_PUBLIC_APP_BUILT_AT: builtAt,
+    NEXT_PUBLIC_APP_ENV: appEnvironment,
+  },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'x-app-version',
+            value: appVersionIdentity,
+          },
+        ],
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {

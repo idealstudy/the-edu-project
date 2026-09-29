@@ -8,6 +8,7 @@ import { GlobalRoleNavigationShell } from '@/features/dashboard/components/globa
 import { Header } from '@/layout/header';
 import { GlobalProvider } from '@/providers';
 import '@/shared/components/editor/styles/text-editor.css';
+import { APP_VERSION_IDENTITY } from '@/shared/lib/app-version';
 import '@/styles/globals.css';
 import 'katex/dist/katex.min.css';
 
@@ -31,6 +32,9 @@ export const metadata: Metadata = {
       'naver-site-verification':
         process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION ?? '',
     },
+  },
+  other: {
+    'app-version': APP_VERSION_IDENTITY,
   },
 };
 
