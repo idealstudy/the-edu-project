@@ -239,7 +239,7 @@ export const ExamHallCard = ({ className }: Props) => {
                 >
                   <span className="flex-1">
                     문제를 풀어 내 위치 만들기
-                    <small className="text-gray-8 mt-1 block font-normal">
+                    <small className="text-gray-8 max-tablet:text-xs mt-1 block font-normal">
                       채점된 풀이가 쌓이면 참고 범위가 열려요
                     </small>
                   </span>
@@ -253,7 +253,7 @@ export const ExamHallCard = ({ className }: Props) => {
                 >
                   <span className="flex-1">
                     모의고사 응시
-                    <small className="text-gray-8 mt-1 block font-normal">
+                    <small className="text-gray-8 max-tablet:text-xs mt-1 block font-normal">
                       시험을 채점하면 시험 근거 범위가 열려요
                     </small>
                   </span>
@@ -273,11 +273,11 @@ export const ExamHallCard = ({ className }: Props) => {
           <span className="flex-1">
             시험 확인하기
             {pendingExam ? (
-              <small className="text-gray-8 mt-1 block font-normal">
+              <small className="text-gray-8 max-tablet:text-xs mt-1 block font-normal">
                 배정된 시험 · {pendingExam.title}
               </small>
             ) : (
-              <small className="text-gray-8 mt-1 block font-normal">
+              <small className="text-gray-8 max-tablet:text-xs mt-1 block font-normal">
                 지금 볼 수 있는 시험을 확인합니다
               </small>
             )}
