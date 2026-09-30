@@ -3,6 +3,7 @@ import localFont from 'next/font/local';
 import Script from 'next/script';
 
 import { PwaRegister } from '@/app/_components/pwa-register';
+import { StaleVersionReload } from '@/app/_components/stale-version-reload';
 import { SITE_CONFIG } from '@/config/site';
 import { GlobalRoleNavigationShell } from '@/features/dashboard/components/global-role-navigation-shell';
 import { Header } from '@/layout/header';
@@ -111,6 +112,7 @@ export default function RootLayout({
           <GlobalRoleNavigationShell>{children}</GlobalRoleNavigationShell>
         </GlobalProvider>
         <PwaRegister />
+        <StaleVersionReload />
       </body>
     </html>
   );
