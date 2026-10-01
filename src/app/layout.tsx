@@ -10,6 +10,7 @@ import { Header } from '@/layout/header';
 import { GlobalProvider } from '@/providers';
 import '@/shared/components/editor/styles/text-editor.css';
 import { APP_VERSION_IDENTITY } from '@/shared/lib/app-version';
+import { STALE_ASSET_GUARD } from '@/shared/lib/stale-asset-guard';
 import '@/styles/globals.css';
 import 'katex/dist/katex.min.css';
 
@@ -62,6 +63,16 @@ export default function RootLayout({
       className={`${pretendard.variable} font-app`}
       suppressHydrationWarning
     >
+      <head>
+        {/* 화면 스크립트보다 먼저 도는 자가 복구. 옛 빌드 HTML 이 어디서든(캐시·복원) 뜨면 그
+         * HTML 이 가리키는 /_next/static 파일이 404 가 나 화면 스크립트가 못 켜진다. 그때 한 번만
+         * 새로고침해 최신 HTML 을 받는다. 1분 안 재발은 무시해 반복 새로고침을 막는다(2026-10-02). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: STALE_ASSET_GUARD,
+          }}
+        />
+      </head>
       <body className="bg-gray-1 antialiased">
         {/* 승인 디자인의 앱 글꼴. CDN이 실패하면 로컬 Pretendard로 즉시 폴백한다. */}
         <link
