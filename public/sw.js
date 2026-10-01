@@ -43,9 +43,16 @@ self.addEventListener('activate', (event) => {
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// 앱을 여는 순간의 일시적 끊김(와이파이·LTE 전환 등)은 한 번 더 시도해 넘긴다.
-const fetchNavigation = (request) =>
-  fetch(request).catch(() => wait(800).then(() => fetch(request)));
+// 앱을 여는 순간의 일시적 끊김(와이파이·LTE 전환 등)은 몇 번 더 시도해 넘긴다(약 3초).
+const RETRY_DELAYS_MS = [700, 1000, 1500];
+const fetchNavigation = (request, attempt = 0) =>
+  fetch(request).catch((error) =>
+    attempt < RETRY_DELAYS_MS.length
+      ? wait(RETRY_DELAYS_MS[attempt]).then(() =>
+          fetchNavigation(request, attempt + 1)
+        )
+      : Promise.reject(error)
+  );
 
 self.addEventListener('fetch', (event) => {
   const { request } = event;
