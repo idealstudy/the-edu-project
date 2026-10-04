@@ -67,7 +67,7 @@ export default function ColumnList() {
         </div>
       )}
 
-      <div className="tablet:grid-cols-2 grid gap-6">
+      <div className="tablet:grid-cols-2 grid min-w-0 gap-6">
         {data?.content.map((column) => (
           <ColumnCard
             key={column.id}
