@@ -92,6 +92,17 @@
   opacity: 0.8;
 }
 
+@media (max-width: 767.98px) {
+  .notion-editor-content a,
+  .notion-editor-content .notion-link {
+    display: inline-flex;
+    min-width: var(--spacing-touch-min);
+    min-height: var(--spacing-touch-min);
+    align-items: center;
+    justify-content: center;
+  }
+}
+
 /* ===========================================
    Lists
    =========================================== */

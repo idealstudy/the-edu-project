@@ -87,7 +87,7 @@ export const EmailStep = ({ onNext }: EmailStepProps) => {
         <span>이미 가입 하셨나요?</span>
         <Link
           href={loginHref}
-          className="text-key-color-primary w-fit underline"
+          className="text-key-color-primary max-tablet:min-h-touch-min max-tablet:min-w-touch-min max-tablet:inline-flex max-tablet:items-center max-tablet:justify-center w-fit underline"
         >
           로그인
         </Link>

@@ -146,6 +146,7 @@ export default function ListLayoutClient({
               <Link
                 href={`/list/teachers?sort=${sortBy}`}
                 replace
+                className="max-tablet:min-h-touch-min max-tablet:inline-flex max-tablet:items-end"
               >
                 <div
                   className={cn(
@@ -164,6 +165,7 @@ export default function ListLayoutClient({
               <Link
                 href={`/list/study-rooms?sort=${sortBy}`}
                 replace
+                className="max-tablet:min-h-touch-min max-tablet:inline-flex max-tablet:items-end"
               >
                 <div
                   className={cn(
