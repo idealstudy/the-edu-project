@@ -45,7 +45,7 @@ export function PortalPopularPosts() {
       )}
 
       {!isLoading && posts && posts.length > 0 && (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-3">
           {posts.map((column) => (
             <ColumnCard
               key={column.id}

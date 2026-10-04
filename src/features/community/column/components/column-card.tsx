@@ -11,7 +11,8 @@ export default function ColumnCard({ column }: { column: ColumnListItem }) {
   return (
     <Link
       href={PUBLIC.COMMUNITY.COLUMN.DETAIL(column.id)}
-      className="border-gray-3 border-precision rounded-xl bg-white"
+      data-testid="column-card"
+      className="border-gray-3 border-precision min-w-0 rounded-xl bg-white"
     >
       {/* 상단 영역 */}
       <div className="bg-orange-1 relative h-37.5 rounded-t-xl">
@@ -53,18 +54,19 @@ export default function ColumnCard({ column }: { column: ColumnListItem }) {
       </div>
 
       {/* 하단 영역 */}
-      <div className="border-gray-3 rounded-b-xl border-t-1 bg-white px-6 py-4">
+      <div className="border-gray-3 min-w-0 rounded-b-xl border-t-1 bg-white px-6 py-4">
         <p className="font-body1-heading mb-2 truncate">{column.title}</p>
         <span>
           {column.authorName ?? column.authorNickname ?? '알 수 없음'}
         </span>
-        <div className="flex items-center justify-between gap-2">
-          <div className="text-gray-7 font-caption-heading flex flex-1 gap-1 truncate">
-            {column.tags.map((tag) => (
-              <span key={tag}>#{tag}</span>
-            ))}
+        <div className="flex min-w-0 items-center justify-between gap-2">
+          <div
+            data-testid="column-card-tags"
+            className="text-gray-7 font-caption-heading min-w-0 flex-1 truncate"
+          >
+            {column.tags.map((tag) => `#${tag}`).join(' ')}
           </div>
-          <span className="text-gray-5">
+          <span className="text-gray-5 shrink-0">
             {formatDistanceToNow(new Date(column.regDate), {
               addSuffix: true,
               locale: ko,
