@@ -128,6 +128,7 @@
   --type-ui-compact-size: 13px;
   --type-ui-choice-size: 14px;
   --type-coach-size: 16px;
+  --type-desktop-site-notice-size: 32px;
   --type-leading-display: 1.2;
   --type-leading-title: 1.25;
   --type-leading-headline-1: 1.3;
@@ -555,6 +556,9 @@ body {
   --spacing-control-xs: var(--component-control-xs); /* 기존 xsmall 제어 */
   --spacing-control-md: 56px; /* 기존 medium 제어 */
   --spacing-control-xl: 64px; /* 기존 large 제어 */
+  /* 휴대폰의 데스크톱 사이트 축소 배율(약 412/980)에서도 읽고 누를 수 있는 복구 안내 */
+  --spacing-desktop-site-notice: 120px;
+  --spacing-desktop-site-notice-target: 112px;
   --spacing-button-compact-x: 13px;
   --spacing-button-default-x: 20px;
   --spacing-button-wide-x: 26px;
@@ -681,6 +685,13 @@ body {
 @utility font-title-normal {
   font-weight: 400;
   font-size: var(--type-title-size);
+  line-height: var(--type-leading-title);
+  letter-spacing: var(--type-tracking-heading);
+}
+
+@utility font-desktop-site-notice {
+  font-weight: 700;
+  font-size: var(--type-desktop-site-notice-size);
   line-height: var(--type-leading-title);
   letter-spacing: var(--type-tracking-heading);
 }

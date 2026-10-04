@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import Script from 'next/script';
 
+import { DesktopSiteNotice } from '@/app/_components/desktop-site-notice';
 import { PwaRegister } from '@/app/_components/pwa-register';
 import { StaleVersionReload } from '@/app/_components/stale-version-reload';
 import { SITE_CONFIG } from '@/config/site';
@@ -79,6 +80,7 @@ export default function RootLayout({
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css"
         />
+        <DesktopSiteNotice />
         {/* GTM Head 스니펫 */}
         {/* 배포환경일때만 작동되게 */}
         {shouldLoadGtm && (
