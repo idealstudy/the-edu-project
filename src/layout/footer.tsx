@@ -14,6 +14,7 @@ export const Footer = () => {
           <Link
             href={PUBLIC.CORE.INDEX}
             aria-label="THE EDU 홈으로 이동"
+            className="max-tablet:min-h-touch-min max-tablet:inline-flex max-tablet:items-center"
           >
             <Image
               src="/logo.svg"
@@ -59,7 +60,7 @@ export const Footer = () => {
             <span className="font-semibold">문의 이메일</span> |{' '}
             <a
               href="mailto:the.edu.devs@gmail.com"
-              className="hover:underline"
+              className="max-tablet:min-h-touch-min max-tablet:inline-flex max-tablet:items-center hover:underline"
             >
               the.edu.devs@gmail.com
             </a>
@@ -70,7 +71,7 @@ export const Footer = () => {
           href={link.terms}
           aria-label="이용약관 전문 보기"
           target="_blank"
-          className="hover:underline"
+          className="max-tablet:min-h-touch-min max-tablet:inline-flex max-tablet:items-center hover:underline"
         >
           서비스 이용약관 바로 가기
         </Link>

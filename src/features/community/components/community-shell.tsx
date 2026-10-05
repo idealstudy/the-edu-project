@@ -56,6 +56,7 @@ export default function CommunityShell({
             <Link
               href="/community/column"
               replace
+              className="max-tablet:min-h-touch-min max-tablet:inline-flex max-tablet:items-end"
             >
               <div
                 className={cn(

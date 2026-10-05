@@ -56,6 +56,7 @@ export default function OpenChallengeShell({
             <Link
               href="/"
               replace
+              className="max-tablet:min-h-touch-min max-tablet:inline-flex max-tablet:items-end"
             >
               <div
                 className={cn(
