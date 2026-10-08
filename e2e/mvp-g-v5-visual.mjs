@@ -5,7 +5,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-const WEB_BASE = process.env.E2E_BASE_URL ?? 'https://dev.d-edu.site';
+const WEB_BASE = process.env.E2E_BASE_URL ?? 'https://dev.hongong.today';
 const VIEWPORT = {
   width: Number(process.env.MVPG_VIEWPORT_WIDTH ?? 1024),
   height: Number(process.env.MVPG_VIEWPORT_HEIGHT ?? 768),

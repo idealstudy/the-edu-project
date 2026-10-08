@@ -6,6 +6,9 @@ type ResolveAppEnvironmentInput = {
   vercelEnv?: string;
 };
 
+// 2026-10-08 운영 도메인 이전(d-edu.site 만료 → hongong.today). 옛 도메인은 재갱신 대비로 유지.
+const PRODUCTION_HOSTS = ['hongong.today', 'd-edu.site'];
+
 const resolveHostname = (value?: string) => {
   const candidate = value?.trim();
 
@@ -32,7 +35,11 @@ export const resolveAppEnvironment = ({
 
   if (vercelEnv === 'preview') return 'preview';
   if (hostname?.startsWith('dev.')) return 'dev';
-  if (hostname === 'd-edu.site' || hostname?.endsWith('.d-edu.site')) {
+  if (
+    PRODUCTION_HOSTS.some(
+      (host) => hostname === host || hostname?.endsWith(`.${host}`)
+    )
+  ) {
     return 'production';
   }
 

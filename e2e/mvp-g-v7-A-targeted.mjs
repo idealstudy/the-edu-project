@@ -2,7 +2,7 @@ import { chromium } from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
-const base = process.env.E2E_BASE_URL ?? 'https://dev.d-edu.site';
+const base = process.env.E2E_BASE_URL ?? 'https://dev.hongong.today';
 const resultPath = process.env.E2E_RESULT_PATH ?? '/tmp/mvpg-v70-A-targeted.json';
 const screenDir = path.resolve(
   process.env.E2E_SCREEN_DIR ?? '../docs/mvp-g/qa-screens-v7-A'

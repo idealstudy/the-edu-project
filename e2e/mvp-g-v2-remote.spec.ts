@@ -69,7 +69,7 @@ async function login(page: Page, role: Role) {
 
 async function newRolePage(browser: Browser, role: Role) {
   const context = await browser.newContext({
-    baseURL: process.env.E2E_BASE_URL ?? 'https://dev.d-edu.site',
+    baseURL: process.env.E2E_BASE_URL ?? 'https://dev.hongong.today',
     viewport: { width: 1024, height: 768 },
   });
   const page = await context.newPage();
@@ -138,7 +138,7 @@ async function probeChallengeAnswer(page: Page, challengeId: number) {
 
 test.describe('MVP-G v2.0 원격 릴리즈 게이트', () => {
   test('health와 401 문구 비노출을 관찰한다', async ({ page }) => {
-    const apiBase = process.env.E2E_API_BASE_URL ?? 'https://apidev.d-edu.site';
+    const apiBase = process.env.E2E_API_BASE_URL ?? 'https://apidev.hongong.today';
     const response = await page.request.get(
       `${apiBase}/api/admin/actuator/health`
     );

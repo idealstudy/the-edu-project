@@ -2,7 +2,7 @@ import { chromium } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
-export const BASE = process.env.E2E_BASE_URL ?? 'https://dev.d-edu.site';
+export const BASE = process.env.E2E_BASE_URL ?? 'https://dev.hongong.today';
 export const SHOT_DIR = path.resolve('../docs/mvp-g/qa-screens-v8-live');
 
 export async function newBrowser() {

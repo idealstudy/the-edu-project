@@ -8,7 +8,7 @@ import { fetchMemberRole } from '@/shared/lib/server';
 // import { EmptyConnectionDialog } from '@/features/dashboard/connect/components/empty-connection-dialog';
 
 const SITE_NAME = '디에듀';
-const SITE_URL = 'https://d-edu.site/';
+const SITE_URL = 'https://hongong.today/';
 const OG_IMAGE = '/og_image.png';
 
 export const metadata: Metadata = {

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
-  const host = 'https://d-edu.site';
+  const host = 'https://hongong.today';
 
   return {
     rules: [

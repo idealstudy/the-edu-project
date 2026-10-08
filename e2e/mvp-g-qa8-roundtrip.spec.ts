@@ -6,7 +6,7 @@ import { skipWithoutEnv } from './helpers/env-guard';
 // 관리자 계정이 없으면 이 스펙만 skip 된다(나머지 스위트는 정상 실행).
 skipWithoutEnv(['E2E_ADMIN_EMAIL', 'E2E_ADMIN_PASSWORD']);
 
-const baseURL = process.env.E2E_BASE_URL ?? 'https://dev.d-edu.site';
+const baseURL = process.env.E2E_BASE_URL ?? 'https://dev.hongong.today';
 const adminEmail = process.env.E2E_ADMIN_EMAIL;
 const adminPassword = process.env.E2E_ADMIN_PASSWORD;
 const screenDir = path.resolve(process.cwd(), '../docs/mvp-g/qa-screens');

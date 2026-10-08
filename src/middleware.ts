@@ -6,6 +6,9 @@ import { decodeJwt } from 'jose';
 const ALLOWED_ORIGINS = [
   'http://localhost:3000',
   'https://localhost:3000',
+  'https://dev.hongong.today',
+  'https://hongong.today',
+  'https://www.hongong.today',
   'https://dev.d-edu.site',
   'https://d-edu.site',
   'https://the-edu-front.vercel.app',

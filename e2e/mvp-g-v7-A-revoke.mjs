@@ -1,7 +1,7 @@
 import { chromium } from '@playwright/test';
 import { writeFile } from 'node:fs/promises';
 
-const base = process.env.E2E_BASE_URL ?? 'https://dev.d-edu.site';
+const base = process.env.E2E_BASE_URL ?? 'https://dev.hongong.today';
 const resultPath = process.env.E2E_RESULT_PATH ?? '/tmp/mvpg-v70-A-revoke.json';
 
 const credential = (prefix) => {

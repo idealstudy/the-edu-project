@@ -50,4 +50,34 @@ describe('resolveAppEnvironment', () => {
       })
     ).toBe('production');
   });
+
+  it('TC-VERSION-011 회귀: 이전한 운영 도메인 hongong.today와 www는 production, dev는 dev로 판정한다', () => {
+    expect(
+      resolveAppEnvironment({
+        projectProductionUrl: 'hongong.today',
+        vercelEnv: 'production',
+      })
+    ).toBe('production');
+    expect(
+      resolveAppEnvironment({
+        baseUrl: 'https://www.hongong.today',
+        vercelEnv: 'production',
+      })
+    ).toBe('production');
+    expect(
+      resolveAppEnvironment({
+        baseUrl: 'https://dev.hongong.today',
+        vercelEnv: 'production',
+      })
+    ).toBe('dev');
+  });
+
+  it('TC-VERSION-012 경계: 도메인 이름만 비슷한 호스트는 production으로 보지 않는다', () => {
+    expect(
+      resolveAppEnvironment({
+        baseUrl: 'https://nothongong.today',
+        vercelEnv: 'production',
+      })
+    ).toBe('local');
+  });
 });

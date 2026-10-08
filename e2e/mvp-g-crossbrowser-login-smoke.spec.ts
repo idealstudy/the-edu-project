@@ -15,7 +15,7 @@ skipWithoutEnv([
   'E2E_ADMIN_PASSWORD',
 ]);
 
-const baseURL = process.env.E2E_BASE_URL ?? 'https://dev.d-edu.site';
+const baseURL = process.env.E2E_BASE_URL ?? 'https://dev.hongong.today';
 
 const login = async (page: Page, email: string, password: string) => {
   await page.goto(`${baseURL}/login`);

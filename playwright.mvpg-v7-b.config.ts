@@ -11,7 +11,7 @@ export default defineConfig({
   reporter: [['list']],
   outputDir: '/tmp/mvpg-v7-b-pw-artifacts',
   use: {
-    baseURL: process.env.E2E_BASE_URL ?? 'https://dev.d-edu.site',
+    baseURL: process.env.E2E_BASE_URL ?? 'https://dev.hongong.today',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'off',
