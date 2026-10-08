@@ -5,9 +5,9 @@ import { loadE2eSecrets } from './e2e/helpers/load-e2e-secrets';
 // .env.local 만 읽으면 계정 변수가 없을 때 전 항목이 조용히 skip 된다.
 loadE2eSecrets();
 
-process.env.BACKEND_API_URL ??= 'https://apidev.d-edu.site/api';
-process.env.NEXT_PUBLIC_BACKEND_API_URL ??= 'https://apidev.d-edu.site/api';
-const devOrigin = process.env.E2E_BASE_URL?.trim() || 'https://dev.d-edu.site';
+process.env.BACKEND_API_URL ??= 'https://apidev.hongong.today/api';
+process.env.NEXT_PUBLIC_BACKEND_API_URL ??= 'https://apidev.hongong.today/api';
+const devOrigin = process.env.E2E_BASE_URL?.trim() || 'https://dev.hongong.today';
 const reportScope = process.env.E2E_REPORT_SCOPE ?? 'manual';
 
 export default defineConfig({

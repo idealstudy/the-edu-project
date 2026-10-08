@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
-const WEB_BASE = process.env.E2E_BASE_URL ?? 'https://dev.d-edu.site';
+const WEB_BASE = process.env.E2E_BASE_URL ?? 'https://dev.hongong.today';
 const OUTPUT =
   process.env.MVPG_BUTTON_EVIDENCE_PATH ?? '/tmp/mvpg-v30-button-audit.json';
 const SCREEN_DIR = path.resolve(process.cwd(), '../docs/mvp-g/qa-screens');

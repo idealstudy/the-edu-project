@@ -13,13 +13,13 @@ type TestResponse = {
 };
 
 const DEV_ORIGIN =
-  process.env.E2E_BASE_URL?.trim() || 'https://dev.d-edu.site';
+  process.env.E2E_BASE_URL?.trim() || 'https://dev.hongong.today';
 
 // 화면의 공개 API(api.public)는 BFF 를 거치지 않고 백엔드로 직접 간다
 // (shared/api/http/http.transport.ts 의 publicHttp baseURL = env.backendApiUrl).
 // 가입처럼 비로그인 상태에서 호출하는 API 는 이 경로를 써야 실제 사용자 경로가 된다.
 export const BACKEND_ORIGIN = (
-  process.env.BACKEND_API_URL?.trim() || 'https://apidev.d-edu.site/api'
+  process.env.BACKEND_API_URL?.trim() || 'https://apidev.hongong.today/api'
 ).replace(/\/$/, '');
 const SESSION_COOKIE_NAMES = new Set([
   'Authorization',

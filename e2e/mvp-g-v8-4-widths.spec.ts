@@ -19,7 +19,7 @@ import { findOwnedStudyRoomId } from './helpers/auth';
  * 페이지 몸통은 절대 좌우로 밀리면 안 된다.
  *
  * 실행:
- *   E2E_BASE_URL=https://dev.d-edu.site npx playwright test \
+ *   E2E_BASE_URL=https://dev.hongong.today npx playwright test \
  *     e2e/mvp-g-v8-4-widths.spec.ts --project=widths-v8-4 --workers=1
  */
 

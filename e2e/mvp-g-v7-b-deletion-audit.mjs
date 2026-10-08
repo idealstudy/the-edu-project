@@ -2,7 +2,7 @@ import { chromium } from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
-const baseURL = process.env.E2E_BASE_URL ?? 'https://dev.d-edu.site';
+const baseURL = process.env.E2E_BASE_URL ?? 'https://dev.hongong.today';
 const outputPath = '/tmp/mvpg-v7-b-deletion-audit.json';
 const screenDir = path.resolve(process.cwd(), '../docs/mvp-g/qa-screens');
 

@@ -13,12 +13,12 @@ export const Footer = () => {
         <div className="flex items-center gap-6">
           <Link
             href={PUBLIC.CORE.INDEX}
-            aria-label="THE EDU 홈으로 이동"
+            aria-label="디에듀 홈으로 이동"
             className="max-tablet:min-h-touch-min max-tablet:inline-flex max-tablet:items-center"
           >
             <Image
               src="/logo.svg"
-              alt="THE EDU 로고"
+              alt="디에듀 로고"
               width={79}
               height={22}
               className="cursor-pointer"
@@ -59,10 +59,10 @@ export const Footer = () => {
           <p>
             <span className="font-semibold">문의 이메일</span> |{' '}
             <a
-              href="mailto:the.edu.devs@gmail.com"
+              href="mailto:support@hongong.today"
               className="max-tablet:min-h-touch-min max-tablet:inline-flex max-tablet:items-center hover:underline"
             >
-              the.edu.devs@gmail.com
+              support@hongong.today
             </a>
           </p>
         </address>

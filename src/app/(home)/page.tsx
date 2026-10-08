@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { PortalHome } from '@/features/home/components/portal-home';
+import { Footer } from '@/layout/footer';
 import { PageViewTracker } from '@/shared/components/analytics';
 
 // MVP-G 공개 포털 홈 — frd-public-portal-v1 §4.1 모듈 순서(모바일 고정,
@@ -19,6 +20,8 @@ export default function HomePage() {
     <>
       <PageViewTracker pageName="open-challenge" />
       <PortalHome />
+      {/* 사업자 정보 공개(전자상거래법 표시 의무). 홈에 빠져 있던 것을 2026-10-08 복원. */}
+      <Footer />
     </>
   );
 }

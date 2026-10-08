@@ -1,5 +1,5 @@
 import { chromium } from 'playwright';
-const API='https://apidev.d-edu.site/api', APP='https://dev.d-edu.site', OUT=process.argv[2];
+const API='https://apidev.hongong.today/api', APP='https://dev.hongong.today', OUT=process.argv[2];
 async function ck(em,pw){const r=await fetch(API+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,password:pw})});
  return r.headers.getSetCookie().map(c=>{const nv=c.split(';')[0],i=nv.indexOf('=');return{name:nv.slice(0,i),value:nv.slice(i+1),domain:'.d-edu.site',path:'/'}}).filter(c=>c.value);}
 const b=await chromium.launch();

@@ -1,6 +1,6 @@
 import { chromium } from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
-const WEB='https://dev.d-edu.site';
+const WEB='https://dev.hongong.today';
 const OUT='/Users/sj/sj_code_master/d-edu-mvp-g-dashboard/docs/mvp-g/qa-screens-v8-C';
 const cred=r=>({email:process.env[`E2E_${r}_EMAIL`],password:process.env[`E2E_${r}_PASSWORD`]});
 async function login(page,role){

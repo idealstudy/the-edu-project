@@ -19,7 +19,7 @@ import {
 // 비로그인 전제 시나리오는 각 테스트가 newDevContext 로 빈 세션 컨텍스트를 연다.
 test.use({ storageState: 'e2e/.auth/student1.state.json' });
 
-// student accounts against https://dev.d-edu.site (no route mocks)
+// student accounts against https://dev.hongong.today (no route mocks)
 const TAG = '@mvp-e-v1.1-devremote';
 
 type PairInvite = {

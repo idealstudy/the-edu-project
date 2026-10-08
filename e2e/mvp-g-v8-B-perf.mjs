@@ -40,7 +40,7 @@ for (const candidate of secretDirs) {
   }
 }
 
-const BASE = process.env.E2E_BASE_URL ?? 'https://dev.d-edu.site';
+const BASE = process.env.E2E_BASE_URL ?? 'https://dev.hongong.today';
 const SAMPLES = Number(process.env.PERF_SAMPLES ?? 10);
 
 const need = (name) => {

@@ -3,7 +3,7 @@ import { chromium } from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
-const WEB_BASE = process.env.E2E_BASE_URL ?? 'https://dev.d-edu.site';
+const WEB_BASE = process.env.E2E_BASE_URL ?? 'https://dev.hongong.today';
 const SCREEN_DIR = path.resolve(process.cwd(), '../docs/mvp-g/qa-screens');
 const OUTPUT = '/tmp/mvpg-v50-critical-actions.json';
 
