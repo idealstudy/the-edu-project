@@ -104,7 +104,7 @@ export const Header = () => {
           >
             <Image
               src={'/logo.svg'}
-              alt="THE EDU 로고"
+              alt="디에듀 로고"
               width={79}
               height={22}
               className="shrink-0 cursor-pointer"
