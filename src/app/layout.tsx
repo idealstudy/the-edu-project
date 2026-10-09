@@ -17,14 +17,16 @@ import 'katex/dist/katex.min.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_CONFIG.url),
-  title: 'THE EDU',
+  // 2026-10-09 도메인 이전(hongong.today) 후속: 옛 브랜드명 THE EDU가 제목이 없는
+  // 화면(로그인 등)의 브라우저 탭에 그대로 노출되던 것을 정정. 서비스 이름 오독공(회장 2026-10-10 확정, 동일 상표 0건).
+  title: '오독공',
   description:
-    'THE EDU는 과외와 일정 관리를 하나의 플랫폼에서 제공합니다. 실시간 피드백, 스케줄 조정 기능을 경험해보세요.',
+    '오독공(오늘 독한 혼공)은 중고등 수학 학생이 AI 코치와 함께 스스로 풀고, 선생님이 그 과정을 확인하고 피드백하는 과외 플랫폼입니다.',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: '디에듀',
+    title: '오독공',
   },
   icons: {
     apple: '/icons/apple-touch-icon-180.png',

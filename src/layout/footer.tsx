@@ -75,6 +75,13 @@ export const Footer = () => {
         >
           서비스 이용약관 바로 가기
         </Link>
+        <Link
+          href="/about"
+          lang="en"
+          className="max-tablet:min-h-touch-min max-tablet:inline-flex max-tablet:items-center ml-4 hover:underline"
+        >
+          About (English)
+        </Link>
       </div>
     </footer>
   );

@@ -10,7 +10,7 @@ import { PageViewTracker } from '@/shared/components/analytics';
 // 100% 그대로 재사용한다(신규 구현 0) — id="today-challenge"로 히어로
 // CTA의 스크롤 타깃만 새로 건다.
 export const metadata: Metadata = {
-  title: '디에듀 | 오늘 한 문제, 또는 비공개 상담',
+  title: '오독공 | 오늘 한 문제, 또는 비공개 상담',
   description:
     '디에듀 AI 코치와 함께 문제를 제대로 풀어보세요. 고민이 있다면 비공개로 상담을 신청할 수 있어요.',
 };

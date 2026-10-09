@@ -8,7 +8,7 @@ import { PageViewTracker } from '@/shared/components/analytics';
 // 화면·데이터 로직은 기존 사이트 메인('/')과 100% 동일 컴포넌트 재사용 —
 // 신규 구현 0 (frd-public-portal-v1 §6.1, api-contract §5).
 export const metadata: Metadata = {
-  title: '오늘의 문제 | 디에듀',
+  title: '오늘의 문제 | 오독공',
   description:
     '디에듀 AI 코치와 함께 문제를 제대로 풀어보세요. 제대로 푼 만큼 약점 지도가 채워집니다.',
 };
