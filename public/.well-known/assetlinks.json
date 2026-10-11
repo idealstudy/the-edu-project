@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "today.hongong.app",
+      "sha256_cert_fingerprints": [
+        "09:32:F6:46:DD:2D:63:4F:47:42:40:92:0D:15:2F:F8:5F:48:9C:CF:99:A5:35:B3:EC:67:B0:A1:8D:91:87:E2"
+      ]
+    }
+  }
+]
